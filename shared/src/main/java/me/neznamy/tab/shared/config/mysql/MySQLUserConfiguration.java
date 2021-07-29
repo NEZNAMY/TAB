@@ -64,13 +64,13 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 	public String[] getProperty(String user, String property, String server, String world) {
 		String value = null;
 		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property)) != null) {
-			return new String[] {value, "user=" + user + ",server=" + server};
+			return new String[] {value, String.format("user=%s,server=%s", user, server)};
 		}
 		if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property)) != null) {
-			return new String[] {value, "user=" + user + ",world=" + world};
+			return new String[] {value, String.format("user=%s,world=%s", user, world)};
 		}
 		if ((value = values.getOrDefault(user, new HashMap<>()).get(property)) != null) {
-			return new String[] {value, "user=" + user};
+			return new String[] {value, String.format("user=%s", user)};
 		}
 		return new String[0];
 	}

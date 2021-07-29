@@ -83,6 +83,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * Constructs new instance and loads configuration
 	 * @param tab - tab instance
 	 */
+	@SuppressWarnings("unchecked")
 	public ScoreboardManagerImpl() {
 		super("Scoreboard");
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
@@ -94,30 +95,32 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
 		respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
-		scoreboardOn = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-on", "&2Scorebord enabled");
-		scoreboardOff = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-off", "&7Scoreboard disabled");
+		scoreboardOn = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-toggle-on", "&2Scorebord enabled");
+		scoreboardOff = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-toggle-off", "&7Scoreboard disabled");
 		if (rememberToggleChoice) {
 			sbOffPlayers = Collections.synchronizedSet(new HashSet<>(TAB.getInstance().getConfiguration().getPlayerData("scoreboard-off")));
 		}
 		staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
 		joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
-		for (Object scoreboard : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards").keySet()) {
-			String condition = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.scoreboards." + scoreboard + ".display-condition");
-			String childBoard = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.scoreboards." + scoreboard + ".if-condition-not-met");
-			String title = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.scoreboards." + scoreboard + ".title");
+		Map<String, Object> scoreboards = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
+		for (Object name : scoreboards.keySet()) {
+			Map<String, Object> scoreboard = (Map<String, Object>) scoreboards.get(name);
+			String condition = (String) scoreboard.get("display-condition");
+			String childBoard = (String) scoreboard.get("if-condition-not-met");
+			String title = (String) scoreboard.get("title");
 			if (title == null) {
 				title = "<Title not defined>";
-				TAB.getInstance().getErrorManager().missingAttribute("Scoreboard", scoreboard, "title");
+				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), name, "title");
 			}
-			List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.scoreboards." + scoreboard + ".lines");
+			List<String> lines = (List<String>) scoreboard.get("lines");
 			if (lines == null) {
-				lines = Arrays.asList("scoreboard \"" + scoreboard +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
-				TAB.getInstance().getErrorManager().missingAttribute("Scoreboard", scoreboard, "lines");
+				lines = Arrays.asList("scoreboard \"" + name +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
+				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), name, "lines");
 			}
-			ScoreboardImpl sb = new ScoreboardImpl(this, scoreboard.toString(), title, lines, condition, childBoard);
-			scoreboards.put(scoreboard.toString(), sb);
-			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + scoreboard, sb);
+			ScoreboardImpl sb = new ScoreboardImpl(this, name.toString(), title, lines, condition, childBoard);
+			scoreboards.put(name.toString(), sb);
+			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + name, sb);
 		}
 		checkForMisconfiguration();
 		TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
@@ -293,7 +296,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	public boolean onCommand(TabPlayer sender, String message) {
 		if (disabledPlayers.contains(sender)) return false;
 		if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
-			TAB.getInstance().getCommand().execute(sender, message.replace(toggleCommand,"scoreboard").split(" "));
+			TAB.getInstance().getCommand().execute(sender, message.replace(toggleCommand, "scoreboard").split(" "));
 			return true;
 		}
 		return false;

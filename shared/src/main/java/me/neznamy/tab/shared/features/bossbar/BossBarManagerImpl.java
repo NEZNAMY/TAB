@@ -37,6 +37,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	//toggle command
 	private String toggleCommand;
+	
+	private String toggleOnMessage;
+	private String toggleOffMessage;
 
 	//list of currently running bossbar announcements
 	private Set<BossBar> announcements = new HashSet<>();
@@ -67,6 +70,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
 		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-world");
 		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-server");
+		toggleOnMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on");
+		toggleOffMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off");
 		for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
 			lines.put(bar.toString(), loadFromConfig(bar.toString()));
 		}
@@ -107,26 +112,27 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	 * @return loaded bossbar
 	 */
 	private BossBarLine loadFromConfig(String bar) {
-		String condition = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".display-condition", null);
-		String style = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".style");
-		String color = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".color");
-		String progress = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".progress");
-		String text = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.bars." + bar + ".text");
+		Map<String, Object> bossbar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
+		String condition = (String) bossbar.get("display-condition");
+		String style = (String) bossbar.get("style");
+		String color = (String) bossbar.get("color");
+		String progress = String.valueOf(bossbar.get("progress"));
+		String text = (String) bossbar.get("text");
 		if (style == null) {
-			TAB.getInstance().getErrorManager().missingAttribute("BossBar", bar, "style");
+			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "style");
 			style = "PROGRESS";
 		}
 		if (color == null) {
-			TAB.getInstance().getErrorManager().missingAttribute("BossBar", bar, "color");
+			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "color");
 			color = "WHITE";
 		}
 		if (progress == null) {
 			progress = "100";
-			TAB.getInstance().getErrorManager().missingAttribute("BossBar", bar, "progress");
+			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "progress");
 		}
 		if (text == null) {
 			text = "";
-			TAB.getInstance().getErrorManager().missingAttribute("BossBar", bar, "text");
+			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "text");
 		}
 		return new BossBarLine(this, bar, condition, color, style, text, progress);
 	}
@@ -274,7 +280,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (visible) {
 			visiblePlayers.add(player);
 			detectBossBarsAndSend(player);
-			if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on"), true);
+			if (sendToggleMessage) player.sendMessage(toggleOnMessage, true);
 			if (rememberToggleChoice) {
 				bossbarOffPlayers.remove(player.getName());
 				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossbarOffPlayers);
@@ -282,7 +288,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		} else {
 			visiblePlayers.remove(player);
 			lines.values().forEach(l -> l.removePlayer(player));
-			if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off"), true);
+			if (sendToggleMessage) player.sendMessage(toggleOffMessage, true);
 			if (rememberToggleChoice && !bossbarOffPlayers.contains(player.getName())) {
 				bossbarOffPlayers.add(player.getName());
 				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossbarOffPlayers);

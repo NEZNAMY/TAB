@@ -15,6 +15,7 @@ import java.util.Set;
 import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 
 /**
  * An error assistant to print internal errors into error file and warn user about misconfiguration
@@ -139,26 +140,8 @@ public class ErrorManagerImpl implements ErrorManager {
 	 * @throws IOException - if IO writer operation fails
 	 */
 	private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
-		buf.write(getCurrentTime() + removeColors(prefix) + message + System.getProperty("line.separator"));
+		buf.write(getCurrentTime() + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
 		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(prefix.replace('&', '\u00a7') + message, false);
-	}
-
-	/**
-	 * Removes all color codes from defined text
-	 * @param text - text to remove colors from
-	 * @return text without colors
-	 */
-	private String removeColors(String text) {
-		StringBuilder sb = new StringBuilder();
-		for (int i=0; i<text.length(); i++) {
-			char c = text.charAt(i);
-			if (c == '&' || c == '\u00a7') {
-				i++;
-			} else {
-				sb.append(c);
-			}
-		}
-		return sb.toString();
 	}
 
 	@Override

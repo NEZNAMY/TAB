@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -119,8 +120,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
+		manager.registerPlayerPlaceholder(new AFKPlaceholder());
 		registerOnlinePlaceholders(manager);
-		registerAFKPlaceholder(manager);
 		registerVaultPlaceholders(manager);
 		registerSyncPlaceholders(manager);
 	}
@@ -128,59 +129,17 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
 			public Object get(TabPlayer p) {
-				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
-				}
-				return count;
+				return TAB.getInstance().getOnlinePlayers().stream().filter(all -> ((Player) p.getPlayer()).canSee((Player) all.getPlayer())).collect(Collectors.toList()).size();
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%staffonline%", 2000) {
 			public Object get(TabPlayer p) {
-				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
-				}
-				return count;
+				return TAB.getInstance().getOnlinePlayers().stream().filter(all -> all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())).collect(Collectors.toList()).size();
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%nonstaffonline%", 2000) {
 			public Object get(TabPlayer p) {
-				int count = TAB.getInstance().getOnlinePlayers().size();
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count--;
-				}
-				return count;
-			}
-		});
-	}
-
-	/**
-	 * Registers AFK placeholder
-	 */
-	private void registerAFKPlaceholder(PlaceholderManager manager) {
-		Plugin afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
-		boolean antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%afk%", 500) {
-			public Object get(TabPlayer p) {
-				try {
-					if (essentials != null) {
-						Object user = essGetUser.invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer());
-						if ((boolean) essIsAfk.invoke(user)) return true;
-					}
-					if (afkplus != null) {
-						Object afkplusplayer = afkplus.getClass().getMethod("getPlayer", UUID.class).invoke(afkplus, p.getUniqueId());
-						if ((boolean) afkplusplayer.getClass().getMethod("isAFK").invoke(afkplusplayer)) return true;
-					}
-					if (antiafkplus) {
-						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
-					}
-					if (purpurIsAfk != null && ((Player)p).getPlayer().isAfk()) return true;
-				} catch (Exception e) {
-					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
-				}
-				return false;
+				return TAB.getInstance().getOnlinePlayers().stream().filter(all -> !all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())).collect(Collectors.toList()).size();
 			}
 		});
 	}
@@ -248,6 +207,39 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					}
 				});
 			}
+		}
+	}
+	
+	public class AFKPlaceholder extends PlayerPlaceholder {
+
+		private Plugin afkplus;
+		private boolean antiafkplus;
+		
+		protected AFKPlaceholder() {
+			super("%afk%", 500);
+			afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
+			antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
+		}
+		
+		public Object get(TabPlayer p) {
+			try {
+				if (essentials != null) {
+					Object user = essGetUser.invoke(Bukkit.getPluginManager().getPlugin("Essentials"), p.getPlayer());
+					if ((boolean) essIsAfk.invoke(user)) return true;
+				}
+				if (afkplus != null) {
+					Object afkplusplayer = afkplus.getClass().getMethod("getPlayer", UUID.class).invoke(afkplus, p.getUniqueId());
+					if ((boolean) afkplusplayer.getClass().getMethod("isAFK").invoke(afkplusplayer)) return true;
+				}
+				if (antiafkplus) {
+					Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
+					if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
+				}
+				if (purpurIsAfk != null && ((Player)p).getPlayer().isAfk()) return true;
+			} catch (Exception e) {
+				TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
+			}
+			return false;
 		}
 	}
 }

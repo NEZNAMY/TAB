@@ -21,7 +21,7 @@ import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 import me.neznamy.tab.shared.TAB;
 
-
+@SuppressWarnings("rawtypes")
 public class NMSStorage {
 
 	//instance of this class
@@ -506,7 +506,7 @@ public class NMSStorage {
 		return classes.get(name);
 	}
 
-	public Constructor<?> getConstructor(String name){
+	public Constructor getConstructor(String name){
 		return constructors.get(name);
 	}
 
@@ -518,7 +518,7 @@ public class NMSStorage {
 		return methods.get(name);
 	}
 
-	public Enum<?>[] getEnum(String name) {
+	public Enum[] getEnum(String name) {
 		return enums.get(name);
 	}
 

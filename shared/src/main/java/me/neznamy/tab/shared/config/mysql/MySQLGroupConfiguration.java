@@ -64,13 +64,13 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 	public String[] getProperty(String group, String property, String server, String world) {
 		String value = null;
 		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
-			return new String[] {value, "group=" + group + ",server=" + server};
+			return new String[] {value, String.format("group=%s,server=%s", group, server)};
 		}
 		if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
-			return new String[] {value, "group=" + group + ",world=" + world};
+			return new String[] {value, String.format("group=%s,world=%s", group, world)};
 		}
 		if ((value = values.getOrDefault(group, new HashMap<>()).get(property)) != null) {
-			return new String[] {value, "group=" + group};
+			return new String[] {value, String.format("group=%s", group)};
 		}
 		return new String[0];
 	}

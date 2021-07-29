@@ -2,9 +2,6 @@ package me.neznamy.tab.api;
 
 public interface ErrorManager {
 
-	
-//	public void printError(String message);
-	
 	/**
 	 * Prints an error message and stack trace into errors.log file
 	 * @param message - message to print
