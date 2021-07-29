@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
@@ -184,15 +185,14 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	@SuppressWarnings("unchecked")
 	private void registerConditionPlaceholders(PlaceholderManager manager) {
 		Condition.setConditions(new HashMap<>());
-		Map<Object, Object> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
-		for (Object name : conditions.keySet()) {
-			Map<Object, Object> condition = (Map<Object, Object>) conditions.get(name);
-			List<String> list = (List<String>) condition.get("conditions");
-			String type = condition.get("type").toString();
-			String yes = condition.get("true").toString();
-			String no = condition.get("false").toString();
-			Condition c = Condition.compile(name.toString(), list, type, yes, no);
-			Condition.getConditions().put(name.toString(), c);
+		Map<Object, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
+		for (Entry<Object, Map<Object, Object>> condition : conditions.entrySet()) {
+			List<String> list = (List<String>) condition.getValue().get("conditions");
+			String type = condition.getValue().get("type").toString();
+			String yes = condition.getValue().get("true").toString();
+			String no = condition.getValue().get("false").toString();
+			Condition c = Condition.compile(condition.getKey().toString(), list, type, yes, no);
+			Condition.getConditions().put(condition.getKey().toString(), c);
 			String identifier = "%condition:" + c.getName() + "%";
 			PlaceholderManagerImpl pm = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
 			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);

@@ -103,24 +103,23 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
 		joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
-		Map<String, Object> scoreboards = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
-		for (Object name : scoreboards.keySet()) {
-			Map<String, Object> scoreboard = (Map<String, Object>) scoreboards.get(name);
-			String condition = (String) scoreboard.get("display-condition");
-			String childBoard = (String) scoreboard.get("if-condition-not-met");
-			String title = (String) scoreboard.get("title");
+		Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
+		for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
+			String condition = (String) entry.getValue().get("display-condition");
+			String childBoard = (String) entry.getValue().get("if-condition-not-met");
+			String title = (String) entry.getValue().get("title");
 			if (title == null) {
 				title = "<Title not defined>";
-				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), name, "title");
+				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), entry.getKey(), "title");
 			}
-			List<String> lines = (List<String>) scoreboard.get("lines");
+			List<String> lines = (List<String>) entry.getValue().get("lines");
 			if (lines == null) {
-				lines = Arrays.asList("scoreboard \"" + name +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
-				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), name, "lines");
+				lines = Arrays.asList("scoreboard \"" + entry.getKey() +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
+				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), entry.getKey(), "lines");
 			}
-			ScoreboardImpl sb = new ScoreboardImpl(this, name.toString(), title, lines, condition, childBoard);
-			scoreboards.put(name.toString(), sb);
-			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + name, sb);
+			ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition, childBoard);
+			scoreboards.put(entry.getKey(), sb);
+			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + entry.getKey(), sb);
 		}
 		checkForMisconfiguration();
 		TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
