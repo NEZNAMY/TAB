@@ -55,6 +55,7 @@ scoreboard:
   use-numbers: false
   static-number: 0
   delay-on-join-milliseconds: 0
+  respect-other-plugins: true
   disable-in-worlds: 
     - disabledworld
   #set to NONE to have no default scoreboard
