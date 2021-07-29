@@ -222,8 +222,8 @@ public class IChatBaseComponent {
 		for (IChatBaseComponent child : getExtra()) {
 			child.convertColorsToLegacy();
 		}
-		if (modifier.getHoverEvent() != null && modifier.getHoverEvent().getValue() instanceof IChatBaseComponent) {
-			((IChatBaseComponent)modifier.getHoverEvent().getValue()).convertColorsToLegacy();
+		if (modifier.getHoverEvent() != null) {
+			modifier.getHoverEvent().getValue().convertColorsToLegacy();
 		}
 	}
 
