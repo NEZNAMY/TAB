@@ -95,6 +95,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		});
 
 		placeholders.add(new PlayerPlaceholder("%displayname%", 500) {
+			@SuppressWarnings("deprecation")
 			public String get(TabPlayer p) {
 				return ((Player) p.getPlayer()).getDisplayName();
 			}

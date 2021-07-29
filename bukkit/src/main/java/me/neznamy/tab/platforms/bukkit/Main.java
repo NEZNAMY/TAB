@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
