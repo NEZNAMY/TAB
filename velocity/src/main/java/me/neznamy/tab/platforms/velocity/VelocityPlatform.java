@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.velocity.v1_1_0;
+package me.neznamy.tab.platforms.velocity;
 
 import java.io.File;
 import java.util.Optional;

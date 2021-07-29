@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.velocity.v1_1_0;
+package me.neznamy.tab.platforms.velocity;
 
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.packets.PacketBuilder;
