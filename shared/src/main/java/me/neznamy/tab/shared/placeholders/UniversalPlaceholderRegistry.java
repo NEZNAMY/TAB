@@ -185,14 +185,14 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	@SuppressWarnings("unchecked")
 	private void registerConditionPlaceholders(PlaceholderManager manager) {
 		Condition.setConditions(new HashMap<>());
-		Map<Object, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
-		for (Entry<Object, Map<Object, Object>> condition : conditions.entrySet()) {
+		Map<String, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
+		for (Entry<String, Map<Object, Object>> condition : conditions.entrySet()) {
 			List<String> list = (List<String>) condition.getValue().get("conditions");
-			String type = condition.getValue().get("type").toString();
-			String yes = condition.getValue().get("true").toString();
-			String no = condition.getValue().get("false").toString();
-			Condition c = Condition.compile(condition.getKey().toString(), list, type, yes, no);
-			Condition.getConditions().put(condition.getKey().toString(), c);
+			String type = String.valueOf(condition.getValue().get("type"));
+			String yes = String.valueOf(condition.getValue().get("true"));
+			String no = String.valueOf(condition.getValue().get("false"));
+			Condition c = Condition.compile(condition.getKey(), list, type, yes, no);
+			Condition.getConditions().put(condition.getKey(), c);
 			String identifier = "%condition:" + c.getName() + "%";
 			PlaceholderManagerImpl pm = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
 			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
