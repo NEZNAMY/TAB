@@ -174,6 +174,7 @@ public class TAB extends TabAPI {
 			data.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Exception e) {
+			data.clear();
 			errorManager.criticalError("Failed to disable", e);
 		}
 	}
