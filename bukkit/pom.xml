@@ -55,10 +55,6 @@
 					<artifactId>YamlAssist</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>com.googlecode.json-simple</groupId>
-					<artifactId>json-simple</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
 				</exclusion>

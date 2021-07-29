@@ -161,7 +161,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		try {
 			sendPacket(packet.build(getVersion()), feature);
 		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("An error occurred when creating " + getClass().getSimpleName(), e);
+			TAB.getInstance().getErrorManager().printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}
 	}
 	

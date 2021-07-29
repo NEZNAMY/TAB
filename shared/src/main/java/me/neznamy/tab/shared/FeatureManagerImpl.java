@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.json.simple.parser.ParseException;
+
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -95,8 +97,9 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @throws InvocationTargetException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
+	 * @throws ParseException 
 	 */
-	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		long time = System.nanoTime();
 		PacketPlayOutPlayerInfo info = TAB.getInstance().getPlatform().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
@@ -286,8 +289,9 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
 	 * @throws IllegalAccessException 
+	 * @throws ParseException 
 	 */
-	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException, ParseException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);

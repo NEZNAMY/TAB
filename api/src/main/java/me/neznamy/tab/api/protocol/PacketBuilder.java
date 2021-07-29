@@ -2,6 +2,8 @@ package me.neznamy.tab.api.protocol;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.json.simple.parser.ParseException;
+
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 
@@ -137,8 +139,9 @@ public interface PacketBuilder {
 	 * @return The converted packet
 	 * @throws InvocationTargetException 
 	 * @throws IllegalAccessException 
+	 * @throws ParseException 
 	 */
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException;
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, ParseException;
 	
 	/**
 	 * Converts platform-specific instance of objective packet into custom class object
@@ -146,8 +149,9 @@ public interface PacketBuilder {
 	 * @param clientVersion - client version
 	 * @return The converted packet
 	 * @throws IllegalAccessException 
+	 * @throws ParseException 
 	 */
-	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException;
+	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, ParseException;
 	
 	/**
 	 * Converts platform-specific instance of display objective packet into custom class object

@@ -95,7 +95,7 @@ public class AlignedSuffix extends TabFeature {
 		int width = 0;
 		if (component.getText() != null) {
 			for (Character c : component.getText().toCharArray()) {
-				if (component.isBold()) {
+				if (component.getModifier().isBold()) {
 					width += widths.get(c)+2;
 				} else {
 					width += widths.get(c)+1;

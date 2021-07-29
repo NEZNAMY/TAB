@@ -21,10 +21,10 @@ import com.viaversion.viaversion.libs.gson.JsonParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.TextColor;
-import me.neznamy.tab.api.chat.IChatBaseComponent.ClickAction;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
@@ -503,23 +503,23 @@ public class BukkitPacketBuilder implements PacketBuilder {
 					String name = (String) nms.getField("ChatHexColor_name").get(color);
 					if (name != null) {
 						//legacy code
-						chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
+						chat.getModifier().setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
 					} else {
 						int rgb = (int) nms.getField("ChatHexColor_rgb").get(color);
-						chat.setColor(new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
+						chat.getModifier().setColor(new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
 					}
 				} else {
-					chat.setColor(new TextColor(EnumChatFormat.valueOf(((Enum)color).name())));
+					chat.getModifier().setColor(new TextColor(EnumChatFormat.valueOf(((Enum)color).name())));
 				}
 			}
-			chat.setBold((Boolean) nms.getField("ChatModifier_bold").get(modifier));
-			chat.setItalic((Boolean) nms.getField("ChatModifier_italic").get(modifier));
-			chat.setObfuscated((Boolean) nms.getField("ChatModifier_obfuscated").get(modifier));
-			chat.setStrikethrough((Boolean) nms.getField("ChatModifier_strikethrough").get(modifier));
-			chat.setUnderlined((Boolean) nms.getField("ChatModifier_underlined").get(modifier));
+			chat.getModifier().setBold((Boolean) nms.getField("ChatModifier_bold").get(modifier));
+			chat.getModifier().setItalic((Boolean) nms.getField("ChatModifier_italic").get(modifier));
+			chat.getModifier().setObfuscated((Boolean) nms.getField("ChatModifier_obfuscated").get(modifier));
+			chat.getModifier().setStrikethrough((Boolean) nms.getField("ChatModifier_strikethrough").get(modifier));
+			chat.getModifier().setUnderlined((Boolean) nms.getField("ChatModifier_underlined").get(modifier));
 			Object clickEvent = nms.getField("ChatModifier_clickEvent").get(modifier);
 			if (clickEvent != null) {
-				chat.onClick(ClickAction.valueOf(nms.getField("ChatClickable_action").get(clickEvent).toString().toUpperCase()), (String) nms.getField("ChatClickable_value").get(clickEvent));
+				chat.getModifier().onClick(EnumClickAction.valueOf(nms.getField("ChatClickable_action").get(clickEvent).toString().toUpperCase()), (String) nms.getField("ChatClickable_value").get(clickEvent));
 			}
 		}
 		for (Object extra : (List<Object>) nms.getField("ChatBaseComponent_extra").get(component)) {
@@ -549,36 +549,36 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (component == null) return null;
 		Object chat = nms.getConstructor("ChatComponentText").newInstance(component.getText());
 		Object modifier;
+		Object clickEvent = component.getModifier().getClickEvent() == null ? null : nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, 
+				component.getModifier().getClickEvent().getAction().toString().toLowerCase()), component.getModifier().getClickEvent().getValue().toString());
 		if (nms.getMinorVersion() >= 16) {
 			Object color = null;
-			if (component.getColor() != null) {
+			if (component.getModifier().getColor() != null) {
 				if (clientVersion.getMinorVersion() >= 16) {
-					color = nms.getMethod("ChatHexColor_ofInt").invoke(null, (component.getColor().getRed() << 16) + (component.getColor().getGreen() << 8) + component.getColor().getBlue());
+					color = nms.getMethod("ChatHexColor_ofInt").invoke(null, (component.getModifier().getColor().getRed() << 16) + (component.getModifier().getColor().getGreen() << 8) + component.getModifier().getColor().getBlue());
 				} else {
-					color = nms.getMethod("ChatHexColor_ofString").invoke(null, component.getColor().getLegacyColor().toString().toLowerCase());
+					color = nms.getMethod("ChatHexColor_ofString").invoke(null, component.getModifier().getColor().getLegacyColor().toString().toLowerCase());
 				}
 			}
 			modifier = nms.getConstructor("ChatModifier").newInstance(
 				color,
-				component.getBold(),
-				component.getItalic(),
-				component.getUnderlined(),
-				component.getStrikethrough(),
-				component.getObfuscated(),
-				component.getClickAction() == null ? null : nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()), 
+				component.getModifier().getBold(),
+				component.getModifier().getItalic(),
+				component.getModifier().getUnderlined(),
+				component.getModifier().getStrikethrough(),
+				component.getModifier().getObfuscated(),
+				clickEvent, 
 				null, //need to make it for 1.16
 				null, null);
 		} else {
 			modifier = nms.getConstructor("ChatModifier").newInstance();
-			if (component.getClickAction() != null){
-				nms.setField(modifier, "ChatModifier_clickEvent", nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, component.getClickAction().toString().toLowerCase()), component.getClickValue().toString()));
-			}
-			if (component.getColor() != null) nms.setField(modifier, "ChatModifier_color", Enum.valueOf((Class<Enum>) nms.getClass("EnumChatFormat"), component.getColor().getLegacyColor().toString()));
-			nms.setField(modifier, "ChatModifier_bold", component.getBold());
-			nms.setField(modifier, "ChatModifier_italic", component.getItalic());
-			nms.setField(modifier, "ChatModifier_underlined", component.getUnderlined());
-			nms.setField(modifier, "ChatModifier_strikethrough", component.getStrikethrough());
-			nms.setField(modifier, "ChatModifier_obfuscated", component.getObfuscated());
+			if (component.getModifier().getColor() != null) nms.setField(modifier, "ChatModifier_color", Enum.valueOf((Class<Enum>) nms.getClass("EnumChatFormat"), component.getModifier().getColor().getLegacyColor().toString()));
+			nms.setField(modifier, "ChatModifier_bold", component.getModifier().getBold());
+			nms.setField(modifier, "ChatModifier_italic", component.getModifier().getItalic());
+			nms.setField(modifier, "ChatModifier_underlined", component.getModifier().getUnderlined());
+			nms.setField(modifier, "ChatModifier_strikethrough", component.getModifier().getStrikethrough());
+			nms.setField(modifier, "ChatModifier_obfuscated", component.getModifier().getObfuscated());
+			if (clickEvent != null) nms.setField(modifier, "ChatModifier_clickEvent", clickEvent);
 		}
 		nms.setField(chat, "ChatBaseComponent_modifier", modifier);
 		for (IChatBaseComponent extra : component.getExtra()) {

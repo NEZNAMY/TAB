@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.parser.ParseException;
+
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -114,21 +116,21 @@ public class BungeePacketBuilder implements PacketBuilder {
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) {
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) throws ParseException {
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		List<PlayerInfoData> listData = new ArrayList<>();
 		for (Item i : item.getItems()) {
-			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), i.getProperties(), i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.fromString(i.getDisplayName())));
+			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), i.getProperties(), i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) {
+	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws ParseException {
 		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {
-			title = packet.getValue() == null ? null : IChatBaseComponent.fromString(packet.getValue()).toLegacyText();
+			title = packet.getValue() == null ? null : IChatBaseComponent.deserialize(packet.getValue()).toLegacyText();
 		} else {
 			title = packet.getValue();
 		}

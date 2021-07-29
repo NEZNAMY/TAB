@@ -126,7 +126,7 @@ public class CpuCommand extends SubCommand {
 				messages.add("&3" + type.getKey().toString() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
 			}
 			IChatBaseComponent message = new IChatBaseComponent(core.replace('&', '\u00a7'));
-			message.onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
+			message.getModifier().onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
 			sender.sendMessage(message);
 		}
 	}
@@ -150,7 +150,7 @@ public class CpuCommand extends SubCommand {
 			messages.add("&3" + entry.getKey() + " - " + entry.getValue());
 		}
 		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + packets.values().stream().mapToInt(AtomicInteger::get).sum()).replace('&', '\u00a7'));
-		message.onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
+		message.getModifier().onHoverShowText(String.join("\n", messages).replace('&', '\u00a7'));
 		sender.sendMessage(message);
 	}
 

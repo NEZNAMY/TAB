@@ -25,10 +25,6 @@
 			<version>${project.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>com.googlecode.json-simple</groupId>
-					<artifactId>json-simple</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>com.github.NEZNAMY</groupId>
 					<artifactId>YamlAssist</artifactId>
 				</exclusion>

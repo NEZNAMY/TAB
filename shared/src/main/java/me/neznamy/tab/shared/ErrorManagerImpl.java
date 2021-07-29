@@ -50,7 +50,10 @@ public class ErrorManagerImpl implements ErrorManager {
 		}
 	}
 
-	@Override
+	/**
+	 * Prints an error message into errors.txt file
+	 * @param message - message to print
+	 */
 	public void printError(String message) {
 		printError(message, null, false);
 	}
@@ -70,7 +73,13 @@ public class ErrorManagerImpl implements ErrorManager {
 		printError(message, t, intoConsoleToo, getErrorLog());
 	}
 
-	@Override
+	/**
+	 * Prints an error message and stack trace into errors.txt file
+	 * @param message - message to print
+	 * @param t - the throwable
+	 * @param intoConsoleToo - if the message should be printed into console as well
+	 * @param file - file to log error to
+	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo, File file) {
 		Throwable error = t;
 		if (error instanceof InvocationTargetException) {
@@ -157,7 +166,10 @@ public class ErrorManagerImpl implements ErrorManager {
 		printError(message, t, true);
 	}
 
-	@Override
+	/**
+	 * Sends message into console once
+	 * @param message - message to send
+	 */
 	public void oneTimeConsoleError(String message) {
 		if (oneTimeMessages.contains(message)) return;
 		oneTimeMessages.add(message);
@@ -172,7 +184,13 @@ public class ErrorManagerImpl implements ErrorManager {
 		return dateformat.format(new Date());
 	}
 
-	@Override
+	/**
+	 * Parses integer in given string, returns second argument if string is not valid
+	 * @param string - string to parse
+	 * @param defaultValue - value to return if string is not valid
+	 * @param place - used in error message
+	 * @return parsed integer
+	 */
 	public int parseInteger(String string, int defaultValue, String place) {
 		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
 		try {
@@ -183,7 +201,14 @@ public class ErrorManagerImpl implements ErrorManager {
 		}
 	}
 
-	@Override
+
+	/**
+	 * Parses float in given string, returns second argument if string is not valid
+	 * @param string - string to parse
+	 * @param defaultValue - value to return if string is not valid
+	 * @param place - used in error message
+	 * @return parsed float
+	 */
 	public float parseFloat(String string, float defaultValue, String place) {
 		try {
 			return Float.parseFloat(string);
@@ -193,7 +218,13 @@ public class ErrorManagerImpl implements ErrorManager {
 		}
 	}
 
-	@Override
+	/**
+	 * Parses double in given string, returns second argument if string is not valid
+	 * @param string - string to parse
+	 * @param defaultValue - value to return if string is not valid
+	 * @param place - used in error message
+	 * @return parsed double
+	 */
 	public double parseDouble(String string, double defaultValue, String place) {
 		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
 		try {
@@ -208,7 +239,13 @@ public class ErrorManagerImpl implements ErrorManager {
 		return String.format("%s only accepts numeric values! (Attempted to use \"%s\")", place, value);
 	}
 
-	@Override
+	/**
+	 * Parses bar color in given string, returns second argument if string is not valid
+	 * @param string - string to parse
+	 * @param defaultValue - value to return if string is not valid
+	 * @param place - used in error message
+	 * @return parsed bar color
+	 */
 	public BarColor parseColor(String string, BarColor defaultValue, String place) {
 		try {
 			return BarColor.valueOf(string);
@@ -218,7 +255,13 @@ public class ErrorManagerImpl implements ErrorManager {
 		}
 	}
 
-	@Override
+	/**
+	 * Parses bar style in given string, returns second argument if string is not valid
+	 * @param string - string to parse
+	 * @param defaultValue - value to return if string is not valid
+	 * @param place - used in error message
+	 * @return parsed bar style
+	 */
 	public BarStyle parseStyle(String string, BarStyle defaultValue, String place) {
 		try {
 			return BarStyle.valueOf(string);
@@ -298,7 +341,12 @@ public class ErrorManagerImpl implements ErrorManager {
 		startupWarns++;
 	}
 
-	@Override
+	/**
+	 * Sends a startup warn about missing object parameter
+	 * @param objectType - object type missing parameter
+	 * @param objectName - name of object
+	 * @param attribute - missing parameter
+	 */
 	public void missingAttribute(String objectType, Object objectName, String attribute) {
 		startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
 	}
@@ -316,12 +364,10 @@ public class ErrorManagerImpl implements ErrorManager {
 		}
 	}
 
-	@Override
 	public File getAntiOverrideLog() {
 		return antiOverrideLog;
 	}
 
-	@Override
 	public File getErrorLog() {
 		return errorLog;
 	}
