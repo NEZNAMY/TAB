@@ -189,7 +189,12 @@ public class PlaceholderManager implements JoinEventListener, QuitEventListener,
 			Set<Refreshable> set = new HashSet<>();
 			for (Feature r : tab.getFeatureManager().getAllFeatures()) {
 				if (!(r instanceof Refreshable)) continue;
-				if (((Refreshable)r).getUsedPlaceholders().contains(placeholder)) set.add((Refreshable) r);
+				try {
+					if (((Refreshable)r).getUsedPlaceholders().contains(placeholder)) set.add((Refreshable) r);
+				} catch (Exception e) {
+					//temporarily avoiding error until recode comes out
+					set.add((Refreshable) r);
+				}
 			}
 			placeholderUsage0.put(placeholder, set);
 		}
