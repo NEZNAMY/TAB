@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.rgb.ChatHoverable;
 import me.neznamy.tab.api.chat.rgb.ChatHoverable.EnumHoverAction;
@@ -182,14 +183,6 @@ public class ChatModifier {
 	 * Sets hover action to SHOW_TEXT and text to given value
 	 * @param text - text to show
 	 */
-	public void onHoverShowText(String text) {
-		onHoverShowText(IChatBaseComponent.optimizedComponent(text));
-	}
-
-	/**
-	 * Sets hover action to SHOW_TEXT and text to given value
-	 * @param text - text to show
-	 */
 	public void onHoverShowText(IChatBaseComponent text) {
 		hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_TEXT, text);
 	}
@@ -199,7 +192,7 @@ public class ChatModifier {
 	 * @param serializedItem - item to show
 	 */
 	public void onHoverShowItem(String serializedItem) {
-		hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ITEM, serializedItem);
+		hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ITEM, new IChatBaseComponent(serializedItem));
 	}
 
 	/**
@@ -209,10 +202,18 @@ public class ChatModifier {
 	 * @param type - entity type, can be null
 	 */
 	public void onHoverShowEntity(UUID id, String type, String customname) {
-		hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, String.format("{id:%s,type:%s,name:%s}", id, type, customname));
+		if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{id:\"%s\",type:\"%s\",name:\"{\\\"text\\\":\\\"%s\\\"}\"}", id, type, customname)));
+		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() == 12) {
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{id:\"%s\",type:\"%s\",name:\"%s\"}", id, type, customname)));
+		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) {
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{id:%s,type:%s,name:%s}", id, type, customname)));
+		} else {
+			throw new IllegalStateException("show_entity hover action is not supported on <1.8");
+		}
 	}
 	
-	public void onHover(EnumHoverAction action, Object value) {
+	public void onHover(EnumHoverAction action, IChatBaseComponent value) {
 		hoverEvent = new ChatHoverable(action, value);
 	}
 

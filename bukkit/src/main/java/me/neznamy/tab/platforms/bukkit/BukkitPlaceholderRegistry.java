@@ -235,7 +235,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 					if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
 				}
-				if (purpurIsAfk != null && ((Player)p).getPlayer().isAfk()) return true;
+				if (purpurIsAfk != null && ((Player)p.getPlayer()).isAfk()) return true;
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
 			}

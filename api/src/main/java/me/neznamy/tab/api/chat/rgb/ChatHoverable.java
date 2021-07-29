@@ -1,11 +1,13 @@
 package me.neznamy.tab.api.chat.rgb;
 
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+
 public class ChatHoverable {
 
 	private EnumHoverAction action;
-	private Object value;
+	private IChatBaseComponent value;
 	
-	public ChatHoverable(EnumHoverAction action, Object value) {
+	public ChatHoverable(EnumHoverAction action, IChatBaseComponent value) {
 		this.action = action;
 		this.value = value;
 	}
@@ -18,11 +20,11 @@ public class ChatHoverable {
 		this.action = action;
 	}
 
-	public Object getValue() {
+	public IChatBaseComponent getValue() {
 		return value;
 	}
 
-	public void setValue(Object value) {
+	public void setValue(IChatBaseComponent value) {
 		this.value = value;
 	}
 

@@ -107,10 +107,6 @@
 					<artifactId>asm</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>net.kyori</groupId>
 					<artifactId>adventure-text-minimessage</artifactId>
 				</exclusion>

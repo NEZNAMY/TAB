@@ -251,6 +251,7 @@ public class TAB extends TabAPI {
 		return configuration;
 	}
 
+	@Override
 	public ProtocolVersion getServerVersion() {
 		return serverVersion;
 	}

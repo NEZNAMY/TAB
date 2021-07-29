@@ -16,6 +16,8 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
+import com.google.gson.JsonObject;
+
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
@@ -120,7 +122,6 @@ public class NMSStorage {
 			classes.put("IChatBaseComponent", getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent"));
 			constructors.put("ChatComponentText", getClass("ChatComponentText").getConstructor(String.class));
 			constructors.put("ChatClickable", getClass("ChatClickable").getConstructor(getClass("EnumClickAction"), String.class));
-			constructors.put("ChatHoverable", getClass("ChatHoverable").getConstructors()[0]);
 			fields.put("ChatBaseComponent_extra", getFields(getClass("ChatBaseComponent"), List.class).get(0));
 			fields.put("ChatBaseComponent_modifier", getFields(getClass("ChatBaseComponent"), getClass("ChatModifier")).get(0));
 			fields.put("ChatComponentText_text", getFields(getClass("ChatComponentText"), String.class).get(0));
@@ -136,13 +137,13 @@ public class NMSStorage {
 			fields.put("ChatModifier_clickEvent", getFields(getClass("ChatModifier"), getClass("ChatClickable")).get(0));
 			fields.put("ChatModifier_hoverEvent", getFields(getClass("ChatModifier"), getClass("ChatHoverable")).get(0));
 			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent"))); //v1.7.R4+, v1.7.R3-
-			methods.put("ChatSerializer_DESERIALIZE", getMethod(getClass("ChatSerializer"), new String[]{"a", "func_150699_a"}, String.class));
 			methods.put("EnumClickAction_a", getMethod(getClass("EnumClickAction"), new String[]{"a", "func_150672_a"}, String.class));
 			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a"}, String.class));
 		}
 		if (minorVersion >= 16) {
 			classes.put("ChatHexColor", getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor"));
 			constructors.put("ChatModifier", getConstructor(getClass("ChatModifier"), 10));
+			constructors.put("ChatHoverable", getClass("ChatHoverable").getConstructor(getClass("EnumHoverAction"), Object.class));
 			List<Field> list = getFields(getClass("ChatHexColor"), String.class);
 			fields.put("ChatHexColor_name", list.get(list.size()-1));
 			fields.put("ChatHexColor_rgb", getFields(getClass("ChatHexColor"), int.class).get(0));
@@ -150,8 +151,10 @@ public class NMSStorage {
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("ChatHexColor")).get(0));
 			methods.put("ChatHexColor_ofInt", getClass("ChatHexColor").getMethod("a", int.class));
 			methods.put("ChatHexColor_ofString", getClass("ChatHexColor").getMethod("a", String.class));
+			methods.put("ChatHoverable_a", getClass("ChatHoverable").getMethod("a", JsonObject.class));
 		} else if (minorVersion >= 7) {
 			constructors.put("ChatModifier", getClass("ChatModifier").getConstructor());
+			constructors.put("ChatHoverable", getClass("ChatHoverable").getConstructor(getClass("EnumHoverAction"), getClass("IChatBaseComponent")));
 			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("EnumChatFormat")).get(0));
 		}

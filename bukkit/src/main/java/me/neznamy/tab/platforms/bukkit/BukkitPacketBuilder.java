@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import com.viaversion.viaversion.api.type.Type;
@@ -27,18 +28,18 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.TextColor;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TAB;
@@ -166,7 +167,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-		Object component = stringToComponent(packet.getMessage().toString(clientVersion));
+		Object component = toNMSComponent(packet.getMessage(), clientVersion);
 		Constructor<?> c = nms.getConstructor("PacketPlayOutChat");
 		if (nms.getMinorVersion() >= 16) {
 			return c.newInstance(component, nms.getEnum("ChatMessageType")[packet.getType().ordinal()], UUID.randomUUID());
@@ -467,18 +468,6 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	/**
-	 * Converts json string into a component
-	 * @param json json as string
-	 * @return NMS component
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 */
-	public Object stringToComponent(String json) throws IllegalAccessException, InvocationTargetException {
-		if (json == null) return null;
-		return nms.getMethod("ChatSerializer_DESERIALIZE").invoke(null, json);
-	}
-
-	/**
 	 * Converts minecraft IChatBaseComponent into TAB's component class. Currently does not support hover event.
 	 * @param component - component to convert
 	 * @return converted component
@@ -560,6 +549,13 @@ public class BukkitPacketBuilder implements PacketBuilder {
 					color = nms.getMethod("ChatHexColor_ofString").invoke(null, component.getModifier().getColor().getLegacyColor().toString().toLowerCase());
 				}
 			}
+			Object hoverEvent = null;
+			if (component.getModifier().getHoverEvent() != null) {
+				JsonObject obj = new JsonObject();
+				obj.addProperty("action", component.getModifier().getHoverEvent().getAction().toString().toLowerCase());
+				obj.addProperty("value", component.getModifier().getHoverEvent().getValue().getText());
+				hoverEvent = nms.getMethod("ChatHoverable_a").invoke(null, obj);
+			}
 			modifier = nms.getConstructor("ChatModifier").newInstance(
 				color,
 				component.getModifier().getBold(),
@@ -567,9 +563,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 				component.getModifier().getUnderlined(),
 				component.getModifier().getStrikethrough(),
 				component.getModifier().getObfuscated(),
-				clickEvent, 
-				null, //need to make it for 1.16
-				null, null);
+				clickEvent, hoverEvent, null, null);
 		} else {
 			modifier = nms.getConstructor("ChatModifier").newInstance();
 			if (component.getModifier().getColor() != null) nms.setField(modifier, "ChatModifier_color", Enum.valueOf((Class<Enum>) nms.getClass("EnumChatFormat"), component.getModifier().getColor().getLegacyColor().toString()));
@@ -579,6 +573,10 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			nms.setField(modifier, "ChatModifier_strikethrough", component.getModifier().getStrikethrough());
 			nms.setField(modifier, "ChatModifier_obfuscated", component.getModifier().getObfuscated());
 			if (clickEvent != null) nms.setField(modifier, "ChatModifier_clickEvent", clickEvent);
+			if (component.getModifier().getHoverEvent() != null) {
+				nms.setField(modifier, "ChatModifier_hoverEvent", nms.getConstructor("ChatHoverable").newInstance(nms.getMethod("EnumHoverAction_a").invoke(null, 
+						component.getModifier().getHoverEvent().getAction().toString().toLowerCase()), toNMSComponent0(component.getModifier().getHoverEvent().getValue(), clientVersion)));
+			}
 		}
 		nms.setField(chat, "ChatBaseComponent_modifier", modifier);
 		for (IChatBaseComponent extra : component.getExtra()) {
@@ -589,7 +587,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	private Object newScoreboardObjective(String objectiveName) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() >= 13) {
-			return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, null, stringToComponent("{\"text\":\"\"}"), null);
+			return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, null, nms.getConstructor("ChatComponentText").newInstance(""), null);
 		}
 		return nms.getConstructor("ScoreboardObjective").newInstance(null, objectiveName, nms.getField("IScoreboardCriteria").get(null));
 	}

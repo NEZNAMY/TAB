@@ -88,4 +88,6 @@ public abstract class TabAPI {
 	public abstract void setBrokenFile(String path);
 
 	public abstract ConfigurationFile getConfig();
+	
+	public abstract ProtocolVersion getServerVersion();
 }

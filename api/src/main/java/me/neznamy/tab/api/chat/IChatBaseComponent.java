@@ -145,7 +145,7 @@ public class IChatBaseComponent {
 			JSONObject hoverEvent = (JSONObject) jsonObject.get("hoverEvent");
 			String action = (String) hoverEvent.get("action");
 			String value = (String) hoverEvent.get("value");
-			component.modifier.onHover(EnumHoverAction.valueOf(action.toUpperCase()), value);
+			component.modifier.onHover(EnumHoverAction.valueOf(action.toUpperCase()), deserialize(value));
 		}
 		if (jsonObject.containsKey("extra")) {
 			List<Object> list = (List<Object>) jsonObject.get("extra");

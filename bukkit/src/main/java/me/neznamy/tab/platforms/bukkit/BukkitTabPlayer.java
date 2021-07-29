@@ -92,7 +92,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		if (nmsPacket == null || !player.isOnline()) return;
 		long time = System.nanoTime();
 		try {
-			if (nmsPacket instanceof ByteBuf && ((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled()) {
+			if (((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled() && nmsPacket instanceof ByteBuf) {
 				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
 			} else if (nmsPacket instanceof PacketPlayOutBoss) {
 				handle((PacketPlayOutBoss) nmsPacket);
