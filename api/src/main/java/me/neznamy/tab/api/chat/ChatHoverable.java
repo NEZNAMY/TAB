@@ -1,6 +1,4 @@
-package me.neznamy.tab.api.chat.rgb;
-
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+package me.neznamy.tab.api.chat;
 
 public class ChatHoverable {
 

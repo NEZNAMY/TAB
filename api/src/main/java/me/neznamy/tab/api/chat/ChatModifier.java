@@ -6,8 +6,7 @@ import org.json.simple.JSONObject;
 
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
-import me.neznamy.tab.api.chat.rgb.ChatHoverable;
-import me.neznamy.tab.api.chat.rgb.ChatHoverable.EnumHoverAction;
+import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
 
 public class ChatModifier {
 
