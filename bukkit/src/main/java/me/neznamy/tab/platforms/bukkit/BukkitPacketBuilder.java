@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.json.simple.parser.ParseException;
 
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
@@ -23,6 +24,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
+import me.neznamy.tab.api.chat.ChatComponentEntity;
+import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.TextColor;
@@ -412,7 +415,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException {
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, IllegalArgumentException, ParseException {
 		if (nms.getMinorVersion() < 8) return null;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.getField("PacketPlayOutPlayerInfo_ACTION").get(nmsPacket).toString());
 		List<PlayerInfoData> listData = new ArrayList<>();
@@ -428,7 +431,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException {
+	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
 		String objective = (String) nms.getField("PacketPlayOutScoreboardObjective_OBJECTIVENAME").get(nmsPacket);
 		String displayName;
 		Object component = nms.getField("PacketPlayOutScoreboardObjective_DISPLAYNAME").get(nmsPacket);
@@ -472,8 +475,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	 * @param component - component to convert
 	 * @return converted component
 	 * @throws IllegalAccessException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws ParseException 
 	 */
-	public IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException {
+	public IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
 		long time = System.nanoTime();
 		IChatBaseComponent obj = fromNMSComponent0(component);
 		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
@@ -481,7 +487,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 	}
 
 	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
-	public IChatBaseComponent fromNMSComponent0(Object component) throws IllegalAccessException {
+	private IChatBaseComponent fromNMSComponent0(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
 		if (!nms.getClass("ChatComponentText").isInstance(component)) return null; //paper
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.getField("ChatComponentText_text").get(component));
 		Object modifier = nms.getField("ChatBaseComponent_modifier").get(component);
@@ -509,6 +515,21 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			Object clickEvent = nms.getField("ChatModifier_clickEvent").get(modifier);
 			if (clickEvent != null) {
 				chat.getModifier().onClick(EnumClickAction.valueOf(nms.getField("ChatClickable_action").get(clickEvent).toString().toUpperCase()), (String) nms.getField("ChatClickable_value").get(clickEvent));
+			}
+			Object hoverEvent = nms.getField("ChatModifier_hoverEvent").get(modifier);
+			if (hoverEvent != null) {
+				EnumHoverAction action;
+				IChatBaseComponent value;
+				if (nms.getMinorVersion() >= 16) {
+					//does not support show_item on 1.16+
+					JsonObject json = (JsonObject) nms.getMethod("ChatHoverable_serialize").invoke(hoverEvent);
+					action = EnumHoverAction.valueOf(json.get("action").getAsString().toUpperCase());
+					value = IChatBaseComponent.deserialize(json.get("contents").getAsJsonObject().toString());
+				} else {
+					action = EnumHoverAction.valueOf(nms.getMethod("ChatHoverable_getAction").invoke(hoverEvent).toString().toUpperCase());
+					value = fromNMSComponent0(nms.getMethod("ChatHoverable_getValue").invoke(hoverEvent));
+				}
+				chat.getModifier().onHover(action, value);
 			}
 		}
 		for (Object extra : (List<Object>) nms.getField("ChatBaseComponent_extra").get(component)) {
@@ -551,10 +572,20 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			}
 			Object hoverEvent = null;
 			if (component.getModifier().getHoverEvent() != null) {
-				JsonObject obj = new JsonObject();
-				obj.addProperty("action", component.getModifier().getHoverEvent().getAction().toString().toLowerCase());
-				obj.addProperty("value", component.getModifier().getHoverEvent().getValue().getText());
-				hoverEvent = nms.getMethod("ChatHoverable_a").invoke(null, obj);
+				Object nmsAction = nms.getMethod("EnumHoverAction_a").invoke(null, component.getModifier().getHoverEvent().getAction().toString().toLowerCase());
+				switch (component.getModifier().getHoverEvent().getAction()) {
+				case SHOW_TEXT:
+					hoverEvent = nms.getConstructor("ChatHoverable").newInstance(nmsAction, toNMSComponent0(component.getModifier().getHoverEvent().getValue(), clientVersion));
+					break;
+				case SHOW_ENTITY:
+					hoverEvent = nms.getMethod("EnumHoverAction_fromJson").invoke(nmsAction, ((ChatComponentEntity) component.getModifier().getHoverEvent().getValue()).toJson());
+					break;
+				case SHOW_ITEM:
+					hoverEvent = nms.getMethod("EnumHoverAction_fromLegacyComponent").invoke(nmsAction, toNMSComponent0(component.getModifier().getHoverEvent().getValue(), clientVersion));
+					break;
+				default:
+					break;
+				}
 			}
 			modifier = nms.getConstructor("ChatModifier").newInstance(
 				color,

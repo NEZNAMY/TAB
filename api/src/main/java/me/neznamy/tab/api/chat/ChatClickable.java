@@ -30,6 +30,7 @@ public class ChatClickable {
 	 * Enum for all possible click actions
 	 */
 	public enum EnumClickAction {
+		
 		OPEN_URL,
 		RUN_COMMAND,
 		CHANGE_PAGE, //since 1.8

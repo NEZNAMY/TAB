@@ -150,8 +150,10 @@ public interface PacketBuilder {
 	 * @return The converted packet
 	 * @throws IllegalAccessException 
 	 * @throws ParseException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 */
-	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, ParseException;
+	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, ParseException, IllegalArgumentException, InvocationTargetException;
 	
 	/**
 	 * Converts platform-specific instance of display objective packet into custom class object

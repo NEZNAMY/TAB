@@ -171,6 +171,7 @@ public class ChatModifier {
 	 * @param newpage - id of new page
 	 */
 	public void onClickChangePage(int newpage) {
+		if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("change_page click action is not supported on <1.8");
 		clickEvent = new ChatClickable(EnumClickAction.CHANGE_PAGE, String.valueOf(newpage));
 	}
 	
@@ -196,17 +197,20 @@ public class ChatModifier {
 
 	/**
 	 * Sets hover action to SHOW_ENTITY and entity data to given values
+	 * @param type - entity type
 	 * @param id - entity uuid
-	 * @param customname - entity custom name, can be null
-	 * @param type - entity type, can be null
+	 * @param name - entity custom name
 	 */
-	public void onHoverShowEntity(UUID id, String type, String customname) {
-		if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
-			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{id:\"%s\",type:\"%s\",name:\"{\\\"text\\\":\\\"%s\\\"}\"}", id, type, customname)));
+	public void onHoverShowEntity(String type, UUID id, String name) {
+		if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("show_entity hover action is not supported on <1.8");
+		if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new ChatComponentEntity(type, id, name));
+		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{type:\"%s\",id:\"%s\",name:\"{\\\"text\\\":\\\"%s\\\"}\"}", type, id, name)));
 		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() == 12) {
-			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{id:\"%s\",type:\"%s\",name:\"%s\"}", id, type, customname)));
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{type:\"%s\",id:\"%s\",name:\"%s\"}", type, id, name)));
 		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) {
-			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{id:%s,type:%s,name:%s}", id, type, customname)));
+			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{type:%s,id:%s,name:%s}", type, id, name)));
 		} else {
 			throw new IllegalStateException("show_entity hover action is not supported on <1.8");
 		}
@@ -242,7 +246,13 @@ public class ChatModifier {
 		if (hoverEvent != null) {
 			JSONObject hover = new JSONObject();
 			hover.put("action", hoverEvent.getAction().toString().toLowerCase());
-			hover.put("value", hoverEvent.getValue());
+			if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
+				hover.put("contents", hoverEvent.getValue());
+			} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
+				hover.put("value", hoverEvent.getValue());
+			} else {
+				hover.put("value", hoverEvent.getValue().toRawText());
+			}
 			json.put("hoverEvent", hover);
 		}
 		if (font != null) json.put("font", font);

@@ -16,12 +16,11 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
-import me.neznamy.tab.shared.TAB;
 
 @SuppressWarnings("rawtypes")
 public class NMSStorage {
@@ -139,6 +138,7 @@ public class NMSStorage {
 			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent"))); //v1.7.R4+, v1.7.R3-
 			methods.put("EnumClickAction_a", getMethod(getClass("EnumClickAction"), new String[]{"a", "func_150672_a"}, String.class));
 			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a"}, String.class));
+			methods.put("ChatHoverable_getAction", getClass("ChatHoverable").getMethod("a"));
 		}
 		if (minorVersion >= 16) {
 			classes.put("ChatHexColor", getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor"));
@@ -151,12 +151,16 @@ public class NMSStorage {
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("ChatHexColor")).get(0));
 			methods.put("ChatHexColor_ofInt", getClass("ChatHexColor").getMethod("a", int.class));
 			methods.put("ChatHexColor_ofString", getClass("ChatHexColor").getMethod("a", String.class));
-			methods.put("ChatHoverable_a", getClass("ChatHoverable").getMethod("a", JsonObject.class));
+			methods.put("ChatHoverable_serialize", getClass("ChatHoverable").getMethod("b"));
+			methods.put("ChatHoverable_getValue", getClass("ChatHoverable").getMethod("a", getClass("EnumHoverAction")));
+			methods.put("EnumHoverAction_fromJson", getClass("EnumHoverAction").getMethod("a", JsonElement.class));
+			methods.put("EnumHoverAction_fromLegacyComponent", getClass("EnumHoverAction").getMethod("a", getClass("IChatBaseComponent")));
 		} else if (minorVersion >= 7) {
 			constructors.put("ChatModifier", getClass("ChatModifier").getConstructor());
 			constructors.put("ChatHoverable", getClass("ChatHoverable").getConstructor(getClass("EnumHoverAction"), getClass("IChatBaseComponent")));
 			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("EnumChatFormat")).get(0));
+			methods.put("ChatHoverable_getValue", getClass("ChatHoverable").getMethod("b"));
 		}
 	}
 	
@@ -377,9 +381,9 @@ public class NMSStorage {
 	 */
 	@SuppressWarnings("unused")
 	private void showMethods(Class<?> clazz) {
-		TAB.getInstance().getPlatform().sendConsoleMessage("--- " + clazz.getSimpleName() + " ---", false);
+		Bukkit.getConsoleSender().sendMessage("--- " + clazz.getSimpleName() + " ---");
 		for (Method m : clazz.getMethods()) {
-			TAB.getInstance().getPlatform().sendConsoleMessage(m.getReturnType().getName() + " " + m.getName() + "(" + Arrays.toString(m.getParameterTypes()) + ")", false);
+			Bukkit.getConsoleSender().sendMessage(m.getReturnType().getName() + " " + m.getName() + "(" + Arrays.toString(m.getParameterTypes()) + ")");
 		}
 	}
 

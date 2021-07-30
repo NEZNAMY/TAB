@@ -290,8 +290,10 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 * @throws IllegalAccessException 
 	 * @throws ParseException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 */
-	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException, ParseException {
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException, ParseException, IllegalArgumentException, InvocationTargetException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, UsageType.PACKET_OBJECTIVE, System.nanoTime()-time);

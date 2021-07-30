@@ -34,12 +34,5 @@ public class ChatHoverable {
 		SHOW_TEXT,
 		SHOW_ITEM,
 		SHOW_ENTITY;
-
-		public static EnumHoverAction fromString(String s) {
-			for (EnumHoverAction action : values()) {
-				if (s.toUpperCase().contains(action.toString())) return action;
-			}
-			throw new IllegalArgumentException("HoverAction not found by name " + s);
-		}
 	}
 }

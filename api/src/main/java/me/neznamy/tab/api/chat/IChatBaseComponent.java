@@ -2,6 +2,7 @@ package me.neznamy.tab.api.chat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -127,7 +128,11 @@ public class IChatBaseComponent {
 			return new IChatBaseComponent(json.substring(1, json.length()-1));
 		}
 		JSONObject jsonObject = (JSONObject) new JSONParser().parse(json);
-		IChatBaseComponent component = new IChatBaseComponent();
+		IChatBaseComponent component;
+		if (jsonObject.containsKey("type")) {
+			return new ChatComponentEntity((String) jsonObject.get("type"), UUID.fromString((String) jsonObject.get("id")), IChatBaseComponent.deserialize(((JSONObject) jsonObject.get("name")).toString()).toFlatText());
+		}
+		component = new IChatBaseComponent();
 		component.setText((String) jsonObject.get("text"));
 		component.modifier.setBold(getBoolean(jsonObject, "bold"));
 		component.modifier.setItalic(getBoolean(jsonObject, "italic"));
