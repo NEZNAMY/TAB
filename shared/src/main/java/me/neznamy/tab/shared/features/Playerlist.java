@@ -22,7 +22,6 @@ import me.neznamy.tab.shared.features.layout.PlayerSlot;
  */
 public class Playerlist extends TabFeature {
 
-	private boolean antiOverrideNames;
 	private boolean antiOverrideTablist;
 	private boolean disabling = false;
 
@@ -172,11 +171,6 @@ public class Playerlist extends TabFeature {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
 			if (packetPlayer != null && !disabledPlayers.contains(packetPlayer)) {
 				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
-				//preventing plugins from changing player name as nametag feature would not work correctly
-				if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER && TAB.getInstance().getFeatureManager().getNameTagFeature() != null && !playerInfoData.getName().equals(packetPlayer.getName()) && antiOverrideNames) {
-					TAB.getInstance().getErrorManager().printError("A plugin tried to change name of " +  packetPlayer.getName() + " to \"" + playerInfoData.getName() + "\" for viewer " + receiver.getName(), null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
-					playerInfoData.setName(packetPlayer.getName());
-				}
 			}
 		}
 	}
