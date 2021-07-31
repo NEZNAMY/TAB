@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.features.YellowNumber;
 public class PlayerSlot {
 
 	private YellowNumber yellowNumber;
+	private Playerlist playerlist;
 	private Layout layout;
 	private UUID id;
 	private String fakeplayer;
@@ -25,6 +26,7 @@ public class PlayerSlot {
 	
 	public PlayerSlot(Layout layout, UUID id, int slot) {
 		yellowNumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
+		playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 		this.layout = layout;
 		this.id = id;
 		this.fakeplayer = layout.formatSlot(slot);
@@ -55,8 +57,7 @@ public class PlayerSlot {
 	public void onJoin(TabPlayer p) {
 		PlayerInfoData data;
 		if (player != null) {
-			data = new PlayerInfoData(fakeplayer, id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, 
-					((Playerlist)TAB.getInstance().getFeatureManager().getFeature("playerlist")).getTabFormat(player, p));
+			data = new PlayerInfoData(fakeplayer, id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p));
 		} else {
 			data = new PlayerInfoData(fakeplayer, id, null, 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(""));
 		}
