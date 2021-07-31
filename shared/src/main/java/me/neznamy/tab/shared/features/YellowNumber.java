@@ -9,6 +9,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.features.layout.PlayerSlot;
 
 /**
  * Feature handler for tablist objective feature
@@ -46,7 +48,7 @@ public class YellowNumber extends TabFeature {
 		}
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()){
 			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getName(), getValue(target)), this);
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(target), getValue(target)), this);
 			}
 		}
 	}
@@ -69,8 +71,8 @@ public class YellowNumber extends TabFeature {
 		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getName(), value), this);
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), this);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
+			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
 		}
 	}
 
@@ -101,11 +103,18 @@ public class YellowNumber extends TabFeature {
 		if (disabledPlayers.contains(refreshed)) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), value), this);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), value), this);
 		}
 	}
-	
-	public String getRawValue() {
-		return rawValue;
+
+	private String getName(TabPlayer p) {
+		Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
+		if (layout != null) {
+			PlayerSlot slot = layout.getSlot(p);
+			if (slot != null) {
+				return slot.getFakePlayer();
+			}
+		}
+		return p.getName(); //layout not enabled or player not visible
 	}
 }

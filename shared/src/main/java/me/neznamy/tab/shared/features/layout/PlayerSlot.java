@@ -10,18 +10,21 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.YellowNumber;
 
 public class PlayerSlot {
 
+	private YellowNumber yellowNumber;
 	private Layout layout;
 	private UUID id;
 	private String fakeplayer;
 	private TabPlayer player;
 	
 	public PlayerSlot(Layout layout, UUID id, int slot) {
+		yellowNumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
 		this.layout = layout;
 		this.id = id;
 		this.fakeplayer = layout.formatSlot(slot);
@@ -42,8 +45,8 @@ public class PlayerSlot {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			all.sendCustomPacket(packet, layout);
 			onJoin(all);
-			if (layout.getYellowNumberFix() != null) {
-				int newYellowNumber = player == null ? 0 : layout.getYellowNumberFix().getLastValue(player);
+			if (yellowNumber != null) {
+				int newYellowNumber = player == null ? 0 : TAB.getInstance().getErrorManager().parseInteger(newPlayer.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), layout);
 			}
 		}
