@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -77,12 +76,6 @@ public class Configs {
 		ClassLoader loader = Configs.class.getClassLoader();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
-		Map<String, Object> values = getAnimationFile().getValues();
-		if (values.size() == 1 && values.containsKey("animations")) {
-			getAnimationFile().setValues(getAnimationFile().getConfigurationSection("animations"));
-			getAnimationFile().save();
-			TAB.getInstance().print('2', "Converted animations.yml to new format.");
-		}
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
 		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
 		reloadFailed = getTranslation().getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
