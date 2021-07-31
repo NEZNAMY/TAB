@@ -161,7 +161,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 	}
 
 	private void updateCollision(TabPlayer p) {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() == null || !p.isOnline()) return;
+		if (!p.isOnline()) return;
 		if (forcedCollision.containsKey(p)) {
 			if (getCollision(p) != forcedCollision.get(p).booleanValue()) {
 				collision.put(p.getName(), getCollisionRule(p));
