@@ -1,11 +1,7 @@
 package me.neznamy.tab.shared.config;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,21 +143,6 @@ public class Configs {
 			return playerdata.getStringList(key, new ArrayList<>());
 		}
 		return new ArrayList<>();
-	}
-
-	/**
-	 * Writes defined line of text to file
-	 * @param f - file to write to
-	 * @param line - line to write
-	 */
-	public static void write(File file, List<String> lines){
-		try (BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8))){
-			for (String line : lines) {
-				buf.write(line + System.getProperty("line.separator"));
-			}
-		} catch (Exception ex) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to write to file " + file.getName(), ex);
-		}
 	}
 
 	public List<String> getRemoveStrings() {
