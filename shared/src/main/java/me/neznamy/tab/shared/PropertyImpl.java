@@ -71,7 +71,7 @@ public class PropertyImpl implements Property {
 		}
 		String rawFormattedValue0 = value;
 		for (String placeholder : placeholders0) {
-			rawFormattedValue0 = rawFormattedValue0.replaceFirst(placeholder, "%s");
+			rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
 		}
 		if (rawFormattedValue0.contains("%")) {
 			int index = rawFormattedValue0.lastIndexOf('%');
