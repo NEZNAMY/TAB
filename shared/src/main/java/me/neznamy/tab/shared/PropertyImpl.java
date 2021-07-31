@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.Property;
@@ -15,8 +16,8 @@ import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
  */
 public class PropertyImpl implements Property {
 
-	//feature using this property to track used placeholders
-	private TabFeature feature;
+	//features using this property to track used placeholders and receive refresh()
+	private List<TabFeature> listeners = new ArrayList<>();
 	
 	//owner of the property
 	private TabPlayer owner;
@@ -42,12 +43,14 @@ public class PropertyImpl implements Property {
 	//used relational placeholders in current raw value
 	private String[] relPlaceholders;
 
-	public PropertyImpl(TabFeature feature, TabPlayer owner, String rawValue) {
-		this(feature, owner, rawValue, null);
+	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
+		this(listener, owner, rawValue, null);
 	}
 	
-	public PropertyImpl(TabFeature feature, TabPlayer owner, String rawValue, String source) {
-		this.feature = feature;
+	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue, String source) {
+		if (listener != null) {
+			listeners.add(listener);
+		}
 		this.owner = owner;
 		this.source = source;
 		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
@@ -84,10 +87,17 @@ public class PropertyImpl implements Property {
 		placeholders = placeholders0.toArray(new String[0]);
 		relPlaceholders = relPlaceholders0.toArray(new String[0]);
 		rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
-		if (feature != null) {
-			feature.addUsedPlaceholders(placeholders0);
-			feature.addUsedPlaceholders(relPlaceholders0);
+		for (TabFeature listener : listeners) {
+			listener.addUsedPlaceholders(placeholders0);
+			listener.addUsedPlaceholders(relPlaceholders0);
 		}
+	}
+	
+	@Override
+	public void addListener(TabFeature listener) {
+		listeners.add(listener);
+		listener.addUsedPlaceholders(Arrays.asList(placeholders));
+		listener.addUsedPlaceholders(Arrays.asList(relPlaceholders));
 	}
 	
 	@Override

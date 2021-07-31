@@ -57,4 +57,10 @@ public interface Property {
 	 * @return format for the viewer
 	 */
 	public String getFormat(TabPlayer viewer);
+	
+	/**
+	 * Adds listener to this property's refreshing which will then receive .refresh() if a placeholder changes value
+	 * @param listener
+	 */
+	public void addListener(TabFeature listener);
 }

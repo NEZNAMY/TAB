@@ -26,7 +26,7 @@ public class YellowNumberFix extends TabFeature {
 	
 	@Override
 	public void onJoin(TabPlayer p) {
-		p.setProperty(this, PropertyUtils.LAYOUT_YELLOW_NUMBER_FIX, objective.getRawValue());
+		p.getProperty(PropertyUtils.YELLOW_NUMBER).addListener(this);
 		refresh(p, false);
 	}
 	
@@ -38,7 +38,7 @@ public class YellowNumberFix extends TabFeature {
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		if (objective.getDisabledPlayers().contains(p)) return;
-		int value = TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PropertyUtils.LAYOUT_YELLOW_NUMBER_FIX).updateAndGet(), 0, "yellow number");
+		int value = getLastValue(p);
 		String fakeplayer = null;
 		for (ParentGroup group : layout.getGroups()) {
 			if (group.getPlayers().containsKey(p)) {
@@ -52,6 +52,6 @@ public class YellowNumberFix extends TabFeature {
 	}
 	
 	public int getLastValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PropertyUtils.LAYOUT_YELLOW_NUMBER_FIX).get(), 0, "yellow number");
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
 	}
 }
