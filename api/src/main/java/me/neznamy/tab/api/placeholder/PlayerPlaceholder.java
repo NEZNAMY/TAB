@@ -13,7 +13,7 @@ import me.neznamy.tab.api.TabPlayer;
 public abstract class PlayerPlaceholder extends Placeholder {
 
 	//last known values
-	private Map<String, Object> lastValues = new HashMap<>();
+	private Map<String, String> lastValues = new HashMap<>();
 	
 	//list of players with force update
 	private Set<String> forceUpdate = new HashSet<>();
@@ -33,7 +33,8 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 * @return true if value changed since last time, false if not
 	 */
 	public boolean update(TabPlayer p) {
-		Object newValue = get(p);
+		Object obj = get(p);
+		String newValue = obj == null ? identifier : String.valueOf(obj);
 		
 		//make invalid placeholders return identifier instead of nothing
 		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
@@ -52,7 +53,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	}
 
 	@Override
-	public Object getLastValue(TabPlayer p) {
+	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValues.containsKey(p.getName())) {
 			update(p);
@@ -67,7 +68,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 */
 	public abstract Object get(TabPlayer p);
 
-	public Map<String, Object> getLastValues() {
+	public Map<String, String> getLastValues() {
 		return lastValues;
 	}
 

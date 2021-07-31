@@ -204,7 +204,7 @@ public class TAB extends TabAPI {
 				
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					String world = ((ProxyTabPlayer)all).getAttribute("world");
-					if (!all.getWorld().equals(world)){
+					if (!String.valueOf(all.getWorld()).equals(world)){
 						((ITabPlayer)all).setWorld(world);
 						TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
 					}
