@@ -32,6 +32,7 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 
 /**
  * TabPlayer for Velocity
@@ -166,24 +167,33 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 				player.getTabList().removeEntry(data.getUniqueId());
 				break;
 			case UPDATE_DISPLAY_NAME:
-				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.getUniqueId())) entry.setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
-				}
+				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
 				break;
 			case UPDATE_LATENCY:
-				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.getUniqueId())) entry.setLatency(data.getLatency());
-				}
+				getEntry(data.getUniqueId()).setLatency(data.getLatency());
 				break;
 			case UPDATE_GAME_MODE:
-				for (TabListEntry entry : player.getTabList().getEntries()) {
-					if (entry.getProfile().getId().equals(data.getUniqueId())) entry.setGameMode(data.getGameMode().ordinal()-1);
-				}
+				getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
 				break;
 			default:
 				break;
 			}
 		}
+	}
+	
+	private TabListEntry getEntry(UUID id) {
+		for (TabListEntry entry : player.getTabList().getEntries()) {
+			if (entry.getProfile().getId().equals(id)) return entry;
+		}
+		//return dummy entry to not cause NPE
+		//possibly add logging into the future to see when this happens
+		return TabListEntry.builder()
+				.tabList(player.getTabList())
+				.displayName(Component.text(""))
+				.gameMode(0)
+				.profile(new GameProfile(UUID.randomUUID(), "empty", new ArrayList<>()))
+				.latency(0)
+				.build();
 	}
 	
 	@Override
