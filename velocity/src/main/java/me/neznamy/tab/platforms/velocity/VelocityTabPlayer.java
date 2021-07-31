@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -157,7 +158,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 						.tabList(player.getTabList())
 						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
 						.gameMode(data.getGameMode().ordinal()-1)
-						.profile(new GameProfile(data.getUniqueId(), data.getName(), (List<Property>) data.getSkin()))
+						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
 						.latency(data.getLatency())
 						.build());
 				break;
