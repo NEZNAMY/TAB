@@ -492,21 +492,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.getField("ChatComponentText_text").get(component));
 		Object modifier = nms.getField("ChatBaseComponent_modifier").get(component);
 		if (modifier != null) {
-			Object color = nms.getField("ChatModifier_color").get(modifier);
-			if (color != null) {
-				if (nms.getMinorVersion() >= 16) {
-					String name = (String) nms.getField("ChatHexColor_name").get(color);
-					if (name != null) {
-						//legacy code
-						chat.getModifier().setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
-					} else {
-						int rgb = (int) nms.getField("ChatHexColor_rgb").get(color);
-						chat.getModifier().setColor(new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
-					}
-				} else {
-					chat.getModifier().setColor(new TextColor(EnumChatFormat.valueOf(((Enum)color).name())));
-				}
-			}
+			chat.getModifier().setColor(fromNMSColor(nms.getField("ChatModifier_color").get(modifier)));
 			chat.getModifier().setBold((Boolean) nms.getField("ChatModifier_bold").get(modifier));
 			chat.getModifier().setItalic((Boolean) nms.getField("ChatModifier_italic").get(modifier));
 			chat.getModifier().setObfuscated((Boolean) nms.getField("ChatModifier_obfuscated").get(modifier));
@@ -536,6 +522,22 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			chat.addExtra(fromNMSComponent0(extra));
 		}
 		return chat;
+	}
+
+	private TextColor fromNMSColor(Object color) throws IllegalArgumentException, IllegalAccessException {
+		if (color == null) return null;
+		if (nms.getMinorVersion() >= 16) {
+			String name = (String) nms.getField("ChatHexColor_name").get(color);
+			if (name != null) {
+				//legacy code
+				return new TextColor(EnumChatFormat.valueOf(name.toUpperCase()));
+			} else {
+				int rgb = (int) nms.getField("ChatHexColor_rgb").get(color);
+				return new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+			}
+		} else {
+			return new TextColor(EnumChatFormat.valueOf(((Enum)color).name()));
+		}
 	}
 
 	/**
