@@ -17,7 +17,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.cpu.UsageType;
-import me.neznamy.tab.shared.features.NameTag;
 
 /**
  * Feature registration which offers calls to features and measures how long it took them to process
@@ -303,14 +302,5 @@ public class FeatureManagerImpl implements FeatureManager {
 			f.onObjective(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
-	}
-
-	/**
-	 * Returns currently loaded nametag feature or null if disabled
-	 * @return currently loaded nametag feature
-	 */
-	public NameTag getNameTagFeature() {
-		if (isFeatureEnabled("nametag16")) return (NameTag) getFeature("nametag16");
-		return (NameTag) getFeature("nametagx");
 	}
 }

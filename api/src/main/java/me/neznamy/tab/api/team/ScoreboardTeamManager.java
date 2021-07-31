@@ -88,4 +88,10 @@ public interface ScoreboardTeamManager {
 	 * @return forced value or null if not forced
 	 */
 	public Boolean getCollisionRule(TabPlayer player);
+	
+	/**
+	 * Sends update team properties packet of player's team to everyone
+	 * @param p - player to update team data of
+	 */
+	public void updateTeamData(TabPlayer p);
 }

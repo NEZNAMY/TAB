@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
@@ -130,8 +131,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 					continue;
 				}
-				if (!TAB.getInstance().getFeatureManager().getNameTagFeature().getDisabledPlayers().contains(p) && 
-						!TAB.getInstance().getFeatureManager().getNameTagFeature().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
+				if (!((TabFeature)TAB.getInstance().getScoreboardTeamManager()).getDisabledPlayers().contains(p) && 
+						!TAB.getInstance().getScoreboardTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
 					logTeamOverride(teamName, entry);
 				} else {
 					newList.add(entry);

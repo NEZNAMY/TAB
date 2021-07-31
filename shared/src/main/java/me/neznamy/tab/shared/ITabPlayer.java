@@ -97,7 +97,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty(TAB.getInstance().getFeatureManager().getNameTagFeature(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
+			setProperty((TabFeature) TAB.getInstance().getScoreboardTeamManager(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
 		forceRefresh();
 	}

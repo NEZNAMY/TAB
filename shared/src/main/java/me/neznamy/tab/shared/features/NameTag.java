@@ -136,6 +136,7 @@ public class NameTag extends TabFeature implements ScoreboardTeamManager {
 		}
 	}
 
+	@Override
 	public void updateTeamData(TabPlayer p) {
 		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
 		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);

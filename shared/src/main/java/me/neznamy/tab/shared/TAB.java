@@ -27,6 +27,7 @@ import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.Playerlist;
@@ -301,7 +302,8 @@ public class TAB extends TabAPI {
 
 	@Override
 	public ScoreboardTeamManager getScoreboardTeamManager() {
-		return featureManager.getNameTagFeature();
+		if (featureManager.isFeatureEnabled("nametag16")) return (NameTag) featureManager.getFeature("nametag16");
+		return (NameTag) featureManager.getFeature("nametagx");
 	}
 
 	@Override

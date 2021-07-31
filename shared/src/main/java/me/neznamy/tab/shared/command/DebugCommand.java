@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -76,8 +77,8 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atabsuffix: &cDisabled");
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
-		if (tab.getFeatureManager().getNameTagFeature() != null) {
-			boolean disabledNametags = tab.getFeatureManager().getNameTagFeature().isDisabled(analyzed.getServer(), analyzed.getWorld());
+		if (tab.getScoreboardTeamManager() != null) {
+			boolean disabledNametags = ((TabFeature) tab.getScoreboardTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, PropertyUtils.TAGPREFIX, disabledNametags);
 			showProperty(sender, analyzed, PropertyUtils.TAGSUFFIX, disabledNametags);
 			for (Object line : getExtraLines()) {
@@ -108,7 +109,7 @@ public class DebugCommand extends SubCommand {
 	 * @return sorting type
 	 */
 	private String getSortingType() {
-		NameTag nametag = TAB.getInstance().getFeatureManager().getNameTagFeature();
+		NameTag nametag = (NameTag) TAB.getInstance().getScoreboardTeamManager();
 		if (nametag != null) {
 			return nametag.getSorting().typesToString();
 		} else {
@@ -135,8 +136,8 @@ public class DebugCommand extends SubCommand {
 	 * @return team name of specified player
 	 */
 	private String getTeamName(TabPlayer analyzed) {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null) {
-			if (TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabled(analyzed.getServer(), analyzed.getWorld())) {
+		if (TAB.getInstance().getScoreboardTeamManager() != null) {
+			if (((TabFeature) TAB.getInstance().getScoreboardTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
 				return "&eTeam name: &cSorting is disabled in player's " + TAB.getInstance().getPlatform().getSeparatorType();
 			} else {
 				return "&eTeam name: &a" + analyzed.getTeamName();
@@ -152,8 +153,8 @@ public class DebugCommand extends SubCommand {
 	 * @return team name note of specified player
 	 */
 	private String getTeamNameNote(TabPlayer analyzed) {
-		if (TAB.getInstance().getFeatureManager().getNameTagFeature() != null && 
-			!TAB.getInstance().getFeatureManager().getNameTagFeature().isDisabled(analyzed.getServer(), analyzed.getWorld()) && 
+		if (TAB.getInstance().getScoreboardTeamManager() != null && 
+			!((TabFeature) TAB.getInstance().getScoreboardTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld()) && 
 			analyzed.getTeamNameNote() != null)
 				return "&eTeam name note: &a" + analyzed.getTeamNameNote();
 		return "";

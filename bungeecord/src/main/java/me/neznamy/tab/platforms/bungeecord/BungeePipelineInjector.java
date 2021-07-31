@@ -13,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
@@ -126,8 +127,8 @@ public class BungeePipelineInjector extends PipelineInjector {
 			if (packet.getPlayers() == null) return;
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (col.contains(p.getName()) && !TAB.getInstance().getFeatureManager().getNameTagFeature().getDisabledPlayers().contains(p) && 
-						!TAB.getInstance().getFeatureManager().getNameTagFeature().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
+				if (col.contains(p.getName()) && !((TabFeature)TAB.getInstance().getScoreboardTeamManager()).getDisabledPlayers().contains(p) && 
+						!TAB.getInstance().getScoreboardTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
 					logTeamOverride(packet.getName(), p.getName());
 					col.remove(p.getName());
 				}
