@@ -28,10 +28,13 @@ public class Layout extends TabFeature {
 	private List<Integer> emptySlots = new ArrayList<>();
 	private List<ParentGroup> parentGroups = new ArrayList<>();
 	private Map<Integer, UUID> uuids = new HashMap<>();
+	private SkinManager skinManager;
 
 	public Layout() {
 		super("Tablist layout");
 		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
+		String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+		skinManager = new SkinManager(defaultSkin);
 		for (int slot=1; slot<=80; slot++) {
 			emptySlots.add(slot);
 			uuids.put(slot, UUID.randomUUID());
@@ -40,7 +43,8 @@ public class Layout extends TabFeature {
 			String[] array = fixedSlot.split("\\|");
 			int slot = Integer.parseInt(array[0]);
 			String text = array[1];
-			FixedSlot f = new FixedSlot(this, uuids.get(slot), slot, text);
+			String skin = array.length > 2 ? array[2] : defaultSkin;
+			FixedSlot f = new FixedSlot(this, slot, text, skin);
 			fixedSlots.put(slot, f);
 			emptySlots.remove((Integer)slot);
 			if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature("layout-slot-" + slot, f);
@@ -106,7 +110,7 @@ public class Layout extends TabFeature {
 		parentGroups.forEach(g -> g.onJoin(p));
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (int slot : emptySlots) {
-			list.add(new PlayerInfoData(formatSlot(slot), uuids.get(slot), null, 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
+			list.add(new PlayerInfoData(formatSlot(slot), uuids.get(slot), skinManager.getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
 	}
@@ -157,6 +161,10 @@ public class Layout extends TabFeature {
 			}
 		}
 		return null;
+	}
+
+	public SkinManager getSkinManager() {
+		return skinManager;
 	}
 
 	public enum Direction {

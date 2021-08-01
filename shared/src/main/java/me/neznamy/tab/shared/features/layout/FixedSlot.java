@@ -18,14 +18,16 @@ public class FixedSlot extends TabFeature {
 	private int slot;
 	private String text;
 	private String propertyName;
+	private Object skin;
 
-	public FixedSlot(Layout layout, UUID id, int slot, String text) {
+	public FixedSlot(Layout layout, int slot, String text, String skin) {
 		super("Tablist layout");
 		this.layout = layout;
-		this.id = id;
+		this.id = layout.getUUID(slot);
 		this.slot = slot;
 		this.text = text;
 		propertyName = "SLOT-" + slot;
+		this.skin = layout.getSkinManager().getSkin(skin);
 	}
 
 	public String getText() {
@@ -40,7 +42,7 @@ public class FixedSlot extends TabFeature {
 	@Override
 	public void onJoin(TabPlayer p) {
 		p.setProperty(this, propertyName, text);
-		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(layout.formatSlot(slot), id, null, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()))), this);
+		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(layout.formatSlot(slot), id, skin, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()))), this);
 	}	
 
 	@Override

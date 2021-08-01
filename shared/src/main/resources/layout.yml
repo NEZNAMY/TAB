@@ -1,32 +1,33 @@
-enabled: false
+enabled: true
 direction: COLUMNS
 
+default-skin: "mineskin:1753261242"
+
 fixed-slots:
-  - '1|&c&lLOVETAB'
-  - '2|1.16.2 - 1.16.4'
-  - '4|&8------------'
-  - '5|&6Server1'
-  - '6|&8------------'
-  - '19|&8------------'
-  - '20|&eMore info here'
-  - '21|&eVote for our'
-  - '24|&8------------'
-  - '25|&5Server2'
-  - '26|&8------------'
-  - '39|&8------------'
-  - '40|&eand here too'
-  - '41|&eserver to make'
-  - '44|&8------------'
-  - '59|&8------------'
-  - '61|&eit much coolier'
-  - '64|&8------------'
+  - '1|&3Website&f:'
+  - '2|&bmyserver.net'
+  - '3|&8&m                       '
+  - '4|&3Name&f:'
+  - '5|&b%player%'
+  - '7|&3Rank&f:'
+  - '8|vault_rank'
+  - '10|&3World&f:'
+  - '11|&b%world%'
+  - '13|&3Time&f:'
+  - '14|&b%time%'
+  - '21|&3Teamspeak&f:'
+  - '22|&bts.myserver.net'
+  - '23|&8&m                       '
+  - '41|&3Store&f:'
+  - '42|&bshop.myserver.net'
+  - '43|&8&m                       '
 
 groups:
   MainGroup1:
     condition: permission:tab.staff
     slots:
-      - '7-22'
+      - '24-40'
   MainGroup2:
 #    condition: ""
     slots:
-      - '27-38'
+      - '44-60'

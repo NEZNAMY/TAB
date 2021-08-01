@@ -1,6 +1,7 @@
 package me.neznamy.tab.api;
 
 import java.io.File;
+import java.util.List;
 
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
@@ -76,4 +77,11 @@ public interface Platform {
 	 * @return platform-specific packet builder
 	 */
 	public PacketBuilder getPacketBuilder();
+	
+	/**
+	 * Converts value-signature array into platform-specific skin object
+	 * @param properties - value and signature
+	 * @return platform-specific skin object
+	 */
+	public Object getSkin(List<String> properties);
 }

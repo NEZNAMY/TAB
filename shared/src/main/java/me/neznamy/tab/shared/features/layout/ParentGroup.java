@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -43,6 +44,10 @@ public class ParentGroup {
 	}
 	
 	public Map<TabPlayer, PlayerSlot> getPlayers() {
+		if (players == null) {
+			players = new HashMap<>();
+			TAB.getInstance().getErrorManager().printError("Player map in layout group was null");
+		}
 		return players;
 	}
 }

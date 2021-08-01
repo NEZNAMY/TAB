@@ -1,11 +1,14 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.util.GameProfile.Property;
 
 import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.protocol.PacketBuilder;
@@ -103,5 +106,12 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public PacketBuilder getPacketBuilder() {
 		return packetBuilder;
+	}
+
+	@Override
+	public Object getSkin(List<String> properties) {
+		List<Property> list = new ArrayList<>();
+		list.add(new Property("textures", properties.get(0), properties.get(1)));
+		return list;
 	}
 }

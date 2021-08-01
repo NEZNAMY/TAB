@@ -59,7 +59,7 @@ public class PlayerSlot {
 		if (player != null) {
 			data = new PlayerInfoData(fakeplayer, id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p));
 		} else {
-			data = new PlayerInfoData(fakeplayer, id, null, 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(""));
+			data = new PlayerInfoData(fakeplayer, id, layout.getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(""));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), layout);
 	}
