@@ -45,33 +45,29 @@ public class SkinManager {
 			String playername = skin.substring(7);
 			if (players.containsKey(playername)) {
 				return TAB.getInstance().getPlatform().getSkin(players.get(playername));
-			} else {
-				List<String> properties = downloadPlayer(playername);
-				if (properties.size() > 0) {
-					players.put(playername, properties);
-					cache.set("players", players);
-					return TAB.getInstance().getPlatform().getSkin(properties);
-				} else {
-					invalidSkins.add(skin);
-					return defaultSkin;
-				}
 			}
+			List<String> properties = downloadPlayer(playername);
+			if (!properties.isEmpty()) {
+				players.put(playername, properties);
+				cache.set("players", players);
+				return TAB.getInstance().getPlatform().getSkin(properties);
+			}
+			invalidSkins.add(skin);
+			return defaultSkin;
 		}
 		if (skin.startsWith("mineskin:")) {
 			int id = Integer.parseInt(skin.substring(9));
 			if (mineskin.containsKey(id)) {
 				return TAB.getInstance().getPlatform().getSkin(mineskin.get(id));
-			} else {
-				List<String> properties = downloadMineskin(id);
-				if (properties.size() > 0) {
-					mineskin.put(id, properties);
-					cache.set("mineskin", mineskin);
-					return TAB.getInstance().getPlatform().getSkin(properties);
-				} else {
-					invalidSkins.add(skin);
-					return defaultSkin;
-				}
 			}
+			List<String> properties = downloadMineskin(id);
+			if (!properties.isEmpty()) {
+				mineskin.put(id, properties);
+				cache.set("mineskin", mineskin);
+				return TAB.getInstance().getPlatform().getSkin(properties);
+			}
+			invalidSkins.add(skin);
+			return defaultSkin;
 		}
 		TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
 		return null;
