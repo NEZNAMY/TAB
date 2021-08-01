@@ -34,7 +34,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 */
 	public boolean update(TabPlayer p) {
 		Object obj = get(p);
-		String newValue = obj == null ? identifier : String.valueOf(obj);
+		String newValue = obj == null ? identifier : String.valueOf(setPlaceholders(obj, p));
 		
 		//make invalid placeholders return identifier instead of nothing
 		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {

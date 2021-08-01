@@ -79,9 +79,7 @@ public abstract class Placeholder {
 			Object originalvalue = getLastValue(p);
 			Object value = TabAPI.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
 			if (!(value instanceof String)) return value;
-			Object newValue = setPlaceholders(value, p);
-			if (!(newValue instanceof String)) return newValue;
-			newValue = replace(newValue.toString(), "%value%", originalvalue.toString());
+			String newValue = replace(value.toString(), "%value%", originalvalue.toString());
 			return replace(s, identifier, newValue.toString());
 		} catch (Exception t) {
 			TabAPI.getInstance().getErrorManager().printError("An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);

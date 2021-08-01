@@ -205,6 +205,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			for (String subcondition : list) {
 				placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
 			}
+			placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
+			placeholdersInConditions.addAll(pm.detectPlaceholders(no));
 			pm.addUsedPlaceholders(placeholdersInConditions);
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
