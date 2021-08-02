@@ -168,13 +168,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
 				announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) continue;
-			Scoreboard board = activeScoreboard.get(p);
-			String current = board == null ? "null" : board.getName();
-			String highest = detectHighestScoreboard(p);
-			if (!current.equals(highest)) {
-				if (activeScoreboard.containsKey(p)) activeScoreboard.get(p).removePlayer(p);
-				sendHighestScoreboard(p);
-			}
+			sendHighestScoreboard(p);
 		}
 	}
 
@@ -213,9 +207,14 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		String scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
 			Scoreboard board = scoreboards.get(scoreboard);
-			if (board != null) {
-				activeScoreboard.put(p, board);
-				board.addPlayer(p);
+			Scoreboard current = activeScoreboard.get(p);
+			if (board != current) {
+				if (current != null) {
+					current.removePlayer(p);
+				}
+				if (board != null) {
+					board.addPlayer(p);
+				}
 			}
 		}
 	}
