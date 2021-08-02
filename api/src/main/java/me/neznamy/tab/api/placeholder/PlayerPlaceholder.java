@@ -40,7 +40,6 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
 			lastValues.put(p.getName(), identifier);
 		}
-		//using String.valueOf to remove one check and fix rare NPE caused by multi thread access
 		if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (!lastValues.containsKey(p.getName()) || !lastValues.get(p.getName()).equals(newValue))) {
 			lastValues.put(p.getName(), newValue);
 			return true;

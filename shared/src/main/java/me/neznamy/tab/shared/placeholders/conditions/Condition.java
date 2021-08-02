@@ -1,9 +1,11 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -58,6 +60,7 @@ public class Condition {
 				TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Arrays.asList("%condition:" + name + "%"));
 	}
 	
 	/**
@@ -127,7 +130,7 @@ public class Condition {
 		if (getConditions().containsKey(string)) {
 			return getConditions().get(string);
 		} else {
-			return Condition.compile(null, Lists.newArrayList(string.split(";")), "AND", null, null);
+			return Condition.compile(UUID.randomUUID().toString(), Lists.newArrayList(string.split(";")), "AND", null, null);
 		}
 	}
 

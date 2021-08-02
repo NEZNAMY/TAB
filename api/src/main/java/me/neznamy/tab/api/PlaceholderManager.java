@@ -57,5 +57,5 @@ public interface PlaceholderManager {
 	 * @param originalOutput - original output of the placeholder
 	 * @return replaced placeholder output
 	 */
-	public Object findReplacement(Map<Object, String> replacements, Object output);
+	public String findReplacement(Map<Object, String> replacements, String output);
 }

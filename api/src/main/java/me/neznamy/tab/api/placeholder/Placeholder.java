@@ -1,8 +1,8 @@
 package me.neznamy.tab.api.placeholder;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -74,20 +74,19 @@ public abstract class Placeholder {
 	 * @param p - player to set placeholder for
 	 * @return string with this placeholder replaced
 	 */
-	public Object set(String s, TabPlayer p) {
+	public String set(String s, TabPlayer p) {
 		try {
-			Object originalvalue = getLastValue(p);
-			Object value = TabAPI.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
-			if (!(value instanceof String)) return value;
-			String newValue = replace(value.toString(), "%value%", originalvalue.toString());
-			return replace(s, identifier, newValue.toString());
+			String originalvalue = getLastValue(p);
+			String value = TabAPI.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
+			value = replace(value, "%value%", originalvalue);
+			return replace(s, identifier, value);
 		} catch (Exception t) {
 			TabAPI.getInstance().getErrorManager().printError("An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 			return s;
 		}
 	}
 	
-	public List<String> getNestedPlaceholders(String output) {
+	public Collection<String> getNestedPlaceholders(String output) {
 		if (!output.contains("%")) return Collections.emptyList();
 		return TabAPI.getInstance().getPlaceholderManager().detectPlaceholders(output);
 	}
@@ -105,7 +104,7 @@ public abstract class Placeholder {
 	 * @return text with replaced placeholders in output
 	 */
 	protected Object setPlaceholders(Object text, TabPlayer p) {
-		if (identifier.equals(text) || !(text instanceof String)) return text;
+		if (!(text instanceof String) || identifier.equals(text)) return text;
 		Object replaced = text;
 		for (String s : getNestedPlaceholders((String) text)) {
 			if (s.equals("%value%") || s.equals(identifier) || s.startsWith("%rel_")) continue;

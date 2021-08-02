@@ -268,13 +268,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 	
 	@Override
-	public Object findReplacement(Map<Object, String> replacements, Object output) {
+	public String findReplacement(Map<Object, String> replacements, String output) {
 		if (replacements.isEmpty()) return output;
-		if (replacements.containsKey(output.toString())) {
-			return replacements.get(output.toString());
+		if (replacements.containsKey(output)) {
+			return replacements.get(output);
 		}
 		try {
-			float actualValue = Float.parseFloat(String.valueOf(output).replace(",", ""));
+			float actualValue = Float.parseFloat(output.replace(",", ""));
 			for (Entry<Object, String> entry : replacements.entrySet()) {
 				String key = entry.getKey().toString();
 				if (key.contains("-")) {

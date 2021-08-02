@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.PermissionPlugin;
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.Platform;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
@@ -307,7 +306,7 @@ public class TAB extends TabAPI {
 	}
 
 	@Override
-	public PlaceholderManager getPlaceholderManager() {
+	public PlaceholderManagerImpl getPlaceholderManager() {
 		return placeholderManager;
 	}
 

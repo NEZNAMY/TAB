@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -173,7 +174,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 				
 				@Override
-				public List<String> getNestedPlaceholders(String output) {
+				public Collection<String> getNestedPlaceholders(String output) {
 					return a.getNestedPlaceholders();
 				}
 			});
