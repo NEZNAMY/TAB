@@ -1,4 +1,4 @@
-enabled: true
+enabled: false
 direction: COLUMNS
 
 default-skin: "mineskin:1753261242"
