@@ -1,9 +1,5 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -19,6 +15,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  */
 public abstract class StableDynamicLine extends ScoreboardLine {
 	
+	private static final String[] EMPTY_ARRAY = new String[0];
 	//text to display
 	protected String text;
 
@@ -36,17 +33,17 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
-		List<String> prefixsuffix = replaceText(refreshed, force, false);
-		if (prefixsuffix.isEmpty()) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix.get(0), prefixsuffix.get(1), "always", "always", 0), this);
+		String[] prefixsuffix = replaceText(refreshed, force, false);
+		if (prefixsuffix.length == 0) return;
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix[0], prefixsuffix[1], "always", "always", 0), this);
 	}
 
 	@Override
 	public void register(TabPlayer p) {
 		p.setProperty(this, teamName, text);
-		List<String> prefixsuffix = replaceText(p, true, true);
-		if (prefixsuffix.isEmpty()) return;
-		addLine(p, teamName, getPlayerName(), prefixsuffix.get(0), prefixsuffix.get(1), getScoreFor(p));
+		String[] prefixsuffix = replaceText(p, true, true);
+		if (prefixsuffix.length == 0) return;
+		addLine(p, teamName, getPlayerName(), prefixsuffix[0], prefixsuffix[1], getScoreFor(p));
 	}
 
 	@Override
@@ -64,10 +61,10 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	 * @param suppressToggle - if line should NOT be removed despite being empty
 	 * @return list of 2 elements for prefix/suffix
 	 */
-	private List<String> replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
+	private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
 		Property scoreproperty = p.getProperty(teamName);
 		boolean emptyBefore = scoreproperty.get().length() == 0;
-		if (!scoreproperty.update() && !force) return new ArrayList<>();
+		if (!scoreproperty.update() && !force) return EMPTY_ARRAY;
 		String replaced = scoreproperty.get();
 		if (p.getVersion().getMinorVersion() < 16) {
 			replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
@@ -79,16 +76,16 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 			if (emptyBefore) {
 				//was "", now it is not
 				addLine(p, teamName, getPlayerName(), prefix, suffix, getScoreFor(p));
-				return new ArrayList<>();
+				return EMPTY_ARRAY;
 			} else {
-				return Arrays.asList(prefix, suffix);
+				return new String[] {prefix, suffix};
 			}
 		} else {
 			if (!suppressToggle) {
 				//new string is "", but before it was not
 				removeLine(p, getPlayerName(), teamName);
 			}
-			return new ArrayList<>();
+			return EMPTY_ARRAY;
 		}
 	}
 	
