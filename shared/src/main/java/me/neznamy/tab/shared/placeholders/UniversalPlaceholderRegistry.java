@@ -167,9 +167,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerAnimationPlaceholders(PlaceholderManager manager) {
 		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
 			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"), TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
-			manager.registerServerPlaceholder(new ServerPlaceholder("%animation:" + a.getName() + "%", 50) {
+			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%animation:" + a.getName() + "%", 50) {
 
-				public Object get() {
+				public Object get(TabPlayer p) {
 					return a.getMessage();
 				}
 				
