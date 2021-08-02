@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
@@ -60,7 +60,15 @@ public class Condition {
 				TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
-		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Arrays.asList("%condition:" + name + "%"));
+		//adding placeholders in conditions to the map so they are actually refreshed if not used anywhere else
+		PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+		List<String> placeholdersInConditions = new ArrayList<>();
+		for (String subcondition : conditions) {
+			placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
+		}
+		placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
+		placeholdersInConditions.addAll(pm.detectPlaceholders(no));
+		pm.addUsedPlaceholders(placeholdersInConditions);
 	}
 	
 	/**

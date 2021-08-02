@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -196,19 +195,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			Condition c = Condition.compile(condition.getKey(), list, type, yes, no);
 			Condition.getConditions().put(condition.getKey(), c);
 			String identifier = "%condition:" + c.getName() + "%";
-			PlaceholderManagerImpl pm = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
+			PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
 			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 			if (pm.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
 				refresh = pm.getPlayerPlaceholderRefreshIntervals().get(identifier);
 			}
-			//adding placeholders in conditions to the map so they are actually refreshed if not used anywhere else
-			List<String> placeholdersInConditions = new ArrayList<>();
-			for (String subcondition : list) {
-				placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
-			}
-			placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
-			placeholdersInConditions.addAll(pm.detectPlaceholders(no));
-			pm.addUsedPlaceholders(placeholdersInConditions);
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
 
 				@Override
