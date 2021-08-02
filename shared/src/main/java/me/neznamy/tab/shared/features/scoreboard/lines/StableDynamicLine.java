@@ -70,15 +70,13 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 			replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
 		}
 		String[] split = split(p, replaced);
-		String prefix = split[0];
-		String suffix = split[1];
 		if (replaced.length() > 0) {
 			if (emptyBefore) {
 				//was "", now it is not
-				addLine(p, teamName, getPlayerName(), prefix, suffix, getScoreFor(p));
+				addLine(p, teamName, getPlayerName(), split[0], split[1], getScoreFor(p));
 				return EMPTY_ARRAY;
 			} else {
-				return new String[] {prefix, suffix};
+				return split;
 			}
 		} else {
 			if (!suppressToggle) {
@@ -104,22 +102,21 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 			String lastColors = EnumChatFormat.getLastColors(text.substring(0, Math.min(16, text.length())));
 			charLimit -= lastColors.length() == 0 ? 2 : lastColors.length();
 		}
-		String prefix;
-		String suffix;
 		if (text.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
-			prefix = text.substring(0, charLimit);
-			suffix = text.substring(charLimit, text.length());
+			StringBuilder prefix = new StringBuilder(text);
+			StringBuilder suffix = new StringBuilder(text);
+			prefix.setLength(charLimit);
+			suffix.delete(0, charLimit);
 			if (prefix.charAt(charLimit-1) == '\u00a7') {
-				prefix = prefix.substring(0, charLimit-1);
-				suffix = '\u00a7' + suffix;
+				prefix.setLength(prefix.length()-1);
+				suffix.insert(0, '\u00a7');
 			}
-			String last = EnumChatFormat.getLastColors(RGBUtils.getInstance().convertRGBtoLegacy(prefix));
-			suffix = last + suffix;
+			String prefixString = prefix.toString();
+			suffix.insert(0, EnumChatFormat.getLastColors(RGBUtils.getInstance().convertRGBtoLegacy(prefixString)));
+			return new String[] {prefixString, suffix.toString()};
 		} else {
-			prefix = text;
-			suffix = "";
+			return new String[] {text, ""};
 		}
-		return new String[] {prefix, suffix};
 	}
 
 	/**
