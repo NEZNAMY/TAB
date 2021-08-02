@@ -143,7 +143,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 			s.register(p);
 		}
 		players.add(p);
-		manager.getActiveScoreboards().remove(p);
+		manager.getActiveScoreboards().put(p, this);
 	}
 
 	/**
