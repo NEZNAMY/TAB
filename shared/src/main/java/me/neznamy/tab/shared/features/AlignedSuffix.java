@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,7 +20,7 @@ public class AlignedSuffix extends TabFeature {
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
-	private Map<Character, Byte> widths = new HashMap<>();
+	private byte[] widths = new byte[65536];
 	private Playerlist playerlist;
 
 	public AlignedSuffix(Playerlist playerlist) {
@@ -30,7 +29,7 @@ public class AlignedSuffix extends TabFeature {
 		loadWidthsFromFile();
 		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-			widths.put((char)(int)entry.getKey(), (byte)(int)entry.getValue());
+			widths[entry.getKey()] = (byte)(int)entry.getValue();
 		}
 		TAB.getInstance().debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
 	}
@@ -45,7 +44,7 @@ public class AlignedSuffix extends TabFeature {
 			String line;
 			int characterId = 1;
 			while ((line = br.readLine()) != null) {
-				widths.put((char)characterId++, (byte)Float.parseFloat(line));
+				widths[characterId++] = (byte) Float.parseFloat(line);
 			}
 			br.close();
 		} catch (Exception ex) {
@@ -95,10 +94,9 @@ public class AlignedSuffix extends TabFeature {
 		int width = 0;
 		if (component.getText() != null) {
 			for (Character c : component.getText().toCharArray()) {
+				width += widths[c] + 1;
 				if (component.getModifier().isBold()) {
-					width += widths.get(c)+2;
-				} else {
-					width += widths.get(c)+1;
+					width += 1;
 				}
 			}
 		}
