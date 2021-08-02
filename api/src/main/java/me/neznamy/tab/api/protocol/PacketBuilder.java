@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
 
 /**
  * An interface represending a platform-specific packet builder
@@ -108,7 +109,11 @@ public interface PacketBuilder {
 	 */
 	public default String cutTo(String string, int length) {
 		if (string == null) return "";
-		String legacyText = IChatBaseComponent.optimizedComponent(string).toLegacyText();
+		String legacyText = string;
+		if (string.contains("#")) {
+			//converting RGB to legacy colors
+			legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
+		}
 		if (legacyText.length() <= length) return legacyText;
 		if (legacyText.charAt(length-1) == '\u00a7') {
 			return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
