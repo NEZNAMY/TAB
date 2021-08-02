@@ -1,9 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -54,11 +52,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @return list of all loaded features
 	 */
 	public Collection<TabFeature> getAllFeatures(){
-		try {
-			return new ArrayList<>(features.values());
-		} catch (ConcurrentModificationException e) {
-			return getAllFeatures();
-		}
+		return features.values();
 	}
 
 	/**
