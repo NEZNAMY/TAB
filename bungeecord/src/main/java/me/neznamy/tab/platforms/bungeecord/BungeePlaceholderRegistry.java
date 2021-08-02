@@ -34,8 +34,8 @@ public class BungeePlaceholderRegistry extends ProxyPlaceholderRegistry {
 			manager.registerServerPlaceholder(new ServerPlaceholder("%canseeonline_" + server.getKey() + "%", 1000) {
 				public Object get() {
 					int count = 0;
-					for (TabPlayer p : TAB.getInstance().getPlayers()) {
-						if (p.getWorldName() != null && p.getWorldName().equals(server.getValue().getName()) && p.isVanished()) count++;
+					for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+						if (p.getServer() != null && p.getServer().equals(server.getValue().getName()) && p.isVanished()) count++;
 					}
 					return count;
 				}
