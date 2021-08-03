@@ -16,6 +16,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.TabFeature;
 
@@ -56,6 +58,7 @@ public class CPUManager {
 	 * @param errorManager - error manager
 	 */
 	public CPUManager(ErrorManager errorManager) {
+		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
 		submit("refreshing cpu stats", () -> {
 
