@@ -53,7 +53,7 @@ public class AlignedSuffix extends TabFeature {
 	}
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
-		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(player.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + player.getProperty(PropertyUtils.TABSUFFIX).getFormat(null)));
+		int playerNameWidth = getPlayerNameWidth(player);
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			maxWidth = playerNameWidth;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -74,15 +74,17 @@ public class AlignedSuffix extends TabFeature {
 	
 	public String formatName(String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
-		String newFormat = prefixAndName + "\u00a7r";
+		StringBuilder newFormat = new StringBuilder(prefixAndName);
+		newFormat.append("\u00a7r");
 		try {
-			newFormat += buildSpaces(maxWidth + 12 - playerNameWidth);
+			newFormat.append(buildSpaces(maxWidth + 12 - playerNameWidth));
 		} catch (IllegalArgumentException e) {
 			//will investigate later
-			newFormat += buildSpaces(12);
+			newFormat.append(buildSpaces(12));
 		}
-		newFormat += EnumChatFormat.getLastColors(prefixAndName) + suffix;
-		return newFormat;
+		newFormat.append(EnumChatFormat.getLastColors(prefixAndName));
+		newFormat.append(suffix);
+		return newFormat.toString();
 	}
 	
 	/**
