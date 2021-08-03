@@ -273,8 +273,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (permissionGroup != null) {
 			this.permissionGroup = permissionGroup;
 		} else {
-			this.permissionGroup = "<null>";
-			TAB.getInstance().getErrorManager().oneTimeConsoleError(TAB.getInstance().getPermissionPlugin().getName() + " v" + TAB.getInstance().getPermissionPlugin().getVersion() + " returned null permission group for " + getName());
+			this.permissionGroup = GroupRefresher.DEFAULT_GROUP;
 		}
 		if (refreshIfChanged) {
 			forceRefresh();
