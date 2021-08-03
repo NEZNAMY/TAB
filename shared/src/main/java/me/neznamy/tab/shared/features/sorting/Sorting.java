@@ -75,7 +75,7 @@ public class Sorting {
 			if (!types.containsKey(arr[0].toUpperCase())) {
 				TAB.getInstance().getErrorManager().startupWarn("\"&e" + arr[0].toUpperCase() + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ".");
 			} else {
-				SortingType type = types.get(arr[0].toUpperCase()).apply(arr.length == 1 ? "" : arr[1]);
+				SortingType type = types.get(arr[0].toUpperCase()).apply(arr.length == 1 ? "" : element.substring(arr[0].length() + 1));
 				list.add(type);
 			}
 		}

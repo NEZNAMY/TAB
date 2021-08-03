@@ -18,7 +18,8 @@ public class Placeholder extends SortingType {
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
 	public Placeholder(String options) {
-		sortingMap = convertSortingElements(options.split(","));
+		super(options.split(":")[0]);
+		sortingMap = convertSortingElements(options.substring(options.indexOf(":")+1).split(","));
 	}
 
 	@Override
