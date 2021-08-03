@@ -49,7 +49,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public PlaceholderManagerImpl(){
 		super("Refreshing placeholders");
 		loadRefreshIntervals();
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, this::refresh);
 	}
 	
 	private void refresh() {
@@ -161,7 +160,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void load() {
+		for (String identifier : placeholderUsage.keySet()) {
+			Placeholder pl = getPlaceholder(identifier);
+			if (pl instanceof ServerPlaceholder) {
+				((ServerPlaceholder)pl).update();
+			}
+		}
 		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, this::refresh);
 	}
 
 	@Override
