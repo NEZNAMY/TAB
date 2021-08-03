@@ -219,7 +219,11 @@ public class BukkitPlatform implements Platform {
 				if (placeholderAPI == null) return identifier;
 				try {
 					return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
-				} catch (Exception t) {
+				} catch (Exception | NoClassDefFoundError t) {
+					if (TAB.getInstance().isDebugMode()) {
+						TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + 
+								" generated an error when setting relational placeholder " + identifier, t);
+					}
 					return identifier;
 				}
 			}
@@ -239,6 +243,10 @@ public class BukkitPlatform implements Platform {
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
 		} catch (Exception | NoClassDefFoundError t) {
+			if (TAB.getInstance().isDebugMode()) {
+				TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion() + 
+						" generated an error when setting placeholder " + placeholder + (player == null ? "" : " for player " + player.getName()), t);
+			}
 			return "ERROR";
 		}
 	}
