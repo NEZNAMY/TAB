@@ -161,6 +161,8 @@ public class CPUManager {
 				} catch (InterruptedException pluginDisabled) {
 					Thread.currentThread().interrupt();
 					break;
+				} catch (Exception | NoClassDefFoundError e) {
+					errorManager.printError("An error occurred when " + errorDescription, e);
 				}
 			}
 		});
@@ -195,6 +197,8 @@ public class CPUManager {
 				addTime(feature, type, System.nanoTime()-time);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
+			} catch (Exception | NoClassDefFoundError e) {
+				errorManager.printError("An error occurred when " + errorDescription, e);
 			}
 		});
 	}
@@ -203,7 +207,7 @@ public class CPUManager {
 		exe.submit(() -> {
 			try {
 				task.run();
-			} catch (Exception | Error e) {
+			} catch (Exception | NoClassDefFoundError e) {
 				errorManager.printError("An error occurred when " + errorDescription, e);
 			}
 		});
