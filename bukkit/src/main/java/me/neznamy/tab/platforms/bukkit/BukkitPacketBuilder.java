@@ -55,6 +55,8 @@ public class BukkitPacketBuilder implements PacketBuilder {
 
 	//entity type ids
 	private EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
+	
+	private Object emptyScoreboard;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -70,6 +72,11 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			if (nms.getMinorVersion() >= 8){
 				entityIds.put(EntityType.ARMOR_STAND, 30);
 			}
+		}
+		try {
+			emptyScoreboard = nms.getConstructor("Scoreboard").newInstance();
+		} catch (Exception e) {
+			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Failed to create instance of \"Scoreboard\"");
 		}
 	}
 
@@ -255,7 +262,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 		if (packet.getAction() == PacketPlayOutScoreboardScore.Action.REMOVE) {
 			return nms.getConstructor("PacketPlayOutScoreboardScore_String").newInstance(packet.getPlayer());
 		}
-		Object score = nms.getConstructor("ScoreboardScore").newInstance(nms.getConstructor("Scoreboard").newInstance(), newScoreboardObjective(packet.getObjectiveName()), packet.getPlayer());
+		Object score = nms.getConstructor("ScoreboardScore").newInstance(emptyScoreboard, newScoreboardObjective(packet.getObjectiveName()), packet.getPlayer());
 		nms.getMethod("ScoreboardScore_setScore").invoke(score, packet.getScore());
 		if (nms.getMinorVersion() >= 8) {
 			return nms.getConstructor("PacketPlayOutScoreboardScore").newInstance(score);
@@ -297,7 +304,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			prefix = cutTo(prefix, 16);
 			suffix = cutTo(suffix, 16);
 		}
-		Object team = nms.getConstructor("ScoreboardTeam").newInstance(nms.getConstructor("Scoreboard").newInstance(), packet.getName());
+		Object team = nms.getConstructor("ScoreboardTeam").newInstance(emptyScoreboard, packet.getName());
 		((Collection<String>)nms.getMethod("ScoreboardTeam_getPlayerNameSet").invoke(team)).addAll(packet.getPlayers());
 		if (prefix != null && prefix.length() > 0) nms.getMethod("ScoreboardTeam_setPrefix").invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
 		if (suffix != null && suffix.length() > 0) nms.getMethod("ScoreboardTeam_setSuffix").invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
@@ -315,7 +322,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			prefix = cutTo(prefix, 16);
 			suffix = cutTo(suffix, 16);
 		}
-		Object team = nms.getConstructor("ScoreboardTeam").newInstance(nms.getConstructor("Scoreboard").newInstance(), packet.getName());
+		Object team = nms.getConstructor("ScoreboardTeam").newInstance(emptyScoreboard, packet.getName());
 		((Collection<String>)nms.getMethod("ScoreboardTeam_getPlayerNameSet").invoke(team)).addAll(packet.getPlayers());
 		if (prefix != null) nms.getMethod("ScoreboardTeam_setPrefix").invoke(team, prefix);
 		if (suffix != null) nms.getMethod("ScoreboardTeam_setSuffix").invoke(team, suffix);
