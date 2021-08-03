@@ -71,7 +71,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
+			if (!p1.isLoaded()) continue;
 			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
+				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
 					forceUpdate.computeIfAbsent(p2, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
@@ -90,6 +92,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (!all.isLoaded()) continue;
 			if (placeholder.update(all)) {
 				update.computeIfAbsent(all, k -> new HashSet<>());
 				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
