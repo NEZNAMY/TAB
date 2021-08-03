@@ -40,8 +40,8 @@ public abstract class PlayerPlaceholder extends Placeholder {
 		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
 			lastValues.put(p.getName(), identifier);
 		}
-		if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (!lastValues.containsKey(p.getName()) || !lastValues.get(p.getName()).equals(newValue))) {
-			lastValues.put(p.getName(), newValue);
+		if (!lastValues.containsKey(p.getName()) || (!"ERROR".equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p.getName()).equals(newValue))) {
+			lastValues.put(p.getName(), "ERROR".equals(newValue) ? identifier : newValue);
 			return true;
 		}
 		if (forceUpdate.contains(p.getName())) {
