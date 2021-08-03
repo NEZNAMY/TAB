@@ -105,7 +105,7 @@ public class TabExpansion extends PlaceholderExpansion {
 	private String findReplacement(String placeholder, Player player) {
 		String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
 		Map<Object, String> replacements = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + placeholder);
-		return TAB.getInstance().getPlaceholderManager().findReplacement(replacements, output).toString().replace("%value%", output);
+		return TAB.getInstance().getPlaceholderManager().findReplacement(replacements, output).replace("%value%", output);
 	}
 	
 	/**

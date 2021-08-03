@@ -179,7 +179,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers synchronous placeholders
 	 */
 	private void registerSyncPlaceholders(PlaceholderManager manager) {
-		PlaceholderManagerImpl pl = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
+		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		for (String identifier : pl.getPlaceholderUsage().keySet()) {
 			if (identifier.startsWith("%sync:")) {
 				int refresh;

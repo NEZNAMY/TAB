@@ -154,7 +154,7 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public Placeholder registerUnknownPlaceholder(String identifier) {
-		PlaceholderManagerImpl pl = (PlaceholderManagerImpl) TAB.getInstance().getPlaceholderManager();
+		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		if (identifier.startsWith("%rel_")) {
 			//relational placeholder
 			return registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier));

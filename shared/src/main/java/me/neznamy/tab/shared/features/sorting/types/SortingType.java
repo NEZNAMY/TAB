@@ -45,7 +45,7 @@ public abstract class SortingType {
 			for (String identifier : usedPlaceholders) {
 				Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 				if (replaced.contains(pl.getIdentifier())) {
-					replaced = pl.set(replaced, player).toString();
+					replaced = pl.set(replaced, player);
 				}
 			}
 		}

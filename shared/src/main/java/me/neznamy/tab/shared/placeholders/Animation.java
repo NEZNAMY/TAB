@@ -23,7 +23,7 @@ public class Animation {
 	private int interval;
 	
 	//all nested placeholders used in animation frames
-	private Set<String> nestedPlaceholders = new HashSet<>();;
+	private Set<String> nestedPlaceholders = new HashSet<>();
 	
 	/**
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when
