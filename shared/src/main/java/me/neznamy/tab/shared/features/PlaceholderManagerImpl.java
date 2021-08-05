@@ -280,10 +280,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			return replacements.get(output);
 		}
 		try {
-			float actualValue = Float.parseFloat(output.replace(",", ""));
+			Float actualValue = null; //only trying to parse if something actually uses numbers intervals
 			for (Entry<Object, String> entry : replacements.entrySet()) {
 				String key = entry.getKey().toString();
 				if (key.contains("-")) {
+					if (actualValue == null) {
+						actualValue = Float.parseFloat(output.replace(",", ""));
+					}
 					String[] arr = key.split("-");
 					if (Float.parseFloat(arr[0]) <= actualValue && actualValue <= Float.parseFloat(arr[1])) return entry.getValue();
 				}
