@@ -92,10 +92,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!all.isLoaded()) continue;
-			if (placeholder.update(all)) {
-				update.computeIfAbsent(all, k -> new HashSet<>());
-				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+			if (all.isLoaded() && placeholder.update(all)) {
+				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 				somethingChanged = true;
 			}
 		}
@@ -110,8 +108,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			somethingChanged = true;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (!all.isLoaded()) continue;
-				update.computeIfAbsent(all, k -> new HashSet<>());
-				update.get(all).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 			}
 		}
 		TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
