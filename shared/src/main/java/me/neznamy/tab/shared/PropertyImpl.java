@@ -86,7 +86,8 @@ public class PropertyImpl implements Property {
 		}
 		placeholders = placeholders0.toArray(new String[0]);
 		relPlaceholders = relPlaceholders0.toArray(new String[0]);
-		rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
+		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
+		rawFormattedValue = applyRemoveStrings(rawFormattedValue0); //this should never be needed
 		for (TabFeature listener : listeners) {
 			listener.addUsedPlaceholders(placeholders0);
 			listener.addUsedPlaceholders(relPlaceholders0);
@@ -162,13 +163,22 @@ public class PropertyImpl implements Property {
 	@Override
 	public boolean update() {
 		long time = System.nanoTime();
-		Object[] values = new Object[placeholders.length];
-		for (int i=0; i<placeholders.length; i++) {
-			values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
+		String string;
+		if (placeholders.length > 0) {
+			if (rawFormattedValue.equals("%s")) {
+				string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
+			} else {
+				String[] values = new String[placeholders.length];
+				for (int i=0; i<placeholders.length; i++) {
+					values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
+				}
+				string = String.format(rawFormattedValue, (Object[]) values);
+			}
+			string = EnumChatFormat.color(string);
+			string = applyRemoveStrings(string);
+		} else {
+			string = rawFormattedValue;
 		}
-		String string = placeholders.length == 0 ? rawFormattedValue : String.format(rawFormattedValue, values);
-		string = EnumChatFormat.color(string);
-		string = applyRemoveStrings(string);
 		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;
 			TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
@@ -179,6 +189,7 @@ public class PropertyImpl implements Property {
 	}
 	
 	private String applyRemoveStrings(String text) {
+		if (TAB.getInstance().getConfiguration().getRemoveStrings().isEmpty()) return text;
 		String reformatted = text;
 		for (String removed : TAB.getInstance().getConfiguration().getRemoveStrings()) {
 			if (removed.startsWith("CONTAINS:") && reformatted.contains(removed.substring(9))) return "";
