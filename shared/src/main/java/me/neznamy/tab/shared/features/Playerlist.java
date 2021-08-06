@@ -175,7 +175,7 @@ public class Playerlist extends TabFeature {
 		}
 	}
 
-	public List<String> getDisabledWorlds() {
+	public String[] getDisabledWorlds() {
 		return disabledWorlds;
 	}
 }

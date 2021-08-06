@@ -415,8 +415,8 @@ public class NameTagX extends NameTag {
 	}
 	
 	public boolean isDisabled(String world) {
-		boolean contains = contains(disabledUnlimitedWorlds, world);
-		if (disabledWorlds.contains("WHITELIST")) contains = !contains;
+		boolean contains = contains(disabledUnlimitedWorlds.toArray(new String[0]), world);
+		if (disabledUnlimitedWorlds.contains("WHITELIST")) contains = !contains;
 		return contains;
 	}
 	

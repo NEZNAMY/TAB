@@ -85,10 +85,10 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 */
 	@SuppressWarnings("unchecked")
 	public ScoreboardManagerImpl() {
-		super("Scoreboard");
+		super("Scoreboard", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-servers"),
+				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds"));
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
 		useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
-		disabledWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds", Arrays.asList("disabledworld"));
 		defaultScoreboard = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
 		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-world");
 		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-server");

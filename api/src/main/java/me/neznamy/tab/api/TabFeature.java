@@ -13,8 +13,10 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 public abstract class TabFeature {
 
 	private String featureName;
-	protected List<String> disabledServers;
-	protected List<String> disabledWorlds;
+	protected String[] disabledServers;
+	private boolean serverWhitelistMode;
+	protected String[] disabledWorlds;
+	private boolean worldWhitelistMode;
 	protected Set<TabPlayer> disabledPlayers = new HashSet<>();
 	
 	private boolean onPacketSendDisplayOverride;
@@ -40,8 +42,10 @@ public abstract class TabFeature {
 	
 	protected TabFeature(String featureName, List<String> disabledServers, List<String> disabledWorlds) {
 		this(featureName);
-		this.disabledServers = disabledServers;
-		this.disabledWorlds = disabledWorlds;
+		this.disabledServers = disabledServers.toArray(new String[0]);
+		serverWhitelistMode = disabledServers.contains("WHITELIST");
+		this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+		worldWhitelistMode = disabledWorlds.contains("WHITELIST");
 	}
 	
 	/**
@@ -191,18 +195,18 @@ public abstract class TabFeature {
 	public boolean isDisabled(String server, String world) {
 		if (disabledWorlds != null) {
 			boolean contains = contains(disabledWorlds, world);
-			if (disabledWorlds.contains("WHITELIST")) contains = !contains;
+			if (worldWhitelistMode) contains = !contains;
 			if (contains) return true;
 		}
 		if (disabledServers != null) {
 			boolean contains = contains(disabledServers, server);
-			if (disabledServers.contains("WHITELIST")) contains = !contains;
+			if (serverWhitelistMode) contains = !contains;
 			if (contains) return true;
 		}
 		return false;
 	}
 	
-	protected boolean contains(List<String> list, String element) {
+	protected boolean contains(String[] list, String element) {
 		if (element == null) return false;
 		for (String s : list) {
 			if (s.endsWith("*")) {

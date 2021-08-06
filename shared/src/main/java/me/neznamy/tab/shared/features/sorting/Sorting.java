@@ -32,7 +32,7 @@ public class Sorting {
 	private boolean caseSensitiveSorting = true;
 	
 	//active sorting types
-	private List<SortingType> usedSortingTypes;
+	private SortingType[] usedSortingTypes;
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
@@ -68,7 +68,7 @@ public class Sorting {
 	 * Compiles sorting type list into classes
 	 * @return list of compiled sorting types
 	 */
-	private List<SortingType> compile(List<String> options){
+	private SortingType[] compile(List<String> options){
 		List<SortingType> list = new ArrayList<>();
 		for (String element : options) {
 			String[] arr = element.split(":");
@@ -79,7 +79,7 @@ public class Sorting {
 				list.add(type);
 			}
 		}
-		return list;
+		return list.toArray(new SortingType[0]);
 	}
 	
 	/**
@@ -128,14 +128,14 @@ public class Sorting {
 	 * @return user-friendly representation of sorting types
 	 */
 	public String typesToString() {
-		String[] elements = new String[getSorting().size()];
-		for (int i=0; i<getSorting().size(); i++) {
-			elements[i] = getSorting().get(i).toString();
+		String[] elements = new String[usedSortingTypes.length];
+		for (int i=0; i<usedSortingTypes.length; i++) {
+			elements[i] = usedSortingTypes[i].toString();
 		}
 		return String.join(" then ", elements);
 	}
 
-	public List<SortingType> getSorting() {
+	public SortingType[] getSorting() {
 		return usedSortingTypes;
 	}
 }

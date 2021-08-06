@@ -28,7 +28,7 @@ public class Condition {
 	private String name;
 	
 	//list of subconditions
-	protected List<SimpleCondition> subconditions = new ArrayList<>();
+	protected SimpleCondition[] subconditions;
 	
 	//value to return if condition is met
 	private String yes;
@@ -52,14 +52,16 @@ public class Condition {
 			TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
 			return;
 		}
+		List<SimpleCondition> list = new ArrayList<>();
 		for (String line : conditions) {
 			SimpleCondition condition = SimpleCondition.compile(line);
 			if (condition != null) {
-				this.subconditions.add(condition);
+				list.add(condition);
 			} else {
 				TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
+		subconditions = list.toArray(new SimpleCondition[0]);
 		//adding placeholders in conditions to the map so they are actually refreshed if not used anywhere else
 		PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
 		List<String> placeholdersInConditions = new ArrayList<>();

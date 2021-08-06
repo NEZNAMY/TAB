@@ -34,6 +34,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	//registered bossbars
 	private Map<String, BossBar> lines = new HashMap<>();
+	private BossBar[] lineValues;
 
 	//toggle command
 	private String toggleCommand;
@@ -90,6 +91,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				}
 			}
 		}
+		lineValues = lines.values().toArray(new BossBar[0]);
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
 		if (rememberToggleChoice) {
 			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerData("bossbar-off");
@@ -146,7 +148,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || !hasBossBarVisible(p) || disabledPlayers.contains(p)) continue;
-				for (BossBar line : lines.values()) {
+				for (BossBar line : lineValues) {
 					if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
 						line.removePlayer(p);
 					}
@@ -160,7 +162,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	@Override
 	public void unload() {
-		for (BossBar line : lines.values()) {
+		for (BossBar line : lineValues) {
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				line.removePlayer(p);
 			}
@@ -183,7 +185,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		} else {
 			disabledPlayers.remove(p);
 		}
-		for (BossBar line : lines.values()) {
+		for (BossBar line : lineValues) {
 			line.removePlayer(p);
 		}
 		detectBossBarsAndSend(p);
@@ -229,7 +231,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
 		visiblePlayers.remove(disconnectedPlayer);
-		for (BossBar line : lines.values()) {
+		for (BossBar line : lineValues) {
 			line.removePlayer(disconnectedPlayer);
 		}
 	}
@@ -243,6 +245,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	public BossBar createBossBar(String name, String title, String progress, String color, String style) {
 		BossBar bar = new BossBarLine(this, name, null, color, style, title, progress);
 		lines.put(bar.getName(), bar);
+		lineValues = lines.values().toArray(new BossBar[0]);
 		return bar;
 	}
 
@@ -253,7 +256,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	@Override
 	public BossBar getBossBar(UUID id) {
-		for (BossBar line : lines.values()) {
+		for (BossBar line : lineValues) {
 			if (line.getUniqueId() == id) return line;
 		}
 		return null;
@@ -287,7 +290,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			}
 		} else {
 			visiblePlayers.remove(player);
-			lines.values().forEach(l -> l.removePlayer(player));
+			for (BossBar l : lineValues) {
+				l.removePlayer(player);
+			}
 			if (sendToggleMessage) player.sendMessage(toggleOffMessage, true);
 			if (rememberToggleChoice && !bossbarOffPlayers.contains(player.getName())) {
 				bossbarOffPlayers.add(player.getName());
