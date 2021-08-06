@@ -125,10 +125,12 @@ public class Layout extends TabFeature {
 
 	@Override
 	public void load() {
-		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			onJoin(p);
+		}
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, UsageType.REPEATING_TASK, () -> {
 			
-			List<TabPlayer> players = sortPlayers(TAB.getInstance().getOnlinePlayers());
+			List<TabPlayer> players = sortPlayers(Arrays.asList(TAB.getInstance().getOnlinePlayers()));
 			for (ParentGroup parent : parentGroups) {
 				parent.tick(players);
 			}

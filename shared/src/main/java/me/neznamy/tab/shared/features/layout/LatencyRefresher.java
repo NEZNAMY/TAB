@@ -22,7 +22,9 @@ public class LatencyRefresher extends TabFeature {
 	
 	@Override
 	public void load() {
-		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			onJoin(p);
+		}
 	}
 	
 	@Override
@@ -44,7 +46,9 @@ public class LatencyRefresher extends TabFeature {
 		for (ParentGroup group : layout.getGroups()) {
 			if (group.getPlayers().get(p) != null) {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
-				TAB.getInstance().getOnlinePlayers().forEach(all -> all.sendCustomPacket(packet, layout));
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+					all.sendCustomPacket(packet, layout);
+				}
 			}
 		}
 	}

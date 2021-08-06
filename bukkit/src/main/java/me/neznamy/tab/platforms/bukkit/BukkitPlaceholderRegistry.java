@@ -7,7 +7,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -129,17 +128,29 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%online%", 2000) {
 			public Object get(TabPlayer p) {
-				return TAB.getInstance().getOnlinePlayers().stream().filter(all -> ((Player) p.getPlayer()).canSee((Player) all.getPlayer())).collect(Collectors.toList()).size();
+				int count = 0;
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+					if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				}
+				return count;
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%staffonline%", 2000) {
 			public Object get(TabPlayer p) {
-				return TAB.getInstance().getOnlinePlayers().stream().filter(all -> all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())).collect(Collectors.toList()).size();
+				int count = 0;
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+					if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				}
+				return count;
 			}
 		});
 		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%nonstaffonline%", 2000) {
 			public Object get(TabPlayer p) {
-				return TAB.getInstance().getOnlinePlayers().stream().filter(all -> !all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())).collect(Collectors.toList()).size();
+				int count = 0;
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+					if (!all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				}
+				return count;
 			}
 		});
 	}

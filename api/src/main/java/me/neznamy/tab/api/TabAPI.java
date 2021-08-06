@@ -1,6 +1,5 @@
 package me.neznamy.tab.api;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BossBarManager;
@@ -41,7 +40,7 @@ public abstract class TabAPI {
 	 * Returns collection of all online players. Will return empty list if plugin is disabled (due to a broken configuration file for example).
 	 * @return collection of online players
 	 */
-	public abstract Collection<TabPlayer> getOnlinePlayers();
+	public abstract TabPlayer[] getOnlinePlayers();
 
 	/**
 	 * Return bossbar manager instance if the feature is enabled. Returns null otherwise.

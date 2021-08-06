@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,6 +49,9 @@ public class TAB extends TabAPI {
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
+	
+	//player array to reduce memory allocation when iterating
+	private TabPlayer[] players = new TabPlayer[0];
 
 	//the command
 	private TabCommand command;
@@ -93,8 +95,8 @@ public class TAB extends TabAPI {
 	}
 
 	@Override
-	public Collection<TabPlayer> getOnlinePlayers(){
-		return data.values();
+	public TabPlayer[] getOnlinePlayers(){
+		return players;
 	}
 
 	/**
@@ -143,7 +145,7 @@ public class TAB extends TabAPI {
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
-			getOnlinePlayers().forEach(p -> ((ITabPlayer)p).markAsLoaded());
+			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded();
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();
@@ -214,10 +216,12 @@ public class TAB extends TabAPI {
 
 	public void addPlayer(TabPlayer player) {
 		data.put(player.getUniqueId(), player);
+		players = data.values().toArray(new TabPlayer[0]);
 	}
 
 	public void removePlayer(TabPlayer player) {
 		data.remove(player.getUniqueId());
+		players = data.values().toArray(new TabPlayer[0]);
 	}
 
 	public static TAB getInstance() {

@@ -53,7 +53,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	
 	private void refresh() {
 		int loopTime = atomic.addAndGet(50);
-		int size = TAB.getInstance().getOnlinePlayers().size();
+		int size = TAB.getInstance().getOnlinePlayers().length;
 		Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
 		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
 		boolean somethingChanged = false;
@@ -166,7 +166,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 				((ServerPlaceholder)pl).update();
 			}
 		}
-		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			onJoin(p);
+		}
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, this::refresh);
 	}
 

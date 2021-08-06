@@ -22,7 +22,9 @@ public class HeaderFooter extends TabFeature {
 	
 	@Override
 	public void load() {
-		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			onJoin(p);
+		}
 	}
 	
 	@Override

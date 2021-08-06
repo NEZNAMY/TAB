@@ -36,7 +36,9 @@ public class FixedSlot extends TabFeature {
 
 	@Override
 	public void load() {
-		TAB.getInstance().getOnlinePlayers().forEach(this::onJoin);
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			onJoin(p);
+		}
 	}
 
 	@Override
@@ -52,6 +54,9 @@ public class FixedSlot extends TabFeature {
 
 	@Override
 	public void unload() {
-		TAB.getInstance().getOnlinePlayers().forEach(p -> p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id)), this));
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id));
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			p.sendCustomPacket(packet, this);
+		}
 	}
 }
