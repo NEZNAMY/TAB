@@ -1,7 +1,5 @@
 package me.neznamy.tab.api.placeholder;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +12,8 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public abstract class Placeholder {
 
+	private static final String[] EMPTY_ARRAY = new String[0];
+	
 	//refresh interval of the placeholder
 	private int refresh;
 	
@@ -86,9 +86,9 @@ public abstract class Placeholder {
 		}
 	}
 	
-	public Collection<String> getNestedPlaceholders(String output) {
-		if (!output.contains("%")) return Collections.emptyList();
-		return TabAPI.getInstance().getPlaceholderManager().detectPlaceholders(output);
+	public String[] getNestedPlaceholders(String output) {
+		if (!output.contains("%")) return EMPTY_ARRAY;
+		return TabAPI.getInstance().getPlaceholderManager().detectPlaceholders(output).toArray(EMPTY_ARRAY);
 	}
 	
 	private String replace(String string, String original, String replacement) {

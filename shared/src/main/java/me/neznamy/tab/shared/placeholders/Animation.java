@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +22,7 @@ public class Animation {
 	private int interval;
 	
 	//all nested placeholders used in animation frames
-	private Set<String> nestedPlaceholders = new HashSet<>();
+	private String[] nestedPlaceholders;
 	
 	/**
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when
@@ -36,11 +35,13 @@ public class Animation {
 		this.name = name;
 		this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);
 		this.messages = TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
+		Set<String> nestedPlaceholders0 = new HashSet<>();
 		for (int i=0; i<messages.length; i++) {
 			messages[i] = EnumChatFormat.color(messages[i]);
-			nestedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(messages[i]));
+			nestedPlaceholders0.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(messages[i]));
 		}
-		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(nestedPlaceholders);
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(nestedPlaceholders0);
+		nestedPlaceholders = nestedPlaceholders0.toArray(new String[0]);
 	}
 	
 	/**
@@ -79,7 +80,7 @@ public class Animation {
 	 * Returns array of all placeholders used in all frames
 	 * @return array of all placeholders used in all frames
 	 */
-	public Collection<String> getNestedPlaceholders() {
+	public String[] getNestedPlaceholders() {
 		return nestedPlaceholders;
 	}
 }
