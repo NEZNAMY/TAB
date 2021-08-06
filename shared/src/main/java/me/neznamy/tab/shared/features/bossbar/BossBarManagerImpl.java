@@ -64,7 +64,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	 * @param tab - tab instance
 	 */
 	public BossBarManagerImpl() {
-		super("Bossbar", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
+		super("BossBar", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-worlds"));
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
 		defaultBars = TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.default-bars", new ArrayList<>());
