@@ -109,10 +109,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
-		Set<BarFlag> flags = new HashSet<>();
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			Set<BarFlag> flags = new HashSet<>();
 			if (packet.isCreateWorldFog()) flags.add(BarFlag.CREATE_FOG);
 			if (packet.isDarkenScreen()) flags.add(BarFlag.DARKEN_SKY);
 			if (packet.isPlayMusic()) flags.add(BarFlag.PLAY_BOSS_MUSIC);
