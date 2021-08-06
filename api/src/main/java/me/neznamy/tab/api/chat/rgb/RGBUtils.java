@@ -84,6 +84,7 @@ public class RGBUtils {
 	}
 	
 	public String convertToBukkitFormat(String text, boolean rgbClient) {
+		if (!text.contains("#")) return text; //no rgb codes
 		if (rgbClient) {
 			//converting random formats to TAB one
 			String replaced = applyFormats(text, false);
