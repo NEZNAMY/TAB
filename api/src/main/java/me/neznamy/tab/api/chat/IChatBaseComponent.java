@@ -46,7 +46,7 @@ public class IChatBaseComponent {
 		this.text = component.text;
 		this.modifier = new ChatModifier(component.modifier);
 		for (IChatBaseComponent child : component.getExtra()) {
-			addExtra(child);
+			addExtra(new IChatBaseComponent(child));
 		}
 	}
 
