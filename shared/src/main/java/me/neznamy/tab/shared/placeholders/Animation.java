@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -37,6 +38,7 @@ public class Animation {
 		this.messages = TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
 		Set<String> nestedPlaceholders0 = new HashSet<>();
 		for (int i=0; i<messages.length; i++) {
+			messages[i] = RGBUtils.getInstance().applyFormats(messages[i], true);
 			messages[i] = EnumChatFormat.color(messages[i]);
 			nestedPlaceholders0.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(messages[i]));
 		}
