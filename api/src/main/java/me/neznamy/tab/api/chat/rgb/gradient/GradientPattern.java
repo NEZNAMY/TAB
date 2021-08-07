@@ -32,6 +32,7 @@ public abstract class GradientPattern {
 			int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
 			int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
 			int blue = (int) (start.getBlue() + (float)(end.getBlue() - start.getBlue())/(length-1)*i);
+			sb.append("#");
 			sb.append(new TextColor(red, green, blue).getHexCode());
 			if (start.isLegacyColorForced()) sb.append("|" + start.getLegacyColor().getCharacter());
 			sb.append(magicCodes + decolorized.charAt(i));

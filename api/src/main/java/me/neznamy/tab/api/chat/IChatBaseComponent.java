@@ -19,11 +19,10 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
-	//empty translatable
+	//constants
 	private static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
-
-	//empty text
 	private static final String EMPTY_TEXT = "{\"text\":\"\"}";
+	private static final List<IChatBaseComponent> EMPTY_LIST = new ArrayList<>(0);
 
 	//component text
 	private String text;
@@ -64,7 +63,7 @@ public class IChatBaseComponent {
 	 * @return list of extras
 	 */
 	public List<IChatBaseComponent> getExtra(){
-		if (extra == null) return new ArrayList<>();
+		if (extra == null) return EMPTY_LIST;
 		return extra;
 	}
 
@@ -290,8 +289,8 @@ public class IChatBaseComponent {
 				}
 			} else if (c == '#'){
 				try {
-					String hex = text.substring(i, i+7);
-					Integer.parseInt(hex.substring(1), 16); //validating code, skipping otherwise
+					String hex = text.substring(i+1, i+7);
+					Integer.parseInt(hex, 16); //validating code, skipping otherwise
 					TextColor color;
 					if (containsLegacyCode(text, i)) {
 						color = new TextColor(hex, EnumChatFormat.getByChar(text.charAt(i+8)));
@@ -401,7 +400,7 @@ public class IChatBaseComponent {
 	 */
 	public String toFlatText() {
 		StringBuilder builder = new StringBuilder();
-		if (modifier.getColor() != null) builder.append(modifier.getColor().getHexCode());
+		if (modifier.getColor() != null) builder.append("#" + modifier.getColor().getHexCode());
 		builder.append(modifier.getMagicCodes());
 		if (text != null) builder.append(text);
 		for (IChatBaseComponent child : getExtra()) {

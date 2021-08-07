@@ -7,19 +7,15 @@ public class TextColor {
 
 	private static EnumChatFormat[] legacyColors = EnumChatFormat.values();
 	
-	//red value
-	private Integer red;
-	
-	//green value
-	private Integer green;
-	
-	//blue value
-	private Integer blue;
+	//rgb values, only initializing when they are actually requested
+	private int red = -1;
+	private int green = -1;
+	private int blue = -1;
 	
 	//closest legacy color
 	private EnumChatFormat legacyColor;
 	
-	//hex code as string prefixed with #
+	//6-digit combination of hexadecimal numbers
 	private String hexCode;
 	
 	//true if legacy color was forced via constructor, false if automatically
@@ -100,8 +96,8 @@ public class TextColor {
 	 * @return amount of red
 	 */
 	public int getRed() {
-		if (red == null) {
-			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+		if (red == -1) {
+			int hexColor = Integer.parseInt(hexCode, 16);
 			red = (hexColor >> 16) & 0xFF;
 			green = (hexColor >> 8) & 0xFF;
 			blue = hexColor & 0xFF;
@@ -114,8 +110,8 @@ public class TextColor {
 	 * @return amount of green
 	 */
 	public int getGreen() {
-		if (green == null) {
-			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+		if (green == -1) {
+			int hexColor = Integer.parseInt(hexCode, 16);
 			red = (hexColor >> 16) & 0xFF;
 			green = (hexColor >> 8) & 0xFF;
 			blue = hexColor & 0xFF;
@@ -128,8 +124,8 @@ public class TextColor {
 	 * @return amount of blue
 	 */
 	public int getBlue() {
-		if (blue == null) {
-			int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+		if (blue == -1) {
+			int hexColor = Integer.parseInt(hexCode, 16);
 			red = (hexColor >> 16) & 0xFF;
 			green = (hexColor >> 8) & 0xFF;
 			blue = hexColor & 0xFF;
@@ -154,7 +150,7 @@ public class TextColor {
 	 */
 	public String getHexCode() {
 		if (hexCode == null) {
-			hexCode = String.format("#%06X", (red << 16) + (green << 8) + blue);
+			hexCode = String.format("%06X", (red << 16) + (green << 8) + blue);
 		}
 		return hexCode;
 	}
@@ -170,7 +166,7 @@ public class TextColor {
 				//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
 				return legacyEquivalent.toString().toLowerCase();
 			}
-			return getHexCode();
+			return "#" + getHexCode();
 		} else {
 			return getLegacyColor().toString().toLowerCase();
 		}

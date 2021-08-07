@@ -44,17 +44,17 @@ public class RGBUtils {
 		//{#RRGGBB>}text{#RRGGBB<}
 		registerGradient(new CommonGradient(Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
 				Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-				"{#", 9, 1, 10, 9));
+				"{#", 9, 2, 10, 8));
 		
 		//<#RRGGBB>Text</#RRGGBB>
 		registerGradient(new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>"), 
 				Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>"), 
-				"<#", 9, 1, 9, 8));
+				"<#", 9, 2, 9, 7));
 		
 		//<$#RRGGBB>Text<$#RRGGBB>
 		registerGradient(new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>"), 
 				Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>"), 
-				"<$", 10, 2, 10, 8));
+				"<$", 10, 3, 10, 7));
 		
 		registerGradient(new KyoriGradient());
 	}
