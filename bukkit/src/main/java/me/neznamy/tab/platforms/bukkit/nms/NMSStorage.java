@@ -457,8 +457,7 @@ public class NMSStorage {
 		List<Field> list = new ArrayList<>();
 		for (Field field : clazz.getDeclaredFields()) {
 			if (field.getType() == type) {
-				setAccessible(field);
-				list.add(field);
+				list.add(setAccessible(field));
 			}
 		}
 		return list;
@@ -474,8 +473,7 @@ public class NMSStorage {
 	private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
 		for (Field f : clazz.getDeclaredFields()) {
 			if (f.getName().equals(name) || (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name))) {
-				setAccessible(f);
-				return f;
+				return setAccessible(f);
 			}
 		}
 		if (name.equals("ping")){
@@ -487,8 +485,7 @@ public class NMSStorage {
 	private Constructor<?> getConstructor(Class<?> clazz, int parameterCount) throws NoSuchMethodException {
 		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
 			if (c.getParameterCount() == parameterCount) {
-				setAccessible(c);
-				return c;
+				return setAccessible(c);
 			}
 		}
 		throw new NoSuchMethodException("No constructor found in class " + clazz.getName() + " with " + parameterCount + " parameters");
@@ -537,7 +534,8 @@ public class NMSStorage {
 		return dataWatcherRegistry;
 	}
 	
-	public void setAccessible(AccessibleObject o) {
+	public <T extends AccessibleObject> T setAccessible(T o) {
 		o.setAccessible(true);
+		return o;
 	}
 }
