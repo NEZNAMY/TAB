@@ -327,7 +327,7 @@ public class NMSStorage {
 		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
 		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
 		fields.put("IScoreboardCriteria", getFields(getClass("IScoreboardCriteria"), getClass("IScoreboardCriteria")).get(0));
-		methods.put("ScoreboardTeam_getPlayerNameSet", getMethod(getClass("ScoreboardTeam"), new String[]{"getPlayerNameSet", "func_96670_d"}));
+		methods.put("ScoreboardTeam_getPlayerNameSet", getMethod(getClass("ScoreboardTeam"), new String[]{"getPlayerNameSet", "d", "func_96670_d"}));
 		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c"}, int.class));
 		if (minorVersion >= 8) {
 			classes.put("EnumScoreboardHealthDisplay", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
@@ -338,12 +338,7 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 9) {
 			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
-			try {
-				methods.put("ScoreboardTeam_setCollisionRule", getClass("ScoreboardTeam").getMethod("setCollisionRule", getClass("EnumTeamPush")));
-			} catch (NoSuchMethodException e) {
-				//v1_9_R1
-				methods.put("ScoreboardTeam_setCollisionRule", getClass("ScoreboardTeam").getMethod("a", getClass("EnumTeamPush")));
-			}
+			methods.put("ScoreboardTeam_setCollisionRule", getMethod(getClass("ScoreboardTeam"), new String[]{"setCollisionRule", "a"}, getClass("EnumTeamPush")));
 		}
 		if (minorVersion >= 13) {
 			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor(getClass("ScoreboardObjective"), int.class));
@@ -438,12 +433,24 @@ public class NMSStorage {
 	private Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
 		for (String name : names) {
 			try {
-				return clazz.getMethod(name, parameterTypes);
+				return getMethod(clazz, name, parameterTypes);
 			} catch (Exception e) {
 				//not the first method in array
 			}
 		}
-		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " in class " + clazz.getName());
+		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " + Arrays.toString(parameterTypes) + " in class " + clazz.getName());
+	}
+	
+	private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+		for (Method m : clazz.getMethods()) {
+			if (!m.getName().equals(name) || m.getParameterCount() != parameterTypes.length) continue;
+			Class<?>[] types = m.getParameterTypes();
+			for (int i=0; i<types.length; i++) {
+				if (types[i] != parameterTypes[i]) continue;
+			}
+			return m;
+		}
+		throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
 	}
 
 	/**
