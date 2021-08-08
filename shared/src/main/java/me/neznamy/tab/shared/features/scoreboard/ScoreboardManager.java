@@ -81,6 +81,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 	//currently active scoreboard announcement
 	private me.neznamy.tab.api.Scoreboard announcement;
 	
+	//hiding TAB's scoreboard when another plugin sends one
+	private boolean respectOtherPlugins;
+	
 	//config option someone requested
 	private int joinDelay;
 	private List<TabPlayer> joinDelayed = new ArrayList<>();
@@ -103,6 +106,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		hiddenByDefault = tab.getConfiguration().getPremiumConfig().getBoolean("scoreboard.hidden-by-default", false);
 		scoreboardOn = tab.getConfiguration().getPremiumConfig().getString("scoreboard-on", "&2Scorebord enabled");
 		scoreboardOff = tab.getConfiguration().getPremiumConfig().getString("scoreboard-off", "&7Scoreboard disabled");
+		respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
 		if (isRememberToggleChoice()) {
 			sbOffPlayers = Collections.synchronizedSet(new HashSet<>(tab.getConfiguration().getPlayerData("scoreboard-off")));
 		}
@@ -303,7 +307,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public boolean onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		if (packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
+		if (respectOtherPlugins && packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			tab.debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			((ITabPlayer)receiver).setOtherPluginScoreboard(packet.getObjectiveName());
 			if (receiver.getActiveScoreboard() != null) {
@@ -315,7 +319,7 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 
 	@Override
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
-		if (packet.getMethod() == 1 && ((ITabPlayer)receiver).getOtherPluginScoreboard() != null && ((ITabPlayer)receiver).getOtherPluginScoreboard().equals(packet.getObjectiveName())) {
+		if (respectOtherPlugins && packet.getMethod() == 1 && ((ITabPlayer)receiver).getOtherPluginScoreboard() != null && ((ITabPlayer)receiver).getOtherPluginScoreboard().equals(packet.getObjectiveName())) {
 			tab.debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			((ITabPlayer)receiver).setOtherPluginScoreboard(null);
 			tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sendHighestScoreboard(receiver));

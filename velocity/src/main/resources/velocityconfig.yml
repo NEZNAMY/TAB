@@ -1,0 +1,143 @@
+# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
+
+#taking permission nodes and groups from backend servers
+use-bukkit-permissions-manager: false
+
+#prefix/suffix in tablist
+change-tablist-prefix-suffix: true
+
+#header/footer
+enable-header-footer: true
+
+global-playerlist:
+  enabled: false
+  display-others-as-spectators: false
+  display-vanished-players-as-spectators: true
+  isolate-unlisted-servers: false
+  spy-servers:
+    - spyserver1
+    - spyserver2
+  server-groups:
+    lobbies:
+      - lobby1
+      - lobby2
+    group2:
+      - server1
+      - server2
+
+header:
+  - "&3&lServer name"
+  - "&6&lRank: %rank%"
+  - "&7&l>> %animation:Welcome%&3 &l%player%&7&l! &7&l<<"
+  - "&7Online players: &f%online%"
+  - "&6Online staff: &e%staffonline%"
+  - ""
+  - "&7&l Used memory: %memory-used% MB / %memory-max% MB"
+  - "%animation:MyAnimation1%"
+footer:
+  - "%animation:MyAnimation1%"
+  - "%animation:time%"
+  - ""
+  - "&7Visit our webpage %animation:web%"
+
+Groups:
+  Owner:
+    tabprefix: "&0&l[&a&lOwner&0&l] &a"
+  Admin:
+    tabprefix: "&0&l[&4&lAdmin&0&l] &1"
+  Player:
+    tabprefix: "&0&l[&7&lPlayer&0&l] &3"
+  example_group:
+    header:
+      - "This is an example of per-group header/footer"
+    footer:
+      - "applied to a group"
+      
+    #default settings for all groups, all groups will take properties from this section unless player's primary group overrides a specific setting
+  _OTHER_:
+    tabprefix: "%rank% "
+
+Users:
+  _NEZNAMY_:
+    tabprefix: "&6&lTAB Author &a"
+
+per-server-settings:
+  server1:
+    header:
+      - "an example of world with custom"
+    footer:
+      - "header/footer and prefix/suffix"
+    Groups:
+      Owner:
+        tabprefix: "&0&l[&a&lOwner&0&l] &a"
+  server2-server3:
+    header:
+      - "This is a shared header for"
+      - "server2 and server3"
+placeholders:
+  #%date%
+  date-format: "dd.MM.yyyy"
+  
+  #%time%
+  time-format: "[HH:mm:ss / h:mm a]"
+  
+  #in hours, in case of wrong timezone
+  time-offset: 0
+  
+  #don't forget color codes
+  remove-strings:
+    - "[]"
+    - "< >"
+
+#aliases for %server%
+server-aliases:
+  hub: "&eHub"
+  survival: "&bSurvival"
+  plot: "&cPlot"
+
+#aliases for %rank%, this is not the place where group prefix is defined!
+rank-aliases:
+  Admin: "&4&lADMIN"
+  Mod: "&b&lMOD"
+  Premium: "&6&lPREMIUM"
+  Ultra: "&b&lULTRA"
+  Legend: "&a&lLEGEND"
+  Titan: "&c&lTITAN"
+  Youtuber: "&c&lYOUTUBE"
+  _OTHER_: "&7No Rank"
+  
+disable-features-in-servers:
+  header-footer:
+    - disabledserver
+  tablist-names:
+    - disabledserver
+  bossbar:
+    - disabledserver
+
+placeholderapi-refresh-intervals:
+  default-refresh-interval: 500
+  server:
+    "%server_uptime%": 1000
+    "%server_tps_1_colored%": 1000
+  player:
+    "%player_health%": 200
+    "%player_ping%": 1000
+    "%vault_prefix%": 1000
+  relational:
+    "%rel_factionsuuid_relation_color%": 500
+
+#taking primary group from permission plugin
+use-primary-group: true
+
+#if the option above is false, all groups are taken from permission plugin and the one higher in this list is used as primary
+primary-group-finding-list:
+  - Owner
+  - Admin
+  - Helper
+  - default
+  
+#if none of the above fits your needs, you can enable this to give groups using tab.group.<group name from the list above> permission
+assign-groups-by-permissions: false
+  
+#unlocks extra console messages
+debug: false

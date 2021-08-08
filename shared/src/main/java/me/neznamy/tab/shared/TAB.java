@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
@@ -282,4 +280,5 @@ public class TAB {
 	public ProtocolVersion getServerVersion() {
 		return serverVersion;
 	}
+
 }

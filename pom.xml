@@ -11,7 +11,7 @@
 		<module>shared</module>
 		<module>bukkit</module>
 		<module>bungeecord</module>
-		<module>velocity-1.1.0</module>
+		<module>velocity</module>
 		<module>jar</module>
 	</modules>
 	<properties>
