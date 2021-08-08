@@ -57,7 +57,6 @@ public class GroupRefresher extends TabFeature {
 				return String.valueOf(group);
 			}
 		}
-		TAB.getInstance().getErrorManager().oneTimeConsoleError("Player " + p.getName() + " does not have any group permission while assign-groups-by-permissions is enabled! Did you forget to add his group to primary-group-finding-list?");
 		return DEFAULT_GROUP;
 	}
 
