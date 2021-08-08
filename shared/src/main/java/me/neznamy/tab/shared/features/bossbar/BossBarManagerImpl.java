@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,10 +26,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	//default bossbars
 	private List<String> defaultBars;
-
-	//per-world / per-server bossbars
-	private Map<String, List<String>> perWorld;
-	private Map<String, List<String>> perServer;
 
 	//registered bossbars
 	private Map<String, BossBar> lines = new HashMap<>();
@@ -69,8 +64,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
 		defaultBars = TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.default-bars", new ArrayList<>());
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
-		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-world");
-		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.per-server");
 		toggleOnMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on");
 		toggleOffMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off");
 		for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
@@ -80,15 +73,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			if (lines.get(bar) == null) {
 				TAB.getInstance().getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
 				defaultBars.remove(bar);
-			}
-		}
-		for (Entry<String, List<String>> entry : perWorld.entrySet()) {
-			List<String> bars = entry.getValue();
-			for (String bar : new ArrayList<>(bars)) {
-				if (lines.get(bar) == null) {
-					TAB.getInstance().getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as per-world bar in world &e" + entry.getKey() + "&c, but does not exist! &bIgnoring.");
-					bars.remove(bar);
-				}
 			}
 		}
 		lineValues = lines.values().toArray(new BossBar[0]);
@@ -104,8 +88,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				return (announceEndTime - System.currentTimeMillis()) / 1000;
 			}
 		});
-		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, perWorld=%s, remember_toggle_choice=%s",
-				disabledWorlds, toggleCommand, defaultBars, hiddenByDefault, perWorld, rememberToggleChoice));
+		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
+				disabledWorlds, toggleCommand, defaultBars, hiddenByDefault, rememberToggleChoice));
 	}
 	
 	/**
@@ -154,8 +138,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 					}
 				}
 				showBossBars(p, defaultBars);
-				showBossBars(p, perWorld.get(p.getWorld()));
-				showBossBars(p, perServer.get(p.getServer()));
 			}
 		});
 	}
@@ -208,8 +190,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (disabledPlayers.contains(p) || !hasBossBarVisible(p)) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, announcements.stream().map(BossBar::getName).collect(Collectors.toList()));
-		showBossBars(p, perWorld.get(p.getWorld()));
-		showBossBars(p, perServer.get(p.getServer()));
 	}
 
 	/**

@@ -105,9 +105,6 @@ bossbar:
     - disabledworld
   disable-in-servers:
     - disabledserver
-  per-world:
-    testworld: 
-      - "test"
   bars:
     ServerInfo:
       style: "PROGRESS" # for 1.9+: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
