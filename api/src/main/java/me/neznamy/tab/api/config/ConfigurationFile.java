@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.api.TabAPI;
-
 /**
  * Abstract class for configuration file
  */
@@ -167,7 +165,6 @@ public abstract class ConfigurationFile {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
 		if (!(value instanceof List)) {
-			dataMismatch(path, ArrayList.class, value.getClass());
 			return new ArrayList<>();
 		}
 		List<String> fixedList = new ArrayList<>();
@@ -208,7 +205,6 @@ public abstract class ConfigurationFile {
 		try{
 			return Integer.parseInt(value.toString());
 		} catch (Exception e) {
-			dataMismatch(path, Integer.class, value.getClass());
 			return defaultValue;
 		}
 	}
@@ -226,7 +222,6 @@ public abstract class ConfigurationFile {
 		try {
 			return Boolean.parseBoolean(value.toString());
 		} catch (Exception e) {
-			dataMismatch(path, Boolean.class, value.getClass());
 			return defaultValue;
 		}
 	}
@@ -244,7 +239,6 @@ public abstract class ConfigurationFile {
 		try{
 			return Double.parseDouble(value.toString());
 		} catch (Exception e) {
-			dataMismatch(path, Double.class, value.getClass());
 			return defaultValue;
 		}
 	}
@@ -261,21 +255,10 @@ public abstract class ConfigurationFile {
 		if (value instanceof Map) {
 			return (Map<K, V>) value;
 		} else {
-			dataMismatch(path, Map.class, value.getClass());
 			return new LinkedHashMap<>();
 		}
 	}
-	
-	/**
-	 * Prints a warning message about data type mismatch
-	 * @param path - path to the variable
-	 * @param expected - expected class type
-	 * @param found - found class type
-	 */
-	private void dataMismatch(String path, Class<?> expected, Class<?> found) {
-		TabAPI.getInstance().getErrorManager().startupWarn("Data mismatch in &e" + file.getName() + "&c. Value of &e" + path + "&c is expected to be &e" + expected.getSimpleName() + "&c, but is &e" + found.getSimpleName() + "&c. This is a misconfiguration issue.");
-	}
-	
+
 	/**
 	 * Sets value to the specified path and saves to disk
 	 * @param path - path to save to
@@ -323,37 +306,35 @@ public abstract class ConfigurationFile {
 		}
 		return key;
 	}
-	
-	private List<String> detectHeader(){
+
+	/**
+	 * Detects header of a file (first lines of file starting with #)
+	 * @return list of comment lines on top
+	 * @throws IOException when I/O operation fails
+	 */
+	private List<String> detectHeader() throws IOException {
 		header = new ArrayList<>();
-		try {
-			for (String line : Files.readAllLines(file.toPath())) {
-				if (line.startsWith("#")) {
-					header.add(line);
-				} else {
-					break;
-				}
+		for (String line : Files.readAllLines(file.toPath())) {
+			if (line.startsWith("#")) {
+				header.add(line);
+			} else {
+				break;
 			}
-		} catch (IOException e) {
-			TabAPI.getInstance().getErrorManager().criticalError("Failed to read file " + file, e);
 		}
 		return header;
 	}
 
 	/**
 	 * Inserts header into file
+	 * @throws IOException when I/O operation fails
 	 */
-	public void fixHeader() {
+	public void fixHeader() throws IOException {
 		if (header == null) return;
-		try {
-			List<String> content = new ArrayList<>(header);
-			content.addAll(Files.readAllLines(file.toPath()));
-			Files.delete(file.toPath());
-			if (file.createNewFile()) {
-				Files.write(file.toPath(), content);
-			}
-		} catch (Exception e) {
-			TabAPI.getInstance().getErrorManager().criticalError("Failed to modify file " + file, e);
+		List<String> content = new ArrayList<>(header);
+		content.addAll(Files.readAllLines(file.toPath()));
+		Files.delete(file.toPath());
+		if (file.createNewFile()) {
+			Files.write(file.toPath(), content);
 		}
 	}
 }

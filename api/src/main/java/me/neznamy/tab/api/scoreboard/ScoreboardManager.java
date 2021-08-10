@@ -23,13 +23,6 @@ public interface ScoreboardManager {
 	public Map<String, Scoreboard> getRegisteredScoreboards();
 	
 	/**
-	 * Displays registered scoreboard to defined player and disables all checks until removed again
-	 * @param player - player to send scoreboard to
-	 * @param scoreboard - scoreboard name from config or one registered via API
-	 */
-	public void showScoreboard(TabPlayer player, String scoreboard);
-	
-	/**
 	 *  Displays scoreboard to defined player and disables all checks until removed again
 	 * @param player - player to send scoreboard to
 	 * @param scoreboard - scoreboard to display
@@ -42,11 +35,12 @@ public interface ScoreboardManager {
 	 * @return true if player has custom scoreboard set via API, false if not
 	 */
 	public boolean hasCustomScoreboard(TabPlayer player);
+	
 	/**
 	 * Hides custom scoreboard sent by API and re-enables internal display logic with conditions
 	 * @param player - player to hide custom scoreboard from
 	 */
-	public void hideCustomScoreboard(TabPlayer player);
+	public void resetScoreboard(TabPlayer player);
 	
 	/**
 	 * Returns true if player has scoreboard enabled, false if disabled (toggled)

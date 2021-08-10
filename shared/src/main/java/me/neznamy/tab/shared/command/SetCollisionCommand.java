@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.team.ScoreboardTeamManager;
+import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
 
 public class SetCollisionCommand extends SubCommand {
@@ -15,7 +15,7 @@ public class SetCollisionCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		ScoreboardTeamManager feature = TAB.getInstance().getScoreboardTeamManager();
+		TeamManager feature = TAB.getInstance().getTeamManager();
 		if (feature == null) {
 			sendMessage(sender, "This command requires nametag feature enabled");
 			return;

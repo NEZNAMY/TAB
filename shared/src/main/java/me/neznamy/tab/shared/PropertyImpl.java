@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.Property;
@@ -16,8 +15,8 @@ import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
  */
 public class PropertyImpl implements Property {
 
-	//features using this property to track used placeholders and receive refresh()
-	private List<TabFeature> listeners = new ArrayList<>();
+	//feature using this property to track used placeholders and receive refresh()
+	private TabFeature listener;
 	
 	//owner of the property
 	private TabPlayer owner;
@@ -48,9 +47,7 @@ public class PropertyImpl implements Property {
 	}
 	
 	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue, String source) {
-		if (listener != null) {
-			listeners.add(listener);
-		}
+		this.listener = listener;
 		this.owner = owner;
 		this.source = source;
 		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
@@ -88,19 +85,12 @@ public class PropertyImpl implements Property {
 		relPlaceholders = relPlaceholders0.toArray(new String[0]);
 		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
 		rawFormattedValue = applyRemoveStrings(rawFormattedValue0); //this should never be needed
-		for (TabFeature listener : listeners) {
+		if (listener != null) {
 			listener.addUsedPlaceholders(placeholders0);
 			listener.addUsedPlaceholders(relPlaceholders0);
 		}
 	}
-	
-	@Override
-	public void addListener(TabFeature listener) {
-		listeners.add(listener);
-		listener.addUsedPlaceholders(Arrays.asList(placeholders));
-		listener.addUsedPlaceholders(Arrays.asList(relPlaceholders));
-	}
-	
+
 	@Override
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {

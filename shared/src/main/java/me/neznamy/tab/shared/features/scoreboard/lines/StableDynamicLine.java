@@ -11,13 +11,12 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 /**
  * Line of text with placeholder support
  * Limitations:
- *   1.5.x - 1.12.x: 28 - 32 characters (depending on implementation)
+ *   1.5.x - 1.12.x: 28 - 32 characters (depending on used magic codes)
+ *   1.13+: unlimited
  */
-public abstract class StableDynamicLine extends ScoreboardLine {
+public class StableDynamicLine extends ScoreboardLine {
 	
 	private static final String[] EMPTY_ARRAY = new String[0];
-	//text to display
-	protected String text;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -25,7 +24,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 	 * @param lineNumber - ID of this line
 	 * @param text - text to display
 	 */
-	protected StableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
+	public StableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber);
 		this.text = text;
 	}
@@ -43,13 +42,13 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		p.setProperty(this, teamName, text);
 		String[] prefixsuffix = replaceText(p, true, true);
 		if (prefixsuffix.length == 0) return;
-		addLine(p, teamName, getPlayerName(), prefixsuffix[0], prefixsuffix[1], getScoreFor(p));
+		addLine(p, getPlayerName(), prefixsuffix[0], prefixsuffix[1]);
 	}
 
 	@Override
 	public void unregister(TabPlayer p) {
 		if (parent.getPlayers().contains(p) && p.getProperty(teamName).get().length() > 0) {
-			removeLine(p, getPlayerName(), teamName);
+			removeLine(p, getPlayerName());
 		}
 	}
 
@@ -73,7 +72,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		if (replaced.length() > 0) {
 			if (emptyBefore) {
 				//was "", now it is not
-				addLine(p, teamName, getPlayerName(), split[0], split[1], getScoreFor(p));
+				addLine(p, getPlayerName(), split[0], split[1]);
 				return EMPTY_ARRAY;
 			} else {
 				return split;
@@ -81,7 +80,7 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		} else {
 			if (!suppressToggle) {
 				//new string is "", but before it was not
-				removeLine(p, getPlayerName(), teamName);
+				removeLine(p, getPlayerName());
 			}
 			return EMPTY_ARRAY;
 		}
@@ -119,10 +118,12 @@ public abstract class StableDynamicLine extends ScoreboardLine {
 		}
 	}
 
-	/**
-	 * Returns number that should be displayed on the right for specified player
-	 * @param p - player to get number for
-	 * @return number displayed
-	 */
-	public abstract int getScoreFor(TabPlayer p);
+	@Override
+	public void setText(String text) {
+		this.text = text;
+		for (TabPlayer p : parent.getPlayers()) {
+			p.setProperty(this, teamName, text);
+			refresh(p, true);
+		}
+	}
 }

@@ -77,8 +77,8 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&atabsuffix: &cDisabled");
 			sendMessage(sender, "&atabname: &cDisabled");
 		}
-		if (tab.getScoreboardTeamManager() != null) {
-			boolean disabledNametags = ((TabFeature) tab.getScoreboardTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
+		if (tab.getTeamManager() != null) {
+			boolean disabledNametags = ((TabFeature) tab.getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, PropertyUtils.TAGPREFIX, disabledNametags);
 			showProperty(sender, analyzed, PropertyUtils.TAGSUFFIX, disabledNametags);
 			for (Object line : getExtraLines()) {
@@ -109,7 +109,7 @@ public class DebugCommand extends SubCommand {
 	 * @return sorting type
 	 */
 	private String getSortingType() {
-		NameTag nametag = (NameTag) TAB.getInstance().getScoreboardTeamManager();
+		NameTag nametag = (NameTag) TAB.getInstance().getTeamManager();
 		if (nametag != null) {
 			return nametag.getSorting().typesToString();
 		} else {
@@ -136,8 +136,8 @@ public class DebugCommand extends SubCommand {
 	 * @return team name of specified player
 	 */
 	private String getTeamName(TabPlayer analyzed) {
-		if (TAB.getInstance().getScoreboardTeamManager() != null) {
-			if (((TabFeature) TAB.getInstance().getScoreboardTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
+		if (TAB.getInstance().getTeamManager() != null) {
+			if (((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
 				return "&eTeam name: &cSorting is disabled in player's " + TAB.getInstance().getPlatform().getSeparatorType();
 			} else {
 				return "&eTeam name: &a" + analyzed.getTeamName();
@@ -153,8 +153,8 @@ public class DebugCommand extends SubCommand {
 	 * @return team name note of specified player
 	 */
 	private String getTeamNameNote(TabPlayer analyzed) {
-		if (TAB.getInstance().getScoreboardTeamManager() != null && 
-			!((TabFeature) TAB.getInstance().getScoreboardTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld()) && 
+		if (TAB.getInstance().getTeamManager() != null && 
+			!((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld()) && 
 			analyzed.getTeamNameNote() != null)
 				return "&eTeam name note: &a" + analyzed.getTeamNameNote();
 		return "";

@@ -50,9 +50,9 @@ public class CustomLine extends ScoreboardLine {
 		if (prefixUpdate || nameUpdate || suffixUpdate) {
 			if (nameUpdate) {
 				//name changed as well
-				removeLine(refreshed, oldName, teamName);
-				addLine(refreshed, teamName, refreshed.getProperty(teamName + "-name").get(), 
-						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get(), score);
+				removeLine(refreshed, oldName);
+				addLine(refreshed, refreshed.getProperty(teamName + "-name").get(), 
+						refreshed.getProperty(teamName + "-prefix").get(), refreshed.getProperty(teamName + "-suffix").get());
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(teamName + "-prefix").get(), 
@@ -66,14 +66,28 @@ public class CustomLine extends ScoreboardLine {
 		p.setProperty(this, teamName + "-prefix", prefix);
 		p.setProperty(this, teamName + "-name", name);
 		p.setProperty(this, teamName + "-suffix", suffix);
-		addLine(p, teamName, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
-				p.getProperty(teamName + "-suffix").get(), score);
+		addLine(p, p.getProperty(teamName + "-name").get(), p.getProperty(teamName + "-prefix").get(),
+				p.getProperty(teamName + "-suffix").get());
 	}
 
 	@Override
 	public void unregister(TabPlayer p) {
 		if (parent.getPlayers().contains(p)) {
-			removeLine(p, p.getProperty(teamName + "-name").get(), teamName);
+			removeLine(p, p.getProperty(teamName + "-name").get());
 		}
+	}
+
+	@Override
+	public void setText(String text) {
+		super.text = text;
+		String[] elements = text.split("\\|");
+		prefix = elements[0];
+		name = elements[1];
+		suffix = elements[2];
+	}
+	
+	@Override
+	public int getNumber(TabPlayer p) {
+		return score;
 	}
 }

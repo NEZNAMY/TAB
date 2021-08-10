@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -8,11 +9,13 @@ import java.util.UUID;
 import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.api.FeatureManager;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
@@ -107,7 +110,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
-		Object pack = info.build(receiver.getVersion());
+		Object pack = TAB.getInstance().getPlatform().getPacketBuilder().build(info, receiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(serializing, UsageType.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		return pack;
 	}
@@ -146,6 +149,14 @@ public class FeatureManagerImpl implements FeatureManager {
 		}
 		((ITabPlayer)connectedPlayer).markAsLoaded();
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
+		Scoreboard sb = TabAPI.getInstance().getScoreboardManager().createScoreboard("test", "title", Arrays.asList("line1", "line2", "line3"));
+		TabAPI.getInstance().getScoreboardManager().showScoreboard(connectedPlayer, sb);
+		TAB.getInstance().getCPUManager().runTaskLater(5000, "x", "x", UsageType.PLAYER_JOIN_EVENT, () -> {
+			TabAPI.getInstance().getScoreboardManager().resetScoreboard(connectedPlayer);
+		});
+		TAB.getInstance().getCPUManager().runTaskLater(10000, "x", "x", UsageType.PLAYER_JOIN_EVENT, () -> {
+			TabAPI.getInstance().getScoreboardManager().showScoreboard(connectedPlayer, sb);
+		});
 	}
 
 	/**

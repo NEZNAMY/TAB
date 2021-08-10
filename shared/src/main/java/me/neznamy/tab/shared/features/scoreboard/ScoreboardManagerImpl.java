@@ -334,13 +334,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
-	public void showScoreboard(TabPlayer player, String scoreboard) {
-		Scoreboard sb = scoreboards.get(scoreboard);
-		if (scoreboard == null) throw new IllegalArgumentException("No scoreboard found with name " + scoreboard);
-		showScoreboard(player, sb);
-	}
-
-	@Override
 	public void showScoreboard(TabPlayer player, Scoreboard scoreboard) {
 		if (forcedScoreboard.containsKey(player)) {
 			forcedScoreboard.get(player).removePlayer(player);
@@ -354,8 +347,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
-	public void hideCustomScoreboard(TabPlayer player) {
+	public void resetScoreboard(TabPlayer player) {
 		if (!forcedScoreboard.containsKey(player)) return;
+		forcedScoreboard.get(player).removePlayer(player);
 		Scoreboard sb = scoreboards.get(detectHighestScoreboard(player));
 		if (sb == null) return; //no scoreboard available
 		activeScoreboard.put(player, sb);

@@ -1,9 +1,5 @@
 package me.neznamy.tab.api.protocol;
 
-import java.lang.reflect.InvocationTargetException;
-
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 
 /**
@@ -27,22 +23,6 @@ public class PacketPlayOutChat implements CrossPlatformPacket {
 		this.type = type;
 	}
 
-	/**
-	 * Calls build method of packet builder instance and returns output
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InstantiationException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 */
-	@Override
-	public Object build(ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-		return TabAPI.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
-	}
-	
-	/**
-	 * An override to toString() method for better output
-	 */
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutChat{message=%s,type=%s}", message, type);

@@ -6,15 +6,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.api.PermissionPlugin;
-import me.neznamy.tab.api.Platform;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.api.team.ScoreboardTeamManager;
+import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -34,6 +32,7 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -237,7 +236,6 @@ public class TAB extends TabAPI {
 		return featureManager;
 	}
 
-	@Override
 	public Platform getPlatform() {
 		return platform;
 	}
@@ -304,7 +302,7 @@ public class TAB extends TabAPI {
 	}
 
 	@Override
-	public ScoreboardTeamManager getScoreboardTeamManager() {
+	public TeamManager getTeamManager() {
 		if (featureManager.isFeatureEnabled("nametag16")) return (NameTag) featureManager.getFeature("nametag16");
 		return (NameTag) featureManager.getFeature("nametagx");
 	}
@@ -330,5 +328,10 @@ public class TAB extends TabAPI {
 	@Override
 	public ConfigurationFile getConfig() {
 		return configuration.getConfig();
+	}
+	
+	@Override
+	public void sendConsoleMessage(String message, boolean translateColors) {
+		platform.sendConsoleMessage(message, translateColors);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.UUID;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.api.team.ScoreboardTeamManager;
+import me.neznamy.tab.api.team.TeamManager;
 
 /**
  * The primary API class to get instances of other API classes
@@ -55,10 +55,10 @@ public abstract class TabAPI {
 	public abstract ScoreboardManager getScoreboardManager();
 	
 	/**
-	 * Returns scoreboard team manager instance if the feature is enabled, false otherwise
-	 * @return scoreboard team manager
+	 * Returns team manager instance if the feature is enabled, false otherwise
+	 * @return team manager
 	 */
-	public abstract ScoreboardTeamManager getScoreboardTeamManager();
+	public abstract TeamManager getTeamManager();
 	
 	/**
 	 * Returns PlaceholderManager instance
@@ -71,12 +71,6 @@ public abstract class TabAPI {
 	 * @return ErrorManager instance
 	 */
 	public abstract ErrorManager getErrorManager();
-
-	/**
-	 * Returns platform instance
-	 * @return platform instance
-	 */
-	public abstract Platform getPlatform();
 	
 	/**
 	 * Returns feature manager instance
@@ -88,5 +82,16 @@ public abstract class TabAPI {
 
 	public abstract ConfigurationFile getConfig();
 	
+	/**
+	 * Returns server version. On proxy installation returns PROXY.
+	 * @return server version
+	 */
 	public abstract ProtocolVersion getServerVersion();
+	
+	/**
+	 * Prints message into console
+	 * @param message - message to print
+	 * @param translateColors - true if colors should be translated, false if not
+	 */
+	public abstract void sendConsoleMessage(String message, boolean translateColors);
 }

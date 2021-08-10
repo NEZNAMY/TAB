@@ -6,6 +6,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
@@ -14,10 +15,13 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 /**
  * Abstract class representing a line of scoreboard
  */
-public abstract class ScoreboardLine extends TabFeature {
+public abstract class ScoreboardLine extends TabFeature implements Line {
 
 	//ID of this line
 	protected int lineNumber;
+	
+	//text to display
+	protected String text;
 	
 	//scoreboard this line belongs to
 	protected ScoreboardImpl parent;
@@ -79,7 +83,7 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param lineNumber - ID of line
 	 * @return forced name start
 	 */
-	protected static String getPlayerName(int lineNumber) {
+	protected String getPlayerName(int lineNumber) {
 		String id = String.valueOf(lineNumber);
 		if (id.length() == 1) id = "0" + id;
 		char c = '\u00a7';
@@ -95,9 +99,9 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param suffix - suffix
 	 * @param value - number
 	 */
-	protected void addLine(TabPlayer p, String team, String fakeplayer, String prefix, String suffix, int value) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, value), this);
-		PacketAPI.registerScoreboardTeam(p, team, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, this);
+	protected void addLine(TabPlayer p, String fakeplayer, String prefix, String suffix) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, getNumber(p)), this);
+		PacketAPI.registerScoreboardTeam(p, teamName, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, this);
 	}
 	
 	/**
@@ -106,8 +110,26 @@ public abstract class ScoreboardLine extends TabFeature {
 	 * @param fakeplayer - player name
 	 * @param teamName - team name
 	 */
-	protected void removeLine(TabPlayer p, String fakeplayer, String teamName) {
+	protected void removeLine(TabPlayer p, String fakeplayer) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), this);
 		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), this);
+	}
+	
+	@Override
+	public String getText() {
+		return text;
+	}
+	
+	/**
+	 * Returns number that should be displayed as score for specified player
+	 * @param p - player to get number for
+	 * @return number displayed
+	 */
+	public int getNumber(TabPlayer p) {
+		if (parent.getManager().isUsingNumbers() || p.getVersion().getMinorVersion() < 8) {
+			return parent.getLines().size() + 1 - lineNumber;
+		} else {
+			return parent.getManager().getStaticNumber();
+		}
 	}
 }

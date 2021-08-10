@@ -131,8 +131,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 					continue;
 				}
-				if (!((TabFeature)TAB.getInstance().getScoreboardTeamManager()).getDisabledPlayers().contains(p) && 
-						!TAB.getInstance().getScoreboardTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
+				if (!((TabFeature)TAB.getInstance().getTeamManager()).getDisabledPlayers().contains(p) && 
+						!TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
 					logTeamOverride(teamName, entry);
 				} else {
 					newList.add(entry);

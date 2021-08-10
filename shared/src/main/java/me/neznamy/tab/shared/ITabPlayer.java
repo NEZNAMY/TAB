@@ -97,7 +97,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
 		pr.setTemporaryValue(value);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty((TabFeature) TAB.getInstance().getScoreboardTeamManager(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
+			setProperty((TabFeature) TAB.getInstance().getTeamManager(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
 		}
 		forceRefresh();
 	}
@@ -159,7 +159,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void sendCustomPacket(CrossPlatformPacket packet, TabFeature feature) {
 		try {
-			sendPacket(packet.build(getVersion()), feature);
+			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()), feature);
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
 		}

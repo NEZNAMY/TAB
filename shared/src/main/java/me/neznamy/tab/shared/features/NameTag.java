@@ -10,7 +10,7 @@ import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.api.team.ScoreboardTeamManager;
+import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
-public class NameTag extends TabFeature implements ScoreboardTeamManager {
+public class NameTag extends TabFeature implements TeamManager {
 
 	private boolean collisionRule;
 	private boolean invisibleNametags;

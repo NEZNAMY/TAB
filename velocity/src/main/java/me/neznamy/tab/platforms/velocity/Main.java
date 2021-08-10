@@ -57,7 +57,7 @@ public class Main {
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
 		}
 		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
-		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.values()[1]));
+		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.PROXY));
 		server.getEventManager().register(this, new VelocityEventListener(plm));
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);

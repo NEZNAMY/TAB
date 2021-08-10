@@ -2,7 +2,7 @@ package me.neznamy.tab.api.team;
 
 import me.neznamy.tab.api.TabPlayer;
 
-public interface ScoreboardTeamManager {
+public interface TeamManager {
 
 	/**
 	 * Makes player's nametag globally invisible

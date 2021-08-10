@@ -32,4 +32,16 @@ public interface Scoreboard {
 	 * @return name of this scoreboard
 	 */
 	public String getName();
+	
+	/**
+	 * Returns scoreboard title
+	 * @return scoreboard title
+	 */
+	public String getTitle();
+	
+	/**
+	 * Sets title to provided value. Supports RGB codes using any of the supported formats.
+	 * @param title - title to use
+	 */
+	public void setTitle(String title);
 }

@@ -1,9 +1,5 @@
 package me.neznamy.tab.api.protocol;
 
-import java.lang.reflect.InvocationTargetException;
-
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 
 /**
@@ -35,17 +31,6 @@ public class PacketPlayOutPlayerListHeaderFooter implements CrossPlatformPacket 
 	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
 		this.header = header;
 		this.footer = footer;
-	}
-
-	/**
-	 * Calls build method of packet builder instance and returns output
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	@Override
-	public Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		return TabAPI.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
 	}
 
 	@Override

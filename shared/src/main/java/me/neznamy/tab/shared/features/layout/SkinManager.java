@@ -2,7 +2,9 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
@@ -25,20 +28,23 @@ public class SkinManager {
 	private Map<Integer, List<String>> mineskin;
 	private Set<String> invalidSkins = new HashSet<>();
 	private Object defaultSkin;
-	
+
 	public SkinManager(String defaultSkin) {
 		try {
 			File f = new File(TAB.getInstance().getPlatform().getDataFolder(), "skincache.yml");
-			if (!f.exists()) f.createNewFile();
-			cache = new YamlConfigurationFile(null, f);
-			players = cache.getConfigurationSection("players");
-			mineskin = cache.getConfigurationSection("mineskin");
-			this.defaultSkin = getSkin(defaultSkin);
+			if (f.exists() || f.createNewFile()) {
+				cache = new YamlConfigurationFile(null, f);
+				players = cache.getConfigurationSection("players");
+				mineskin = cache.getConfigurationSection("mineskin");
+				this.defaultSkin = getSkin(defaultSkin);
+			} else {
+				TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
+			}
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", e);
 		}
 	}
-	
+
 	public Object getSkin(String skin) {
 		if (invalidSkins.contains(skin)) return defaultSkin;
 		if (skin.startsWith("player:")) {
@@ -72,12 +78,10 @@ public class SkinManager {
 		TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
 		return null;
 	}
-	
+
 	private List<String> downloadPlayer(String name) {
 		try {
-			URL url = new URL("https://api.ashcon.app/mojang/v2/user/" + name);
-			InputStreamReader reader = new InputStreamReader(url.openStream());
-			JSONObject json = (JSONObject) new JSONParser().parse(reader);
+			JSONObject json = getResponse("https://api.ashcon.app/mojang/v2/user/" + name);
 			JSONObject textures = (JSONObject) json.get("textures");
 			JSONObject raw = (JSONObject) textures.get("raw");
 			String value = (String) raw.get("value");
@@ -91,26 +95,30 @@ public class SkinManager {
 			return new ArrayList<>();
 		}
 	}
-	
+
 	public List<String> downloadMineskin(int id) {
-        try {
-            URL url = new URL("https://api.mineskin.org/get/id/" + id);
-            InputStreamReader reader = new InputStreamReader(url.openStream());
-            JSONObject json = (JSONObject) new JSONParser().parse(reader);
-            JSONObject data = (JSONObject) json.get("data");
+		try {
+			JSONObject json = getResponse("https://api.mineskin.org/get/id/" + id);
+			JSONObject data = (JSONObject) json.get("data");
 			JSONObject texture = (JSONObject) data.get("texture");
 			String value = (String) texture.get("value");
 			String signature = (String) texture.get("signature");
 			return Arrays.asList(value, signature);
-        } catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by id: No skin with the id '" + id + "' was found");
 			return new ArrayList<>();
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by id: " + e.getMessage(), e);
 			return new ArrayList<>();
 		}
-    }
-	
+	}
+
+	private JSONObject getResponse(String url) throws MalformedURLException, IOException, ParseException {
+		try (InputStreamReader reader = new InputStreamReader(new URL(url).openStream())){
+			return (JSONObject) new JSONParser().parse(reader);
+		}
+	}
+
 	public Object getDefaultSkin() {
 		return defaultSkin;
 	}

@@ -442,11 +442,12 @@ public class NMSStorage {
 	}
 	
 	private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+		main:
 		for (Method m : clazz.getMethods()) {
 			if (!m.getName().equals(name) || m.getParameterCount() != parameterTypes.length) continue;
 			Class<?>[] types = m.getParameterTypes();
 			for (int i=0; i<types.length; i++) {
-				if (types[i] != parameterTypes[i]) continue;
+				if (types[i] != parameterTypes[i]) continue main;
 			}
 			return m;
 		}

@@ -1,10 +1,5 @@
 package me.neznamy.tab.api.protocol;
 
-import java.lang.reflect.InvocationTargetException;
-
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-
 /**
  * A class representing platform specific packet class
  */
@@ -48,22 +43,6 @@ public class PacketPlayOutScoreboardObjective implements CrossPlatformPacket {
 		this.method = 1;
 	}
 
-	/**
-	 * Calls build method of packet builder instance and returns output
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	@Override
-	public Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		return TabAPI.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
-	}
-	
-	/**
-	 * An override to toString() method for better output
-	 */
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutScoreboardObjective{objectiveName=%s,displayName=%s,renderType=%s,method=%s}",

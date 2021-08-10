@@ -1,10 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 
@@ -128,20 +125,6 @@ public class PacketPlayOutBoss implements CrossPlatformPacket {
 		return value;
 	}
 
-	/**
-	 * Calls build method of packet builder instance and returns output
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	@Override
-	public Object build(ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		return TabAPI.getInstance().getPlatform().getPacketBuilder().build(this, clientVersion);
-	}
-	
-	/**
-	 * An override to toString() method for better output
-	 */
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutBoss{id=%s,operation=%s,name=%s,pct=%s,color=%s,overlay=%s,darkenScreen=%s,playMusic=%s,createWorldFog=%s}", 
@@ -184,7 +167,6 @@ public class PacketPlayOutBoss implements CrossPlatformPacket {
 		return playMusic;
 	}
 	
-
 	public void setDarkenScreen(boolean darkenScreen) {
 		this.darkenScreen = darkenScreen;
 	}

@@ -14,7 +14,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 /**
  * Packet builder for Velocity platform
  */
-public class VelocityPacketBuilder implements PacketBuilder {
+public class VelocityPacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {

@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.permission;
 
-import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.TabPlayer;
 
 /**

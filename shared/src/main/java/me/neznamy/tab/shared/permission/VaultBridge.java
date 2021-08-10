@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.permission;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
-import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 

@@ -1,10 +1,11 @@
-package me.neznamy.tab.api;
+package me.neznamy.tab.shared;
 
 import java.io.File;
 import java.util.List;
 
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 
 /**
  * An interface with methods that are called in universal code, but require platform-specific API calls

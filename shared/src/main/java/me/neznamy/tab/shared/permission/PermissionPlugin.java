@@ -1,6 +1,8 @@
-package me.neznamy.tab.api;
+package me.neznamy.tab.shared.permission;
 
 import java.lang.reflect.InvocationTargetException;
+
+import me.neznamy.tab.api.TabPlayer;
 
 /**
  * An interface representing permission plugin hook

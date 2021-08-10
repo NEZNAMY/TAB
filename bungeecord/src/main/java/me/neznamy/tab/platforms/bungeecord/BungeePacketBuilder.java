@@ -35,7 +35,7 @@ import net.md_5.bungee.protocol.packet.Team;
 /**
  * Packet builder for BungeeCord platform
  */
-public class BungeePacketBuilder implements PacketBuilder {
+public class BungeePacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {

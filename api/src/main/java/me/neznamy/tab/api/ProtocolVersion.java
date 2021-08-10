@@ -5,7 +5,8 @@ package me.neznamy.tab.api;
  */
 public enum ProtocolVersion {
 
-	UNKNOWN	(999),
+	UNKNOWN	(999, "Unknown"),
+	PROXY	(999, "Proxy"),
 	V1_17_1	(756),
 	V1_17	(755),
 	V1_16_5 (754),
@@ -72,13 +73,19 @@ public enum ProtocolVersion {
 	 */
 	private ProtocolVersion(int networkId){
 		this.networkId = networkId;
-		if (toString().equals("UNKNOWN")) {
-			this.minorVersion = 17;
-			this.friendlyName = "Unknown";
-		} else {
-			this.minorVersion = Integer.parseInt(toString().split("_")[1]);
-			this.friendlyName = toString().substring(1).replace("_", ".");
-		}
+		this.minorVersion = Integer.parseInt(toString().split("_")[1]);
+		this.friendlyName = toString().substring(1).replace("_", ".");
+	}
+	
+	/**
+	 * Constructs new instance with given network id and friendly name
+	 * @param networkId - network id of this version
+	 * @param friendlyName - friendly name to display
+	 */
+	private ProtocolVersion(int networkId, String friendlyName){
+		this.networkId = networkId;
+		this.minorVersion = 17;
+		this.friendlyName = friendlyName;
 	}
 
 	/**

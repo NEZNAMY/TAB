@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.bukkit.permission;
 
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.api.PermissionPlugin;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.milkbowl.vault.permission.Permission;
 
 /**

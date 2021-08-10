@@ -48,7 +48,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TAB;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class BukkitPacketBuilder implements PacketBuilder {
+public class BukkitPacketBuilder extends PacketBuilder {
 
 	//nms storage
 	private NMSStorage nms;

@@ -29,7 +29,7 @@ public class Main extends Plugin {
 			return;
 		}
 		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
-		TAB.setInstance(new TAB(new BungeePlatform(this, plm), ProtocolVersion.values()[1]));
+		TAB.setInstance(new TAB(new BungeePlatform(this, plm), ProtocolVersion.PROXY));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener(plm));
 		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
