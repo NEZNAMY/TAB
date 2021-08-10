@@ -110,11 +110,23 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			if (!disabledBefore) {
 				for (TabPlayer viewer : tab.getPlayers()) {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
-					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())));
+					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())), TabFeature.TABLIST_NAMES);
 				}
 			}
 		} else {
 			refresh(p, true);
+			if (TAB.getInstance().getPlatform().getSeparatorType().equals("server")) {
+				//temporary solution for velocity
+				TAB.getInstance().getCPUManager().runTaskLater(TAB.getInstance().getConfiguration().getConfig().getInt("server-switch-tablist-update-delay", 1000), "", TabFeature.TABLIST_NAMES, UsageType.WORLD_SWITCH_EVENT, () -> {
+					PacketPlayOutPlayerInfo switchedPlayer = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID(), getTabFormat(p, null)));
+					List<PlayerInfoData> others = new ArrayList<>();
+					for (TabPlayer all : TAB.getInstance().getPlayers()) {
+						others.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, p)));
+						all.sendCustomPacket(switchedPlayer, TabFeature.TABLIST_NAMES);
+					}
+					p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, others), TabFeature.TABLIST_NAMES);
+				});
+			}
 		}
 	}
 
@@ -194,7 +206,7 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTablist) tab.getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, r);
+		if (!antiOverrideTablist) tab.getCPUManager().runTaskLater(TAB.getInstance().getConfiguration().getConfig().getInt("server-switch-tablist-update-delay", 1000), "processing PlayerJoinEvent", getFeatureType(), UsageType.PLAYER_JOIN_EVENT, r);
 	}
 
 	@Override
