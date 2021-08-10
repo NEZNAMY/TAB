@@ -9,6 +9,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -40,7 +41,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	private String childBoard;
 
 	//lines of scoreboard
-	private List<ScoreboardLine> lines = new ArrayList<>();
+	private List<Line> lines = new ArrayList<>();
 
 	//players currently seeing this scoreboard
 	private Set<TabPlayer> players = new HashSet<>();
@@ -55,7 +56,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param childBoard - scoreboard to display if condition is not met
 	 */
 	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
-		this(manager, name, title, lines);
+		this(manager, name, title, lines, false);
 		this.displayCondition = Condition.getCondition(displayCondition);
 		this.childBoard = childBoard;
 	}
@@ -67,13 +68,18 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param title - scoreboard title
 	 * @param lines - lines of scoreboard
 	 */
-	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines) {
+	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, boolean dynamicLinesOnly) {
 		super(manager.getFeatureName());
 		this.manager = manager;
 		this.name = name;
 		this.title = title;
 		for (int i=0; i<lines.size(); i++) {
-			ScoreboardLine score = registerLine(i+1, lines.get(i));
+			ScoreboardLine score;
+			if (dynamicLinesOnly) {
+				score = new StableDynamicLine(this, i+1, lines.get(i));
+			} else {
+				score = registerLine(i+1, lines.get(i));
+			}
 			this.lines.add(score);
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + i, score);
 		}
@@ -124,8 +130,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		if (players.contains(p)) return; //already registered
 		p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
 		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, this);
-		for (ScoreboardLine s : lines) {
-			s.register(p);
+		for (Line s : lines) {
+			((ScoreboardLine)s).register(p);
 		}
 		players.add(p);
 		manager.getActiveScoreboards().put(p, this);
@@ -145,8 +151,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void removePlayer(TabPlayer p) {
 		if (!players.contains(p)) return; //not registered
 		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), this);
-		for (ScoreboardLine s : lines) {
-			s.unregister(p);
+		for (Line s : lines) {
+			((ScoreboardLine)s).unregister(p);
 		}
 		players.remove(p);
 		manager.getActiveScoreboards().remove(p);
@@ -158,7 +164,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), this);
 	}
 
-	public List<ScoreboardLine> getLines() {
+	public List<Line> getLines() {
 		return lines;
 	}
 
@@ -182,6 +188,24 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		for (TabPlayer p : players) {
 			p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
 			refresh(p, false);
+		}
+	}
+
+	@Override
+	public void addLine(String text) {
+		StableDynamicLine line = new StableDynamicLine(this, lines.size()+1, text);
+		lines.add(line);
+		for (TabPlayer p : players) {
+			line.register(p);
+		}
+	}
+
+	@Override
+	public void removeLine(int index) {
+		ScoreboardLine line = (ScoreboardLine) lines.get(index);
+		lines.remove(line);
+		for (TabPlayer p : players) {
+			line.unregister(p);
 		}
 	}
 }

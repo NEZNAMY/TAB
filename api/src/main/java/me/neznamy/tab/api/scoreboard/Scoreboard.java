@@ -1,5 +1,6 @@
 package me.neznamy.tab.api.scoreboard;
 
+import java.util.List;
 import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -44,4 +45,22 @@ public interface Scoreboard {
 	 * @param title - title to use
 	 */
 	public void setTitle(String title);
+	
+	/**
+	 * Returns list of lines of this scoreboard
+	 * @return list of lines of this scoreboard
+	 */
+	public List<Line> getLines();
+	
+	/**
+	 * Adds line with specified text on the bottom of scoreboard
+	 * @param text - text to display
+	 */
+	public void addLine(String text);
+	
+	/**
+	 * Removes line with specified index. Index starts at 0 and ends at getLines().size()-1
+	 * @param index - index of line to remove
+	 */
+	public void removeLine(int index);
 }

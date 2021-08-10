@@ -323,7 +323,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public Scoreboard createScoreboard(String name, String title, List<String> lines) {
-		Scoreboard sb = new ScoreboardImpl(this, name, title, lines);
+		Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
 		scoreboards.put(name, sb);
 		return sb;
 	}
