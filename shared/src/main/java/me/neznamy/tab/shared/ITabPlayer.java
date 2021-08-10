@@ -203,6 +203,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void removeCustomScoreboard() {
 		if (forcedScoreboard == null) return;
+		forcedScoreboard.unregister(this);
 		ScoreboardManager sbm = ((ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard"));
 		if (sbm == null) throw new IllegalStateException("Scoreboard feature is not enabled");
 		Scoreboard sb = sbm.getScoreboards().get(sbm.detectHighestScoreboard(this));
