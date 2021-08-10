@@ -171,7 +171,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
-		} catch (Exception e) {
+		} catch (Exception | NoClassDefFoundError e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
 			return false;
 		}
