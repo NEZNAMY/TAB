@@ -202,7 +202,6 @@ public class ChatModifier {
 	 * @param name - entity custom name
 	 */
 	public void onHoverShowEntity(String type, UUID id, String name) {
-		if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("show_entity hover action is not supported on <1.8");
 		if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
 			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new ChatComponentEntity(type, id, name));
 		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
