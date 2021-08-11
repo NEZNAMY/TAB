@@ -61,7 +61,7 @@ public enum EnumChatFormat {
 	private EnumChatFormat(int networkId, char character, String hexCode) {
 		this(networkId, character);
 		this.hexCode = hexCode;
-		int hexColor = Integer.parseInt(hexCode.substring(1), 16);
+		int hexColor = Integer.parseInt(hexCode, 16);
 		red = (hexColor >> 16) & 0xFF;
 		green = (hexColor >> 8) & 0xFF;
 		blue = hexColor & 0xFF;
