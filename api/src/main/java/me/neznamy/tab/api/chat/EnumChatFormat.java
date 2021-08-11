@@ -46,7 +46,7 @@ public enum EnumChatFormat {
 	//blue value of this color
 	private int blue;
 	
-	//hex code as string prefixed with #
+	//hex code as string
 	private String hexCode;
 	
 	//\u00a7 followed by color's character
@@ -157,8 +157,8 @@ public enum EnumChatFormat {
 	}
 	
 	/**
-	 * Returns hex code of this format prefixed with #, null if this is a magic code
-	 * @return hex code of this format prefixed with #
+	 * Returns hex code of this format, null if this is a magic code
+	 * @return hex code of this format
 	 */
 	public String getHexCode() {
 		return hexCode;
