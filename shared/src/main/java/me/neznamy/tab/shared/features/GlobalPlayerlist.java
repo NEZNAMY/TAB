@@ -104,6 +104,7 @@ public class GlobalPlayerlist extends TabFeature {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		connectedPlayer.setProperty(this, "globalplayerlist-ping", "%ping%");
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == connectedPlayer) continue;
 			if (shouldSee(all, connectedPlayer)) {
@@ -112,6 +113,15 @@ public class GlobalPlayerlist extends TabFeature {
 			if (shouldSee(connectedPlayer, all)) {
 				connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), this);
 			}
+		}
+	}
+	
+	@Override
+	public void refresh(TabPlayer p, boolean force) {
+		//player ping changed, must manually update latency for players on other servers
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(p.getTablistUUID(), p.getPing()));
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (!p.getServer().equals(all.getServer())) all.sendCustomPacket(packet, this);
 		}
 	}
 
