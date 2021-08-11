@@ -24,7 +24,7 @@ public class StaticLine extends ScoreboardLine {
 	protected String name;
 	protected String suffix;
 	
-	public StaticLine(ScoreboardImpl parent, int lineNumber, String text, boolean useNumbers) {
+	public StaticLine(ScoreboardImpl parent, int lineNumber, String text) {
 		super(parent, lineNumber);
 		this.text = EnumChatFormat.color(text);
 		setValues(this.text);

@@ -99,7 +99,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		if (text.contains("%") || (manager.isUsingNumbers() && text.length() <= 26)) {
 			return new StableDynamicLine(this, lineNumber, text);
 		}
-		return new StaticLine(this, lineNumber, text, manager.isUsingNumbers());
+		return new StaticLine(this, lineNumber, text);
 	}
 
 	@Override
