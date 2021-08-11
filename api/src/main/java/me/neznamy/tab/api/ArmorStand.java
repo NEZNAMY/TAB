@@ -1,7 +1,5 @@
 package me.neznamy.tab.api;
 
-import java.util.Set;
-
 public interface ArmorStand {
 
 	/**
@@ -68,12 +66,6 @@ public interface ArmorStand {
 	public void updateVisibility(boolean force);
 	
 	/**
-	 * Removes specified player from list of players in range
-	 * @param viewer - player to remove
-	 */
-	public void removeFromRegistered(TabPlayer viewer);
-	
-	/**
 	 * Returns entity ID of this armor stand
 	 * @return entity ID of this armor stand
 	 */
@@ -85,10 +77,4 @@ public interface ArmorStand {
 	 * @param addToRegistered - if player should be added to players in range
 	 */
 	public void spawn(TabPlayer viewer);
-	
-	/**
-	 * Returns list of players in entity tracking range (48 blocks)
-	 * @return list of nearby players
-	 */
-	public Set<TabPlayer> getNearbyPlayers();
 }

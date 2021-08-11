@@ -47,9 +47,6 @@ public class NameTagX extends NameTag {
 	//map of defined static lines
 	private Map<String, Object> staticLines = new ConcurrentHashMap<>();
 
-	//entity id counter to pick unique entity IDs
-	private int idCounter = 2000000000;
-
 	//player data by entityId, used for better performance
 	private Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
 	
@@ -303,13 +300,13 @@ public class NameTagX extends NameTag {
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(this, idCounter++, pl, p, height, false, markerFor18x));
+			pl.getArmorStandManager().addArmorStand(line, new BukkitArmorStand(pl, p, height, false));
 			height += spaceBetweenLines;
 		}
 		for (Entry<String, Object> line : staticLines.entrySet()) {
 			Property p = pl.getProperty(line.getKey());
 			if (p.getCurrentRawValue().length() == 0) continue;
-			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(this, idCounter++, pl, p, Double.parseDouble(line.getValue().toString()), true, markerFor18x));
+			pl.getArmorStandManager().addArmorStand(line.getKey(), new BukkitArmorStand(pl, p, Double.parseDouble(line.getValue().toString()), true));
 		}
 		fixArmorStandHeights(pl);
 	}
@@ -422,5 +419,9 @@ public class NameTagX extends NameTag {
 	
 	public boolean isInDisabledWorld(TabPlayer p) {
 		return getDisabledPlayers().contains(p) || isDisabled(p.getWorld());
+	}
+
+	public boolean isMarkerFor18x() {
+		return markerFor18x;
 	}
 }

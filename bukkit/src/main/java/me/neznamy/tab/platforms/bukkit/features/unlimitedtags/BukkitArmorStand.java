@@ -1,8 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
@@ -29,6 +26,10 @@ import me.neznamy.tab.shared.cpu.UsageType;
  */
 public class BukkitArmorStand implements ArmorStand {
 
+	//entity id counter to pick unique entity IDs
+	private static int idCounter = 2000000000;
+	
+	//nametag feature
 	private NameTagX manager;
 	
 	//owner of the armor stand
@@ -52,17 +53,11 @@ public class BukkitArmorStand implements ArmorStand {
 	//armor stand visibility
 	private boolean visible;
 
-	//list of players in entity tracking range (48 blocks)
-	private Set<TabPlayer> nearbyPlayers = Collections.synchronizedSet(new HashSet<TabPlayer>());
-
 	//property dedicated to this armor stand
 	private Property property;
 
 	//if offset is static or dynamic based on other armor stands
 	private boolean staticOffset;
-
-	//if marker tag should be used for 1.8.x clients
-	private boolean markerFor18x;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -71,15 +66,14 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param yOffset - offset in blocks
 	 * @param staticOffset - if offset is static or not
 	 */
-	public BukkitArmorStand(NameTagX manager, int entityId, TabPlayer owner, Property property, double yOffset, boolean staticOffset, boolean markerFor18x) {
-		this.manager = manager;
-		this.entityId = entityId;
+	public BukkitArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
+		this.manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
+		this.entityId = idCounter++;
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = (Player) owner.getPlayer();
 		this.yOffset = yOffset;
 		this.property = property;
-		this.markerFor18x = markerFor18x;
 		visible = getVisibility();
 	}
 
@@ -108,7 +102,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		for (TabPlayer all : getNearbyPlayers()) {
+		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
 			all.sendPacket(getTeleportPacket(all), manager);
 		}
 	}
@@ -121,7 +115,6 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	public Object[] getSpawnPackets(TabPlayer viewer) {
 		visible = getVisibility();
-		nearbyPlayers.add(viewer);
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
 		if (NMSStorage.getInstance().getMinorVersion() >= 15) {
 			return new Object[] {
@@ -148,18 +141,17 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return location of armor stand
 	 */
 	protected Location getArmorStandLocationFor(TabPlayer viewer) {
-		return viewer.getVersion().getMinorVersion() == 8 && !markerFor18x ? getLocation().clone().add(0,-2,0) : getLocation();
+		return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 
 	@Override
 	public void destroy(TabPlayer viewer) {
-		nearbyPlayers.remove(viewer);
 		viewer.sendPacket(getDestroyPacket(), manager);
 	}
 
 	@Override
 	public void teleport() {
-		for (TabPlayer all : getNearbyPlayers()) {
+		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
 			all.sendPacket(getTeleportPacket(all), manager);
 		}
 	}
@@ -173,7 +165,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void sneak(boolean sneaking) {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
-		for (TabPlayer viewer : getNearbyPlayers()) {
+		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
 			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
@@ -197,8 +189,8 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendPacket(getDestroyPacket(), manager);
-		nearbyPlayers.clear();
+		Object destroyPacket = getDestroyPacket();
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendPacket(destroyPacket, manager);
 	}
 
 	@Override
@@ -271,7 +263,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Updates armor stand's metadata
 	 */
 	protected void updateMetadata() {
-		for (TabPlayer viewer : getNearbyPlayers()) {
+		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
 			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)), manager);
 		}
 	}
@@ -344,11 +336,6 @@ public class BukkitArmorStand implements ArmorStand {
 		return entityId;
 	}
 
-	@Override
-	public void removeFromRegistered(TabPlayer viewer) {
-		nearbyPlayers.remove(viewer);
-	}
-
 	/**
 	 * Creates data watcher with specified display name for viewer
 	 * @param displayName - armor stand name
@@ -371,15 +358,8 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 		datawatcher.helper().setCustomNameVisible(visibility);
 
-		if (viewer.getVersion().getMinorVersion() > 8 || markerFor18x) datawatcher.helper().setArmorStandFlags((byte)16);
+		if (viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x()) datawatcher.helper().setArmorStandFlags((byte)16);
 		return datawatcher;
-	}
-
-	@Override
-	public Set<TabPlayer> getNearbyPlayers(){
-		synchronized (nearbyPlayers) {
-			return new HashSet<>(nearbyPlayers);
-		}
 	}
 
 	/**

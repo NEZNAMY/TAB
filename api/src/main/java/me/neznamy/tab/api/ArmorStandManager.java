@@ -13,7 +13,10 @@ import java.util.Set;
 public class ArmorStandManager {
 
 	//map of registered armor stands
-	private Map<String, ArmorStand> armorStands = Collections.synchronizedMap(new LinkedHashMap<String, ArmorStand>());
+	private Map<String, ArmorStand> armorStands = Collections.synchronizedMap(new LinkedHashMap<>());
+	
+	//players in entity tracking range
+	private Set<TabPlayer> nearbyPlayers = Collections.synchronizedSet(new HashSet<>());
 
 	/**
 	 * Adds armor stand into list
@@ -22,6 +25,7 @@ public class ArmorStandManager {
 	 */
 	public void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
+		nearbyPlayers.forEach(as::spawn);
 	}
 
 	/**
@@ -29,6 +33,7 @@ public class ArmorStandManager {
 	 * @param name - name of armor stand to remove
 	 */
 	public void removeArmorStand(String name) {
+		armorStands.get(name).destroy();
 		armorStands.remove(name);
 	}
 
@@ -37,6 +42,7 @@ public class ArmorStandManager {
 	 * @param viewer - player to spawn armor stands for
 	 */
 	public void spawn(TabPlayer viewer) {
+		nearbyPlayers.add(viewer);
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		synchronized (armorStands) {
 			armorStands.values().forEach(a -> a.spawn(viewer));
@@ -96,9 +102,7 @@ public class ArmorStandManager {
 	 * @param viewer - player to remove
 	 */
 	public void unregisterPlayer(TabPlayer viewer) {
-		synchronized (armorStands) {
-			armorStands.values().forEach(a -> a.removeFromRegistered(viewer));
-		}
+		nearbyPlayers.remove(viewer);
 	}
 
 	/**
@@ -108,6 +112,7 @@ public class ArmorStandManager {
 		synchronized (armorStands) {
 			armorStands.values().forEach(ArmorStand::destroy);
 		}
+		nearbyPlayers.clear();
 	}
 
 	/**
@@ -118,6 +123,7 @@ public class ArmorStandManager {
 		synchronized (armorStands) {
 			armorStands.values().forEach(a -> a.destroy(viewer));
 		}
+		nearbyPlayers.remove(viewer);
 	}
 
 	/**
@@ -149,9 +155,8 @@ public class ArmorStandManager {
 	 * @return list of nearby players
 	 */
 	public Set<TabPlayer> getNearbyPlayers(){
-		if (armorStands.isEmpty()) return new HashSet<>(); //not initialized yet
-		synchronized (armorStands) {
-			return armorStands.values().iterator().next().getNearbyPlayers();
+		synchronized (nearbyPlayers) {
+			return new HashSet<>(nearbyPlayers);
 		}
 	}
 }
