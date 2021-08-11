@@ -54,8 +54,12 @@ public class VelocityPluginMessageHandler implements PluginMessageHandler {
 
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
-		Player sender = (Player) player.getPlayer();
-		Optional<ServerConnection> server = sender.getCurrentServer();
-		if (server.isPresent()) server.get().sendPluginMessage(mc, message);
+		try {
+			Player sender = (Player) player.getPlayer();
+			Optional<ServerConnection> server = sender.getCurrentServer();
+			if (server.isPresent()) server.get().sendPluginMessage(mc, message);
+		} catch (Exception e) {
+			//not connected for some reason
+		}
 	}
 }
