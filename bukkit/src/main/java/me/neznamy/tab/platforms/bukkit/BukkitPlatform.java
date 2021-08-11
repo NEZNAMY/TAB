@@ -19,6 +19,8 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
+import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
@@ -268,7 +270,12 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void callLoadEvent() {
-		Bukkit.getPluginManager().callEvent(new BukkitTABLoadEvent());
+		Bukkit.getPluginManager().callEvent(new TabLoadEvent());
+	}
+	
+	@Override
+	public void callLoadEvent(TabPlayer player) {
+		Bukkit.getPluginManager().callEvent(new TabPlayerLoadEvent(player));
 	}
 
 	@Override

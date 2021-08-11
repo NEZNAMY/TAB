@@ -3,7 +3,10 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.io.File;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
+import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.NameTag;
@@ -89,7 +92,12 @@ public class BungeePlatform extends ProxyPlatform {
 
 	@Override
 	public void callLoadEvent() {
-		ProxyServer.getInstance().getPluginManager().callEvent(new BungeeTABLoadEvent());
+		ProxyServer.getInstance().getPluginManager().callEvent(new TabLoadEvent());
+	}
+	
+	@Override
+	public void callLoadEvent(TabPlayer player) {
+		ProxyServer.getInstance().getPluginManager().callEvent(new TabPlayerLoadEvent(player));
 	}
 
 	@Override

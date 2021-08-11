@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.io.File;
 import java.util.List;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -60,6 +61,12 @@ public interface Platform {
 	 * This method is called when plugin is fully enabled
 	 */
 	public void callLoadEvent();
+	
+	/**
+	 * Calls platform-specific event
+	 * This method is called when player is fully loaded
+	 */
+	public void callLoadEvent(TabPlayer player);
 	
 	/**
 	 * Returns max player count configured in server files

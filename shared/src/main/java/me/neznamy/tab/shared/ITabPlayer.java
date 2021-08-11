@@ -211,6 +211,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void markAsLoaded() {
 		onJoinFinished = true;
+		TAB.getInstance().getPlatform().callLoadEvent(this);
 	}
 
 	@Override

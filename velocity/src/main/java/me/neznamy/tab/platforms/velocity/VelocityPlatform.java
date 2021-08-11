@@ -10,7 +10,10 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.util.GameProfile.Property;
 
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.platforms.velocity.event.TabPlayerLoadEvent;
+import me.neznamy.tab.platforms.velocity.event.TabLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -90,7 +93,12 @@ public class VelocityPlatform extends ProxyPlatform {
 
 	@Override
 	public void callLoadEvent() {
-		//not needed here
+		server.getEventManager().fireAndForget(new TabLoadEvent());
+	}
+	
+	@Override
+	public void callLoadEvent(TabPlayer player) {
+		server.getEventManager().fireAndForget(new TabPlayerLoadEvent(player));
 	}
 
 	@Override
