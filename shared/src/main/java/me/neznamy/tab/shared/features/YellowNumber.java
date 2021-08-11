@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Arrays;
+
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
@@ -33,7 +35,7 @@ public class YellowNumber extends TabFeature {
 		} else {
 			displayType = EnumScoreboardHealthDisplay.INTEGER;
 		}
-		TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, disabledWorlds, disabledServers, displayType));
+		TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), displayType));
 	}
 
 	@Override

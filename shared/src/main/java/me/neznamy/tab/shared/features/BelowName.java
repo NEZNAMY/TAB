@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.Arrays;
+
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
@@ -29,7 +31,7 @@ public class BelowName extends TabFeature {
 		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
 		rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
 		textRefresher = new TextRefresher();
-		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, disabledWorlds, disabledServers));
+		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
 		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", textRefresher);
 	}
 

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
@@ -17,7 +18,7 @@ public class HeaderFooter extends TabFeature {
 	public HeaderFooter() {
 		super("Header/Footer", TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-worlds"));
-		TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s, disabledSerers=%s", disabledWorlds, disabledServers));
+		TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s, disabledServers=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
 	}
 	
 	@Override

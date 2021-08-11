@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -88,8 +89,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				return (announceEndTime - System.currentTimeMillis()) / 1000;
 			}
 		});
-		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
-				disabledWorlds, toggleCommand, defaultBars, hiddenByDefault, rememberToggleChoice));
+		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
+				Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), toggleCommand, defaultBars, hiddenByDefault, rememberToggleChoice));
 	}
 	
 	/**
