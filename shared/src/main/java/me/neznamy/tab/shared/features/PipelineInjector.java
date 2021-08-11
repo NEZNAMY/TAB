@@ -1,5 +1,9 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+
+import io.netty.channel.ChannelDuplexHandler;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -19,18 +23,24 @@ public abstract class PipelineInjector extends TabFeature {
 	//name of the pipeline decoder injected in netty
 	public static final String DECODER_NAME = "TAB";
 	
+	//handler to inject before
+	private final String INJECT_POSITION;
+	
 	//preventing spam when packet is sent to everyone
 	private String lastTeamOverrideMessage;
 	
 	//anti-override rules
 	protected boolean antiOverrideTeams;
 	
+	protected Function<TabPlayer, ChannelDuplexHandler> channelFunction;
+	
 	/**
 	 * Constructs new instance
 	 * @param tab
 	 */
-	protected PipelineInjector() {
+	protected PipelineInjector(String injectPosition) {
 		super("Pipeline injection");
+		INJECT_POSITION = injectPosition;
 		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
 				TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 	}
@@ -39,9 +49,29 @@ public abstract class PipelineInjector extends TabFeature {
 	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
 	 * @param uuid - player's uuid
 	 */
-	public abstract void inject(TabPlayer player);
-	
-	public abstract void uninject(TabPlayer player);
+	public void inject(TabPlayer player) {
+		if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
+		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
+			//fake player or waterfall bug
+			return;
+		}
+		uninject(player);
+		try {
+			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, channelFunction.apply(player));
+		} catch (NoSuchElementException | IllegalArgumentException e) {
+			//idk how does this keep happening but whatever
+		}
+	}
+
+	public void uninject(TabPlayer player) {
+		if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
+		try {
+			if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
+		} catch (NoSuchElementException e) {
+			//for whatever reason this rarely throws
+			//java.util.NoSuchElementException: TABReader
+		}
+	}
 	
 	@Override
 	public void load() {

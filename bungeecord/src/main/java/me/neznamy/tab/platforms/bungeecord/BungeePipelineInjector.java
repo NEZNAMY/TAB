@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
@@ -26,39 +25,20 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
 
-	//handler to inject before
-	private static final String INJECT_POSITION = "inbound-boss";
-	
 	//packets that must be deserialized and bungeecord does not do it automatically
 	private Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
 
 	/**
-	 * Constructs new instance with given parameter
-	 * @param tab - tab instance
+	 * Constructs new instance of the feature
 	 */
 	public BungeePipelineInjector() {
+		super("inbound-boss");
+		channelFunction = (player) -> new BungeeChannelDuplexHandler(player);
 		extraPackets.put(Team.class, Team::new);
 		extraPackets.put(ScoreboardDisplay.class, ScoreboardDisplay::new);
 		extraPackets.put(ScoreboardObjective.class, ScoreboardObjective::new);
 	}
 
-	@Override
-	public void inject(TabPlayer player) {
-		if (player.getVersion().getMinorVersion() < 8) return;
-		uninject(player);
-		try {
-			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BungeeChannelDuplexHandler(player));
-		} catch (NoSuchElementException | IllegalArgumentException e) {
-			//idk how does this keep happening but whatever
-		}
-	}
-
-	@Override
-	public void uninject(TabPlayer player) {
-		if (player.getVersion().getMinorVersion() < 8) return;
-		if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
-	}
-	
 	/**
 	 * Custom channel duplex handler override
 	 */

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,9 +15,6 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 
-	//handler to inject before
-	private static final String INJECT_POSITION = "packet_handler";
-	
 	//nms storage
 	private NMSStorage nms;
 
@@ -28,35 +24,11 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	 * @param nms - nms storage
 	 */
 	public BukkitPipelineInjector(NMSStorage nms){
+		super("packet_handler");
 		this.nms = nms;
-	}
-	
-	@Override
-	public void inject(TabPlayer player) {
-		if (player.getChannel() == null) return; //hello A248
-		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
-			//fake player or waterfall bug
-			return;
-		}
-		uninject(player);
-		try {
-			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, new BukkitChannelDuplexHandler(player));
-		} catch (NoSuchElementException | IllegalArgumentException e) {
-			//idk how does this keep happening but whatever
-		}
+		channelFunction = (player) -> new BukkitChannelDuplexHandler(player);
 	}
 
-	@Override
-	public void uninject(TabPlayer player) {
-		if (player.getChannel() == null) return; //hello A248
-		try {
-			if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
-		} catch (NoSuchElementException e) {
-			//for whatever reason this rarely throws
-			//java.util.NoSuchElementException: TABReader
-		}
-	}
-	
 	/**
 	 * Custom channel duplex handler override
 	 */
