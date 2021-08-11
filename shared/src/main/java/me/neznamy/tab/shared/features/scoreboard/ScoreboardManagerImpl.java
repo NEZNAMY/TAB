@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,15 +31,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	//toggle command
 	private String toggleCommand;
 	
-	//default scoreboard
-	private String defaultScoreboard;
-	
-	//per-world / per-server scoreboards
-	private Map<String, String> perWorld;
-	private Map<String, String> perServer;
-	
 	//defined scoreboards
-	private Map<String, Scoreboard> scoreboards = new HashMap<>();
+	private Map<String, Scoreboard> scoreboards = new LinkedHashMap<>();
 	
 	//using 1-15
 	private boolean useNumbers;
@@ -89,9 +83,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds"));
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
 		useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
-		defaultScoreboard = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.default-scoreboard", "MyDefaultScoreboard");
-		perWorld = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-world");
-		perServer = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.per-server");
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
 		respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
@@ -106,7 +97,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
 		for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
 			String condition = (String) entry.getValue().get("display-condition");
-			String childBoard = (String) entry.getValue().get("if-condition-not-met");
 			String title = (String) entry.getValue().get("title");
 			if (title == null) {
 				title = "<Title not defined>";
@@ -117,39 +107,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 				lines = Arrays.asList("scoreboard \"" + entry.getKey() +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
 				TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), entry.getKey(), "lines");
 			}
-			ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition, childBoard);
+			ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition);
 			scoreboards.put(entry.getKey(), sb);
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + entry.getKey(), sb);
 		}
-		checkForMisconfiguration();
 		TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
-				+ ", defaultScoreboard=%s, perWorld=%s, rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
-				toggleCommand, useNumbers, disabledWorlds, defaultScoreboard, perWorld, rememberToggleChoice, hiddenByDefault, scoreboardOn, scoreboardOff, staticNumber, joinDelay));
-	}
-
-	/**
-	 * Checks for misconfiguration and sends console warns if anything was found
-	 */
-	private void checkForMisconfiguration() {
-		if (!defaultScoreboard.equalsIgnoreCase("NONE") && !scoreboards.containsKey(defaultScoreboard)) {
-			TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as default scoreboard.", defaultScoreboard));
-			defaultScoreboard = "NONE";
-		}
-		for (Entry<String, String> entry : perWorld.entrySet()) {
-			if (!scoreboards.containsKey(entry.getValue())) {
-				TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as per-world scoreboard in world &e\"%s\"&c.", entry.getValue(), entry.getKey()));
-			}
-		}
-		for (Entry<String, String> entry : perServer.entrySet()) {
-			if (!scoreboards.containsKey(entry.getValue())) {
-				TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as per-server scoreboard in server &e\"%s\"&c.", entry.getValue(), entry.getKey()));
-			}
-		}
-		for (Scoreboard scoreboard : scoreboards.values()) {
-			if (((ScoreboardImpl) scoreboard).getChildScoreboard() != null && !scoreboards.containsKey(((ScoreboardImpl) scoreboard).getChildScoreboard())) {
-				TAB.getInstance().getErrorManager().startupWarn(String.format("Unknown scoreboard &e\"%s\"&c set as if-condition-not-met of scoreboard &e\"%s\"&c.",((ScoreboardImpl) scoreboard).getChildScoreboard(), scoreboard.getName()));
-			}
-		}
+				+ ", rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
+				toggleCommand, useNumbers, disabledWorlds, rememberToggleChoice, hiddenByDefault, scoreboardOn, scoreboardOff, staticNumber, joinDelay));
 	}
 
 	@Override
@@ -175,7 +139,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	@Override
 	public void unload() {
 		for (Scoreboard board : scoreboards.values()) {
-			((ScoreboardImpl)board).unregister();
+			board.unregister();
 		}
 		scoreboards.clear();
 	}
@@ -204,16 +168,15 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 */
 	public void sendHighestScoreboard(TabPlayer p) {
 		if (disabledPlayers.contains(p) || !hasScoreboardVisible(p)) return;
-		String scoreboard = detectHighestScoreboard(p);
+		Scoreboard scoreboard = detectHighestScoreboard(p);
 		if (scoreboard != null) {
-			Scoreboard board = scoreboards.get(scoreboard);
 			Scoreboard current = activeScoreboard.get(p);
-			if (board != current) {
+			if (scoreboard != current) {
 				if (current != null) {
 					current.removePlayer(p);
 				}
-				if (board != null) {
-					board.addPlayer(p);
+				if (scoreboard != null) {
+					scoreboard.addPlayer(p);
 				}
 			}
 		}
@@ -269,25 +232,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * @param p - player to check
 	 * @return highest scoreboard player should see
 	 */
-	public String detectHighestScoreboard(TabPlayer p) {
-		String scoreboard = perWorld.get(p.getWorld());
-		if (scoreboard == null) {
-			scoreboard = perServer.get(p.getServer());
+	public Scoreboard detectHighestScoreboard(TabPlayer p) {
+		for (Entry<String, Scoreboard> entry : scoreboards.entrySet()) {
+			if (((ScoreboardImpl)entry.getValue()).isConditionMet(p)) return entry.getValue();
 		}
-		if (scoreboard == null) {
-			if (defaultScoreboard.equalsIgnoreCase("NONE")) {
-				return "null";
-			} else {
-				scoreboard = defaultScoreboard;
-			}
-		}
-		ScoreboardImpl board = (ScoreboardImpl) scoreboards.get(scoreboard);
-		while (board != null && !board.isConditionMet(p)) {
-			board = (ScoreboardImpl) scoreboards.get(board.getChildScoreboard());
-			if (board == null) return "null";
-			scoreboard = board.getName();
-		}
-		return scoreboard;
+		return null;
 	}
 
 	@Override
@@ -350,7 +299,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	public void resetScoreboard(TabPlayer player) {
 		if (!forcedScoreboard.containsKey(player)) return;
 		forcedScoreboard.get(player).removePlayer(player);
-		Scoreboard sb = scoreboards.get(detectHighestScoreboard(player));
+		Scoreboard sb = detectHighestScoreboard(player);
 		if (sb == null) return; //no scoreboard available
 		activeScoreboard.put(player, sb);
 		sb.addPlayer(player);

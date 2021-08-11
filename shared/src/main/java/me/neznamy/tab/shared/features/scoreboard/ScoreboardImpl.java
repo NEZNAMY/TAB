@@ -37,9 +37,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	//display condition
 	private Condition displayCondition;
 
-	//scoreboard to display if condition is not met
-	private String childBoard;
-
 	//lines of scoreboard
 	private List<Line> lines = new ArrayList<>();
 
@@ -55,10 +52,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param displayCondition - display condition
 	 * @param childBoard - scoreboard to display if condition is not met
 	 */
-	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition, String childBoard) {
+	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition) {
 		this(manager, name, title, lines, false);
 		this.displayCondition = Condition.getCondition(displayCondition);
-		this.childBoard = childBoard;
 	}
 
 	/**
@@ -113,16 +109,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @return true if condition is null or is met, false otherwise
 	 */
 	public boolean isConditionMet(TabPlayer p) {
-		if (displayCondition == null) return true;
-		return displayCondition.isMet(p);
-	}
-
-	/**
-	 * Returns scoreboard that should be displayed if display condition is not met
-	 * @return scoreboard that should be displayed if display condition is not met
-	 */
-	public String getChildScoreboard() {
-		return childBoard;
+		return displayCondition == null || displayCondition.isMet(p);
 	}
 
 	@Override
@@ -137,9 +124,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		manager.getActiveScoreboards().put(p, this);
 	}
 
-	/**
-	 * Unregisters this scoreboard from all players
-	 */
+	@Override
 	public void unregister() {
 		for (TabPlayer all : getPlayers().toArray(new TabPlayer[0])) {
 			removePlayer(all);

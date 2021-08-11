@@ -152,17 +152,10 @@ scoreboard:
     - disabledworld
   disable-in-servers:
     - disabledserver
-  # scoreboard with the highest priority
-  default-scoreboard: "admin"
-  per-world:
-    # players in the testworld world will see the twscoreboard scoreboard
-    testworld: "twscoreboard"
   scoreboards:
     admin:
-      # Only players with tab.scoreboard.admin can see this scoreboard
+      # Only players with tab.scoreboard.admin can see this scoreboard, others will see scoreboard1
       display-condition: "permission:tab.scoreboard.admin"
-      # If a player doesn't have the permission, they'll see scoreboard1 instead
-      if-condition-not-met: scoreboard1
       title: "Admin scoreboard"
       lines:
         - "%animation:MyAnimation1%"
@@ -190,10 +183,6 @@ scoreboard:
         - "* &bPing&7: &f%ping%&7ms"
         - "* &bWorld&7: &f%world%"
         - "%animation:MyAnimation1%"
-    twscoreboard:
-      title: "TestWorld"
-      lines:
-        - "This is scoreboard for everyone in testworld world"
 
 ping-spoof:
   enabled: false

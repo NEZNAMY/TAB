@@ -63,4 +63,9 @@ public interface Scoreboard {
 	 * @param index - index of line to remove
 	 */
 	public void removeLine(int index);
+	
+	/**
+	 * Unregisters this scoreboard from all players
+	 */
+	public void unregister();
 }
