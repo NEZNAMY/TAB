@@ -26,7 +26,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	public BukkitPipelineInjector(NMSStorage nms){
 		super("packet_handler");
 		this.nms = nms;
-		channelFunction = (player) -> new BukkitChannelDuplexHandler(player);
+		channelFunction = BukkitChannelDuplexHandler::new;
 	}
 
 	/**

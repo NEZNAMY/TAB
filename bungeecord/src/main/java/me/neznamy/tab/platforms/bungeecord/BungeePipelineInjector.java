@@ -33,7 +33,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 	 */
 	public BungeePipelineInjector() {
 		super("inbound-boss");
-		channelFunction = (player) -> new BungeeChannelDuplexHandler(player);
+		channelFunction = BungeeChannelDuplexHandler::new;
 		extraPackets.put(Team.class, Team::new);
 		extraPackets.put(ScoreboardDisplay.class, ScoreboardDisplay::new);
 		extraPackets.put(ScoreboardObjective.class, ScoreboardObjective::new);
