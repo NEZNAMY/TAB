@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,7 +112,7 @@ public class SkinManager {
 		}
 	}
 
-	private JSONObject getResponse(String url) throws MalformedURLException, IOException, ParseException {
+	private JSONObject getResponse(String url) throws IOException, ParseException {
 		try (InputStreamReader reader = new InputStreamReader(new URL(url).openStream())){
 			return (JSONObject) new JSONParser().parse(reader);
 		}
