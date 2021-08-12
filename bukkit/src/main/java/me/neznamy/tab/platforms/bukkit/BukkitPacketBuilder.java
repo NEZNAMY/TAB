@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -502,7 +503,7 @@ public class BukkitPacketBuilder implements PacketBuilder {
 					String name = (String) nms.getField("ChatHexColor_name").get(color);
 					if (name != null) {
 						//legacy code
-						chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase())));
+						chat.setColor(new TextColor(EnumChatFormat.valueOf(name.toUpperCase(Locale.US))));
 					} else {
 						int rgb = (int) nms.getField("ChatHexColor_rgb").get(color);
 						chat.setColor(new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
