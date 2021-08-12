@@ -275,7 +275,7 @@ public class BukkitPlatform implements Platform {
 	
 	@Override
 	public void callLoadEvent(TabPlayer player) {
-		Bukkit.getPluginManager().callEvent(new TabPlayerLoadEvent(player));
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Bukkit.getPluginManager().callEvent(new TabPlayerLoadEvent(player)));
 	}
 
 	@Override
