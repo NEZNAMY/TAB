@@ -27,6 +27,15 @@ public class ArmorStandManager {
 		armorStands.put(name, as);
 		nearbyPlayers.forEach(as::spawn);
 	}
+	
+	/**
+	 * Returns armor stand with given name or null if not present
+	 * @param name - name of armor stand registered with
+	 * @return armor stand with given name
+	 */
+	public ArmorStand getArmorStand(String name) {
+		return armorStands.get(name);
+	}
 
 	/**
 	 * Removes armor stand from list. It is not automatically destroyed for players
