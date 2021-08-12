@@ -140,7 +140,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param viewer - player to get location for
 	 * @return location of armor stand
 	 */
-	protected Location getArmorStandLocationFor(TabPlayer viewer) {
+	public Location getArmorStandLocationFor(TabPlayer viewer) {
 		return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 
@@ -208,7 +208,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param viewer - player to get location for
 	 * @return teleport packet
 	 */
-	protected Object getTeleportPacket(TabPlayer viewer) {
+	public Object getTeleportPacket(TabPlayer viewer) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(entityId, getArmorStandLocationFor(viewer));
 		} catch (Exception e) {
@@ -221,7 +221,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns destroy packet
 	 * @return destroy packet
 	 */
-	protected Object getDestroyPacket() {
+	public Object getDestroyPacket() {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityDestroyPacket(entityId);
 		} catch (Exception e) {
@@ -235,7 +235,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param dataWatcher - datawatcher
 	 * @return metadata packet
 	 */
-	protected Object getMetadataPacket(DataWatcher dataWatcher) {
+	public Object getMetadataPacket(DataWatcher dataWatcher) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityMetadataPacket(entityId, dataWatcher);
 		} catch (Exception e) {
@@ -250,7 +250,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param dataWatcher - datawatcher
 	 * @return spawn packet
 	 */
-	protected Object getSpawnPacket(Location loc, DataWatcher dataWatcher) {
+	public Object getSpawnPacket(Location loc, DataWatcher dataWatcher) {
 		try {
 			return ((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntitySpawnPacket(entityId, uuid, EntityType.ARMOR_STAND, loc, dataWatcher);
 		} catch (Exception e) {
@@ -262,7 +262,7 @@ public class BukkitArmorStand implements ArmorStand {
 	/**
 	 * Updates armor stand's metadata
 	 */
-	protected void updateMetadata() {
+	public void updateMetadata() {
 		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
 			viewer.sendPacket(getMetadataPacket(createDataWatcher(property.getFormat(viewer), viewer)), manager);
 		}
@@ -272,7 +272,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns general visibility rule for everyone with limited info
 	 * @return true if should be visible, false if not
 	 */
-	protected boolean getVisibility() {
+	public boolean getVisibility() {
 		if (((BukkitTabPlayer)owner).isDisguised() || manager.getPlayersOnBoats().contains(owner)) return false;
 		if (TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) return true;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
@@ -282,7 +282,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Returns general location where armor stand should be at time of calling
 	 * @return Location where armor stand should be for everyone
 	 */
-	protected Location getLocation() {
+	public Location getLocation() {
 		double x = player.getLocation().getX();
 		double y = getY() + yOffset + 2;
 		double z = player.getLocation().getZ();
@@ -342,7 +342,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param viewer - player to apply checks against
 	 * @return datawatcher for viewer
 	 */
-	protected DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
+	public DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
 
 		byte flag = 32; //invisible
