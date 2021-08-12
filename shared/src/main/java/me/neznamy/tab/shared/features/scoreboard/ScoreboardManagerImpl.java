@@ -169,15 +169,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	public void sendHighestScoreboard(TabPlayer p) {
 		if (disabledPlayers.contains(p) || !hasScoreboardVisible(p)) return;
 		Scoreboard scoreboard = detectHighestScoreboard(p);
-		if (scoreboard != null) {
-			Scoreboard current = activeScoreboard.get(p);
-			if (scoreboard != current) {
-				if (current != null) {
-					current.removePlayer(p);
-				}
-				if (scoreboard != null) {
-					scoreboard.addPlayer(p);
-				}
+		Scoreboard current = activeScoreboard.get(p);
+		if (scoreboard != current) {
+			if (current != null) {
+				current.removePlayer(p);
+			}
+			if (scoreboard != null) {
+				scoreboard.addPlayer(p);
 			}
 		}
 	}
