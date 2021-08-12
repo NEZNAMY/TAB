@@ -24,7 +24,7 @@ public abstract class PipelineInjector extends TabFeature {
 	public static final String DECODER_NAME = "TAB";
 	
 	//handler to inject before
-	private final String INJECT_POSITION;
+	private final String injectPosition;
 	
 	//preventing spam when packet is sent to everyone
 	private String lastTeamOverrideMessage;
@@ -40,7 +40,7 @@ public abstract class PipelineInjector extends TabFeature {
 	 */
 	protected PipelineInjector(String injectPosition) {
 		super("Pipeline injection");
-		INJECT_POSITION = injectPosition;
+		this.injectPosition = injectPosition;
 		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
 				TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 	}
@@ -51,13 +51,13 @@ public abstract class PipelineInjector extends TabFeature {
 	 */
 	public void inject(TabPlayer player) {
 		if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
-		if (!player.getChannel().pipeline().names().contains(INJECT_POSITION)) {
+		if (!player.getChannel().pipeline().names().contains(injectPosition)) {
 			//fake player or waterfall bug
 			return;
 		}
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(INJECT_POSITION, DECODER_NAME, channelFunction.apply(player));
+			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, channelFunction.apply(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//idk how does this keep happening but whatever
 		}
