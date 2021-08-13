@@ -156,7 +156,7 @@ public class DebugCommand extends SubCommand {
 		if (TAB.getInstance().getTeamManager() != null && 
 			!((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld()) && 
 			analyzed.getTeamNameNote() != null)
-				return "&eTeam name note: &a" + analyzed.getTeamNameNote();
+				return "&eTeam name note: &r" + analyzed.getTeamNameNote();
 		return "";
 	}
 	

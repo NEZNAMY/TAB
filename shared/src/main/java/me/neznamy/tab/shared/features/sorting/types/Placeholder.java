@@ -31,7 +31,7 @@ public class Placeholder extends SortingType {
 		if (sortingValue == null) {
 			sortingValue = String.valueOf(sortingMap.size()+1);
 			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by predefined placeholder values is enabled, but output \"" + output + "\" is not listed.");
-			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's placeholder output is not in list. ");
+			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's placeholder output is not in list. &r");
 		}
 		return sortingValue;
 	}

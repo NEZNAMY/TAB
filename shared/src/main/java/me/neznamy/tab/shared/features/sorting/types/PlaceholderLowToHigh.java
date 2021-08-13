@@ -19,7 +19,7 @@ public class PlaceholderLowToHigh extends SortingType {
 	@Override
 	public String getChars(ITabPlayer p) {
 		String output = setPlaceholders(p);
-		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + output + "\". ");
+		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + output + "\". &r");
 		int intValue = TAB.getInstance().getErrorManager().parseInteger(output, 0, "numeric sorting placeholder");
 		return String.valueOf(DEFAULT_NUMBER + intValue);
 	}

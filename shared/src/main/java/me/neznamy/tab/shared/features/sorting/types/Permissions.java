@@ -26,7 +26,7 @@ public class Permissions extends SortingType {
 		for (String localgroup : sortedGroups.keySet()) {
 			if (p.hasPermission("tab.sort." + localgroup)) {
 				chars = sortedGroups.get(localgroup.toLowerCase());
-				p.setTeamNameNote("Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list)");
+				p.setTeamNameNote("Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list). &r");
 				if (p.hasPermission("random.permission")) {
 					p.setTeamNameNote(p.getTeamNameNote() + "&cThis user appears to have all permissions. Is he OP? &r");
 				}
@@ -36,7 +36,7 @@ public class Permissions extends SortingType {
 		if (chars == null) {
 			chars = "9";
 			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
-			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer does not have sorting permission for any group in sorting list. ");
+			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer does not have sorting permission for any group in sorting list. &r");
 		}
 		return chars;
 	}
