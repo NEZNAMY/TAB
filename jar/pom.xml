@@ -76,7 +76,7 @@
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
-			<artifactId>velocity-1.1.0</artifactId>
+			<artifactId>velocity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
