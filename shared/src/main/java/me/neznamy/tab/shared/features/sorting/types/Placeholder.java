@@ -25,7 +25,7 @@ public class Placeholder extends SortingType {
 	@Override
 	public String getChars(ITabPlayer p) {
 		String output = setPlaceholders(p);
-		p.setTeamNameNote(p.getTeamNameNote() + "Placeholder returned \"" + output + "\". ");
+		p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\". ");
 		if (output.contains("&")) output = output.replace('&', '\u00a7');
 		String sortingValue = sortingMap.get(output);
 		if (sortingValue == null) {
