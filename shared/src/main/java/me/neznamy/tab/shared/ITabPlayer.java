@@ -12,9 +12,9 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.CrossPlatformPacket;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
+import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.shared.features.GroupRefresher;
 
 /**
@@ -152,12 +152,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void sendCustomPacket(CrossPlatformPacket packet) {
+	public void sendCustomPacket(TabPacket packet) {
 		sendCustomPacket(packet, null);
 	}
 
 	@Override
-	public void sendCustomPacket(CrossPlatformPacket packet, TabFeature feature) {
+	public void sendCustomPacket(TabPacket packet, TabFeature feature) {
 		try {
 			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()), feature);
 		} catch (Exception e) {

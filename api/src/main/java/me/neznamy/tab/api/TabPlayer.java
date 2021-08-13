@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.CrossPlatformPacket;
+import me.neznamy.tab.api.protocol.TabPacket;
 
 /**
  * An interface representing a player
@@ -106,7 +106,7 @@ public interface TabPlayer {
 	 * Sends the player a custom universal packet
 	 * @param packet - packet to send
 	 */
-	public void sendCustomPacket(CrossPlatformPacket packet);
+	public void sendCustomPacket(TabPacket packet);
 
 	/**
 	 * Sends the player a custom universal packet and adds that packet into counter that
@@ -114,7 +114,7 @@ public interface TabPlayer {
 	 * @param packet - packet to send
 	 * @param feature - feature to increment sent packet counter of 
 	 */
-	public void sendCustomPacket(CrossPlatformPacket packet, TabFeature feature);
+	public void sendCustomPacket(TabPacket packet, TabFeature feature);
 
 	/**
 	 * Sends the player a platform-specific packet

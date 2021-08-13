@@ -5,7 +5,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 /**
  * A class representing platform specific packet class
  */
-public class PacketPlayOutChat implements CrossPlatformPacket {
+public class PacketPlayOutChat implements TabPacket {
 
 	//the message to be sent
 	private IChatBaseComponent message;

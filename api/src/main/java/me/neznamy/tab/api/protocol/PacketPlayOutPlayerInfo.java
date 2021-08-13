@@ -10,7 +10,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 /**
  * A class representing platform specific packet class
  */
-public class PacketPlayOutPlayerInfo implements CrossPlatformPacket {
+public class PacketPlayOutPlayerInfo implements TabPacket {
 
 	//packet action
 	private EnumPlayerInfoAction action;

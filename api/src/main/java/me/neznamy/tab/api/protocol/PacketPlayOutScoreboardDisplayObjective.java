@@ -3,7 +3,7 @@ package me.neznamy.tab.api.protocol;
 /**
  * A class representing platform specific packet class
  */
-public class PacketPlayOutScoreboardDisplayObjective implements CrossPlatformPacket {
+public class PacketPlayOutScoreboardDisplayObjective implements TabPacket {
 
 	//display slot (0 = playerlist, 1 = sidebar, 2 = belowname)
 	private int slot;

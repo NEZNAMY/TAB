@@ -5,7 +5,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 /**
  * A class representing platform specific packet class
  */
-public class PacketPlayOutPlayerListHeaderFooter implements CrossPlatformPacket {
+public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
 	//tablist header
 	private IChatBaseComponent header;

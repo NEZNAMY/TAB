@@ -8,7 +8,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 /**
  * A class representing platform specific packet class
  */
-public class PacketPlayOutScoreboardTeam implements CrossPlatformPacket {
+public class PacketPlayOutScoreboardTeam implements TabPacket {
 
 	//team name, limited to 16 characters, used for sorting in tablist alphabetically
 	private String name;

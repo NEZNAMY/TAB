@@ -16,7 +16,7 @@ import me.neznamy.tab.api.util.BiFunctionWithException;
  */
 public abstract class PacketBuilder {
 	
-	private Map<Class<? extends CrossPlatformPacket>, BiFunctionWithException<CrossPlatformPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
+	protected Map<Class<? extends TabPacket>, BiFunctionWithException<TabPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
 	
 	protected PacketBuilder() {
 		buildMap.put(PacketPlayOutBoss.class, (packet, version) -> build((PacketPlayOutBoss)packet, version));
@@ -29,7 +29,7 @@ public abstract class PacketBuilder {
 		buildMap.put(PacketPlayOutScoreboardTeam.class, (packet, version) -> build((PacketPlayOutScoreboardTeam)packet, version));
 	}
 	
-	public Object build(CrossPlatformPacket packet, ProtocolVersion clientVersion) throws Exception {
+	public Object build(TabPacket packet, ProtocolVersion clientVersion) throws Exception {
 		return buildMap.get(packet.getClass()).apply(packet, clientVersion);
 	}
 

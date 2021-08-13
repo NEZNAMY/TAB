@@ -8,7 +8,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 /**
  * A class representing platform specific packet class
  */
-public class PacketPlayOutBoss implements CrossPlatformPacket {
+public class PacketPlayOutBoss implements TabPacket {
 
 	//bossbar's uuid
 	private UUID id;
