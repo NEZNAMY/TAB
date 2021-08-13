@@ -45,6 +45,10 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboa
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TAB;
 
@@ -79,6 +83,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		} catch (Exception e) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Failed to create instance of \"Scoreboard\"");
 		}
+		buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet, version));
+		buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport)packet, version));
+		buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> build((PacketPlayOutEntityDestroy)packet, version));
+		buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving)packet, version));
 	}
 
 	@Override
@@ -157,7 +165,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 		int entityId = packet.getId().hashCode();
 		if (packet.getOperation() == Action.REMOVE) {
-			return buildEntityDestroyPacket(entityId);
+			return build(new PacketPlayOutEntityDestroy(entityId), clientVersion);
 		}
 		DataWatcher w = new DataWatcher();
 		if (packet.getOperation() == Action.UPDATE_PCT || packet.getOperation() == Action.ADD) {
@@ -170,9 +178,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		}
 		if (packet.getOperation() == Action.ADD) {
 			w.helper().setEntityFlags((byte) 32);
-			return buildEntitySpawnPacket(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w);
+			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w), clientVersion);
 		} else {
-			return buildEntityMetadataPacket(entityId, w);
+			return build(new PacketPlayOutEntityMetadata(entityId, w), clientVersion);
 		}
 	}
 
@@ -340,26 +348,17 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntityDestroyPacket(int id) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	public Object build(PacketPlayOutEntityDestroy packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		try {
-			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(new int[] {id});
+			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(packet.getEntities());
 		} catch (IllegalArgumentException e) {
 			//1.17.0
-			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(id);
+			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(packet.getEntities()[0]);
 		}
 	}
 
-	/**
-	 * Builds entity metadata packet with given parameters
-	 * @param entityId - entity id
-	 * @param dataWatcher - datawatcher
-	 * @return metadata packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	public Object buildEntityMetadataPacket(int entityId, DataWatcher dataWatcher) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		return nms.getConstructor("PacketPlayOutEntityMetadata").newInstance(entityId, dataWatcher.toNMS(), true);
+	public Object build(PacketPlayOutEntityMetadata packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		return nms.getConstructor("PacketPlayOutEntityMetadata").newInstance(packet.getEntityId(), packet.getDataWatcher().toNMS(), true);
 	}
 
 	/**
@@ -374,24 +373,24 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntitySpawnPacket(int entityId, UUID uuid, EntityType entityType, Location loc, DataWatcher dataWatcher) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+	public Object build(PacketPlayOutSpawnEntityLiving packet, ProtocolVersion clientVersion) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutSpawnEntityLiving").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
-		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYID", entityId);
-		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYTYPE", entityIds.get(entityType));
-		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_YAW", (byte)(loc.getYaw() * 256.0f / 360.0f));
-		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_PITCH", (byte)(loc.getPitch() * 256.0f / 360.0f));
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYID", packet.getEntityId());
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYTYPE", entityIds.get(packet.getEntityType()));
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_YAW", (byte)(packet.getLocation().getYaw() * 256.0f / 360.0f));
+		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_PITCH", (byte)(packet.getLocation().getPitch() * 256.0f / 360.0f));
 		if (nms.getMinorVersion() <= 14) {
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_DATAWATCHER", dataWatcher.toNMS());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_DATAWATCHER", packet.getDataWatcher().toNMS());
 		}
 		if (nms.getMinorVersion() >= 9) {
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_UUID", uuid);
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_X", loc.getX());
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Y", loc.getY());
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Z", loc.getZ());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_UUID", packet.getUniqueId());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_X", packet.getLocation().getX());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Y", packet.getLocation().getY());
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Z", packet.getLocation().getZ());
 		} else {
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_X", floor(loc.getX()*32));
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Y", floor(loc.getY()*32));
-			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Z", floor(loc.getZ()*32));
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_X", floor(packet.getLocation().getX()*32));
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Y", floor(packet.getLocation().getY()*32));
+			nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_Z", floor(packet.getLocation().getZ()*32));
 		}
 		return nmsPacket;
 	}
@@ -405,20 +404,20 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public Object buildEntityTeleportPacket(int entityId, Location location) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+	public Object build(PacketPlayOutEntityTeleport packet, ProtocolVersion clientVersion) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutEntityTeleport").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
-		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_ENTITYID", entityId);
+		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_ENTITYID", packet.getEntityId());
 		if (nms.getMinorVersion() >= 9) {
-			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_X", location.getX());
-			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Y", location.getY());
-			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Z", location.getZ());
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_X", packet.getLocation().getX());
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Y", packet.getLocation().getY());
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Z", packet.getLocation().getZ());
 		} else {
-			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_X", floor(location.getX()*32));
-			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Y", floor(location.getY()*32));
-			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Z", floor(location.getZ()*32));
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_X", floor(packet.getLocation().getX()*32));
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Y", floor(packet.getLocation().getY()*32));
+			nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_Z", floor(packet.getLocation().getZ()*32));
 		}
-		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_YAW", (byte) (location.getYaw()/360*256));
-		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_PITCH", (byte) (location.getPitch()/360*256));
+		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_YAW", (byte) (packet.getLocation().getYaw()/360*256));
+		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_PITCH", (byte) (packet.getLocation().getPitch()/360*256));
 		return nmsPacket;
 	}
 

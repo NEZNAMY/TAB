@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
-import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
@@ -46,11 +46,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 		for (BossBar line : getRegisteredBossBars().values()) {
 			for (TabPlayer all : line.getPlayers()) {
 				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-				try {
-					all.sendPacket(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).buildEntityTeleportPacket(line.getUniqueId().hashCode(), getWitherLocation(all)), this);
-				} catch (Exception e) {
-					TAB.getInstance().getErrorManager().printError("Failed to create PacketPlayOutEntityTeleport", e);
-				}
+				all.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), getWitherLocation(all)), this);
 			}
 		}
 	}
