@@ -179,6 +179,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void addLine(String text) {
 		StableDynamicLine line = new StableDynamicLine(this, lines.size()+1, text);
+		TAB.getInstance().getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + lines.size(), line);
 		lines.add(line);
 		for (TabPlayer p : players) {
 			line.register(p);
@@ -192,5 +193,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		for (TabPlayer p : players) {
 			line.unregister(p);
 		}
+		TAB.getInstance().getFeatureManager().unregisterFeature("scoreboard-score-" + name + "-" + index);
 	}
 }
