@@ -83,10 +83,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		} catch (Exception e) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Failed to create instance of \"Scoreboard\"");
 		}
-		buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet, version));
-		buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport)packet, version));
-		buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> build((PacketPlayOutEntityDestroy)packet, version));
-		buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving)packet, version));
+		buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet));
+		buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport)packet));
+		buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> build((PacketPlayOutEntityDestroy)packet));
+		buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving)packet));
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 		int entityId = packet.getId().hashCode();
 		if (packet.getOperation() == Action.REMOVE) {
-			return build(new PacketPlayOutEntityDestroy(entityId), clientVersion);
+			return build(new PacketPlayOutEntityDestroy(entityId));
 		}
 		DataWatcher w = new DataWatcher();
 		if (packet.getOperation() == Action.UPDATE_PCT || packet.getOperation() == Action.ADD) {
@@ -178,9 +178,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		}
 		if (packet.getOperation() == Action.ADD) {
 			w.helper().setEntityFlags((byte) 32);
-			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w), clientVersion);
+			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w));
 		} else {
-			return build(new PacketPlayOutEntityMetadata(entityId, w), clientVersion);
+			return build(new PacketPlayOutEntityMetadata(entityId, w));
 		}
 	}
 
@@ -348,7 +348,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutEntityDestroy packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	public Object build(PacketPlayOutEntityDestroy packet) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		try {
 			return nms.getConstructor("PacketPlayOutEntityDestroy").newInstance(packet.getEntities());
 		} catch (IllegalArgumentException e) {
@@ -357,7 +357,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		}
 	}
 
-	public Object build(PacketPlayOutEntityMetadata packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	public Object build(PacketPlayOutEntityMetadata packet) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		return nms.getConstructor("PacketPlayOutEntityMetadata").newInstance(packet.getEntityId(), packet.getDataWatcher().toNMS(), true);
 	}
 
@@ -373,7 +373,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutSpawnEntityLiving packet, ProtocolVersion clientVersion) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+	public Object build(PacketPlayOutSpawnEntityLiving packet) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutSpawnEntityLiving").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
 		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYID", packet.getEntityId());
 		nms.setField(nmsPacket, "PacketPlayOutSpawnEntityLiving_ENTITYTYPE", entityIds.get(packet.getEntityType()));
@@ -404,7 +404,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InvocationTargetException 
 	 * @throws InstantiationException 
 	 */
-	public Object build(PacketPlayOutEntityTeleport packet, ProtocolVersion clientVersion) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+	public Object build(PacketPlayOutEntityTeleport packet) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		Object nmsPacket = nms.getConstructor("PacketPlayOutEntityTeleport").newInstance(nms.getMethod("getHandle").invoke(Bukkit.getOnlinePlayers().iterator().next()));
 		nms.setField(nmsPacket, "PacketPlayOutEntityTeleport_ENTITYID", packet.getEntityId());
 		if (nms.getMinorVersion() >= 9) {
