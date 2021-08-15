@@ -32,6 +32,7 @@ public abstract class SortingType {
 	protected SortingType(String sortingPlaceholder){
 		this.sortingPlaceholder = sortingPlaceholder;
 		usedPlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(sortingPlaceholder);
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(usedPlaceholders);
 	}
 	
 	/**
