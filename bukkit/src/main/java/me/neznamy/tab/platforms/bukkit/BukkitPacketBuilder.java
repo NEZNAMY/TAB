@@ -568,8 +568,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		if (component == null) return null;
 		Object chat = nms.getConstructor("ChatComponentText").newInstance(component.getText());
 		Object modifier;
-		Object clickEvent = component.getModifier().getClickEvent() == null ? null : nms.getConstructor("ChatClickable").newInstance(nms.getMethod("EnumClickAction_a").invoke(null, 
-				component.getModifier().getClickEvent().getAction().toString().toLowerCase()), component.getModifier().getClickEvent().getValue());
+		Object clickEvent = component.getModifier().getClickEvent() == null ? null : nms.getConstructor("ChatClickable").newInstance(Enum.valueOf((Class<Enum>) nms.getClass("EnumClickAction"), 
+				component.getModifier().getClickEvent().getAction().toString().toUpperCase()), component.getModifier().getClickEvent().getValue());
 		if (nms.getMinorVersion() >= 16) {
 			Object color = null;
 			if (component.getModifier().getColor() != null) {

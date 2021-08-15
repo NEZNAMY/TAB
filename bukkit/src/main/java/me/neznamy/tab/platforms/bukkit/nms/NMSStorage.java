@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +18,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.platforms.bukkit.Main;
@@ -59,19 +62,20 @@ public class NMSStorage {
 		classes.put("EntityPlayer", getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer"));
 		classes.put("Entity", getNMSClass("net.minecraft.world.entity.Entity", "Entity"));
 		classes.put("EntityLiving", getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving"));
+		classes.put("EntityHuman", getNMSClass("net.minecraft.world.entity.player.EntityHuman", "EntityHuman"));
 		classes.put("Packet", getNMSClass("net.minecraft.network.protocol.Packet", "Packet"));
 		classes.put("PlayerConnection", getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection"));
 		classes.put("NetworkManager", getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager"));
 		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "field_71138_i", "e"));
 		fields.put("PLAYER_CONNECTION", getFields(getClass("EntityPlayer"), getClass("PlayerConnection")).get(0));
 		methods.put("getHandle", Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle"));
-		methods.put("sendPacket", getMethod(getClass("PlayerConnection"), new String[]{"sendPacket", "func_147359_a"}, getClass("Packet")));
+		methods.put("sendPacket", getMethods(getClass("PlayerConnection"), void.class, getClass("Packet")).get(0));
 		if (minorVersion >= 7) {
 			fields.put("NETWORK_MANAGER", getFields(getClass("PlayerConnection"), getClass("NetworkManager")).get(0));
 		}
 		if (minorVersion >= 8) {
 			fields.put("CHANNEL", getFields(getClass("NetworkManager"), Channel.class).get(0));
-			methods.put("getProfile", getClass("EntityPlayer").getMethod("getProfile"));
+			methods.put("getProfile", getMethods(getClass("EntityHuman"), GameProfile.class).get(0));
 		}
 		initializeChatComponents();
 		initializeChatPacket();
@@ -135,10 +139,9 @@ public class NMSStorage {
 			fields.put("ChatModifier_obfuscated", booleans.get(4));
 			fields.put("ChatModifier_clickEvent", getFields(getClass("ChatModifier"), getClass("ChatClickable")).get(0));
 			fields.put("ChatModifier_hoverEvent", getFields(getClass("ChatModifier"), getClass("ChatHoverable")).get(0));
-			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent"))); //v1.7.R4+, v1.7.R3-
-			methods.put("EnumClickAction_a", getMethod(getClass("EnumClickAction"), new String[]{"a", "func_150672_a"}, String.class));
+			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent")));
 			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a"}, String.class));
-			methods.put("ChatHoverable_getAction", getClass("ChatHoverable").getMethod("a"));
+			methods.put("ChatHoverable_getAction", getMethods(getClass("ChatHoverable"), getClass("EnumHoverAction")).get(0));
 		}
 		if (minorVersion >= 16) {
 			classes.put("ChatHexColor", getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor"));
@@ -149,18 +152,18 @@ public class NMSStorage {
 			fields.put("ChatHexColor_rgb", getFields(getClass("ChatHexColor"), int.class).get(0));
 			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), Object.class).get(0));
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("ChatHexColor")).get(0));
-			methods.put("ChatHexColor_ofInt", getClass("ChatHexColor").getMethod("a", int.class));
-			methods.put("ChatHexColor_ofString", getClass("ChatHexColor").getMethod("a", String.class));
-			methods.put("ChatHoverable_serialize", getClass("ChatHoverable").getMethod("b"));
-			methods.put("ChatHoverable_getValue", getClass("ChatHoverable").getMethod("a", getClass("EnumHoverAction")));
-			methods.put("EnumHoverAction_fromJson", getClass("EnumHoverAction").getMethod("a", JsonElement.class));
-			methods.put("EnumHoverAction_fromLegacyComponent", getClass("EnumHoverAction").getMethod("a", getClass("IChatBaseComponent")));
+			methods.put("ChatHexColor_ofInt", getMethods(getClass("ChatHexColor"), getClass("ChatHexColor"), int.class).get(0));
+			methods.put("ChatHexColor_ofString", getMethods(getClass("ChatHexColor"), getClass("ChatHexColor"), String.class).get(0));
+			methods.put("ChatHoverable_serialize", getMethods(getClass("ChatHoverable"), JsonObject.class).get(0));
+			methods.put("ChatHoverable_getValue", getMethods(getClass("ChatHoverable"), Object.class, getClass("EnumHoverAction")).get(0));
+			methods.put("EnumHoverAction_fromJson", getMethods(getClass("EnumHoverAction"), getClass("ChatHoverable"), JsonElement.class).get(0));
+			methods.put("EnumHoverAction_fromLegacyComponent", getMethods(getClass("EnumHoverAction"), getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
 		} else if (minorVersion >= 7) {
 			constructors.put("ChatModifier", getClass("ChatModifier").getConstructor());
 			constructors.put("ChatHoverable", getClass("ChatHoverable").getConstructor(getClass("EnumHoverAction"), getClass("IChatBaseComponent")));
 			fields.put("ChatHoverable_value", getFields(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
 			fields.put("ChatModifier_color", getFields(getClass("ChatModifier"), getClass("EnumChatFormat")).get(0));
-			methods.put("ChatHoverable_getValue", getClass("ChatHoverable").getMethod("b"));
+			methods.put("ChatHoverable_getValue", getMethods(getClass("ChatHoverable"), getClass("IChatBaseComponent")).get(0));
 		}
 	}
 	
@@ -297,10 +300,10 @@ public class NMSStorage {
 			constructors.put("PlayerInfoData", getClass("PlayerInfoData").getConstructors()[0]);
 			fields.put("PacketPlayOutPlayerInfo_ACTION", getFields(getClass("PacketPlayOutPlayerInfo"), getClass("EnumPlayerInfoAction")).get(0));
 			fields.put("PacketPlayOutPlayerInfo_PLAYERS", getFields(getClass("PacketPlayOutPlayerInfo"), List.class).get(0));
-			methods.put("PlayerInfoData_getProfile", getClass("PlayerInfoData").getMethod("a"));
-			methods.put("PlayerInfoData_getLatency", getClass("PlayerInfoData").getMethod("b"));
-			methods.put("PlayerInfoData_getGamemode", getClass("PlayerInfoData").getMethod("c"));
-			methods.put("PlayerInfoData_getDisplayName", getClass("PlayerInfoData").getMethod("d"));
+			methods.put("PlayerInfoData_getProfile", getMethods(getClass("PlayerInfoData"), GameProfile.class).get(0));
+			methods.put("PlayerInfoData_getLatency", getMethods(getClass("PlayerInfoData"), int.class).get(0));
+			methods.put("PlayerInfoData_getGamemode", getMethods(getClass("PlayerInfoData"), getClass("EnumGamemode")).get(0));
+			methods.put("PlayerInfoData_getDisplayName", getMethods(getClass("PlayerInfoData"), getClass("IChatBaseComponent")).get(0));
 		}
 	}
 	
@@ -327,7 +330,7 @@ public class NMSStorage {
 		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
 		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
 		fields.put("IScoreboardCriteria", getFields(getClass("IScoreboardCriteria"), getClass("IScoreboardCriteria")).get(0));
-		methods.put("ScoreboardTeam_getPlayerNameSet", getMethod(getClass("ScoreboardTeam"), new String[]{"getPlayerNameSet", "d", "func_96670_d"}));
+		methods.put("ScoreboardTeam_getPlayerNameSet", getMethods(getClass("ScoreboardTeam"), Collection.class).get(0));
 		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c"}, int.class));
 		if (minorVersion >= 8) {
 			classes.put("EnumScoreboardHealthDisplay", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
@@ -338,7 +341,7 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 9) {
 			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
-			methods.put("ScoreboardTeam_setCollisionRule", getMethod(getClass("ScoreboardTeam"), new String[]{"setCollisionRule", "a"}, getClass("EnumTeamPush")));
+			methods.put("ScoreboardTeam_setCollisionRule", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumTeamPush")).get(0));
 		}
 		if (minorVersion >= 13) {
 			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor(getClass("ScoreboardObjective"), int.class));
@@ -346,7 +349,7 @@ public class NMSStorage {
 			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("IChatBaseComponent")).get(0));
 			methods.put("ScoreboardTeam_setPrefix", getClass("ScoreboardTeam").getMethod("setPrefix", getClass("IChatBaseComponent")));
 			methods.put("ScoreboardTeam_setSuffix", getClass("ScoreboardTeam").getMethod("setSuffix", getClass("IChatBaseComponent")));
-			methods.put("ScoreboardTeam_setColor", getClass("ScoreboardTeam").getMethod("setColor", getClass("EnumChatFormat")));
+			methods.put("ScoreboardTeam_setColor", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumChatFormat")).get(0));
 		} else {
 			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor());
 			constructors.put("PacketPlayOutScoreboardScore_String", getClass("PacketPlayOutScoreboardScore").getConstructor(String.class));
@@ -361,9 +364,9 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 17) {
 			classes.put("PacketPlayOutScoreboardTeam_a", Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a"));
-			methods.put("PacketPlayOutScoreboardTeam_of", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam")));
-			methods.put("PacketPlayOutScoreboardTeam_ofBoolean", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam"), boolean.class));
-			methods.put("PacketPlayOutScoreboardTeam_ofString", getClass("PacketPlayOutScoreboardTeam").getMethod("a", getClass("ScoreboardTeam"), String.class, getClass("PacketPlayOutScoreboardTeam_a")));
+			methods.put("PacketPlayOutScoreboardTeam_of", getMethods(getClass("PacketPlayOutScoreboardTeam"), getClass("PacketPlayOutScoreboardTeam"), getClass("ScoreboardTeam")).get(0));
+			methods.put("PacketPlayOutScoreboardTeam_ofBoolean", getMethods(getClass("PacketPlayOutScoreboardTeam"), getClass("PacketPlayOutScoreboardTeam"), getClass("ScoreboardTeam"), boolean.class).get(0));
+			methods.put("PacketPlayOutScoreboardTeam_ofString", getMethods(getClass("PacketPlayOutScoreboardTeam"), getClass("PacketPlayOutScoreboardTeam"), getClass("ScoreboardTeam"), String.class, getClass("PacketPlayOutScoreboardTeam_a")).get(0));
 		} else {
 			constructors.put("PacketPlayOutScoreboardTeam", getClass("PacketPlayOutScoreboardTeam").getConstructor(getClass("ScoreboardTeam"), int.class));
 		}
@@ -452,6 +455,20 @@ public class NMSStorage {
 			return m;
 		}
 		throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
+	}
+	
+	private List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes){
+		List<Method> list = new ArrayList<>();
+		main:
+		for (Method m : clazz.getDeclaredMethods()) {
+			if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
+			Class<?>[] types = m.getParameterTypes();
+			for (int i=0; i<types.length; i++) {
+				if (types[i] != parameterTypes[i]) continue main;
+			}
+			list.add(m);
+		}
+		return list;
 	}
 
 	/**
