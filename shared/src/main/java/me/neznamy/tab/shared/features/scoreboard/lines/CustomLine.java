@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
@@ -43,37 +44,37 @@ public class CustomLine extends ScoreboardLine {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
-		String oldName = refreshed.getProperty(parent.getName() + "-" + teamName + "-name").get();
-		boolean prefixUpdate = refreshed.getProperty(parent.getName() + "-" + teamName + "-prefix").update();
-		boolean nameUpdate = refreshed.getProperty(parent.getName() + "-" + teamName + "-name").update();
-		boolean suffixUpdate = refreshed.getProperty(parent.getName() + "-" + teamName + "-suffix").update();
+		String oldName = refreshed.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get();
+		boolean prefixUpdate = refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).update();
+		boolean nameUpdate = refreshed.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).update();
+		boolean suffixUpdate = refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).update();
 		if (prefixUpdate || nameUpdate || suffixUpdate) {
 			if (nameUpdate) {
 				//name changed as well
 				removeLine(refreshed, oldName);
-				addLine(refreshed, refreshed.getProperty(parent.getName() + "-" + teamName + "-name").get(), 
-						refreshed.getProperty(parent.getName() + "-" + teamName + "-prefix").get(), refreshed.getProperty(parent.getName() + "-" + teamName + "-suffix").get());
+				addLine(refreshed, refreshed.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get(), 
+						refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(), refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get());
 			} else {
 				//only prefix/suffix changed
-				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(parent.getName() + "-" + teamName + "-prefix").get(), 
-						refreshed.getProperty(parent.getName() + "-" + teamName + "-suffix").get(), "always", "always", 0), this);
+				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(), 
+						refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0), this);
 			}
 		}
 	}
 
 	@Override
 	public void register(TabPlayer p) {
-		p.setProperty(this, teamName + "-prefix", prefix);
-		p.setProperty(this, teamName + "-name", name);
-		p.setProperty(this, teamName + "-suffix", suffix);
-		addLine(p, p.getProperty(parent.getName() + "-" + teamName + "-name").get(), p.getProperty(parent.getName() + "-" + teamName + "-prefix").get(),
-				p.getProperty(parent.getName() + "-" + teamName + "-suffix").get());
+		p.setProperty(this, PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber), prefix);
+		p.setProperty(this, PropertyUtils.scoreboardName(parent.getName(), lineNumber), name);
+		p.setProperty(this, PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber), suffix);
+		addLine(p, p.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get(), p.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(),
+				p.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get());
 	}
 
 	@Override
 	public void unregister(TabPlayer p) {
 		if (parent.getPlayers().contains(p)) {
-			removeLine(p, p.getProperty(parent.getName() + "-" + teamName + "-name").get());
+			removeLine(p, p.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get());
 		}
 	}
 

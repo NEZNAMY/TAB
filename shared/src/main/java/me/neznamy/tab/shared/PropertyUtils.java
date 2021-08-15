@@ -44,4 +44,16 @@ public class PropertyUtils {
 	public static String bossbarStyle(String name) {
 		return "bossbar-style-" + name;
 	}
+	
+	public static String scoreboardPrefix(String scoreboard, int lineNumber) {
+		return scoreboard + "-" + lineNumber + "-prefix";
+	}
+	
+	public static String scoreboardName(String scoreboard, int lineNumber) {
+		return scoreboard + "-" + lineNumber + "-name";
+	}
+	
+	public static String scoreboardSuffix(String scoreboard, int lineNumber) {
+		return scoreboard + "-" + lineNumber + "-suffix";
+	}
 }

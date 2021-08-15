@@ -77,7 +77,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 				score = registerLine(i+1, lines.get(i));
 			}
 			this.lines.add(score);
-			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + i, score);
+			TAB.getInstance().getFeatureManager().registerFeature(featureName(name, i), score);
 		}
 	}
 
@@ -179,7 +179,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void addLine(String text) {
 		StableDynamicLine line = new StableDynamicLine(this, lines.size()+1, text);
-		TAB.getInstance().getFeatureManager().registerFeature("scoreboard-score-" + name + "-" + lines.size(), line);
+		TAB.getInstance().getFeatureManager().registerFeature(featureName(name, lines.size()), line);
 		lines.add(line);
 		for (TabPlayer p : players) {
 			line.register(p);
@@ -193,6 +193,10 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		for (TabPlayer p : players) {
 			line.unregister(p);
 		}
-		TAB.getInstance().getFeatureManager().unregisterFeature("scoreboard-score-" + name + "-" + index);
+		TAB.getInstance().getFeatureManager().unregisterFeature(featureName(name, index));
+	}
+	
+	private String featureName(String line, int index) {
+		return "scoreboard-score-" + line + "-" + index;
 	}
 }
