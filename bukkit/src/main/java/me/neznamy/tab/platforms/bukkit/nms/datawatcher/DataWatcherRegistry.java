@@ -18,18 +18,17 @@ public class DataWatcherRegistry {
 	private Object registryFloat;
 	private Object registryString;
 	private Object registryIChatBaseComponent;
-	private Object registryOptional_IChatBaseComponent;
-	@Deprecated
-	private Object registryOptional_ItemStack;
+	private Object registryOptionalIChatBaseComponent;
+	private Object registryOptionalItemStack;
 	private Object registryItemStack;
-	private Object registryOptional_IBlockData;
+	private Object registryOptionalIBlockData;
 	private Object registryBoolean;
 	private Object registryParticleParam;
 	private Object registryVector3f;
 	private Object registryBlockPosition;
-	private Object registryOptional_BlockPosition;
+	private Object registryOptionalBlockPosition;
 	private Object registryEnumDirection;
-	private Object registryOptional_UUID;
+	private Object registryOptionalUUID;
 	private Object registryNBTTagCompound;
 	private Object registryVillagerData;
 	private Object registryOptionalInt;
@@ -47,16 +46,16 @@ public class DataWatcherRegistry {
 			registryString = fields.get("d");
 			registryIChatBaseComponent = fields.get("e");
 			if (nms.getMinorVersion() >= 13) {
-				registryOptional_IChatBaseComponent = fields.get("f");
+				registryOptionalIChatBaseComponent = fields.get("f");
 				registryItemStack = fields.get("g");
-				registryOptional_IBlockData = fields.get("h");
+				registryOptionalIBlockData = fields.get("h");
 				registryBoolean = fields.get("i");
 				registryParticleParam = fields.get("j");
 				registryVector3f = fields.get("k");
 				registryBlockPosition = fields.get("l");
-				registryOptional_BlockPosition = fields.get("m");
+				registryOptionalBlockPosition = fields.get("m");
 				registryEnumDirection = fields.get("n");
-				registryOptional_UUID = fields.get("o");
+				registryOptionalUUID = fields.get("o");
 				registryNBTTagCompound = fields.get("p");
 				if (nms.getMinorVersion() >= 15) {
 					registryVillagerData = fields.get("q");
@@ -64,20 +63,20 @@ public class DataWatcherRegistry {
 					registryEntityPose = fields.get("s");
 				}
 			} else {
-				registryOptional_IBlockData = fields.get("g");
+				registryOptionalIBlockData = fields.get("g");
 				registryBoolean = fields.get("h");
 				registryVector3f = fields.get("i");
 				registryBlockPosition = fields.get("j");
-				registryOptional_BlockPosition = fields.get("k");
+				registryOptionalBlockPosition = fields.get("k");
 				registryEnumDirection = fields.get("l");
-				registryOptional_UUID = fields.get("m");
+				registryOptionalUUID = fields.get("m");
 				if (nms.getMinorVersion() >= 12) {
 					registryNBTTagCompound = fields.get("n");
 				}
 				if (nms.getMinorVersion() >= 11) {
 					registryItemStack = fields.get("f");
 				} else {
-					registryOptional_ItemStack = fields.get("f");
+					registryOptionalItemStack = fields.get("f");
 				}
 			}
 		}
@@ -128,11 +127,11 @@ public class DataWatcherRegistry {
 	}
 	
 	public Object getOptionalComponent() {
-		return registryOptional_IChatBaseComponent;
+		return registryOptionalIChatBaseComponent;
 	}
 	
 	public Object getOptionalItemStack() {
-		return registryOptional_ItemStack;
+		return registryOptionalItemStack;
 	}
 	
 	public Object getItemStack() {
@@ -140,7 +139,7 @@ public class DataWatcherRegistry {
 	}
 	
 	public Object getOptionalIBlockData() {
-		return registryOptional_IBlockData;
+		return registryOptionalIBlockData;
 	}
 	
 	public Object getBoolean() {
@@ -160,7 +159,7 @@ public class DataWatcherRegistry {
 	}
 	
 	public Object getOptionalBlockPosition() {
-		return registryOptional_BlockPosition;
+		return registryOptionalBlockPosition;
 	}
 	
 	public Object getEnumDirection() {
@@ -168,7 +167,7 @@ public class DataWatcherRegistry {
 	}
 	
 	public Object getOptionalUUID() {
-		return registryOptional_UUID;
+		return registryOptionalUUID;
 	}
 	
 	public Object getNBTTagCompound() {
