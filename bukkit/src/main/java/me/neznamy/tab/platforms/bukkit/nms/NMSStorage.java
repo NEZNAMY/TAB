@@ -62,7 +62,7 @@ public class NMSStorage {
 		classes.put("Packet", getNMSClass("net.minecraft.network.protocol.Packet", "Packet"));
 		classes.put("PlayerConnection", getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection"));
 		classes.put("NetworkManager", getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager"));
-		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "e"));
+		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "field_71138_i", "e"));
 		fields.put("PLAYER_CONNECTION", getFields(getClass("EntityPlayer"), getClass("PlayerConnection")).get(0));
 		methods.put("getHandle", Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle"));
 		methods.put("sendPacket", getMethod(getClass("PlayerConnection"), new String[]{"sendPacket", "func_147359_a"}, getClass("Packet")));
@@ -483,9 +483,6 @@ public class NMSStorage {
 			if (f.getName().equals(name) || (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name))) {
 				return setAccessible(f);
 			}
-		}
-		if (name.equals("ping")){
-			return getField(clazz, "field_71138_i"); //thermos
 		}
 		throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
 	}
