@@ -39,7 +39,7 @@ public class StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void register(TabPlayer p) {
-		p.setProperty(this, teamName, text);
+		p.setProperty(this, parent.getName() + "-" + teamName, text);
 		String[] prefixsuffix = replaceText(p, true, true);
 		if (prefixsuffix.length == 0) return;
 		addLine(p, getPlayerName(), prefixsuffix[0], prefixsuffix[1]);
@@ -47,7 +47,7 @@ public class StableDynamicLine extends ScoreboardLine {
 
 	@Override
 	public void unregister(TabPlayer p) {
-		if (parent.getPlayers().contains(p) && p.getProperty(teamName).get().length() > 0) {
+		if (parent.getPlayers().contains(p) && p.getProperty(parent.getName() + "-" + teamName).get().length() > 0) {
 			removeLine(p, getPlayerName());
 		}
 	}
@@ -61,7 +61,7 @@ public class StableDynamicLine extends ScoreboardLine {
 	 * @return list of 2 elements for prefix/suffix
 	 */
 	private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
-		Property scoreproperty = p.getProperty(teamName);
+		Property scoreproperty = p.getProperty(parent.getName() + "-" + teamName);
 		boolean emptyBefore = scoreproperty.get().length() == 0;
 		if (!scoreproperty.update() && !force) return EMPTY_ARRAY;
 		String replaced = scoreproperty.get();
