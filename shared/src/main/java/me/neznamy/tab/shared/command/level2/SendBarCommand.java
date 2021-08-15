@@ -58,18 +58,9 @@ public class SendBarCommand extends SubCommand {
 	public List<String> complete(TabPlayer sender, String[] arguments) {
 		BossBarManager b = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (b == null) return new ArrayList<>();
-		List<String> suggestions = new ArrayList<>();
-		if (arguments.length == 1) {
-			return getOnlinePlayers(arguments[0]);
-		} else if (arguments.length == 2) {
-			for (String bar : b.getRegisteredBossBars().keySet()) {
-				if (bar.toLowerCase().startsWith(arguments[1].toLowerCase())) suggestions.add(bar);
-			}
-		} else if (arguments.length == 3 && b.getBossBar(arguments[1]) != null){
-			for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
-				if (time.startsWith(arguments[2])) suggestions.add(time);
-			}
-		}
-		return suggestions;
+		if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
+		if (arguments.length == 2) return getStartingArgument(b.getRegisteredBossBars().keySet(), arguments[1]);
+		if (arguments.length == 3 && b.getBossBar(arguments[1]) != null) return getStartingArgument(Arrays.asList("5", "10", "30", "60", "120"), arguments[2]);
+		return new ArrayList<>();
 	}
 }

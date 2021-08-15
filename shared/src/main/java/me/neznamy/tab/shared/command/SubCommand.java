@@ -2,9 +2,12 @@ package me.neznamy.tab.shared.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
@@ -115,6 +118,10 @@ public abstract class SubCommand {
 			if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
 		}
 		return suggestions;
+	}
+	
+	public List<String> getStartingArgument(Collection<String> values, String argument){
+		return values.stream().filter(value -> value.toLowerCase().startsWith(argument.toLowerCase())).collect(Collectors.toList());
 	}
 	
 	/**

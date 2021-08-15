@@ -6,7 +6,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.command.level2.SendBarCommand;
 
 /**
- * Handler for "/tab announce" subcommand
+ * Handler for "/tab send" subcommand
  */
 public class SendCommand extends SubCommand {
 

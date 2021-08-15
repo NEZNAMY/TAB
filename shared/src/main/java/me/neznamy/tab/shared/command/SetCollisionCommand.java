@@ -1,5 +1,9 @@
 package me.neznamy.tab.shared.command;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
@@ -35,5 +39,12 @@ public class SetCollisionCommand extends SubCommand {
 		} else {
 			sendMessage(sender, "&cUsage: /tab setcollision <player> <true/false>");
 		}
+	}
+	
+	@Override
+	public List<String> complete(TabPlayer sender, String[] arguments) {
+		if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
+		if (arguments.length == 2) return getStartingArgument(Arrays.asList("true", "false"), arguments[1]);
+		return new ArrayList<>();
 	}
 }

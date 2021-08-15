@@ -1,5 +1,9 @@
 package me.neznamy.tab.shared.command;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -65,5 +69,13 @@ public class ScoreboardCommand extends SubCommand {
 			}
 		}
 		return target;
+	}
+	
+	@Override
+	public List<String> complete(TabPlayer sender, String[] arguments) {
+		if (arguments.length == 1) return getStartingArgument(Arrays.asList("on", "off", "toggle"), arguments[0]);
+		if (arguments.length == 2) return getOnlinePlayers(arguments[1]);
+		if (arguments.length == 3) return getStartingArgument(Arrays.asList("-s"), arguments[2]);
+		return new ArrayList<>();
 	}
 }
