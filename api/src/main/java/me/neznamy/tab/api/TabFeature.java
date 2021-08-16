@@ -13,9 +13,9 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 public abstract class TabFeature {
 
 	private String featureName;
-	protected String[] disabledServers;
+	protected String[] disabledServers = new String[0];
 	private boolean serverWhitelistMode;
-	protected String[] disabledWorlds;
+	protected String[] disabledWorlds = new String[0];
 	private boolean worldWhitelistMode;
 	protected Set<TabPlayer> disabledPlayers = new HashSet<>();
 	
@@ -42,10 +42,14 @@ public abstract class TabFeature {
 	
 	protected TabFeature(String featureName, List<String> disabledServers, List<String> disabledWorlds) {
 		this(featureName);
-		this.disabledServers = disabledServers.toArray(new String[0]);
-		serverWhitelistMode = disabledServers.contains("WHITELIST");
-		this.disabledWorlds = disabledWorlds.toArray(new String[0]);
-		worldWhitelistMode = disabledWorlds.contains("WHITELIST");
+		if (disabledServers != null) {
+			this.disabledServers = disabledServers.toArray(new String[0]);
+			serverWhitelistMode = disabledServers.contains("WHITELIST");
+		}
+		if (disabledWorlds != null) {
+			this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+			worldWhitelistMode = disabledWorlds.contains("WHITELIST");
+		}
 	}
 	
 	/**
