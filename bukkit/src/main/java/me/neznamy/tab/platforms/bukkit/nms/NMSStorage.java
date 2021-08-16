@@ -371,7 +371,7 @@ public class NMSStorage {
 		}
 		if (minorVersion >= 13) {
 			methods.put("ScoreboardTeam_setPrefix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "method_1138"}, getClass("IChatBaseComponent")));
-			methods.put("ScoreboardTeam_setSuffix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "method_1139"}, getClass("IChatBaseComponent")));
+			methods.put("ScoreboardTeam_setSuffix", getMethod(getClass("ScoreboardTeam"), new String[]{"setSuffix", "method_1139"}, getClass("IChatBaseComponent")));
 			methods.put("ScoreboardTeam_setColor", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumChatFormat")).get(0));
 		} else {
 			methods.put("ScoreboardTeam_setPrefix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "func_96666_b"}, String.class));
