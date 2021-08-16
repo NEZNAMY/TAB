@@ -229,7 +229,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (nms.getMinorVersion() < 8) return null;
-		if (nms.getMinorVersion() >= 17) {
+		if (nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").getParameterCount() == 2) {
 			return nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").newInstance(toNMSComponent(packet.getHeader(), clientVersion), toNMSComponent(packet.getFooter(), clientVersion));
 		}
 		Object nmsPacket = nms.getConstructor("PacketPlayOutPlayerListHeaderFooter").newInstance();

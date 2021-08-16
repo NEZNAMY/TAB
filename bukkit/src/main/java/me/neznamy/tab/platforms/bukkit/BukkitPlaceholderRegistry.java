@@ -36,7 +36,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private JavaPlugin plugin;
 
 	//vault chat
-	private Chat chat;
+	private Object chat;
 
 	private Object essentials;
 	private Method essGetUser;
@@ -56,9 +56,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		decimal2.applyPattern("#.##");
 		this.plugin = plugin;
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-		if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
-			if (rspChat != null) chat = rspChat.getProvider();
+		try {
+			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
+				if (rspChat != null) chat = rspChat.getProvider();
+			}
+		} catch (Exception e) {
+			//modded server without vault
 		}
 		if (essentials != null) {
 			try {
@@ -163,13 +167,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-prefix%", 500) {
 
 				public Object get(TabPlayer p) {
-					return chat.getPlayerPrefix((Player) p.getPlayer());
+					return ((Chat) chat).getPlayerPrefix((Player) p.getPlayer());
 				}
 			});
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%vault-suffix%", 500) {
 
 				public Object get(TabPlayer p) {
-					return chat.getPlayerSuffix((Player) p.getPlayer());
+					return ((Chat) chat).getPlayerSuffix((Player) p.getPlayer());
 				}
 			});
 		} else {

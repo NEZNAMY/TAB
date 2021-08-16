@@ -66,7 +66,7 @@ public class NMSStorage {
 		classes.put("Packet", getNMSClass("net.minecraft.network.protocol.Packet", "Packet"));
 		classes.put("PlayerConnection", getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection"));
 		classes.put("NetworkManager", getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager"));
-		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "field_71138_i", "e"));
+		fields.put("PING", getField(getClass("EntityPlayer"), "ping", "latency", "field_71138_i", "field_13967", "e"));
 		fields.put("PLAYER_CONNECTION", getFields(getClass("EntityPlayer"), getClass("PlayerConnection")).get(0));
 		methods.put("getHandle", Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle"));
 		methods.put("sendPacket", getMethods(getClass("PlayerConnection"), void.class, getClass("Packet")).get(0));
@@ -86,6 +86,11 @@ public class NMSStorage {
 		initializeOtherEntityPackets();
 		initializePlayerInfoPacket();
 		initializeScoreboardPackets();
+		try {
+			initializeTeamPackets();
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+			//fabric with missing team packet
+		}
 		initializeEnums();
 	}
 
@@ -139,8 +144,8 @@ public class NMSStorage {
 			fields.put("ChatModifier_obfuscated", booleans.get(4));
 			fields.put("ChatModifier_clickEvent", getFields(getClass("ChatModifier"), getClass("ChatClickable")).get(0));
 			fields.put("ChatModifier_hoverEvent", getFields(getClass("ChatModifier"), getClass("ChatHoverable")).get(0));
-			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a"}, getClass("IChatBaseComponent")));
-			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a"}, String.class));
+			methods.put("ChatComponentText_addSibling", getMethod(getClass("ChatComponentText"), new String[]{"addSibling", "a", "func_150257_a", "method_10852"}, getClass("IChatBaseComponent")));
+			methods.put("EnumHoverAction_a", getMethod(getClass("EnumHoverAction"), new String[]{"a", "func_150684_a", "method_27670"}, String.class));
 			methods.put("ChatHoverable_getAction", getMethods(getClass("ChatHoverable"), getClass("EnumHoverAction")).get(0));
 		}
 		if (minorVersion >= 16) {
@@ -200,7 +205,7 @@ public class NMSStorage {
 			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
 			fields.put("DataWatcherObject_SLOT", getFields(getClass("DataWatcherObject"), int.class).get(0));
 			fields.put("DataWatcherObject_SERIALIZER", getFields(getClass("DataWatcherObject"), getClass("DataWatcherSerializer")).get(0));
-			methods.put("DataWatcher_REGISTER", getClass("DataWatcher").getMethod("register", getClass("DataWatcherObject"), Object.class));
+			methods.put("DataWatcher_REGISTER", getMethod(getClass("DataWatcher"), new String[]{"register", "method_12784"}, getClass("DataWatcherObject"), Object.class));
 		} else {
 			fields.put("DataWatcherItem_TYPE", getFields(getClass("DataWatcherItem"), int.class).get(1));
 			fields.put("DataWatcherItem_VALUE", getFields(getClass("DataWatcherItem"), Object.class).get(0));
@@ -253,9 +258,9 @@ public class NMSStorage {
 			classes.put("PacketPlayOutPlayerListHeaderFooter", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter"));
 			fields.put("PacketPlayOutPlayerListHeaderFooter_HEADER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(0));
 			fields.put("PacketPlayOutPlayerListHeaderFooter_FOOTER", getFields(getClass("PacketPlayOutPlayerListHeaderFooter"), getClass("IChatBaseComponent")).get(1));
-			if (minorVersion >= 17) {
+			try {
 				constructors.put("PacketPlayOutPlayerListHeaderFooter", getClass("PacketPlayOutPlayerListHeaderFooter").getConstructor(getClass("IChatBaseComponent"), getClass("IChatBaseComponent")));
-			} else {
+			} catch (NoSuchMethodException e) {
 				constructors.put("PacketPlayOutPlayerListHeaderFooter", getClass("PacketPlayOutPlayerListHeaderFooter").getConstructor());
 			}
 		}
@@ -275,7 +280,7 @@ public class NMSStorage {
 		fields.put("PacketPlayOutEntityMetadata_LIST", getFields(getClass("PacketPlayOutEntityMetadata"), List.class).get(0));
 		fields.put("PacketPlayOutNamedEntitySpawn_ENTITYID", getFields(getClass("PacketPlayOutNamedEntitySpawn"), int.class).get(0));
 		if (minorVersion >= 7) {
-			classes.put("EnumEntityUseAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction"));
+			classes.put("EnumEntityUseAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction", "net.minecraft.class_2824$class_5906"));
 			fields.put("PacketPlayInUseEntity_ENTITY", getFields(getClass("PacketPlayInUseEntity"), int.class).get(0));
 			fields.put("PacketPlayInUseEntity_ACTION", getFields(getClass("PacketPlayInUseEntity"), getClass("EnumEntityUseAction")).get(0));
 		}
@@ -293,7 +298,7 @@ public class NMSStorage {
 	private void initializePlayerInfoPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
 		if (minorVersion >= 8) {
 			classes.put("PacketPlayOutPlayerInfo", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo"));
-			classes.put("EnumPlayerInfoAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction"));
+			classes.put("EnumPlayerInfoAction", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction", "net.minecraft.class_2703$class_5893"));
 			classes.put("PlayerInfoData", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", "PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData"));
 			classes.put("EnumGamemode", getNMSClass("net.minecraft.world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode"));
 			constructors.put("PacketPlayOutPlayerInfo", getClass("PacketPlayOutPlayerInfo").getConstructor(getClass("EnumPlayerInfoAction"), Array.newInstance(getClass("EntityPlayer"), 0).getClass()));
@@ -311,15 +316,12 @@ public class NMSStorage {
 		classes.put("PacketPlayOutScoreboardDisplayObjective", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective", "PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective"));
 		classes.put("PacketPlayOutScoreboardObjective", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", "PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective"));
 		classes.put("PacketPlayOutScoreboardScore", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore", "PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore"));
-		classes.put("PacketPlayOutScoreboardTeam", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam"));
 		classes.put("Scoreboard", getNMSClass("net.minecraft.world.scores.Scoreboard", "Scoreboard"));
 		classes.put("ScoreboardObjective", getNMSClass("net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective"));
-		classes.put("ScoreboardTeam", getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam"));
 		classes.put("ScoreboardScore", getNMSClass("net.minecraft.world.scores.ScoreboardScore", "ScoreboardScore"));
 		classes.put("IScoreboardCriteria", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria", "IScoreboardCriteria"));
 		constructors.put("ScoreboardObjective", getClass("ScoreboardObjective").getConstructors()[0]);
 		constructors.put("Scoreboard", getClass("Scoreboard").getConstructor());
-		constructors.put("ScoreboardTeam", getClass("ScoreboardTeam").getConstructor(getClass("Scoreboard"), String.class));
 		constructors.put("ScoreboardScore", getClass("ScoreboardScore").getConstructor(getClass("Scoreboard"), getClass("ScoreboardObjective"), String.class));
 		constructors.put("PacketPlayOutScoreboardDisplayObjective", getClass("PacketPlayOutScoreboardDisplayObjective").getConstructor(int.class, getClass("ScoreboardObjective")));
 		fields.put("PacketPlayOutScoreboardDisplayObjective_POSITION", getFields(getClass("PacketPlayOutScoreboardDisplayObjective"), int.class).get(0));
@@ -327,47 +329,60 @@ public class NMSStorage {
 		fields.put("PacketPlayOutScoreboardObjective_OBJECTIVENAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(0));
 		List<Field> list = getFields(getClass("PacketPlayOutScoreboardObjective"), int.class);
 		fields.put("PacketPlayOutScoreboardObjective_METHOD", list.get(list.size()-1));
-		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
-		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
 		fields.put("IScoreboardCriteria", getFields(getClass("IScoreboardCriteria"), getClass("IScoreboardCriteria")).get(0));
-		methods.put("ScoreboardTeam_getPlayerNameSet", getMethods(getClass("ScoreboardTeam"), Collection.class).get(0));
-		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c"}, int.class));
+		methods.put("ScoreboardScore_setScore", getMethod(getClass("ScoreboardScore"), new String[]{"setScore", "func_96647_c", "method_1128"}, int.class));
 		if (minorVersion >= 8) {
 			classes.put("EnumScoreboardHealthDisplay", getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay"));
 			classes.put("EnumScoreboardAction", getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction"));
-			classes.put("EnumNameTagVisibility", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility"));
 			fields.put("PacketPlayOutScoreboardObjective_RENDERTYPE", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("EnumScoreboardHealthDisplay")).get(0));
-			methods.put("ScoreboardTeam_setNameTagVisibility", getMethod(getClass("ScoreboardTeam"), new String[]{"setNameTagVisibility", "a"}, getClass("EnumNameTagVisibility")));
-		}
-		if (minorVersion >= 9) {
-			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
-			methods.put("ScoreboardTeam_setCollisionRule", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumTeamPush")).get(0));
 		}
 		if (minorVersion >= 13) {
 			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor(getClass("ScoreboardObjective"), int.class));
 			constructors.put("PacketPlayOutScoreboardScore_1_13", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("EnumScoreboardAction"), String.class, String.class, int.class));
 			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), getClass("IChatBaseComponent")).get(0));
-			methods.put("ScoreboardTeam_setPrefix", getClass("ScoreboardTeam").getMethod("setPrefix", getClass("IChatBaseComponent")));
-			methods.put("ScoreboardTeam_setSuffix", getClass("ScoreboardTeam").getMethod("setSuffix", getClass("IChatBaseComponent")));
-			methods.put("ScoreboardTeam_setColor", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumChatFormat")).get(0));
 		} else {
 			constructors.put("PacketPlayOutScoreboardObjective", getClass("PacketPlayOutScoreboardObjective").getConstructor());
 			constructors.put("PacketPlayOutScoreboardScore_String", getClass("PacketPlayOutScoreboardScore").getConstructor(String.class));
 			fields.put("PacketPlayOutScoreboardObjective_DISPLAYNAME", getFields(getClass("PacketPlayOutScoreboardObjective"), String.class).get(1));
-			methods.put("ScoreboardTeam_setPrefix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "func_96666_b"}, String.class));
-			methods.put("ScoreboardTeam_setSuffix", getMethod(getClass("ScoreboardTeam"), new String[]{"setSuffix", "func_96662_c"}, String.class));
 			if (minorVersion >= 8) {
 				constructors.put("PacketPlayOutScoreboardScore", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("ScoreboardScore")));
 			} else {
 				constructors.put("PacketPlayOutScoreboardScore", getClass("PacketPlayOutScoreboardScore").getConstructor(getClass("ScoreboardScore"), int.class));
 			}
 		}
-		if (minorVersion >= 17) {
+	}
+	
+	private void initializeTeamPackets() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		classes.put("PacketPlayOutScoreboardTeam", getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam"));
+		classes.put("Scoreboard", getNMSClass("net.minecraft.world.scores.Scoreboard", "Scoreboard"));
+		classes.put("ScoreboardTeam", getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam"));
+		constructors.put("Scoreboard", getClass("Scoreboard").getConstructor());
+		constructors.put("ScoreboardTeam", getClass("ScoreboardTeam").getConstructor(getClass("Scoreboard"), String.class));
+		fields.put("PacketPlayOutScoreboardTeam_NAME", getFields(getClass("PacketPlayOutScoreboardTeam"), String.class).get(0));
+		fields.put("PacketPlayOutScoreboardTeam_PLAYERS", getFields(getClass("PacketPlayOutScoreboardTeam"), Collection.class).get(0));
+		methods.put("ScoreboardTeam_getPlayerNameSet", getMethods(getClass("ScoreboardTeam"), Collection.class).get(0));
+		if (minorVersion >= 8) {
+			classes.put("EnumNameTagVisibility", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility"));
+			methods.put("ScoreboardTeam_setNameTagVisibility", getMethod(getClass("ScoreboardTeam"), new String[]{"setNameTagVisibility", "a", "method_1149"}, getClass("EnumNameTagVisibility")));
+		}
+		if (minorVersion >= 9) {
+			classes.put("EnumTeamPush", getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush"));
+			methods.put("ScoreboardTeam_setCollisionRule", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumTeamPush")).get(0));
+		}
+		if (minorVersion >= 13) {
+			methods.put("ScoreboardTeam_setPrefix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "method_1138"}, getClass("IChatBaseComponent")));
+			methods.put("ScoreboardTeam_setSuffix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "method_1139"}, getClass("IChatBaseComponent")));
+			methods.put("ScoreboardTeam_setColor", getMethods(getClass("ScoreboardTeam"), void.class, getClass("EnumChatFormat")).get(0));
+		} else {
+			methods.put("ScoreboardTeam_setPrefix", getMethod(getClass("ScoreboardTeam"), new String[]{"setPrefix", "func_96666_b"}, String.class));
+			methods.put("ScoreboardTeam_setSuffix", getMethod(getClass("ScoreboardTeam"), new String[]{"setSuffix", "func_96662_c"}, String.class));
+		}
+		try {
 			classes.put("PacketPlayOutScoreboardTeam_a", Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a"));
 			methods.put("PacketPlayOutScoreboardTeam_of", getMethods(getClass("PacketPlayOutScoreboardTeam"), getClass("PacketPlayOutScoreboardTeam"), getClass("ScoreboardTeam")).get(0));
 			methods.put("PacketPlayOutScoreboardTeam_ofBoolean", getMethods(getClass("PacketPlayOutScoreboardTeam"), getClass("PacketPlayOutScoreboardTeam"), getClass("ScoreboardTeam"), boolean.class).get(0));
 			methods.put("PacketPlayOutScoreboardTeam_ofString", getMethods(getClass("PacketPlayOutScoreboardTeam"), getClass("PacketPlayOutScoreboardTeam"), getClass("ScoreboardTeam"), String.class, getClass("PacketPlayOutScoreboardTeam_a")).get(0));
-		} else {
+		} catch (ClassNotFoundException e) {
 			constructors.put("PacketPlayOutScoreboardTeam", getClass("PacketPlayOutScoreboardTeam").getConstructor(getClass("ScoreboardTeam"), int.class));
 		}
 	}
@@ -395,7 +410,7 @@ public class NMSStorage {
 		for (String name : names) {
 			try {
 				return getNMSClass(name);
-			} catch (ClassNotFoundException e) {
+			} catch (ClassNotFoundException | NullPointerException e) {
 				//not the first class name in array
 			}
 		}
@@ -409,17 +424,15 @@ public class NMSStorage {
 	 * @throws ClassNotFoundException if class was not found
 	 */
 	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		if (minorVersion >= 17) {
+		try {
 			return Class.forName(name);
-		} else {
+		} catch (ClassNotFoundException ex) {
 			try {
 				return Class.forName("net.minecraft.server." + serverPackage + "." + name);
-			} catch (ClassNotFoundException e) {
+			} catch (ClassNotFoundException | NullPointerException e) {
 				//modded server?
-				Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
-			} catch (NullPointerException e) {
-				//nested class in modded server
-				throw new ClassNotFoundException(name);
+				Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+				if (clazz != null) return clazz;
 			}
 		}
 		throw new ClassNotFoundException(name);
@@ -441,7 +454,8 @@ public class NMSStorage {
 				//not the first method in array
 			}
 		}
-		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " + Arrays.toString(parameterTypes) + " in class " + clazz.getName());
+		new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " + Arrays.toString(parameterTypes) + " in class " + clazz.getName()).printStackTrace();
+		return null;
 	}
 	
 	private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
