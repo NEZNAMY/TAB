@@ -42,8 +42,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private Method essGetUser;
 	private Method essIsAfk;
 	
-	private Method purpurIsAfk;
-	
 	private Object server;
 	private Field recentTps;
 	
@@ -71,11 +69,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to load essentials methods", e);
 			}
-		}
-		try {
-			purpurIsAfk = Player.class.getMethod("isAfk");
-		} catch (NoSuchMethodException | SecurityException e1) {
-			//not purpur
 		}
 		try {
 			server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
@@ -250,9 +243,11 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 					if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
 				}
-				if (purpurIsAfk != null && ((Player)p.getPlayer()).isAfk()) return true;
+				if (((Player)p.getPlayer()).isAfk()) return true;
 			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
+			} catch (NoSuchMethodError e) {
+				//not purpur
 			}
 			return false;
 		}

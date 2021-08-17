@@ -63,18 +63,19 @@ public class DataWatcher {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher;
 		if (nms.getMinorVersion() >= 7) {
-			nmsWatcher = nms.getConstructor("DataWatcher").newInstance(new Object[] {null});
+			Object[] args = new Object[] {null};
+			nmsWatcher = nms.newDataWatcher.newInstance(args);
 		} else {
-			nmsWatcher = nms.getConstructor("DataWatcher").newInstance();
+			nmsWatcher = nms.newDataWatcher.newInstance();
 		}
 		for (DataWatcherItem item : dataValues.values()) {
 			Object position;
 			if (nms.getMinorVersion() >= 9) {
-				position = nms.getConstructor("DataWatcherObject").newInstance(item.getType().getPosition(), item.getType().getClassType());
+				position = nms.newDataWatcherObject.newInstance(item.getType().getPosition(), item.getType().getClassType());
 			} else {
 				position = item.getType().getPosition();
 			}
-			nms.getMethod("DataWatcher_REGISTER").invoke(nmsWatcher, position, item.getValue());
+			nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.getValue());
 		}
 		return nmsWatcher;
 	}

@@ -29,10 +29,10 @@ public class DataWatcherItem {
 	public static DataWatcherItem fromNMS(Object nmsItem) throws IllegalAccessException {
 		NMSStorage nms = NMSStorage.getInstance();
 		if (NMSStorage.getInstance().getMinorVersion() >= 9) {
-			Object nmsObject = nms.getField("DataWatcherItem_TYPE").get(nmsItem);
-			return new DataWatcherItem(new DataWatcherObject(nms.getField("DataWatcherObject_SLOT").getInt(nmsObject), nms.getField("DataWatcherObject_SERIALIZER").get(nmsObject)), nms.getField("DataWatcherItem_VALUE").get(nmsItem));
+			Object nmsObject = nms.DataWatcherItem_TYPE.get(nmsItem);
+			return new DataWatcherItem(new DataWatcherObject(nms.DataWatcherObject_SLOT.getInt(nmsObject), nms.DataWatcherObject_SERIALIZER.get(nmsObject)), nms.DataWatcherItem_VALUE.get(nmsItem));
 		} else {
-			return new DataWatcherItem(new DataWatcherObject(nms.getField("DataWatcherItem_TYPE").getInt(nmsItem), null), nms.getField("DataWatcherItem_VALUE").get(nmsItem));
+			return new DataWatcherItem(new DataWatcherObject(nms.DataWatcherItem_TYPE.getInt(nmsItem), null), nms.DataWatcherItem_VALUE.get(nmsItem));
 		}
 	}
 

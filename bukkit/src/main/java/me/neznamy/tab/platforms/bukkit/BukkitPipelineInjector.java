@@ -58,19 +58,19 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			try {
-				if (nms.getClass("PacketPlayOutPlayerInfo").isInstance(packet)) {
+				if (nms.PacketPlayOutPlayerInfo.isInstance(packet)) {
 					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (antiOverrideTeams && nms.getClass("PacketPlayOutScoreboardTeam").isInstance(packet)) {
+				if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 					modifyPlayers(packet);
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				if (nms.getClass("PacketPlayOutScoreboardDisplayObjective").isInstance(packet) && TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
+				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
 					return;
 				}
-				if (nms.getClass("PacketPlayOutScoreboardObjective").isInstance(packet)) {
+				if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
 					TAB.getInstance().getFeatureManager().onObjective(player, packet);
 				}
 				TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
@@ -92,8 +92,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		@SuppressWarnings("unchecked")
 		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws IllegalAccessException {
 			long time = System.nanoTime();
-			Collection<String> players = (Collection<String>) nms.getField("PacketPlayOutScoreboardTeam_PLAYERS").get(packetPlayOutScoreboardTeam);
-			String teamName = (String) nms.getField("PacketPlayOutScoreboardTeam_NAME").get(packetPlayOutScoreboardTeam);
+			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
+			String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
 			if (players == null) return;
 			//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 			Collection<String> newList = new ArrayList<>();
@@ -110,7 +110,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					newList.add(entry);
 				}
 			}
-			nms.setField(packetPlayOutScoreboardTeam, "PacketPlayOutScoreboardTeam_PLAYERS", newList);
+			nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
 			TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}

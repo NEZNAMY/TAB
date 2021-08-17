@@ -54,14 +54,14 @@ public class BukkitTabPlayer extends ITabPlayer {
 		player = p;
 		world = p.getWorld().getName();
 		try {
-			handle = NMSStorage.getInstance().getMethod("getHandle").invoke(player);
-			playerConnection = NMSStorage.getInstance().getField("PLAYER_CONNECTION").get(handle);
+			handle = NMSStorage.getInstance().getHandle.invoke(player);
+			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
 		}
 		try {
-			if (NMSStorage.getInstance().getField("CHANNEL") != null)
-				channel = (Channel) NMSStorage.getInstance().getField("CHANNEL").get(NMSStorage.getInstance().getField("NETWORK_MANAGER").get(playerConnection));
+			if (NMSStorage.getInstance().CHANNEL != null)
+				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
 		}
@@ -79,7 +79,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public int getPing() {
 		try {
-			int ping = NMSStorage.getInstance().getField("PING").getInt(handle);
+			int ping = NMSStorage.getInstance().PING.getInt(handle);
 			if (ping > 10000 || ping < 0) ping = -1;
 			return ping;
 		} catch (Exception e) {
@@ -97,7 +97,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			} else if (nmsPacket instanceof PacketPlayOutBoss) {
 				handle((PacketPlayOutBoss) nmsPacket);
 			} else {
-				NMSStorage.getInstance().getMethod("sendPacket").invoke(playerConnection, nmsPacket);
+				NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 			}
 		} catch (IllegalArgumentException e) {
 			//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
@@ -180,7 +180,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public Object getSkin() {
 		try {
-			return ((GameProfile)NMSStorage.getInstance().getMethod("getProfile").invoke(handle)).getProperties();
+			return ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties();
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
 			return null;

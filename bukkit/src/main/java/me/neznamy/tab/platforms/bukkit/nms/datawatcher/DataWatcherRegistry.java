@@ -39,7 +39,7 @@ public class DataWatcherRegistry {
 	 */
 	public DataWatcherRegistry(NMSStorage nms) {
 		if (nms.getMinorVersion() >= 9) {
-			Map<String, Object> fields = getStaticFields(nms.getClass("DataWatcherRegistry"), nms);
+			Map<String, Object> fields = getStaticFields(nms.DataWatcherRegistry, nms);
 			registryByte = fields.get("a");
 			registryInteger = fields.get("b");
 			registryFloat = fields.get("c");
