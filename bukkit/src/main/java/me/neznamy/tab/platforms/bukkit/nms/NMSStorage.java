@@ -304,7 +304,7 @@ public class NMSStorage {
 		if (minorVersion >= 16) {
 			Class<?> ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
 			Class<?> MinecraftKey = getNMSClass("net.minecraft.resources.MinecraftKey", "MinecraftKey");
-			newChatModifier = ChatModifier.getConstructor(ChatHexColor, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, ChatClickable, ChatHoverable, String.class, MinecraftKey);
+			newChatModifier = setAccessible(ChatModifier.getDeclaredConstructor(ChatHexColor, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, ChatClickable, ChatHoverable, String.class, MinecraftKey));
 			newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, Object.class);
 			List<Field> list = getFields(ChatHexColor, String.class);
 			ChatHexColor_name = list.get(list.size()-1);
