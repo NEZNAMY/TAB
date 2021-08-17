@@ -30,7 +30,7 @@ public class NMSStorage {
 	private static NMSStorage instance;
 
 	//data watcher registry
-	private DataWatcherRegistry dataWatcherRegistry;
+	private DataWatcherRegistry registry;
 
 	//server package, such as "v1_16_R3"
 	private String serverPackage;
@@ -132,7 +132,6 @@ public class NMSStorage {
 	
 	//other entity packets
 	public Class<?> PacketPlayInUseEntity;
-	private Class<?> EnumEntityUseAction;
 	public Class<?> PacketPlayInUseEntity$d;
 	public Field PacketPlayInUseEntity_ENTITY;
 	public Field PacketPlayInUseEntity_ACTION;
@@ -153,7 +152,7 @@ public class NMSStorage {
 	public Class<?> PacketPlayOutNamedEntitySpawn;
 	public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 	
-	//PacketPlayOutPlayerInfo;
+	//PacketPlayOutPlayerInfo
 	public Class<?> PacketPlayOutPlayerInfo;
 	public Constructor<?> newPacketPlayOutPlayerInfo;
 	public Constructor<?> newPlayerInfoData;
@@ -304,7 +303,8 @@ public class NMSStorage {
 		ChatHoverable_getAction = getMethods(ChatHoverable, EnumHoverAction).get(0);
 		if (minorVersion >= 16) {
 			Class<?> ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
-			newChatModifier = getConstructor(ChatModifier, 10);
+			Class<?> MinecraftKey = getNMSClass("net.minecraft.resources.MinecraftKey", "MinecraftKey");
+			newChatModifier = ChatModifier.getConstructor(ChatHexColor, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, ChatClickable, ChatHoverable, String.class, MinecraftKey);
 			newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, Object.class);
 			List<Field> list = getFields(ChatHexColor, String.class);
 			ChatHexColor_name = list.get(list.size()-1);
@@ -363,7 +363,7 @@ public class NMSStorage {
 			DataWatcherItem_TYPE = getFields(DataWatcherItem, int.class).get(1);
 			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
 		}
-		dataWatcherRegistry = new DataWatcherRegistry(this);
+		registry = new DataWatcherRegistry(this);
 	}
 	
 	private void initializeEntitySpawnPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
@@ -430,7 +430,7 @@ public class NMSStorage {
 		PacketPlayOutEntityMetadata_LIST = getFields(PacketPlayOutEntityMetadata, List.class).get(0);
 		PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
 		if (minorVersion >= 7) {
-			EnumEntityUseAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction", "net.minecraft.class_2824$class_5906");
+			Class<?> EnumEntityUseAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction", "net.minecraft.class_2824$class_5906");
 			PacketPlayInUseEntity_ENTITY = getFields(PacketPlayInUseEntity, int.class).get(0);
 			PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
 		}
@@ -544,28 +544,18 @@ public class NMSStorage {
 	}
 
 	/**
-	 * A helper method that prints all methods of class into console, including their return type, name and parameters
-	 * Useful for modded servers which code I can not access
-	 * @param clazz - class to show methods of
-	 */
-	@SuppressWarnings("unused")
-	private void showMethods(Class<?> clazz) {
-		Bukkit.getConsoleSender().sendMessage("--- " + clazz.getSimpleName() + " ---");
-		for (Method m : clazz.getMethods()) {
-			Bukkit.getConsoleSender().sendMessage(m.getReturnType().getName() + " " + m.getName() + "(" + Arrays.toString(m.getParameterTypes()) + ")");
-		}
-	}
-
-	/**
 	 * Returns class with given potential names in same order
 	 * @param names - possible class names
 	 * @return class for specified name(s)
 	 * @throws ClassNotFoundException if class does not exist
 	 */
-	private Class<?> getNMSClass(String... names) throws ClassNotFoundException {
+	private Class<?> getNMSClass(String fullPath_1_17, String... names) throws ClassNotFoundException {
+		if (minorVersion >= 17) {
+			return Class.forName(fullPath_1_17);
+		}
 		for (String name : names) {
 			try {
-				return getNMSClass(name);
+				return getLegacyClass(name);
 			} catch (ClassNotFoundException | NullPointerException e) {
 				//not the first class name in array
 			}
@@ -579,19 +569,15 @@ public class NMSStorage {
 	 * @return class from given name
 	 * @throws ClassNotFoundException if class was not found
 	 */
-	private Class<?> getNMSClass(String name) throws ClassNotFoundException {
+	private Class<?> getLegacyClass(String name) throws ClassNotFoundException {
 		try {
-			return Class.forName(name);
-		} catch (ClassNotFoundException ex) {
-			try {
-				return Class.forName("net.minecraft.server." + serverPackage + "." + name);
-			} catch (ClassNotFoundException | NullPointerException e) {
-				//modded server?
-				Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
-				if (clazz != null) return clazz;
-			}
+			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
+		} catch (ClassNotFoundException e) {
+			//modded server?
+			Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+			if (clazz != null) return clazz;
+			throw new ClassNotFoundException(name);
 		}
-		throw new ClassNotFoundException(name);
 	}
 
 	/**
@@ -673,15 +659,6 @@ public class NMSStorage {
 		throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
 	}
 
-	private Constructor<?> getConstructor(Class<?> clazz, int parameterCount) throws NoSuchMethodException {
-		for (Constructor<?> c : clazz.getDeclaredConstructors()) {
-			if (c.getParameterCount() == parameterCount) {
-				return setAccessible(c);
-			}
-		}
-		throw new NoSuchMethodException("No constructor found in class " + clazz.getName() + " with " + parameterCount + " parameters");
-	}
-
 	private Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
 		for (String name : potentialNames) {
 			try {
@@ -702,7 +679,7 @@ public class NMSStorage {
 	}
 
 	public DataWatcherRegistry getDataWatcherRegistry() {
-		return dataWatcherRegistry;
+		return registry;
 	}
 	
 	public <T extends AccessibleObject> T setAccessible(T o) {
