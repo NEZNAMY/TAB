@@ -221,7 +221,7 @@ public class NMSStorage {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 		EnumChatFormat = getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat");
-		EnumChatFormat_values = (Enum[]) EnumChatFormat.getMethod("values").invoke(null);
+		EnumChatFormat_values = getEnumValues(EnumChatFormat);
 		EntityPlayer = getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer");
 		Entity = getNMSClass("net.minecraft.world.entity.Entity", "Entity");
 		EntityLiving = getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving");
@@ -328,7 +328,7 @@ public class NMSStorage {
 		Class<?> PacketPlayOutChat = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
 		if (minorVersion >= 12) {
 			ChatMessageType = getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
-			ChatMessageType_values = (Enum[]) ChatMessageType.getMethod("values").invoke(null);
+			ChatMessageType_values = getEnumValues(ChatMessageType);
 		}
 		if (minorVersion >= 16) {
 			newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType, UUID.class);
@@ -459,8 +459,8 @@ public class NMSStorage {
 		PlayerInfoData_getLatency = getMethods(PlayerInfoData, int.class).get(0);
 		PlayerInfoData_getGamemode = getMethods(PlayerInfoData, EnumGamemode).get(0);
 		PlayerInfoData_getDisplayName = getMethods(PlayerInfoData, IChatBaseComponent).get(0);
-		EnumPlayerInfoAction_values = (Enum[]) EnumPlayerInfoAction.getMethod("values").invoke(null);
-		EnumGamemode_values = (Enum[]) EnumGamemode.getMethod("values").invoke(null);
+		EnumPlayerInfoAction_values = getEnumValues(EnumPlayerInfoAction);
+		EnumGamemode_values = getEnumValues(EnumGamemode);
 	}
 
 	private void initializeScoreboardPackets() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, InvocationTargetException {
@@ -483,12 +483,12 @@ public class NMSStorage {
 		IScoreboardCriteria_self = getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
 		ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "func_96647_c", "method_1128"}, int.class);
 		Class<?> EnumScoreboardAction = null;
-		ChatMessageType_values = (Enum[]) ChatMessageType.getMethod("values").invoke(null);
+		ChatMessageType_values = getEnumValues(ChatMessageType);
 		if (minorVersion >= 8) {
 			EnumScoreboardHealthDisplay = getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
-			EnumScoreboardHealthDisplay_values = (Enum[]) EnumScoreboardHealthDisplay.getMethod("values").invoke(null);
+			EnumScoreboardHealthDisplay_values = getEnumValues(EnumScoreboardHealthDisplay);
 			EnumScoreboardAction = getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
-			EnumScoreboardAction_values = (Enum[]) EnumScoreboardAction.getMethod("values").invoke(null);
+			EnumScoreboardAction_values = getEnumValues(EnumScoreboardAction);
 			PacketPlayOutScoreboardObjective_RENDERTYPE = getFields(PacketPlayOutScoreboardObjective, EnumScoreboardHealthDisplay).get(0);
 		}
 		if (minorVersion >= 13) {
@@ -516,12 +516,12 @@ public class NMSStorage {
 		ScoreboardTeam_getPlayerNameSet = getMethods(ScoreboardTeam, Collection.class).get(0);
 		if (minorVersion >= 8) {
 			Class<?> EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
-			EnumNameTagVisibility_values = (Enum[]) EnumNameTagVisibility.getMethod("values").invoke(null);
+			EnumNameTagVisibility_values = getEnumValues(EnumNameTagVisibility);
 			ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a", "method_1149"}, EnumNameTagVisibility);
 		}
 		if (minorVersion >= 9) {
 			Class<?> EnumTeamPush = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
-			EnumTeamPush_values = (Enum[]) EnumTeamPush.getMethod("values").invoke(null);
+			EnumTeamPush_values = getEnumValues(EnumTeamPush);
 			ScoreboardTeam_setCollisionRule = getMethods(ScoreboardTeam, void.class, EnumTeamPush).get(0);
 		}
 		if (minorVersion >= 13) {
@@ -537,7 +537,7 @@ public class NMSStorage {
 			PacketPlayOutScoreboardTeam_of = getMethods(PacketPlayOutScoreboardTeam, PacketPlayOutScoreboardTeam, ScoreboardTeam).get(0);
 			PacketPlayOutScoreboardTeam_ofBoolean = getMethods(PacketPlayOutScoreboardTeam, PacketPlayOutScoreboardTeam, ScoreboardTeam, boolean.class).get(0);
 			PacketPlayOutScoreboardTeam_ofString = getMethods(PacketPlayOutScoreboardTeam, PacketPlayOutScoreboardTeam, ScoreboardTeam, String.class, PacketPlayOutScoreboardTeam_PlayerAction).get(0);
-			PacketPlayOutScoreboardTeam_PlayerAction_values = (Enum[]) PacketPlayOutScoreboardTeam_PlayerAction.getMethod("values").invoke(null);
+			PacketPlayOutScoreboardTeam_PlayerAction_values = getEnumValues(PacketPlayOutScoreboardTeam_PlayerAction);
 		} catch (ClassNotFoundException e) {
 			newPacketPlayOutScoreboardTeam = PacketPlayOutScoreboardTeam.getConstructor(ScoreboardTeam, int.class);
 		}
@@ -668,6 +668,10 @@ public class NMSStorage {
 			}
 		}
 		throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
+	}
+	
+	private Enum[] getEnumValues(Class<?> clazz) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		return (Enum[]) clazz.getMethod("values").invoke(null);
 	}
 
 	public int getMinorVersion() {
