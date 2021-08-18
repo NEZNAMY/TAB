@@ -10,7 +10,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class BukkitPipelineInjector extends PipelineInjector {
@@ -111,7 +110,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				}
 			}
 			nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
-			TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Nametags", "Anti override", System.nanoTime()-time);
 		}
 	}
 }

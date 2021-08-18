@@ -1,8 +1,7 @@
-package me.neznamy.tab.shared.cpu;
+package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,7 +29,7 @@ public class CPUManager {
 	private static final int BUFFER_SIZE_MILLIS = 10000;
 
 	//nanoseconds worked in the current 10 seconds
-	private Map<String, Map<UsageType, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
+	private Map<String, Map<String, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
@@ -39,7 +38,7 @@ public class CPUManager {
 	private Map<String, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
 
 	//nanoseconds worked in the previous 10 seconds
-	private Map<String, Map<UsageType, AtomicLong>> featureUsagePrevious = new HashMap<>();
+	private Map<String, Map<String, AtomicLong>> featureUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
@@ -109,7 +108,18 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runMeasuredTask(String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+	public void runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
+		runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
+	}
+	
+	/**
+	 * Starts a task in new thread and measures how long it took to process
+	 * @param errorDescription - description to use if this task throws an error
+	 * @param feature - feature to add cpu usage to
+	 * @param type - usage type to add cpu usage to
+	 * @param task - the task
+	 */
+	public void runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
 		submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
@@ -125,7 +135,7 @@ public class CPUManager {
 	public void runTask(String errorDescription, Runnable task) {
 		submit(errorDescription, task);
 	}
-
+	
 	/**
 	 * Starts a new task with defined repeat interval that measures cpu usage
 	 * @param intervalMilliseconds - task interval
@@ -134,7 +144,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
 		startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
@@ -146,7 +156,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, UsageType type, Runnable task) {
+	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
 		if (intervalMilliseconds <= 0) return;
 		submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
@@ -179,7 +189,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, UsageType type, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
 		runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
@@ -191,7 +201,7 @@ public class CPUManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, UsageType type, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
 		submit(errorDescription, () -> {
 			try {
 				Thread.sleep(delayMilliseconds);
@@ -273,26 +283,26 @@ public class CPUManager {
 	 * Returns map of CPU usage per feature per type in the previous 10 seconds
 	 * @return map of CPU usage per feature per type
 	 */
-	public Map<Object, Map<UsageType, Float>> getFeatureUsage(){
-		Map<Object, EnumMap<UsageType, Long>> total = new HashMap<>();
-		for (Entry<String, Map<UsageType, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
-			Object key = nanos.getKey();
+	public Map<String, Map<String, Float>> getFeatureUsage(){
+		Map<String, Map<String, Long>> total = new HashMap<>();
+		for (Entry<String, Map<String, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
+			String key = nanos.getKey();
 			if (!total.containsKey(key)) {
-				total.put(key, new EnumMap<>(UsageType.class));
+				total.put(key, new HashMap<>());
 			}
-			Map<UsageType, Long> usage = total.get(key);
-			for (Entry<UsageType, AtomicLong> entry : nanos.getValue().entrySet()) {
+			Map<String, Long> usage = total.get(key);
+			for (Entry<String, AtomicLong> entry : nanos.getValue().entrySet()) {
 				if (!usage.containsKey(entry.getKey())) {
 					usage.put(entry.getKey(), 0L);
 				}
 				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().get());
 			}
 		}
-		Map<Object, Map<UsageType, Float>> sorted = new LinkedHashMap<>();
-		for (Object key : sortKeys(total)) {
-			Map<UsageType, Long> local = sortByValue(total.get(key));
-			Map<UsageType, Float> percent = new LinkedHashMap<>();
-			for (Entry<UsageType, Long> entry : local.entrySet()) {
+		Map<String, Map<String, Float>> sorted = new LinkedHashMap<>();
+		for (String key : sortKeys(total)) {
+			Map<String, Long> local = sortByValue(total.get(key));
+			Map<String, Float> percent = new LinkedHashMap<>();
+			for (Entry<String, Long> entry : local.entrySet()) {
 				percent.put(entry.getKey(), nanosToPercent(entry.getValue()));
 			}
 			sorted.put(key, percent);
@@ -354,9 +364,9 @@ public class CPUManager {
 	 * @param map - map to sort
 	 * @return list of keys sorted from highest usage to lowest
 	 */
-	private <K> List<K> sortKeys(Map<K, EnumMap<UsageType, Long>> map){
+	private <K> List<K> sortKeys(Map<K, Map<String, Long>> map){
 		Map<K, Long> simplified = new LinkedHashMap<>();
-		for (Entry<K, EnumMap<UsageType, Long>> entry : map.entrySet()) {
+		for (Entry<K, Map<String, Long>> entry : map.entrySet()) {
 			simplified.put(entry.getKey(), sumValues(entry.getValue()));
 		}
 		simplified = sortByValue(simplified);
@@ -386,8 +396,8 @@ public class CPUManager {
 	 * @param type - usage to add time to of the feature
 	 * @param nanoseconds - time to add
 	 */
-	public void addTime(TabFeature feature, UsageType type, long nanoseconds) {
-		addTime(feature.getFeatureName(), type, nanoseconds);
+	public void addTime(TabFeature feature, String type, long nanoseconds) {
+		featureUsageCurrent.computeIfAbsent(feature.getFeatureName(), f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
 	}
 	
 	/**
@@ -396,7 +406,7 @@ public class CPUManager {
 	 * @param type - usage to add time to of the feature
 	 * @param nanoseconds - time to add
 	 */
-	public void addTime(String feature, UsageType type, long nanoseconds) {
+	public void addTime(String feature, String type, long nanoseconds) {
 		featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
 	}
 

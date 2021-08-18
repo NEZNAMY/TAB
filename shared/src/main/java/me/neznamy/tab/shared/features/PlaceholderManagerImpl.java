@@ -24,7 +24,6 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * Messy class for placeholder management
@@ -144,18 +143,18 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), true);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), UsageType.REFRESHING, System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), "Updating visuals", System.nanoTime()-startTime);
 			}
 		}
 		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), false);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), UsageType.REFRESHING, System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), "Updating visuals", System.nanoTime()-startTime);
 			}
 		}
 		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
-		TAB.getInstance().getCPUManager().addTime(getFeatureName(), UsageType.REPEATING_TASK, startRefreshTime-System.nanoTime());
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), "Refreshing placeholders", startRefreshTime-System.nanoTime());
 	}
 
 	@Override
@@ -169,7 +168,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, UsageType.REPEATING_TASK, this::refresh);
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, "Refreshing placeholders", this::refresh);
 	}
 
 	@Override

@@ -15,7 +15,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * Feature handler for global playerlist feature
@@ -53,7 +52,7 @@ public class GlobalPlayerlist extends TabFeature {
 	}
 
 	private void startTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", this, UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", this, "Refreshing vanish status", () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (vanishedPlayers.contains(p) && !p.isVanished()) {
@@ -128,7 +127,7 @@ public class GlobalPlayerlist extends TabFeature {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		//delay due to waterfall bug calling server switch when players leave
-		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, UsageType.PLAYER_QUIT_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, "Player quit", () -> {
 
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

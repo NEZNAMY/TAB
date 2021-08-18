@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * The event listener part for securing proper functionality of armor stands
@@ -34,7 +33,7 @@ public class EventListener implements Listener {
 	public void onSneak(PlayerToggleSneakEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || !p.isLoaded() || feature.isInDisabledWorld(p)) return;
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", feature, UsageType.PLAYER_TOGGLE_SNEAK_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", feature, "PlayerToggleSneakEvent", () -> {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
 		});
 	}
@@ -45,7 +44,7 @@ public class EventListener implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", feature, UsageType.PLAYER_RESPAWN_EVENT, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", feature, "PlayerRespawnEvent", () -> {
 			TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 			if (feature.isInDisabledWorld(respawned)) return;
 			respawned.getArmorStandManager().teleport();

@@ -12,7 +12,6 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
@@ -47,7 +46,7 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 			if (receiver == null) return;
 			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setResult(ForwardResult.handled());
-			TAB.getInstance().getCPUManager().addTime("Plugin message handling", UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Plugin message handling", "PluginMessageEvent", System.nanoTime()-time);
 		}
 	}
 

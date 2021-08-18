@@ -23,7 +23,6 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * A class representing an armor stand attached to a player (if the feature is enabled)
@@ -185,7 +184,7 @@ public class BukkitArmorStand implements ArmorStand {
 				Runnable spawn = () -> spawn(viewer);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
-					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, UsageType.V1_8_0_BUG_COMPENSATION, spawn);
+					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, "Compensating for 1.8.0 bugs", spawn);
 				} else {
 					spawn.run();
 				}

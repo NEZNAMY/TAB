@@ -11,7 +11,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -39,9 +38,9 @@ public class CpuCommand extends SubCommand {
 		Map<String, Float> bridgeplaceholders = tab.getCPUManager().getBridgeUsage();
 		double bridgeplaceholdersTotal = bridgeplaceholders.values().stream().mapToDouble(Float::floatValue).sum();
 
-		Map<Object, Map<UsageType, Float>> features = tab.getCPUManager().getFeatureUsage();
+		Map<String, Map<String, Float>> features = tab.getCPUManager().getFeatureUsage();
 		double featuresTotal = 0;
-		for (Map<UsageType, Float> map : features.values()) {
+		for (Map<String, Float> map : features.values()) {
 			featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
 		}
 
@@ -100,13 +99,13 @@ public class CpuCommand extends SubCommand {
 		}
 	}
 
-	public void sendToConsole(Map<Object, Map<UsageType, Float>> features) {
+	public void sendToConsole(Map<String, Map<String, Float>> features) {
 		TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
-		for (Entry<Object, Map<UsageType, Float>> entry : features.entrySet()) {
+		for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
 			double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
 			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
-			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
+			for (Entry<String, Float> type : entry.getValue().entrySet()){
 				messages.add(String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)));
 			}
 			TAB.getInstance().getPlatform().sendConsoleMessage(core, true);
@@ -116,13 +115,13 @@ public class CpuCommand extends SubCommand {
 		}
 	}
 
-	public void sendToPlayer(TabPlayer sender, Map<Object, Map<UsageType, Float>> features) {
+	public void sendToPlayer(TabPlayer sender, Map<String, Map<String, Float>> features) {
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
-		for (Entry<Object, Map<UsageType, Float>> entry : features.entrySet()) {
+		for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
 			double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
 			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
-			for (Entry<UsageType, Float> type : entry.getValue().entrySet()){
+			for (Entry<String, Float> type : entry.getValue().entrySet()){
 				messages.add("&3" + type.getKey().toString() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
 			}
 			IChatBaseComponent message = new IChatBaseComponent(core.replace('&', '\u00a7'));

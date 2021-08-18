@@ -15,7 +15,6 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -59,7 +58,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
 			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
-			TAB.getInstance().getCPUManager().addTime("Packet deserializing", UsageType.PACKET_READING_OUT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Packet deserializing", "ByteBuf", System.nanoTime()-time);
 			try {
 				switch(modifiedPacket.getClass().getSimpleName()) {
 				case "PlayerListItem":
@@ -67,9 +66,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 					return;
 				case "Team":
 					if (antiOverrideTeams) {
-						time = System.nanoTime();
 						modifyPlayers((Team) modifiedPacket);
-						TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
 					}
 					break;
 				case "ScoreboardDisplay":
@@ -114,7 +111,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
-			TAB.getInstance().getCPUManager().addTime("Nametags", UsageType.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Nametags", "Anti override", System.nanoTime()-time);
 		}
 		
 		/**

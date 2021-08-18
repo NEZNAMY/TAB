@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -40,7 +39,7 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 			if (receiver == null) return;
 			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setCancelled(true);
-			TAB.getInstance().getCPUManager().addTime("Plugin message handling", UsageType.PLUGIN_MESSAGE_EVENT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Plugin message handling", "PluginMessageEvent", System.nanoTime()-time);
 		}
 	}
 

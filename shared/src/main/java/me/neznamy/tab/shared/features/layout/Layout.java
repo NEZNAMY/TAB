@@ -18,7 +18,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
@@ -128,7 +127,7 @@ public class Layout extends TabFeature {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, "Refreshing layout sorting & conditions", () -> {
 			
 			List<TabPlayer> players = sortPlayers(Arrays.asList(TAB.getInstance().getOnlinePlayers()));
 			for (ParentGroup parent : parentGroups) {

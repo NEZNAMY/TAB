@@ -25,7 +25,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.NameTag;
 
 /**
@@ -109,7 +108,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, UsageType.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, "Refreshing nametag visibility and collision", () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isInDisabledWorld(p)) continue;
@@ -136,7 +135,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVehicleTickingTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", this, UsageType.TICKING_VEHICLES, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", this, "Ticking vehicles", () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
@@ -251,7 +250,7 @@ public class NameTagX extends NameTag {
 		playersInVehicle.remove(disconnectedPlayer);
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
-		TAB.getInstance().getCPUManager().runTaskLater(100, "processing onQuit", this, UsageType.PLAYER_QUIT_EVENT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+		TAB.getInstance().getCPUManager().runTaskLater(100, "processing onQuit", this, "Player quit", () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
 
 	@Override

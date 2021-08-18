@@ -16,8 +16,6 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.cpu.CPUManager;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.AlignedSuffix;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
@@ -200,7 +198,7 @@ public class TAB extends TabAPI {
 		featureManager.registerFeature("group", new GroupRefresher());
 		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {
-			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", UsageType.REPEATING_TASK, () -> {
+			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
 				
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					String world = ((ProxyTabPlayer)all).getAttribute("world");

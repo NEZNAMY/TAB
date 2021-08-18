@@ -13,7 +13,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 
 /**
@@ -31,7 +30,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", this, UsageType.TELEPORTING_ENTITY, this::teleport);
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", this, "Teleporting Wither entity", this::teleport);
 	}
 	
 	@Override
@@ -61,7 +60,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, UsageType.PLAYER_RESPAWN_EVENT, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, "PlayerRespawnEvent", () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**

@@ -8,7 +8,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.cpu.UsageType;
 
 /**
  * Permission group refresher
@@ -27,7 +26,7 @@ public class GroupRefresher extends TabFeature {
 		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
 			primaryGroupFindingList.add(group.toString());
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", this, UsageType.REPEATING_TASK, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", this, "Refreshing player groups", () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				((ITabPlayer) p).setGroup(detectPermissionGroup(p), true); 
