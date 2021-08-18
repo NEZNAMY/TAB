@@ -8,7 +8,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
-import me.neznamy.tab.shared.PacketAPI;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
@@ -101,7 +101,10 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 */
 	protected void addLine(TabPlayer p, String fakeplayer, String prefix, String suffix) {
 		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, getNumber(p)), this);
-		PacketAPI.registerScoreboardTeam(p, teamName, prefix, suffix, false, false, Arrays.asList(fakeplayer), null, this);
+		if (p.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
+			p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), this);
+		}
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Arrays.asList(fakeplayer), 0), this);
 	}
 	
 	/**

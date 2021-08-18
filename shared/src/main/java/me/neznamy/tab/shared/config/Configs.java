@@ -89,7 +89,9 @@ public class Configs {
 			getRemoveStrings().add(s.replace('&', '\u00a7'));
 		}
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
-		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
+		if (tab.getPlatform().getSeparatorType().equals("world")) {
+			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
+		}
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;

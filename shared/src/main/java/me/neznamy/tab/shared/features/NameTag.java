@@ -12,7 +12,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -104,13 +103,8 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	public void registerTeam(TabPlayer p) {
-		if (hasTeamHandlingPaused(p)) return;
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			String currentPrefix = tagprefix.getFormat(viewer);
-			String currentSuffix = tagsuffix.getFormat(viewer);
-			PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), currentPrefix, currentSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, this);
+			registerTeam(p, viewer);
 		}
 	}
 
@@ -120,7 +114,11 @@ public class NameTag extends TabFeature implements TeamManager {
 		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
-		PacketAPI.registerScoreboardTeam(viewer, p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer), getCollision(p), Arrays.asList(p.getName()), null, this);
+		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), this);
+		}
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer)?"always":"never", 
+				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), this);
 	}
 
 	public void updateTeam(TabPlayer p) {
