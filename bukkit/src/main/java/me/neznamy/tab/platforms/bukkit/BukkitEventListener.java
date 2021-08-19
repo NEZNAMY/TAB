@@ -37,11 +37,12 @@ public class BukkitEventListener implements Listener {
 				int i = 0;
 				int version;
 				while ((version = Main.getProtocolVersion(e.getPlayer())) == -1 && ++i < 100) {
-					Thread.sleep(2);
+					Thread.sleep(5);
 				}
 				if (!e.getPlayer().isOnline()) return;
-				if (i == 50) {
-					TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + e.getPlayer().getName() + " after 50 retries");
+				if (i == 100) {
+					TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + e.getPlayer().getName() + " after 100 retries");
+					version = TAB.getInstance().getServerVersion().getNetworkId();
 				}
 				TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), version));
 			} catch (InterruptedException pluginDisabled) {
