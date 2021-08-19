@@ -98,7 +98,7 @@ public class Main extends JavaPlugin {
 			if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
 		}
 		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-			return getProtocolVersionVia(player);
+			return getProtocolVersionVia(player, 0);
 		}
 		return TAB.getInstance().getServerVersion().getNetworkId();
 	}
@@ -123,9 +123,18 @@ public class Main extends JavaPlugin {
 	 * Returns protocol version of this player using ViaVersion
 	 * @return protocol version of this player using ViaVersion
 	 */
-	private static int getProtocolVersionVia(Player player){
+	private static int getProtocolVersionVia(Player player, int retryLevel){
 		try {
+			if (retryLevel == 100) {
+				TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " after 100 retries");
+				return TAB.getInstance().getServerVersion().getNetworkId();
+			}
 			int version = Via.getAPI().getPlayerVersion(player.getUniqueId());
+			if (version == -1) {
+				if (!player.isOnline()) return TAB.getInstance().getServerVersion().getNetworkId();
+				Thread.sleep(5);
+				return getProtocolVersionVia(player, retryLevel + 1);
+			}
 			TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + player.getName() + "(online=" + player.isOnline() + ")");
 			return version;
 		} catch (Exception | NoClassDefFoundError e) {
