@@ -81,7 +81,7 @@ yellow-number-in-tablist:
     - disabledserver
 
 belowname-objective:
-  enabled: true
+  enabled: false
   number: "%health%"
   text: "&c❤"
   disable-in-worlds:
