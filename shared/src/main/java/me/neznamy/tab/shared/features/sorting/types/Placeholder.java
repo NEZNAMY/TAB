@@ -25,19 +25,21 @@ public class Placeholder extends SortingType {
 	@Override
 	public String getChars(ITabPlayer p) {
 		String output = setPlaceholders(p);
-		p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\". ");
+		p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\"");
 		if (output.contains("&")) output = output.replace('&', '\u00a7');
-		String sortingValue = sortingMap.get(output);
+		String sortingValue = sortingMap.get(output.toLowerCase());
 		if (sortingValue == null) {
 			sortingValue = String.valueOf(sortingMap.size()+1);
 			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by predefined placeholder values is enabled, but output \"" + output + "\" is not listed.");
-			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's placeholder output is not in list. &r");
+			p.setTeamNameNote(p.getTeamNameNote() + "&c (not in list). &r");
+		} else {
+			p.setTeamNameNote(p.getTeamNameNote() + " (#" + Integer.parseInt(sortingMap.get(output.toLowerCase())) + " in list). &r");
 		}
 		return sortingValue;
 	}
 	
 	@Override
 	public String toString() {
-		return "PLACEHOLDER_A_TO_Z";
+		return "PLACEHOLDER";
 	}
 }
