@@ -2,8 +2,6 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +15,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
@@ -28,6 +27,7 @@ public class Layout extends TabFeature {
 	private List<ParentGroup> parentGroups = new ArrayList<>();
 	private Map<Integer, UUID> uuids = new HashMap<>();
 	private SkinManager skinManager;
+	private Map<TabPlayer, String> sortedPlayers = new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName()));
 
 	public Layout() {
 		super("Tablist layout");
@@ -83,35 +83,20 @@ public class Layout extends TabFeature {
 		}
 	}
 
-	private List<TabPlayer> sortPlayers(Collection<TabPlayer> players){
-		Map<TabPlayer, String> teamMap = new HashMap<>();
-		for (TabPlayer p : players) {
-			if (!p.isLoaded()) continue;
-			teamMap.put(p, String.valueOf(p.getTeamName()));
-		}
-		teamMap = sortByValue(teamMap);
-		return new ArrayList<>(teamMap.keySet());
-	}
-
-	private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
-		Comparator<K> valueComparator = (k1, k2) -> {
-			int compare = map.get(k2).compareTo(map.get(k1));
-			if (compare == 0) return 1;
-			else return -compare;
-		};
-		Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
-		sortedByValues.putAll(map);
-		return sortedByValues;
-	}
-
 	@Override
 	public void onJoin(TabPlayer p) {
+		sortedPlayers.put(p, p.getTeamName());
 		parentGroups.forEach(g -> g.onJoin(p));
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (int slot : emptySlots) {
 			list.add(new PlayerInfoData(formatSlot(slot), uuids.get(slot), skinManager.getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
+	}
+	
+	@Override
+	public void onQuit(TabPlayer p) {
+		sortedPlayers.remove(p);
 	}
 
 	private int translateSlot(int slot) {
@@ -127,9 +112,9 @@ public class Layout extends TabFeature {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, "Refreshing layout sorting & conditions", () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, "Refreshing layout conditions", () -> {
 			
-			List<TabPlayer> players = sortPlayers(Arrays.asList(TAB.getInstance().getOnlinePlayers()));
+			List<TabPlayer> players = new ArrayList<>(sortedPlayers.keySet());
 			for (ParentGroup parent : parentGroups) {
 				parent.tick(players);
 			}
@@ -166,6 +151,12 @@ public class Layout extends TabFeature {
 
 	public SkinManager getSkinManager() {
 		return skinManager;
+	}
+	
+	public void updateTeamName(TabPlayer p, String teamName) {
+		sortedPlayers.remove(p);
+		((ITabPlayer) p).setTeamName(teamName);
+		sortedPlayers.put(p, teamName);
 	}
 
 	public enum Direction {
