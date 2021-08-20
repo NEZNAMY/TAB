@@ -483,7 +483,6 @@ public class NMSStorage {
 		IScoreboardCriteria_self = getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
 		ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "func_96647_c", "method_1128"}, int.class);
 		Class<?> EnumScoreboardAction = null;
-		ChatMessageType_values = getEnumValues(ChatMessageType);
 		if (minorVersion >= 8) {
 			EnumScoreboardHealthDisplay = getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
 			EnumScoreboardHealthDisplay_values = getEnumValues(EnumScoreboardHealthDisplay);
