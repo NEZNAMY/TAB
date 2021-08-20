@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -53,24 +54,20 @@ public abstract class SortingType {
 		return replaced;
 	}
 	
-	/**
-	 * Loads sorting list from config and applies sorting numbers
-	 * @return map of lowercased groups with their sorting characters
-	 */
 	protected LinkedHashMap<String, String> convertSortingElements(String[] elements) {
 		LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<>();
 		int index = 1;
-		int charCount = String.valueOf(elements.length).length(); //1 char for <10 groups, 2 chars for <100 etc
-		for (String group : elements){
-			while (group.startsWith(" ")) group = group.substring(1);
-			while (group.endsWith(" ")) group = group.substring(0, group.length()-1);
+		int charCount = String.valueOf(elements.length).length(); //1 char for <10 values, 2 chars for <100 etc
+		for (String element : elements){
+			while (element.startsWith(" ")) element = element.substring(1);
+			while (element.endsWith(" ")) element = element.substring(0, element.length()-1);
 			StringBuilder sb = new StringBuilder();
 			sb.append(index);
 			while (sb.length() < charCount) { 
 				sb.insert(0, "0");
 			}
-			for (String group0 : group.toLowerCase().split(" ")) {
-				sortedGroups.put(group0, sb.toString());
+			for (String element0 : element.toLowerCase().split("\\|")) {
+				sortedGroups.put(EnumChatFormat.color(element0), sb.toString());
 			}
 			index++;
 		}
