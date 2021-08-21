@@ -21,7 +21,7 @@ public class FixedSlot extends TabFeature {
 	private Object skin;
 
 	public FixedSlot(Layout layout, int slot, String text, String skin) {
-		super("Tablist layout");
+		super("Layout - FixedSlots");
 		this.layout = layout;
 		this.id = layout.getUUID(slot);
 		this.slot = slot;

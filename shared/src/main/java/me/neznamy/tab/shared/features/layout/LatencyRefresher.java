@@ -16,7 +16,7 @@ public class LatencyRefresher extends TabFeature {
 	private Layout layout;
 	
 	public LatencyRefresher(Layout layout) {
-		super(layout.getFeatureName());
+		super("Layout - LatencyRefresher");
 		this.layout = layout;
 	}
 	
@@ -37,7 +37,7 @@ public class LatencyRefresher extends TabFeature {
 				if (all == p) continue; //already sent in refresh
 				list.add(new PlayerInfoData(group.getPlayers().get(all).getUUID(), all.getPing()));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), layout);
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), this);
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class LatencyRefresher extends TabFeature {
 			if (group.getPlayers().get(p) != null) {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					all.sendCustomPacket(packet, layout);
+					all.sendCustomPacket(packet, this);
 				}
 			}
 		}

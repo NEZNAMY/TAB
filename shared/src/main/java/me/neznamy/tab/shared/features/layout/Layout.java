@@ -31,7 +31,7 @@ public class Layout extends TabFeature {
 	private String remainingPlayersText;
 
 	public Layout() {
-		super("Tablist layout");
+		super("Layout");
 		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
 		String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
 		remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
