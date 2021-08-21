@@ -164,7 +164,6 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void teleport(TabPlayer viewer) {
 		if (!owner.getArmorStandManager().isNearby(viewer) && viewer != owner) {
-			TAB.getInstance().getErrorManager().printError(viewer.getName() + " was not in nearby player list of " + owner.getName() + " when receiving move packet");
 			spawn(viewer);
 		} else {
 			viewer.sendCustomPacket(getTeleportPacket(viewer), manager);
