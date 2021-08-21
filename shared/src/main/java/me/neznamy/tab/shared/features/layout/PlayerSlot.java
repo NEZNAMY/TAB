@@ -67,7 +67,7 @@ public class PlayerSlot {
 	}
 	
 	public void setText(String text) {
-		if (this.text == text) return;
+		if (this.text.equals(text) && player == null) return;
 		this.text = text;
 		if (player != null) {
 			setPlayer(null);
