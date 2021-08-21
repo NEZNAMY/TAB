@@ -44,7 +44,6 @@ public class ParentGroup {
 				playerSlots.get(slot).setPlayer(p);
 				players.put(p, playerSlots.get(slot));
 			} else {
-				playerSlots.get(slot).setPlayer(null);
 				playerSlots.get(slot).setText("");
 			}
 		}
