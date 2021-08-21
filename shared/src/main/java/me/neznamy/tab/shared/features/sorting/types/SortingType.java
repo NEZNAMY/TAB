@@ -59,15 +59,14 @@ public abstract class SortingType {
 		int index = 1;
 		int charCount = String.valueOf(elements.length).length(); //1 char for <10 values, 2 chars for <100 etc
 		for (String element : elements){
-			while (element.startsWith(" ")) element = element.substring(1);
-			while (element.endsWith(" ")) element = element.substring(0, element.length()-1);
 			StringBuilder sb = new StringBuilder();
 			sb.append(index);
 			while (sb.length() < charCount) { 
 				sb.insert(0, "0");
 			}
-			for (String element0 : element.toLowerCase().split("\\|")) {
+			for (String element0 : element.split("\\|")) {
 				sortedGroups.put(EnumChatFormat.color(element0), sb.toString());
+				sortedGroups.put(EnumChatFormat.color(element0.toLowerCase()), sb.toString());
 			}
 			index++;
 		}
