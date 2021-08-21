@@ -154,4 +154,8 @@ public class ArmorStandManager {
 			return new HashSet<>(nearbyPlayers);
 		}
 	}
+	
+	public boolean isNearby(TabPlayer viewer) {
+		return nearbyPlayers.contains(viewer);
+	}
 }
