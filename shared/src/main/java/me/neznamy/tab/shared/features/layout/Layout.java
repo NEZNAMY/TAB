@@ -28,11 +28,13 @@ public class Layout extends TabFeature {
 	private Map<Integer, UUID> uuids = new HashMap<>();
 	private SkinManager skinManager;
 	private Map<TabPlayer, String> sortedPlayers = new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName()));
+	private String remainingPlayersText;
 
 	public Layout() {
 		super("Tablist layout");
 		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
 		String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+		remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
 		skinManager = new SkinManager(defaultSkin);
 		for (int slot=1; slot<=80; slot++) {
 			emptySlots.add(slot);
@@ -157,6 +159,10 @@ public class Layout extends TabFeature {
 		sortedPlayers.remove(p);
 		((ITabPlayer) p).setTeamName(teamName);
 		sortedPlayers.put(p, teamName);
+	}
+
+	public String getRemainingPlayersText() {
+		return remainingPlayersText;
 	}
 
 	public enum Direction {

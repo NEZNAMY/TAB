@@ -1,7 +1,7 @@
 enabled: false
 direction: COLUMNS
-
 default-skin: "mineskin:1753261242"
+remaining-players-text: "... and %s more"
 
 fixed-slots:
   - '1|&3Website&f:'

@@ -11,12 +11,14 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
 
+	private Layout layout;
 	private Condition condition;
 	private int[] slots;
 	private Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
 	private Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
 	public ParentGroup(Layout layout, Condition condition, int[] slots) {
+		this.layout = layout;
 		this.condition = condition;
 		this.slots = slots;
 		for (int slot : slots) {
@@ -25,17 +27,26 @@ public class ParentGroup {
 	}
 
 	public void tick(List<TabPlayer> remainingPlayers){
-		int index = 0;
 		players.clear();
-		for (TabPlayer p : new ArrayList<>(remainingPlayers)) {
-			if (index == slots.length || (condition != null && !condition.isMet(p))) continue;
-			int slot = slots[index++];
-			playerSlots.get(slot).setPlayer(p);
-			remainingPlayers.remove(p);
-			players.put(p, playerSlots.get(slot));
+		List<TabPlayer> meetingCondition = new ArrayList<>();
+		for (TabPlayer p : remainingPlayers) {
+			if (condition == null || condition.isMet(p)) meetingCondition.add(p);
 		}
-		while (index < slots.length) {
-			playerSlots.get(slots[index++]).setPlayer(null);
+		remainingPlayers.removeAll(meetingCondition);
+		for (int index = 0; index < slots.length; index++) {
+			int slot = slots[index];
+			if (index == slots.length - 1 && playerSlots.size() < meetingCondition.size()) {
+				playerSlots.get(slot).setText(String.format(layout.getRemainingPlayersText(), meetingCondition.size() - playerSlots.size() + 1));
+				break;
+			}
+			if (meetingCondition.size() > index) {
+				TabPlayer p = meetingCondition.get(index);
+				playerSlots.get(slot).setPlayer(p);
+				players.put(p, playerSlots.get(slot));
+			} else {
+				playerSlots.get(slot).setPlayer(null);
+				playerSlots.get(slot).setText("");
+			}
 		}
 	}
 	
