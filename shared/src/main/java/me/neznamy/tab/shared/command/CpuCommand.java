@@ -122,7 +122,7 @@ public class CpuCommand extends SubCommand {
 			String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
 			List<String> messages = new ArrayList<>();
 			for (Entry<String, Float> type : entry.getValue().entrySet()){
-				messages.add("&3" + type.getKey().toString() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
+				messages.add("&3" + type.getKey() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
 			}
 			IChatBaseComponent message = new IChatBaseComponent(core.replace('&', '\u00a7'));
 			message.getModifier().onHoverShowText(new IChatBaseComponent(String.join("\n", messages).replace('&', '\u00a7')));
