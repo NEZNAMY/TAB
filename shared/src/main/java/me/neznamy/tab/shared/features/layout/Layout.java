@@ -166,6 +166,7 @@ public class Layout extends TabFeature {
 		sortedPlayers.remove(p);
 		((ITabPlayer) p).setTeamName(teamName);
 		sortedPlayers.put(p, teamName);
+		tick();
 	}
 
 	public String getRemainingPlayersText() {

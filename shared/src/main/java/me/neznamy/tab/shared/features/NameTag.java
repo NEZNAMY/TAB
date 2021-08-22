@@ -14,6 +14,7 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public class NameTag extends TabFeature implements TeamManager {
@@ -128,6 +129,8 @@ public class NameTag extends TabFeature implements TeamManager {
 			updateTeamData(p);
 		} else {
 			unregisterTeam(p);
+			Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
+			if (layout != null) layout.updateTeamName(p, newName);
 			((ITabPlayer) p).setTeamName(newName);
 			registerTeam(p);
 		}
