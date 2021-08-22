@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +56,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition) {
 		this(manager, name, title, lines, false);
 		this.displayCondition = Condition.getCondition(displayCondition);
+		if (this.displayCondition != null) {
+			manager.addUsedPlaceholders(Arrays.asList("%condition:" + this.displayCondition.getName() + "%"));
+		}
 	}
 
 	/**

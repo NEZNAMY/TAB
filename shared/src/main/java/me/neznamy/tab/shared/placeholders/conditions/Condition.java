@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
@@ -140,7 +141,21 @@ public class Condition {
 		if (getConditions().containsKey(string)) {
 			return getConditions().get(string);
 		} else {
-			return Condition.compile(UUID.randomUUID().toString(), Lists.newArrayList(string.split(";")), "AND", null, null);
+			Condition c = Condition.compile(UUID.randomUUID().toString(), Lists.newArrayList(string.split(";")), "AND", "yes", "no");
+			String identifier = "%condition:" + c.getName() + "%";
+			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
+			if (TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
+				refresh = TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().get(identifier);
+			}
+			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+
+				@Override
+				public Object get(TabPlayer p) {
+					return c.getText(p);
+				}
+			});
+			return c;
+			
 		}
 	}
 

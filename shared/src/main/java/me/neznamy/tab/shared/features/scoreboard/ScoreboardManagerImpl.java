@@ -124,15 +124,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			}
 			setScoreboardVisible(p, hiddenByDefault == sbOffPlayers.contains(p.getName()), false);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing scoreboard conditions", this, "Refreshing conditions", this::refreshConditions);
 	}
 	
-	private void refreshConditions() {
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
-				announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) continue;
-			sendHighestScoreboard(p);
-		}
+	@Override
+	public void refresh(TabPlayer p, boolean force) {
+		if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
+				announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) return;
+		sendHighestScoreboard(p);
 	}
 
 	@Override
