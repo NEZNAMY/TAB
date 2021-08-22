@@ -128,18 +128,17 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing bossbar display conditions", this, "Refreshing display conditions", () -> {
-
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || !hasBossBarVisible(p) || disabledPlayers.contains(p)) continue;
-				for (BossBar line : lineValues) {
-					if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
-						line.removePlayer(p);
-					}
-				}
-				showBossBars(p, defaultBars);
+	}
+	
+	@Override
+	public void refresh(TabPlayer p, boolean force) {
+		if (!p.isLoaded() || !hasBossBarVisible(p) || disabledPlayers.contains(p)) return;
+		for (BossBar line : lineValues) {
+			if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
+				line.removePlayer(p);
 			}
-		});
+		}
+		showBossBars(p, defaultBars);
 	}
 
 	@Override

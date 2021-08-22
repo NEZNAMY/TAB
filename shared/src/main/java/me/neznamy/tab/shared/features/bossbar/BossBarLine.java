@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.bossbar;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -63,6 +64,9 @@ public class BossBarLine implements BossBar {
 		this.manager = manager;
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
+		if (this.displayCondition != null) {
+			manager.addUsedPlaceholders(Arrays.asList("%condition:" + this.displayCondition.getName() + "%"));
+		}
 		this.uuid = UUID.randomUUID();
 		this.color = color;
 		this.style = style;
