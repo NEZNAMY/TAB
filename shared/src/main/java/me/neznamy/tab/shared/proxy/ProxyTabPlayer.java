@@ -52,5 +52,9 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 		attributes.put(attribute, value);
 	}
 	
+	public PluginMessageHandler getPluginMessageHandler() {
+		return plm;
+	}
+	
 	public abstract boolean hasPermission0(String permission);
 }

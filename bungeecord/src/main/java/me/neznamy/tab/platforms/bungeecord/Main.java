@@ -31,7 +31,6 @@ public class Main extends Plugin {
 		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
 		TAB.setInstance(new TAB(new BungeePlatform(this, plm), ProtocolVersion.PROXY));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener(plm));
-		if (getProxy().getPluginManager().getPlugin("PremiumVanish") != null) getProxy().getPluginManager().registerListener(this, new PremiumVanishListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 10535);

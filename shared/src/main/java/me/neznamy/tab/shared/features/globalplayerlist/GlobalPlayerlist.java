@@ -1,6 +1,5 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.globalplayerlist;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.Playerlist;
 
 /**
  * Feature handler for global playerlist feature
@@ -27,8 +27,6 @@ public class GlobalPlayerlist extends TabFeature {
 	private boolean vanishedAsSpectators;
 	private boolean isolateUnlistedServers;
 
-	private List<TabPlayer> vanishedPlayers = new ArrayList<>();
-
 	public GlobalPlayerlist() {
 		super("Global playerlist");
 		spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Arrays.asList("spyserver1"));
@@ -36,6 +34,8 @@ public class GlobalPlayerlist extends TabFeature {
 		displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
 		vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
 		isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
+		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_latency", new LatencyRefresher());
+		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_vanish", new VanishRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
 				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
 	}
@@ -48,33 +48,6 @@ public class GlobalPlayerlist extends TabFeature {
 				if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), this);
 			}
 		}
-		startTask();
-	}
-
-	private void startTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing vanished players", this, "Refreshing vanish status", () -> {
-
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (vanishedPlayers.contains(p) && !p.isVanished()) {
-					vanishedPlayers.remove(p);
-					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-						if (viewer == p) continue;
-						if (shouldSee(viewer, p)) {
-							viewer.sendCustomPacket(getAddPacket(p, viewer), this);
-						}
-					}
-				}
-				if (!vanishedPlayers.contains(p) && p.isVanished()) {
-					vanishedPlayers.add(p);
-					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-						if (all == p) continue;
-						if (!shouldSee(all, p)) {
-							all.sendCustomPacket(getRemovePacket(p), this);
-						}
-					}
-				}
-			}
-		});
 	}
 
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
@@ -103,7 +76,6 @@ public class GlobalPlayerlist extends TabFeature {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setProperty(this, "globalplayerlist-ping", "%ping%");
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == connectedPlayer) continue;
 			if (shouldSee(all, connectedPlayer)) {
@@ -112,15 +84,6 @@ public class GlobalPlayerlist extends TabFeature {
 			if (shouldSee(connectedPlayer, all)) {
 				connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), this);
 			}
-		}
-	}
-	
-	@Override
-	public void refresh(TabPlayer p, boolean force) {
-		//player ping changed, must manually update latency for players on other servers
-		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(p.getTablistUUID(), p.getPing()));
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!p.getServer().equals(all.getServer())) all.sendCustomPacket(packet, this);
 		}
 	}
 
@@ -168,7 +131,7 @@ public class GlobalPlayerlist extends TabFeature {
 			format = playerlist.getTabFormat(p, viewer);
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), 
-				p.getPing(), isVanishedAsSpectators() && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
+				p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
 	}
 
 	@Override
@@ -196,9 +159,5 @@ public class GlobalPlayerlist extends TabFeature {
 
 	public boolean isVanishedAsSpectators() {
 		return vanishedAsSpectators;
-	}
-
-	public void setVanishedAsSpectators(boolean vanishedAsSpectators) {
-		this.vanishedAsSpectators = vanishedAsSpectators;
 	}
 }

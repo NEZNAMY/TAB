@@ -28,5 +28,11 @@ public abstract class ProxyPlaceholderRegistry implements PlaceholderRegistry {
 				return count;
 			}
 		});
+		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%internal:vanished%", 1000) {
+			public Object get(TabPlayer p) {
+				((ProxyTabPlayer)p).getPluginMessageHandler().requestAttribute(p, "vanished");
+				return p.isVanished();
+			}
+		});
 	}
 }
