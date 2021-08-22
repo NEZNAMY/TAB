@@ -2,7 +2,6 @@ package me.neznamy.tab.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
@@ -45,11 +44,12 @@ public interface PlaceholderManager {
 	public Placeholder getPlaceholder(String identifier);
 	
 	/**
-	 * Returns map of used placeholders in features where key is placeholder identifier and value is a set of features
-	 * using this placeholder somewhere in properties
-	 * @return placeholder usage map
+	 * Adds placeholder to list of used placeholders and assigns this feature as using it,
+	 * which will then receive refresh() if values changes
+	 * @param identifier - placeholder identifier
+	 * @param feature - feature using the placeholder
 	 */
-	public Map<String, Set<TabFeature>> getPlaceholderUsage();
+	public void addUsedPlaceholder(String identifier, TabFeature feature);
 	
 	/**
 	 * Finds placeholder output replacement

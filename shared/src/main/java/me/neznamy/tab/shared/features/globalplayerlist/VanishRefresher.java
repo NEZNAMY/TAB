@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
@@ -16,7 +15,7 @@ public class VanishRefresher extends TabFeature {
 	protected VanishRefresher(GlobalPlayerlist playerlist) {
 		super("Global Playerlist");
 		this.playerlist = playerlist;
-		TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().computeIfAbsent("%internal:vanished%", x -> new HashSet<>()).add(this);
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%internal:vanished%", this);
 	}
 	
 	@Override

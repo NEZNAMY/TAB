@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
-import java.util.HashSet;
-
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -13,7 +11,7 @@ public class LatencyRefresher extends TabFeature {
 
 	public LatencyRefresher() {
 		super("Global Playerlist");
-		TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().computeIfAbsent("%ping%", x -> new HashSet<>()).add(this);
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%ping%", this);
 	}
 
 	@Override

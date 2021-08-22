@@ -42,6 +42,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	//map of String-Set of features using placeholder
 	private Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
+	private String[] usedPlaceholders = new String[0];
 	
 	private AtomicInteger atomic = new AtomicInteger();
 
@@ -56,7 +57,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
 		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
 		boolean somethingChanged = false;
-		for (String identifier : placeholderUsage.keySet()) {
+		for (String identifier : usedPlaceholders) {
 			Placeholder placeholder = getPlaceholder(identifier);
 			if (loopTime % placeholder.getRefresh() != 0) continue;
 			if (placeholder instanceof RelationalPlaceholder && updateRelationalPlaceholder((RelationalPlaceholder) placeholder, forceUpdate)) somethingChanged = true;
@@ -159,7 +160,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void load() {
-		for (String identifier : placeholderUsage.keySet()) {
+		for (String identifier : usedPlaceholders) {
 			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof ServerPlaceholder) {
 				((ServerPlaceholder)pl).update();
@@ -173,7 +174,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		for (String identifier : placeholderUsage.keySet()) {
+		for (String identifier : usedPlaceholders) {
 			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof RelationalPlaceholder) {
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -189,7 +190,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		for (String identifier : placeholderUsage.keySet()) {
+		for (String identifier : usedPlaceholders) {
 			Placeholder pl = getPlaceholder(identifier);
 			if (pl instanceof RelationalPlaceholder) {
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -270,8 +271,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	@Override
-	public Map<String, Set<TabFeature>> getPlaceholderUsage() {
-		return placeholderUsage;
+	public void addUsedPlaceholder(String identifier, TabFeature feature) {
+		placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature);
+		usedPlaceholders = placeholderUsage.keySet().toArray(new String[0]);
+	}
+	
+	public String[] getUsedPlaceholders() {
+		return usedPlaceholders;
 	}
 	
 	@Override

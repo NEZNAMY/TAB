@@ -187,7 +187,7 @@ public abstract class TabFeature {
 	 * @param placeholders - placeholders to add as used in this feature
 	 */
 	public void addUsedPlaceholders(Collection<String> placeholders) {
-		placeholders.forEach(p -> TabAPI.getInstance().getPlaceholderManager().getPlaceholderUsage().computeIfAbsent(p, x -> new HashSet<>()).add(this));
+		placeholders.forEach(p -> TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder(p, this));
 	}
 	
 	/**
