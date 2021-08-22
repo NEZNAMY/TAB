@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,9 @@ public class ParentGroup {
 	public ParentGroup(Layout layout, Condition condition, int[] slots) {
 		this.layout = layout;
 		this.condition = condition;
+		if (condition != null) {
+			layout.addUsedPlaceholders(Arrays.asList("%condition:" + condition.getName() + "%"));
+		}
 		this.slots = slots;
 		for (int slot : slots) {
 			playerSlots.put(slot, new PlayerSlot(layout, layout.getUUID(slot), slot));

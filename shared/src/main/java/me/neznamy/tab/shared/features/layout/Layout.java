@@ -94,11 +94,13 @@ public class Layout extends TabFeature {
 			list.add(new PlayerInfoData(formatSlot(slot), uuids.get(slot), skinManager.getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
+		tick();
 	}
 	
 	@Override
 	public void onQuit(TabPlayer p) {
 		sortedPlayers.remove(p);
+		tick();
 	}
 
 	private int translateSlot(int slot) {
@@ -114,13 +116,18 @@ public class Layout extends TabFeature {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking layout", this, "Refreshing layout conditions", () -> {
-			
-			List<TabPlayer> players = new ArrayList<>(sortedPlayers.keySet());
-			for (ParentGroup parent : parentGroups) {
-				parent.tick(players);
-			}
-		});
+	}
+	
+	@Override
+	public void refresh(TabPlayer p, boolean force) {
+		tick();
+	}
+
+	private void tick() {
+		List<TabPlayer> players = new ArrayList<>(sortedPlayers.keySet());
+		for (ParentGroup parent : parentGroups) {
+			parent.tick(players);
+		}
 	}
 
 	@Override
