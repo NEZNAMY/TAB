@@ -51,7 +51,7 @@ public class PlayerSlot {
 			all.sendCustomPacket(packet, packetDisplayName);
 			onJoin(all);
 			if (yellowNumber != null) {
-				int newYellowNumber = player == null ? 0 : TAB.getInstance().getErrorManager().parseInteger(newPlayer.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
+				int newYellowNumber = player == null ? 0 : TAB.getInstance().getErrorManager().parseInteger(player.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), packetDisplayName);
 			}
 		}
