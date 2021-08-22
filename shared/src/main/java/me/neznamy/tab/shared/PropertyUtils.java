@@ -24,8 +24,6 @@ public class PropertyUtils {
 	
 	public static final String YELLOW_NUMBER = "yellow-number";
 	
-	public static final String LAYOUT_LATENCY = "latency";
-	
 	private PropertyUtils() {
 	}
 	

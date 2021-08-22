@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.TAB;
 public class LatencyRefresher extends TabFeature {
 
 	public LatencyRefresher() {
-		super("Global playerlist");
+		super("Global Playerlist");
 		TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().computeIfAbsent("%ping%", x -> new HashSet<>()).add(this);
 	}
 
@@ -21,7 +21,7 @@ public class LatencyRefresher extends TabFeature {
 		//player ping changed, must manually update latency for players on other servers
 		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(p.getTablistUUID(), p.getPing()));
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!p.getServer().equals(all.getServer())) all.sendCustomPacket(packet, this);
+			if (!p.getServer().equals(all.getServer())) all.sendCustomPacket(packet, "Global Playerlist - Latency updating");
 		}
 	}
 }

@@ -28,6 +28,6 @@ public class TextRefresher extends TabFeature {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!line.getPlayers().contains(refreshed)) return;
-		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), refreshed.getProperty(textProperty).updateAndGet()), this);
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), refreshed.getProperty(textProperty).updateAndGet()), "BossBar - Text");
 	}
 }

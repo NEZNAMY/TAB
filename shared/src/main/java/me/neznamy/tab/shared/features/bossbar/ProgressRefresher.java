@@ -28,6 +28,6 @@ public class ProgressRefresher extends TabFeature {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!line.getPlayers().contains(refreshed)) return;
-		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), line.parseProgress(refreshed.getProperty(progressProperty).updateAndGet())/100), this);
+		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), line.parseProgress(refreshed.getProperty(progressProperty).updateAndGet())/100), "BossBar - Progress");
 	}
 }

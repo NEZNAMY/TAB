@@ -17,6 +17,8 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
  */
 public abstract class ScoreboardLine extends TabFeature implements Line {
 
+	protected final String packetDisplayName = "Scoreboard - Lines";
+	
 	//ID of this line
 	protected int lineNumber;
 	
@@ -100,11 +102,11 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 * @param value - number
 	 */
 	protected void addLine(TabPlayer p, String fakeplayer, String prefix, String suffix) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, getNumber(p)), this);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, getNumber(p)), packetDisplayName);
 		if (p.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
-			p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), this);
+			p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), packetDisplayName);
 		}
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Arrays.asList(fakeplayer), 0), this);
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Arrays.asList(fakeplayer), 0), packetDisplayName);
 	}
 	
 	/**
@@ -114,8 +116,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 * @param teamName - team name
 	 */
 	protected void removeLine(TabPlayer p, String fakeplayer) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), this);
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), this);
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), packetDisplayName);
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), packetDisplayName);
 	}
 	
 	@Override

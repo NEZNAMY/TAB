@@ -115,6 +115,14 @@ public interface TabPlayer {
 	 * @param feature - feature to increment sent packet counter of 
 	 */
 	public void sendCustomPacket(TabPacket packet, TabFeature feature);
+	
+	/**
+	 * Sends the player a custom universal packet and adds that packet into counter that
+	 * is displayed in /tab cpu
+	 * @param packet - packet to send
+	 * @param feature - feature to increment sent packet counter of 
+	 */
+	public void sendCustomPacket(TabPacket packet, String feature);
 
 	/**
 	 * Sends the player a platform-specific packet

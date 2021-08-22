@@ -153,16 +153,23 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void sendCustomPacket(TabPacket packet) {
-		sendCustomPacket(packet, null);
+		try {
+			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
+		} catch (Exception e) {
+			TAB.getInstance().getErrorManager().printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
+		}
 	}
 
 	@Override
 	public void sendCustomPacket(TabPacket packet, TabFeature feature) {
-		try {
-			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()), feature);
-		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
-		}
+		sendCustomPacket(packet);
+		if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature.getFeatureName());
+	}
+	
+	@Override
+	public void sendCustomPacket(TabPacket packet, String feature) {
+		sendCustomPacket(packet);
+		if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature);
 	}
 	
 	@Override

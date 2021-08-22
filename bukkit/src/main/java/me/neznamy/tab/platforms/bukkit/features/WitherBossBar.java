@@ -45,7 +45,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 		for (BossBar line : getRegisteredBossBars().values()) {
 			for (TabPlayer all : line.getPlayers()) {
 				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-				all.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), getWitherLocation(all)), this);
+				all.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), getWitherLocation(all)), "BossBar - Teleporting entity");
 			}
 		}
 	}

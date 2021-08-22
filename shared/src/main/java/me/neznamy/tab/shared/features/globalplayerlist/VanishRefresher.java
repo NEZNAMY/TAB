@@ -14,7 +14,7 @@ public class VanishRefresher extends TabFeature {
 	private List<TabPlayer> vanishedPlayers = new ArrayList<>();
 	
 	protected VanishRefresher(GlobalPlayerlist playerlist) {
-		super("Global playerlist");
+		super("Global Playerlist");
 		this.playerlist = playerlist;
 		TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().computeIfAbsent("%internal:vanished%", x -> new HashSet<>()).add(this);
 	}
@@ -26,7 +26,7 @@ public class VanishRefresher extends TabFeature {
 			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer == p) continue;
 				if (playerlist.shouldSee(viewer, p)) {
-					viewer.sendCustomPacket(playerlist.getAddPacket(p, viewer), this);
+					viewer.sendCustomPacket(playerlist.getAddPacket(p, viewer), "Global Playerlist - Vanishing");
 				}
 			}
 		}
@@ -35,7 +35,7 @@ public class VanishRefresher extends TabFeature {
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == p) continue;
 				if (!playerlist.shouldSee(all, p)) {
-					all.sendCustomPacket(playerlist.getRemovePacket(p), this);
+					all.sendCustomPacket(playerlist.getRemovePacket(p), "Global Playerlist - Vanishing");
 				}
 			}
 		}

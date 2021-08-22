@@ -28,7 +28,7 @@ public class GlobalPlayerlist extends TabFeature {
 	private boolean isolateUnlistedServers;
 
 	public GlobalPlayerlist() {
-		super("Global playerlist");
+		super("Global Playerlist");
 		spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Arrays.asList("spyserver1"));
 		sharedServers = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
 		displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);

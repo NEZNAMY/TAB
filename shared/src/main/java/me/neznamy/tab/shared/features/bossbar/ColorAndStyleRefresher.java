@@ -32,6 +32,6 @@ public class ColorAndStyleRefresher extends TabFeature {
 		if (!line.getPlayers().contains(refreshed)) return;
 		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), 
 				line.parseColor(refreshed.getProperty(colorProperty).updateAndGet()), 
-				line.parseStyle(refreshed.getProperty(styleProperty).updateAndGet())), this);
+				line.parseStyle(refreshed.getProperty(styleProperty).updateAndGet())), "BossBar - Color and style");
 	}
 }

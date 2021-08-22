@@ -23,6 +23,10 @@ public class PacketAPI {
 	 * @param displayType - display type of the value (only supported in Playerlist)
 	 */
 	public static synchronized void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, TabFeature feature) {
+		registerScoreboardObjective(to, objectiveName, title, position, displayType, feature.getFeatureName());
+	}
+	
+	public static synchronized void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, String feature) {
 		if (to.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
 			to.sendCustomPacket(new PacketPlayOutScoreboardObjective(objectiveName), feature);
 		}

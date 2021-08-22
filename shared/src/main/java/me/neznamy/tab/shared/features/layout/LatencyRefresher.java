@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
@@ -8,7 +9,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 
 public class LatencyRefresher extends TabFeature {
@@ -18,6 +18,7 @@ public class LatencyRefresher extends TabFeature {
 	public LatencyRefresher(Layout layout) {
 		super("Layout - LatencyRefresher");
 		this.layout = layout;
+		addUsedPlaceholders(Arrays.asList("%ping%"));
 	}
 	
 	@Override
@@ -29,7 +30,6 @@ public class LatencyRefresher extends TabFeature {
 	
 	@Override
 	public void onJoin(TabPlayer p) {
-		p.setProperty(this, PropertyUtils.LAYOUT_LATENCY, "%ping%");
 		refresh(p, false);
 		for (ParentGroup group : layout.getGroups()) {
 			List<PlayerInfoData> list = new ArrayList<>();
@@ -37,7 +37,7 @@ public class LatencyRefresher extends TabFeature {
 				if (all == p) continue; //already sent in refresh
 				list.add(new PlayerInfoData(group.getPlayers().get(all).getUUID(), all.getPing()));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), this);
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), "Layout - Latency");
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class LatencyRefresher extends TabFeature {
 			if (group.getPlayers().get(p) != null) {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					all.sendCustomPacket(packet, this);
+					all.sendCustomPacket(packet, "Layout - Latency");
 				}
 			}
 		}

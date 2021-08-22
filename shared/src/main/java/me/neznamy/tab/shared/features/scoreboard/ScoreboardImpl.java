@@ -120,7 +120,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, this);
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
@@ -150,7 +150,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE) == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), this);
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), "Scoreboard - Title");
 	}
 
 	public List<Line> getLines() {

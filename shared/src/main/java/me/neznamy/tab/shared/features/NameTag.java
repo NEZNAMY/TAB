@@ -93,13 +93,13 @@ public class NameTag extends TabFeature implements TeamManager {
 		if (hasTeamHandlingPaused(p)) return;
 		if (p.getTeamName() == null) return;
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), this);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), "NameTags - Team unregister");
 		}
 	}
 
 	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
 		if (hasTeamHandlingPaused(p)) return;
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), this);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), "NameTags - Team unregister");
 	}
 
 	public void registerTeam(TabPlayer p) {
@@ -115,10 +115,10 @@ public class NameTag extends TabFeature implements TeamManager {
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
 		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), this);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), "NameTags - Team unregister");
 		}
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer)?"always":"never", 
-				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), this);
+				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), "NameTags - Team register");
 	}
 
 	public void updateTeam(TabPlayer p) {
@@ -141,7 +141,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), this);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), "NameTags - Team update");
 		}
 	}
 
@@ -151,7 +151,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), this);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), "NameTags - Team update");
 	}
 
 	private String translate(boolean b) {
