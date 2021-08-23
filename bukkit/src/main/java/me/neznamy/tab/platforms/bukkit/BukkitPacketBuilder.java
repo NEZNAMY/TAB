@@ -5,8 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -59,6 +61,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	//entity type ids
 	private EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
+	
+	private Map<IChatBaseComponent, Object> componentCache = new HashMap<>();
 	
 	private Object emptyScoreboard;
 
@@ -555,9 +559,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InstantiationException 
 	 */
 	public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		if (componentCache.containsKey(component)) return componentCache.get(component);
 		long time = System.nanoTime();
 		Object obj = toNMSComponent0(component, clientVersion);
 		TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
+		if (componentCache.size() > 10000) componentCache.clear();
+		componentCache.put(component, obj);
 		return obj;
 	}
 

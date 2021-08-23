@@ -1,7 +1,9 @@
 package me.neznamy.tab.api.chat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
@@ -19,6 +21,8 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
+	private static Map<String, IChatBaseComponent> componentCache = new HashMap<>();
+	
 	//constants
 	private static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
 	private static final String EMPTY_TEXT = "{\"text\":\"\"}";
@@ -418,12 +422,17 @@ public class IChatBaseComponent {
 	 */
 	public static IChatBaseComponent optimizedComponent(String text){
 		if (text == null) return null;
+		if (componentCache.containsKey(text)) return componentCache.get(text);
+		IChatBaseComponent component;
 		if (text.contains("#") || text.contains("&x") || text.contains("\u00a7x")){
 			//contains RGB colors
-			return IChatBaseComponent.fromColoredText(text);
+			component = IChatBaseComponent.fromColoredText(text);
 		} else {
 			//no RGB
-			return new IChatBaseComponent(text);
+			component = new IChatBaseComponent(text);
 		}
+		if (componentCache.size() > 10000) componentCache.clear();
+		componentCache.put(text, component);
+		return component;
 	}
 }
