@@ -131,7 +131,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 * @return number displayed
 	 */
 	public int getNumber(TabPlayer p) {
-		if (parent.getManager().isUsingNumbers() || p.getVersion().getMinorVersion() < 8) {
+		if (parent.getManager().isUsingNumbers() || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) {
 			return parent.getLines().size() + 1 - lineNumber;
 		} else {
 			return parent.getManager().getStaticNumber();

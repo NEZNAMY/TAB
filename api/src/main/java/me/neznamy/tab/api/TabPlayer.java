@@ -279,4 +279,6 @@ public interface TabPlayer {
 	 * @return gamemode of the player
 	 */
 	public int getGamemode();
+	
+	public boolean isBedrockPlayer();
 }

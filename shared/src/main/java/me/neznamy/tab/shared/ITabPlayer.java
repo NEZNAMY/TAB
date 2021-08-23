@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.geysermc.floodgate.api.FloodgateApi;
+
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.EnumProperty;
@@ -30,6 +32,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String teamName;
 	private String teamNameNote;
 	private String forcedTeamName;
+	private boolean bedrockPlayer;
 
 	private Map<String, Property> properties = new HashMap<>();
 	private ArmorStandManager armorStandManager;
@@ -41,6 +44,12 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	protected void init() {
 		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
+		try {
+			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+			bedrockPlayer = FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
+		} catch (ClassNotFoundException e) {
+			//plugin not installed
+		}
 	}
 
 	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
@@ -286,5 +295,9 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (refreshIfChanged) {
 			forceRefresh();
 		}
+	}
+
+	public boolean isBedrockPlayer() {
+		return bedrockPlayer;
 	}
 }
