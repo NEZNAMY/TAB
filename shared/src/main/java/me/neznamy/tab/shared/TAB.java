@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.HeaderFooterManager;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
@@ -331,5 +332,10 @@ public class TAB extends TabAPI {
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		platform.sendConsoleMessage(message, translateColors);
+	}
+
+	@Override
+	public HeaderFooterManager getHeaderFooterManager() {
+		return (HeaderFooterManager) featureManager.getFeature("headerfooter");
 	}
 }

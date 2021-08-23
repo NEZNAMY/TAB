@@ -60,6 +60,8 @@ public abstract class TabAPI {
 	 */
 	public abstract TeamManager getTeamManager();
 	
+	public abstract HeaderFooterManager getHeaderFooterManager();
+	
 	/**
 	 * Returns PlaceholderManager instance
 	 * @return PlaceholderManager instance
