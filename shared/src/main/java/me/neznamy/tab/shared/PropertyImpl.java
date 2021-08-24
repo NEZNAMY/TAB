@@ -43,8 +43,8 @@ public class PropertyImpl implements Property {
 	//used relational placeholders in current raw value
 	private String[] relPlaceholders;
 	
-	private StringBuilder sb = new StringBuilder();
-	private Formatter formatter = new Formatter(sb);
+	private StringBuilder formatBuffer = new StringBuilder();
+	private Formatter formatter = new Formatter(formatBuffer);
 
 	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
 		this(listener, owner, rawValue, null);
@@ -166,8 +166,8 @@ public class PropertyImpl implements Property {
 				for (int i=0; i<placeholders.length; i++) {
 					values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
 				}
-				sb.setLength(0);
 				string = formatter.format(rawFormattedValue, (Object[]) values).toString();
+				formatBuffer.setLength(0);
 			}
 			string = EnumChatFormat.color(string);
 			string = applyRemoveStrings(string);
