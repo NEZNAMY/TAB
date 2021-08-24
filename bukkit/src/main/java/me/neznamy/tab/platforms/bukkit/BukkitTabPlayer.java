@@ -118,7 +118,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (packet.isPlayMusic()) flags.add(BarFlag.PLAY_BOSS_MUSIC);
 			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
-					BarStyle.valueOf(packet.getOverlay().name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")),
+					BarStyle.valueOf(packet.getOverlay().getBukkitName()),
 					flags.toArray(new BarFlag[0]));
 			bar.setProgress(packet.getPct());
 			bossbars.put(packet.getId(), bar);
@@ -136,7 +136,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			break;
 		case UPDATE_STYLE:
 			bossbars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));
-			bossbars.get(packet.getId()).setStyle(BarStyle.valueOf(packet.getOverlay().name().replace("PROGRESS", "SOLID").replace("NOTCHED", "SEGMENTED")));
+			bossbars.get(packet.getId()).setStyle(BarStyle.valueOf(packet.getOverlay().getBukkitName()));
 			break;
 		case UPDATE_PROPERTIES:
 			bar = bossbars.get(packet.getId());

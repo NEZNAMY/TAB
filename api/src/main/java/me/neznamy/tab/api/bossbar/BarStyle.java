@@ -5,9 +5,19 @@ package me.neznamy.tab.api.bossbar;
  */
 public enum BarStyle {
 
-	PROGRESS,
-	NOTCHED_6,
-	NOTCHED_10,
-	NOTCHED_12,
-	NOTCHED_20;
+	PROGRESS("SOLID"),
+	NOTCHED_6("SEGMENTED_6"),
+	NOTCHED_10("SEGMENTED_10"),
+	NOTCHED_12("SEGMENTED_12"),
+	NOTCHED_20("SEGMENTED_20");
+	
+	private String bukkitName;
+	
+	private BarStyle(String bukkitName){
+		this.bukkitName = bukkitName;
+	}
+	
+	public String getBukkitName() {
+		return bukkitName;
+	}
 }
