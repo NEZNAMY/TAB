@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 import me.neznamy.tab.api.Property;
@@ -41,6 +42,9 @@ public class PropertyImpl implements Property {
 	
 	//used relational placeholders in current raw value
 	private String[] relPlaceholders;
+	
+	private StringBuilder sb = new StringBuilder();
+	private Formatter formatter = new Formatter(sb);
 
 	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
 		this(listener, owner, rawValue, null);
@@ -162,7 +166,8 @@ public class PropertyImpl implements Property {
 				for (int i=0; i<placeholders.length; i++) {
 					values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
 				}
-				string = String.format(rawFormattedValue, (Object[]) values);
+				sb.setLength(0);
+				string = formatter.format(rawFormattedValue, (Object[]) values).toString();
 			}
 			string = EnumChatFormat.color(string);
 			string = applyRemoveStrings(string);
