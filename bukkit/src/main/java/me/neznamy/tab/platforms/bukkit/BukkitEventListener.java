@@ -15,6 +15,12 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitEventListener implements Listener {
 
+	private Main main;
+	
+	public BukkitEventListener(Main main) {
+		this.main = main;
+	}
+	
 	/**
 	 * Listener to PlayerQuitEvent to remove player data and forward the event to features
 	 * @param e quit event
@@ -32,7 +38,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), Main.getProtocolVersion(e.getPlayer()))));
+		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), main.getProtocolVersion(e.getPlayer()))));
 	}
 
 	/**

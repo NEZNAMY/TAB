@@ -98,7 +98,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			//1.9+ server, handled using bukkit api
 			return packet;
 		}
-		if (clientVersion.getMinorVersion() >= 9 && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+		if (clientVersion.getMinorVersion() >= 9 && ((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled()) {
 			//1.9+ client on 1.8 server
 			//technically redundant VV check as there is no other way to get 1.9 client on 1.8 server
 			return buildBossPacketVia(packet, clientVersion);

@@ -26,6 +26,9 @@ import me.neznamy.tab.shared.TAB;
  */
 public class Main extends JavaPlugin {
 	
+	private boolean viaversion;
+	private boolean protocolsupport;
+	
 	@Override
 	public void onEnable(){
 		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
@@ -33,11 +36,13 @@ public class Main extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
+		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
+		protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
 		}
-		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(this), this);
 		TABCommand command = new TABCommand();
 		Bukkit.getPluginCommand("tab").setExecutor(command);
 		Bukkit.getPluginCommand("tab").setTabCompleter(command);
@@ -91,13 +96,13 @@ public class Main extends JavaPlugin {
 	 * Gets protocol version and returns it
 	 * @return protocol version of this player
 	 */
-	public static int getProtocolVersion(Player player) {
-		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport")){
+	public int getProtocolVersion(Player player) {
+		if (protocolsupport){
 			int version = getProtocolVersionPS(player);
 			//some PS versions return -1 on unsupported server versions instead of throwing exception
 			if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
 		}
-		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+		if (viaversion) {
 			return getProtocolVersionVia(player, 0);
 		}
 		return TAB.getInstance().getServerVersion().getNetworkId();
@@ -107,7 +112,7 @@ public class Main extends JavaPlugin {
 	 * Returns protocol version of this player using ProtocolSupport
 	 * @return protocol version of this player using ProtocolSupport
 	 */
-	private static int getProtocolVersionPS(Player player){
+	private int getProtocolVersionPS(Player player){
 		try {
 			Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
 			int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
@@ -123,7 +128,7 @@ public class Main extends JavaPlugin {
 	 * Returns protocol version of this player using ViaVersion
 	 * @return protocol version of this player using ViaVersion
 	 */
-	private static int getProtocolVersionVia(Player player, int retryLevel){
+	private int getProtocolVersionVia(Player player, int retryLevel){
 		try {
 			if (retryLevel == 100) {
 				TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " after 100 retries");

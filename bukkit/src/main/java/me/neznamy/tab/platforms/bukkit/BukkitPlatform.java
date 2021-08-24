@@ -7,7 +7,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
@@ -46,7 +45,7 @@ import net.milkbowl.vault.permission.Permission;
 public class BukkitPlatform implements Platform {
 	
 	//plugin instance
-	private JavaPlugin plugin;
+	private Main plugin;
 	
 	//nms storage
 	private NMSStorage nms;
@@ -65,7 +64,7 @@ public class BukkitPlatform implements Platform {
 	 * @param plugin - plugin instance
 	 * @param nms - nms storage
 	 */
-	public BukkitPlatform(JavaPlugin plugin, NMSStorage nms) {
+	public BukkitPlatform(Main plugin, NMSStorage nms) {
 		this.plugin = plugin;
 		this.nms = nms;
 		packetBuilder = new BukkitPacketBuilder(nms);
@@ -110,7 +109,7 @@ public class BukkitPlatform implements Platform {
 			new TabExpansion(plugin);
 		}
 		for (Player p : getOnlinePlayers()) {
-			tab.addPlayer(new BukkitTabPlayer(p, Main.getProtocolVersion(p)));
+			tab.addPlayer(new BukkitTabPlayer(p, plugin.getProtocolVersion(p)));
 		}
 	}
 	
