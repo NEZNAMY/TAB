@@ -254,6 +254,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		Placeholder p = registeredPlaceholders.get(identifier);
 		if (p == null) {
 			p = TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+			addUsedPlaceholder(identifier, this); //likely used via tab expansion
 		}
 		return p;
 	}
