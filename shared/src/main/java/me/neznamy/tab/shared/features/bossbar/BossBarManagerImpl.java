@@ -80,7 +80,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (rememberToggleChoice) {
 			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerData("bossbar-off");
 		}
-		TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%countdown%", this);
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(new ServerPlaceholder("%countdown%", 100) {
 
 			@Override
