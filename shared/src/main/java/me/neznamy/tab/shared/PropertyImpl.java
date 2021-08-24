@@ -169,8 +169,7 @@ public class PropertyImpl implements Property {
 				string = formatter.format(rawFormattedValue, (Object[]) values).toString();
 				formatBuffer.setLength(0);
 			}
-			string = EnumChatFormat.color(string);
-			string = applyRemoveStrings(string);
+			string = applyRemoveStrings(EnumChatFormat.color(string));
 		} else {
 			string = rawFormattedValue;
 		}
