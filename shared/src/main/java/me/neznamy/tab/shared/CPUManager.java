@@ -210,8 +210,6 @@ public class CPUManager {
 				addTime(feature, type, System.nanoTime()-time);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
-			} catch (Exception | NoClassDefFoundError e) {
-				errorManager.printError("An error occurred when " + errorDescription, e);
 			}
 		});
 	}
