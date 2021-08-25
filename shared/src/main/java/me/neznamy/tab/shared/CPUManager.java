@@ -367,27 +367,9 @@ public class CPUManager {
 	private <K> List<K> sortKeys(Map<K, Map<String, Long>> map){
 		Map<K, Long> simplified = new LinkedHashMap<>();
 		for (Entry<K, Map<String, Long>> entry : map.entrySet()) {
-			simplified.put(entry.getKey(), sumValues(entry.getValue()));
+			simplified.put(entry.getKey(), entry.getValue().values().stream().mapToLong(Long::longValue).sum());
 		}
-		simplified = sortByValue(simplified);
-		List<K> sortedKeys = new ArrayList<>();
-		for (K key : simplified.keySet()) {
-			sortedKeys.add(key);
-		}
-		return sortedKeys;
-	}
-
-	/**
-	 * Returns summary of all values in a map
-	 * @param map - map to sum up values of
-	 * @return summary of values
-	 */
-	private long sumValues(Map<?, Long> map) {
-		long total = 0;
-		for (Long value : map.values()) {
-			total += value;
-		}
-		return total;
+		return new ArrayList<>(sortByValue(simplified).keySet());
 	}
 
 	/**
