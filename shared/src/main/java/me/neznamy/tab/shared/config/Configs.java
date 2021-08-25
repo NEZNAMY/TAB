@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
@@ -26,7 +27,7 @@ public class Configs {
 	//config.yml file
 	private ConfigurationFile config;
 
-	private List<String> removeStrings;
+	private String[] removeStrings;
 	private boolean bukkitPermissions;
 
 	//hidden config options
@@ -84,9 +85,10 @@ public class Configs {
 	 */
 	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
-		removeStrings = new ArrayList<>();
-		for (String s : getConfig().getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "))) {
-			getRemoveStrings().add(s.replace('&', '\u00a7'));
+		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
+		removeStrings = new String[list.size()];
+		for (int i=0; i<list.size(); i++) {
+			removeStrings[i] = EnumChatFormat.color(list.get(i));
 		}
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
 		if (tab.getPlatform().getSeparatorType().equals("world")) {
@@ -147,7 +149,7 @@ public class Configs {
 		return new ArrayList<>();
 	}
 
-	public List<String> getRemoveStrings() {
+	public String[] getRemoveStrings() {
 		return removeStrings;
 	}
 

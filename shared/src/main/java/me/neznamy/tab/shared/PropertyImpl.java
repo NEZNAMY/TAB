@@ -183,7 +183,7 @@ public class PropertyImpl implements Property {
 	}
 	
 	private String applyRemoveStrings(String text) {
-		if (TAB.getInstance().getConfiguration().getRemoveStrings().isEmpty()) return text;
+		if (TAB.getInstance().getConfiguration().getRemoveStrings().length == 0) return text;
 		String reformatted = text;
 		for (String removed : TAB.getInstance().getConfiguration().getRemoveStrings()) {
 			if (removed.startsWith("CONTAINS:") && reformatted.contains(removed.substring(9))) return "";
