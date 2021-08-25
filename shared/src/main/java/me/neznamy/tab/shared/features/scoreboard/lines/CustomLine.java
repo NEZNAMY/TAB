@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
@@ -57,7 +58,7 @@ public class CustomLine extends ScoreboardLine {
 			} else {
 				//only prefix/suffix changed
 				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(), 
-						refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0), packetDisplayName);
+						refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0), CpuConstants.PacketCategory.SCOREBOARD_LINES);
 			}
 		}
 	}

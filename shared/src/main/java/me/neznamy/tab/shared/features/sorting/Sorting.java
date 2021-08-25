@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NameTag;
@@ -50,7 +51,7 @@ public class Sorting {
 		types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
 		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
 		
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", nametags, "Refreshing team names", () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", nametags, CpuConstants.UsageCategory.REFRESHING_TEAM_NAMES, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)) continue;

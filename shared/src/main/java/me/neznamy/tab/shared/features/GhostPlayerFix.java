@@ -5,6 +5,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -19,7 +20,7 @@ public class GhostPlayerFix extends TabFeature {
 	
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		TAB.getInstance().getCPUManager().runTaskLater(500, "removing players", this, "Player quit", () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(500, "removing players", this, CpuConstants.UsageCategory.PLAYER_QUIT, () -> {
 
 			if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

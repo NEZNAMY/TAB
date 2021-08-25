@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 
@@ -30,7 +31,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//bar disappears in client after ~1 second of not seeing boss entity
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", this, "Teleporting Wither entity", this::teleport);
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", this, CpuConstants.UsageCategory.TELEPORTING_WITHER, this::teleport);
 	}
 	
 	@Override
@@ -45,7 +46,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 		for (BossBar line : getRegisteredBossBars().values()) {
 			for (TabPlayer all : line.getPlayers()) {
 				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-				all.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), getWitherLocation(all)), "BossBar - Teleporting entity");
+				all.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), getWitherLocation(all)), CpuConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
 			}
 		}
 	}
@@ -60,7 +61,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, "PlayerRespawnEvent", () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, CpuConstants.UsageCategory.PLAYER_RESPAWN, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**

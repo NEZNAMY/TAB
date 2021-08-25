@@ -9,6 +9,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 
 public class LatencyRefresher extends TabFeature {
@@ -37,7 +38,7 @@ public class LatencyRefresher extends TabFeature {
 				if (all == p) continue; //already sent in refresh
 				list.add(new PlayerInfoData(group.getPlayers().get(all).getUUID(), all.getPing()));
 			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), "Layout - Latency");
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), CpuConstants.PacketCategory.LAYOUT_LATENCY);
 		}
 	}
 	
@@ -47,7 +48,7 @@ public class LatencyRefresher extends TabFeature {
 			if (group.getPlayers().get(p) != null) {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					all.sendCustomPacket(packet, "Layout - Latency");
+					all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_LATENCY);
 				}
 			}
 		}

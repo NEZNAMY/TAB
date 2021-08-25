@@ -10,6 +10,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
@@ -17,7 +18,6 @@ import me.neznamy.tab.shared.features.YellowNumber;
 
 public class PlayerSlot {
 
-	private final String packetDisplayName = "Layout - Player slots";
 	private YellowNumber yellowNumber;
 	private Playerlist playerlist;
 	private Layout layout;
@@ -48,11 +48,11 @@ public class PlayerSlot {
 		if (player != null) text = "";
 		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id));
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			all.sendCustomPacket(packet, packetDisplayName);
+			all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			onJoin(all);
 			if (yellowNumber != null) {
 				int newYellowNumber = player == null ? 0 : TAB.getInstance().getErrorManager().parseInteger(player.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
-				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), packetDisplayName);
+				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			}
 		}
 	}
@@ -64,7 +64,7 @@ public class PlayerSlot {
 		} else {
 			data = new PlayerInfoData(fakeplayer, id, layout.getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
 		}
-		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), packetDisplayName);
+		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 	}
 	
 	public void setText(String text) {
@@ -75,7 +75,7 @@ public class PlayerSlot {
 		} else {
 			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, new IChatBaseComponent(text)));
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				all.sendCustomPacket(packet, packetDisplayName);
+				all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			}
 		}
 	}

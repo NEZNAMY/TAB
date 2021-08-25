@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -73,14 +74,14 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		long time = System.nanoTime();
 		checkPlayer(e.getPlayer());
-		TAB.getInstance().getCPUManager().addTime(getFeatureName(), "Player join", System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuConstants.UsageCategory.PLAYER_JOIN, System.nanoTime()-time);
 	}
 	
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent e) {
 		long time = System.nanoTime();
 		checkPlayer(e.getPlayer());
-		TAB.getInstance().getCPUManager().addTime(getFeatureName(), "Player world switch", System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuConstants.UsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 	}
 	
 	private void checkPlayer(Player p) {

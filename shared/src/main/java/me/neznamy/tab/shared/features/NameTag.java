@@ -11,6 +11,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
@@ -66,7 +67,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	public void startRefreshingTasks() {
 		//workaround for a 1.8.x client-sided bug
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, "Refreshing nametag visibility and collision", () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || disabledPlayers.contains(p)) continue;
@@ -94,13 +95,13 @@ public class NameTag extends TabFeature implements TeamManager {
 		if (hasTeamHandlingPaused(p)) return;
 		if (p.getTeamName() == null) return;
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), "NameTags - Team unregister");
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 	}
 
 	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
 		if (hasTeamHandlingPaused(p)) return;
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), "NameTags - Team unregister");
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 	}
 
 	public void registerTeam(TabPlayer p) {
@@ -116,10 +117,10 @@ public class NameTag extends TabFeature implements TeamManager {
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
 		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), "NameTags - Team unregister");
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer)?"always":"never", 
-				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), "NameTags - Team register");
+				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
 	}
 
 	public void updateTeam(TabPlayer p) {
@@ -144,7 +145,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), "NameTags - Team update");
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
 	}
 
@@ -154,7 +155,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), "NameTags - Team update");
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 	}
 
 	private String translate(boolean b) {

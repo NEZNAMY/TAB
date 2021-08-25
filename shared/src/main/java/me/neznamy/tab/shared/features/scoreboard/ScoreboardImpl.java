@@ -12,6 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
@@ -150,7 +151,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE) == null) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), "Scoreboard - Title");
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
+				refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), CpuConstants.PacketCategory.SCOREBOARD_TITLE);
 	}
 
 	public List<Line> getLines() {

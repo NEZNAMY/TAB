@@ -22,6 +22,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -108,7 +109,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (yOffset == offset) return;
 		yOffset = offset;
 		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
-			all.sendCustomPacket(getTeleportPacket(all), "UnlimitedNametags - Changing offset");
+			all.sendCustomPacket(getTeleportPacket(all), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE);
 		}
 	}
 
@@ -136,7 +137,7 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void spawn(TabPlayer viewer) {
 		for (TabPacket packet : getSpawnPackets(viewer)) {
-			viewer.sendCustomPacket(packet, "UnlimitedNametags - Spawning");
+			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
 		}
 	}
 
@@ -151,13 +152,13 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy(TabPlayer viewer) {
-		viewer.sendCustomPacket(destroyPacket, "UnlimitedNametags - Despawning");
+		viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 
 	@Override
 	public void teleport() {
 		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
-			all.sendCustomPacket(getTeleportPacket(all), "UnlimitedNametags - Global teleporting");
+			all.sendCustomPacket(getTeleportPacket(all), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
 	}
 
@@ -166,7 +167,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (!owner.getArmorStandManager().isNearby(viewer) && viewer != owner) {
 			spawn(viewer);
 		} else {
-			viewer.sendCustomPacket(getTeleportPacket(viewer), "UnlimitedNametags - Teleporting");
+			viewer.sendCustomPacket(getTeleportPacket(viewer), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
 	}
 
@@ -178,17 +179,17 @@ public class BukkitArmorStand implements ArmorStand {
 			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendCustomPacket(destroyPacket, "UnlimitedNametags - Sneaking");
+					viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
 				} else {
 					spawn(viewer);
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendCustomPacket(destroyPacket, "UnlimitedNametags - Sneaking");
+				viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
 				Runnable spawn = () -> spawn(viewer);
 				if (viewer.getVersion().getMinorVersion() == 8) {
 					//1.8.0 client sided bug
-					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, "Compensating for 1.8.0 bugs", spawn);
+					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, CpuConstants.UsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
 				} else {
 					spawn.run();
 				}
@@ -198,7 +199,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, "UnlimitedNametags - Despawning");
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 
 	@Override
@@ -225,7 +226,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	public void updateMetadata() {
 		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), "UnlimitedNametags - Updating metadata");
+			viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
 		}
 	}
 
