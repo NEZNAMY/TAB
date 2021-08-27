@@ -20,7 +20,7 @@ public class PluginInfo extends TabFeature {
 		if (message.equalsIgnoreCase(command) && sender.hasPermission("tab.admin")){
 			IChatBaseComponent component = new IChatBaseComponent("\u00a73TAB v" + TAB.PLUGIN_VERSION);
 			component.getModifier().onHoverShowText(new IChatBaseComponent("\u00a7aClick to visit plugin's spigot page"));
-			component.getModifier().onClickOpenUrl("https://www.spigotmc.org/resources/57806/");
+			component.getModifier().onClickOpenUrl("https://github.com/NEZNAMY/TAB");
 			component.addExtra(new IChatBaseComponent("\u00a70 by _NEZNAMY_"));
 			sender.sendMessage(component);
 		}
