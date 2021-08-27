@@ -262,13 +262,16 @@ public class NameTagX extends NameTag {
 		} else {
 			getDisabledPlayers().remove(p);
 		}
-		Set<TabPlayer> nearby = p.getArmorStandManager().getNearbyPlayers();
+		TabPlayer[] nearby = p.getArmorStandManager().getNearbyPlayers();
 		p.getArmorStandManager().destroy();
 		loadArmorStands(p);
 		loadPassengers(p);
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			viewer.getArmorStandManager().destroy(p);
-			if (nearby.contains(viewer) && to.equals(viewer.getWorld())) spawnArmorStands(p, viewer, true);
+			if (!to.equals(viewer.getWorld())) continue;
+			for (TabPlayer player : nearby) {
+				if (player == viewer) spawnArmorStands(p, viewer, true);
+			}
 		}
 	}
 	

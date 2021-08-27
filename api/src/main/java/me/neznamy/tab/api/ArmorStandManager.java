@@ -18,7 +18,9 @@ public class ArmorStandManager {
 	private Set<TabPlayer> nearbyPlayers = Collections.synchronizedSet(new HashSet<>());
 	
 	//array to iterate over to avoid concurrent modification and slightly boost performance & memory
-	private ArmorStand[] armorStandArray;
+	private ArmorStand[] armorStandArray = new ArmorStand[0];
+	
+	private TabPlayer[] nearbyPlayerArray = new TabPlayer[0];
 	
 	/**
 	 * Adds armor stand into list
@@ -28,7 +30,7 @@ public class ArmorStandManager {
 	public void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
 		armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
-		nearbyPlayers.forEach(as::spawn);
+		for (TabPlayer p : nearbyPlayerArray) as.spawn(p);
 	}
 	
 	/**
@@ -56,6 +58,7 @@ public class ArmorStandManager {
 	 */
 	public void spawn(TabPlayer viewer) {
 		nearbyPlayers.add(viewer);
+		nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		for (ArmorStand a : armorStandArray) a.spawn(viewer);
 	}
@@ -104,6 +107,7 @@ public class ArmorStandManager {
 	 */
 	public void unregisterPlayer(TabPlayer viewer) {
 		nearbyPlayers.remove(viewer);
+		nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
 	}
 
 	/**
@@ -112,6 +116,7 @@ public class ArmorStandManager {
 	public void destroy() {
 		for (ArmorStand a : armorStandArray) a.destroy();
 		nearbyPlayers.clear();
+		nearbyPlayerArray = new TabPlayer[0];
 	}
 
 	/**
@@ -120,7 +125,7 @@ public class ArmorStandManager {
 	 */
 	public void destroy(TabPlayer viewer) {
 		for (ArmorStand a : armorStandArray) a.destroy(viewer);
-		nearbyPlayers.remove(viewer);
+		unregisterPlayer(viewer);
 	}
 
 	/**
@@ -146,13 +151,11 @@ public class ArmorStandManager {
 	}
 
 	/**
-	 * Returns list of nearby players
-	 * @return list of nearby players
+	 * Returns array of nearby players
+	 * @return array of nearby players
 	 */
-	public Set<TabPlayer> getNearbyPlayers(){
-		synchronized (nearbyPlayers) {
-			return new HashSet<>(nearbyPlayers);
-		}
+	public TabPlayer[] getNearbyPlayers(){
+		return nearbyPlayerArray;
 	}
 	
 	public boolean isNearby(TabPlayer viewer) {
