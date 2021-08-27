@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +107,7 @@ public class PetFix implements RawPacketListener, QuitEventListener {
 			Object removedEntry = null;
 			List<Object> items = (List<Object>) nms.getField("PacketPlayOutEntityMetadata_LIST").get(packet);
 			if (items == null) return;
-			for (Object item : items) {
+			for (Object item : new ArrayList<>(items)) {
 				if (nms.getField("DataWatcherObject_SLOT").getInt(nms.getField("DataWatcherItem_TYPE").get(item)) == petOwnerPosition) {
 					Object value = nms.getField("DataWatcherItem_VALUE").get(item);
 					if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) {
