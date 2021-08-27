@@ -572,10 +572,15 @@ public class NMSStorage {
 		try {
 			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
 		} catch (ClassNotFoundException e) {
-			//modded server?
-			Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
-			if (clazz != null) return clazz;
-			throw new ClassNotFoundException(name);
+			try {
+				//modded server?
+				Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+				if (clazz != null) return clazz;
+				throw new ClassNotFoundException(name);
+			} catch (ClassNotFoundException e1) {
+				//fabric
+				return Class.forName(name);
+			}
 		}
 	}
 
