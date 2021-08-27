@@ -12,7 +12,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -24,6 +23,7 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
 import io.netty.channel.Channel;
+import me.libraryaddict.disguise.DisguiseAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
@@ -223,8 +223,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public boolean isDisguised() {
 		try {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
-			return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, player);
-		} catch (Exception | NoClassDefFoundError e) {
+			return DisguiseAPI.isDisguised(player);
+		} catch (Exception | NoClassDefFoundError | ExceptionInInitializerError e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
 			return false;
 		}
