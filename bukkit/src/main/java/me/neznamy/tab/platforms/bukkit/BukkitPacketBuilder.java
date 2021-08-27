@@ -19,11 +19,7 @@ import org.json.simple.parser.ParseException;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.gson.JsonParser;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.ChatComponentEntity;
@@ -94,64 +90,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		if (nms.getMinorVersion() >= 9) {
-			//1.9+ server, handled using bukkit api
+		if (nms.getMinorVersion() >= 9 || clientVersion.getMinorVersion() >= 9) {
+			//1.9+ server or client, handled by bukkit api or viaversion
 			return packet;
 		}
-		if (clientVersion.getMinorVersion() >= 9 && ((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled()) {
-			//1.9+ client on 1.8 server
-			//technically redundant VV check as there is no other way to get 1.9 client on 1.8 server
-			return buildBossPacketVia(packet, clientVersion);
-		}
-
 		//<1.9 client and server
 		return buildBossPacketEntity(packet, clientVersion);
-	}
-
-	/**
-	 * Builds 1.9 bossbar packet bytebuf using viaversion
-	 * @param packet - packet to build
-	 * @param clientVersion - client version
-	 * @return bytebuf with 1.9 bossbar packet content
-	 */
-	private ByteBuf buildBossPacketVia(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
-		if (clientVersion == ProtocolVersion.UNKNOWN) return null; //preventing disconnect if packet ID changes and users do not update
-		try {
-			ByteBuf buf = Unpooled.buffer();
-			Type.VAR_INT.writePrimitive(buf, clientVersion.getMinorVersion() == 15 || clientVersion.getMinorVersion() >= 17 ? 0x0D : 0x0C);
-			Type.UUID.write(buf, packet.getId());
-			Type.VAR_INT.writePrimitive(buf, packet.getOperation().ordinal());
-			switch (packet.getOperation()) {
-			case ADD:
-				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.getName()).toString(clientVersion)));
-				Type.FLOAT.writePrimitive(buf, packet.getPct());
-				Type.VAR_INT.writePrimitive(buf, packet.getColor().ordinal());
-				Type.VAR_INT.writePrimitive(buf, packet.getOverlay().ordinal());
-				Type.BYTE.write(buf, packet.getFlags());
-				break;
-			case REMOVE:
-				break;
-			case UPDATE_PCT:
-				Type.FLOAT.writePrimitive(buf, packet.getPct());
-				break;
-			case UPDATE_NAME:
-				Type.COMPONENT.write(buf, JsonParser.parseString(IChatBaseComponent.optimizedComponent(packet.getName()).toString(clientVersion)));
-				break;
-			case UPDATE_STYLE:
-				Type.VAR_INT.writePrimitive(buf, packet.getColor().ordinal());
-				Type.VAR_INT.writePrimitive(buf, packet.getOverlay().ordinal());
-				break;
-			case UPDATE_PROPERTIES:
-				Type.BYTE.write(buf, packet.getFlags());
-				break;
-			default:
-				break;
-			}
-			return buf;
-		} catch (Exception t) {
-			TAB.getInstance().getErrorManager().printError("Failed to create 1.9 bossbar packet using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ". Is it the latest version?", t);
-			return null;
-		}
 	}
 
 	/**

@@ -19,8 +19,10 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
+import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
+import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
@@ -45,6 +47,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	
 	//player's visible boss bars
 	private Map<UUID, BossBar> bossbars = new HashMap<>();
+	private Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -92,16 +95,15 @@ public class BukkitTabPlayer extends ITabPlayer {
 		if (nmsPacket == null || !player.isOnline()) return;
 		long time = System.nanoTime();
 		try {
-			if (((BukkitPlatform)TAB.getInstance().getPlatform()).isViaversionEnabled() && nmsPacket instanceof ByteBuf) {
-				Via.getAPI().sendRawPacket(uniqueId, (ByteBuf) nmsPacket);
-			} else if (nmsPacket instanceof PacketPlayOutBoss) {
-				handle((PacketPlayOutBoss) nmsPacket);
+			if (nmsPacket instanceof PacketPlayOutBoss) {
+				if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+					handle((PacketPlayOutBoss) nmsPacket);
+				} else {
+					handleVia((PacketPlayOutBoss) nmsPacket);
+				}
 			} else {
 				NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 			}
-		} catch (IllegalArgumentException e) {
-			//java.lang.IllegalArgumentException: This player is not controlled by ViaVersion!
-			//this is only used to send 1.9 bossbar packets on 1.8 servers, no idea why it does this sometimes
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
@@ -149,7 +151,58 @@ public class BukkitTabPlayer extends ITabPlayer {
 		}
 	}
 	
+	private void handleVia(PacketPlayOutBoss packet) {
+		com.viaversion.viaversion.api.legacy.bossbar.BossBar bar;
+		switch (packet.getOperation()) {
+		case ADD:
+			bar = Via.getAPI().legacyAPI().createLegacyBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16), 
+					packet.getPct(),
+					BossColor.valueOf(packet.getColor().name()), 
+					BossStyle.valueOf(packet.getOverlay().getBukkitName()));
+//			if (packet.isCreateWorldFog()) flags.add(BossFlag.CREATE_FOG); //???
+			if (packet.isDarkenScreen()) bar.addFlag(BossFlag.DARKEN_SKY);
+			if (packet.isPlayMusic()) bar.addFlag(BossFlag.PLAY_BOSS_MUSIC);
+			viaBossbars.put(packet.getId(), bar);
+			bar.addPlayer(player.getUniqueId());
+			break;
+		case REMOVE:
+			viaBossbars.get(packet.getId()).removePlayer(player.getUniqueId());
+			viaBossbars.remove(packet.getId());
+			break;
+		case UPDATE_PCT:
+			viaBossbars.get(packet.getId()).setHealth(packet.getPct());
+			break;
+		case UPDATE_NAME:
+			viaBossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16));
+			break;
+		case UPDATE_STYLE:
+			viaBossbars.get(packet.getId()).setColor(BossColor.valueOf(packet.getColor().name()));
+			viaBossbars.get(packet.getId()).setStyle(BossStyle.valueOf(packet.getOverlay().getBukkitName()));
+			break;
+		case UPDATE_PROPERTIES:
+			bar = viaBossbars.get(packet.getId());
+//			processFlagVia(bar, packet.isCreateWorldFog(), BossFlag.CREATE_FOG);
+			processFlagVia(bar, packet.isDarkenScreen(), BossFlag.DARKEN_SKY);
+			processFlagVia(bar, packet.isPlayMusic(), BossFlag.PLAY_BOSS_MUSIC);
+			break;
+		default:
+			break;
+		}
+	}
+	
 	private void processFlag(BossBar bar, boolean targetValue, BarFlag flag) {
+		if (targetValue) {
+			if (!bar.hasFlag(flag)) {
+				bar.addFlag(flag);
+			}
+		} else {
+			if (bar.hasFlag(flag)) {
+				bar.removeFlag(flag);
+			}
+		}
+	}
+	
+	private void processFlagVia(com.viaversion.viaversion.api.legacy.bossbar.BossBar bar, boolean targetValue, BossFlag flag) {
 		if (targetValue) {
 			if (!bar.hasFlag(flag)) {
 				bar.addFlag(flag);
