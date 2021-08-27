@@ -36,6 +36,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	
 	@Override
 	public void load() {
+		super.load();
 		teleport();
 	}
 	
@@ -53,6 +54,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 
 	@Override
 	public void unload() {
+		super.unload();
 		HandlerList.unregisterAll(this);
 	}
 	
