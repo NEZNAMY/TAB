@@ -136,7 +136,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVehicleTickingTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "ticking vehicles", this, CpuConstants.UsageCategory.TICKING_VEHICLES, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(200, "ticking vehicles", this, CpuConstants.UsageCategory.TICKING_VEHICLES, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
