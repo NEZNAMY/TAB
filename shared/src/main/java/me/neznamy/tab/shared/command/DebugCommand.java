@@ -57,7 +57,7 @@ public class DebugCommand extends SubCommand {
 		if (tab.getErrorManager().getErrorLog().exists()) {
 			sendMessage(sender, "&6" + tab.getErrorManager().getErrorLog().getPath() + " size: &c" + tab.getErrorManager().getErrorLog().length()/1024 + "KB");
 		}
-		sendMessage(sender, "&6Permission plugin: &b" + tab.getPermissionPlugin().getName());
+		sendMessage(sender, "&6Permission plugin: &b" + ((GroupRefresher)tab.getFeatureManager().getFeature("group")).getPlugin().getName());
 		sendMessage(sender, "&6Permission group choice logic: &b" + getGroupChoiceLogic());
 		sendMessage(sender, "&6Sorting system: &b" + getSortingType());
 		sendMessage(sender, separator);

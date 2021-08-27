@@ -31,7 +31,6 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -65,9 +64,6 @@ public class TAB extends TabAPI {
 
 	//error manager
 	private ErrorManagerImpl errorManager;
-
-	//permission plugin interface
-	private PermissionPlugin permissionPlugin;
 
 	//feature manager
 	private FeatureManagerImpl featureManager;
@@ -137,7 +133,6 @@ public class TAB extends TabAPI {
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
 			configuration.loadFiles();
-			permissionPlugin = platform.detectPermissionPlugin();
 			placeholderManager = new PlaceholderManagerImpl();
 			featureManager.registerFeature("placeholders", placeholderManager);
 			platform.loadFeatures();
@@ -196,7 +191,7 @@ public class TAB extends TabAPI {
 		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
 		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
 		if (configuration.getLayout().getBoolean("enabled", false)) featureManager.registerFeature("layout", new Layout());
-		featureManager.registerFeature("group", new GroupRefresher());
+		featureManager.registerFeature("group", new GroupRefresher(platform.detectPermissionPlugin()));
 		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {
 			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
@@ -263,10 +258,6 @@ public class TAB extends TabAPI {
 
 	public TabCommand getCommand() {
 		return command;
-	}
-
-	public PermissionPlugin getPermissionPlugin() {
-		return permissionPlugin;
 	}
 
 	public void setDebugMode(boolean debug) {

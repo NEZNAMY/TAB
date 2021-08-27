@@ -91,11 +91,11 @@ public class BukkitPlatform implements Platform {
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().isPluginEnabled("Essentials");
 		TAB tab = TAB.getInstance();
-		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
-		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
 		loadNametagFeature(tab);
 		tab.loadUniversalFeatures();
+		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
 			if (nms.getMinorVersion() < 9) {
 				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));

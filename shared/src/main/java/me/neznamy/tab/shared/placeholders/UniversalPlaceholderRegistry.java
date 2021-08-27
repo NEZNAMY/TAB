@@ -14,8 +14,10 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -145,15 +147,16 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers luckperms placeholders
 	 */
 	private void registerLuckPermsPlaceholders(PlaceholderManager manager) {
-		if (TAB.getInstance().getPermissionPlugin() instanceof LuckPerms) {
+		PermissionPlugin plugin = ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin();
+		if (plugin instanceof LuckPerms) {
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 1000) {
 				public Object get(TabPlayer p) {
-					return ((LuckPerms)TAB.getInstance().getPermissionPlugin()).getPrefix(p);
+					return ((LuckPerms)plugin).getPrefix(p);
 				}
 			});
 			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 1000) {
 				public Object get(TabPlayer p) {
-					return ((LuckPerms)TAB.getInstance().getPermissionPlugin()).getSuffix(p);
+					return ((LuckPerms)plugin).getSuffix(p);
 				}
 			});
 		}

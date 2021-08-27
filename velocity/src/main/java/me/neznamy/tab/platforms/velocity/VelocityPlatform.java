@@ -61,9 +61,9 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
+		tab.loadUniversalFeatures();
 		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 		for (Player p : server.getAllPlayers()) {
