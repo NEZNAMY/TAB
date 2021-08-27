@@ -9,13 +9,13 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * A large source of hate. Packet intercepting to secure proper functionality of some features:
+ * Packet intercepting to secure proper functionality of some features:
  * Tablist names - anti-override
  * Nametags - anti-override
- * TabObjective & Belowname - anti-override
  * Scoreboard - disabling tab's scoreboard to prevent conflict
  * SpectatorFix - to change gamemode to something else than spectator
  * PetFix - to remove owner field from entity data
+ * PingSpoof - full feature functionality
  * Unlimited nametags - replacement for bukkit events with much better accuracy and reliability
  */
 public abstract class PipelineInjector extends TabFeature {
