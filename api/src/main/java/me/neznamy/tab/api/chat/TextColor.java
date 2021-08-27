@@ -21,9 +21,6 @@ public class TextColor {
 	//true if legacy color was forced via constructor, false if automatically
 	private boolean legacyColorForced;
 	
-	//true if toString should return legacy color
-	private boolean returnLegacy;
-	
 	/**
 	 * Constructs new instance based on hex code as string
 	 * @param hexCode - a 6-digit combination of hex numbers
@@ -160,16 +157,13 @@ public class TextColor {
 	 * @return the color converted into string acceptable by client
 	 */
 	public String toString() {
-		if (!returnLegacy) {
-			EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRed(), getGreen(), getBlue());
-			if (legacyEquivalent != null) {
-				//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
-				return legacyEquivalent.toString().toLowerCase();
-			}
-			return "#" + getHexCode();
-		} else {
-			return getLegacyColor().toString().toLowerCase();
+		EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRed(), getGreen(), getBlue());
+		if (legacyEquivalent != null) {
+			//not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color
+			return legacyEquivalent.toString().toLowerCase();
 		}
+		return "#" + getHexCode();
+
 	}
 	
 	/**
@@ -179,15 +173,7 @@ public class TextColor {
 	public boolean isLegacyColorForced() {
 		return legacyColorForced;
 	}
-	
-	/**
-	 * Sets returnLegacy flag to given value
-	 * @param returnLegacy - true if color should return legacy
-	 */
-	public void setReturnLegacy(boolean returnLegacy) {
-		this.returnLegacy = returnLegacy;
-	}
-	
+
 	/**
 	 * Reads the string and turns into text color. String is either #RRGGBB or a lowercased legacy color
 	 * @param string - string from color field in chat component

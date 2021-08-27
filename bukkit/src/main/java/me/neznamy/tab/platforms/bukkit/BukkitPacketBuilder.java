@@ -58,7 +58,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	//entity type ids
 	private EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
 	
-	private Map<IChatBaseComponent, Object> componentCache = new HashMap<>();
+	private Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
+	private Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
 	
 	private Object emptyScoreboard;
 
@@ -503,12 +504,22 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InstantiationException 
 	 */
 	public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		if (componentCache.containsKey(component)) return componentCache.get(component);
-		long time = System.nanoTime();
-		Object obj = toNMSComponent0(component, clientVersion);
-		TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
-		if (componentCache.size() > 10000) componentCache.clear();
-		componentCache.put(component, obj);
+		Object obj;
+		if (clientVersion.getMinorVersion() >= 16) {
+			if (componentCacheModern.containsKey(component)) return componentCacheModern.get(component);
+			long time = System.nanoTime();
+			obj = toNMSComponent0(component, clientVersion);
+			TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
+			if (componentCacheModern.size() > 10000) componentCacheModern.clear();
+			componentCacheModern.put(component, obj);
+		} else {
+			if (componentCacheLegacy.containsKey(component)) return componentCacheLegacy.get(component);
+			long time = System.nanoTime();
+			obj = toNMSComponent0(component, clientVersion);
+			TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
+			if (componentCacheLegacy.size() > 10000) componentCacheLegacy.clear();
+			componentCacheLegacy.put(component, obj);
+		}
 		return obj;
 	}
 

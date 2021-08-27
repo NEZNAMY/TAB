@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
@@ -22,6 +23,8 @@ public class ChatModifier {
 	private ChatHoverable hoverEvent;
 	
 	private String font;
+	
+	private ProtocolVersion targetVersion;
 	
 	public ChatModifier() {
 	}
@@ -230,7 +233,7 @@ public class ChatModifier {
 	@SuppressWarnings("unchecked")
 	public JSONObject serialize() {
 		JSONObject json = new JSONObject();
-		if (color != null) json.put("color", color.toString());
+		if (color != null) json.put("color", targetVersion.getMinorVersion() >= 16 ? color.toString() : color.getLegacyColor().toString().toLowerCase());
 		if (bold != null) json.put("bold", bold);
 		if (italic != null) json.put("italic", italic);
 		if (underlined != null) json.put("underlined", underlined);
@@ -267,4 +270,9 @@ public class ChatModifier {
 		if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
 		return builder.toString();
 	}
+	
+	public void setTargetVersion(ProtocolVersion targetVersion) {
+		this.targetVersion = targetVersion;
+	}
+	
 }

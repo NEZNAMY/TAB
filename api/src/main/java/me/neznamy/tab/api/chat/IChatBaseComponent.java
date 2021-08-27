@@ -22,6 +22,8 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 public class IChatBaseComponent {
 
 	private static Map<String, IChatBaseComponent> componentCache = new HashMap<>();
+	private static Map<IChatBaseComponent, String> serializeCacheModern = new HashMap<>();
+	private static Map<IChatBaseComponent, String> serializeCacheLegacy = new HashMap<>();
 	
 	//constants
 	private static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";
@@ -215,24 +217,23 @@ public class IChatBaseComponent {
 				}
 			}
 		}
-		if (clientVersion.getMinorVersion() < 16) {
-			//core component, fixing all colors
-			convertColorsToLegacy();
-		}
-		return toString();
-	}
-
-	/**
-	 * Converts all RGB colors everywhere in this component and it's extras into legacy codes
-	 */
-	private void convertColorsToLegacy() {
-		if (modifier.getColor() != null) modifier.getColor().setReturnLegacy(true);
+		modifier.setTargetVersion(clientVersion);
 		for (IChatBaseComponent child : getExtra()) {
-			child.convertColorsToLegacy();
+			child.modifier.setTargetVersion(clientVersion);
 		}
-		if (modifier.getHoverEvent() != null) {
-			modifier.getHoverEvent().getValue().convertColorsToLegacy();
+		String string;
+		if (clientVersion.getMinorVersion() >= 16) {
+			if (serializeCacheModern.containsKey(this)) return serializeCacheModern.get(this);
+			string = toString();
+			if (serializeCacheModern.size() > 10000) serializeCacheModern.clear();
+			serializeCacheModern.put(this, string);
+		} else {
+			if (serializeCacheLegacy.containsKey(this)) return serializeCacheLegacy.get(this);
+			string = toString();
+			if (serializeCacheLegacy.size() > 10000) serializeCacheLegacy.clear();
+			serializeCacheLegacy.put(this, string);
 		}
+		return string;
 	}
 
 	/**
