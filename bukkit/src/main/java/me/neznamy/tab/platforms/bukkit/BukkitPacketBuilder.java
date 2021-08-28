@@ -57,10 +57,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	//entity type ids
 	private EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
-	
+
 	private Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
 	private Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
-	
+
 	private Object emptyScoreboard;
 
 	/**
@@ -99,39 +99,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		return buildBossPacketEntity(packet, clientVersion);
 	}
 
-	/**
-	 * Builds entity bossbar packet
-	 * @param packet - packet to build
-	 * @param clientVersion - client version
-	 * @return entity bossbar packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		if (packet.getOperation() == Action.UPDATE_STYLE) return null; //nothing to do here
-
-		int entityId = packet.getId().hashCode();
-		if (packet.getOperation() == Action.REMOVE) {
-			return build(new PacketPlayOutEntityDestroy(entityId));
-		}
-		DataWatcher w = new DataWatcher();
-		if (packet.getOperation() == Action.UPDATE_PCT || packet.getOperation() == Action.ADD) {
-			float health = 300*packet.getPct();
-			if (health == 0) health = 1;
-			w.helper().setHealth(health);
-		}
-		if (packet.getOperation() == Action.UPDATE_NAME || packet.getOperation() == Action.ADD) {
-			w.helper().setCustomName(packet.getName(), clientVersion);
-		}
-		if (packet.getOperation() == Action.ADD) {
-			w.helper().setEntityFlags((byte) 32);
-			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w));
-		} else {
-			return build(new PacketPlayOutEntityMetadata(entityId, w));
-		}
-	}
-
 	@Override
 	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 		Object component = toNMSComponent(packet.getMessage(), clientVersion);
@@ -157,7 +124,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		List<Object> items = new ArrayList<>();
 		for (PlayerInfoData data : packet.getEntries()) {
 			GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
-			
+
 			if (data.getSkin() != null) profile.getProperties().putAll((PropertyMap) data.getSkin());
 			List<Object> parameters = new ArrayList<>();
 			if (nms.newPlayerInfoData.getParameterCount() == 5) {
@@ -199,7 +166,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 					packet.getRenderType() == null ? null : nms.EnumScoreboardHealthDisplay_values[packet.getRenderType().ordinal()]), 
 					packet.getMethod());
 		}
-		
+
 		Object nmsPacket = nms.newPacketPlayOutScoreboardObjective.newInstance();
 		nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME, packet.getObjectiveName());
 		nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_DISPLAYNAME, displayName);
@@ -252,7 +219,53 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		}
 		return nms.newPacketPlayOutScoreboardTeam.newInstance(team, packet.getMethod());
 	}
-	
+
+	@Override
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, IllegalArgumentException, ParseException {
+		if (nms.getMinorVersion() < 8) return null;
+		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
+		List<PlayerInfoData> listData = new ArrayList<>();
+		for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
+			Object nmsGamemode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
+			EnumGamemode gamemode = (nmsGamemode == null) ? null : EnumGamemode.valueOf(nmsGamemode.toString());
+			GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
+			Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
+			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gamemode, listName));
+		}
+		return new PacketPlayOutPlayerInfo(action, listData);
+	}
+
+	@Override
+	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
+		String objective = (String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
+		String displayName;
+		Object component = nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
+		if (nms.getMinorVersion() >= 13) {
+			IChatBaseComponent c = component == null ? null : fromNMSComponent(component);
+			displayName = c == null ? null : c.toLegacyText();
+		} else {
+			displayName = (String) component;
+		}
+		EnumScoreboardHealthDisplay renderType = null;
+		if (nms.getMinorVersion() >= 8) {
+			Object nmsRender = nms.PacketPlayOutScoreboardObjective_RENDERTYPE.get(nmsPacket);
+			if (nmsRender != null) {
+				renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
+			}
+		}
+		int method = nms.PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
+		return new PacketPlayOutScoreboardObjective(method, objective, displayName, renderType);
+	}
+
+	@Override
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException {
+		return new PacketPlayOutScoreboardDisplayObjective(
+			nms.PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
+			(String) nms.PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
+		);
+	}
+
 	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();
@@ -270,7 +283,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
 		return team;
 	}
-	
+
 	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();
@@ -285,6 +298,40 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
 		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
 		return team;
+	}
+
+
+	/**
+	 * Builds entity bossbar packet
+	 * @param packet - packet to build
+	 * @param clientVersion - client version
+	 * @return entity bossbar packet
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		if (packet.getOperation() == Action.UPDATE_STYLE) return null; //nothing to do here
+
+		int entityId = packet.getId().hashCode();
+		if (packet.getOperation() == Action.REMOVE) {
+			return build(new PacketPlayOutEntityDestroy(entityId));
+		}
+		DataWatcher w = new DataWatcher();
+		if (packet.getOperation() == Action.UPDATE_PCT || packet.getOperation() == Action.ADD) {
+			float health = 300*packet.getPct();
+			if (health == 0) health = 1;
+			w.helper().setHealth(health);
+		}
+		if (packet.getOperation() == Action.UPDATE_NAME || packet.getOperation() == Action.ADD) {
+			w.helper().setCustomName(packet.getName(), clientVersion);
+		}
+		if (packet.getOperation() == Action.ADD) {
+			w.helper().setEntityFlags((byte) 32);
+			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w));
+		} else {
+			return build(new PacketPlayOutEntityMetadata(entityId, w));
+		}
 	}
 
 	/**
@@ -368,52 +415,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		return nmsPacket;
 	}
 
-	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, IllegalArgumentException, ParseException {
-		if (nms.getMinorVersion() < 8) return null;
-		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
-		List<PlayerInfoData> listData = new ArrayList<>();
-		for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
-			Object nmsGamemode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
-			EnumGamemode gamemode = (nmsGamemode == null) ? null : EnumGamemode.valueOf(nmsGamemode.toString());
-			GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
-			Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
-			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gamemode, listName));
-		}
-		return new PacketPlayOutPlayerInfo(action, listData);
-	}
-
-	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
-		String objective = (String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
-		String displayName;
-		Object component = nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
-		if (nms.getMinorVersion() >= 13) {
-			IChatBaseComponent c = component == null ? null : fromNMSComponent(component);
-			displayName = c == null ? null : c.toLegacyText();
-		} else {
-			displayName = (String) component;
-		}
-		EnumScoreboardHealthDisplay renderType = null;
-		if (nms.getMinorVersion() >= 8) {
-			Object nmsRender = nms.PacketPlayOutScoreboardObjective_RENDERTYPE.get(nmsPacket);
-			if (nmsRender != null) {
-				renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
-			}
-		}
-		int method = nms.PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
-		return new PacketPlayOutScoreboardObjective(method, objective, displayName, renderType);
-	}
-
-	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException {
-		return new PacketPlayOutScoreboardDisplayObjective(
-			nms.PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
-			(String) nms.PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
-		);
-	}
-
 	/**
 	 * A method yoinked from minecraft code used to convert double to int
 	 * @param paramDouble double value
@@ -433,7 +434,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws IllegalArgumentException 
 	 * @throws ParseException 
 	 */
-	public IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
+	private IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
 		long time = System.nanoTime();
 		IChatBaseComponent obj = fromNMSComponent0(component);
 		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
@@ -557,13 +558,13 @@ public class BukkitPacketBuilder extends PacketBuilder {
 				}
 			}
 			modifier = nms.newChatModifier.newInstance(
-				color,
-				component.getModifier().getBold(),
-				component.getModifier().getItalic(),
-				component.getModifier().getUnderlined(),
-				component.getModifier().getStrikethrough(),
-				component.getModifier().getObfuscated(),
-				clickEvent, hoverEvent, null, null);
+					color,
+					component.getModifier().getBold(),
+					component.getModifier().getItalic(),
+					component.getModifier().getUnderlined(),
+					component.getModifier().getStrikethrough(),
+					component.getModifier().getObfuscated(),
+					clickEvent, hoverEvent, null, null);
 		} else {
 			modifier = nms.newChatModifier.newInstance();
 			if (component.getModifier().getColor() != null) nms.setField(modifier, nms.ChatModifier_color, Enum.valueOf((Class<Enum>) nms.EnumChatFormat, component.getModifier().getColor().getLegacyColor().toString()));

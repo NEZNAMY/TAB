@@ -52,21 +52,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		}
 	}
 
-	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
-		PropertyImpl p = (PropertyImpl) getProperty(identifier);
-		if (p == null) {
-			properties.put(identifier, new PropertyImpl(feature, this, rawValue, source));
-			return true;
-		} else {
-			if (!p.getOriginalRawValue().equals(rawValue)) {
-				p.changeRawValue(rawValue);
-				p.setSource(source);
-				return true;
-			}
-			return false;
-		}
-	}
-	
 	@Override
 	public void sendMessage(String message, boolean translateColors) {
 		if (message == null || message.length() == 0) return;
@@ -152,14 +137,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return server;
 	}
 
-	public void setWorld(String name) {
-		world = name;
-	}
-	
-	public void setServer(String name) {
-		server = name;
-	}
-
 	@Override
 	public void sendCustomPacket(TabPacket packet) {
 		try {
@@ -225,11 +202,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		return onJoinFinished;
 	}
 
-	public void markAsLoaded() {
-		onJoinFinished = true;
-		TAB.getInstance().getPlatform().callLoadEvent(this);
-	}
-
 	@Override
 	public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
 		return setProperty(feature, identifier, rawValue, null);
@@ -266,23 +238,33 @@ public abstract class ITabPlayer implements TabPlayer {
 		this.armorStandManager = armorStandManager;
 	}
 
-	public void setTeamName(String name) {
-		teamName = name;
-	}
-
 	@Override
 	public String getTeamName() {
 		if (forcedTeamName != null) return forcedTeamName;
 		return teamName;
 	}
 
-	public void setTeamNameNote(String note) {
-		teamNameNote = note;
-	}
-
 	@Override
 	public String getTeamNameNote() {
 		return teamNameNote;
+	}
+	
+	@Override
+	public boolean isBedrockPlayer() {
+		return bedrockPlayer;
+	}
+	
+	public void setTeamNameNote(String note) {
+		teamNameNote = note;
+	}
+	
+	public void setTeamName(String name) {
+		teamName = name;
+	}
+	
+	public void markAsLoaded() {
+		onJoinFinished = true;
+		TAB.getInstance().getPlatform().callLoadEvent(this);
 	}
 
 	public void setGroup(String permissionGroup, boolean refreshIfChanged) {
@@ -297,7 +279,26 @@ public abstract class ITabPlayer implements TabPlayer {
 		}
 	}
 
-	public boolean isBedrockPlayer() {
-		return bedrockPlayer;
+	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
+		PropertyImpl p = (PropertyImpl) getProperty(identifier);
+		if (p == null) {
+			properties.put(identifier, new PropertyImpl(feature, this, rawValue, source));
+			return true;
+		} else {
+			if (!p.getOriginalRawValue().equals(rawValue)) {
+				p.changeRawValue(rawValue);
+				p.setSource(source);
+				return true;
+			}
+			return false;
+		}
+	}
+	
+	public void setWorld(String name) {
+		world = name;
+	}
+	
+	public void setServer(String name) {
+		server = name;
 	}
 }

@@ -55,7 +55,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			}
 			registerTeam(all);
 		}
-		startRefreshingTasks();
+		startRefreshingTask();
 	}
 
 	@Override
@@ -64,129 +64,6 @@ public class NameTag extends TabFeature implements TeamManager {
 			if (!disabledPlayers.contains(p)) unregisterTeam(p);
 		}
 	}
-
-	public void startRefreshingTasks() {
-		//workaround for a 1.8.x client-sided bug
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
-
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || disabledPlayers.contains(p)) continue;
-				//nametag visibility
-				boolean invisible = p.hasInvisibilityPotion();
-				if (invisible && !invisiblePlayers.contains(p.getName())) {
-					invisiblePlayers.add(p.getName());
-					updateTeamData(p);
-				}
-				if (!invisible && invisiblePlayers.contains(p.getName())) {
-					invisiblePlayers.remove(p.getName());
-					updateTeamData(p);
-				}
-				//cannot control collision rule on <1.9 servers in any way
-				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) updateCollision(p);
-			}
-		});
-	}
-
-	public Set<String> getInvisiblePlayers(){
-		return invisiblePlayers;
-	}
-
-	public void unregisterTeam(TabPlayer p) {
-		if (hasTeamHandlingPaused(p)) return;
-		if (p.getTeamName() == null) return;
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
-		}
-	}
-
-	public void unregisterTeam(TabPlayer p, TabPlayer viewer) {
-		if (hasTeamHandlingPaused(p)) return;
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
-	}
-
-	public void registerTeam(TabPlayer p) {
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			registerTeam(p, viewer);
-		}
-	}
-
-	public void registerTeam(TabPlayer p, TabPlayer viewer) {
-		if (hasTeamHandlingPaused(p)) return;
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
-		String replacedPrefix = tagprefix.getFormat(viewer);
-		String replacedSuffix = tagsuffix.getFormat(viewer);
-		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
-		}
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer)?"always":"never", 
-				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
-	}
-
-	public void updateTeam(TabPlayer p) {
-		if (p.getTeamName() == null) return; //player not loaded yet
-		String newName = getSorting().getTeamName(p);
-		if (p.getTeamName().equals(newName)) {
-			updateTeamData(p);
-		} else {
-			unregisterTeam(p);
-			Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
-			if (layout != null) layout.updateTeamName(p, newName);
-			((ITabPlayer) p).setTeamName(newName);
-			registerTeam(p);
-		}
-	}
-
-	@Override
-	public void updateTeamData(TabPlayer p) {
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			String currentPrefix = tagprefix.getFormat(viewer);
-			String currentSuffix = tagsuffix.getFormat(viewer);
-			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
-		}
-	}
-
-	public void updateTeamData(TabPlayer p, TabPlayer viewer) {
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
-		boolean visible = getTeamVisibility(p, viewer);
-		String currentPrefix = tagprefix.getFormat(viewer);
-		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
-	}
-
-	private String translate(boolean b) {
-		return b ? "always" : "never";
-	}
-
-	private void updateCollision(TabPlayer p) {
-		if (!p.isOnline()) return;
-		if (forcedCollision.containsKey(p)) {
-			if (getCollision(p) != forcedCollision.get(p).booleanValue()) {
-				collision.put(p.getName(), getCollisionRule(p));
-				updateTeamData(p);
-			}
-		} else {
-			boolean newCollision = !p.isDisguised() && collisionRule;
-			if (collision.get(p.getName()) == null || getCollision(p) != newCollision) {
-				collision.put(p.getName(), newCollision);
-				updateTeamData(p);
-			}
-		}
-	}
-
-	protected boolean getCollision(TabPlayer p) {
-		if (!p.isOnline()) return false;
-		if (getCollisionRule(p) != null) return getCollisionRule(p);
-		if (!collision.containsKey(p.getName())) {
-			collision.put(p.getName(), collisionRule);
-		}
-		return collision.get(p.getName());
-	}
-
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
@@ -265,20 +142,6 @@ public class NameTag extends TabFeature implements TeamManager {
 		} else {
 			updateTeam(p);
 		}
-	}
-
-	public void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(this, PropertyUtils.TAGPREFIX);
-		p.loadPropertyFromConfig(this, PropertyUtils.TAGSUFFIX);
-	}
-
-	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
-		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && 
-				!invisibleNametags && !invisiblePlayers.contains(p.getName());
-	}
-
-	public Sorting getSorting() {
-		return sorting;
 	}
 
 	@Override
@@ -370,4 +233,132 @@ public class NameTag extends TabFeature implements TeamManager {
 	public Boolean getCollisionRule(TabPlayer player) {
 		return forcedCollision.get(player);
 	}
+	
+	@Override
+	public void updateTeamData(TabPlayer p) {
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			String currentPrefix = tagprefix.getFormat(viewer);
+			String currentSuffix = tagsuffix.getFormat(viewer);
+			boolean visible = getTeamVisibility(p, viewer);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+		}
+	}
+
+	private void startRefreshingTask() {
+		//workaround for a 1.8.x client-sided bug
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
+
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+				if (!p.isLoaded() || disabledPlayers.contains(p)) continue;
+				//nametag visibility
+				boolean invisible = p.hasInvisibilityPotion();
+				if (invisible && !invisiblePlayers.contains(p.getName())) {
+					invisiblePlayers.add(p.getName());
+					updateTeamData(p);
+				}
+				if (!invisible && invisiblePlayers.contains(p.getName())) {
+					invisiblePlayers.remove(p.getName());
+					updateTeamData(p);
+				}
+				//cannot control collision rule on <1.9 servers in any way
+				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) updateCollision(p);
+			}
+		});
+	}
+
+	public void unregisterTeam(TabPlayer p) {
+		if (hasTeamHandlingPaused(p)) return;
+		if (p.getTeamName() == null) return;
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+		}
+	}
+
+	public void registerTeam(TabPlayer p) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			registerTeam(p, viewer);
+		}
+	}
+
+	private void registerTeam(TabPlayer p, TabPlayer viewer) {
+		if (hasTeamHandlingPaused(p)) return;
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		String replacedPrefix = tagprefix.getFormat(viewer);
+		String replacedSuffix = tagsuffix.getFormat(viewer);
+		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+		}
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer)?"always":"never", 
+				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+	}
+
+	private void updateTeam(TabPlayer p) {
+		if (p.getTeamName() == null) return; //player not loaded yet
+		String newName = getSorting().getTeamName(p);
+		if (p.getTeamName().equals(newName)) {
+			updateTeamData(p);
+		} else {
+			unregisterTeam(p);
+			Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
+			if (layout != null) layout.updateTeamName(p, newName);
+			((ITabPlayer) p).setTeamName(newName);
+			registerTeam(p);
+		}
+	}
+
+	public void updateTeamData(TabPlayer p, TabPlayer viewer) {
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		boolean visible = getTeamVisibility(p, viewer);
+		String currentPrefix = tagprefix.getFormat(viewer);
+		String currentSuffix = tagsuffix.getFormat(viewer);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+	}
+
+	private String translate(boolean b) {
+		return b ? "always" : "never";
+	}
+
+	private void updateCollision(TabPlayer p) {
+		if (!p.isOnline()) return;
+		if (forcedCollision.containsKey(p)) {
+			if (getCollision(p) != forcedCollision.get(p).booleanValue()) {
+				collision.put(p.getName(), getCollisionRule(p));
+				updateTeamData(p);
+			}
+		} else {
+			boolean newCollision = !p.isDisguised() && collisionRule;
+			if (collision.get(p.getName()) == null || getCollision(p) != newCollision) {
+				collision.put(p.getName(), newCollision);
+				updateTeamData(p);
+			}
+		}
+	}
+
+	protected boolean getCollision(TabPlayer p) {
+		if (!p.isOnline()) return false;
+		if (getCollisionRule(p) != null) return getCollisionRule(p);
+		if (!collision.containsKey(p.getName())) {
+			collision.put(p.getName(), collisionRule);
+		}
+		return collision.get(p.getName());
+	}
+	
+	protected void updateProperties(TabPlayer p) {
+		p.loadPropertyFromConfig(this, PropertyUtils.TAGPREFIX);
+		p.loadPropertyFromConfig(this, PropertyUtils.TAGSUFFIX);
+	}
+
+	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
+		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && 
+				!invisibleNametags && !invisiblePlayers.contains(p.getName());
+	}
+
+	public Sorting getSorting() {
+		return sorting;
+	}
+
 }

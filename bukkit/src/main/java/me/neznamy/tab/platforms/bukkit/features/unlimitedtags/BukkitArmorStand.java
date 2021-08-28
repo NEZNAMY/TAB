@@ -32,10 +32,10 @@ public class BukkitArmorStand implements ArmorStand {
 
 	//entity id counter to pick unique entity IDs
 	private static int idCounter = 2000000000;
-	
+
 	//nametag feature
 	private NameTagX manager;
-	
+
 	//owner of the armor stand
 	private TabPlayer owner;
 
@@ -62,7 +62,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	//if offset is static or dynamic based on other armor stands
 	private boolean staticOffset;
-	
+
 	//entity destroy packet
 	private PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
@@ -113,41 +113,11 @@ public class BukkitArmorStand implements ArmorStand {
 		}
 	}
 
-	/**
-	 * Returns list of packets to send to make armor stand spawn with metadata
-	 * @param viewer - viewer to apply relational placeholders for
-	 * @param addToRegistered - if player should be added to registered or not
-	 * @return List of packets that spawn the armor stand
-	 */
-	public TabPacket[] getSpawnPackets(TabPlayer viewer) {
-		visible = getVisibility();
-		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-		if (NMSStorage.getInstance().getMinorVersion() >= 15) {
-			return new TabPacket[] {
-					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
-					new PacketPlayOutEntityMetadata(entityId, dataWatcher)
-			};
-		} else {
-			return new TabPacket[] {
-					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), dataWatcher),
-			};
-		}
-	}
-
 	@Override
 	public void spawn(TabPlayer viewer) {
 		for (TabPacket packet : getSpawnPackets(viewer)) {
 			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
 		}
-	}
-
-	/**
-	 * Returns location where armor stand should be for specified viewer
-	 * @param viewer - player to get location for
-	 * @return location of armor stand
-	 */
-	public Location getArmorStandLocationFor(TabPlayer viewer) {
-		return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 
 	@Override
@@ -210,7 +180,11 @@ public class BukkitArmorStand implements ArmorStand {
 			updateMetadata();
 		}
 	}
-	
+
+	@Override
+	public int getEntityId() {
+		return entityId;
+	}
 
 	/**
 	 * Returns teleport packet for specified viewer
@@ -281,21 +255,16 @@ public class BukkitArmorStand implements ArmorStand {
 				return vehicle.getLocation().getY() + 1.15;
 			}
 		}
-        //1.13+ swimming or 1.9+ flying with elytra
-        if (isSwimming() || (NMSStorage.getInstance().getMinorVersion() >= 9 && player.isGliding())) {
-            return player.getLocation().getY()-1.22;
-        }
+		//1.13+ swimming or 1.9+ flying with elytra
+		if (isSwimming() || (NMSStorage.getInstance().getMinorVersion() >= 9 && player.isGliding())) {
+			return player.getLocation().getY()-1.22;
+		}
 		return player.getLocation().getY();
 	}
-	
+
 	private boolean isSwimming() {
 		if (NMSStorage.getInstance().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
 		return NMSStorage.getInstance().getMinorVersion() == 13 && player.isSwimming();
-	}
-
-	@Override
-	public int getEntityId() {
-		return entityId;
 	}
 
 	/**
@@ -332,4 +301,35 @@ public class BukkitArmorStand implements ArmorStand {
 	private boolean isNameVisiblyEmpty(String displayName) {
 		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
 	}
+
+	/**
+	 * Returns list of packets to send to make armor stand spawn with metadata
+	 * @param viewer - viewer to apply relational placeholders for
+	 * @param addToRegistered - if player should be added to registered or not
+	 * @return List of packets that spawn the armor stand
+	 */
+	public TabPacket[] getSpawnPackets(TabPlayer viewer) {
+		visible = getVisibility();
+		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
+		if (NMSStorage.getInstance().getMinorVersion() >= 15) {
+			return new TabPacket[] {
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
+					new PacketPlayOutEntityMetadata(entityId, dataWatcher)
+			};
+		} else {
+			return new TabPacket[] {
+					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), dataWatcher),
+			};
+		}
+	}
+
+	/**
+	 * Returns location where armor stand should be for specified viewer
+	 * @param viewer - player to get location for
+	 * @return location of armor stand
+	 */
+	public Location getArmorStandLocationFor(TabPlayer viewer) {
+		return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
+	}
+
 }
