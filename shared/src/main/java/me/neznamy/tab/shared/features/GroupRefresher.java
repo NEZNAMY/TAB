@@ -38,7 +38,9 @@ public class GroupRefresher extends TabFeature {
 		if (plugin instanceof LuckPerms) {
 			luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
 				long time = System.nanoTime();
-				refreshPlayer(TAB.getInstance().getPlayer(event.getUser().getUniqueId()));
+				TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
+				if (p == null) return; //server still starting up and users connecting already (LP loading them)
+				refreshPlayer(p);
 				TAB.getInstance().getCPUManager().addTime(this, CpuConstants.UsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
 			});
 		} else {
