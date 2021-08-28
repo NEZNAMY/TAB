@@ -38,7 +38,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	//vault chat
 	private Object chat;
 
-	private Object essentials;
 	private Method essGetUser;
 	private Method essIsAfk;
 	
@@ -53,7 +52,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	public BukkitPlaceholderRegistry(JavaPlugin plugin) {
 		decimal2.applyPattern("#.##");
 		this.plugin = plugin;
-		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
+		Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
