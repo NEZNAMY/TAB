@@ -389,6 +389,16 @@ public class CPUManager {
 	public void addTime(String feature, String type, long nanoseconds) {
 		featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
 	}
+	
+	/**
+	 * Adds used time to specified key into specified map
+	 * @param map - map to add usage to
+	 * @param key - usage key
+	 * @param time - nanoseconds the task took
+	 */
+	private void addTime(Map<String, AtomicLong> map, String key, long time) {
+		map.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(time);
+	}
 
 	/**
 	 * Adds placeholder time to defined placeholder
@@ -415,16 +425,6 @@ public class CPUManager {
 	 */
 	public void addMethodTime(String method, long nanoseconds) {
 		addTime(methodUsageCurrent, method, nanoseconds);
-	}
-	
-	/**
-	 * Adds used time to specified key into specified map
-	 * @param map - map to add usage to
-	 * @param key - usage key
-	 * @param time - nanoseconds the task took
-	 */
-	private void addTime(Map<String, AtomicLong> map, String key, long time) {
-		map.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(time);
 	}
 	
 	/**

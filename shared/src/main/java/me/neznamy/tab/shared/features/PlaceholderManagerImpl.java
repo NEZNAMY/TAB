@@ -67,6 +67,31 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		}
 		if (somethingChanged) refresh(forceUpdate, update);
 	}
+	
+	private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
+		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+			if (forceUpdate.containsKey(entry.getKey())) {
+				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
+			}
+		}
+		long startRefreshTime = System.nanoTime();
+		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
+			for (TabFeature r : entry.getValue()) {
+				long startTime = System.nanoTime();
+				r.refresh(entry.getKey(), true);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
+			}
+		}
+		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+			for (TabFeature r : entry.getValue()) {
+				long startTime = System.nanoTime();
+				r.refresh(entry.getKey(), false);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
+			}
+		}
+		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuConstants.UsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
+	}
 
 	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {
 		boolean somethingChanged = false;
@@ -132,31 +157,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		for (Entry<Object, Object> placeholder : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.relational").entrySet()) {
 			relationalPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), TAB.getInstance().getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval of relational placeholder"));
 		}
-	}
-
-	private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
-		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
-			if (forceUpdate.containsKey(entry.getKey())) {
-				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
-			}
-		}
-		long startRefreshTime = System.nanoTime();
-		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
-			for (TabFeature r : entry.getValue()) {
-				long startTime = System.nanoTime();
-				r.refresh(entry.getKey(), true);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
-			}
-		}
-		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
-			for (TabFeature r : entry.getValue()) {
-				long startTime = System.nanoTime();
-				r.refresh(entry.getKey(), false);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
-			}
-		}
-		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
-		TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuConstants.UsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
 	}
 
 	public int getRelationalRefresh(String identifier) {

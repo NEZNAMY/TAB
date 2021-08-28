@@ -150,20 +150,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		hiddenNametag.add(player);
 		updateTeamData(player);
 	}
-
-	@Override
-	public void showNametag(TabPlayer player) {
-		if (!hiddenNametag.contains(player)) return;
-		hiddenNametag.remove(player);
-		updateTeamData(player);
-	}
-
-	@Override
-	public boolean hasHiddenNametag(TabPlayer player) {
-		return hiddenNametag.contains(player);
-	}
-
-
+	
 	@Override
 	public void hideNametag(TabPlayer player, TabPlayer viewer) {
 		if (hiddenNametagFor.get(player).add(viewer)) {
@@ -173,6 +160,13 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	@Override
+	public void showNametag(TabPlayer player) {
+		if (!hiddenNametag.contains(player)) return;
+		hiddenNametag.remove(player);
+		updateTeamData(player);
+	}
+	
+	@Override
 	public void showNametag(TabPlayer player, TabPlayer viewer) {
 		if (hiddenNametagFor.get(player).remove(viewer)) {
 			updateTeamData(player, viewer);
@@ -181,10 +175,14 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	@Override
+	public boolean hasHiddenNametag(TabPlayer player) {
+		return hiddenNametag.contains(player);
+	}
+
+	@Override
 	public boolean hasHiddenNametag(TabPlayer player, TabPlayer viewer) {
 		return hiddenNametagFor.get(player).contains(viewer);
 	}
-
 
 	@Override
 	public void pauseTeamHandling(TabPlayer player) {
@@ -244,6 +242,15 @@ public class NameTag extends TabFeature implements TeamManager {
 			boolean visible = getTeamVisibility(p, viewer);
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
+	}
+
+	public void updateTeamData(TabPlayer p, TabPlayer viewer) {
+		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
+		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		boolean visible = getTeamVisibility(p, viewer);
+		String currentPrefix = tagprefix.getFormat(viewer);
+		String currentSuffix = tagsuffix.getFormat(viewer);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 	}
 
 	private void startRefreshingTask() {
@@ -307,15 +314,6 @@ public class NameTag extends TabFeature implements TeamManager {
 			((ITabPlayer) p).setTeamName(newName);
 			registerTeam(p);
 		}
-	}
-
-	public void updateTeamData(TabPlayer p, TabPlayer viewer) {
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
-		boolean visible = getTeamVisibility(p, viewer);
-		String currentPrefix = tagprefix.getFormat(viewer);
-		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 	}
 
 	private String translate(boolean b) {

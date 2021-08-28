@@ -121,6 +121,11 @@ public class BukkitArmorStand implements ArmorStand {
 	}
 
 	@Override
+	public void destroy() {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+	}
+	
+	@Override
 	public void destroy(TabPlayer viewer) {
 		viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
@@ -165,11 +170,6 @@ public class BukkitArmorStand implements ArmorStand {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 
 	@Override

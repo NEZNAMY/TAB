@@ -203,11 +203,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
-		return setProperty(feature, identifier, rawValue, null);
-	}
-
-	@Override
 	public void loadPropertyFromConfig(TabFeature feature, String property) {
 		loadPropertyFromConfig(feature, property, "");
 	}
@@ -254,6 +249,26 @@ public abstract class ITabPlayer implements TabPlayer {
 		return bedrockPlayer;
 	}
 	
+	@Override
+	public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
+		return setProperty(feature, identifier, rawValue, null);
+	}
+	
+	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
+		PropertyImpl p = (PropertyImpl) getProperty(identifier);
+		if (p == null) {
+			properties.put(identifier, new PropertyImpl(feature, this, rawValue, source));
+			return true;
+		} else {
+			if (!p.getOriginalRawValue().equals(rawValue)) {
+				p.changeRawValue(rawValue);
+				p.setSource(source);
+				return true;
+			}
+			return false;
+		}
+	}
+	
 	public void setTeamNameNote(String note) {
 		teamNameNote = note;
 	}
@@ -279,21 +294,6 @@ public abstract class ITabPlayer implements TabPlayer {
 		}
 	}
 
-	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
-		PropertyImpl p = (PropertyImpl) getProperty(identifier);
-		if (p == null) {
-			properties.put(identifier, new PropertyImpl(feature, this, rawValue, source));
-			return true;
-		} else {
-			if (!p.getOriginalRawValue().equals(rawValue)) {
-				p.changeRawValue(rawValue);
-				p.setSource(source);
-				return true;
-			}
-			return false;
-		}
-	}
-	
 	public void setWorld(String name) {
 		world = name;
 	}
