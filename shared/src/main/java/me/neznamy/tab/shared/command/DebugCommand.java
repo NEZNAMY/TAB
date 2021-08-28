@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
@@ -186,8 +187,8 @@ public class DebugCommand extends SubCommand {
 			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + TAB.getInstance().getPlatform().getSeparatorType());
 		} else {
 			PropertyImpl pr = (PropertyImpl) analyzed.getProperty(property);
-			String rawValue = pr.getCurrentRawValue().replace('\u00a7', '&');
-			String value = String.format(("&a%s: &e\"&r%s&r&e\" &7(%s) &7(Source: %s)").replace('&', '\u00a7'), property, rawValue, rawValue.length(), pr.getSource());
+			String rawValue = EnumChatFormat.decolor(pr.getCurrentRawValue());
+			String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(%s) &7(Source: %s)")), property, rawValue, rawValue.length(), pr.getSource());
 			sendRawMessage(sender, value);
 		}
 	}

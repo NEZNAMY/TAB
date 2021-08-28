@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
@@ -72,7 +73,7 @@ public class BungeePlatform extends ProxyPlatform {
 	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? message.replace('&', '\u00a7') : message));
+		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? EnumChatFormat.color(message) : message));
 	}
 	
 	@Override

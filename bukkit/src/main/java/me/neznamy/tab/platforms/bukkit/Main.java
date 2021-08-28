@@ -18,6 +18,7 @@ import com.viaversion.viaversion.api.Via;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GroupRefresher;
@@ -32,7 +33,7 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable(){
-		Bukkit.getConsoleSender().sendMessage("\u00a77[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")");
+		Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&7[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")"));
 		if (!isVersionSupported()){
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
@@ -41,7 +42,7 @@ public class Main extends JavaPlugin {
 		protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
-			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly.");
+			Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
 		}
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(this), this);
 		TABCommand command = new TABCommand();
@@ -77,17 +78,17 @@ public class Main extends JavaPlugin {
 			if (supportedVersions.contains(serverPackage)) {
 				return true;
 			} else {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.17. Disabling just to stay safe.");
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.17. Disabling just to stay safe."));
 			}
 		} catch (Exception ex) {
 			if (supportedVersions.contains(serverPackage)) {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)");
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"));
 				Bukkit.getConsoleSender().sendMessage(ex.getClass().getName() + ": " + ex.getMessage());
 				for (StackTraceElement e : ex.getStackTrace()) {
 					Bukkit.getConsoleSender().sendMessage("\t" + e.toString());
 				}
 			} else {
-				Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.17. Disabling.");
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.17. Disabling."));
 			}
 		}
 		return false;
@@ -155,7 +156,7 @@ public class Main extends JavaPlugin {
 		public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(message.replace('&', '\u00a7'));
+					sender.sendMessage(EnumChatFormat.color(message));
 				}
 			} else {
 				TabPlayer p = null;

@@ -11,6 +11,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.util.GameProfile.Property;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.velocity.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.velocity.event.TabLoadEvent;
@@ -73,7 +74,7 @@ public class VelocityPlatform extends ProxyPlatform {
 	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? message.replace('&', '\u00a7') : message));
+		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? EnumChatFormat.color(message) : message));
 	}
 	
 	@Override

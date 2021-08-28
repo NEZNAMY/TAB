@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 
 /**
  * Representation of any placeholder
@@ -41,7 +42,7 @@ public abstract class Placeholder {
 		for (Entry<Object, Object> entry : original.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
-			replacements.put(key.replace('&', '\u00a7'), value.replace('&', '\u00a7'));
+			replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
 			//snakeyaml converts yes & no to booleans, making them not work when used without "
 			if (key.equals("true")) {
 				replacements.put("yes", value);

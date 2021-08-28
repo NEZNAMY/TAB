@@ -252,7 +252,7 @@ public class NMSStorage {
 		try {
 			initializeTeamPackets();
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-			Bukkit.getConsoleSender().sendMessage("\u00a7c[TAB] Failed to load PacketPlayOutScoreboardTeam");
+			Bukkit.getConsoleSender().sendMessage(me.neznamy.tab.api.chat.EnumChatFormat.color("&c[TAB] Failed to load PacketPlayOutScoreboardTeam"));
 			//fabric with missing team packet
 		}
 	}

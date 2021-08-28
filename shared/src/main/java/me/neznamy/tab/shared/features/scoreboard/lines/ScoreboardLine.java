@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
@@ -67,7 +68,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	protected String[] split(String string, int firstElementMaxLength) {
 		if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
 		int splitIndex = firstElementMaxLength;
-		if (string.charAt(splitIndex-1) == '\u00a7') splitIndex--;
+		if (string.charAt(splitIndex-1) == EnumChatFormat.COLOR_CHAR) splitIndex--;
 		return new String[] {string.substring(0, splitIndex), string.substring(splitIndex, string.length())};
 	}
 	
@@ -87,8 +88,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	protected String getPlayerName(int lineNumber) {
 		String id = String.valueOf(lineNumber);
 		if (id.length() == 1) id = "0" + id;
-		char c = '\u00a7';
-		return c + String.valueOf(id.charAt(0)) + c + String.valueOf(id.charAt(1)) + c + "r";
+		return EnumChatFormat.COLOR_STRING + id.charAt(0) + EnumChatFormat.COLOR_STRING + id.charAt(1) + EnumChatFormat.COLOR_STRING + "r";
 	}
 	
 	/**

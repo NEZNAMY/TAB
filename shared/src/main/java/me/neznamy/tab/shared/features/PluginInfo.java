@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 
@@ -18,10 +19,10 @@ public class PluginInfo extends TabFeature {
 	public boolean onCommand(TabPlayer sender, String message) {
 		String command = TAB.getInstance().getPlatform().getSeparatorType().equals("server")? "/btab" : "/tab";
 		if (message.equalsIgnoreCase(command) && sender.hasPermission("tab.admin")){
-			IChatBaseComponent component = new IChatBaseComponent("\u00a73TAB v" + TAB.PLUGIN_VERSION);
-			component.getModifier().onHoverShowText(new IChatBaseComponent("\u00a7aClick to visit plugin's spigot page"));
+			IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
+			component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's spigot page")));
 			component.getModifier().onClickOpenUrl("https://github.com/NEZNAMY/TAB");
-			component.addExtra(new IChatBaseComponent("\u00a70 by _NEZNAMY_"));
+			component.addExtra(new IChatBaseComponent(EnumChatFormat.color("&0 by _NEZNAMY_")));
 			sender.sendMessage(component);
 		}
 		return false;

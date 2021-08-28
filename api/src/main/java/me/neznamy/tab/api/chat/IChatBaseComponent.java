@@ -248,7 +248,7 @@ public class IChatBaseComponent {
 		IChatBaseComponent component = new IChatBaseComponent();
 		for (int i = 0; i < text.length(); i++){
 			char c = text.charAt(i);
-			if (c == '\u00a7'){
+			if (c == EnumChatFormat.COLOR_CHAR){
 				i++;
 				if (i >= text.length()) {
 					break;
@@ -425,7 +425,7 @@ public class IChatBaseComponent {
 		if (text == null) return null;
 		if (componentCache.containsKey(text)) return componentCache.get(text);
 		IChatBaseComponent component;
-		if (text.contains("#") || text.contains("&x") || text.contains("\u00a7x")){
+		if (text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x")){
 			//contains RGB colors
 			component = IChatBaseComponent.fromColoredText(text);
 		} else {

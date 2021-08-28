@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.simple.parser.ParseException;
 
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.util.BiFunctionWithException;
@@ -135,7 +136,7 @@ public abstract class PacketBuilder {
 			legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
 		}
 		if (legacyText.length() <= length) return legacyText;
-		if (legacyText.charAt(length-1) == '\u00a7') {
+		if (legacyText.charAt(length-1) == EnumChatFormat.COLOR_CHAR) {
 			return legacyText.substring(0, length-1); //cutting one extra character to prevent prefix ending with "&"
 		} else {
 			return legacyText.substring(0, length);

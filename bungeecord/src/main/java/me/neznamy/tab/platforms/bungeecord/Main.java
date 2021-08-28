@@ -7,6 +7,7 @@ import org.bstats.charts.SimplePie;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -26,7 +27,7 @@ public class Main extends Plugin {
 	@Override
 	public void onEnable(){
 		if (!isVersionSupported()) {
-			ProxyServer.getInstance().getConsole().sendMessage(new TextComponent("\u00a7c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
+			ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(EnumChatFormat.color("&c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/")));
 			return;
 		}
 		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
@@ -73,7 +74,7 @@ public class Main extends Plugin {
 		public void execute(CommandSender sender, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(new TextComponent(message.replace('&', '\u00a7')));
+					sender.sendMessage(new TextComponent(EnumChatFormat.color(message)));
 				}
 			} else {
 				TabPlayer p = null;

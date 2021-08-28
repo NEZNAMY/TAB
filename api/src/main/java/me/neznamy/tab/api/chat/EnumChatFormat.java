@@ -30,7 +30,10 @@ public enum EnumChatFormat {
 	ITALIC(20, 'o'),
 	RESET(21, 'r');
 
+	public static final char COLOR_CHAR = 0x00a7;
+	public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
 	private static EnumChatFormat[] values = values();
+
 	//network id of the color
 	private int networkId;
 	
@@ -49,7 +52,7 @@ public enum EnumChatFormat {
 	//hex code as string
 	private String hexCode;
 	
-	//\u00a7 followed by color's character
+	//color char followed by color's character
 	private String chatFormat;
 
 	/**
@@ -75,7 +78,7 @@ public enum EnumChatFormat {
 	private EnumChatFormat(int networkId, char character) {
 		this.networkId = networkId;
 		this.character = character;
-		this.chatFormat = "\u00a7" + character;
+		this.chatFormat = String.valueOf(COLOR_CHAR) + character;
 	}
 	
 	/**
@@ -141,8 +144,8 @@ public enum EnumChatFormat {
 	}
 	
 	/**
-	 * Returns \u00a7 followed by color's character
-	 * @return \u00a7 followed by color's character
+	 * Returns color char followed by color's character
+	 * @return color char followed by color's character
 	 */
 	public String getFormat() {
 		return chatFormat;
@@ -185,11 +188,16 @@ public enum EnumChatFormat {
 		char[] b = textToTranslate.toCharArray();
 		for (int i = 0; i < b.length - 1; i++) {
 			if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[(i + 1)]) > -1)){
-				b[i] = '\u00a7';
+				b[i] = COLOR_CHAR;
 				b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
 			}
 		}
 		return new String(b);
+	}
+	
+	public static String decolor(String text) {
+		if (!text.contains(COLOR_STRING)) return text;
+		return text.replace(COLOR_CHAR, '&');
 	}
 	
 	//code taken from bukkit, so it can work on bungee too
@@ -198,10 +206,10 @@ public enum EnumChatFormat {
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
-			if ((section == '\u00a7' || section == '&') && (index < length - 1)){
+			if ((section == COLOR_CHAR || section == '&') && (index < length - 1)){
 				char c = input.charAt(index + 1);
 				if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
-					result.insert(0, '\u00a7');
+					result.insert(0, COLOR_CHAR);
 					result.insert(1, c);
 					if ("0123456789AaBbCcDdEeFfRr".contains(String.valueOf(c))) {
 						break;

@@ -107,9 +107,9 @@ public class StableDynamicLine extends ScoreboardLine {
 			StringBuilder suffix = new StringBuilder(text);
 			prefix.setLength(charLimit);
 			suffix.delete(0, charLimit);
-			if (prefix.charAt(charLimit-1) == '\u00a7') {
+			if (prefix.charAt(charLimit-1) == EnumChatFormat.COLOR_CHAR) {
 				prefix.setLength(prefix.length()-1);
-				suffix.insert(0, '\u00a7');
+				suffix.insert(0, EnumChatFormat.COLOR_CHAR);
 			}
 			String prefixString = prefix.toString();
 			suffix.insert(0, EnumChatFormat.getLastColors(RGBUtils.getInstance().convertRGBtoLegacy(prefixString)));

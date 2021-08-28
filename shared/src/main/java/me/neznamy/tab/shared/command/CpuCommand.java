@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
@@ -124,8 +125,8 @@ public class CpuCommand extends SubCommand {
 			for (Entry<String, Float> type : entry.getValue().entrySet()){
 				messages.add("&3" + type.getKey() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
 			}
-			IChatBaseComponent message = new IChatBaseComponent(core.replace('&', '\u00a7'));
-			message.getModifier().onHoverShowText(new IChatBaseComponent(String.join("\n", messages).replace('&', '\u00a7')));
+			IChatBaseComponent message = new IChatBaseComponent(EnumChatFormat.color(core));
+			message.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color(String.join("\n", messages))));
 			sender.sendMessage(message);
 		}
 	}
@@ -148,8 +149,8 @@ public class CpuCommand extends SubCommand {
 		for (Entry<String, AtomicInteger> entry : packets.entrySet()) {
 			messages.add("&3" + entry.getKey() + " - " + entry.getValue());
 		}
-		IChatBaseComponent message = new IChatBaseComponent(("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + packets.values().stream().mapToInt(AtomicInteger::get).sum()).replace('&', '\u00a7'));
-		message.getModifier().onHoverShowText(new IChatBaseComponent(String.join("\n", messages).replace('&', '\u00a7')));
+		IChatBaseComponent message = new IChatBaseComponent(EnumChatFormat.color("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin (hover for more info): " + packets.values().stream().mapToInt(AtomicInteger::get).sum()));
+		message.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color(String.join("\n", messages))));
 		sender.sendMessage(message);
 	}
 

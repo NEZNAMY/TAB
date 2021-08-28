@@ -13,6 +13,7 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -150,7 +151,7 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
-		Bukkit.getConsoleSender().sendMessage(translateColors ? message.replace('&', '\u00a7') : message);
+		Bukkit.getConsoleSender().sendMessage(translateColors ? EnumChatFormat.color(message) : message);
 	}
 
 	@Override

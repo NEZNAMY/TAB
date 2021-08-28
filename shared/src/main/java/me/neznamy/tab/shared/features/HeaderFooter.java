@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.api.HeaderFooterManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
@@ -89,7 +90,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 
 	private String getProperty(TabPlayer p, String property) {
 		String append = getFromConfig(p, property + "append");
-		if (append.length() > 0) append = "\n\u00a7r" + append;
+		if (append.length() > 0) append = "\n" + EnumChatFormat.COLOR_CHAR + "r" + append;
 		return getFromConfig(p, property) + append;
 	}
 	
@@ -114,7 +115,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 			 lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer." + property);
 		}
 		if (lines == null) lines = new ArrayList<>();
-		return String.join("\n\u00a7r", lines);
+		return String.join("\n" + EnumChatFormat.COLOR_CHAR + "r", lines);
 	}
 
 	@Override

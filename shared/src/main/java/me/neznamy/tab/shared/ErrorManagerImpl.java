@@ -15,6 +15,7 @@ import java.util.Set;
 import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 
 /**
@@ -91,7 +92,7 @@ public class ErrorManagerImpl implements ErrorManager {
 			if (file.length() > 1000000) return; //not going over 1 MB
 			try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))){
 				if (message != null) {
-					write(buf, "&c[TAB v" + TAB.PLUGIN_VERSION + "] ", message.replace('\u00a7', '&'), intoConsoleToo);
+					write(buf, "&c[TAB v" + TAB.PLUGIN_VERSION + "] ", EnumChatFormat.decolor(message), intoConsoleToo);
 				}
 				if (error != null) {
 					write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
@@ -141,7 +142,7 @@ public class ErrorManagerImpl implements ErrorManager {
 	 */
 	private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
 		buf.write(getCurrentTime() + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
-		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(prefix.replace('&', '\u00a7') + message, false);
+		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
 	}
 
 	@Override

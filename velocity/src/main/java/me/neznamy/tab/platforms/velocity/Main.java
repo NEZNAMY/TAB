@@ -18,6 +18,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
@@ -49,12 +50,12 @@ public class Main {
 	@Subscribe
 	public void onProxyInitialization(ProxyInitializeEvent event) {
 		if (!isVersionSupported()) {
-			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a7c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads"));
+			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads")));
 			return;
 		}
 		if (server.getConfiguration().isOnlineMode()) {
-			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text("\u00a76[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
-					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
+			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&6[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
+					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).")));
 		}
 		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
 		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.PROXY));
@@ -106,7 +107,7 @@ public class Main {
 			CommandSource sender = invocation.source();
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
-					sender.sendMessage(Identity.nil(), Component.text(message.replace('&', '\u00a7')));
+					sender.sendMessage(Identity.nil(), Component.text(EnumChatFormat.color(message)));
 				}
 			} else {
 				TabPlayer p = null;

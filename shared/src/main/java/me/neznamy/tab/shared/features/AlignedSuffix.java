@@ -75,7 +75,8 @@ public class AlignedSuffix extends TabFeature {
 	public String formatName(String prefixAndName, String suffix) {
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		StringBuilder newFormat = new StringBuilder(prefixAndName);
-		newFormat.append("\u00a7r");
+		newFormat.append(EnumChatFormat.COLOR_CHAR);
+		newFormat.append("r");
 		try {
 			newFormat.append(buildSpaces(maxWidth + 12 - playerNameWidth));
 		} catch (IllegalArgumentException e) {
@@ -132,14 +133,16 @@ public class AlignedSuffix extends TabFeature {
 		StringBuilder output = new StringBuilder();
 		while (pixelsLeft % 5 != 0) {
 			pixelsLeft -= 4;
-			output.append(" ");
+			output.append(' ');
 		}
-		output.append("\u00a7l");
+		output.append(EnumChatFormat.COLOR_CHAR);
+		output.append('l');
 		while (pixelsLeft > 0) {
 			pixelsLeft -= 5;
-			output.append(" ");
+			output.append(' ');
 		}
-		output.append("\u00a7r");
+		output.append(EnumChatFormat.COLOR_CHAR);
+		output.append('r');
 		return output.toString();
 	}
 	
