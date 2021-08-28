@@ -181,7 +181,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public boolean hasHiddenNametag(TabPlayer player, TabPlayer viewer) {
-		return hiddenNametagFor.get(player).contains(viewer);
+		return hiddenNametagFor.containsKey(player) && hiddenNametagFor.get(player).contains(viewer);
 	}
 
 	@Override
