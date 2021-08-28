@@ -1,6 +1,7 @@
 package me.neznamy.tab.api;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -19,22 +20,34 @@ public abstract class TabFeature {
 	private boolean worldWhitelistMode;
 	protected Set<TabPlayer> disabledPlayers = new HashSet<>();
 	
-	private boolean onPacketSendDisplayOverride;
-	private boolean onPacketSendObjectiveOverride;
-	private boolean onPacketSendInfoOverride;
-	private boolean onPacketSendOverride;
-	private boolean onPacketReceiveOverride;
-	private boolean onCommandOverride;
+	private List<String> methodOverrides = new ArrayList<>();
 	
 	protected TabFeature(String featureName) {
 		this.featureName = featureName;
 		try {
-			onPacketSendDisplayOverride = getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class;
-			onPacketSendObjectiveOverride = getClass().getMethod("onObjective", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class;
-			onPacketSendInfoOverride = getClass().getMethod("onPlayerInfo", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class;
-			onPacketSendOverride = getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
-			onPacketReceiveOverride = getClass().getMethod("onPacketReceive", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class;
-			onCommandOverride = getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class;
+			if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onCommand");
+			if (getClass().getMethod("onJoin", TabPlayer.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onJoin");
+			//quit contains something by default so always calling it
+			if (getClass().getMethod("onWorldChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onWorldChange");
+			if (getClass().getMethod("onServerChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onServerChange");
+			if (getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class) 
+				methodOverrides.add("onDisplayObjective");
+			if (getClass().getMethod("onLoginPacket", TabPlayer.class).getDeclaringClass() != TabFeature.class) 
+				methodOverrides.add("onLoginPacket");
+			if (getClass().getMethod("onObjective", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onObjective");
+			if (getClass().getMethod("onPlayerInfo", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onPlayerInfo");
+			if (getClass().getMethod("onPacketReceive", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onPacketReceive");
+			if (getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onPacketSend");
+			if (getClass().getMethod("refresh", TabPlayer.class, boolean.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("refresh");
 		} catch (Exception e) {
 			TabAPI.getInstance().getErrorManager().criticalError("Failed to load feature method overrides", e);
 		}
@@ -230,28 +243,8 @@ public abstract class TabFeature {
 		return featureName;
 	}
 
-	public boolean isOnPacketSendDisplayOverride() {
-		return onPacketSendDisplayOverride;
-	}
-
-	public boolean isOnPacketSendInfoOverride() {
-		return onPacketSendInfoOverride;
-	}
-
-	public boolean isOnPacketSendObjectiveOverride() {
-		return onPacketSendObjectiveOverride;
-	}
-
-	public boolean isOnCommandOverride() {
-		return onCommandOverride;
-	}
-
-	public boolean isOnPacketReceiveOverride() {
-		return onPacketReceiveOverride;
-	}
-
-	public boolean isOnPacketSendOverride() {
-		return onPacketSendOverride;
+	public boolean overridesMethod(String method) {
+		return methodOverrides.contains(method);
 	}
 
 	public Set<TabPlayer> getDisabledPlayers() {
