@@ -84,7 +84,7 @@ public class Configs {
 	 * @throws YAMLException 
 	 */
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		removeStrings = new String[list.size()];
 		for (int i=0; i<list.size(); i++) {

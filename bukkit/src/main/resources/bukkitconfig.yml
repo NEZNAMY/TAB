@@ -13,8 +13,6 @@ scoreboard-teams:
   case-sentitive-sorting: true
   disable-in-worlds:
     - disabledworld
-  disable-in-servers:
-    - disabledserver
   unlimited-nametag-mode:
     enabled: false
     use-marker-tag-for-1-8-x-clients: false
@@ -37,15 +35,11 @@ tablist-name-formatting:
   anti-override: true
   disable-in-worlds:
     - disabledworld
-  disable-in-servers:
-    - disabledserver
 
 header-footer:
   enabled: true
   disable-in-worlds:
     - disabledworld
-  disable-in-servers:
-    - disabledserver
   header:
     - "&3&lServer name"
     - "&7&l>> %animation:Welcome%&3 &l%player%&7&l! &7&l<<"
@@ -77,8 +71,6 @@ yellow-number-in-tablist:
   value: "%ping%"
   disable-in-worlds:
     - disabledworld
-  disable-in-servers:
-    - disabledserver
 
 belowname-objective:
   enabled: false
@@ -86,8 +78,6 @@ belowname-objective:
   text: "&c❤"
   disable-in-worlds:
     - disabledworld
-  disable-in-servers:
-    - disabledserver
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
 prevent-spectator-effect:
@@ -103,8 +93,6 @@ bossbar:
     - ServerInfo
   disable-in-worlds:
     - disabledworld
-  disable-in-servers:
-    - disabledserver
   bars:
     ServerInfo:
       style: "PROGRESS" # for 1.9+: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
@@ -150,8 +138,6 @@ scoreboard:
   respect-other-plugins: true
   disable-in-worlds: 
     - disabledworld
-  disable-in-servers:
-    - disabledserver
   scoreboards:
     admin:
       # Only players with tab.scoreboard.admin can see this scoreboard, others will see scoreboard1
@@ -254,7 +240,7 @@ primary-group-finding-list:
   - Mod
   - Helper
   - default
-  
+
 debug: false
 
 mysql:
