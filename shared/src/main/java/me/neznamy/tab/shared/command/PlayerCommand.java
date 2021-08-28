@@ -56,15 +56,7 @@ public class PlayerCommand extends PropertyCommand {
 		}
 		help(sender);
 	}
-	
-	private void help(TabPlayer sender) {
-		sendMessage(sender, "&cSyntax&8: &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>");
-		sendMessage(sender, "&7Valid Properties are:");
-		sendMessage(sender, " - &9tabprefix&3/&9tabsuffix&3/&9customtabname");
-		sendMessage(sender, " - &9tagprefix&3/&9tagsuffix&3/&9customtagname");
-		sendMessage(sender, " - &9belowname&3/&9abovename");
-	}
-	
+
 	/**
 	 * Saves new player settings into config
 	 * @param sender - command sender or null if console
