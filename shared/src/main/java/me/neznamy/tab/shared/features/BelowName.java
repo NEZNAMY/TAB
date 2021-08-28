@@ -116,7 +116,7 @@ public class BelowName extends TabFeature {
 
 		@Override
 		public void refresh(TabPlayer refreshed, boolean force) {
-			if (disabledPlayers.contains(refreshed)) return;
+			if (!refreshed.isLoaded() || disabledPlayers.contains(refreshed)) return;
 			refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), textRefresher);
 		}
 	}
