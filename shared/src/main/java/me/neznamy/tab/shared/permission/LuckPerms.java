@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.GroupRefresher;
@@ -9,8 +8,6 @@ import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.InheritanceNode;
 import net.luckperms.api.query.QueryOptions;
 
 /**
@@ -32,26 +29,15 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		if (version.startsWith("4")) return UPDATE_MESSAGE;
-		net.luckperms.api.LuckPerms api = getAPI();
-		if (api == null) {
+		try {
+			if (version.startsWith("4")) return UPDATE_MESSAGE;
+			net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
+			User user = api.getUserManager().getUser(p.getUniqueId());
+			if (user == null) return GroupRefresher.DEFAULT_GROUP; //pretend like nothing is wrong
+			return user.getPrimaryGroup();
+		} catch (Exception e) {
 			return GroupRefresher.DEFAULT_GROUP;
 		}
-		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) return GroupRefresher.DEFAULT_GROUP; //pretend like nothing is wrong
-		return user.getPrimaryGroup();
-	}
-
-	@Override
-	public String[] getAllGroups(TabPlayer p) {
-		if (version.startsWith("4")) return new String[]{UPDATE_MESSAGE};
-		net.luckperms.api.LuckPerms api = getAPI();
-		if (api == null) {
-			return new String[]{GroupRefresher.DEFAULT_GROUP};
-		}
-		User user = api.getUserManager().getUser(p.getUniqueId());
-		if (user == null) return new String[] {GroupRefresher.DEFAULT_GROUP}; //pretend like nothing is wrong
-		return user.getNodes().stream().filter(NodeType.INHERITANCE::matches).map(NodeType.INHERITANCE::cast).map(InheritanceNode::getGroupName).collect(Collectors.toSet()).toArray(new String[0]);
 	}
 
 	@Override
@@ -67,10 +53,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 	private String getValue(TabPlayer p, boolean prefix) {
 		try {
 			if (version.startsWith("4")) return UPDATE_MESSAGE;
-			net.luckperms.api.LuckPerms api = getAPI();
-			if (api == null) {
-				return "";
-			}
+			net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
 			User user = api.getUserManager().getUser(p.getUniqueId());
 			if (user == null) return "";
 			Optional<QueryOptions> options = LuckPermsProvider.get().getContextManager().getQueryOptions(user);
@@ -86,15 +69,6 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		} catch (Exception e) {
 			//pretend like nothing is wrong
 			return "";
-		}
-	}
-	
-	private net.luckperms.api.LuckPerms getAPI() {
-		try {
-			return LuckPermsProvider.get();
-		} catch (Exception e) {
-			//pretend like nothing is wrong
-			return null;
 		}
 	}
 

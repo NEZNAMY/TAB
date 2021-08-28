@@ -33,7 +33,6 @@ public class UltraPermissions implements PermissionPlugin {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Object api = null;
 		if (TAB.getInstance().getPlatform().getSeparatorType().equals("server")) { //meh solution but whatever

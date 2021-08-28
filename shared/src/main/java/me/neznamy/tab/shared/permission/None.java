@@ -14,11 +14,6 @@ public class None implements PermissionPlugin {
 	}
 
 	@Override
-	public String[] getAllGroups(TabPlayer p) {
-		return new String[] {GroupRefresher.DEFAULT_GROUP};
-	}
-	
-	@Override
 	public String getName() {
 		return "Unknown/None";
 	}

@@ -31,14 +31,6 @@ public class VaultBridge implements PermissionPlugin {
 	}
 
 	@Override
-	public String[] getAllGroups(TabPlayer p) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF("Group");
-		plm.sendPluginMessage(p, out.toByteArray());
-		return new String[] {p.getGroup()};
-	}
-	
-	@Override
 	public String getName() {
 		return "Vault through BukkitBridge";
 	}
