@@ -13,15 +13,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import net.milkbowl.vault.chat.Chat;
 
 /**
@@ -31,9 +28,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	//formatter for 2 decimal places
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
-
-	//plugin instance
-	private JavaPlugin plugin;
 
 	//vault chat
 	private Object chat;
@@ -49,9 +43,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 * Constructs new instance with given parameter
 	 * @param plugin - plugin instance
 	 */
-	public BukkitPlaceholderRegistry(JavaPlugin plugin) {
+	public BukkitPlaceholderRegistry() {
 		decimal2.applyPattern("#.##");
-		this.plugin = plugin;
 		Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -103,7 +96,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder("%afk%", 500, new AFKPlaceholder().getFunction());
 		registerOnlinePlaceholders(manager);
 		registerVaultPlaceholders(manager);
-		registerSyncPlaceholders(manager);
 	}
 
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
@@ -143,41 +135,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		}
 	}
 
-	/**
-	 * Registers synchronous placeholders
-	 */
-	private void registerSyncPlaceholders(PlaceholderManager manager) {
-		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
-		for (String identifier : pl.getUsedPlaceholders()) {
-			if (identifier.startsWith("%sync:")) {
-				int refresh;
-				if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
-				} else if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-				} else {
-					refresh = pl.getDefaultRefresh();
-				}
-				pl.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
-					
-					@Override
-					public Object get(TabPlayer p) {
-						Bukkit.getScheduler().runTask(plugin, () -> {
-
-							long time = System.nanoTime();
-							String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
-							String value = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
-							getLastValues().put(p.getName(), value);
-							if (!getForceUpdate().contains(p.getName())) getForceUpdate().add(p.getName());
-							TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
-						});
-						return getLastValues().get(p.getName());
-					}
-				});
-			}
-		}
-	}
-	
 	public class AFKPlaceholder {
 
 		private Plugin essentials;
