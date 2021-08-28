@@ -36,7 +36,11 @@ public class GroupRefresher extends TabFeature {
 			primaryGroupFindingList.add(group.toString());
 		}
 		if (plugin instanceof LuckPerms) {
-			luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, (event) -> refreshPlayer(TAB.getInstance().getPlayer(event.getUser().getUniqueId())));
+			luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
+				long time = System.nanoTime();
+				refreshPlayer(TAB.getInstance().getPlayer(event.getUser().getUniqueId()));
+				TAB.getInstance().getCPUManager().addTime(this, CpuConstants.UsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
+			});
 		} else {
 			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", this, CpuConstants.UsageCategory.REFRESHING_GROUPS, () -> {
 				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) refreshPlayer(p);
