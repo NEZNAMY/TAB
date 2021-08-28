@@ -181,7 +181,7 @@ public class TextColor {
 	 */
 	public static TextColor fromString(String string) {
 		if (string == null) return null;
-		if (string.startsWith("#")) return new TextColor(string);
+		if (string.startsWith("#")) return new TextColor(string.substring(1));
 		return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
 	}
 }
