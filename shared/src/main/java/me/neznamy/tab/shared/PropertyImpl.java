@@ -9,7 +9,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 
 /**
  * A string with placeholders

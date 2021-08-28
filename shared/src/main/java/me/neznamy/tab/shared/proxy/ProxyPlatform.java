@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.proxy;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.Placeholder;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
+import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 
 public abstract class ProxyPlatform implements Platform {
 
@@ -17,7 +17,7 @@ public abstract class ProxyPlatform implements Platform {
 	}
 	
 	@Override
-	public Placeholder registerUnknownPlaceholder(String identifier) {
+	public void registerUnknownPlaceholder(String identifier) {
 		TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		int refresh = pl.getDefaultRefresh();
@@ -31,6 +31,5 @@ public abstract class ProxyPlatform implements Platform {
 			}
 		};
 		pl.registerPlaceholder(p);
-		return p;
 	}
 }

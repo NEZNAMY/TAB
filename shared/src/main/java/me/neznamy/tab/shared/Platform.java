@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
@@ -36,7 +35,7 @@ public interface Platform {
 	 * @param identifier - placeholder's identifier
 	 * @return new placeholder
 	 */
-	public Placeholder registerUnknownPlaceholder(String identifier);
+	public void registerUnknownPlaceholder(String identifier);
 	
 	/**
 	 * Returns server's version

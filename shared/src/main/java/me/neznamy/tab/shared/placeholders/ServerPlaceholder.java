@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.placeholder;
+package me.neznamy.tab.shared.placeholders;
 
 import me.neznamy.tab.api.TabPlayer;
 

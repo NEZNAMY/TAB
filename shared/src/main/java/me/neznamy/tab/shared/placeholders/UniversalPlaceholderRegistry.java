@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -30,72 +28,32 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%world%", 1000) {
-			public Object get(TabPlayer p) {
-				return p.getWorld();
-			}
-		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%worldonline%", 1000) {
-			public Object get(TabPlayer p) {
+		manager.registerPlayerPlaceholder("%world%", 1000, p -> p.getWorld());
+		manager.registerPlayerPlaceholder("%worldonline%", 1000, p -> {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (String.valueOf(p.getWorld()).equals(all.getWorld())) count++;
 				}
 				return count;
-			}
 		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%server%", 1000) {
-			public Object get(TabPlayer p) {
-				return p.getServer();
-			}
-		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%serveronline%", 1000) {
-			public Object get(TabPlayer p) {
+		manager.registerPlayerPlaceholder("%server%", 1000, p -> p.getServer());
+		manager.registerPlayerPlaceholder("%serveronline%", 1000, p -> {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 					if (String.valueOf(p.getServer()).equals(all.getServer())) count++;
 				}
 				return count;
-			}
 		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%player%", 100000000) {
-			public Object get(TabPlayer p) {
-				return p.getName();
-			}
-		});
+		manager.registerPlayerPlaceholder("%player%", 100000000, p -> p.getName());
 		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
 		SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
-		manager.registerServerPlaceholder(new ServerPlaceholder("%time%", 500) {
-			public Object get() {
-				return timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
-			}
-		});
+		manager.registerServerPlaceholder("%time%", 500, () -> timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
 		SimpleDateFormat dateFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
-		manager.registerServerPlaceholder(new ServerPlaceholder("%date%", 60000) {
-			public Object get() {
-				return dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000)));
-			}
-		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%ping%", 500) {
-			public Object get(TabPlayer p) {
-				return p.getPing();
-			}
-		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%player-version%", 100000000) {
-			public Object get(TabPlayer p) {
-				return p.getVersion().getFriendlyName();
-			}
-		});
-		manager.registerPlayerPlaceholder(new PlayerPlaceholder("%player-version-id%", 100000000) {
-			public Object get(TabPlayer p) {
-				return p.getVersion().getNetworkId();
-			}
-		});
-		manager.registerServerPlaceholder(new ServerPlaceholder("%maxplayers%", 100000000) {
-			public Object get() {
-				return TAB.getInstance().getPlatform().getMaxPlayers();
-			}
-		});
+		manager.registerServerPlaceholder("%date%", 60000, () -> dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
+		manager.registerPlayerPlaceholder("%ping%", 500, p -> p.getPing());
+		manager.registerPlayerPlaceholder("%player-version%", 100000000, p -> p.getVersion().getFriendlyName());
+		manager.registerPlayerPlaceholder("%player-version-id%", 100000000, p -> p.getVersion().getNetworkId());
+		manager.registerServerPlaceholder("%maxplayers%", 100000000, () -> TAB.getInstance().getPlatform().getMaxPlayers());
 		registerLuckPermsPlaceholders(manager);
 		registerMemoryPlaceholders(manager);
 		registerAnimationPlaceholders(manager);
@@ -121,26 +79,10 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers all memory-related placeholders
 	 */
 	private void registerMemoryPlaceholders(PlaceholderManager manager) {
-		manager.registerServerPlaceholder(new ServerPlaceholder("%memory-used%", 200) {
-			public Object get() {
-				return ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576));
-			}
-		});
-		manager.registerServerPlaceholder(new ServerPlaceholder("%memory-max%", 100000000) {
-			public Object get() {
-				return ((int) (Runtime.getRuntime().maxMemory() / 1048576));
-			}
-		});
-		manager.registerServerPlaceholder(new ServerPlaceholder("%memory-used-gb%", 200) {
-			public Object get() {
-				return decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024);
-			}
-		});
-		manager.registerServerPlaceholder(new ServerPlaceholder("%memory-max-gb%", 100000000) {
-			public Object get() {
-				return decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024);
-			}
-		});
+		manager.registerServerPlaceholder("%memory-used%", 200, () -> ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)));
+		manager.registerServerPlaceholder("%memory-max%", 100000000, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576)));
+		manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
+		manager.registerServerPlaceholder("%memory-max-gb%", 100000000, () -> decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024));
 	}
 
 	/**
@@ -149,16 +91,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerLuckPermsPlaceholders(PlaceholderManager manager) {
 		PermissionPlugin plugin = ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin();
 		if (plugin instanceof LuckPerms) {
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-prefix%", 1000) {
-				public Object get(TabPlayer p) {
-					return ((LuckPerms)plugin).getPrefix(p);
-				}
-			});
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%luckperms-suffix%", 1000) {
-				public Object get(TabPlayer p) {
-					return ((LuckPerms)plugin).getSuffix(p);
-				}
-			});
+			manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, p -> ((LuckPerms)plugin).getPrefix(p));
+			manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, p -> ((LuckPerms)plugin).getSuffix(p));
 		}
 	}
 
@@ -168,7 +102,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerAnimationPlaceholders(PlaceholderManager manager) {
 		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
 			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"), TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder("%animation:" + a.getName() + "%", 50) {
+			((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholder("%animation:" + a.getName() + "%", 50) {
 
 				public Object get(TabPlayer p) {
 					return a.getMessage();
@@ -202,13 +136,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			if (pm.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
 				refresh = pm.getPlayerPlaceholderRefreshIntervals().get(identifier);
 			}
-			manager.registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
-
-				@Override
-				public Object get(TabPlayer p) {
-					return c.getText(p);
-				}
-			});
+			manager.registerPlayerPlaceholder(identifier, refresh, p -> c.getText(p));
 		}
 	}
 }

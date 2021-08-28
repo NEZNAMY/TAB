@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.placeholder;
+package me.neznamy.tab.shared.placeholders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Representation of any placeholder
@@ -38,7 +39,7 @@ public abstract class Placeholder {
 	}
 
 	private void loadReplacements() {
-		Map<Object, Object> original = TabAPI.getInstance().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
+		Map<Object, Object> original = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier);
 		for (Entry<Object, Object> entry : original.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
@@ -78,7 +79,7 @@ public abstract class Placeholder {
 	public String set(String s, TabPlayer p) {
 		try {
 			String originalvalue = getLastValue(p);
-			String value = TabAPI.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
+			String value = TAB.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
 			value = replace(value, "%value%", originalvalue);
 			return replace(s, identifier, value);
 		} catch (Exception t) {
@@ -109,7 +110,7 @@ public abstract class Placeholder {
 		Object replaced = text;
 		for (String s : getNestedPlaceholders((String) text)) {
 			if (s.equals("%value%") || s.equals(identifier) || s.startsWith("%rel_")) continue;
-			replaced = TabAPI.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
+			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
 		}
 		return replaced;
 	}

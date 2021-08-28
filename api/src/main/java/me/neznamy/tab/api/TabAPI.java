@@ -3,7 +3,6 @@ package me.neznamy.tab.api;
 import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.TeamManager;
 
@@ -82,8 +81,6 @@ public abstract class TabAPI {
 
 	public abstract void setBrokenFile(String path);
 
-	public abstract ConfigurationFile getConfig();
-	
 	/**
 	 * Returns server version. On proxy installation returns PROXY.
 	 * @return server version

@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,12 +22,12 @@ import com.google.common.base.Preconditions;
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.Placeholder;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
-import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholder;
 
 /**
  * Messy class for placeholder management
@@ -240,18 +243,36 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	@Override
-	public void registerPlayerPlaceholder(PlayerPlaceholder placeholder) {
-		registerPlaceholder(placeholder);
+	public void registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
+		registerPlaceholder(new ServerPlaceholder(identifier, refresh) {
+
+			@Override
+			public Object get() {
+				return supplier.get();
+			}
+		});
+	}
+	
+	@Override
+	public void registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
+		registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+
+			@Override
+			public Object get(TabPlayer p) {
+				return function.apply(p);
+			}
+		});
 	}
 
 	@Override
-	public void registerServerPlaceholder(ServerPlaceholder placeholder) {
-		registerPlaceholder(placeholder);
-	}
+	public void registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
+		registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
 
-	@Override
-	public void registerRelationalPlaceholder(RelationalPlaceholder placeholder) {
-		registerPlaceholder(placeholder);
+			@Override
+			public Object get(TabPlayer viewer, TabPlayer target) {
+				return function.apply(viewer, target);
+			}
+		});
 	}
 
 	@Override
@@ -266,12 +287,12 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 
-	@Override
 	public Placeholder getPlaceholder(String identifier) {
 		Placeholder p = registeredPlaceholders.get(identifier);
 		if (p == null) {
-			p = TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+			TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
 			addUsedPlaceholder(identifier, this); //likely used via tab expansion
+			return getPlaceholder(identifier);
 		}
 		return p;
 	}
@@ -282,7 +303,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		usedPlaceholders = placeholderUsage.keySet().toArray(new String[0]);
 	}
 	
-	@Override
 	public String findReplacement(Map<Object, String> replacements, String output) {
 		if (replacements.isEmpty()) return output;
 		if (replacements.containsKey(output)) {

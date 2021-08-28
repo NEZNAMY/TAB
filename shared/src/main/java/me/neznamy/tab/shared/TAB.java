@@ -11,7 +11,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
@@ -315,11 +314,6 @@ public class TAB extends TabAPI {
 		return data.get(uniqueId);
 	}
 
-	@Override
-	public ConfigurationFile getConfig() {
-		return configuration.getConfig();
-	}
-	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		platform.sendConsoleMessage(message, translateColors);

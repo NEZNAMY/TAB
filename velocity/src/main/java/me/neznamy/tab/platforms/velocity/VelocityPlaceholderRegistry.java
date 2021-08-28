@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import me.neznamy.tab.api.PlaceholderManager;
-import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 
 /**
@@ -27,11 +26,7 @@ public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 	public void registerPlaceholders(PlaceholderManager manager) {
 		super.registerPlaceholders(manager);
 		for (RegisteredServer rServer : server.getAllServers()) {
-			manager.registerServerPlaceholder(new ServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000) {
-				public Object get() {
-					return rServer.getPlayersConnected().size();
-				}
-			});
+			manager.registerServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000, () -> rServer.getPlayersConnected().size());
 		}
 	}
 }

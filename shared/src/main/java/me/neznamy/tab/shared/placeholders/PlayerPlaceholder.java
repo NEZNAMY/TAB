@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.placeholder;
+package me.neznamy.tab.shared.placeholders;
 
 import java.util.HashMap;
 import java.util.HashSet;

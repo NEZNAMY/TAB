@@ -9,7 +9,6 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
@@ -147,13 +146,7 @@ public class Condition {
 			if (TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
 				refresh = TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().get(identifier);
 			}
-			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
-
-				@Override
-				public Object get(TabPlayer p) {
-					return c.getText(p);
-				}
-			});
+			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> c.getText(p));
 			return c;
 			
 		}
