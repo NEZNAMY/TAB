@@ -35,10 +35,11 @@ public class GlobalPlayerlist extends TabFeature {
 		displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
 		vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
 		isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
-		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_latency", new LatencyRefresher());
+		boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
+		if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_latency", new LatencyRefresher());
 		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_vanish", new VanishRefresher(this));
-		TAB.getInstance().debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s",
-				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers));
+		TAB.getInstance().debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",
+				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers, updateLatency));
 	}
 
 	@Override
