@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventSubscription;
@@ -43,7 +44,7 @@ public class GroupRefresher extends TabFeature {
 				refreshPlayer(p);
 				TAB.getInstance().getCPUManager().addTime(this, CpuConstants.UsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
 			});
-		} else {
+		} else if (!(plugin instanceof None)){
 			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", this, CpuConstants.UsageCategory.REFRESHING_GROUPS, () -> {
 				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) refreshPlayer(p);
 			});
