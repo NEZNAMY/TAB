@@ -1,9 +1,12 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
  * Sorting by permission nodes tab.sort.<name>, where names are defined in sorting list
@@ -16,17 +19,24 @@ public class Permissions extends SortingType {
 	/**
 	 * Constructs new instance
 	 */
-	public Permissions(String options) {
+	public Permissions(Sorting sorting, String options) {
 		sortedGroups = convertSortingElements(options.split(","));
+		List<String> placeholders = new ArrayList<>();
+		for (String permission : sortedGroups.keySet()) {
+			String placeholder = "%permission:" + permission + "%";
+			placeholders.add(placeholder);
+			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(placeholder, 1000, p -> p.hasPermission(permission));
+		}
+		sorting.addUsedPlaceholders(placeholders);
 	}
 	
 	@Override
 	public String getChars(ITabPlayer p) {
 		String chars = null;
-		for (String localgroup : sortedGroups.keySet()) {
-			if (p.hasPermission("tab.sort." + localgroup)) {
-				chars = sortedGroups.get(localgroup.toLowerCase());
-				p.setTeamNameNote("Highest sorting permission: &etab.sort." + localgroup + " &a(#" + Integer.parseInt(chars) + " in sorting list). &r");
+		for (String permission : sortedGroups.keySet()) {
+			if (p.hasPermission(permission)) {
+				chars = sortedGroups.get(permission.toLowerCase());
+				p.setTeamNameNote("Highest sorting permission: &e" + permission + " &a(#" + Integer.parseInt(chars) + " in list). &r");
 				if (p.hasPermission("random.permission")) {
 					p.setTeamNameNote(p.getTeamNameNote() + "&cThis user appears to have all permissions. Is he OP? &r");
 				}
@@ -34,15 +44,15 @@ public class Permissions extends SortingType {
 			}
 		}
 		if (chars == null) {
-			chars = "9";
-			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission. Configure sorting permissions or disable sorting by permissions like it is by default.");
-			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer does not have sorting permission for any group in sorting list. &r");
+			chars = String.valueOf(sortedGroups.size()+1);
+			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission.");
+			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer does not have any of the defined permissions. &r");
 		}
 		return chars;
 	}
 	
 	@Override
 	public String toString() {
-		return "GROUP_PERMISSIONS";
+		return "PERMISSIONS";
 	}
 }

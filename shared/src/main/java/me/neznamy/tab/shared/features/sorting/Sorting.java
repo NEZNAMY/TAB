@@ -1,13 +1,13 @@
 package me.neznamy.tab.shared.features.sorting;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NameTag;
@@ -24,10 +24,12 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
 /**
  * Class for handling player sorting rules
  */
-public class Sorting {
+public class Sorting extends TabFeature {
 
+	private NameTag nametags;
+	
 	//map of all registered sorting types
-	private Map<String, Function<String, SortingType>> types = new HashMap<>();
+	private Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
 	
 	//if sorting is case senstitive or not
 	private boolean caseSensitiveSorting = true;
@@ -41,6 +43,8 @@ public class Sorting {
 	 * @param nametags - nametag feature
 	 */
 	public Sorting(NameTag nametags) {
+		super("Team name refreshing");
+		this.nametags = nametags;
 		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sentitive-sorting", true);
 		types.put("GROUPS", Groups::new);
 		types.put("PERMISSIONS", Permissions::new);
@@ -50,21 +54,19 @@ public class Sorting {
 		types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
 		types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
 		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
-		
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing team names", nametags, CpuConstants.UsageCategory.REFRESHING_TEAM_NAMES, () -> {
-
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)) continue;
-				String newName = getTeamName(p);
-				if (!p.getTeamName().equals(newName)) {
-					nametags.unregisterTeam(p);
-					Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
-					if (layout != null) layout.updateTeamName(p, newName);
-					((ITabPlayer) p).setTeamName(newName);
-					nametags.registerTeam(p);
-				}
-			}
-		});
+	}
+	
+	@Override
+	public void refresh(TabPlayer p, boolean force) {
+		if (!p.isLoaded() || nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)) return;
+		String newName = getTeamName(p);
+		if (!p.getTeamName().equals(newName)) {
+			nametags.unregisterTeam(p);
+			Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
+			if (layout != null) layout.updateTeamName(p, newName);
+			((ITabPlayer) p).setTeamName(newName);
+			nametags.registerTeam(p);
+		}
 	}
 	
 	/**
@@ -78,7 +80,7 @@ public class Sorting {
 			if (!types.containsKey(arr[0].toUpperCase())) {
 				TAB.getInstance().getErrorManager().startupWarn("\"&e" + arr[0].toUpperCase() + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ".");
 			} else {
-				SortingType type = types.get(arr[0].toUpperCase()).apply(arr.length == 1 ? "" : element.substring(arr[0].length() + 1));
+				SortingType type = types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1));
 				list.add(type);
 			}
 		}

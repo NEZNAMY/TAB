@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
  * Sorting by a placeholder by values defined in list
@@ -18,8 +19,8 @@ public class Placeholder extends SortingType {
 	 * Constructs new instance with given parameter
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
-	public Placeholder(String options) {
-		super(options.split(":")[0]);
+	public Placeholder(Sorting sorting, String options) {
+		super(sorting, options.split(":")[0]);
 		sortingMap = convertSortingElements(options.substring(options.indexOf(":")+1).split(","));
 	}
 

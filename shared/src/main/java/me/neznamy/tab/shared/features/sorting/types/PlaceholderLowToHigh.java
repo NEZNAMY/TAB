@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
  * Sorting by a numeric placeholder from lowest to highest
@@ -12,8 +13,8 @@ public class PlaceholderLowToHigh extends SortingType {
 	 * Constructs new instance with given parameter
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
-	public PlaceholderLowToHigh(String sortingPlaceholder) {
-		super(sortingPlaceholder);
+	public PlaceholderLowToHigh(Sorting sorting, String sortingPlaceholder) {
+		super(sorting, sortingPlaceholder);
 	}
 
 	@Override

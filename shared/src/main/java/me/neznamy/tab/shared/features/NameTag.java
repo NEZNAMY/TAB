@@ -37,6 +37,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
 		invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
 		sorting = new Sorting(this);
+		TAB.getInstance().getFeatureManager().registerFeature("sorting", sorting);
 		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNametags=%s",
 				collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNametags));
 	}

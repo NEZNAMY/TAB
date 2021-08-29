@@ -1,13 +1,13 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.placeholders.Placeholder;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public abstract class SortingType {
 
@@ -16,24 +16,17 @@ public abstract class SortingType {
 	
 	//placeholder to sort by, if sorting type uses it
 	protected String sortingPlaceholder;
-	
-	//used placeholders in sorting placeholder
-	private List<String> usedPlaceholders;
-	
-	/**
-	 * Constructs new instance
-	 */
-	protected SortingType() {
+
+	protected SortingType(){
 	}
 	
 	/**
 	 * Constructs new instance with given parameter
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
-	protected SortingType(String sortingPlaceholder){
+	protected SortingType(Sorting sorting, String sortingPlaceholder){
+		sorting.addUsedPlaceholders(Arrays.asList(sortingPlaceholder));
 		this.sortingPlaceholder = sortingPlaceholder;
-		usedPlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(sortingPlaceholder);
-		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(usedPlaceholders);
 	}
 	
 	/**
@@ -42,16 +35,7 @@ public abstract class SortingType {
 	 * @return text with replaced placeholders
 	 */
 	protected String setPlaceholders(TabPlayer player) {
-		String replaced = sortingPlaceholder;
-		if (sortingPlaceholder.contains("%")) {
-			for (String identifier : usedPlaceholders) {
-				Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
-				if (replaced.contains(pl.getIdentifier())) {
-					replaced = pl.set(replaced, player);
-				}
-			}
-		}
-		return replaced;
+		return TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder).set(sortingPlaceholder, player);
 	}
 	
 	protected LinkedHashMap<String, String> convertSortingElements(String[] elements) {

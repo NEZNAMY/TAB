@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
  * Sorting by primary permission groups
@@ -17,7 +18,8 @@ public class Groups extends SortingType {
 	/**
 	 * Constructs new instance
 	 */
-	public Groups(String options) {
+	public Groups(Sorting sorting, String options) {
+		super(sorting, "%group%");
 		sortedGroups = convertSortingElements(options.split(","));
 	}
 
