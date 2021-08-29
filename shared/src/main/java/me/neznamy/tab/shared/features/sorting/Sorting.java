@@ -98,10 +98,6 @@ public class Sorting extends TabFeature {
 		for (SortingType type : getSorting()) {
 			sb.append(type.getChars((ITabPlayer) p));
 		}
-		if (sb.length() > 12) {
-			sb.setLength(12);
-		}
-		sb.append(p.getName());
 		if (sb.length() > 15) {
 			sb.setLength(15);
 		}

@@ -6,10 +6,10 @@ scoreboard-teams:
   invisible-nametags: false
   anti-override: true
 
-  # types: GROUPS:<group1>,<group2>... , GROUP_PERMISSIONS:<permission1>,<perm2>... , PLACEHOLDER:<output1>,<output2>... , PLACEHOLDER_A_TO_Z, PLACEHOLDER_Z_TO_A, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_LOW_TO_HIGH
+  # types: GROUPS:<group1>,<group2>... , PERMISSIONS:<permission1>,<perm2>... , PLACEHOLDER:<output1>,<output2>... , PLACEHOLDER_A_TO_Z, PLACEHOLDER_Z_TO_A, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_LOW_TO_HIGH
   sorting-types:
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
-    - "PLACEHOLDER_LOW_TO_HIGH:%ping%"
+    - "PLACEHOLDER_A_TO_Z:%player%"
   case-sentitive-sorting: true
   disable-in-worlds:
     - disabledworld
