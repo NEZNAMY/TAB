@@ -3,6 +3,7 @@ package me.neznamy.tab.api;
 import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.TeamManager;
 
@@ -93,4 +94,14 @@ public abstract class TabAPI {
 	 * @param translateColors - true if colors should be translated, false if not
 	 */
 	public abstract void sendConsoleMessage(String message, boolean translateColors);
+	
+	public abstract ThreadManager getThreadManager();
+	
+	public abstract ConfigurationFile getPlayerCache();
+	
+	public abstract ConfigurationFile getConfig();
+	
+	public abstract PropertyConfiguration getGroups();
+	
+	public abstract PropertyConfiguration getUsers();
 }

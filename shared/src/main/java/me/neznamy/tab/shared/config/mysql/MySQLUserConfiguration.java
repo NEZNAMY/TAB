@@ -6,9 +6,9 @@ import java.util.Map;
 
 import javax.sql.rowset.CachedRowSet;
 
+import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.MySQL;
-import me.neznamy.tab.shared.config.PropertyConfiguration;
 
 public class MySQLUserConfiguration implements PropertyConfiguration {
 

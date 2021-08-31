@@ -7,10 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.HeaderFooterManager;
+import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
@@ -59,7 +61,7 @@ public class TAB extends TabAPI {
 	private Platform platform;
 
 	//cpu manager
-	private CPUManager cpu;
+	private CpuManager cpu;
 
 	//error manager
 	private ErrorManagerImpl errorManager;
@@ -128,7 +130,7 @@ public class TAB extends TabAPI {
 		try {
 			long time = System.currentTimeMillis();
 			this.errorManager = new ErrorManagerImpl(this);
-			cpu = new CPUManager(errorManager);
+			cpu = new CpuManager(errorManager);
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
 			configuration.loadFiles();
@@ -193,7 +195,7 @@ public class TAB extends TabAPI {
 		featureManager.registerFeature("group", new GroupRefresher(platform.detectPermissionPlugin()));
 		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {
-			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
+			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
 				
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					String world = ((ProxyTabPlayer)all).getAttribute("world");
@@ -233,7 +235,7 @@ public class TAB extends TabAPI {
 		return platform;
 	}
 
-	public CPUManager getCPUManager() {
+	public CpuManager getCPUManager() {
 		return cpu;
 	}
 
@@ -322,5 +324,30 @@ public class TAB extends TabAPI {
 	@Override
 	public HeaderFooterManager getHeaderFooterManager() {
 		return (HeaderFooterManager) featureManager.getFeature("headerfooter");
+	}
+
+	@Override
+	public ConfigurationFile getPlayerCache() {
+		return configuration.getPlayerDataFile();
+	}
+
+	@Override
+	public ConfigurationFile getConfig() {
+		return configuration.getConfig();
+	}
+	
+	@Override
+	public CpuManager getThreadManager() {
+		return cpu;
+	}
+
+	@Override
+	public PropertyConfiguration getGroups() {
+		return configuration.getGroups();
+	}
+
+	@Override
+	public PropertyConfiguration getUsers() {
+		return configuration.getUsers();
 	}
 }

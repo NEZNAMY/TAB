@@ -36,4 +36,6 @@ public interface PlaceholderManager {
 	 * @param feature - feature using the placeholder
 	 */
 	public void addUsedPlaceholder(String identifier, TabFeature feature);
+	
+	public String findReplacement(String placeholder, String output);
 }

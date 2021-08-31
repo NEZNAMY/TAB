@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,11 +20,12 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.ThreadManager;
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
-public class CPUManager {
+public class CpuManager implements ThreadManager {
 
 	//data reset interval in milliseconds
 	private static final int BUFFER_SIZE_MILLIS = 10000;
@@ -56,7 +58,7 @@ public class CPUManager {
 	 * Constructs new instance and starts repeating task that resets values every 10 seconds
 	 * @param errorManager - error manager
 	 */
-	public CPUManager(ErrorManager errorManager) {
+	public CpuManager(ErrorManager errorManager) {
 		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
 		submit("refreshing cpu stats", () -> {
@@ -101,64 +103,34 @@ public class CPUManager {
 		old.shutdownNow();
 	}
 
-	/**
-	 * Starts a task in new thread and measures how long it took to process
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public void runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
-		runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
+	@Override
+	public Future<?> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
+		return runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
 	}
 	
-	/**
-	 * Starts a task in new thread and measures how long it took to process
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public void runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
-		submit(errorDescription, () -> {
+	@Override
+	public Future<?> runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
+		return submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
 			addTime(feature, type, System.nanoTime()-time);
 		});
 	}
 
-	/**
-	 * Runs task in a new thread
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param task - the task
-	 */
-	public void runTask(String errorDescription, Runnable task) {
-		submit(errorDescription, task);
+	@Override
+	public Future<?> runTask(String errorDescription, Runnable task) {
+		return submit(errorDescription, task);
 	}
 	
-	/**
-	 * Starts a new task with defined repeat interval that measures cpu usage
-	 * @param intervalMilliseconds - task interval
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
+	@Override
+	public Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+		return startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
-	/**
-	 * Starts a new task with defined repeat interval that measures cpu usage
-	 * @param intervalMilliseconds - task interval
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public void startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
-		if (intervalMilliseconds <= 0) return;
-		submit(errorDescription, () -> {
+	@Override
+	public Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
+		if (intervalMilliseconds <= 0) return null;
+		return submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
 			while (true) {
 				try {
@@ -181,28 +153,14 @@ public class CPUManager {
 		});
 	}
 
-	/**
-	 * Runs task with a delay and measures how long it took to process
-	 * @param delayMilliseconds - how long to run the task after
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
+	@Override
+	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+		return runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
-	/**
-	 * Runs task with a delay and measures how long it took to process
-	 * @param delayMilliseconds - how long to run the task after
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
-		submit(errorDescription, () -> {
+	@Override
+	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
+		return submit(errorDescription, () -> {
 			try {
 				Thread.sleep(delayMilliseconds);
 				long time = System.nanoTime();
@@ -214,8 +172,8 @@ public class CPUManager {
 		});
 	}
 	
-	private void submit(String errorDescription, Runnable task) {
-		exe.submit(() -> {
+	private Future<?> submit(String errorDescription, Runnable task) {
+		return exe.submit(() -> {
 			try {
 				task.run();
 			} catch (Exception | NoClassDefFoundError e) {

@@ -302,28 +302,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature);
 		usedPlaceholders = placeholderUsage.keySet().toArray(new String[0]);
 	}
-	
-	public String findReplacement(Map<Object, String> replacements, String output) {
-		if (replacements.isEmpty()) return output;
-		if (replacements.containsKey(output)) {
-			return replacements.get(output);
-		}
-		try {
-			Float actualValue = null; //only trying to parse if something actually uses numbers intervals
-			for (Entry<Object, String> entry : replacements.entrySet()) {
-				String key = entry.getKey().toString();
-				if (key.contains("-")) {
-					if (actualValue == null) {
-						actualValue = Float.parseFloat(output.replace(",", ""));
-					}
-					String[] arr = key.split("-");
-					if (Float.parseFloat(arr[0]) <= actualValue && actualValue <= Float.parseFloat(arr[1])) return entry.getValue();
-				}
-			}
-		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-			//nope
-		}
-		if (replacements.containsKey("else")) return replacements.get("else");
-		return output;
+
+	@Override
+	public String findReplacement(String placeholder, String output) {
+		return getPlaceholder(placeholder).findReplacement(output);
 	}
 }

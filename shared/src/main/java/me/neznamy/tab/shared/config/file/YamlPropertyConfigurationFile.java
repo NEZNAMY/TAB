@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
-import me.neznamy.tab.shared.config.PropertyConfiguration;
 
 public class YamlPropertyConfigurationFile extends YamlConfigurationFile implements PropertyConfiguration {
 

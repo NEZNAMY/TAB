@@ -3,12 +3,12 @@ package me.neznamy.tab.shared.config;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
+import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
@@ -127,28 +127,6 @@ public class Configs {
 		return value == null ? defaultValue : value;
 	}
 
-	/**
-	 * Returns player data with specified key
-	 * @param key - data key
-	 * @return list of players logged in this data key
-	 */
-	public List<String> getPlayerData(String key) {
-		if (playerdata == null) {
-			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
-			try {
-				if (file.exists() || file.createNewFile()) {
-					playerdata = new YamlConfigurationFile(null, file);
-					return playerdata.getStringList(key, new ArrayList<>());
-				}
-			} catch (Exception e) {
-				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
-			}
-		} else {
-			return playerdata.getStringList(key, new ArrayList<>());
-		}
-		return new ArrayList<>();
-	}
-
 	public String[] getRemoveStrings() {
 		return removeStrings;
 	}
@@ -194,6 +172,16 @@ public class Configs {
 	}
 
 	public ConfigurationFile getPlayerDataFile() {
+		if (playerdata == null) {
+			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
+			try {
+				if (file.exists() || file.createNewFile()) {
+					playerdata = new YamlConfigurationFile(null, file);
+				}
+			} catch (Exception e) {
+				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
+			}
+		}
 		return playerdata;
 	}
 

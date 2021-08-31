@@ -79,7 +79,7 @@ public abstract class Placeholder {
 	public String set(String s, TabPlayer p) {
 		try {
 			String originalvalue = getLastValue(p);
-			String value = TAB.getInstance().getPlaceholderManager().findReplacement(replacements, originalvalue);
+			String value = findReplacement(originalvalue);
 			value = replace(value, "%value%", originalvalue);
 			return replace(s, identifier, value);
 		} catch (Exception t) {
@@ -113,6 +113,30 @@ public abstract class Placeholder {
 			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
 		}
 		return replaced;
+	}
+	
+	public String findReplacement(String output) {
+		if (replacements.isEmpty()) return output;
+		if (replacements.containsKey(output)) {
+			return replacements.get(output);
+		}
+		try {
+			Float actualValue = null; //only trying to parse if something actually uses numbers intervals
+			for (Entry<Object, String> entry : replacements.entrySet()) {
+				String key = entry.getKey().toString();
+				if (key.contains("-")) {
+					if (actualValue == null) {
+						actualValue = Float.parseFloat(output.replace(",", ""));
+					}
+					String[] arr = key.split("-");
+					if (Float.parseFloat(arr[0]) <= actualValue && actualValue <= Float.parseFloat(arr[1])) return entry.getValue();
+				}
+			}
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			//nope
+		}
+		if (replacements.containsKey("else")) return replacements.get("else");
+		return output;
 	}
 	
 	/**
