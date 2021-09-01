@@ -140,7 +140,7 @@ public class BukkitArmorStand implements ArmorStand {
 	@Override
 	public void teleport(TabPlayer viewer) {
 		if (!owner.getArmorStandManager().isNearby(viewer) && viewer != owner) {
-			spawn(viewer);
+			owner.getArmorStandManager().spawn(viewer);
 		} else {
 			viewer.sendCustomPacket(getTeleportPacket(viewer), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
