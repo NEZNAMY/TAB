@@ -16,9 +16,14 @@ import me.neznamy.tab.api.util.BiFunctionWithException;
  * An interface represending a platform-specific packet builder
  */
 public abstract class PacketBuilder {
-	
+
+	/** Function map turning custom packet class into platform-specific packets */
 	protected Map<Class<? extends TabPacket>, BiFunctionWithException<TabPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
-	
+
+	/**
+	 * Constructs new instance and fills {@link #buildMap} with abstract build methods
+	 * of packets present on all platforms.
+	 */
 	protected PacketBuilder() {
 		buildMap.put(PacketPlayOutBoss.class, (packet, version) -> build((PacketPlayOutBoss)packet, version));
 		buildMap.put(PacketPlayOutChat.class, (packet, version) -> build((PacketPlayOutChat)packet, version));
@@ -29,104 +34,169 @@ public abstract class PacketBuilder {
 		buildMap.put(PacketPlayOutScoreboardScore.class, (packet, version) -> build((PacketPlayOutScoreboardScore)packet, version));
 		buildMap.put(PacketPlayOutScoreboardTeam.class, (packet, version) -> build((PacketPlayOutScoreboardTeam)packet, version));
 	}
-	
+
+	/**
+	 * Converts custom packet into platform-specific packet by calling a function from
+	 * {@link #buildMap}.
+	 * 
+	 * @param	packet
+	 * 			Packet to build
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	Exception
+	 * 			if reflection fails
+	 */
 	public Object build(TabPacket packet, ProtocolVersion clientVersion) throws Exception {
 		return buildMap.get(packet.getClass()).apply(packet, clientVersion);
 	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutBoss class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutChat class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutPlayerInfo class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutPlayerListHeaderFooter class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardDisplayObjective class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardObjective class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardScore class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException;
-	
+
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardTeam class based on custom packet class
-	 * @param packet - custom packet to be built
-	 * @param clientVersion - version of client to receive the packet
-	 * @return platform-specific packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @param	packet
+	 * 			Custom packet to be built
+	 * @param	clientVersion
+	 * 			Protocol version of player to build the packet for
+	 * @return	Platform-specific packet
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InstantiationException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException;
 
 	/**
-	 * Cuts given string to specified character length (or length-1 if last character is a color character) and translates RGB to legacy colors
-	 * @param string - string to cut
-	 * @param length - length to cut to
-	 * @return the cut text or original if cut was not needed
+	 * Cuts given string to specified character length (or length-1 if last character is a color character)
+	 * and translates RGB to legacy colors. If string is not that long, the original string is returned.
+	 * RGB codes are converted into legacy, since cutting is only needed for <1.13.
+	 * If {@code string} is {@code null}, empty string is returned.
+	 * @param	string
+	 * 			String to cut
+	 * @param	length
+	 * 			Length to cut to
+	 * @return	string cut to {@code length} characters
 	 */
 	public String cutTo(String string, int length) {
 		if (string == null) return "";
@@ -142,12 +212,19 @@ public abstract class PacketBuilder {
 			return legacyText.substring(0, length);
 		}
 	}
-	
+
 	/**
-	 * Returns the text as json component for 1.13+ clients or cut text for 1.12-
-	 * @param text - text to convert
-	 * @param clientVersion - client version
-	 * @return component for 1.13+ clients, cut string for 1.12-
+	 * If {@code clientVersion} is >= 1.13, creates a component from given text and returns
+	 * it as a serialized component, which bungeecord uses.
+	 * <p>
+	 * If {@code clientVersion} is < 1.12, the text is cut to {@code length} characters if
+	 * needed and returned.
+	 * 
+	 * @param	text
+	 * 			Text to convert
+	 * @param	clientVersion
+	 * 			Version of player to convert text for
+	 * @return	serialized component for 1.13+ clients, cut string for 1.12-
 	 */
 	public String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
 		if (text == null) return null;
@@ -157,36 +234,54 @@ public abstract class PacketBuilder {
 			return cutTo(text, length);
 		}
 	}
-	
+
 	/**
-	 * Converts platform-specific instance of player info packet into custom class object
-	 * @param packet - platform-specific info packet
-	 * @param clientVersion - client version
-	 * @return The converted packet
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws ParseException 
+	 * Converts platform-specific instance of player info packet into 
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo} object.
+	 * 
+	 * @param	packet
+	 * 			platform-specific info packet
+	 * @param	clientVersion
+	 * 			Version of client receiving the packet
+	 * @return	The packet converted into {@link me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo}
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	ParseException 
+	 * 			if client is 1.13+, but display name was not a valid serialized component
 	 */
 	public abstract PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, ParseException;
-	
+
 	/**
-	 * Converts platform-specific instance of objective packet into custom class object
-	 * @param packet - platform-specific objective packet
-	 * @param clientVersion - client version
-	 * @return The converted packet
-	 * @throws IllegalAccessException 
-	 * @throws ParseException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
+	 * Converts platform-specific instance of objective packet into 
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective} object.
+	 * 
+	 * @param	packet
+	 * 			platform-specific objective packet
+	 * @param	clientVersion
+	 * 			Version of client receiving the packet
+	 * @return	The packet converted into {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective}
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
+	 * @throws	InvocationTargetException
+	 * 			if thrown by reflective operation
+	 * @throws	ParseException 
+	 * 			if client is 1.13+, but title was not a valid serialized component
 	 */
-	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, ParseException, IllegalArgumentException, InvocationTargetException;
-	
+	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, ParseException, InvocationTargetException;
+
 	/**
-	 * Converts platform-specific instance of display objective packet into custom class object
-	 * @param packet - platform-specific display objective packet
-	 * @param clientVersion - client version
-	 * @return The converted packet
-	 * @throws IllegalAccessException 
+	 * Converts platform-specific instance of display objective packet into 
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective} object.
+	 * 
+	 * @param	packet
+	 * 			platform-specific display objective packet
+	 * @param	clientVersion
+	 * 			Version of client receiving the packet
+	 * @return	The packet converted into {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective}
+	 * @throws	IllegalAccessException
+	 * 			if thrown by reflective operation
 	 */
 	public abstract PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException;
 }

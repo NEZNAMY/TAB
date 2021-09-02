@@ -83,7 +83,7 @@ public abstract class Placeholder {
 			value = replace(value, "%value%", originalvalue);
 			return replace(s, identifier, value);
 		} catch (Exception t) {
-			TabAPI.getInstance().getErrorManager().printError("An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
+			TAB.getInstance().getErrorManager().printError("An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
 			return s;
 		}
 	}

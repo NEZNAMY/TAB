@@ -64,7 +64,7 @@ public class TAB extends TabAPI {
 	private CpuManager cpu;
 
 	//error manager
-	private ErrorManagerImpl errorManager;
+	private ErrorManager errorManager;
 
 	//feature manager
 	private FeatureManagerImpl featureManager;
@@ -129,7 +129,7 @@ public class TAB extends TabAPI {
 	public String load() {
 		try {
 			long time = System.currentTimeMillis();
-			this.errorManager = new ErrorManagerImpl(this);
+			this.errorManager = new ErrorManager(this);
 			cpu = new CpuManager(errorManager);
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
@@ -239,8 +239,7 @@ public class TAB extends TabAPI {
 		return cpu;
 	}
 
-	@Override
-	public ErrorManagerImpl getErrorManager() {
+	public ErrorManager getErrorManager() {
 		return errorManager;
 	}
 
@@ -263,15 +262,6 @@ public class TAB extends TabAPI {
 
 	public void setDebugMode(boolean debug) {
 		debugMode = debug;
-	}
-
-	@Override
-	public void setBrokenFile(String file) {
-		brokenFile = file;
-	}
-
-	public String getBrokenFile() {
-		return brokenFile;
 	}
 
 	public DisabledCommand getDisabledCommand() {

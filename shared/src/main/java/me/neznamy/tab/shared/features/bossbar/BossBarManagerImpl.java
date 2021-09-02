@@ -208,14 +208,15 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	@Override
-	public BossBar createBossBar(String name, String title, float progress, BarColor color, BarStyle style) {
-		return createBossBar(name, title, String.valueOf(progress), color.toString(), style.toString());
+	public BossBar createBossBar(String title, float progress, BarColor color, BarStyle style) {
+		return createBossBar(title, String.valueOf(progress), color.toString(), style.toString());
 	}
 
 	@Override
-	public BossBar createBossBar(String name, String title, String progress, String color, String style) {
-		BossBar bar = new BossBarLine(this, name, null, color, style, title, progress);
-		lines.put(bar.getName(), bar);
+	public BossBar createBossBar(String title, String progress, String color, String style) {
+		UUID id = UUID.randomUUID();
+		BossBar bar = new BossBarLine(this, id.toString(), null, color, style, title, progress);
+		lines.put(id.toString(), bar);
 		lineValues = lines.values().toArray(new BossBar[0]);
 		return bar;
 	}

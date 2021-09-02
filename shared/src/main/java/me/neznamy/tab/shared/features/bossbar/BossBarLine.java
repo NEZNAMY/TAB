@@ -132,6 +132,7 @@ public class BossBarLine implements BossBar {
 	
 	@Override
 	public void setTitle(String title) {
+		if (this.title == title) return;
 		this.title = title;
 		for (TabPlayer p : players) {
 			p.setProperty(textRefresher, PropertyUtils.bossbarTitle(name), title);
@@ -141,6 +142,7 @@ public class BossBarLine implements BossBar {
 
 	@Override
 	public void setProgress(String progress) {
+		if (this.progress == progress) return;
 		this.progress = progress;
 		for (TabPlayer p : players) {
 			p.setProperty(progressRefresher, PropertyUtils.bossbarProgress(name), progress);
@@ -155,6 +157,7 @@ public class BossBarLine implements BossBar {
 
 	@Override
 	public void setColor(String color) {
+		if (this.color == color) return;
 		this.color = color;
 		for (TabPlayer p : players) {
 			p.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarColor(name), color);
@@ -172,6 +175,7 @@ public class BossBarLine implements BossBar {
 
 	@Override
 	public void setStyle(String style) {
+		if (this.style == style) return;
 		this.style = style;
 		for (TabPlayer p : players) {
 			p.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarStyle(name), style);
@@ -234,6 +238,6 @@ public class BossBarLine implements BossBar {
 
 	@Override
 	public Set<TabPlayer> getPlayers() {
-		return players;
+		return new HashSet<>(players);
 	}
 }

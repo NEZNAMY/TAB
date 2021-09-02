@@ -7,16 +7,19 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
  */
 public class PacketPlayOutChat implements TabPacket {
 
-	//the message to be sent
+	/** Message to be sent */
 	private IChatBaseComponent message;
-	
-	//position of the message
+
+	/** Message position */
 	private ChatMessageType type;
 
 	/**
-	 * Constructs new instance of the class with given message and position
-	 * @param message - message to be sent
-	 * @param type - message position
+	 * Constructs new instance with given parameters
+	 * 
+	 * @param	message
+	 * 			Chat message to be sent
+	 * @param	type
+	 * 			Message position
 	 */
 	public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
 		this.message = message;
@@ -28,16 +31,25 @@ public class PacketPlayOutChat implements TabPacket {
 		return String.format("PacketPlayOutChat{message=%s,type=%s}", message, type);
 	}
 
+	/**
+	 * Returns {@link #message}
+	 * @return	message
+	 */
 	public IChatBaseComponent getMessage() {
 		return message;
 	}
 
+	/**
+	 * Returns {@link #type}
+	 * @return	type
+	 */
 	public ChatMessageType getType() {
 		return type;
 	}
 
 	/**
 	 * An enum representing positions of a chat message
+	 * Calling ordinal() will return type's network ID.
 	 */
 	public enum ChatMessageType {
 

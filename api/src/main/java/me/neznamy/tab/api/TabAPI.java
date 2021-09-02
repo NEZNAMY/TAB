@@ -69,18 +69,10 @@ public abstract class TabAPI {
 	public abstract PlaceholderManager getPlaceholderManager();
 
 	/**
-	 * Returns ErrorManager instance
-	 * @return ErrorManager instance
-	 */
-	public abstract ErrorManager getErrorManager();
-	
-	/**
 	 * Returns feature manager instance
 	 * @return feature manager instance
 	 */
 	public abstract FeatureManager getFeatureManager();
-
-	public abstract void setBrokenFile(String path);
 
 	/**
 	 * Returns server version. On proxy installation returns PROXY.

@@ -1,71 +1,91 @@
 package me.neznamy.tab.api.scoreboard;
 
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * An interface to be worked with to manipulate scoreboard
+ * An interface allowing to work with scoreboard, such as adding plyaers,
+ * removing players and changing lines. New instance can be created using
+ * {@link ScoreboardManager#createScoreboard(String, String, List)},
+ * for scoreboards from config {@link ScoreboardManager#getRegisteredScoreboards()}.
  */
 public interface Scoreboard {
 
 	/**
-	 * Registers this scoreboard to specified player
-	 * @param p - player to register scoreboard for
-	 */
-	public void addPlayer(TabPlayer p);
-	
-	/**
-	 * Unregisters this scoreboard from specified player
-	 * @param p - player to unregister scoreboard for
-	 */
-	public void removePlayer(TabPlayer p);
-
-	/**
-	 * Returns list of all players who can see this scoreboard
-	 * @return list of players who can see this scoreboard
-	 */
-	public Set<TabPlayer> getPlayers();
-	
-	/**
-	 * Returns name of this scoreboard
-	 * @return name of this scoreboard
+	 * Returns internal name of this scoreboard. Name is defined in registration,
+	 * scoreboards from config use name they were defined with. This value is
+	 * used internally and in /tab announce scoreboard command.
+	 * 
+	 * @return	custom name of this scoreboard
 	 */
 	public String getName();
-	
+
 	/**
-	 * Returns scoreboard title
-	 * @return scoreboard title
+	 * Returns raw title of this scoreboard. Placeholders stay in their
+	 * raw, unparsed format.
+	 * 
+	 * @return	scoreboard title
+	 * @see		#setTitle(String)
 	 */
 	public String getTitle();
-	
+
 	/**
-	 * Sets title to provided value. Supports RGB codes using any of the supported formats.
-	 * @param title - title to use
+	 * Sets title to specified value. Placeholders are refreshed automatically
+	 * with refresh intervals defined in config. No need to call this method
+	 * to try to keep placeholders up to date. Supports RGB codes using any of 
+	 * the supported formats.
+	 * <p>
+	 * Length is limited to 32 characters on <1.13. If the limit is exceeded,
+	 * text will be cut to 32 characters.
+	 * <p>
+	 * Calling this method with same title as before will not do anything.
+	 * 
+	 * @param	title
+	 * 			New title to use with placeholder support
+	 * @see		#getTitle()
 	 */
 	public void setTitle(String title);
-	
+
 	/**
-	 * Returns list of lines of this scoreboard
-	 * @return list of lines of this scoreboard
+	 * Returns list of lines in this scoreboard in the order they appear
+	 * in game (first line is on top). This list should only be used for reading,
+	 * for adding/removing lines see {@link #addLine(String)} and {@link #removeLine(int)}.
+	 * 
+	 * @return	list of lines in this scoreboard
+	 * @see		#addLine(String)
+	 * @see		#removeLine(int)
 	 */
 	public List<Line> getLines();
-	
+
 	/**
-	 * Adds line with specified text on the bottom of scoreboard
-	 * @param text - text to display
+	 * Adds line with specified text on the bottom of scoreboard. Supports
+	 * placeholders, which will automatically be refreshed.
+	 * 
+	 * @param	text
+	 * 			Text to display
+	 * @see		#getLines()
+	 * @see		#removeLine(int)
 	 */
 	public void addLine(String text);
-	
+
 	/**
-	 * Removes line with specified index. Index starts at 0 and ends at getLines().size()-1
-	 * @param index - index of line to remove
+	 * Removes line with specified index. Index starts at {@code 0} and ends at 
+	 * {@link #getLines()}.size()-1.
+	 * 
+	 * @param	index
+	 * 			Index of line to remove, starting at 0
+	 * @throws	IndexOutOfBoundsException
+	 * 			if the index is out of range (index < 0 || index >= {@link #getLines()}.size())
+	 * @see		#getLines()
+	 * @see		#addLine(String)
 	 */
 	public void removeLine(int index);
-	
+
 	/**
-	 * Unregisters this scoreboard from all players
+	 * Unregisters this scoreboard from all players who can see it.
+	 * Calling this method is equal to iterating over {@link #getPlayers()}
+	 * and calling {@link #removePlayer(TabPlayer)} on each player.
 	 */
 	public void unregister();
 }

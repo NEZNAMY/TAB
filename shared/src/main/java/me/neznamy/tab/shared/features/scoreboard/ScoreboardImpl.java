@@ -117,7 +117,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		return displayCondition == null || displayCondition.isMet(p);
 	}
 
-	@Override
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
@@ -137,7 +136,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		players.clear();
 	}
 
-	@Override
 	public void removePlayer(TabPlayer p) {
 		if (!players.contains(p)) return; //not registered
 		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), this);
@@ -155,11 +153,11 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 				refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), CpuConstants.PacketCategory.SCOREBOARD_TITLE);
 	}
 
+	@Override
 	public List<Line> getLines() {
 		return lines;
 	}
 
-	@Override
 	public Set<TabPlayer> getPlayers() {
 		return players;
 	}
@@ -194,6 +192,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	@Override
 	public void removeLine(int index) {
+		if (index < 0 || index >= lines.size()) throw new IndexOutOfBoundsException("Index " + index + " is out of range (0 - " + (lines.size()-1) + ")");
 		ScoreboardLine line = (ScoreboardLine) lines.get(index);
 		lines.remove(line);
 		for (TabPlayer p : players) {

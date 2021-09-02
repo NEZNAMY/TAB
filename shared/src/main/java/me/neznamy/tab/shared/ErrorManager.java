@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -21,7 +20,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 /**
  * An error assistant to print internal errors into error file and warn user about misconfiguration
  */
-public class ErrorManagerImpl implements ErrorManager {
+public class ErrorManager {
 
 	//date format used in error messages
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
@@ -43,7 +42,7 @@ public class ErrorManagerImpl implements ErrorManager {
 	 * Constructs new instance
 	 * @param tab - tab instance
 	 */
-	public ErrorManagerImpl(TAB tab) {
+	public ErrorManager(TAB tab) {
 		this.tab = tab;
 		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
 		antiOverrideLog = new File(tab.getPlatform().getDataFolder(), "anti-override.log");
@@ -60,7 +59,7 @@ public class ErrorManagerImpl implements ErrorManager {
 		printError(message, null, false);
 	}
 
-	@Override
+
 	public void printError(String message, Throwable t) {
 		printError(message, t, false);
 	}
@@ -145,7 +144,6 @@ public class ErrorManagerImpl implements ErrorManager {
 		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
 	}
 
-	@Override
 	public void criticalError(String message, Throwable t) {
 		printError(message, t, true);
 	}
@@ -317,7 +315,6 @@ public class ErrorManagerImpl implements ErrorManager {
 		return list;
 	}
 
-	@Override
 	public void startupWarn(String message) {
 		if (oneTimeMessages.contains(message)) return;
 		oneTimeMessages.add(message);

@@ -7,26 +7,33 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
  */
 public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
-	//tablist header
+	/** Tablist header */
 	private IChatBaseComponent header;
-	
-	//tablist footer
+
+	/** Tablist footer */
 	private IChatBaseComponent footer;
 
 	/**
-	 * Constructs a new instance with given parameters
-	 * @param header - header
-	 * @param footer - footer
+	 * Constructs new instance with given parameters. They are converted to {@link IChatBaseComponent}
+	 * using {@link IChatBaseComponent#optimizedComponent(String)} method.
+	 * 
+	 * @param	header
+	 * 			Tablist header
+	 * @param	footer
+	 * 			Tablist footer
 	 */
 	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
 		this.header = IChatBaseComponent.optimizedComponent(header);
 		this.footer = IChatBaseComponent.optimizedComponent(footer);
 	}
-	
+
 	/**
-	 * Constructs a new instance with given parameters
-	 * @param header - header
-	 * @param footer - footer
+	 * Constructs new instance with given parameters.
+	 * 
+	 * @param	header
+	 * 			Tablist header
+	 * @param	footer
+	 * 			Tablist footer
 	 */
 	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
 		this.header = header;
@@ -38,11 +45,19 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 		return String.format("PacketPlayOutPlayerListHeaderFooter{header=%s,footer=%s}", header, footer);
 	}
 
-	public IChatBaseComponent getFooter() {
-		return footer;
-	}
-
+	/**
+	 * Returns {@link #header}
+	 * @return	header
+	 */
 	public IChatBaseComponent getHeader() {
 		return header;
+	}
+
+	/**
+	 * Returns {@link #footer}
+	 * @return	footer
+	 */
+	public IChatBaseComponent getFooter() {
+		return footer;
 	}
 }

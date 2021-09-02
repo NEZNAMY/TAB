@@ -1,6 +1,5 @@
 package me.neznamy.tab.api.protocol;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -12,26 +11,32 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
  */
 public class PacketPlayOutPlayerInfo implements TabPacket {
 
-	//packet action
+	/** Packet action */
 	private EnumPlayerInfoAction action;
 
-	//list of affected players
+	/** List of affected entries */
 	private List<PlayerInfoData> entries;
 
 	/**
-	 * Constructs a new instance with given parameters
-	 * @param action - packet action
-	 * @param entries - affected players
+	 * Constructs new instance with given parameters.
+	 * 
+	 * @param	action
+	 * 			Packet action
+	 * @param	entries
+	 * 			Affected entries
 	 */
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
 		this.action = action;
-		this.entries = new ArrayList<>(Arrays.asList(entries));
+		this.entries = Arrays.asList(entries);
 	}
 
 	/**
-	 * Constructs a new instance with given parameters
-	 * @param action - packet action
-	 * @param entries - affected players
+	 * Constructs new instance with given parameters.
+	 * 
+	 * @param	action
+	 * 			Packet action
+	 * @param	entries
+	 * 			Affected entries
 	 */
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
 		this.action = action;
@@ -43,12 +48,20 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		return String.format("PacketPlayOutPlayerInfo{action=%s,entries=%s}", action, entries);
 	}
 
-	public List<PlayerInfoData> getEntries() {
-		return entries;
-	}
-
+	/**
+	 * Returns {@link #action}
+	 * @return	packet action
+	 */
 	public EnumPlayerInfoAction getAction() {
 		return action;
+	}
+
+	/**
+	 * Returns {@link #entries}
+	 * @return	affected entries
+	 */
+	public List<PlayerInfoData> getEntries() {
+		return entries;
 	}
 
 	/**
@@ -56,32 +69,43 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 	 */
 	public static class PlayerInfoData {
 
-		//ping
+		/** Latency */
 		private int latency;
 
-		//gamemode
+		/** Gamemode */
 		private EnumGamemode gameMode = EnumGamemode.SURVIVAL; //protocollib causes NPE even when action does not use gamemode
 
-		//tablist name
+		/** 
+		 * Display name displayed in tablist. Using {@code null} results in no display name
+		 * and scoreboard team prefix/suffix being visible in tablist instead.
+		 */
 		private IChatBaseComponent displayName;
 
-		//username
+		/** Real name of affected player */
 		private String name;
 
-		//uuid
+		/** Player UUID */
 		private UUID uniqueId;
 
-		//platform-specific skin data
+		/** platform-specific skin object */
 		private Object skin;
 
 		/**
-		 * Constructor perfect for ADD_PLAYER action
-		 * @param name - player's name
-		 * @param uniqueId - player's uuid
-		 * @param skin - player's skin
-		 * @param latency - player's ping
-		 * @param gameMode - player's gamemode
-		 * @param displayName - player's tablist name
+		 * Constructs new instance with given parameters. Suitable for 
+		 * {@link EnumPlayerInfoAction}.ADD_PLAYER action
+		 * 
+		 * @param	name
+		 * 			Player's name
+		 * @param	uniqueId
+		 * 			Player's uuid
+		 * @param	skin
+		 * 			Player's platform-specific skin object
+		 * @param	latency
+		 * 			Player's ping
+		 * @param	gameMode
+		 * 			Player's gamemode
+		 * @param	displayName
+		 * 			Player's display name
 		 */
 		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
 			this.name = name;
@@ -91,98 +115,164 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 			this.gameMode = gameMode;
 			this.displayName = displayName;
 		}
-		
+
 		/**
-		 * Constructor perfect for UPDATE_GAME_MODE action
-		 * @param uniqueId - player's uuid
-		 * @param gameMode - player's gamemode
+		 * Constructs new instance with given parameters. Suitable for 
+		 * {@link EnumPlayerInfoAction}.UPDATE_GAME_MODE action
+		 * 
+		 * @param	uniqueId
+		 * 			Player's uuid
+		 * @param	gameMode
+		 * 			Player's gamemode
 		 */
 		public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
 			this.uniqueId = uniqueId;
 			this.gameMode = gameMode;
 		}
-		
+
 		/**
-		 * Constructor perfect for UPDATE_LATENCY action
-		 * @param uniqueId - player's uuid
-		 * @param latency - player's ping
+		 * Constructs new instance with given parameters. Suitable for 
+		 * {@link EnumPlayerInfoAction}.UPDATE_LATENCY action
+		 * 
+		 * @param	uniqueId
+		 * 			Player's uuid
+		 * @param	latency
+		 * 			Player's ping
 		 */
 		public PlayerInfoData(UUID uniqueId, int latency) {
 			this.uniqueId = uniqueId;
 			this.latency = latency;
 		}
-		
+
 		/**
-		 * Constructor perfect for UPDATE_DISPLAY_NAME action
-		 * @param uniqueId - player's uuid
-		 * @param displayName - player's tablist name
+		 * Constructs new instance with given parameters. Suitable for 
+		 * {@link EnumPlayerInfoAction}.UPDATE_DISPLAY_NAME action
+		 * 
+		 * @param	uniqueId
+		 * 			Player's uuid
+		 * @param	displayName
+		 * 			Player's display name
 		 */
 		public PlayerInfoData(UUID uniqueId, IChatBaseComponent displayName) {
 			this.uniqueId = uniqueId;
 			this.displayName = displayName;
 		}
-		
+
 		/**
-		 * Constructor perfect for REMOVE_PLAYER action
-		 * @param uniqueId - player's uuid
+		 * Constructs new instance with given parameter. Suitable for 
+		 * {@link EnumPlayerInfoAction}.REMOVE_PLAYER action
+		 * 
+		 * @param	uniqueId
+		 * 			Player's uuid
 		 */
 		public PlayerInfoData(UUID uniqueId) {
 			this.uniqueId = uniqueId;
 		}
 
-		/**
-		 * An override to toString() method for better output
-		 */
 		@Override
 		public String toString() {
 			return String.format("PlayerInfoData{latency=%s,gameMode=%s,displayName=%s,name=%s,uniqueId=%s,skin=%s}",
 					latency, gameMode, displayName, name, uniqueId, skin);
 		}
 
+		/**
+		 * Returns {@link #latency}
+		 * @return	latency
+		 */
 		public int getLatency() {
 			return latency;
 		}
 
+		/**
+		 * Sets {@link #latency} to specified value
+		 * @param	latency
+		 * 			Latency to use
+		 */
 		public void setLatency(int latency) {
 			this.latency = latency;
 		}
 
+		/**
+		 * Returns {@link #displayName}
+		 * @return	displayName
+		 */
 		public IChatBaseComponent getDisplayName() {
 			return displayName;
 		}
 
+		/**
+		 * Sets {@link #displayName} to specified value
+		 * @param	displayName
+		 * 			Display name to use
+		 */
 		public void setDisplayName(IChatBaseComponent displayName) {
 			this.displayName = displayName;
 		}
 
+		/**
+		 * Returns {@link #uniqueId}
+		 * @return	uniqueId
+		 */
 		public UUID getUniqueId() {
 			return uniqueId;
 		}
 
+		/**
+		 * Sets {@link #uniqueId} to specified value
+		 * @param	uniqueId
+		 * 			UUID to use
+		 */
 		public void setUniqueId(UUID uniqueId) {
 			this.uniqueId = uniqueId;
 		}
 
+		/**
+		 * Returns {@link #name}
+		 * @return	name
+		 */
 		public String getName() {
 			return name;
 		}
 
+		/**
+		 * Sets {@link #name} to specified value
+		 * @param	name
+		 * 			name to use
+		 */
 		public void setName(String name) {
 			this.name = name;
 		}
 
+		/**
+		 * Returns {@link #gameMode}
+		 * @return	gameMode
+		 */
 		public EnumGamemode getGameMode() {
 			return gameMode;
 		}
 
+		/**
+		 * Sets {@link #gameMode} to specified value
+		 * @param	gameMode
+		 * 			Gamemode to use
+		 */
 		public void setGameMode(EnumGamemode gameMode) {
 			this.gameMode = gameMode;
 		}
 
+		/**
+		 * Returns {@link #skin}
+		 * @return	skin
+		 */
 		public Object getSkin() {
 			return skin;
 		}
 
+		/**
+		 * Sets {@link #skin} to specified value
+		 * @param	skin
+		 * 			Skin to use
+		 */
 		public void setSkin(Object skin) {
 			this.skin = skin;
 		}
@@ -190,6 +280,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
 	/**
 	 * En enum representing packet action
+	 * Calling ordinal() will return action's network ID.
 	 */
 	public enum EnumPlayerInfoAction {
 
@@ -198,7 +289,6 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		UPDATE_LATENCY,
 		UPDATE_DISPLAY_NAME,
 		REMOVE_PLAYER;
-
 	}
 
 	/**
@@ -211,6 +301,5 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		CREATIVE,
 		ADVENTURE,
 		SPECTATOR;
-
 	}
 }

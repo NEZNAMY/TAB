@@ -10,40 +10,47 @@ import me.neznamy.tab.api.bossbar.BarStyle;
  */
 public class PacketPlayOutBoss implements TabPacket {
 
-	//bossbar's uuid
+	/** UUID of the bossbar */
 	private UUID id;
-	
-	//packet action
+
+	/** Action of this packet */
 	private Action operation;
-	
-	//bossbar title
+
+	/** Bossbar title */
 	private String name;
-	
-	//bossbar progress
+
+	/** Bossbar progress (0-1)*/
 	private float pct;
-	
-	//bossbar color
+
+	/** Bossbar color */
 	private BarColor color;
-	
-	//bossbar style
+
+	/** Bossbar style */
 	private BarStyle overlay;
-	
-	//darker screen if bossbar is displayed
+
+	/** Darken screen flag */
 	private boolean darkenScreen;
-	
-	//play boss music when bossbar is displayed
+
+	/** Play music flag */
 	private boolean playMusic;
-	
-	//create fog if bossbar is displayed
+
+	/** Create fog flag */
 	private boolean createWorldFog;
 
 	/**
-	 * Constructs new packet based on given parameters with ADD action
-	 * @param id - bossbar uuid
-	 * @param name - bossbar title
-	 * @param pct - bossbar progress
-	 * @param color - bossbar color
-	 * @param overlay - bossbar style
+	 * Constructs new instance with given parameters and  
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.ADD action
+	 * 
+	 * @param	id
+	 * 			bossbar uuid
+	 * @param	name
+	 * 			bossbar title
+	 * @param	pct
+	 * 			bossbar progress
+	 * @param	color
+	 * 			bossbar color
+	 * @param	overlay
+	 * 			bossbar style
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		this.operation = Action.ADD;
@@ -55,8 +62,11 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters with REMOVE action
-	 * @param id - bossbar uuid
+	 * Constructs new instance with given parameters and  
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.REMOVE action
+	 * 
+	 * @param	id
+	 * 			bossbar uuid
 	 */
 	public PacketPlayOutBoss(UUID id) {
 		this.operation = Action.REMOVE;
@@ -64,9 +74,13 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters UPDATE_PCT action
-	 * @param id - bossbar uuid
-	 * @param pct - bossbar progress
+	 * Constructs new instance with given parameters and  
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PCT action
+	 * 
+	 * @param	id
+	 * 			bossbar uuid
+	 * @param	pct
+	 * 			bossbar progress
 	 */
 	public PacketPlayOutBoss(UUID id, float pct) {
 		this.operation = Action.UPDATE_PCT;
@@ -75,9 +89,13 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters UPDATE_NAME action
-	 * @param id - bossbar uuid
-	 * @param name - bossbar title
+	 * Constructs new instance with given parameters and  
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_NAME action
+	 * 
+	 * @param	id
+	 * 			bossbar uuid
+	 * @param	name
+	 * 			bossbar title
 	 */
 	public PacketPlayOutBoss(UUID id, String name) {
 		this.operation = Action.UPDATE_NAME;
@@ -86,10 +104,15 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters UPDATE_STYLE action
-	 * @param id - bossbar uuid
-	 * @param color - bossbar color
-	 * @param overlay - bossbar style
+	 * Constructs new instance with given parameters and  
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_STYLE action
+	 * 
+	 * @param	id
+	 * 			bossbar uuid
+	 * @param	name
+	 * 			bossbar color
+	 * @param	overlay
+	 * 			bossbar style
 	 */
 	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
 		this.operation = Action.UPDATE_STYLE;
@@ -99,11 +122,15 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Constructs new packet based on given parameters with UPDATE_PROPERTIES action
-	 * @param id - bossbar uuid
-	 * @param darkenScreen - darker screen if bossbar is displayed
-	 * @param playMusic - play boss music when bossbar is displayed
-	 * @param createWorldFog - create fog if bossbar is displayed
+	 * Constructs new instance with given parameters and  
+	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PROPERTIES action
+	 * 
+	 * @param	darkenScreen
+	 * 			Darken screen flag
+	 * @param	playMusic
+	 * 			Play music flag
+	 * @param	createWorldFog
+	 * 			Create fog flag
 	 */
 	public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
 		this.operation = Action.UPDATE_PROPERTIES;
@@ -114,7 +141,11 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Returns bitmask based on darkenScreen, playMusic and createWorldFog values
+	 * Returns bitmask based on {@link #darkenScreen}, {@link #playMusic} and {@link #darkenScreen} values.
+	 * <p>
+	 * {@link #darkenScreen} adds {@code 1}, {@link #playMusic} {@code 2} and {@link #darkenScreen} {@code 4}
+	 * to the final value.
+	 * 
 	 * @return the bitmask
 	 */
 	public byte getFlags(){
@@ -131,56 +162,111 @@ public class PacketPlayOutBoss implements TabPacket {
 				id, operation, name, pct, color, overlay, darkenScreen, playMusic, createWorldFog);
 	}
 
+	/**
+	 * Returns {@link #color}
+	 * @return	color
+	 */
 	public BarColor getColor() {
 		return color;
 	}
 
+	/**
+	 * Returns {@link #style}
+	 * @return	style
+	 */
 	public BarStyle getOverlay() {
 		return overlay;
 	}
 
+	/**
+	 * Returns {@link #name}
+	 * @return	name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Returns {@link #id}
+	 * @return	id
+	 */
 	public UUID getId() {
 		return id;
 	}
 
+	/**
+	 * Returns {@link #pct}
+	 * @return	progress
+	 */
 	public float getPct() {
 		return pct;
 	}
 
+	/**
+	 * Returns {@link #operation}
+	 * @return	packet action
+	 */
 	public Action getOperation() {
 		return operation;
 	}
 
+	/**
+	 * Returns {@link #darkenScreen}
+	 * @return	darkenScreen
+	 */
 	public boolean isDarkenScreen() {
 		return darkenScreen;
 	}
 
+	/**
+	 * Returns {@link #createWorldFog}
+	 * @return	createWorldFog
+	 */
 	public boolean isCreateWorldFog() {
 		return createWorldFog;
 	}
 
+	/**
+	 * Returns {@link #playMusic}
+	 * @return	playMusic
+	 */
 	public boolean isPlayMusic() {
 		return playMusic;
 	}
-	
+
+	/**
+	 * Sets {@link #darkenScreen} to specified value
+	 * 
+	 * @param	darkenScreen
+	 * 			Darken screen flag
+	 */
 	public void setDarkenScreen(boolean darkenScreen) {
 		this.darkenScreen = darkenScreen;
 	}
 
+	/**
+	 * Sets {@link #createWorldFog} to specified value
+	 * 
+	 * @param	createWorldFog
+	 * 			Create fog flag
+	 */
 	public void setCreateWorldFog(boolean createWorldFog) {
 		this.createWorldFog = createWorldFog;
 	}
 
+	/**
+	 * Sets {@link #playMusic} to specified value
+	 * 
+	 * @param	playMusic
+	 * 			Play music flag
+	 */
 	public void setPlayMusic(boolean playMusic) {
 		this.playMusic = playMusic;
 	}
 
 	/**
-	 * An enum representing all valid boss packet actions
+	 * An enum representing all valid boss packet actions.
+	 * Calling ordinal() will return action's network ID.
 	 */
 	public enum Action {
 

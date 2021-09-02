@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import me.neznamy.tab.api.ErrorManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.ThreadManager;
 

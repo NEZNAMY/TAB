@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.google.common.base.Preconditions;
+
 import java.util.Set;
 
 import me.neznamy.tab.api.TabFeature;
@@ -65,9 +68,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	private int joinDelay;
 	private List<TabPlayer> joinDelayed = new ArrayList<>();
 	
-	private Map<TabPlayer, Scoreboard> forcedScoreboard = new HashMap<>();
+	private Map<TabPlayer, ScoreboardImpl> forcedScoreboard = new HashMap<>();
 	
-	private Map<TabPlayer, Scoreboard> activeScoreboard = new HashMap<>();
+	private Map<TabPlayer, ScoreboardImpl> activeScoreboard = new HashMap<>();
 	
 	private Set<TabPlayer> visiblePlayers = new HashSet<>();
 	
@@ -170,10 +173,10 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		Scoreboard current = activeScoreboard.get(p);
 		if (scoreboard != current) {
 			if (current != null) {
-				current.removePlayer(p);
+				((ScoreboardImpl) current).removePlayer(p);
 			}
 			if (scoreboard != null) {
-				scoreboard.addPlayer(p);
+				((ScoreboardImpl) scoreboard).addPlayer(p);
 			}
 		}
 	}
@@ -268,6 +271,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public Scoreboard createScoreboard(String name, String title, List<String> lines) {
+		Preconditions.checkNotNull(name, "name");
+		Preconditions.checkNotNull(lines, "lines");
 		Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
 		scoreboards.put(name, sb);
 		return sb;
@@ -280,6 +285,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void showScoreboard(TabPlayer player, Scoreboard scoreboard) {
+		Preconditions.checkNotNull(player, "player");
+		Preconditions.checkNotNull(scoreboard, "scoreboard");
 		if (forcedScoreboard.containsKey(player)) {
 			forcedScoreboard.get(player).removePlayer(player);
 		}
@@ -287,8 +294,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			activeScoreboard.get(player).removePlayer(player);
 			activeScoreboard.remove(player);
 		}
-		forcedScoreboard.put(player, scoreboard);
-		scoreboard.addPlayer(player);
+		forcedScoreboard.put(player, (ScoreboardImpl) scoreboard);
+		((ScoreboardImpl) scoreboard).addPlayer(player);
 	}
 
 	@Override
@@ -297,8 +304,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		forcedScoreboard.get(player).removePlayer(player);
 		Scoreboard sb = detectHighestScoreboard(player);
 		if (sb == null) return; //no scoreboard available
-		activeScoreboard.put(player, sb);
-		sb.addPlayer(player);
+		activeScoreboard.put(player, (ScoreboardImpl) sb);
+		((ScoreboardImpl) sb).addPlayer(player);
 		forcedScoreboard.remove(player);
 	}
 
@@ -355,7 +362,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		setScoreboardVisible(player, !visiblePlayers.contains(player), sendToggleMessage);
 	}
 	
-	public Map<TabPlayer, Scoreboard> getActiveScoreboards(){
+	public Map<TabPlayer, ScoreboardImpl> getActiveScoreboards(){
 		return activeScoreboard;
 	}
 	
@@ -365,12 +372,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void announceScoreboard(String scoreboard, int duration) {
-		Scoreboard sb = scoreboards.get(scoreboard);
+		if (duration < 0) throw new IllegalArgumentException("Duration canont be negative");
+		ScoreboardImpl sb = (ScoreboardImpl) scoreboards.get(scoreboard);
 		if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
 		new Thread(() -> {
 			try {
 				announcement = sb;
-				Map<TabPlayer, Scoreboard> previous = new HashMap<>();
+				Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasScoreboardVisible(all)) continue;
 					previous.put(all, activeScoreboard.get(all));

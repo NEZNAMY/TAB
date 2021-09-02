@@ -49,7 +49,7 @@ public abstract class TabFeature {
 			if (getClass().getMethod("refresh", TabPlayer.class, boolean.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("refresh");
 		} catch (Exception e) {
-			TabAPI.getInstance().getErrorManager().criticalError("Failed to load feature method overrides", e);
+			//this will never happen
 		}
 	}
 	

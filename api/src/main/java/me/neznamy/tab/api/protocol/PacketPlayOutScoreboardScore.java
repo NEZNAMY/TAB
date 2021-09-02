@@ -5,26 +5,35 @@ package me.neznamy.tab.api.protocol;
  */
 public class PacketPlayOutScoreboardScore implements TabPacket {
 
-	//packet action
+	/** Packet action */
 	private Action action;
 
-	//objective name
+	/** Objective name */
 	private String objectiveName;
 
-	//affected player
+	/** Affected player */
 	private String player;
 
-	//player's score
+	/** Player's score */
 	private int score;
 
 	/**
-	 * Constructs a new instance with given parameters
-	 * @param action - packet action
-	 * @param objectiveName - objective name
-	 * @param player - affected player
-	 * @param score - player's score
+	 * Constructs new instance with given parameters
+	 * 
+	 * @param	action
+	 * 			Packet action
+	 * @param	objectiveName
+	 * 			Objective name
+	 * @param	player
+	 * 			Affected player
+	 * @param	score
+	 * 			Player's score
+	 * @throws	IllegalArgumentException
+	 * 			if {@code objectiveName} is null or longer than 16 characters
 	 */
 	public PacketPlayOutScoreboardScore(Action action, String objectiveName, String player, int score) {
+		if (objectiveName == null) throw new IllegalArgumentException("objectiveName cannot be null");
+		if (objectiveName.length() > 16) throw new IllegalArgumentException("objectiveName cannot be longer than 16 character (is " + objectiveName.length() + ")");
 		this.action = action;
 		this.objectiveName = objectiveName;
 		this.player = player;
@@ -37,18 +46,34 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 				action, objectiveName, player, score);
 	}
 
-	public String getPlayer() {
-		return player;
-	}
-
+	/**
+	 * Returns {@link #action}
+	 * @return	packet action
+	 */
 	public Action getAction() {
 		return action;
 	}
 
+	/**
+	 * Returns {@link #objectiveName}
+	 * @return	objective name
+	 */
 	public String getObjectiveName() {
 		return objectiveName;
 	}
 
+	/**
+	 * Returns {@link #player}
+	 * @return	player
+	 */
+	public String getPlayer() {
+		return player;
+	}
+
+	/**
+	 * Returns {@link #score}
+	 * @return	score
+	 */
 	public int getScore() {
 		return score;
 	}
