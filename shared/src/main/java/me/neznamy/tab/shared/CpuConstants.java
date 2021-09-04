@@ -13,7 +13,7 @@ public class CpuConstants {
 		public static final String COMMAND_PREPROCESS = "Command Preprocess";
 		public static final String PLAYER_SNEAK = "Player Sneak";
 		public static final String PLAYER_RESPAWN = "Player Respawn";
-		public static final String PLUGIN_MESSAGE = "Plugin Message";
+		public static final String PLUGIN_MESSAGE = "PluginMessageEvent";
 		public static final String LUCKPERMS_RECALCULATE_EVENT = "UserDataRecalculateEvent";
 		
 		public static final String ANTI_OVERRIDE = "Anti override";
