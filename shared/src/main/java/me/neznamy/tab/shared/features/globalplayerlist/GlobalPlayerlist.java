@@ -140,8 +140,9 @@ public class GlobalPlayerlist extends TabFeature {
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
-				//not preventing NPC removals
-				if (TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId()) != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0)) {
+				TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+					//not preventing NPC removals
+				if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {
 					//remove packet not coming from tab
 					//changing to random non-existing player, the easiest way to cancel the removal
 					playerInfoData.setUniqueId(UUID.randomUUID());
