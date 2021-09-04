@@ -173,8 +173,9 @@ public class GlobalPlayerlist implements Loadable, JoinEventListener, QuitEventL
 	public void onPacketSend(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
+				TabPlayer packetPlayer = tab.getPlayerByTablistUUID(playerInfoData.getUniqueId());
 					//not preventing NPC removals
-				if (tab.getPlayerByTablistUUID(playerInfoData.getUniqueId()) != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0)) {
+				if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {
 					//remove packet not coming from tab
 					//changing to random non-existing player, the easiest way to cancel the removal
 					playerInfoData.setUniqueId(UUID.randomUUID());
