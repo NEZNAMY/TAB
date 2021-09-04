@@ -198,7 +198,7 @@ public class TAB extends TabAPI {
 			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
 				
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					String world = ((ProxyTabPlayer)all).getAttribute("world");
+					String world = ((ProxyTabPlayer)all).getAttribute("world", "N/A");
 					if (!String.valueOf(all.getWorld()).equals(world)){
 						((ITabPlayer)all).setWorld(world);
 						TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
