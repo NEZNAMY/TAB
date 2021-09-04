@@ -77,6 +77,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		roundDown.setRoundingMode(RoundingMode.DOWN);
 		roundDown.setMaximumFractionDigits(2);
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());
+		manager.registerPlayerPlaceholder("%vanished%", 1000, p -> p.isVanished());
 		manager.registerServerPlaceholder("%tps%", 1000, () -> {
 			try {
 				return decimal2.format(Math.min(20, ((double[]) recentTps.get(server))[0]));
