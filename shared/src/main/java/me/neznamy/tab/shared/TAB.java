@@ -61,7 +61,7 @@ public class TAB extends TabAPI {
 	private Platform platform;
 
 	//cpu manager
-	private CpuManager0 cpu;
+	private CpuManager cpu;
 
 	//error manager
 	private ErrorManager errorManager;
@@ -130,7 +130,7 @@ public class TAB extends TabAPI {
 		try {
 			long time = System.currentTimeMillis();
 			this.errorManager = new ErrorManager(this);
-			cpu = new CpuManager0(errorManager);
+			cpu = new CpuManager(errorManager);
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
 			configuration.loadFiles();
@@ -235,7 +235,7 @@ public class TAB extends TabAPI {
 		return platform;
 	}
 
-	public CpuManager0 getCPUManager() {
+	public CpuManager getCPUManager() {
 		return cpu;
 	}
 
@@ -327,7 +327,7 @@ public class TAB extends TabAPI {
 	}
 	
 	@Override
-	public CpuManager0 getThreadManager() {
+	public CpuManager getThreadManager() {
 		return cpu;
 	}
 

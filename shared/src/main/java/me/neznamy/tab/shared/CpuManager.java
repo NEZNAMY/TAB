@@ -24,7 +24,7 @@ import me.neznamy.tab.api.ThreadManager;
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
-public class CpuManager0 implements ThreadManager {
+public class CpuManager implements ThreadManager {
 
 	//data reset interval in milliseconds
 	private static final int BUFFER_SIZE_MILLIS = 10000;
@@ -57,7 +57,7 @@ public class CpuManager0 implements ThreadManager {
 	 * Constructs new instance and starts repeating task that resets values every 10 seconds
 	 * @param errorManager - error manager
 	 */
-	public CpuManager0(ErrorManager errorManager) {
+	public CpuManager(ErrorManager errorManager) {
 		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
 		submit("refreshing cpu stats", () -> {
