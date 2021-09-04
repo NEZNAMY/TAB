@@ -43,10 +43,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 	 * Custom channel duplex handler override
 	 */
 	public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
-		
+
 		//injected player
 		private TabPlayer player;
-		
+
 		/**
 		 * Constructs new instance with given player
 		 * @param player - player to inject
@@ -58,7 +58,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
-			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
+			Object modifiedPacket = packet instanceof ByteBuf && bytebufDeserialization ? deserialize((ByteBuf) packet) : packet;
 			TAB.getInstance().getCPUManager().addTime("Packet deserializing", CpuConstants.UsageCategory.BYTEBUF, System.nanoTime()-time);
 			try {
 				switch(modifiedPacket.getClass().getSimpleName()) {
@@ -114,7 +114,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 			packet.setPlayers(col.toArray(new String[0]));
 			TAB.getInstance().getCPUManager().addTime("Nametags", CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
-		
+
 		/**
 		 * Deserializes bytebuf in case it is one of the tracked packets coming from backend server and returns it.
 		 * If the packet is not one of them, returns input

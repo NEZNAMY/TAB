@@ -34,6 +34,8 @@ public abstract class PipelineInjector extends TabFeature {
 	
 	protected Function<TabPlayer, ChannelDuplexHandler> channelFunction;
 	
+	protected boolean bytebufDeserialization;
+	
 	/**
 	 * Constructs new instance
 	 * @param tab
@@ -43,6 +45,7 @@ public abstract class PipelineInjector extends TabFeature {
 		this.injectPosition = injectPosition;
 		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
 				TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
+		if (antiOverrideTeams) setByteBufDeserialization(true);
 	}
 	
 	/**
@@ -99,5 +102,9 @@ public abstract class PipelineInjector extends TabFeature {
 			lastTeamOverrideMessage = message;
 			TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
 		}
+	}
+	
+	public void setByteBufDeserialization(boolean bytebufDeserialization) {
+		this.bytebufDeserialization = bytebufDeserialization;
 	}
 }
