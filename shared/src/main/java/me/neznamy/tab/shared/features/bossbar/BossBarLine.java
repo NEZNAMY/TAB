@@ -49,6 +49,12 @@ public class BossBarLine implements BossBar {
 	private TextRefresher textRefresher;
 	private ProgressRefresher progressRefresher;
 	private ColorAndStyleRefresher colorAndStyleRefresher;
+	
+	//property names
+	private String propertyTitle;
+	private String propertyProgress;
+	private String propertyColor;
+	private String propertyStyle;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -75,6 +81,10 @@ public class BossBarLine implements BossBar {
 		textRefresher = new TextRefresher(this);
 		progressRefresher = new ProgressRefresher(this);
 		colorAndStyleRefresher = new ColorAndStyleRefresher(this);
+		propertyTitle = PropertyUtils.bossbarTitle(name);
+		propertyProgress = PropertyUtils.bossbarProgress(name);
+		propertyColor = PropertyUtils.bossbarColor(name);
+		propertyStyle = PropertyUtils.bossbarStyle(name);
 		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, textRefresher);
 		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, progressRefresher);
 		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, colorAndStyleRefresher);
@@ -135,8 +145,8 @@ public class BossBarLine implements BossBar {
 		if (this.title == title) return;
 		this.title = title;
 		for (TabPlayer p : players) {
-			p.setProperty(textRefresher, PropertyUtils.bossbarTitle(name), title);
-			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(PropertyUtils.bossbarTitle(name)).get()), manager);
+			p.setProperty(textRefresher, propertyTitle, title);
+			p.sendCustomPacket(new PacketPlayOutBoss(uuid, p.getProperty(propertyTitle).get()), manager);
 		}
 	}
 
@@ -145,8 +155,8 @@ public class BossBarLine implements BossBar {
 		if (this.progress == progress) return;
 		this.progress = progress;
 		for (TabPlayer p : players) {
-			p.setProperty(progressRefresher, PropertyUtils.bossbarProgress(name), progress);
-			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(PropertyUtils.bossbarProgress(name)).get())/100), manager);
+			p.setProperty(progressRefresher, propertyProgress, progress);
+			p.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(p.getProperty(propertyProgress).get())/100), manager);
 		}
 	}
 
@@ -160,10 +170,10 @@ public class BossBarLine implements BossBar {
 		if (this.color == color) return;
 		this.color = color;
 		for (TabPlayer p : players) {
-			p.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarColor(name), color);
+			p.setProperty(colorAndStyleRefresher, propertyColor, color);
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
-				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
-				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
+				parseColor(p.getProperty(propertyColor).get()),
+				parseStyle(p.getProperty(propertyStyle).get())
 			), manager);
 		}
 	}
@@ -178,10 +188,10 @@ public class BossBarLine implements BossBar {
 		if (this.style == style) return;
 		this.style = style;
 		for (TabPlayer p : players) {
-			p.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarStyle(name), style);
+			p.setProperty(colorAndStyleRefresher, propertyStyle, style);
 			p.sendCustomPacket(new PacketPlayOutBoss(uuid, 
-				parseColor(p.getProperty(PropertyUtils.bossbarColor(name)).get()),
-				parseStyle(p.getProperty(PropertyUtils.bossbarStyle(name)).get())
+				parseColor(p.getProperty(propertyColor).get()),
+				parseStyle(p.getProperty(propertyStyle).get())
 			), manager);
 		}
 	}
@@ -215,16 +225,16 @@ public class BossBarLine implements BossBar {
 	public void addPlayer(TabPlayer player) {
 		if (players.contains(player)) return;
 		players.add(player);
-		player.setProperty(textRefresher, PropertyUtils.bossbarTitle(name), title);
-		player.setProperty(progressRefresher, PropertyUtils.bossbarProgress(name), progress);
-		player.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarColor(name), color);
-		player.setProperty(colorAndStyleRefresher, PropertyUtils.bossbarStyle(name), style);
+		player.setProperty(textRefresher, propertyTitle, title);
+		player.setProperty(progressRefresher, propertyProgress, progress);
+		player.setProperty(colorAndStyleRefresher, propertyColor, color);
+		player.setProperty(colorAndStyleRefresher, propertyStyle, style);
 		player.sendCustomPacket(new PacketPlayOutBoss(
 				uuid, 
-				player.getProperty(PropertyUtils.bossbarTitle(name)).get(), 
-				parseProgress(player.getProperty(PropertyUtils.bossbarProgress(name)).get())/100, 
-				parseColor(player.getProperty(PropertyUtils.bossbarColor(name)).get()), 
-				parseStyle(player.getProperty(PropertyUtils.bossbarStyle(name)).get())
+				player.getProperty(propertyTitle).get(), 
+				parseProgress(player.getProperty(propertyProgress).get())/100, 
+				parseColor(player.getProperty(propertyColor).get()), 
+				parseStyle(player.getProperty(propertyStyle).get())
 			), manager
 		);
 	}
