@@ -6,14 +6,14 @@ import me.neznamy.tab.api.chat.TextColor;
 /**
  * Abstract class for applying different gradient patterns
  */
-public abstract class GradientPattern {
+public interface GradientPattern {
 
 	/**
 	 * Applies gradients in provided text and returns text using only #RRGGBB
 	 * @param text - text to be reformatted
 	 * @return reformatted text
 	 */
-	public abstract String applyPattern(String text, boolean ignorePlaceholders);
+	public String applyPattern(String text, boolean ignorePlaceholders);
 	
 	/**
 	 * Returns gradient text based on start color, text and end color
@@ -22,7 +22,7 @@ public abstract class GradientPattern {
 	 * @param end - end color
 	 * @return reformatted text
 	 */	
-	protected String asGradient(TextColor start, String text, TextColor end) {
+	public default String asGradient(TextColor start, String text, TextColor end) {
 		//lazy support for magic codes in gradients
 		String magicCodes = EnumChatFormat.getLastColors(text);
 		String decolorized = text.substring(magicCodes.length());

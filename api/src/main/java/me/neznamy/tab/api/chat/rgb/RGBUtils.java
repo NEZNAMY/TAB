@@ -1,7 +1,5 @@
 package me.neznamy.tab.api.chat.rgb;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,38 +23,38 @@ public class RGBUtils {
 	//instance of class
 	private static RGBUtils instance = new RGBUtils();
 	
-	//list of rgb formatters
-	private Set<RGBFormatter> formats = new HashSet<>();
+	//rgb formatters
+	private RGBFormatter[] formats;
 	
-	//list of gradient patterns
-	private Set<GradientPattern> gradients = new HashSet<>();
+	//gradient patterns
+	private GradientPattern[] gradients;
 	
 	//TAB's RGB format
 	private final Pattern tabPattern = Pattern.compile("#[0-9a-fA-F]{6}");
 	private final Pattern tabPatternLegacy = Pattern.compile("#[0-9a-fA-F]{6}\\|.");
 
 	public RGBUtils() {
-		registerRGBFormatter(new BukkitFormat());
-		registerRGBFormatter(new CMIFormat());
-		registerRGBFormatter(new UnnamedFormat1());
-		registerRGBFormatter(new HtmlFormat());
-		
-		//{#RRGGBB>}text{#RRGGBB<}
-		registerGradient(new CommonGradient(Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-				Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-				"{#", 9, 2, 10, 8));
-		
-		//<#RRGGBB>Text</#RRGGBB>
-		registerGradient(new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>"), 
-				Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>"), 
-				"<#", 9, 2, 9, 7));
-		
-		//<$#RRGGBB>Text<$#RRGGBB>
-		registerGradient(new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>"), 
-				Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>"), 
-				"<$", 10, 3, 10, 7));
-		
-		registerGradient(new KyoriGradient());
+		formats = new RGBFormatter[] {
+				new BukkitFormat(),
+				new CMIFormat(),
+				new UnnamedFormat1(),
+				new HtmlFormat()
+		};
+		gradients = new GradientPattern[] {
+				//{#RRGGBB>}text{#RRGGBB<}
+				new CommonGradient(Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
+						Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
+						"{#", 9, 2, 10, 8),
+				//<#RRGGBB>Text</#RRGGBB>
+				new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>"), 
+						Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>"), 
+						"<#", 9, 2, 9, 7),
+				//<$#RRGGBB>Text<$#RRGGBB>
+				new CommonGradient(Pattern.compile("<\\$#[0-9a-fA-F]{6}>[^<]*<\\$#[0-9a-fA-F]{6}>"), 
+						Pattern.compile("<\\$#[0-9a-fA-F]{6}\\|.>[^<]*<\\$#[0-9a-fA-F]{6}>"), 
+						"<$", 10, 3, 10, 7),
+				new KyoriGradient()
+		};
 	}
 	
 	/**
@@ -105,23 +103,7 @@ public class RGBUtils {
 			return IChatBaseComponent.fromColoredText(text).toLegacyText();
 		}
 	}
-	
-	/**
-	 * Registers RGB formatter
-	 * @param formatter - formatter to register
-	 */
-	public void registerRGBFormatter(RGBFormatter formatter) {
-		formats.add(formatter);
-	}
-	
-	/**
-	 * Registers gradient pattern
-	 * @param pattern - gradient pattern to register
-	 */
-	public void registerGradient(GradientPattern pattern) {
-		gradients.add(pattern);
-	}
-	
+
 	/**
 	 * Converts all hex codes in given string to legacy codes
 	 * @param text - text to translate

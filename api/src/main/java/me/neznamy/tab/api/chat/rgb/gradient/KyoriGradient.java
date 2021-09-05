@@ -9,7 +9,7 @@ import me.neznamy.tab.api.chat.TextColor;
 /**
  * Gradient applier for <gradient:#RRGGBB:#RRGGBB>Text</gradient> and <gradient:#RRGGBB|L:#RRGGBB>Text</gradient>
  */
-public class KyoriGradient extends GradientPattern {
+public class KyoriGradient implements GradientPattern {
 
 	private final Pattern pattern = Pattern.compile("<gradient:#[0-9a-fA-F]{6}:#[0-9a-fA-F]{6}>[^<]*</gradient>");
 

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.TextColor;
 
-public class CommonGradient extends GradientPattern {
+public class CommonGradient implements GradientPattern {
 
 	private Pattern pattern;
 	private Pattern legacyPattern;
