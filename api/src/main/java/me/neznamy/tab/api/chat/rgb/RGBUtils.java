@@ -86,17 +86,13 @@ public class RGBUtils {
 		if (rgbClient) {
 			//converting random formats to TAB one
 			String replaced = applyFormats(text, false);
-			Matcher m = tabPatternLegacy.matcher(replaced);
-			while (m.find()) {
-				String hexcode = m.group();
-				String fixed = "&x&" + hexcode.charAt(1) + "&" + hexcode.charAt(2) + "&" + hexcode.charAt(3) + "&" + hexcode.charAt(4) + "&" + hexcode.charAt(5) + "&" + hexcode.charAt(6);
-				replaced = replaced.replace(hexcode, EnumChatFormat.color(fixed));
-			}
-			m = tabPattern.matcher(replaced);
-			while (m.find()) {
-				String hexcode = m.group();
-				String fixed = "&x&" + hexcode.charAt(1) + "&" + hexcode.charAt(2) + "&" + hexcode.charAt(3) + "&" + hexcode.charAt(4) + "&" + hexcode.charAt(5) + "&" + hexcode.charAt(6);
-				replaced = replaced.replace(hexcode, EnumChatFormat.color(fixed));
+			for (Pattern p : new Pattern[]{tabPatternLegacy, tabPattern}) {
+				Matcher m = p.matcher(replaced);
+				while (m.find()) {
+					String hexcode = m.group();
+					String fixed = "&x&" + hexcode.charAt(1) + "&" + hexcode.charAt(2) + "&" + hexcode.charAt(3) + "&" + hexcode.charAt(4) + "&" + hexcode.charAt(5) + "&" + hexcode.charAt(6);
+					replaced = replaced.replace(hexcode, EnumChatFormat.color(fixed));
+				}
 			}
 			return replaced;
 		} else {
