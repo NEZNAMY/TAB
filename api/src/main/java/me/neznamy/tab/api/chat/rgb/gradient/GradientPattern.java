@@ -28,6 +28,17 @@ public abstract class GradientPattern {
 		String decolorized = text.substring(magicCodes.length());
 		StringBuilder sb = new StringBuilder();
 		int length = decolorized.length();
+		if (length == 1) {
+			int red = (start.getRed() + end.getRed()) / 2;
+			int green = (start.getGreen() + end.getGreen()) / 2;
+			int blue = (start.getBlue() + end.getBlue()) / 2;
+			sb.append("#");
+			sb.append(new TextColor(red, green, blue).getHexCode());
+			if (start.isLegacyColorForced()) sb.append("|" + start.getLegacyColor().getCharacter());
+			sb.append(magicCodes);
+			sb.append(decolorized);
+			return sb.toString();
+		}
 		for (int i=0; i<length; i++) {
 			int red = (int) (start.getRed() + (float)(end.getRed() - start.getRed())/(length-1)*i);
 			int green = (int) (start.getGreen() + (float)(end.getGreen() - start.getGreen())/(length-1)*i);
@@ -35,7 +46,8 @@ public abstract class GradientPattern {
 			sb.append("#");
 			sb.append(new TextColor(red, green, blue).getHexCode());
 			if (start.isLegacyColorForced()) sb.append("|" + start.getLegacyColor().getCharacter());
-			sb.append(magicCodes + decolorized.charAt(i));
+			sb.append(magicCodes);
+			sb.append(decolorized.charAt(i));
 		}
 		return sb.toString();
 	}
