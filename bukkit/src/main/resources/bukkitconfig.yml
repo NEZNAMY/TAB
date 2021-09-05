@@ -198,11 +198,6 @@ placeholder-output-replacements:
   "%afk%":
     true: " &o[AFK]&r"
     false: ""
-  "%tps%":
-    "15-20": "&a%value%"
-    "10-15": "&e%value%"
-    "5-10": "&6%value%"
-    "0-5": "&c%value%"
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders-(premium-only)
 conditions:

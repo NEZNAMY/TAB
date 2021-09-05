@@ -201,14 +201,14 @@ conditions:
     no: "~%essentials_nickname%"
   tps:
     conditions:
-      - "%tps%>=19"
-    yes: "<#55FF55>%tps%</#00AA00>"
+      - "%server_tps_1%>=19"
+    yes: "<#55FF55>%server_tps_1%</#00AA00>"
     no: "%condition:tps2%"
   tps2:
     conditions:
-      - "%tps%>=15"
-    yes: "<#FFFF55>%tps%</#FFAA00>"
-    no: "<#FF5555>%tps%</#AA0000>"
+      - "%server_tps_1%>=15"
+    yes: "<#FFFF55>%server_tps_1%</#FFAA00>"
+    no: "<#FF5555>%server_tps_1%</#AA0000>"
   mspt:
     conditions:
       - "%mspt%<40"
