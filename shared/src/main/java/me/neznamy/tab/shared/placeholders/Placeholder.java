@@ -109,7 +109,7 @@ public abstract class Placeholder {
 		if (!(text instanceof String) || identifier.equals(text)) return text;
 		Object replaced = text;
 		for (String s : getNestedPlaceholders((String) text)) {
-			if (s.equals("%value%") || s.equals(identifier) || s.startsWith("%rel_")) continue;
+			if (s.equals("%value%") || s.equals(identifier) || (identifier.startsWith("%sync:") && s.equals("%" + identifier.substring(6)))|| s.startsWith("%rel_")) continue;
 			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
 		}
 		return replaced;
