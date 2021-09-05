@@ -115,7 +115,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			scoreboards.put(entry.getKey(), sb);
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + entry.getKey(), sb);
 		}
-		if (respectOtherPlugins) ((PipelineInjector) TAB.getInstance().getFeatureManager().getFeature("injection")).setByteBufDeserialization(true);
+		if (respectOtherPlugins) {
+			PipelineInjector inj = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature("injection");
+			//null check if injection was disabled in config or velocity
+			if (inj != null) inj.setByteBufDeserialization(true);
+		}
 		TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
 				+ ", disabledServers=%s, rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
 				toggleCommand, useNumbers, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), rememberToggleChoice, hiddenByDefault, scoreboardOn, scoreboardOff, staticNumber, joinDelay));
