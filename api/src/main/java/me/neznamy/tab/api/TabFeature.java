@@ -29,7 +29,8 @@ public abstract class TabFeature {
 				methodOverrides.add("onCommand");
 			if (getClass().getMethod("onJoin", TabPlayer.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onJoin");
-			//quit contains something by default so always calling it
+			if (getClass().getMethod("onQuit", TabPlayer.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onQuit");
 			if (getClass().getMethod("onWorldChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onWorldChange");
 			if (getClass().getMethod("onServerChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)

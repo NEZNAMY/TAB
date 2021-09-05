@@ -119,6 +119,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (disconnectedPlayer == null) return;
 		for (TabFeature f : values) {
+			if (!f.overridesMethod("onQuit")) continue;
 			long time = System.nanoTime();
 			f.onQuit(disconnectedPlayer);
 			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.PLAYER_QUIT, System.nanoTime()-time);
