@@ -47,7 +47,6 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.shared.TAB;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitPacketBuilder extends PacketBuilder {
@@ -425,7 +424,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	/**
-	 * Converts minecraft IChatBaseComponent into TAB's component class. Currently does not support hover event.
+	 * Converts minecraft IChatBaseComponent into TAB's component class. Currently does not support show_item hover event on 1.16+.
 	 * @param component - component to convert
 	 * @return converted component
 	 * @throws IllegalAccessException 
@@ -434,14 +433,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws ParseException 
 	 */
 	private IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
-		long time = System.nanoTime();
-		IChatBaseComponent obj = fromNMSComponent0(component);
-		TAB.getInstance().getCPUManager().addMethodTime("fromNMSComponent", System.nanoTime()-time);
-		return obj;
-	}
-
-	//separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
-	private IChatBaseComponent fromNMSComponent0(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
 		if (!nms.ChatComponentText.isInstance(component)) return null; //paper
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);
@@ -467,13 +458,13 @@ public class BukkitPacketBuilder extends PacketBuilder {
 					value = IChatBaseComponent.deserialize(json.get("contents").getAsJsonObject().toString());
 				} else {
 					action = EnumHoverAction.valueOf(nms.ChatHoverable_getAction.invoke(hoverEvent).toString().toUpperCase());
-					value = fromNMSComponent0(nms.ChatHoverable_getValue.invoke(hoverEvent));
+					value = fromNMSComponent(nms.ChatHoverable_getValue.invoke(hoverEvent));
 				}
 				chat.getModifier().onHover(action, value);
 			}
 		}
 		for (Object extra : (List<Object>) nms.ChatBaseComponent_extra.get(component)) {
-			chat.addExtra(fromNMSComponent0(extra));
+			chat.addExtra(fromNMSComponent(extra));
 		}
 		return chat;
 	}
@@ -507,16 +498,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		Object obj;
 		if (clientVersion.getMinorVersion() >= 16) {
 			if (componentCacheModern.containsKey(component)) return componentCacheModern.get(component);
-			long time = System.nanoTime();
 			obj = toNMSComponent0(component, clientVersion);
-			TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
 			if (componentCacheModern.size() > 10000) componentCacheModern.clear();
 			componentCacheModern.put(component, obj);
 		} else {
 			if (componentCacheLegacy.containsKey(component)) return componentCacheLegacy.get(component);
-			long time = System.nanoTime();
 			obj = toNMSComponent0(component, clientVersion);
-			TAB.getInstance().getCPUManager().addMethodTime("toNMSComponent", System.nanoTime()-time);
 			if (componentCacheLegacy.size() > 10000) componentCacheLegacy.clear();
 			componentCacheLegacy.put(component, obj);
 		}
