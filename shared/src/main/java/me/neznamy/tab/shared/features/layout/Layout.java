@@ -58,7 +58,6 @@ public class Layout extends TabFeature {
 			list.add(new PlayerInfoData(id));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
-		System.out.println("unregistered layout from " + p.getName());
 	}
 
 	public boolean isConditionMet(TabPlayer p) {
