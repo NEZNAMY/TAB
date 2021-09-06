@@ -278,30 +278,6 @@ public class ErrorManager {
 	}
 
 	/**
-	 * Makes interval divisible by 50 and sends error message if it was not already or was 0 or less
-	 * @param identifier - placeholder identifier
-	 * @param interval - configured interval
-	 * @return fixed interval
-	 */
-	public int fixPlaceholderInterval(String identifier, int interval) {
-		if (interval == 0) {
-			startupWarn(String.format("Placeholder \"&e%s&c\" has refresh interval of 0 milliseconds! Is that misconfiguration? &bUsing 100.", identifier));
-			return 100;
-		}
-		if (interval < 0) {
-			startupWarn(String.format("Placeholder \"&e%s&c\" has refresh interval of %s. Refresh cannot be negative! &bUsing 100.", identifier, interval));
-			return 100;
-		}
-		if (interval % 50 != 0) {
-			int newInterval = interval - interval%50;
-			if (newInterval == 0) newInterval = 50;
-			startupWarn(String.format("Placeholder \"&e%s&c\" has refresh interval of %s which is not divisible by 50! &bUsing %s.", identifier, interval, newInterval));
-			return newInterval;
-		}
-		return interval;
-	}
-
-	/**
 	 * Returns the list if not null, empty list and error message if null
 	 * @param name - name of animation used in error message
 	 * @param list - list of animation frames

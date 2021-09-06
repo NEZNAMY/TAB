@@ -188,33 +188,17 @@ public class BukkitPlatform implements Platform {
 				return;
 			}
 			if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-				registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier));
-			} else if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-				registerPlayerPlaceholder(identifier, pl.getPlayerPlaceholderRefreshIntervals().get(identifier));
+				TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () -> setPlaceholders(null, identifier));
 			} else {
-				registerPlayerPlaceholder(identifier, pl.getDefaultRefresh());
+				int refresh;
+				if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
+					refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
+				} else {
+					refresh = pl.getDefaultRefresh();
+				}
+				TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> setPlaceholders((Player) p.getPlayer(), identifier));
 			}
 		}
-	}
-
-	/**
-	 * Registers server placeholder
-	 * @param identifier - placeholder identifier
-	 * @param refresh - refresh interval in milliseconds
-	 */
-	private void registerServerPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, 
-				TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh), () -> setPlaceholders(null, identifier));
-	}
-
-	/**
-	 * Registers player placeholder
-	 * @param identifier - placeholder identifier
-	 * @param refresh - refresh interval in milliseconds
-	 */
-	private void registerPlayerPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, 
-				TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh), p -> setPlaceholders((Player) p.getPlayer(), identifier));
 	}
 
 	/**
@@ -223,19 +207,18 @@ public class BukkitPlatform implements Platform {
 	 * @param refresh - refresh interval in milliseconds
 	 */
 	private void registerRelationalPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, 
-				TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh), (viewer, target) -> {
-					if (placeholderAPI == null) return identifier;
-					try {
-						return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
-					} catch (Exception | NoClassDefFoundError t) {
-						if (TAB.getInstance().isDebugMode()) {
-							TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + 
-									" generated an error when setting relational placeholder " + identifier, t);
-						}
-						return identifier;
-					}
-				});
+		TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, refresh, (viewer, target) -> {
+			if (placeholderAPI == null) return identifier;
+			try {
+				return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
+			} catch (Exception | NoClassDefFoundError t) {
+				if (TAB.getInstance().isDebugMode()) {
+					TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + 
+							" generated an error when setting relational placeholder " + identifier, t);
+				}
+				return identifier;
+			}
+		});
 	}
 
 	/**

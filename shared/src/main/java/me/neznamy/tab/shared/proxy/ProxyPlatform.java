@@ -23,7 +23,7 @@ public abstract class ProxyPlatform implements Platform {
 		int refresh = pl.getDefaultRefresh();
 		if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
 		if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
-		Placeholder p = new PlayerPlaceholder(identifier, TAB.getInstance().getErrorManager().fixPlaceholderInterval(identifier, refresh)){
+		Placeholder p = new PlayerPlaceholder(identifier, refresh){
 			
 			public Object get(TabPlayer p) {
 				plm.requestPlaceholder(p, identifier);
