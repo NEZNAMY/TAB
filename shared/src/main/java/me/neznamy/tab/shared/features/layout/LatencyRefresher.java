@@ -47,7 +47,7 @@ public class LatencyRefresher extends TabFeature {
 		for (ParentGroup group : layout.getGroups()) {
 			if (group.getPlayers().get(p) != null) {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				for (TabPlayer all : layout.getViewers()) {
 					all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_LATENCY);
 				}
 			}

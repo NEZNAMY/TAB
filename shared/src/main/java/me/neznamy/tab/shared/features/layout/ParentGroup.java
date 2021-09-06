@@ -25,7 +25,7 @@ public class ParentGroup {
 		}
 		this.slots = slots;
 		for (int slot : slots) {
-			playerSlots.put(slot, new PlayerSlot(layout, layout.getUUID(slot), slot));
+			playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot), slot));
 		}
 	}
 
@@ -39,7 +39,7 @@ public class ParentGroup {
 		for (int index = 0; index < slots.length; index++) {
 			int slot = slots[index];
 			if (index == slots.length - 1 && playerSlots.size() < meetingCondition.size()) {
-				playerSlots.get(slot).setText(String.format(layout.getRemainingPlayersText(), meetingCondition.size() - playerSlots.size() + 1));
+				playerSlots.get(slot).setText(String.format(layout.getManager().getRemainingPlayersText(), meetingCondition.size() - playerSlots.size() + 1));
 				break;
 			}
 			if (meetingCondition.size() > index) {
@@ -52,8 +52,8 @@ public class ParentGroup {
 		}
 	}
 	
-	public void onJoin(TabPlayer p) {
-		playerSlots.values().forEach(s -> s.onJoin(p));
+	public void sendTo(TabPlayer p) {
+		playerSlots.values().forEach(s -> s.sendSlot(p));
 	}
 	
 	public Map<TabPlayer, PlayerSlot> getPlayers() {

@@ -30,7 +30,7 @@ import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
-import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
@@ -191,7 +191,7 @@ public class TAB extends TabAPI {
 		if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) featureManager.registerFeature("spectatorfix", new SpectatorFix());
 		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
 		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
-		if (configuration.getLayout().getBoolean("enabled", false)) featureManager.registerFeature("layout", new Layout());
+		if (configuration.getLayout().getBoolean("enabled", false)) featureManager.registerFeature("layout", new LayoutManager());
 		featureManager.registerFeature("group", new GroupRefresher(platform.detectPermissionPlugin()));
 		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {

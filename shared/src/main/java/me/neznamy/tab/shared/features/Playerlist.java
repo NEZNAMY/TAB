@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 
 /**
@@ -50,7 +51,7 @@ public class Playerlist extends TabFeature {
 		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<>();
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (!disabledPlayers.contains(p)) updatedPlayers.add(new PlayerInfoData(getTablistUUID(p)));
+			if (!disabledPlayers.contains(p)) updatedPlayers.add(new PlayerInfoData(getTablistUUID(p, p)));
 		}
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), this);
@@ -71,7 +72,7 @@ public class Playerlist extends TabFeature {
 			if (!disabledBefore) {
 				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
-					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p))), this);
+					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p, viewer))), this);
 				}
 			}
 		} else {
@@ -121,7 +122,7 @@ public class Playerlist extends TabFeature {
 				} else {
 					format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
 				}
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed), IChatBaseComponent.optimizedComponent(format))), this);
+				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), IChatBaseComponent.optimizedComponent(format))), this);
 			}
 		}
 	}
@@ -144,7 +145,7 @@ public class Playerlist extends TabFeature {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
-				list.add(new PlayerInfoData(getTablistUUID(all), getTabFormat(all, connectedPlayer)));
+				list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer)));
 			}
 			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
 		};
@@ -153,15 +154,18 @@ public class Playerlist extends TabFeature {
 		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, CpuConstants.UsageCategory.PLAYER_JOIN, r);
 	}
 	
-	private UUID getTablistUUID(TabPlayer p) {
-		Layout layout = (Layout) TAB.getInstance().getFeatureManager().getFeature("layout");
-		if (layout != null) {
-			PlayerSlot slot = layout.getSlot(p);
-			if (slot != null) {
-				return slot.getUUID();
+	private UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
+		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
+		if (manager != null) {
+			Layout layout = manager.getPlayerViews().get(viewer);
+			if (layout != null) {
+				PlayerSlot slot = layout.getSlot(p);
+				if (slot != null) {
+					return slot.getUUID();
+				}
 			}
 		}
-		return p.getTablistUUID(); //layout not enabled or player not visible
+		return p.getTablistUUID(); //layout not enabled or player not visible to viewer
 	}
 
 	@Override

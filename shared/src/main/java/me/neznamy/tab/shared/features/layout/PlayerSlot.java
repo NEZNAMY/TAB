@@ -31,7 +31,7 @@ public class PlayerSlot {
 		playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 		this.layout = layout;
 		this.id = id;
-		this.fakeplayer = layout.formatSlot(slot);
+		this.fakeplayer = layout.getManager().formatSlot(slot);
 	}
 	
 	public UUID getUUID() {
@@ -47,22 +47,22 @@ public class PlayerSlot {
 		this.player = newPlayer;
 		if (player != null) text = "";
 		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id));
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
-			onJoin(all);
+		for (TabPlayer viewer : layout.getViewers()) {
+			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+			sendSlot(viewer);
 			if (yellowNumber != null) {
 				int newYellowNumber = player == null ? 0 : TAB.getInstance().getErrorManager().parseInteger(player.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
-				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			}
 		}
 	}
 	
-	public void onJoin(TabPlayer p) {
+	public void sendSlot(TabPlayer p) {
 		PlayerInfoData data;
 		if (player != null) {
 			data = new PlayerInfoData(fakeplayer, id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p));
 		} else {
-			data = new PlayerInfoData(fakeplayer, id, layout.getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
+			data = new PlayerInfoData(fakeplayer, id, layout.getManager().getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 	}
@@ -74,7 +74,7 @@ public class PlayerSlot {
 			setPlayer(null);
 		} else {
 			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, new IChatBaseComponent(text)));
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			for (TabPlayer all : layout.getViewers()) {
 				all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			}
 		}
