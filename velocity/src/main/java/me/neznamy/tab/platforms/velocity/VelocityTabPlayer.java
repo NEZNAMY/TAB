@@ -62,6 +62,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			//tab reload while a player is connecting, how unfortunate
 			super.server = "<null>";
 		}
+		world = "N/A";
 		name = p.getUsername();
 		uniqueId = p.getUniqueId();
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));

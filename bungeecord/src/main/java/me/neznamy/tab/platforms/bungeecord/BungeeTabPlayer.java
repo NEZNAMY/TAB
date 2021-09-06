@@ -60,6 +60,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 		} else {
 			server = "-";
 		}
+		world = "N/A";
 		try {
 			channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
 		} catch (IllegalAccessException e) {
