@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.function.Function;
 
 import org.bukkit.Bukkit;
@@ -139,13 +138,11 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	public class AFKPlaceholder {
 
 		private Plugin essentials;
-		private Plugin afkplus;
 		private boolean antiafkplus;
 		private boolean purpur;
 		
 		protected AFKPlaceholder() {
 			essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-			afkplus = Bukkit.getPluginManager().getPlugin("AFKPlus");
 			antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
 			try {
 				Player.class.getMethod("isAfk");
@@ -161,10 +158,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					if (essentials != null) {
 						Object user = essGetUser.invoke(essentials, p.getPlayer());
 						if ((boolean) essIsAfk.invoke(user)) return true;
-					}
-					if (afkplus != null) {
-						Object afkplusplayer = afkplus.getClass().getMethod("getPlayer", UUID.class).invoke(afkplus, p.getUniqueId());
-						if ((boolean) afkplusplayer.getClass().getMethod("isAFK").invoke(afkplusplayer)) return true;
 					}
 					if (antiafkplus) {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
