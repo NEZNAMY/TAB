@@ -28,7 +28,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
-		manager.registerPlayerPlaceholder("%world%", 1000, p -> p.getWorld());
+		manager.registerPlayerPlaceholder("%world%", 1000, TabPlayer::getWorld);
 		manager.registerPlayerPlaceholder("%worldonline%", 1000, p -> {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
@@ -36,7 +36,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 				return count;
 		});
-		manager.registerPlayerPlaceholder("%server%", 1000, p -> p.getServer());
+		manager.registerPlayerPlaceholder("%server%", 1000, TabPlayer::getServer);
 		manager.registerPlayerPlaceholder("%serveronline%", 1000, p -> {
 				int count = 0;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
@@ -44,14 +44,14 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 				return count;
 		});
-		manager.registerPlayerPlaceholder("%player%", 100000000, p -> p.getName());
-		manager.registerPlayerPlaceholder("%group%", 1000, p -> p.getGroup());
+		manager.registerPlayerPlaceholder("%player%", 100000000, TabPlayer::getName);
+		manager.registerPlayerPlaceholder("%group%", 1000, TabPlayer::getGroup);
 		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
 		SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		manager.registerServerPlaceholder("%time%", 500, () -> timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
 		SimpleDateFormat dateFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
 		manager.registerServerPlaceholder("%date%", 60000, () -> dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
-		manager.registerPlayerPlaceholder("%ping%", 500, p -> p.getPing());
+		manager.registerPlayerPlaceholder("%ping%", 500, TabPlayer::getPing);
 		manager.registerPlayerPlaceholder("%player-version%", 100000000, p -> p.getVersion().getFriendlyName());
 		manager.registerPlayerPlaceholder("%player-version-id%", 100000000, p -> p.getVersion().getNetworkId());
 		manager.registerServerPlaceholder("%maxplayers%", 100000000, () -> TAB.getInstance().getPlatform().getMaxPlayers());
@@ -92,8 +92,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerLuckPermsPlaceholders(PlaceholderManager manager) {
 		PermissionPlugin plugin = ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin();
 		if (plugin instanceof LuckPerms) {
-			manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, p -> ((LuckPerms)plugin).getPrefix(p));
-			manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, p -> ((LuckPerms)plugin).getSuffix(p));
+			manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, ((LuckPerms)plugin)::getPrefix);
+			manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, ((LuckPerms)plugin)::getSuffix);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			if (pm.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
 				refresh = pm.getPlayerPlaceholderRefreshIntervals().get(identifier);
 			}
-			manager.registerPlayerPlaceholder(identifier, refresh, p -> c.getText(p));
+			manager.registerPlayerPlaceholder(identifier, refresh, c::getText);
 		}
 	}
 }

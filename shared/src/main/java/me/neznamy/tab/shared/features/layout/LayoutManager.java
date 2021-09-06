@@ -105,12 +105,12 @@ public class LayoutManager extends TabFeature {
 		Layout highest = getHighestLayout(p);
 		if (highest != null) highest.sendTo(p);
 		playerViews.put(p, highest);
-		layouts.values().forEach(l -> l.tick());
+		layouts.values().forEach(Layout::tick);
 	}
 
 	@Override
 	public void onQuit(TabPlayer p) {
-		layouts.values().forEach(l -> l.tick());
+		layouts.values().forEach(Layout::tick);
 	}
 
 	private int translateSlot(int slot) {
@@ -169,7 +169,7 @@ public class LayoutManager extends TabFeature {
 		sortedPlayers.remove(p);
 		((ITabPlayer) p).setTeamName(teamName);
 		sortedPlayers.put(p, teamName);
-		layouts.values().forEach(l -> l.tick());
+		layouts.values().forEach(Layout::tick);
 	}
 
 	public String getRemainingPlayersText() {

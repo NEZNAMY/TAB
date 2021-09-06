@@ -146,7 +146,7 @@ public class Condition {
 			if (TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
 				refresh = TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().get(identifier);
 			}
-			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> c.getText(p));
+			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, c::getText);
 			return c;
 			
 		}
