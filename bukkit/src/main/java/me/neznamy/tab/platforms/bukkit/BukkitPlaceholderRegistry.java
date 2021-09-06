@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -12,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+
+import com.earth2me.essentials.Essentials;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
@@ -31,12 +32,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	//vault chat
 	private Object chat;
 
-	private Method essGetUser;
-	private Method essIsAfk;
-	
 	private Object server;
 	private Field recentTps;
-	
 
 	/**
 	 * Constructs new instance with given parameter
@@ -44,7 +41,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 */
 	public BukkitPlaceholderRegistry() {
 		decimal2.applyPattern("#.##");
-		Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
@@ -52,14 +48,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			}
 		} catch (Exception e) {
 			//modded server without vault
-		}
-		if (essentials != null) {
-			try {
-				essGetUser = Class.forName("com.earth2me.essentials.Essentials").getMethod("getUser", Player.class);
-				essIsAfk = Class.forName("com.earth2me.essentials.User").getMethod("isAfk");
-			} catch (Exception e) {
-				TAB.getInstance().getErrorManager().printError("Failed to load essentials methods", e);
-			}
 		}
 		try {
 			server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
@@ -156,8 +144,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			return p -> {
 				try {
 					if (essentials != null) {
-						Object user = essGetUser.invoke(essentials, p.getPlayer());
-						if ((boolean) essIsAfk.invoke(user)) return true;
+						if (((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
 					}
 					if (antiafkplus) {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);

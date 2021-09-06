@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
+import com.earth2me.essentials.Essentials;
 import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
@@ -252,19 +253,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean isVanished() {
-		try {
-			if (((BukkitPlatform)TAB.getInstance().getPlatform()).isEssentialsEnabled()) {
-				Object essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-				Object user = essentials.getClass().getMethod("getUser", Player.class).invoke(essentials, player);
-				boolean vanished = (boolean) user.getClass().getMethod("isVanished").invoke(user);
-				if (vanished) return true;
-			}
-			List<MetadataValue> metadata = player.getMetadata("vanished");
-			return !metadata.isEmpty() && metadata.get(0).asBoolean();
-		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("Failed to check vanish status of " + player.getName(), e);
-		}
-		return false;
+		Essentials essentials = ((BukkitPlatform)TAB.getInstance().getPlatform()).getEssentials();
+		if (essentials != null && essentials.getUser(getUniqueId()).isVanished()) return true;
+		List<MetadataValue> metadata = player.getMetadata("vanished");
+		return !metadata.isEmpty() && metadata.get(0).asBoolean();
 	}
 
 	@SuppressWarnings("deprecation")

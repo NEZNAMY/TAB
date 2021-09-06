@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.earth2me.essentials.Essentials;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
@@ -55,7 +56,7 @@ public class BukkitPlatform implements Platform {
 	private boolean viaversion;
 	private boolean idisguise;
 	private boolean libsdisguises;
-	private boolean essentials;
+	private Plugin essentials;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -87,7 +88,7 @@ public class BukkitPlatform implements Platform {
 		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
-		essentials = Bukkit.getPluginManager().isPluginEnabled("Essentials");
+		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
 		loadNametagFeature(tab);
@@ -303,8 +304,8 @@ public class BukkitPlatform implements Platform {
 		return idisguise;
 	}
 
-	public boolean isEssentialsEnabled() {
-		return essentials;
+	public Essentials getEssentials() {
+		return (Essentials) essentials;
 	}
 
 	@Override
