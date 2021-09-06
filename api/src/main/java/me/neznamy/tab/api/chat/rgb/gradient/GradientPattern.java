@@ -29,11 +29,8 @@ public interface GradientPattern {
 		StringBuilder sb = new StringBuilder();
 		int length = decolorized.length();
 		if (length == 1) {
-			int red = (start.getRed() + end.getRed()) / 2;
-			int green = (start.getGreen() + end.getGreen()) / 2;
-			int blue = (start.getBlue() + end.getBlue()) / 2;
 			sb.append("#");
-			sb.append(new TextColor(red, green, blue).getHexCode());
+			sb.append(new TextColor(start.getRed(), start.getGreen(), start.getBlue()).getHexCode());
 			if (start.isLegacyColorForced()) sb.append("|" + start.getLegacyColor().getCharacter());
 			sb.append(magicCodes);
 			sb.append(decolorized);
