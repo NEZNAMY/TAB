@@ -110,6 +110,8 @@ public class LayoutManager extends TabFeature {
 
 	@Override
 	public void onQuit(TabPlayer p) {
+		playerViews.remove(p);
+		sortedPlayers.remove(p);
 		layouts.values().forEach(Layout::tick);
 	}
 
