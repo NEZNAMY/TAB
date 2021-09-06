@@ -55,8 +55,15 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder("%player-version%", 100000000, p -> p.getVersion().getFriendlyName());
 		manager.registerPlayerPlaceholder("%player-version-id%", 100000000, p -> p.getVersion().getNetworkId());
 		manager.registerServerPlaceholder("%maxplayers%", 100000000, () -> TAB.getInstance().getPlatform().getMaxPlayers());
-		registerLuckPermsPlaceholders(manager);
-		registerMemoryPlaceholders(manager);
+		manager.registerServerPlaceholder("%memory-used%", 200, () -> ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)));
+		manager.registerServerPlaceholder("%memory-max%", 100000000, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576)));
+		manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
+		manager.registerServerPlaceholder("%memory-max-gb%", 100000000, () -> decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024));
+		PermissionPlugin plugin = ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin();
+		if (plugin instanceof LuckPerms) {
+			manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, ((LuckPerms)plugin)::getPrefix);
+			manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, ((LuckPerms)plugin)::getSuffix);
+		}
 		registerAnimationPlaceholders(manager);
 		registerConditionPlaceholders(manager);
 	}
@@ -73,27 +80,6 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		} catch (Exception e) {
 			TAB.getInstance().getErrorManager().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
 			return new SimpleDateFormat(defaultValue);
-		}
-	}
-
-	/**
-	 * Registers all memory-related placeholders
-	 */
-	private void registerMemoryPlaceholders(PlaceholderManager manager) {
-		manager.registerServerPlaceholder("%memory-used%", 200, () -> ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)));
-		manager.registerServerPlaceholder("%memory-max%", 100000000, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576)));
-		manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
-		manager.registerServerPlaceholder("%memory-max-gb%", 100000000, () -> decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024));
-	}
-
-	/**
-	 * Registers luckperms placeholders
-	 */
-	private void registerLuckPermsPlaceholders(PlaceholderManager manager) {
-		PermissionPlugin plugin = ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin();
-		if (plugin instanceof LuckPerms) {
-			manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, ((LuckPerms)plugin)::getPrefix);
-			manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, ((LuckPerms)plugin)::getSuffix);
 		}
 	}
 
