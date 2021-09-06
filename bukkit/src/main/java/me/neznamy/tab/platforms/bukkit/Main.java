@@ -144,6 +144,9 @@ public class Main extends JavaPlugin {
 			}
 			TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + player.getName() + "(online=" + player.isOnline() + ")");
 			return version;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return -1;
 		} catch (Exception | NoClassDefFoundError e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " using ViaVersion v" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion(), e);
 			return TAB.getInstance().getServerVersion().getNetworkId();
