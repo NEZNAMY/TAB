@@ -114,7 +114,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 * Registers vault placeholders
 	 */
 	private void registerVaultPlaceholders(PlaceholderManager manager) {
-		if (Bukkit.getPluginManager().isPluginEnabled("Vault") && chat != null) {
+		if (chat != null) {
 			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
 			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
 		} else {
