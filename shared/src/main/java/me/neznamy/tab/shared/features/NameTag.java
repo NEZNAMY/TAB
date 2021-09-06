@@ -121,7 +121,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		forcedTeamName.remove(disconnectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == disconnectedPlayer) continue;
-			hiddenNametagFor.get(all).remove(disconnectedPlayer); //clearing memory from API method
+			if (hiddenNametagFor.containsKey(all)) hiddenNametagFor.get(all).remove(disconnectedPlayer); //clearing memory from API method
 		}
 	}
 
