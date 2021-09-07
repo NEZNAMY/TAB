@@ -26,7 +26,7 @@ public class FixedSlot extends TabFeature {
 		this.id = layout.getManager().getUUID(slot);
 		this.slot = slot;
 		this.text = text;
-		propertyName = "SLOT-" + slot;
+		propertyName = "Layout-" + layout.getName() + "SLOT-" + slot;
 		this.skin = layout.getManager().getSkinManager().getSkin(skin);
 	}
 
@@ -34,8 +34,7 @@ public class FixedSlot extends TabFeature {
 		return text;
 	}
 
-	@Override
-	public void onJoin(TabPlayer p) {
+	public void sendTo(TabPlayer p) {
 		if (!layout.containsViewer(p)) return;
 		p.setProperty(this, propertyName, text);
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(layout.getManager().formatSlot(slot), id, skin, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()))), CpuConstants.PacketCategory.LAYOUT_FIXED_SLOTS);
