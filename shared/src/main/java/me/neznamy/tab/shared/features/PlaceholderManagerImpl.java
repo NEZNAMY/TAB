@@ -242,35 +242,17 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
-		registerPlaceholder(new ServerPlaceholder(identifier, refresh) {
-
-			@Override
-			public Object get() {
-				return supplier.get();
-			}
-		});
+		registerPlaceholder(new ServerPlaceholder(identifier, refresh, supplier));
 	}
 	
 	@Override
 	public void registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
-		registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
-
-			@Override
-			public Object get(TabPlayer p) {
-				return function.apply(p);
-			}
-		});
+		registerPlaceholder(new PlayerPlaceholder(identifier, refresh, function));
 	}
 
 	@Override
 	public void registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
-		registerPlaceholder(new RelationalPlaceholder(identifier, refresh) {
-
-			@Override
-			public Object get(TabPlayer viewer, TabPlayer target) {
-				return function.apply(viewer, target);
-			}
-		});
+		registerPlaceholder(new RelationalPlaceholder(identifier, refresh, function));
 	}
 
 	@Override

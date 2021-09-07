@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -9,7 +10,9 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 /**
  * A relational placeholder (output different for every pair of players)
  */
-public abstract class RelationalPlaceholder extends Placeholder {
+public class RelationalPlaceholder extends Placeholder {
+	
+	private BiFunction<TabPlayer, TabPlayer, Object> function;
 	
 	//last known values with key formatted as "viewer-target" to avoid extra dimension
 	private Map<String, String> lastValue = new HashMap<>();
@@ -19,9 +22,10 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval
 	 */
-	protected RelationalPlaceholder(String identifier, int refresh) {
+	public RelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
 		super(identifier, refresh);
 		if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException("Relational placeholder identifiers must start with \"rel_\"");
+		this.function = function;
 	}
 	
 	/**
@@ -65,7 +69,9 @@ public abstract class RelationalPlaceholder extends Placeholder {
 	 * Abstract method to be overridden by specific placeholders, returns new value of the placeholder
 	 * @return new value
 	 */
-	public abstract Object get(TabPlayer viewer, TabPlayer target);
+	public Object get(TabPlayer viewer, TabPlayer target) {
+		return function.apply(viewer, target);
+	}
 
 	public Map<String, String> getLastValues() {
 		return lastValue;

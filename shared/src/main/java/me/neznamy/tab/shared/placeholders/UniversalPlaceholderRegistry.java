@@ -89,12 +89,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private void registerAnimationPlaceholders(PlaceholderManager manager) {
 		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
 			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"), TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
-			((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholder("%animation:" + a.getName() + "%", 50) {
+			((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholder("%animation:" + a.getName() + "%", 50, p -> a.getMessage()) {
 
-				public Object get(TabPlayer p) {
-					return a.getMessage();
-				}
-				
 				@Override
 				public String[] getNestedPlaceholders(String output) {
 					return a.getNestedPlaceholders();

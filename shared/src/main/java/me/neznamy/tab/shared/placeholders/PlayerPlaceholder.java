@@ -4,14 +4,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
 
 /**
  * A player placeholder (output is different for every player)
  */
-public abstract class PlayerPlaceholder extends Placeholder {
+public class PlayerPlaceholder extends Placeholder {
 
+	private Function<TabPlayer, Object> function;
+	
 	//last known values
 	private Map<String, String> lastValues = new HashMap<>();
 	
@@ -23,8 +26,9 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 * @param identifier - placeholder's identifier
 	 * @param refresh - refresh interval in milliseconds
 	 */
-	protected PlayerPlaceholder(String identifier, int refresh) {
+	public PlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
 		super(identifier, refresh);
+		this.function = function;
 	}
 	
 	/**
@@ -65,7 +69,9 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	 * @param p - player to get placeholder value for
 	 * @return value placeholder returned
 	 */
-	public abstract Object get(TabPlayer p);
+	public Object get(TabPlayer p) {
+		return function.apply(p);
+	}
 
 	public Map<String, String> getLastValues() {
 		return lastValues;

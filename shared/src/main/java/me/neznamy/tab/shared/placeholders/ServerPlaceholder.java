@@ -1,12 +1,16 @@
 package me.neznamy.tab.shared.placeholders;
 
+import java.util.function.Supplier;
+
 import me.neznamy.tab.api.TabPlayer;
 
 /**
  * A server placeholder (output same for all players)
  */
-public abstract class ServerPlaceholder extends Placeholder{
+public class ServerPlaceholder extends Placeholder {
 
+	private Supplier<Object> supplier;
+	
 	//last known value of the placeholder
 	private String lastValue;
 
@@ -15,8 +19,9 @@ public abstract class ServerPlaceholder extends Placeholder{
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval
 	 */
-	protected ServerPlaceholder(String identifier, int refresh) {
+	public ServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
 		super(identifier, refresh);
+		this.supplier = supplier;
 	}
 	
 	/**
@@ -48,5 +53,7 @@ public abstract class ServerPlaceholder extends Placeholder{
 	 * Abstract method to be overridden by specific placeholders, returns new value of the placeholder
 	 * @return new value
 	 */
-	public abstract Object get();
+	public Object get() {
+		return supplier.get();
+	}
 }

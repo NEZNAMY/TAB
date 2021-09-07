@@ -169,7 +169,7 @@ public class BukkitPlatform implements Platform {
 				} else {
 					refresh = pl.getDefaultRefresh();
 				}
-				pl.registerPlaceholder(new PlayerPlaceholder(identifier, refresh) {
+				pl.registerPlaceholder(new PlayerPlaceholder(identifier, refresh, null) {
 					
 					@Override
 					public Object get(TabPlayer p) {
