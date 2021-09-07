@@ -18,7 +18,7 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.AlignedSuffix;
+import me.neznamy.tab.shared.features.AlignedPlayerlist;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.GroupRefresher;
@@ -182,9 +182,11 @@ public class TAB extends TabAPI {
 		if (configuration.getConfig().getBoolean("header-footer.enabled", true)) featureManager.registerFeature("headerfooter", new HeaderFooter());
 		if (configuration.isRemoveGhostPlayers()) featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (serverVersion.getMinorVersion() >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
-			Playerlist playerlist = new Playerlist();
-			featureManager.registerFeature("playerlist", playerlist);
-			if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) featureManager.registerFeature("alignedsuffix", new AlignedSuffix(playerlist));
+			if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
+				featureManager.registerFeature("playerlist", new AlignedPlayerlist());
+			} else {
+				featureManager.registerFeature("playerlist", new Playerlist());
+			}
 		}
 		if (configuration.getConfig().getBoolean("ping-spoof.enabled", false)) featureManager.registerFeature("pingspoof", new PingSpoof());
 		if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) featureManager.registerFeature("tabobjective", new YellowNumber());

@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -16,16 +16,13 @@ import me.neznamy.tab.shared.TAB;
 /**
  * Additional code for Playerlist class to secure alignment
  */
-public class AlignedSuffix extends TabFeature {
+public class AlignedPlayerlist extends Playerlist {
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
 	private byte[] widths = new byte[65536];
-	private Playerlist playerlist;
 
-	public AlignedSuffix(Playerlist playerlist) {
-		super("Aligned tabsuffix");
-		this.playerlist = playerlist;
+	public AlignedPlayerlist() {
 		loadWidthsFromFile();
 		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
@@ -148,6 +145,7 @@ public class AlignedSuffix extends TabFeature {
 	
 	@Override
 	public void onQuit(TabPlayer p) {
+		super.onQuit(p);
 		if (recalculateMaxWidth(p)) {
 			updateAllNames(p);
 		}
@@ -155,6 +153,7 @@ public class AlignedSuffix extends TabFeature {
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		super.onWorldChange(p, from, to);
 		if (recalculateMaxWidth(null)) {
 			updateAllNames(null);
 		}
@@ -163,7 +162,7 @@ public class AlignedSuffix extends TabFeature {
 	private void updateAllNames(TabPlayer exception) {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == exception) continue;
-			playerlist.refresh(all, true);
+			refresh(all, true);
 		}
 	}
 
@@ -181,5 +180,22 @@ public class AlignedSuffix extends TabFeature {
 			}
 		}
 		return oldMaxWidth != maxWidth;
+	}
+	
+	@Override
+	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
+		Property prefix = p.getProperty(PropertyUtils.TABPREFIX);
+		Property name = p.getProperty(PropertyUtils.CUSTOMTABNAME);
+		Property suffix = p.getProperty(PropertyUtils.TABSUFFIX);
+		if (prefix == null || name == null || suffix == null) {
+			return null;
+		}
+		String format;
+		if (updateWidths) {
+			format = formatNameAndUpdateLeader(p, viewer);
+		} else {
+			format = formatName(prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
+		}
+		return IChatBaseComponent.optimizedComponent(format);
 	}
 }

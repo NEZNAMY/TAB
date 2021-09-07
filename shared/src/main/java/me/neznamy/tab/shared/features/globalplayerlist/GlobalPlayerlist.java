@@ -130,7 +130,7 @@ public class GlobalPlayerlist extends TabFeature {
 		IChatBaseComponent format = null;
 		Playerlist playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 		if (playerlist != null) {
-			format = playerlist.getTabFormat(p, viewer);
+			format = playerlist.getTabFormat(p, viewer, false);
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), 
 				p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));

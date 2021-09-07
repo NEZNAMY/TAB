@@ -80,22 +80,16 @@ public class Playerlist extends TabFeature {
 		}
 	}
 
-	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
+	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
 		Property prefix = p.getProperty(PropertyUtils.TABPREFIX);
 		Property name = p.getProperty(PropertyUtils.CUSTOMTABNAME);
 		Property suffix = p.getProperty(PropertyUtils.TABSUFFIX);
 		if (prefix == null || name == null || suffix == null) {
 			return null;
 		}
-		String format;
-		AlignedSuffix alignedSuffix = (AlignedSuffix) TAB.getInstance().getFeatureManager().getFeature("alignedsuffix");
-		if (alignedSuffix != null) {
-			format = alignedSuffix.formatName(prefix.getFormat(viewer) + name.getFormat(viewer), suffix.getFormat(viewer));
-		} else {
-			format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
-		}
-		return IChatBaseComponent.optimizedComponent(format);
+		return IChatBaseComponent.optimizedComponent(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
 	}
+	
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (disabledPlayers.contains(refreshed)) return;
@@ -110,22 +104,13 @@ public class Playerlist extends TabFeature {
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			Property prefix = refreshed.getProperty(PropertyUtils.TABPREFIX);
-			Property name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME);
-			Property suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX);
 			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer.getVersion().getMinorVersion() < 8) continue;
-				String format;
-				AlignedSuffix alignedSuffix = (AlignedSuffix) TAB.getInstance().getFeatureManager().getFeature("alignedsuffix");
-				if (alignedSuffix != null) {
-					format = alignedSuffix.formatNameAndUpdateLeader(refreshed, viewer);
-				} else {
-					format = prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer);
-				}
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), IChatBaseComponent.optimizedComponent(format))), this);
+				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), getTabFormat(refreshed, viewer, true))), this);
 			}
 		}
 	}
+	
 	private void updateProperties(TabPlayer p) {
 		p.loadPropertyFromConfig(this, PropertyUtils.TABPREFIX);
 		p.loadPropertyFromConfig(this, PropertyUtils.CUSTOMTABNAME, p.getName());
@@ -145,7 +130,7 @@ public class Playerlist extends TabFeature {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
-				list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer)));
+				list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer, false)));
 			}
 			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
 		};
@@ -175,12 +160,8 @@ public class Playerlist extends TabFeature {
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
 			if (packetPlayer != null && !disabledPlayers.contains(packetPlayer)) {
-				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
+				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver, false));
 			}
 		}
-	}
-
-	public String[] getDisabledWorlds() {
-		return disabledWorlds;
 	}
 }
