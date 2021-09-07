@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.features;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
@@ -23,30 +23,15 @@ public class AlignedPlayerlist extends Playerlist {
 	private byte[] widths = new byte[65536];
 
 	public AlignedPlayerlist() {
-		loadWidthsFromFile();
+		int characterId = 1;
+		for (String line : new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("widths.txt"))).lines().collect(Collectors.toList())) {
+			widths[characterId++] = (byte) Float.parseFloat(line);
+		}
 		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
 			widths[entry.getKey()] = (byte)(int)entry.getValue();
 		}
 		TAB.getInstance().debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
-	}
-	
-	/**
-	 * Loads all predefined widths from included widths.txt file
-	 */
-	private void loadWidthsFromFile() {
-		try {
-			InputStream input = getClass().getClassLoader().getResourceAsStream("widths.txt");
-			BufferedReader br = new BufferedReader(new InputStreamReader(input));
-			String line;
-			int characterId = 1;
-			while ((line = br.readLine()) != null) {
-				widths[characterId++] = (byte) Float.parseFloat(line);
-			}
-			br.close();
-		} catch (Exception ex) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to read character widths from file", ex);
-		}
 	}
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
