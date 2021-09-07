@@ -93,7 +93,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		scoreboardOn = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-toggle-on", "&2Scorebord enabled");
 		scoreboardOff = TAB.getInstance().getConfiguration().getTranslation().getString("scoreboard-toggle-off", "&7Scoreboard disabled");
 		if (rememberToggleChoice) {
-			sbOffPlayers = Collections.synchronizedSet(new HashSet<>(TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("scoreboard-off")));
+			sbOffPlayers = Collections.synchronizedSet(new HashSet<>(TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("scoreboard-off", new ArrayList<>())));
 		}
 		staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
 		joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
