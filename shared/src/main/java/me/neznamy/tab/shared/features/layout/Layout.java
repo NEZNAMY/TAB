@@ -81,6 +81,13 @@ public class Layout extends TabFeature {
 	public void refresh(TabPlayer p, boolean force) {
 		tick();
 	}
+	
+	@Override
+	public void onQuit(TabPlayer p) {
+		if (viewers.remove(p)) {
+			viewerArray = viewers.toArray(new TabPlayer[0]);
+		}
+	}
 
 	public TabPlayer[] getViewers() {
 		return viewerArray;
