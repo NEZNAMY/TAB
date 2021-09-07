@@ -74,7 +74,7 @@ public class GroupCommand extends PropertyCommand {
 		if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
 		TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, null, null, value.length() == 0 ? null : value);
 		for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-			if (pl.getGroup().equals(group) || group.equals("_OTHER_")){
+			if (pl.getGroup().equals(group) || group.equals("_DEFAULT_")){
 				pl.forceRefresh();
 			}
 		}
