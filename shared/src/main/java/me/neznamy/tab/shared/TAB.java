@@ -69,9 +69,6 @@ public class TAB extends TabAPI {
 	//feature manager
 	private FeatureManagerImpl featureManager;
 
-	//name of broken configuration file filled on load and used in disabledCommand
-	private String brokenFile = "-";
-
 	private Configs configuration;
 
 	private boolean debugMode;
@@ -148,7 +145,7 @@ public class TAB extends TabAPI {
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
-			return configuration.getReloadFailedMessage().replace("%file%", brokenFile);
+			return configuration.getReloadFailedMessage().replace("%file%", "-"); //recode soon
 		} catch (Exception e) {
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
 			disabled = true;
