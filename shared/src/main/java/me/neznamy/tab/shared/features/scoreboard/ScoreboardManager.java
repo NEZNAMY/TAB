@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -310,8 +311,9 @@ public class ScoreboardManager implements Loadable, JoinEventListener, QuitEvent
 		if (respectOtherPlugins && packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			tab.debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			((ITabPlayer)receiver).setOtherPluginScoreboard(packet.getObjectiveName());
-			if (receiver.getActiveScoreboard() != null) {
-				tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> receiver.getActiveScoreboard().unregister(receiver));
+			Scoreboard sb = receiver.getActiveScoreboard();
+			if (sb != null) {
+				tab.getCPUManager().runMeasuredTask("sending packets", TabFeature.SCOREBOARD, UsageType.ANTI_OVERRIDE, () -> sb.unregister(receiver));
 			}
 		}
 		return false;
