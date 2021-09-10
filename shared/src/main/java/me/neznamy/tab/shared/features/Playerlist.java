@@ -154,6 +154,10 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
+			if (refreshed.getProperty(PropertyUtils.TABPREFIX) == null) {
+				TAB.getInstance().getErrorManager().printError("Player " + refreshed + " did not have tablist properties loaded at time of refresh (online=" + refreshed.isOnline() + ", loaded= " + refreshed.isLoaded() + ")");
+				return;
+			}
 			boolean prefix = refreshed.getProperty(PropertyUtils.TABPREFIX).update();
 			boolean name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME).update();
 			boolean suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX).update();
