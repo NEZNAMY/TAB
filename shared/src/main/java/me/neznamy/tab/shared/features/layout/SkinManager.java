@@ -39,7 +39,7 @@ public class SkinManager {
 			} else {
 				TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", e);
 		}
 	}
@@ -89,7 +89,7 @@ public class SkinManager {
 		} catch (FileNotFoundException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by player: No user with the name '" + name + "' was found");
 			return new ArrayList<>();
-		} catch (Exception e) {
+		} catch (IOException | ParseException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by player: " + e.getMessage(), e);
 			return new ArrayList<>();
 		}
@@ -106,7 +106,7 @@ public class SkinManager {
 		} catch (FileNotFoundException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by id: No skin with the id '" + id + "' was found");
 			return new ArrayList<>();
-		} catch (Exception e) {
+		} catch (IOException | ParseException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by id: " + e.getMessage(), e);
 			return new ArrayList<>();
 		}

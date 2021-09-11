@@ -38,14 +38,10 @@ public class BungeeEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		try {
-			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-				TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer(), plm));
-			} else {
-				TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
-			}
-		} catch (Exception ex){
-			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
+		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
+			TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer(), plm));
+		} else {
+			TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
 		}
 	}
 

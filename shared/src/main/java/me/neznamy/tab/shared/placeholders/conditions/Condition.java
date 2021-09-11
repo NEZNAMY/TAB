@@ -122,7 +122,7 @@ public class Condition {
 		ConditionType type;
 		try {
 			type = ConditionType.valueOf(conditionType);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			type = ConditionType.AND;
 			if (conditions.size() > 1) TAB.getInstance().getErrorManager().startupWarn("Invalid condition type: " + conditionType);
 		}

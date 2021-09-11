@@ -121,7 +121,7 @@ public enum ProtocolVersion {
 		if (friendlyName.startsWith("1.8")) return V1_8;
 		try {
 			return valueOf("V" + friendlyName.replace(".", "_"));
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			return UNKNOWN;
 		}
 	}

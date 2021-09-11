@@ -100,7 +100,7 @@ public class ErrorManager {
 					}
 				}
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
 			tab.getPlatform().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
 			for (StackTraceElement e : ex.getStackTrace()) {
@@ -231,7 +231,7 @@ public class ErrorManager {
 	public BarColor parseColor(String string, BarColor defaultValue, String place) {
 		try {
 			return BarColor.valueOf(string);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			oneTimeConsoleError(String.format("%s only accepts one of the defined colors! (Attempted to use \"%s\")", place, string));
 			return defaultValue;
 		}
@@ -247,7 +247,7 @@ public class ErrorManager {
 	public BarStyle parseStyle(String string, BarStyle defaultValue, String place) {
 		try {
 			return BarStyle.valueOf(string);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			oneTimeConsoleError(String.format("%s only accepts one of the defined styles! (Attempted to use \"%s\")", place, string));
 			return defaultValue;
 		}

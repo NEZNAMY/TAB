@@ -47,7 +47,7 @@ public class LayoutManager extends TabFeature {
 	private Direction parseDirection(String value) {
 		try {
 			return Direction.valueOf(value);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			TAB.getInstance().getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(Direction.values()) + ". &bUsing COLUMNS");
 			return Direction.COLUMNS;
 		}

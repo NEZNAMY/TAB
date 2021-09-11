@@ -72,11 +72,12 @@ public class PacketListener extends TabFeature {
 			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
 		} else if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
 			if (nms.getMinorVersion() >= 17) {
-				try {
-					onEntityDestroy(receiver, (List<Integer>) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
-				} catch (ClassCastException e) {
+				Object entities = nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet);
+				if (entities instanceof List) {
+					onEntityDestroy(receiver, (List<Integer>) entities);
+				} else {
 					//1.17.0
-					onEntityDestroy(receiver, nms.PacketPlayOutEntityDestroy_ENTITIES.getInt(packet));
+					onEntityDestroy(receiver, (int) entities);
 				}
 			} else {
 				onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));

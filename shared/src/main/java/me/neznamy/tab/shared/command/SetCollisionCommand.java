@@ -30,12 +30,8 @@ public class SetCollisionCommand extends SubCommand {
 				sendMessage(sender, getTranslation("player_not_found"));
 				return;
 			}
-			try {
-				feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
-				feature.updateTeamData(target);
-			} catch (Exception e) {
-				sendMessage(sender, "&c\"" + args[1] + "\" is not a valid true/false value");
-			}
+			feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
+			feature.updateTeamData(target);
 		} else {
 			sendMessage(sender, "&cUsage: /tab setcollision <player> <true/false>");
 		}

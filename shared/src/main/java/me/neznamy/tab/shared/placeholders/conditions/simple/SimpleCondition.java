@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +107,7 @@ public abstract class SimpleCondition {
 				try {
 					SimpleCondition c = entry.getValue().getConstructor(String.class).newInstance(line);
 					if (c != null) return c;
-				} catch (Exception e) {
+				} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 					//should never happen
 					TAB.getInstance().getErrorManager().printError("Failed to create condition from line \"" + line + "\"", e);
 				}

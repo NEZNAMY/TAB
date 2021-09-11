@@ -40,7 +40,7 @@ public class MySQL {
 		if (isConnected()) {
 			try {
 				con.close();
-			} catch (Exception e) {
+			} catch (SQLException e) {
 				TAB.getInstance().getErrorManager().printError("Failed to close MySQL connection", e);
 			}
 		}
@@ -49,7 +49,7 @@ public class MySQL {
 	private boolean isConnected() {
 		try {
 			return con != null && !con.isClosed();
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check MySQL connection", e);
 		}
 		return false;

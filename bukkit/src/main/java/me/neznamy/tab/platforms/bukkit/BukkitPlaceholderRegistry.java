@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -47,19 +48,19 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
 				if (rspChat != null) chat = rspChat.getProvider();
 			}
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
 			//modded server without vault
 		}
 		try {
 			server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
 			recentTps = server.getClass().getField("recentTps");
-		} catch (Exception e) {
+		} catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
 			//not spigot
 		}
 		try {
 			Bukkit.class.getMethod("getTPS");
 			paperTps = true;
-		} catch (Exception e) {
+		} catch (NoSuchMethodException e) {
 			//not paper
 		}
 	}
@@ -83,14 +84,14 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					tps = new double[] {-1};
 				}
 				return decimal2.format(Math.min(20, tps[0]));
-			} catch (Exception t) {
+			} catch (IllegalAccessException t) {
 				return "-1";
 			}
 		});
 		try {
 			Class.forName("com.destroystokyo.paper.PaperConfig");
 			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
-		} catch(Exception e){
+		} catch (ClassNotFoundException e){
 			//not paper
 		}
 		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
@@ -150,7 +151,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			try {
 				Player.class.getMethod("isAfk");
 				purpur = true;
-			} catch (Exception e) {
+			} catch (NoSuchMethodException e) {
 				//not purpur
 			}
 		}
@@ -166,7 +167,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
 					}
 					if (purpur && ((Player)p.getPlayer()).isAfk()) return true;
-				} catch (Exception e) {
+				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
 					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
 				}
 				return false;

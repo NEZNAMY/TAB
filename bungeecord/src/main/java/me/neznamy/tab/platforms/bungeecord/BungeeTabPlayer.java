@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
@@ -39,7 +40,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 			getId.setAccessible(true);
 			wrapperField = InitialHandler.class.getDeclaredField("ch");
 			wrapperField.setAccessible(true);
-		} catch (Exception e) {
+		} catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to initialize fields for packet analysis", e);
 		}
 	}
@@ -115,7 +116,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
 		try {
 			return (int) getId.invoke(directionData, clazz, player.getPendingConnection().getVersion());
-		} catch (Exception e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz + " with client version " + player.getPendingConnection().getVersion(), e);
 			return -1;
 		}

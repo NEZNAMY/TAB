@@ -178,7 +178,7 @@ public class Configs {
 				if (file.exists() || file.createNewFile()) {
 					playerdata = new YamlConfigurationFile(null, file);
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
 			}
 		}

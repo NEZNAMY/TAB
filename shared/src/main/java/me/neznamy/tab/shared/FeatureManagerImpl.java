@@ -244,7 +244,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			long time = System.nanoTime();
 			try {
 				f.onPacketSend(receiver, packet);
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | InstantiationException e) {
+			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
 				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
 			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);

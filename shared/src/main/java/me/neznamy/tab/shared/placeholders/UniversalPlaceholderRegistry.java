@@ -77,7 +77,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	private SimpleDateFormat createDateFormat(String value, String defaultValue) {
 		try {
 			return new SimpleDateFormat(value, Locale.ENGLISH);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			TAB.getInstance().getErrorManager().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
 			return new SimpleDateFormat(defaultValue);
 		}

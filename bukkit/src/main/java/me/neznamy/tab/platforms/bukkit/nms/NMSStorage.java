@@ -211,13 +211,12 @@ public class NMSStorage {
 	/**
 	 * Creates new instance, initializes required NMS classes and fields
 	 * @throws NoSuchFieldException 
-	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws ClassNotFoundException 
 	 * @throws InvocationTargetException 
 	 * @throws IllegalAccessException 
 	 */
-	public NMSStorage() throws NoSuchFieldException, NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, InvocationTargetException {
+	public NMSStorage() throws NoSuchFieldException, NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException {
 		serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 		EnumChatFormat = getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat");
@@ -251,7 +250,7 @@ public class NMSStorage {
 		initializeScoreboardPackets();
 		try {
 			initializeTeamPackets();
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+		} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			Bukkit.getConsoleSender().sendMessage(me.neznamy.tab.api.chat.EnumChatFormat.color("&c[TAB] Failed to load PacketPlayOutScoreboardTeam"));
 			//fabric with missing team packet
 		}
@@ -273,7 +272,7 @@ public class NMSStorage {
 		return instance;
 	}
 
-	private void initializeChatComponents() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+	private void initializeChatComponents() throws ClassNotFoundException, NoSuchMethodException {
 		if (minorVersion < 7) return;
 		Class<?> ChatBaseComponent = getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent");
 		Class<?> ChatClickable = getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable");
@@ -324,7 +323,7 @@ public class NMSStorage {
 		}
 	}
 	
-	private void initializeChatPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, InvocationTargetException {
+	private void initializeChatPacket() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		Class<?> PacketPlayOutChat = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
 		if (minorVersion >= 12) {
 			ChatMessageType = getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
@@ -341,7 +340,7 @@ public class NMSStorage {
 		}
 	}
 	
-	private void initializeDataWatcher() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+	private void initializeDataWatcher() throws ClassNotFoundException, NoSuchMethodException {
 		DataWatcher = getNMSClass("net.minecraft.network.syncher.DataWatcher", "DataWatcher");
 		Class<?> DataWatcherItem = getNMSClass("net.minecraft.network.syncher.DataWatcher$Item", "DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
 		if (minorVersion >= 7) {
@@ -366,7 +365,7 @@ public class NMSStorage {
 		registry = new DataWatcherRegistry(this);
 	}
 	
-	private void initializeEntitySpawnPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+	private void initializeEntitySpawnPacket() throws ClassNotFoundException, NoSuchMethodException {
 		PacketPlayOutSpawnEntityLiving = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
 		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
 		PacketPlayOutSpawnEntityLiving_ENTITYID = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(0);
@@ -388,7 +387,7 @@ public class NMSStorage {
 		}
 	}
 	
-	private void initializeEntityTeleportPacket() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+	private void initializeEntityTeleportPacket() throws NoSuchMethodException, ClassNotFoundException {
 		PacketPlayOutEntityTeleport = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
 		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
 		PacketPlayOutEntityTeleport_ENTITYID = getFields(PacketPlayOutEntityTeleport, int.class).get(0);
@@ -405,7 +404,7 @@ public class NMSStorage {
 		}
 	}
 	
-	private void initializeHeaderFooterPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+	private void initializeHeaderFooterPacket() throws ClassNotFoundException, NoSuchMethodException {
 		if (minorVersion < 8) return;
 		Class<?> PacketPlayOutPlayerListHeaderFooter = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
 		PacketPlayOutPlayerListHeaderFooter_HEADER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(0);
@@ -445,7 +444,7 @@ public class NMSStorage {
 		}
 	}
 	
-	private void initializePlayerInfoPacket() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, InvocationTargetException {
+	private void initializePlayerInfoPacket() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		if (minorVersion < 8) return;
 		PacketPlayOutPlayerInfo = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo");
 		Class<?> EnumPlayerInfoAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction", "net.minecraft.class_2703$class_5893");
@@ -463,7 +462,7 @@ public class NMSStorage {
 		EnumGamemode_values = getEnumValues(EnumGamemode);
 	}
 
-	private void initializeScoreboardPackets() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, InvocationTargetException {
+	private void initializeScoreboardPackets() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		PacketPlayOutScoreboardDisplayObjective = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective", "PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
 		PacketPlayOutScoreboardObjective = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", "PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
 		Class<?> PacketPlayOutScoreboardScore = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore", "PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
@@ -506,7 +505,7 @@ public class NMSStorage {
 		}
 	}
 	
-	private void initializeTeamPackets() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, InvocationTargetException {
+	private void initializeTeamPackets() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		PacketPlayOutScoreboardTeam = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
 		Class<?> ScoreboardTeam = getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam");
 		newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
@@ -596,7 +595,7 @@ public class NMSStorage {
 		for (String name : names) {
 			try {
 				return getMethod(clazz, name, parameterTypes);
-			} catch (Exception e) {
+			} catch (NoSuchMethodException e) {
 				//not the first method in array
 			}
 		}
@@ -674,7 +673,7 @@ public class NMSStorage {
 		throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
 	}
 	
-	private Enum[] getEnumValues(Class<?> clazz) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	private Enum[] getEnumValues(Class<?> clazz) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		return (Enum[]) clazz.getMethod("values").invoke(null);
 	}
 

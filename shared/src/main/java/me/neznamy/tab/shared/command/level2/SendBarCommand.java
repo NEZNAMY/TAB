@@ -42,7 +42,7 @@ public class SendBarCommand extends SubCommand {
 		int duration;
 		try {
 			duration = Integer.parseInt(args[2]);
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}

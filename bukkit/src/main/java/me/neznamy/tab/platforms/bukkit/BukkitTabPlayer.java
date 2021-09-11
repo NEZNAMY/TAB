@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,13 +61,13 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			handle = NMSStorage.getInstance().getHandle.invoke(player);
 			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
-		} catch (Exception e) {
+		} catch (InvocationTargetException | IllegalAccessException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
 		}
 		try {
 			if (NMSStorage.getInstance().CHANNEL != null)
 				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
 		}
 		uniqueId = p.getUniqueId();
@@ -86,7 +87,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			int ping = NMSStorage.getInstance().PING.getInt(handle);
 			if (ping > 10000 || ping < 0) ping = -1;
 			return ping;
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
 			return -1;
 		}
 	}
@@ -105,7 +106,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			} else {
 				NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 			}
-		} catch (Exception e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
@@ -225,7 +226,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		try {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return DisguiseAPI.isDisguised(player);
-		} catch (Exception | NoClassDefFoundError | ExceptionInInitializerError e) {
+		} catch (NoClassDefFoundError | ExceptionInInitializerError e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
 			return false;
 		}
@@ -235,7 +236,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Object getSkin() {
 		try {
 			return ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties();
-		} catch (Exception e) {
+		} catch (InvocationTargetException | IllegalAccessException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
 			return null;
 		}

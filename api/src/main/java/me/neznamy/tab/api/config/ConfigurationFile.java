@@ -84,24 +84,19 @@ public abstract class ConfigurationFile {
 	 * @return	value from configuration file
 	 */
 	public Object getObject(String path, Object defaultValue) {
-		try {
-			Object value = values;
-			for (String tab : path.split("\\.")) {
-				if (value == null) {
-					if (defaultValue != null) set(path, defaultValue);
-					return defaultValue;
-				}
-				value = getIgnoreCase((Map<Object, Object>) value, tab);
-			}
-			if (value == null && defaultValue != null) {
-				set(path, defaultValue);
+		Object value = values;
+		for (String tab : path.split("\\.")) {
+			if (!(value instanceof Map)) {
+				if (defaultValue != null) set(path, defaultValue);
 				return defaultValue;
 			}
-			return value;
-		} catch (Exception e) {
-			if (defaultValue != null) set(path, defaultValue);
+			value = getIgnoreCase((Map<Object, Object>) value, tab);
+		}
+		if (value == null && defaultValue != null) {
+			set(path, defaultValue);
 			return defaultValue;
 		}
+		return value;
 	}
 
 	/**
@@ -226,7 +221,7 @@ public abstract class ConfigurationFile {
 		if (value == null) return defaultValue;
 		try{
 			return Integer.parseInt(value.toString());
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			return defaultValue;
 		}
 	}
@@ -245,11 +240,7 @@ public abstract class ConfigurationFile {
 	public boolean getBoolean(String path, boolean defaultValue) {
 		Object value = getObject(path, defaultValue);
 		if (value == null) return defaultValue;
-		try {
-			return Boolean.parseBoolean(value.toString());
-		} catch (Exception e) {
-			return defaultValue;
-		}
+		return Boolean.parseBoolean(value.toString());
 	}
 
 	/**
@@ -268,7 +259,7 @@ public abstract class ConfigurationFile {
 		if (value == null) return defaultValue;
 		try {
 			return Double.parseDouble(value.toString());
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			return defaultValue;
 		}
 	}

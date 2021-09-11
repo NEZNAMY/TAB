@@ -37,7 +37,7 @@ public class AnnounceBarCommand extends SubCommand{
 		int duration;
 		try {
 			duration = Integer.parseInt(args[1]);
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			sendMessage(sender, args[1] + " is not a number!");
 			return;
 		}

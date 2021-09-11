@@ -19,6 +19,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.OverflowPacketException;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
@@ -86,12 +87,12 @@ public class BungeePipelineInjector extends PipelineInjector {
 				default:
 					break;
 				}
-			} catch (Exception | NoClassDefFoundError e){
+			} catch (Exception e){
 				TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
 			try {
 				super.write(context, modifiedPacket, channelPromise);
-			} catch (Exception | NoClassDefFoundError e) {
+			} catch (Exception e) {
 				TAB.getInstance().getErrorManager().printError("Failed to forward packet " + modifiedPacket.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}
@@ -133,7 +134,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 						return packet;
 					}
 				}
-			} catch (Exception e) {
+			} catch (OverflowPacketException e) {
 				//OverflowPacketException someone got, no idea why
 			}
 			buf.readerIndex(marker);

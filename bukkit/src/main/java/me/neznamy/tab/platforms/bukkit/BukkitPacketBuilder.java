@@ -79,7 +79,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		}
 		try {
 			emptyScoreboard = nms.newScoreboard.newInstance();
-		} catch (Exception e) {
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Failed to create instance of \"Scoreboard\""));
 		}
 		buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet));

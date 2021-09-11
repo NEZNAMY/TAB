@@ -77,15 +77,10 @@ public abstract class Placeholder {
 	 * @return string with this placeholder replaced
 	 */
 	public String set(String s, TabPlayer p) {
-		try {
-			String originalvalue = getLastValue(p);
-			String value = findReplacement(originalvalue);
-			value = replace(value, "%value%", originalvalue);
-			return replace(s, identifier, value);
-		} catch (Exception t) {
-			TAB.getInstance().getErrorManager().printError("An error occurred when setting placeholder " + identifier + (p == null ? "" : " for " + p.getName()), t);
-			return s;
-		}
+		String originalvalue = getLastValue(p);
+		String value = findReplacement(originalvalue);
+		value = replace(value, "%value%", originalvalue);
+		return replace(s, identifier, value);
 	}
 	
 	public String[] getNestedPlaceholders(String output) {

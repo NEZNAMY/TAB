@@ -94,7 +94,7 @@ public class DataWatcherRegistry {
 				nms.setAccessible(field);
 				try {
 					fields.put(field.getName(), field.get(null));
-				} catch (Exception e) {
+				} catch (IllegalAccessException e) {
 					//this will never happen
 				}
 			}

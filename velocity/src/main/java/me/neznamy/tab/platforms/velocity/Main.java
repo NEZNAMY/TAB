@@ -77,7 +77,7 @@ public class Main {
 			Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
 			Class.forName("net.kyori.adventure.identity.Identity"); //1.1.0 b265
 			return true;
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
 			return false;
 		}
 	}

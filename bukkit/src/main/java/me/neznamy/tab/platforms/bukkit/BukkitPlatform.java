@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 
@@ -141,7 +142,7 @@ public class BukkitPlatform implements Platform {
 				//1.8+
 				return ((Collection<Player>)players).toArray(new Player[0]); 
 			}
-		} catch (Exception e) {
+		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
 			return new Player[0];
 		}

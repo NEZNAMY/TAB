@@ -41,15 +41,11 @@ public class VelocityEventListener {
 	@Subscribe
 	public void onConnect(ServerPostConnectEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		try {
-			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer(), plm));
-			} else {
-				Optional<ServerConnection> server = e.getPlayer().getCurrentServer();
-				TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");
-			}
-		} catch (Exception ex){
-			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
+		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
+			TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer(), plm));
+		} else {
+			Optional<ServerConnection> server = e.getPlayer().getCurrentServer();
+			TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");
 		}
 	}
 	

@@ -49,7 +49,7 @@ public abstract class TabFeature {
 				methodOverrides.add("onPacketSend");
 			if (getClass().getMethod("refresh", TabPlayer.class, boolean.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("refresh");
-		} catch (Exception e) {
+		} catch (NoSuchMethodException e) {
 			//this will never happen
 		}
 	}
