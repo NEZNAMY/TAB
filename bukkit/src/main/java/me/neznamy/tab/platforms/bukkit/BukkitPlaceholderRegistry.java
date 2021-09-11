@@ -34,6 +34,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 	private Object server;
 	private Field recentTps;
+	private boolean paperTps;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -55,6 +56,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		} catch (Exception e) {
 			//not spigot
 		}
+		try {
+			Bukkit.class.getMethod("getTPS");
+			paperTps = true;
+		} catch (Exception e) {
+			//not paper
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -67,7 +74,15 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
 		manager.registerServerPlaceholder("%tps%", 1000, () -> {
 			try {
-				return decimal2.format(Math.min(20, ((double[]) recentTps.get(server))[0]));
+				double[] tps;
+				if (paperTps) {
+					tps = Bukkit.getTPS();
+				} else if (recentTps != null){
+					tps = (double[]) recentTps.get(server);
+				} else {
+					tps = new double[] {-1};
+				}
+				return decimal2.format(Math.min(20, tps[0]));
 			} catch (Exception t) {
 				return "-1";
 			}
