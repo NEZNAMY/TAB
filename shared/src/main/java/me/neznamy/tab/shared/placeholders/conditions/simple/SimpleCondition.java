@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -16,7 +16,7 @@ import me.neznamy.tab.shared.TAB;
 public abstract class SimpleCondition {
 	
 	//all known condition types
-	private static Map<String, Class<? extends SimpleCondition>> conditionTypes = new LinkedHashMap<>();
+	private static Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
 	
 	//left side of condition
 	private String leftSide;
@@ -34,14 +34,14 @@ public abstract class SimpleCondition {
 	 * Registering all condition types
 	 */
 	static {
-		getConditionTypes().put("permission:", PermissionCondition.class);
-		getConditionTypes().put("<-", ContainsCondition.class);
-		getConditionTypes().put(">=", MoreThanOrEqualsCondition.class);
-		getConditionTypes().put(">", MoreThanCondition.class);
-		getConditionTypes().put("<=", LessThanOrEqualsCondition.class);
-		getConditionTypes().put("<", LessThanCondition.class);
-		getConditionTypes().put("!=", NotEqualsCondition.class);
-		getConditionTypes().put("=", EqualsCondition.class);
+		conditionTypes.put("permission:", PermissionCondition::new);
+		conditionTypes.put("<-", ContainsCondition::new);
+		conditionTypes.put(">=", MoreThanOrEqualsCondition::new);
+		conditionTypes.put(">", MoreThanCondition::new);
+		conditionTypes.put("<=", LessThanOrEqualsCondition::new);
+		conditionTypes.put("<", LessThanCondition::new);
+		conditionTypes.put("!=", NotEqualsCondition::new);
+		conditionTypes.put("=", EqualsCondition::new);
 	}
 
 	/**
@@ -102,21 +102,15 @@ public abstract class SimpleCondition {
 	 * @return compiled condition
 	 */
 	public static SimpleCondition compile(String line) {
-		for (Entry<String, Class<? extends SimpleCondition>> entry : getConditionTypes().entrySet()) {
+		for (Entry<String, Function<String, SimpleCondition>> entry : conditionTypes.entrySet()) {
 			if (line.contains(entry.getKey())) {
-				try {
-					SimpleCondition c = entry.getValue().getConstructor(String.class).newInstance(line);
-					if (c != null) return c;
-				} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					//should never happen
-					TAB.getInstance().getErrorManager().printError("Failed to create condition from line \"" + line + "\"", e);
-				}
+				return entry.getValue().apply(line);
 			}
 		}
 		return null;
 	}
 
-	public static Map<String, Class<? extends SimpleCondition>> getConditionTypes() {
+	public static Map<String, Function<String, SimpleCondition>> getConditionTypes() {
 		return conditionTypes;
 	}
 }
