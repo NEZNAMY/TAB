@@ -112,17 +112,17 @@ public class RGBUtils {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < applied.length(); i++){
 			char c = applied.charAt(i);
-			if (c == '#') {
-				try {
+			if (c == '#' && applied.length() > i+6) {
+				String hexCode = applied.substring(i+1, i+7);
+				if (isHexCode(hexCode)) {
 					if (containsLegacyCode(applied, i)) {
-						sb.append(new TextColor(applied.substring(i, i+7), EnumChatFormat.getByChar(applied.charAt(i+8))).getLegacyColor().getFormat());
+						sb.append(new TextColor(hexCode, EnumChatFormat.getByChar(applied.charAt(i+8))).getLegacyColor().getFormat());
 						i += 8;
 					} else {
-						sb.append(new TextColor(applied.substring(i, i+7)).getLegacyColor().getFormat());
+						sb.append(new TextColor(hexCode).getLegacyColor().getFormat());
 						i += 6;
 					}
-				} catch (Exception e) {
-					//not a valid RGB code
+				} else {
 					sb.append(c);
 				}
 			} else {
@@ -130,6 +130,15 @@ public class RGBUtils {
 			}
 		}
 		return sb.toString();
+	}
+	
+	public boolean isHexCode(String string) {
+		if (string.length() != 6) return false;
+		for (int i=0; i<6; i++) {
+			char c = string.charAt(i);
+			if (c < 48 || (c > 57 && c < 65) || (c > 70 && c < 97) || c > 102) return false;
+		}
+		return true;
 	}
 	
 	/**
