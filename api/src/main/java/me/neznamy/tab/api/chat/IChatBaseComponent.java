@@ -292,10 +292,9 @@ public class IChatBaseComponent {
 						break;
 					}
 				}
-			} else if (c == '#'){
-				try {
-					String hex = text.substring(i+1, i+7);
-					Integer.parseInt(hex, 16); //validating code, skipping otherwise
+			} else if (c == '#' && text.length() > i+6){
+				String hex = text.substring(i+1, i+7);
+				if (RGBUtils.getInstance().isHexCode(hex)) {
 					TextColor color;
 					if (containsLegacyCode(text, i)) {
 						color = new TextColor(hex, EnumChatFormat.getByChar(text.charAt(i+8)));
@@ -311,8 +310,7 @@ public class IChatBaseComponent {
 					}
 					component = new IChatBaseComponent();
 					component.modifier.setColor(color);
-				} catch (Exception e) {
-					//invalid hex code or string index out of bounds
+				} else {
 					builder.append(c);
 				}
 			} else {
