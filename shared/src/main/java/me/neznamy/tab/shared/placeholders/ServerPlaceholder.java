@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.function.Supplier;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A server placeholder (output same for all players)
@@ -54,6 +55,11 @@ public class ServerPlaceholder extends Placeholder {
 	 * @return new value
 	 */
 	public Object get() {
-		return supplier.get();
+		try {
+			return supplier.get();
+		} catch (Throwable t) {
+			TAB.getInstance().getErrorManager().placeholderError("Server placeholder " + identifier + " generated an error", t);
+			return "ERROR";
+		}
 	}
 }

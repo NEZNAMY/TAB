@@ -6,6 +6,7 @@ import java.util.function.BiFunction;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A relational placeholder (output different for every pair of players)
@@ -70,7 +71,12 @@ public class RelationalPlaceholder extends Placeholder {
 	 * @return new value
 	 */
 	public Object get(TabPlayer viewer, TabPlayer target) {
-		return function.apply(viewer, target);
+		try {
+			return function.apply(viewer, target);
+		} catch (Throwable t) {
+			TAB.getInstance().getErrorManager().placeholderError("Relational placeholder " + identifier + " generated an error when setting for players " + viewer.getName() + " and " + target.getName(), t);
+			return "ERROR";
+		}
 	}
 
 	public Map<String, String> getLastValues() {

@@ -34,6 +34,7 @@ public class ErrorManager {
 	//error logs
 	private File errorLog;
 	private File antiOverrideLog;
+	private File placeholderErrorLog;
 
 	//plugin instance
 	private TAB tab;
@@ -46,6 +47,7 @@ public class ErrorManager {
 		this.tab = tab;
 		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
 		antiOverrideLog = new File(tab.getPlatform().getDataFolder(), "anti-override.log");
+		placeholderErrorLog = new File(tab.getPlatform().getDataFolder(), "placeholder-errors.log");
 		if (getErrorLog().exists() && getErrorLog().length() > 10) {
 			startupWarn("File &e" + getErrorLog().getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
@@ -114,6 +116,10 @@ public class ErrorManager {
 				}
 			}
 		}
+	}
+	
+	public void placeholderError(String message, Throwable t) {
+		printError(message, t, false, placeholderErrorLog);
 	}
 
 	/**

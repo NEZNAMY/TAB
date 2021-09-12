@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * A player placeholder (output is different for every player)
@@ -70,7 +71,12 @@ public class PlayerPlaceholder extends Placeholder {
 	 * @return value placeholder returned
 	 */
 	public Object get(TabPlayer p) {
-		return function.apply(p);
+		try {
+			return function.apply(p);
+		} catch (Throwable t) {
+			TAB.getInstance().getErrorManager().placeholderError("Player placeholder " + identifier + " generated an error when setting for player " + p.getName(), t);
+			return "ERROR";
+		}
 	}
 
 	public Map<String, String> getLastValues() {

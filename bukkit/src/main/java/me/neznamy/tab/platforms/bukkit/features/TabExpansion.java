@@ -3,12 +3,12 @@ package me.neznamy.tab.platforms.bukkit.features;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.platforms.bukkit.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -98,7 +98,7 @@ public class TabExpansion extends PlaceholderExpansion {
 	 * @return replacement
 	 */
 	private String findReplacement(String placeholder, Player player) {
-		String output = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders(player, placeholder);
+		String output = PlaceholderAPI.setPlaceholders(player, placeholder);
 		return TAB.getInstance().getPlaceholderManager().findReplacement(placeholder, output).replace("%value%", output);
 	}
 	

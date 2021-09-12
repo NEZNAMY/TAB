@@ -53,7 +53,7 @@ public class BukkitPlatform implements Platform {
 	private BukkitPacketBuilder packetBuilder;
 
 	//booleans to check plugin presence
-	private Plugin placeholderAPI;
+	private boolean placeholderAPI;
 	private boolean viaversion;
 	private boolean idisguise;
 	private boolean libsdisguises;
@@ -85,7 +85,7 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void loadFeatures() {
-		placeholderAPI = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
@@ -105,7 +105,7 @@ public class BukkitPlatform implements Platform {
 		}
 		if (nms.getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
 		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
-		if (placeholderAPI != null) {
+		if (placeholderAPI) {
 			new TabExpansion(plugin);
 		}
 		for (Player p : getOnlinePlayers()) {
@@ -158,7 +158,8 @@ public class BukkitPlatform implements Platform {
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		if (identifier.startsWith("%rel_")) {
 			//relational placeholder
-			registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier));
+			TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> 
+				placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
 		} else {
 			//normal placeholder
 			if (identifier.startsWith("%sync:")) {
@@ -178,7 +179,7 @@ public class BukkitPlatform implements Platform {
 
 							long time = System.nanoTime();
 							String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
-							String value = ((BukkitPlatform) TAB.getInstance().getPlatform()).setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%");
+							String value = placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%") : identifier;
 							getLastValues().put(p.getName(), value);
 							if (!getForceUpdate().contains(p.getName())) getForceUpdate().add(p.getName());
 							TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
@@ -189,7 +190,8 @@ public class BukkitPlatform implements Platform {
 				return;
 			}
 			if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-				TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () -> setPlaceholders(null, identifier));
+				TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () ->
+						placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
 			} else {
 				int refresh;
 				if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
@@ -197,47 +199,9 @@ public class BukkitPlatform implements Platform {
 				} else {
 					refresh = pl.getDefaultRefresh();
 				}
-				TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> setPlaceholders((Player) p.getPlayer(), identifier));
+				TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> 
+					placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
 			}
-		}
-	}
-
-	/**
-	 * Registers relational placeholder
-	 * @param identifier - placeholder identifier
-	 * @param refresh - refresh interval in milliseconds
-	 */
-	private void registerRelationalPlaceholder(String identifier, int refresh) {
-		TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, refresh, (viewer, target) -> {
-			if (placeholderAPI == null) return identifier;
-			try {
-				return PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier);
-			} catch (Exception | NoClassDefFoundError t) {
-				if (TAB.getInstance().isDebugMode()) {
-					TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + 
-							" generated an error when setting relational placeholder " + identifier, t);
-				}
-				return identifier;
-			}
-		});
-	}
-
-	/**
-	 * Runs PlaceholderAPI call and returns the output. Returns identifier if call throws an exception.
-	 * @param player - player to set placeholder for
-	 * @param placeholder - placeholder
-	 * @return result from PlaceholderAPI
-	 */
-	public String setPlaceholders(Player player, String placeholder) {
-		if (placeholderAPI == null) return placeholder;
-		try {
-			return PlaceholderAPI.setPlaceholders(player, placeholder);
-		} catch (Exception | NoClassDefFoundError t) {
-			if (TAB.getInstance().isDebugMode()) {
-				TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + 
-						" generated an error when setting placeholder " + placeholder + (player == null ? "" : " for player " + player.getName()), t);
-			}
-			return "ERROR";
 		}
 	}
 
