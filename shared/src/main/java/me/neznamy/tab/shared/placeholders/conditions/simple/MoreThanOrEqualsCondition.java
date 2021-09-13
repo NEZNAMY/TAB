@@ -1,12 +1,11 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 
 /**
  * "leftSide>=rightSide" condition
  */
-public class MoreThanOrEqualsCondition extends SimpleCondition {
+public class MoreThanOrEqualsCondition extends NumericCondition {
 
 	/**
 	 * Constructs new instance with given condition line
@@ -19,7 +18,6 @@ public class MoreThanOrEqualsCondition extends SimpleCondition {
 	
 	@Override
 	public boolean isMet(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseDouble(parseLeftSide(p).replace(",", ""), 0, "left side of >= condition") >= 
-				TAB.getInstance().getErrorManager().parseDouble(parseRightSide(p), 0, "right side of >= condition");	
+		return getLeftSide(p) >= getRightSide(p);	
 	}
 }
