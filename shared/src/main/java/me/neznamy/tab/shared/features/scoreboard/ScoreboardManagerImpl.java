@@ -215,13 +215,18 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		boolean disabledBefore = disabledPlayers.contains(p);
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledPlayers.add(p);
+			if (!disabledBefore) {
+				unregisterScoreboard(p, true);
+			}
 		} else {
 			disabledPlayers.remove(p);
+			if (disabledBefore) {
+				sendHighestScoreboard(p);
+			}
 		}
-		unregisterScoreboard(p, true);
-		sendHighestScoreboard(p);
 	}
 
 	public boolean isUsingNumbers() {
@@ -238,6 +243,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 * @return highest scoreboard player should see
 	 */
 	public Scoreboard detectHighestScoreboard(TabPlayer p) {
+		if (forcedScoreboard.containsKey(p)) return forcedScoreboard.get(p);
 		for (Entry<String, Scoreboard> entry : scoreboards.entrySet()) {
 			if (((ScoreboardImpl)entry.getValue()).isConditionMet(p)) return entry.getValue();
 		}
