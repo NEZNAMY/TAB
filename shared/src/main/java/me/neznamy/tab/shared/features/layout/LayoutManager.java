@@ -23,6 +23,7 @@ public class LayoutManager extends TabFeature {
 
 	private Direction direction;
 	private String defaultSkin;
+	private boolean enableRemainingPlayersText;
 	private String remainingPlayersText;
 
 	private Map<String, Layout> layouts = new LinkedHashMap<>();
@@ -35,6 +36,7 @@ public class LayoutManager extends TabFeature {
 		super("Layout");
 		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
 		defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+		enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
 		remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
 		skinManager = new SkinManager(defaultSkin);
 		for (int slot=1; slot<=80; slot++) {
@@ -172,6 +174,10 @@ public class LayoutManager extends TabFeature {
 		((ITabPlayer) p).setTeamName(teamName);
 		sortedPlayers.put(p, teamName);
 		layouts.values().forEach(Layout::tick);
+	}
+
+	public boolean isRemainingPlayersTextEnabled() {
+		return enableRemainingPlayersText;
 	}
 
 	public String getRemainingPlayersText() {

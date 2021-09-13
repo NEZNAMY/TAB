@@ -38,7 +38,7 @@ public class ParentGroup {
 		remainingPlayers.removeAll(meetingCondition);
 		for (int index = 0; index < slots.length; index++) {
 			int slot = slots[index];
-			if (index == slots.length - 1 && playerSlots.size() < meetingCondition.size()) {
+			if (layout.getManager().isRemainingPlayersTextEnabled() && index == slots.length - 1 && playerSlots.size() < meetingCondition.size()) {
 				playerSlots.get(slot).setText(String.format(layout.getManager().getRemainingPlayersText(), meetingCondition.size() - playerSlots.size() + 1));
 				break;
 			}
