@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,7 +17,7 @@ public abstract class PlayerPlaceholder extends Placeholder {
 	private Map<String, String> lastValues = new HashMap<>();
 	
 	//list of players with force update
-	private Set<String> forceUpdate = new HashSet<>();
+	private Set<String> forceUpdate = Collections.synchronizedSet(new HashSet<>());
 
 	/**
 	 * Constructs new instance with given parameters
@@ -45,9 +46,11 @@ public abstract class PlayerPlaceholder extends Placeholder {
 			getLastValues().put(p.getName(), newValue);
 			return true;
 		}
-		if (getForceUpdate().contains(p.getName())) {
-			getForceUpdate().remove(p.getName());
-			return true;
+		synchronized (forceUpdate) {
+			if (forceUpdate.contains(p.getName())) {
+				forceUpdate.remove(p.getName());
+				return true;
+			}
 		}
 		return false;
 	}
@@ -74,5 +77,11 @@ public abstract class PlayerPlaceholder extends Placeholder {
 
 	public Set<String> getForceUpdate() {
 		return forceUpdate;
+	}
+	
+	public void addForceUpdate(TabPlayer p) {
+		synchronized (forceUpdate) {
+			forceUpdate.add(p.getName());
+		}
 	}
 }
