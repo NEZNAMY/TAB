@@ -44,7 +44,7 @@ public class YellowNumber extends TabFeature {
 		for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()){
 			loaded.setProperty(this, PropertyUtils.YELLOW_NUMBER, rawValue);
 			if (isDisabled(loaded.getServer(), loaded.getWorld())) {
-				disabledPlayers.add(loaded);
+				addDisabledPlayer(loaded);
 				continue;
 			}
 			PacketAPI.registerScoreboardObjective(loaded, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
@@ -59,7 +59,7 @@ public class YellowNumber extends TabFeature {
 	@Override
 	public void unload() {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()){
-			if (disabledPlayers.contains(p)) continue;
+			if (isDisabledPlayer(p)) continue;
 			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), this);
 		}
 	}
@@ -68,7 +68,7 @@ public class YellowNumber extends TabFeature {
 	public void onJoin(TabPlayer connectedPlayer) {
 		connectedPlayer.setProperty(this, PropertyUtils.YELLOW_NUMBER, rawValue);
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-			disabledPlayers.add(connectedPlayer);
+			addDisabledPlayer(connectedPlayer);
 			return;
 		}
 		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
@@ -81,13 +81,13 @@ public class YellowNumber extends TabFeature {
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = disabledPlayers.contains(p);
+		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			disabledPlayers.add(p);
+			addDisabledPlayer(p);
 		} else {
-			disabledPlayers.remove(p);
+			removeDisabledPlayer(p);
 		}
 		if (disabledNow && !disabledBefore) {
 			p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), this);
@@ -103,7 +103,7 @@ public class YellowNumber extends TabFeature {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (disabledPlayers.contains(refreshed)) return;
+		if (isDisabledPlayer(refreshed)) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed, all), value), this);

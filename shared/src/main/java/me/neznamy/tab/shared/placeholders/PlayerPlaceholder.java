@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.placeholders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -20,7 +20,7 @@ public class PlayerPlaceholder extends Placeholder {
 	private Map<String, String> lastValues = new HashMap<>();
 	
 	//list of players with force update
-	private Set<String> forceUpdate = new HashSet<>();
+	private List<String> forceUpdate = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters
@@ -83,7 +83,7 @@ public class PlayerPlaceholder extends Placeholder {
 		return lastValues;
 	}
 
-	public Set<String> getForceUpdate() {
+	public List<String> getForceUpdate() {
 		return forceUpdate;
 	}
 }

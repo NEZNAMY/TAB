@@ -38,7 +38,7 @@ public class Playerlist extends TabFeature {
 	public void load(){
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (isDisabled(all.getServer(), all.getWorld())) {
-				disabledPlayers.add(all);
+				addDisabledPlayer(all);
 				updateProperties(all);
 				return;
 			}
@@ -51,7 +51,7 @@ public class Playerlist extends TabFeature {
 		disabling = true;
 		List<PlayerInfoData> updatedPlayers = new ArrayList<>();
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (!disabledPlayers.contains(p)) updatedPlayers.add(new PlayerInfoData(getTablistUUID(p, p)));
+			if (!isDisabledPlayer(p)) updatedPlayers.add(new PlayerInfoData(getTablistUUID(p, p)));
 		}
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), this);
@@ -60,13 +60,13 @@ public class Playerlist extends TabFeature {
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = disabledPlayers.contains(p);
+		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			disabledPlayers.add(p);
+			addDisabledPlayer(p);
 		} else {
-			disabledPlayers.remove(p);
+			removeDisabledPlayer(p);
 		}
 		if (disabledNow) {
 			if (!disabledBefore) {
@@ -92,7 +92,7 @@ public class Playerlist extends TabFeature {
 	
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (disabledPlayers.contains(refreshed)) return;
+		if (isDisabledPlayer(refreshed)) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -120,7 +120,7 @@ public class Playerlist extends TabFeature {
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-			disabledPlayers.add(connectedPlayer);
+			addDisabledPlayer(connectedPlayer);
 			updateProperties(connectedPlayer);
 			return;
 		}
@@ -159,7 +159,7 @@ public class Playerlist extends TabFeature {
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
-			if (packetPlayer != null && !disabledPlayers.contains(packetPlayer)) {
+			if (packetPlayer != null && !isDisabledPlayer(packetPlayer)) {
 				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver, false));
 			}
 		}

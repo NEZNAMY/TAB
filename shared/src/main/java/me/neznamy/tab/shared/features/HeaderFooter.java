@@ -33,7 +33,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	@Override
 	public void unload() {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (disabledPlayers.contains(p) || p.getVersion().getMinorVersion() < 8) continue;
+			if (isDisabledPlayer(p) || p.getVersion().getMinorVersion() < 8) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), this);
 		}
 	}
@@ -41,7 +41,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-			disabledPlayers.add(connectedPlayer);
+			addDisabledPlayer(connectedPlayer);
 			return;
 		}
 		refresh(connectedPlayer, true);
@@ -49,13 +49,13 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = disabledPlayers.contains(p);
+		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			disabledPlayers.add(p);
+			addDisabledPlayer(p);
 		} else {
-			disabledPlayers.remove(p);
+			removeDisabledPlayer(p);
 		}
 		if (p.getVersion().getMinorVersion() < 8) return;
 		if (disabledNow) {
@@ -84,7 +84,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 			p.setProperty(this, PropertyUtils.HEADER, getProperty(p, PropertyUtils.HEADER));
 			p.setProperty(this, PropertyUtils.FOOTER, getProperty(p, PropertyUtils.FOOTER));
 		}
-		if (disabledPlayers.contains(p) || p.getVersion().getMinorVersion() < 8) return;
+		if (isDisabledPlayer(p) || p.getVersion().getMinorVersion() < 8) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(PropertyUtils.HEADER).updateAndGet(), p.getProperty(PropertyUtils.FOOTER).updateAndGet()), this);
 	}
 

@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.features;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabFeature;
@@ -22,12 +22,12 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	private boolean collisionRule;
 	private boolean invisibleNametags;
-	protected Set<String> invisiblePlayers = new HashSet<>();
+	protected List<String> invisiblePlayers = new ArrayList<>();
 	private Sorting sorting;
 	protected Map<String, Boolean> collision = new HashMap<>();
-	private Set<TabPlayer> hiddenNametag = new HashSet<>();
-	private Map<TabPlayer, Set<TabPlayer>> hiddenNametagFor = new HashMap<>();
-	private Set<TabPlayer> teamHandlingPaused = new HashSet<>();
+	private List<TabPlayer> hiddenNametag = new ArrayList<>();
+	private Map<TabPlayer, List<TabPlayer>> hiddenNametagFor = new HashMap<>();
+	private List<TabPlayer> teamHandlingPaused = new ArrayList<>();
 	private Map<TabPlayer, String> forcedTeamName = new HashMap<>();
 	private Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
 
@@ -48,10 +48,10 @@ public class NameTag extends TabFeature implements TeamManager {
 			((ITabPlayer) all).setTeamName(getSorting().getTeamName(all));
 			updateProperties(all);
 			collision.put(all.getName(), true);
-			hiddenNametagFor.put(all, new HashSet<>());
+			hiddenNametagFor.put(all, new ArrayList<>());
 			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
 			if (isDisabled(all.getServer(), all.getWorld())) {
-				disabledPlayers.add(all);
+				addDisabledPlayer(all);
 				continue;
 			}
 			registerTeam(all);
@@ -62,7 +62,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	@Override
 	public void unload() {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (!disabledPlayers.contains(p)) unregisterTeam(p);
+			if (!isDisabledPlayer(p)) unregisterTeam(p);
 		}
 	}
 
@@ -70,13 +70,13 @@ public class NameTag extends TabFeature implements TeamManager {
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (!all.isLoaded()) continue;
-			if (!disabledPlayers.contains(all)) registerTeam(all, packetReceiver);
+			if (!isDisabledPlayer(all)) registerTeam(all, packetReceiver);
 		}
 	}
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (disabledPlayers.contains(refreshed)) return;
+		if (isDisabledPlayer(refreshed)) return;
 		boolean refresh;
 		if (force) {
 			updateProperties(refreshed);
@@ -95,15 +95,15 @@ public class NameTag extends TabFeature implements TeamManager {
 		((ITabPlayer) connectedPlayer).setTeamName(getSorting().getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
 		collision.put(connectedPlayer.getName(), true);
-		hiddenNametagFor.put(connectedPlayer, new HashSet<>());
+		hiddenNametagFor.put(connectedPlayer, new ArrayList<>());
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
-			if (!disabledPlayers.contains(all)) {
+			if (!isDisabledPlayer(all)) {
 				registerTeam(all, connectedPlayer);
 			}
 		}
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-			disabledPlayers.add(connectedPlayer);
+			addDisabledPlayer(connectedPlayer);
 			return;
 		}
 		registerTeam(connectedPlayer);
@@ -112,7 +112,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
-		if (!disabledPlayers.contains(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
+		if (!isDisabledPlayer(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
 		invisiblePlayers.remove(disconnectedPlayer.getName());
 		collision.remove(disconnectedPlayer.getName());
 		hiddenNametag.remove(disconnectedPlayer);
@@ -127,13 +127,13 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
-		boolean disabledBefore = disabledPlayers.contains(p);
+		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			disabledNow = true;
-			disabledPlayers.add(p);
+			addDisabledPlayer(p);
 		} else {
-			disabledPlayers.remove(p);
+			removeDisabledPlayer(p);
 		}
 		updateProperties(p);
 		if (disabledNow && !disabledBefore) {
@@ -154,10 +154,10 @@ public class NameTag extends TabFeature implements TeamManager {
 	
 	@Override
 	public void hideNametag(TabPlayer player, TabPlayer viewer) {
-		if (hiddenNametagFor.get(player).add(viewer)) {
-			updateTeamData(player, viewer);
-			if (player.getArmorStandManager() != null) player.getArmorStandManager().updateVisibility(true);
-		}
+		if (hiddenNametagFor.get(player).contains(viewer)) return;
+		hiddenNametagFor.get(player).add(viewer);
+		updateTeamData(player, viewer);
+		if (player.getArmorStandManager() != null) player.getArmorStandManager().updateVisibility(true);
 	}
 
 	@Override
@@ -169,10 +169,10 @@ public class NameTag extends TabFeature implements TeamManager {
 	
 	@Override
 	public void showNametag(TabPlayer player, TabPlayer viewer) {
-		if (hiddenNametagFor.get(player).remove(viewer)) {
-			updateTeamData(player, viewer);
-			if (player.getArmorStandManager() != null) player.getArmorStandManager().updateVisibility(true);
-		}
+		if (!hiddenNametagFor.get(player).contains(viewer)) return;
+		hiddenNametagFor.get(player).remove(viewer);
+		updateTeamData(player, viewer);
+		if (player.getArmorStandManager() != null) player.getArmorStandManager().updateVisibility(true);
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	@Override
 	public void pauseTeamHandling(TabPlayer player) {
 		if (teamHandlingPaused.contains(player)) return;
-		if (!disabledPlayers.contains(player)) unregisterTeam(player);
+		if (!isDisabledPlayer(player)) unregisterTeam(player);
 		teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
 	}
 
@@ -196,7 +196,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	public void resumeTeamHandling(TabPlayer player) {
 		if (!teamHandlingPaused.contains(player)) return;
 		teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
-		if (!disabledPlayers.contains(player)) registerTeam(player);
+		if (!isDisabledPlayer(player)) registerTeam(player);
 	}
 
 	@Override
@@ -259,7 +259,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || disabledPlayers.contains(p)) continue;
+				if (!p.isLoaded() || isDisabledPlayer(p)) continue;
 				//nametag visibility
 				boolean invisible = p.hasInvisibilityPotion();
 				if (invisible && !invisiblePlayers.contains(p.getName())) {

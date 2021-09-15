@@ -3,10 +3,8 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,7 +35,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	private String toggleOffMessage;
 
 	//list of currently running bossbar announcements
-	private Set<BossBar> announcements = new HashSet<>();
+	private List<BossBar> announcements = new ArrayList<>();
 
 	//saving toggle choice into file
 	private boolean rememberToggleChoice;
@@ -51,7 +49,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	//if bossbar is hidden by default until toggle command is used
 	private boolean hiddenByDefault;
 
-	private Set<TabPlayer> visiblePlayers = new HashSet<>();
+	private List<TabPlayer> visiblePlayers = new ArrayList<>();
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -124,7 +122,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || !hasBossBarVisible(p) || disabledPlayers.contains(p)) return;
+		if (!p.isLoaded() || !hasBossBarVisible(p) || isDisabledPlayer(p)) return;
 		for (BossBar line : lineValues) {
 			if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
 				line.removePlayer(p);
@@ -145,7 +143,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-			disabledPlayers.add(connectedPlayer);
+			addDisabledPlayer(connectedPlayer);
 			return;
 		}
 		setBossBarVisible(connectedPlayer, !bossbarOffPlayers.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
@@ -154,9 +152,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabled(p.getServer(), p.getWorld())) {
-			disabledPlayers.add(p);
+			addDisabledPlayer(p);
 		} else {
-			disabledPlayers.remove(p);
+			removeDisabledPlayer(p);
 		}
 		for (BossBar line : lineValues) {
 			line.removePlayer(p);
@@ -178,7 +176,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	 * @param p - player to process
 	 */
 	protected void detectBossBarsAndSend(TabPlayer p) {
-		if (disabledPlayers.contains(p) || !hasBossBarVisible(p)) return;
+		if (isDisabledPlayer(p) || !hasBossBarVisible(p)) return;
 		showBossBars(p, defaultBars);
 		showBossBars(p, announcements.stream().map(BossBar::getName).collect(Collectors.toList()));
 	}
@@ -314,7 +312,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	@Override
-	public Set<BossBar> getAnnouncedBossBars() {
+	public List<BossBar> getAnnouncedBossBars() {
 		return announcements;
 	}
 }

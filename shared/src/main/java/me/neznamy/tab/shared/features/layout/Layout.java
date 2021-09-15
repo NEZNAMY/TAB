@@ -2,10 +2,8 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabFeature;
@@ -26,7 +24,7 @@ public class Layout extends TabFeature {
 	private Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
 	private List<Integer> emptySlots = new ArrayList<>();
 	private List<ParentGroup> groups = new ArrayList<>();
-	private Set<TabPlayer> viewers = new HashSet<>();
+	private List<TabPlayer> viewers = new ArrayList<>();
 	private TabPlayer[] viewerArray = new TabPlayer[0];
 
 	public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
@@ -41,6 +39,7 @@ public class Layout extends TabFeature {
 	}
 
 	public void sendTo(TabPlayer p) {
+		if (viewers.contains(p)) return;
 		viewers.add(p);
 		viewerArray = viewers.toArray(new TabPlayer[0]);
 		groups.forEach(g -> g.sendTo(p));
@@ -53,6 +52,7 @@ public class Layout extends TabFeature {
 	}
 
 	public void removeFrom(TabPlayer p) {
+		if (!viewers.contains(p)) return;
 		viewers.remove(p);
 		viewerArray = viewers.toArray(new TabPlayer[0]);
 		List<PlayerInfoData> list = new ArrayList<>();

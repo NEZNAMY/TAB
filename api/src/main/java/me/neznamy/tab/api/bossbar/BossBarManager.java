@@ -1,7 +1,7 @@
 package me.neznamy.tab.api.bossbar;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -158,10 +158,10 @@ public interface BossBarManager {
 	public void announceBossBar(String bossbar, int duration);
 
 	/**
-	 * Returns set of bossbars which are currently being announced.
-	 * @return	set of currently active bossbar announcements
+	 * Returns list of bossbars which are currently being announced.
+	 * @return	list of currently active bossbar announcements
 	 * @see #sendBossBarTemporarily(TabPlayer, String, int)
 	 * @see #announceBossBar(String, int)
 	 */
-	public Set<BossBar> getAnnouncedBossBars();
+	public List<BossBar> getAnnouncedBossBars();
 }

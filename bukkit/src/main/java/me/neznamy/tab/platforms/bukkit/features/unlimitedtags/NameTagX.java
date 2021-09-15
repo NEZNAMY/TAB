@@ -3,11 +3,9 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -64,7 +62,7 @@ public class NameTagX extends NameTag {
 	
 	private Map<TabPlayer, Location> playerLocations = new ConcurrentHashMap<>();
 	
-	private Set<TabPlayer> playersInDisabledUnlimitedWorlds = new HashSet<>();
+	private List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -209,7 +207,8 @@ public class NameTagX extends NameTag {
 		getEntityIdMap().put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		loadArmorStands(connectedPlayer);
 		if (isDisabled(connectedPlayer.getWorld())) {
-			playersInDisabledUnlimitedWorlds.add(connectedPlayer);
+			if (!playersInDisabledUnlimitedWorlds.contains(connectedPlayer))
+				playersInDisabledUnlimitedWorlds.add(connectedPlayer);
 			return;
 		}
 		if (isInDisabledWorld(connectedPlayer)) return;
@@ -258,9 +257,9 @@ public class NameTagX extends NameTag {
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		super.onWorldChange(p, from, to);
 		if (isDisabled(p.getWorld())) {
-			getDisabledPlayers().add(p);
+			addDisabledPlayer(p);
 		} else {
-			getDisabledPlayers().remove(p);
+			removeDisabledPlayer(p);
 		}
 		TabPlayer[] nearby = p.getArmorStandManager().getNearbyPlayers();
 		p.getArmorStandManager().destroy();
@@ -421,7 +420,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	public boolean isInDisabledWorld(TabPlayer p) {
-		return getDisabledPlayers().contains(p) || isDisabled(p.getWorld());
+		return isDisabledPlayer(p) || isDisabled(p.getWorld());
 	}
 
 	public boolean isMarkerFor18x() {

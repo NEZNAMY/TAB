@@ -1,6 +1,6 @@
 package me.neznamy.tab.api.bossbar;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -174,12 +174,12 @@ public interface BossBar {
 	public void removePlayer(TabPlayer player);
 
 	/**
-	 * Returns set of players who can see this bossbar.
+	 * Returns list of players who can see this bossbar.
 	 * <p>
-	 * The returned set is immutable can only be used to read, writing
-	 * does not do anything. For adding/removing playes see {@link #addPlayer(TabPlayer)}
+	 * The returned list can only be used to read. Writing
+	 * will not work properly. For adding/removing playes see {@link #addPlayer(TabPlayer)}
 	 * and {@link #removePlayer(TabPlayer)}.
-	 * @return	Immutable set of players seeing this bossbar
+	 * @return	List of players seeing this bossbar
 	 */
-	public Set<TabPlayer> getPlayers();
+	public List<TabPlayer> getPlayers();
 }

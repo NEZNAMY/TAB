@@ -7,10 +7,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,7 +23,7 @@ public class SkinManager {
 	private ConfigurationFile cache;
 	private Map<String, List<String>> players;
 	private Map<Integer, List<String>> mineskin;
-	private Set<String> invalidSkins = new HashSet<>();
+	private List<String> invalidSkins = new ArrayList<>();
 	private Object defaultSkin;
 
 	public SkinManager(String defaultSkin) {

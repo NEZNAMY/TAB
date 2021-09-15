@@ -2,10 +2,8 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -116,14 +114,12 @@ public class BukkitTabPlayer extends ITabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
-			Set<BarFlag> flags = new HashSet<>();
-			if (packet.isCreateWorldFog()) flags.add(BarFlag.CREATE_FOG);
-			if (packet.isDarkenScreen()) flags.add(BarFlag.DARKEN_SKY);
-			if (packet.isPlayMusic()) flags.add(BarFlag.PLAY_BOSS_MUSIC);
 			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
-					BarStyle.valueOf(packet.getOverlay().getBukkitName()),
-					flags.toArray(new BarFlag[0]));
+					BarStyle.valueOf(packet.getOverlay().getBukkitName()));
+			if (packet.isCreateWorldFog()) bar.addFlag(BarFlag.CREATE_FOG);
+			if (packet.isDarkenScreen()) bar.addFlag(BarFlag.DARKEN_SKY);
+			if (packet.isPlayMusic()) bar.addFlag(BarFlag.PLAY_BOSS_MUSIC);
 			bar.setProgress(packet.getPct());
 			bossbars.put(packet.getId(), bar);
 			bar.addPlayer(player);

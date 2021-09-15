@@ -3,11 +3,9 @@ package me.neznamy.tab.platforms.velocity;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
@@ -21,8 +19,8 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -109,18 +107,16 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
-		Set<Flag> flags = new HashSet<>();
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
-			if (packet.isCreateWorldFog()) flags.add(Flag.CREATE_WORLD_FOG);
-			if (packet.isDarkenScreen()) flags.add(Flag.DARKEN_SCREEN);
-			if (packet.isPlayMusic()) flags.add(Flag.PLAY_BOSS_MUSIC);
 			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
 					packet.getPct(), 
 					Color.valueOf(packet.getColor().toString()), 
-					Overlay.valueOf(packet.getOverlay().toString()), 
-					flags);
+					Overlay.valueOf(packet.getOverlay().toString()));
+			if (packet.isCreateWorldFog()) bar.addFlag(Flag.CREATE_WORLD_FOG);
+			if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
+			if (packet.isPlayMusic()) bar.addFlag(Flag.PLAY_BOSS_MUSIC);
 			bossbars.put(packet.getId(), bar);
 			player.showBossBar(bar);
 			break;
@@ -140,13 +136,25 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			bar.color(Color.valueOf(packet.getColor().toString()));
 			break;
 		case UPDATE_PROPERTIES:
-			if (packet.isCreateWorldFog()) flags.add(Flag.CREATE_WORLD_FOG);
-			if (packet.isDarkenScreen()) flags.add(Flag.DARKEN_SCREEN);
-			if (packet.isPlayMusic()) flags.add(Flag.PLAY_BOSS_MUSIC);
-			bossbars.get(packet.getId()).flags(flags);
+			bar = bossbars.get(packet.getId());
+			processFlag(bar, packet.isCreateWorldFog(), Flag.CREATE_WORLD_FOG);
+			processFlag(bar, packet.isDarkenScreen(), Flag.DARKEN_SCREEN);
+			processFlag(bar, packet.isPlayMusic(), Flag.PLAY_BOSS_MUSIC);
 			break;
 		default:
 			break;
+		}
+	}
+	
+	private void processFlag(BossBar bar, boolean targetValue, Flag flag) {
+		if (targetValue) {
+			if (!bar.hasFlag(flag)) {
+				bar.addFlag(flag);
+			}
+		} else {
+			if (bar.hasFlag(flag)) {
+				bar.removeFlag(flag);
+			}
 		}
 	}
 	

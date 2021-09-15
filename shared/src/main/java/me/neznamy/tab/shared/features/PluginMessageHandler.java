@@ -56,7 +56,7 @@ public abstract class PluginMessageHandler {
 			long cpu = in.readLong();
 			PlayerPlaceholder pl = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			pl.getLastValues().put(player.getName(), output);
-			pl.getForceUpdate().add(player.getName());
+			if (!pl.getForceUpdate().contains(player.getName())) pl.getForceUpdate().add(player.getName());
 			TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 		}
 		if (subChannel.equals("Attribute")) {

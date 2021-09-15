@@ -6,11 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -26,7 +25,7 @@ public class ErrorManager {
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
 	//one time messages already sent into console so they are not sent again
-	private Set<String> oneTimeMessages = new HashSet<>();
+	private List<String> oneTimeMessages = new ArrayList<>();
 
 	//amount of logged startup warns
 	private int startupWarns = 0;

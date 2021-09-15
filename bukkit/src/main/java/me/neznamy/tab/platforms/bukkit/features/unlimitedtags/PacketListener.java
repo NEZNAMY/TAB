@@ -63,7 +63,7 @@ public class PacketListener extends TabFeature {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
 		String world = ((Player)receiver.getPlayer()).getWorld().getName();
-		if (!receiver.isLoaded() || nameTagX.getDisabledPlayers().contains(receiver) || nameTagX.isDisabled(world)) return;
+		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.isDisabled(world)) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		} else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {

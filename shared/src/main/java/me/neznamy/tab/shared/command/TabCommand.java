@@ -3,9 +3,8 @@ package me.neznamy.tab.shared.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -39,7 +38,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new SendCommand());
 		registerSubCommand(new SetCollisionCommand());
 		registerSubCommand(new ScoreboardCommand());
-		Set<String> properties = Sets.newHashSet(PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
+		List<String> properties = Lists.newArrayList(PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
 		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
 			properties.add(line.toString());
 		}

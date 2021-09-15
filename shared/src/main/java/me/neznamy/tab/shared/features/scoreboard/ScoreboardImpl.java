@@ -2,9 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -43,7 +41,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	private List<Line> lines = new ArrayList<>();
 
 	//players currently seeing this scoreboard
-	private Set<TabPlayer> players = new HashSet<>();
+	private List<TabPlayer> players = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters and registers lines to feature manager
@@ -158,7 +156,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		return lines;
 	}
 
-	public Set<TabPlayer> getPlayers() {
+	public List<TabPlayer> getPlayers() {
 		return players;
 	}
 

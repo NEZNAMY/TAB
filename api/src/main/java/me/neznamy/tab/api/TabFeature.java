@@ -3,9 +3,7 @@ package me.neznamy.tab.api;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
@@ -18,8 +16,7 @@ public abstract class TabFeature {
 	private boolean serverWhitelistMode;
 	protected String[] disabledWorlds = new String[0];
 	private boolean worldWhitelistMode;
-	protected Set<TabPlayer> disabledPlayers = new HashSet<>();
-	
+	private List<TabPlayer> disabledPlayers = new ArrayList<>();
 	private List<String> methodOverrides = new ArrayList<>();
 	
 	protected TabFeature(String featureName) {
@@ -249,7 +246,16 @@ public abstract class TabFeature {
 		return methodOverrides.contains(method);
 	}
 
-	public Set<TabPlayer> getDisabledPlayers() {
-		return disabledPlayers;
+	public boolean isDisabledPlayer(TabPlayer p) {
+		return disabledPlayers.contains(p);
+	}
+	
+	public void addDisabledPlayer(TabPlayer p) {
+		if (disabledPlayers.contains(p)) return;
+		disabledPlayers.add(p);
+	}
+	
+	public boolean removeDisabledPlayer(TabPlayer p) {
+		return disabledPlayers.remove(p);
 	}
 }

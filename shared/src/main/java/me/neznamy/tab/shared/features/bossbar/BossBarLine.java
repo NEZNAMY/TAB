@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.features.bossbar;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -43,7 +43,7 @@ public class BossBarLine implements BossBar {
 	private String progress;
 	
 	//set of players seeing this bossbar
-	private Set<TabPlayer> players = new HashSet<>();
+	private List<TabPlayer> players = new ArrayList<>();
 	
 	//refreshers
 	private TextRefresher textRefresher;
@@ -247,7 +247,7 @@ public class BossBarLine implements BossBar {
 	}
 
 	@Override
-	public Set<TabPlayer> getPlayers() {
-		return new HashSet<>(players);
+	public List<TabPlayer> getPlayers() {
+		return players;
 	}
 }

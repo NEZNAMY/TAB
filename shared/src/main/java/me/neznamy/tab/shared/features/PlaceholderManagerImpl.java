@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -45,8 +43,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	//plugin internals + PAPI + API
 	private Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
-	//map of String-Set of features using placeholder
-	private Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
+	//map of String-List of features using placeholder
+	private Map<String, List<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
 	private Placeholder[] usedPlaceholders = new Placeholder[0];
 	
 	private AtomicInteger atomic = new AtomicInteger();
@@ -59,8 +57,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private void refresh() {
 		int loopTime = atomic.addAndGet(50);
 		int size = TAB.getInstance().getOnlinePlayers().length;
-		Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
-		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
+		Map<TabPlayer, List<TabFeature>> update = new HashMap<>(size);
+		Map<TabPlayer, List<TabFeature>> forceUpdate = new HashMap<>(size);
 		boolean somethingChanged = false;
 		for (Placeholder placeholder : usedPlaceholders) {
 			if (loopTime % placeholder.getRefresh() != 0) continue;
@@ -71,21 +69,21 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		if (somethingChanged) refresh(forceUpdate, update);
 	}
 	
-	private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
-		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+	private void refresh(Map<TabPlayer, List<TabFeature>> forceUpdate, Map<TabPlayer, List<TabFeature>> update) {
+		for (Entry<TabPlayer, List<TabFeature>> entry : update.entrySet()) {
 			if (forceUpdate.containsKey(entry.getKey())) {
 				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
 			}
 		}
 		long startRefreshTime = System.nanoTime();
-		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
+		for (Entry<TabPlayer, List<TabFeature>> entry : forceUpdate.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), true);
 				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
 			}
 		}
-		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+		for (Entry<TabPlayer, List<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), false);
@@ -96,7 +94,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuConstants.UsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
 	}
 
-	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {
+	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, List<TabFeature>> forceUpdate) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
@@ -104,11 +102,11 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
 				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
-					forceUpdate.computeIfAbsent(p2, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+					forceUpdate.computeIfAbsent(p2, x -> new ArrayList<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
 				}
 				if (placeholder.update(p2, p1)) {
-					forceUpdate.computeIfAbsent(p1, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+					forceUpdate.computeIfAbsent(p1, x -> new ArrayList<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
 				}
 			}
@@ -117,12 +115,12 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		return somethingChanged;
 	}
 
-	private boolean updatePlayerPlaceholder(PlayerPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> update) {
+	private boolean updatePlayerPlaceholder(PlayerPlaceholder placeholder, Map<TabPlayer, List<TabFeature>> update) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.isLoaded() && placeholder.update(all)) {
-				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+				update.computeIfAbsent(all, k -> new ArrayList<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 				somethingChanged = true;
 			}
 		}
@@ -130,14 +128,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		return somethingChanged;
 	}
 
-	private boolean updateServerPlaceholder(ServerPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> update) {
+	private boolean updateServerPlaceholder(ServerPlaceholder placeholder, Map<TabPlayer, List<TabFeature>> update) {
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		if (placeholder.update()) {
 			somethingChanged = true;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (!all.isLoaded()) continue;
-				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+				update.computeIfAbsent(all, k -> new ArrayList<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 			}
 		}
 		TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
@@ -279,7 +277,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void addUsedPlaceholder(String identifier, TabFeature feature) {
-		placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature);
+		placeholderUsage.computeIfAbsent(identifier, x -> new ArrayList<>()).add(feature);
 		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).collect(Collectors.toSet()).toArray(new Placeholder[0]);
 	}
 
