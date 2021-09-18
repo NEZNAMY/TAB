@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.permission;
 import java.util.Optional;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -33,10 +33,10 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			if (version.startsWith("4")) return UPDATE_MESSAGE;
 			net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
 			User user = api.getUserManager().getUser(p.getUniqueId());
-			if (user == null) return GroupRefresher.DEFAULT_GROUP; //pretend like nothing is wrong
+			if (user == null) return GroupManager.DEFAULT_GROUP; //pretend like nothing is wrong
 			return user.getPrimaryGroup();
 		} catch (Exception e) {
-			return GroupRefresher.DEFAULT_GROUP;
+			return GroupManager.DEFAULT_GROUP;
 		}
 	}
 

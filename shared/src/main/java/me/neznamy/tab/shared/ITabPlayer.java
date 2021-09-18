@@ -17,7 +17,6 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.shared.features.GroupRefresher;
 
 /**
  * The core class for player
@@ -28,7 +27,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	protected UUID uniqueId;
 	protected String world;
 	protected String server;
-	private String permissionGroup = GroupRefresher.DEFAULT_GROUP;
+	private String permissionGroup = GroupManager.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
 	private String forcedTeamName;
@@ -43,7 +42,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean onJoinFinished;
 
 	protected void init() {
-		setGroup(((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).detectPermissionGroup(this), false);
+		setGroup(TAB.getInstance().getGroupManager().detectPermissionGroup(this), false);
 		try {
 			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
 			bedrockPlayer = FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
@@ -287,7 +286,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (permissionGroup != null) {
 			this.permissionGroup = permissionGroup;
 		} else {
-			this.permissionGroup = GroupRefresher.DEFAULT_GROUP;
+			this.permissionGroup = GroupManager.DEFAULT_GROUP;
 		}
 		if (refreshIfChanged) {
 			forceRefresh();

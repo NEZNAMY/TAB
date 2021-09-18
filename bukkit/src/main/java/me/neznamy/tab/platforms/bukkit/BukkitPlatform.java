@@ -93,9 +93,9 @@ public class BukkitPlatform implements Platform {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
 		loadNametagFeature(tab);
-		tab.loadUniversalFeatures();
 		new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
 			if (nms.getMinorVersion() < 9) {
 				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));

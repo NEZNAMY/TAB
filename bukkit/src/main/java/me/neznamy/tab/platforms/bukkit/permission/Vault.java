@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.permission;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.GroupRefresher;
+import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.milkbowl.vault.permission.Permission;
 
@@ -30,7 +30,7 @@ public class Vault implements PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		if (getName().equals("SuperPerms")) return GroupRefresher.DEFAULT_GROUP;
+		if (getName().equals("SuperPerms")) return GroupManager.DEFAULT_GROUP;
 		return permission.getPrimaryGroup((Player) p.getPlayer());
 	}
 

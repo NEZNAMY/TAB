@@ -9,7 +9,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -36,7 +35,7 @@ public class Main extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 10535);
-		metrics.addCustomChart(new SimplePie("permission_system", () -> ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin().getName()));
+		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
 	}
 	

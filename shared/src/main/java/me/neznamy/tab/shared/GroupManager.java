@@ -1,14 +1,10 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.CpuConstants;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -19,7 +15,7 @@ import net.luckperms.api.event.user.UserDataRecalculateEvent;
 /**
  * Permission group refresher
  */
-public class GroupRefresher extends TabFeature {
+public class GroupManager {
 
 	public static final String DEFAULT_GROUP = "NONE";
 	
@@ -28,8 +24,7 @@ public class GroupRefresher extends TabFeature {
 	private boolean groupsByPermissions;
 	private List<String> primaryGroupFindingList;
 	
-	public GroupRefresher(PermissionPlugin plugin) {
-		super("Permission group refreshing");
+	public GroupManager(PermissionPlugin plugin) {
 		this.plugin = plugin;
 		groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 		primaryGroupFindingList = new ArrayList<>();
@@ -42,10 +37,10 @@ public class GroupRefresher extends TabFeature {
 				TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 				if (p == null) return; //server still starting up and users connecting already (LP loading them)
 				refreshPlayer(p);
-				TAB.getInstance().getCPUManager().addTime(this, CpuConstants.UsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
+				TAB.getInstance().getCPUManager().addTime("Permission group refreshing", CpuConstants.UsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
 			});
 		} else if (!(plugin instanceof None)){
-			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", this, CpuConstants.UsageCategory.REFRESHING_GROUPS, () -> {
+			TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, "refreshing permission groups", "Repeating task", CpuConstants.UsageCategory.REFRESHING_GROUPS, () -> {
 				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) refreshPlayer(p);
 			});
 		}
@@ -56,8 +51,7 @@ public class GroupRefresher extends TabFeature {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
-	public void unload() {
+	public void unregisterHook() {
 		if (luckPermsSub != null) ((EventSubscription<UserDataRecalculateEvent>)luckPermsSub).close();
 	}
 

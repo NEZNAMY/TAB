@@ -22,7 +22,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.GroupRefresher;
 
 /**
  * Main class for Bukkit platform
@@ -53,7 +52,7 @@ public class Main extends JavaPlugin {
 		Metrics metrics = new Metrics(this, 5304);
 		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
-		metrics.addCustomChart(new SimplePie("permission_system", () -> ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin().getName()));
+		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("server_version", () -> "1." + NMSStorage.getInstance().getMinorVersion() + ".x"));
 	}
 

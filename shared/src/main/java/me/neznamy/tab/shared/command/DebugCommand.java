@@ -11,7 +11,6 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.Playerlist;
 
@@ -58,7 +57,7 @@ public class DebugCommand extends SubCommand {
 		if (tab.getErrorManager().getErrorLog().exists()) {
 			sendMessage(sender, "&6" + tab.getErrorManager().getErrorLog().getPath() + " size: &c" + tab.getErrorManager().getErrorLog().length()/1024 + "KB");
 		}
-		sendMessage(sender, "&6Permission plugin: &b" + ((GroupRefresher)tab.getFeatureManager().getFeature("group")).getPlugin().getName());
+		sendMessage(sender, "&6Permission plugin: &b" + TAB.getInstance().getGroupManager().getPlugin().getName());
 		sendMessage(sender, "&6Permission group choice logic: &b" + getGroupChoiceLogic());
 		sendMessage(sender, "&6Sorting system: &b" + getSortingType());
 		sendMessage(sender, separator);
@@ -97,8 +96,7 @@ public class DebugCommand extends SubCommand {
 	 * @return group choice logic
 	 */
 	private String getGroupChoiceLogic() {
-		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
-		if (group.isGroupsByPermissions()) {
+		if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
 			return "Permissions";
 		}
 		return "Primary group";
@@ -124,8 +122,7 @@ public class DebugCommand extends SubCommand {
 	 * @return all info about player's group
 	 */
 	private String getGroup(TabPlayer analyzed) {
-		GroupRefresher group = (GroupRefresher) TAB.getInstance().getFeatureManager().getFeature("group");
-		if (group.isGroupsByPermissions()) {
+		if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
 			return "&eHighest permission for group: &a" + analyzed.getGroup();
 		}
 		return "&ePrimary permission group: &a" + analyzed.getGroup();

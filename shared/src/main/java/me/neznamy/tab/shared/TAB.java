@@ -21,7 +21,6 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.AlignedPlayerlist;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
-import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PingSpoof;
@@ -79,6 +78,8 @@ public class TAB extends TabAPI {
 
 	//server version, always using latest on proxies
 	private ProtocolVersion serverVersion;
+	
+	private GroupManager groupManager;
 
 	public TAB(Platform platform, ProtocolVersion serverVersion) {
 		this.platform = platform;
@@ -133,6 +134,7 @@ public class TAB extends TabAPI {
 			configuration.loadFiles();
 			placeholderManager = new PlaceholderManagerImpl();
 			featureManager.registerFeature("placeholders", placeholderManager);
+			groupManager = new GroupManager(platform.detectPermissionPlugin());
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
@@ -161,6 +163,7 @@ public class TAB extends TabAPI {
 		disabled = true;
 		try {
 			long time = System.currentTimeMillis();
+			groupManager.unregisterHook();
 			cpu.cancelAllTasks();
 			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
@@ -191,7 +194,6 @@ public class TAB extends TabAPI {
 		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
 		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
 		if (configuration.getLayout().getBoolean("enabled", false)) featureManager.registerFeature("layout", new LayoutManager());
-		featureManager.registerFeature("group", new GroupRefresher(platform.detectPermissionPlugin()));
 		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {
 			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
@@ -338,5 +340,9 @@ public class TAB extends TabAPI {
 	@Override
 	public PropertyConfiguration getUsers() {
 		return configuration.getUsers();
+	}
+
+	public GroupManager getGroupManager() {
+		return groupManager;
 	}
 }

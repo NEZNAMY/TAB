@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.GroupRefresher;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -59,7 +58,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerServerPlaceholder("%memory-max%", 100000000, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576)));
 		manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
 		manager.registerServerPlaceholder("%memory-max-gb%", 100000000, () -> decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024));
-		PermissionPlugin plugin = ((GroupRefresher)TAB.getInstance().getFeatureManager().getFeature("group")).getPlugin();
+		PermissionPlugin plugin = TAB.getInstance().getGroupManager().getPlugin();
 		if (plugin instanceof LuckPerms) {
 			manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, ((LuckPerms)plugin)::getPrefix);
 			manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, ((LuckPerms)plugin)::getSuffix);
