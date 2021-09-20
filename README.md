@@ -21,7 +21,7 @@ Discord invite link: https://discord.gg/EaSvdk6
 
 
 ## Maven Repository
-```
+```xml
 <repositories>
   <repository>
     <id>jitpack.io</id>
@@ -35,6 +35,7 @@ Discord invite link: https://discord.gg/EaSvdk6
     <groupId>com.github.NEZNAMY</groupId>
     <artifactId>TAB</artifactId>
     <version>2.9.2</version>
+    <scope>provided</scope>
   </dependency>
 </dependencies>
  ```
