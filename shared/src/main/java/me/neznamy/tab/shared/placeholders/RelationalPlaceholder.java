@@ -54,7 +54,7 @@ public class RelationalPlaceholder extends Placeholder {
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!getLastValues().containsKey(viewer.getName() + "-" + target.getName())) update(viewer, target);
 		String value = getLastValues().get(viewer.getName() + "-" + target.getName());
-		String newValue = String.valueOf(setPlaceholders(findReplacement(EnumChatFormat.color(value)), target));
+		String newValue = String.valueOf(setPlaceholders(replacements.findReplacement(EnumChatFormat.color(value)), target));
 		if (newValue.contains("%value%")) {
 			newValue = newValue.replace("%value%", value);
 		}

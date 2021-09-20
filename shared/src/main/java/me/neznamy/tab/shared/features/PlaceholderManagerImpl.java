@@ -283,6 +283,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public String findReplacement(String placeholder, String output) {
-		return getPlaceholder(placeholder).findReplacement(output);
+		return getPlaceholder(placeholder).getReplacements().findReplacement(output);
 	}
 }
