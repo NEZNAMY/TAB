@@ -31,6 +31,7 @@ import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -193,7 +194,13 @@ public class TAB extends TabAPI {
 		if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) featureManager.registerFeature("spectatorfix", new SpectatorFix());
 		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
 		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
-		if (configuration.getLayout().getBoolean("enabled", false)) featureManager.registerFeature("layout", new LayoutManager());
+		if (configuration.getLayout().getBoolean("enabled", false)) {
+			if (getTeamManager() == null) {
+				//sorting is disabled, but layout needs team names
+				featureManager.registerFeature("sorting", new Sorting(null));
+			}
+			featureManager.registerFeature("layout", new LayoutManager());
+		}
 		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.getSeparatorType().equals("server")) {
 			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {

@@ -58,15 +58,29 @@ public class Sorting extends TabFeature {
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)) return;
+		if (!p.isLoaded() || (nametags != null && (nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)))) return;
 		String newName = getTeamName(p);
 		if (!p.getTeamName().equals(newName)) {
-			nametags.unregisterTeam(p);
+			if (nametags != null) nametags.unregisterTeam(p);
 			LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
 			if (layout != null) layout.updateTeamName(p, newName);
 			((ITabPlayer) p).setTeamName(newName);
-			nametags.registerTeam(p);
+			if (nametags != null) nametags.registerTeam(p);
 		}
+	}
+	
+	@Override
+	public void load(){
+		if (nametags != null) return; //handled by nametag feature
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			((ITabPlayer) all).setTeamName(getTeamName(all));
+		}
+	}
+	
+	@Override
+	public void onJoin(TabPlayer connectedPlayer) {
+		if (nametags != null) return; //handled by nametag feature
+		((ITabPlayer) connectedPlayer).setTeamName(getTeamName(connectedPlayer));
 	}
 	
 	/**
