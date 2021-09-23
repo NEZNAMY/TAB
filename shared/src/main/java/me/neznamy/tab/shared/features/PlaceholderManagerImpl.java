@@ -279,8 +279,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void addUsedPlaceholder(String identifier, TabFeature feature) {
-		placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature);
-		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+		if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
+			usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+		}
 	}
 
 	@Override
