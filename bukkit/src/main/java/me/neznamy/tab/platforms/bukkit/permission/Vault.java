@@ -12,7 +12,7 @@ import net.milkbowl.vault.permission.Permission;
  */
 public class Vault implements PermissionPlugin {
 
-	//permission plugi
+	//permission plugin
 	private Permission permission;
 	
 	//vault version
