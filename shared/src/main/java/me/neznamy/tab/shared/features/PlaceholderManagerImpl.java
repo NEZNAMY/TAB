@@ -274,6 +274,10 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			addUsedPlaceholder(identifier, this); //likely used via tab expansion
 			return getPlaceholder(identifier);
 		}
+		if (!placeholderUsage.containsKey(identifier)) {
+			//tab expansion for internal placeholder
+			addUsedPlaceholder(identifier, this);
+		}
 		return p;
 	}
 
