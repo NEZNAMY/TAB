@@ -38,6 +38,7 @@ public class LatencyRefresher extends TabFeature {
 				if (all == p) continue; //already sent in refresh
 				list.add(new PlayerInfoData(group.getPlayers().get(all).getUUID(), all.getPing()));
 			}
+			if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), CpuConstants.PacketCategory.LAYOUT_LATENCY);
 		}
 	}
@@ -48,6 +49,7 @@ public class LatencyRefresher extends TabFeature {
 			if (group.getPlayers().get(p) != null) {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
 				for (TabPlayer all : layout.getViewers()) {
+					if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
 					all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_LATENCY);
 				}
 			}

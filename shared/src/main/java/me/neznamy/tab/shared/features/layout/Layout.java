@@ -48,6 +48,7 @@ public class Layout extends TabFeature {
 		for (int slot : emptySlots) {
 			list.add(new PlayerInfoData(manager.formatSlot(slot), manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
+		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
 	}
 
@@ -59,6 +60,7 @@ public class Layout extends TabFeature {
 		for (UUID id : manager.getUuids().values()) {
 			list.add(new PlayerInfoData(id));
 		}
+		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
 	}
 

@@ -150,6 +150,7 @@ public class LayoutManager extends TabFeature {
 			list.add(new PlayerInfoData(id));
 		}
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
 		}
 	}

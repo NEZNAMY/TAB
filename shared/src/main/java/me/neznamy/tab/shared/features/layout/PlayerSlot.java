@@ -48,6 +48,7 @@ public class PlayerSlot {
 		if (player != null) text = "";
 		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id));
 		for (TabPlayer viewer : layout.getViewers()) {
+			if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
 			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			sendSlot(viewer);
 			if (yellowNumber != null) {
@@ -58,6 +59,7 @@ public class PlayerSlot {
 	}
 	
 	public void sendSlot(TabPlayer p) {
+		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		PlayerInfoData data;
 		if (player != null) {
 			data = new PlayerInfoData(fakeplayer, id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p, false));
@@ -75,6 +77,7 @@ public class PlayerSlot {
 		} else {
 			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, new IChatBaseComponent(text)));
 			for (TabPlayer all : layout.getViewers()) {
+				if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
 				all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			}
 		}
