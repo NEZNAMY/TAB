@@ -56,6 +56,7 @@ public class ArmorStandManager {
 	 * @param viewer - player to spawn armor stands for
 	 */
 	public void spawn(TabPlayer viewer) {
+		if (viewer == null) throw new IllegalArgumentException("Attempted to add null player to nearby list");
 		nearbyPlayers.add(viewer);
 		nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
 		if (viewer.getVersion().getMinorVersion() < 8) return;
