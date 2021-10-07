@@ -238,7 +238,7 @@ public class BukkitPlatform implements Platform {
 		if (placeholderAPI == null) return placeholder;
 		try {
 			return PlaceholderAPI.setPlaceholders(player, placeholder);
-		} catch (Exception t) {
+		} catch (Throwable t) {
 			String playername = (player == null ? "<null>" : player.getName());
 			TAB.getInstance().getErrorManager().printError("PlaceholderAPI v" + placeholderAPI.getDescription().getVersion() + " generated an error when setting placeholder " + placeholder + " for player " + playername, t, false, TAB.getInstance().getErrorManager().getPapiErrorLog());
 			return "ERROR";
