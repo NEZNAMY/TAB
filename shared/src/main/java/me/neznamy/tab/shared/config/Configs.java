@@ -74,7 +74,6 @@ public class Configs {
 	 */
 	public void loadFiles() throws YAMLException, IOException {
 		ClassLoader loader = Configs.class.getClassLoader();
-		convertToV3();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
@@ -89,6 +88,8 @@ public class Configs {
 	 */
 	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		if (!config.hasConfigOption("mysql"))
+			convertToV3();
 		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
 		removeStrings = new String[list.size()];
 		for (int i=0; i<list.size(); i++) {
@@ -202,6 +203,7 @@ public class Configs {
 	}
 
 	public void convertToV3() {
+		config.setValues(new HashMap<>());
 		Map<String, ConfigurationFile> yamls = new HashMap<>();
 		File folder = tab.getPlatform().getDataFolder();
 		String path = folder.getPath();
@@ -216,6 +218,7 @@ public class Configs {
 			yamls.put("finalConfig", new YamlConfigurationFile(null, new File(path+"\\config.yml")));
 			yamls.put("groups.yml", new YamlConfigurationFile(null, new File(path+"\\groups.yml")));
 			yamls.put("users.yml", new YamlConfigurationFile(null, new File(path+"\\users.yml")));
+			config = yamls.get("finalConfig");
 		} catch (IOException e) {e.printStackTrace();}
 
 		createConfigYml(yamls);
@@ -246,7 +249,7 @@ public class Configs {
 	private final List<String> disabledServer = Collections.singletonList("disabledServer");
 
 	private void createConfigYml(Map<String, ConfigurationFile> yamls) {
-		tab.sendConsoleMessage("Converting config",false);
+		tab.sendConsoleMessage("&c[TAB v" + TAB.PLUGIN_VERSION + "] Converting legacy 2.9.2 config to 3.0",true);
 		String worldOrServer = tab.getPlatform().getSeparatorType();
 		boolean isProxy = worldOrServer.equals("server");
 
