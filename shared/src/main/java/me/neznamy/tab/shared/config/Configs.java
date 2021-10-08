@@ -210,14 +210,14 @@ public class Configs {
 		for (File file : folder.listFiles()) if (!checkFiles(file,yamls)) return;
 
 		try {
-			Files.createFile(Paths.get(path+"\\config.yml"));
-			if (!Files.exists(Paths.get(path+"\\groups.yml")))
-				Files.createFile(Paths.get(path+"\\groups.yml"));
-			if (!Files.exists(Paths.get(path+"\\users.yml")))
-				Files.createFile(Paths.get(path+"\\users.yml"));
-			yamls.put("finalConfig", new YamlConfigurationFile(null, new File(path+"\\config.yml")));
-			yamls.put("groups.yml", new YamlConfigurationFile(null, new File(path+"\\groups.yml")));
-			yamls.put("users.yml", new YamlConfigurationFile(null, new File(path+"\\users.yml")));
+			Files.createFile(Paths.get(path+File.separator+"config.yml"));
+			if (!Files.exists(Paths.get(path+File.separator+"groups.yml")))
+				Files.createFile(Paths.get(path+File.separator+"groups.yml"));
+			if (!Files.exists(Paths.get(path+File.separator+"users.yml")))
+				Files.createFile(Paths.get(path+File.separator+"users.yml"));
+			yamls.put("finalConfig", new YamlConfigurationFile(null, new File(path+File.separator+"config.yml")));
+			yamls.put("groups.yml", new YamlConfigurationFile(null, new File(path+File.separator+"groups.yml")));
+			yamls.put("users.yml", new YamlConfigurationFile(null, new File(path+File.separator+"users.yml")));
 			config = yamls.get("finalConfig");
 		} catch (IOException e) {e.printStackTrace();}
 
@@ -229,10 +229,10 @@ public class Configs {
 			return true;
 
 		try {
-			File oldfolder = new File(file.getParent()+"\\old_configs");
+			File oldfolder = new File(file.getParent()+File.separator+"old_configs");
 			if (!oldfolder.exists()) oldfolder.mkdir();
 
-			Path oldconfig = Paths.get(file.getParent()+"\\old_configs\\"+file.getName());
+			Path oldconfig = Paths.get(file.getParent()+File.separator+"old_configs"+File.separator+file.getName());
 			Files.copy(file.toPath(), oldconfig, StandardCopyOption.REPLACE_EXISTING);
 
 			yamls.put(file.getName(), new YamlConfigurationFile(null,file));
