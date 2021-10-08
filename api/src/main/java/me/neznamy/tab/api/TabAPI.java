@@ -96,4 +96,6 @@ public abstract class TabAPI {
 	public abstract PropertyConfiguration getGroups();
 	
 	public abstract PropertyConfiguration getUsers();
+	
+	public abstract void debug(String message);
 }

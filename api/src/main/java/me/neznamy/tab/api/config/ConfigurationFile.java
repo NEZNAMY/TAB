@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TabAPI;
+
 /**
  * Abstract class for configuration file
  */
@@ -93,6 +95,7 @@ public abstract class ConfigurationFile {
 			value = getIgnoreCase((Map<Object, Object>) value, tab);
 		}
 		if (value == null && defaultValue != null) {
+			TabAPI.getInstance().debug("Inserting missing config option \"" + path + "\" with value \"" + defaultValue + "\" into " + file.getName());
 			set(path, defaultValue);
 			return defaultValue;
 		}

@@ -118,6 +118,7 @@ public class TAB extends TabAPI {
 	 * Sends a console message with debug prefix if debug is enabled in config
 	 * @param message - message to be sent into console
 	 */
+	@Override
 	public void debug(String message) {
 		if (debugMode) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
 	}
