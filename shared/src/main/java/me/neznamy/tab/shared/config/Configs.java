@@ -296,14 +296,14 @@ public class Configs {
 		finalCfg.set("scoreboard-teams.sorting-types",sortingtypes);
 
 		finalCfg.set("scoreboard-teams.case-sensitive-sorting",premium.getBoolean("case-sentitive-sorting",true));
-		finalCfg.set("scoreboard-teams.case-disable-in-worlds",premium.getStringList("disable-features-in-worlds.nametag",disabledWorld));
+		finalCfg.set("scoreboard-teams.case-disable-in-worlds",config.getStringList("disable-features-in-worlds.nametag",disabledWorld));
 		if (isProxy)
-			finalCfg.set("scoreboard-teams.case-disable-in-servers",premium.getStringList("disable-features-in-servers.nametag",disabledServer));
-		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.enabled",premium.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled",false));
-		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients",premium.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients",false));
-		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.disable-on-boats",premium.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats",true));
-		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.space-between-lines",premium.getBoolean("unlimited-nametag-prefix-suffix-mode.space-between-lines",true));
-		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds",premium.getStringList("disable-features-in-worlds.unlimited-nametags",disabledWorld));
+			finalCfg.set("scoreboard-teams.case-disable-in-servers",config.getStringList("disable-features-in-servers.nametag",disabledServer));
+		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.enabled",config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled",false));
+		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients",config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients",false));
+		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.disable-on-boats",config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats",true));
+		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.space-between-lines",config.getBoolean("unlimited-nametag-prefix-suffix-mode.space-between-lines",true));
+		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds",config.getStringList("disable-features-in-worlds.unlimited-nametags",disabledWorld));
 		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.dynamic-lines",premium.getStringList("unlimited-nametag-mode-dynamic-lines",Arrays.asList("abovename","nametag","belowname","another")));
 		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.static-lines",premium.getConfigurationSection("unlimited-nametag-mode-static-lines"));
 
@@ -313,7 +313,7 @@ public class Configs {
 		finalCfg.set("tablist-name-formatting.anti-override", config.getBoolean("anti-override.tablist-names",true));
 		finalCfg.set("tablist-name-formatting.disable-in-worlds", config.getStringList("disable-features-in-worlds.tablist-names",disabledWorld));
 		if (isProxy)
-			finalCfg.set("tablist-name-formatting.disable-in-servers",premium.getStringList("disable-features-in-servers.tablist-names",disabledServer));
+			finalCfg.set("tablist-name-formatting.disable-in-servers",config.getStringList("disable-features-in-servers.tablist-names",disabledServer));
 
 		finalCfg.set("header-footer.enabled", config.getBoolean("enable-header-footer",true));
 		finalCfg.set("header-footer.disable-in-worlds", config.getStringList("disable-features-in-worlds.header-footer",disabledWorld));
@@ -327,13 +327,13 @@ public class Configs {
 		finalCfg.set("yellow-number-in-tablist.anti-override", config.getBoolean("anti-override.scoreboard-objectives",true));
 		finalCfg.set("yellow-number-in-tablist.disable-in-worlds", config.getStringList("disable-features-in-worlds.yellow-number",disabledWorld));
 		if (isProxy)
-			finalCfg.set("yellow-number.disable-in-servers",premium.getStringList("disable-features-in-servers.yellow-number",disabledServer));
+			finalCfg.set("yellow-number.disable-in-servers",config.getStringList("disable-features-in-servers.yellow-number",disabledServer));
 
 		finalCfg.set("belowname-objective", config.getConfigurationSection("classic-vanilla-belowname"));
 		finalCfg.set("belowname-objective.anti-override", config.getBoolean("anti-override.scoreboard-objectives",true));
 		finalCfg.set("belowname-objective.disable-in-worlds", config.getStringList("disable-features-in-worlds.belowname",disabledWorld));
 		if (isProxy)
-			finalCfg.set("belowname-objective.disable-in-servers",premium.getStringList("disable-features-in-servers.belowname",disabledServer));
+			finalCfg.set("belowname-objective.disable-in-servers",config.getStringList("disable-features-in-servers.belowname",disabledServer));
 
 		finalCfg.set("prevent-spectator-effect.enabled", config.getBoolean("do-not-move-spectators",false));
 
@@ -344,7 +344,7 @@ public class Configs {
 		finalCfg.set("bossbar.default-bars", bossbar.getStringList("default-bars",Arrays.asList("ServerInfo","tpsbar")));
 		finalCfg.set("bossbar.disable-in-worlds", bossbar.getObject("disable-features-in-worlds.bossbar"));
 		if (isProxy)
-			finalCfg.set("bossbar.disable-in-servers",premium.getStringList("disable-features-in-servers.bossbar",disabledServer));
+			finalCfg.set("bossbar.disable-in-servers",config.getStringList("disable-features-in-servers.bossbar",disabledServer));
 
 		Map<String,Map<String,String>> bossbars = bossbar.getConfigurationSection("bars");
 		Map<String,List<String>> perworldBossbars = bossbar.getConfigurationSection("per-world");
