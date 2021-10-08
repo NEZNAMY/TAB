@@ -8,12 +8,12 @@
 	<packaging>pom</packaging>
 	<description>An all-in-one solution that works</description>
 	<modules>
+		<module>api</module>
 		<module>shared</module>
 		<module>bukkit</module>
 		<module>bungeecord</module>
 		<module>velocity</module>
 		<module>jar</module>
-		<module>api</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
