@@ -74,7 +74,7 @@ public class Configs {
 	 */
 	public void loadFiles() throws YAMLException, IOException {
 		ClassLoader loader = Configs.class.getClassLoader();
-		convertToV3(loader);
+		convertToV3();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
 		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
@@ -201,7 +201,7 @@ public class Configs {
 		return mysql;
 	}
 
-	public void convertToV3(ClassLoader loader) {
+	public void convertToV3() {
 		Map<String, ConfigurationFile> yamls = new HashMap<>();
 		File folder = tab.getPlatform().getDataFolder();
 		String path = folder.getPath();
@@ -209,8 +209,10 @@ public class Configs {
 
 		try {
 			Files.createFile(Paths.get(path+"\\config.yml"));
-			Files.createFile(Paths.get(path+"\\groups.yml"));
-			Files.createFile(Paths.get(path+"\\users.yml"));
+			if (!Files.exists(Paths.get(path+"\\groups.yml")))
+				Files.createFile(Paths.get(path+"\\groups.yml"));
+			if (!Files.exists(Paths.get(path+"\\users.yml")))
+				Files.createFile(Paths.get(path+"\\users.yml"));
 			yamls.put("finalConfig", new YamlConfigurationFile(null, new File(path+"\\config.yml")));
 			yamls.put("groups.yml", new YamlConfigurationFile(null, new File(path+"\\groups.yml")));
 			yamls.put("users.yml", new YamlConfigurationFile(null, new File(path+"\\users.yml")));
