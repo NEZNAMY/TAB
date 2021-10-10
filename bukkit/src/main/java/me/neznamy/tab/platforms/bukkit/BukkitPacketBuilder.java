@@ -421,7 +421,9 @@ public class BukkitPacketBuilder implements PacketBuilder {
 			GameProfile profile = (GameProfile) nms.getMethod("PlayerInfoData_getProfile").invoke(nmsData);
 			Object nmsComponent = nms.getMethod("PlayerInfoData_getDisplayName").invoke(nmsData);
 			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int) nms.getMethod("PlayerInfoData_getLatency").invoke(nmsData), gamemode, listName));
+			PropertyMap map = new PropertyMap();
+			map.putAll(profile.getProperties());
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), map, (int) nms.getMethod("PlayerInfoData_getLatency").invoke(nmsData), gamemode, listName));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
