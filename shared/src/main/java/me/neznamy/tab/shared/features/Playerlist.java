@@ -40,7 +40,7 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 		this.tab = tab;
 		disabledWorlds = tab.getConfiguration().getConfig().getStringList("disable-features-in-"+tab.getPlatform().getSeparatorType()+"s.tablist-names", Arrays.asList("disabled" + tab.getPlatform().getSeparatorType()));
 		antiOverrideNames = tab.getConfiguration().getConfig().getBoolean("anti-override.usernames", true) && tab.getFeatureManager().isFeatureEnabled("injection");
-		refreshUsedPlaceholders();
+		usedPlaceholders = new HashSet<>(tab.getConfiguration().getConfig().getUsedPlaceholderIdentifiersRecursive(PropertyUtils.TABPREFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.TABSUFFIX));
 		antiOverrideTablist = tab.getConfiguration().getConfig().getBoolean("anti-override.tablist-names", true) && tab.getFeatureManager().isFeatureEnabled("injection");
 		if (antiOverrideTablist) {
 			tab.getFeatureManager().registerFeature("playerlist_info", new PlayerInfoPacketListener() {
