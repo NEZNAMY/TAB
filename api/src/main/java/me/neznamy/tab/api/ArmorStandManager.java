@@ -1,6 +1,7 @@
 package me.neznamy.tab.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class ArmorStandManager {
 	private Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
 	
 	//players in entity tracking range
-	private List<TabPlayer> nearbyPlayers = new ArrayList<>();
+	private List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<>());
 	
 	//array to iterate over to avoid concurrent modification and slightly boost performance & memory
 	private ArmorStand[] armorStandArray = new ArmorStand[0];
@@ -26,7 +27,7 @@ public class ArmorStandManager {
 	 * @param name - key name of the armor stand
 	 * @param as - armor stand to add
 	 */
-	public synchronized void addArmorStand(String name, ArmorStand as) {
+	public void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
 		armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
 		for (TabPlayer p : nearbyPlayerArray) as.spawn(p);
@@ -57,8 +58,10 @@ public class ArmorStandManager {
 	 */
 	public void spawn(TabPlayer viewer) {
 		if (viewer == null) throw new IllegalArgumentException("Attempted to add null player to nearby list");
-		nearbyPlayers.add(viewer);
-		nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+		synchronized (nearbyPlayers) {
+			nearbyPlayers.add(viewer);
+			nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+		}
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		for (ArmorStand a : armorStandArray) a.spawn(viewer);
 	}
@@ -106,8 +109,10 @@ public class ArmorStandManager {
 	 * @param viewer - player to remove
 	 */
 	public void unregisterPlayer(TabPlayer viewer) {
-		nearbyPlayers.remove(viewer);
-		nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+		synchronized (nearbyPlayers) {
+			nearbyPlayers.remove(viewer);
+			nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+		}
 	}
 
 	/**
@@ -115,8 +120,10 @@ public class ArmorStandManager {
 	 */
 	public void destroy() {
 		for (ArmorStand a : armorStandArray) a.destroy();
-		nearbyPlayers.clear();
-		nearbyPlayerArray = new TabPlayer[0];
+		synchronized (nearbyPlayers) {
+			nearbyPlayers.clear();
+			nearbyPlayerArray = new TabPlayer[0];
+		}
 	}
 
 	/**
