@@ -266,7 +266,7 @@ public class NameTagX extends NameTag {
 		loadArmorStands(p);
 		loadPassengers(p);
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			viewer.getArmorStandManager().destroy(p);
+			if (viewer.getArmorStandManager() != null) viewer.getArmorStandManager().destroy(p);
 			if (!to.equals(viewer.getWorld())) continue;
 			for (TabPlayer player : nearby) {
 				if (player == viewer) spawnArmorStands(p, viewer, true);

@@ -61,6 +61,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	private Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
 
 	private Object emptyScoreboard;
+	private Object dummyEntity;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -81,6 +82,13 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			emptyScoreboard = nms.newScoreboard.newInstance();
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Failed to create instance of \"Scoreboard\""));
+		}
+		if (nms.getMinorVersion() >= 8) {
+			try {
+				dummyEntity = nms.newEntityArmorStand.newInstance(nms.World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Failed to create instance of \"EntityArmorStand\""));
+			}
 		}
 		buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet));
 		buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport)packet));
@@ -253,7 +261,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InstantiationException 
 	 */
 	public Object build(PacketPlayOutSpawnEntityLiving packet) throws IllegalAccessException, InstantiationException, InvocationTargetException {
-		Object nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance(nms.getHandle.invoke(Bukkit.getOnlinePlayers().iterator().next()));
+		Object nmsPacket;
+		if (nms.getMinorVersion() >= 17) {
+			nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance(dummyEntity);
+		} else {
+			nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance();
+		}
 		nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYID, packet.getEntityId());
 		nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, entityIds.get(packet.getEntityType()));
 		nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_YAW, (byte)(packet.getLocation().getYaw() * 256.0f / 360.0f));
@@ -284,7 +297,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws InstantiationException 
 	 */
 	public Object build(PacketPlayOutEntityTeleport packet) throws IllegalAccessException, InstantiationException, InvocationTargetException {
-		Object nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance(nms.getHandle.invoke(Bukkit.getOnlinePlayers().iterator().next()));
+		Object nmsPacket;
+		if (nms.getMinorVersion() >= 17) {
+			nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance(dummyEntity);
+		} else {
+			nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance();
+		}
 		nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_ENTITYID, packet.getEntityId());
 		if (nms.getMinorVersion() >= 9) {
 			nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_X, packet.getLocation().getX());
@@ -311,7 +329,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
 			Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
 			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), profile.getProperties(), (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gamemode, listName));
+			PropertyMap map = new PropertyMap();
+			map.putAll(profile.getProperties());
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), map, (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gamemode, listName));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}

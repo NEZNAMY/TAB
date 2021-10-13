@@ -43,6 +43,7 @@ public class NMSStorage {
 	public Class<?> EntityPlayer;
 	private Class<?> Entity;
 	private Class<?> EntityLiving;
+	public Constructor<?> newEntityArmorStand;
 	public Field PING;
 	public Field PLAYER_CONNECTION;
 	public Field NETWORK_MANAGER;
@@ -50,6 +51,7 @@ public class NMSStorage {
 	public Method getHandle;
 	public Method sendPacket;
 	public Method getProfile;
+	public Method World_getHandle;
 	public Enum[] EnumChatFormat_values;
 	
 	//chat
@@ -224,6 +226,7 @@ public class NMSStorage {
 		EntityPlayer = getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer");
 		Entity = getNMSClass("net.minecraft.world.entity.Entity", "Entity");
 		EntityLiving = getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving");
+		Class<?> World = getNMSClass("net.minecraft.world.level.World", "World");
 		Class<?> EntityHuman = getNMSClass("net.minecraft.world.entity.player.EntityHuman", "EntityHuman");
 		Class<?> Packet = getNMSClass("net.minecraft.network.protocol.Packet", "Packet");
 		Class<?> PlayerConnection = getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection");
@@ -232,12 +235,15 @@ public class NMSStorage {
 		PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
 		getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
 		sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
+		World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
 		if (minorVersion >= 7) {
 			NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
 		}
 		if (minorVersion >= 8) {
 			CHANNEL = getFields(NetworkManager, Channel.class).get(0);
 			getProfile = getMethods(EntityHuman, GameProfile.class).get(0);
+			Class<?> EntityArmorStand = getNMSClass("net.minecraft.world.entity.decoration.EntityArmorStand", "EntityArmorStand");
+			newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
 		}
 		initializeChatComponents();
 		initializeChatPacket();
@@ -367,7 +373,11 @@ public class NMSStorage {
 	
 	private void initializeEntitySpawnPacket() throws ClassNotFoundException, NoSuchMethodException {
 		PacketPlayOutSpawnEntityLiving = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
-		newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
+		if (minorVersion >= 17) {
+			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
+		} else {
+			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
+		}
 		PacketPlayOutSpawnEntityLiving_ENTITYID = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(0);
 		PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(1);
 		PacketPlayOutSpawnEntityLiving_YAW = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
@@ -389,7 +399,11 @@ public class NMSStorage {
 	
 	private void initializeEntityTeleportPacket() throws NoSuchMethodException, ClassNotFoundException {
 		PacketPlayOutEntityTeleport = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
-		newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
+		if (minorVersion >= 17) {
+			newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
+		} else {
+			newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
+		}
 		PacketPlayOutEntityTeleport_ENTITYID = getFields(PacketPlayOutEntityTeleport, int.class).get(0);
 		PacketPlayOutEntityTeleport_YAW = getFields(PacketPlayOutEntityTeleport, byte.class).get(0);
 		PacketPlayOutEntityTeleport_PITCH = getFields(PacketPlayOutEntityTeleport, byte.class).get(1);
