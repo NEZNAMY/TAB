@@ -438,7 +438,15 @@ public class Configs {
 			}
 		}
 		groups.set("per-"+worldOrServer, groupMap);
+		groups.set("_DEFAULT_",groups.getConfigurationSection("_OTHER_"));
+		groups.set("_OTHER_",null);
 		users.set("per-"+worldOrServer, userMap);
+		for (Object world : groups.getConfigurationSection("per-"+worldOrServer).keySet()) {
+			String gPath = "per-"+worldOrServer+"."+world;
+			if (!groups.hasConfigOption(gPath+"._OTHER_")) continue;
+			groups.set(gPath+"._DEFAULT_",groups.getObject(gPath+"._OTHER_"));
+			groups.set(gPath+"._OTHER_",null);
+		}
 		finalCfg.set("header-footer.per-"+worldOrServer, headerFooterMap);
 	}
 
