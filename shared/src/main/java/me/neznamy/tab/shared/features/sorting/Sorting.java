@@ -45,7 +45,7 @@ public class Sorting extends TabFeature {
 	public Sorting(NameTag nametags) {
 		super("Team name refreshing");
 		this.nametags = nametags;
-		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sentitive-sorting", true);
+		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
 		types.put("GROUPS", Groups::new);
 		types.put("PERMISSIONS", Permissions::new);
 		types.put("PLACEHOLDER", Placeholder::new);

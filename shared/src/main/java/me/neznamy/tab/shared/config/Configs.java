@@ -300,8 +300,8 @@ public class Configs {
 		}
 		finalCfg.set("scoreboard-teams.sorting-types",sortingtypes);
 
-		finalCfg.set("scoreboard-teams.case-sensitive-sorting",premium.getBoolean("case-sentitive-sorting",true));
-		finalCfg.set("scoreboard-teams.case-disable-in-worlds",config.getStringList("disable-features-in-worlds.nametag",disabledWorld));
+		finalCfg.set("scoreboard-teams.case-sensitive-sorting",premium.getBoolean("case-sensitive-sorting",true));
+		finalCfg.set("scoreboard-teams.disable-in-worlds",config.getStringList("disable-features-in-worlds.nametag",disabledWorld));
 		if (isProxy)
 			finalCfg.set("scoreboard-teams.case-disable-in-servers",config.getStringList("disable-features-in-servers.nametag",disabledServer));
 		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.enabled",config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled",false));
