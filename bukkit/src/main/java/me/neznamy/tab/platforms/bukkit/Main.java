@@ -132,8 +132,8 @@ public class Main extends JavaPlugin {
 	 */
 	private int getProtocolVersionVia(Player player, int retryLevel){
 		try {
-			if (retryLevel == 100) {
-				TAB.getInstance().getErrorManager().printError("Failed to get protocol version of " + player.getName() + " after 100 retries");
+			if (retryLevel == 10) {
+				TAB.getInstance().debug("Failed to get protocol version of " + player.getName() + " after 10 retries");
 				return TAB.getInstance().getServerVersion().getNetworkId();
 			}
 			int version = Via.getAPI().getPlayerVersion(player.getUniqueId());
