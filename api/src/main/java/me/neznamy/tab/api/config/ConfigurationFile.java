@@ -74,6 +74,10 @@ public abstract class ConfigurationFile {
 		return values;
 	}
 
+	public void setValues(Map<String, Object> values) {
+		this.values = values;
+	}
+
 	/**
 	 * Gets config option with specified path. If the option is not present and 
 	 * {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} 
@@ -273,8 +277,6 @@ public abstract class ConfigurationFile {
 	 * 
 	 * @param	path	
 	 * 			Path to the option with sections separated with "{@code .}"
-	 * @param	defaultValue
-	 * 			Value to be inserted and returned if option is not present
 	 * @return	value from configuration file as {@code Map<K, V>}
 	 */
 	public <K, V> Map<K, V> getConfigurationSection(String path) {
