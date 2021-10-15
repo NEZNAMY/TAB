@@ -25,8 +25,12 @@ public abstract class SortingType {
 	 * @param sortingPlaceholder - placeholder to sort by
 	 */
 	protected SortingType(Sorting sorting, String sortingPlaceholder){
-		sorting.addUsedPlaceholders(Arrays.asList(sortingPlaceholder));
-		this.sortingPlaceholder = sortingPlaceholder;
+		if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
+			TAB.getInstance().getErrorManager().startupWarn("\"" + sortingPlaceholder + "\" is not a valid placeholder for " + toString() + " sorting type");
+		} else {
+			sorting.addUsedPlaceholders(Arrays.asList(sortingPlaceholder));
+			this.sortingPlaceholder = sortingPlaceholder;
+		}
 	}
 	
 	/**
@@ -35,6 +39,7 @@ public abstract class SortingType {
 	 * @return text with replaced placeholders
 	 */
 	protected String setPlaceholders(TabPlayer player) {
+		if (sortingPlaceholder == null) return "";
 		return TAB.getInstance().getPlaceholderManager().getPlaceholder(sortingPlaceholder).set(sortingPlaceholder, player);
 	}
 	
