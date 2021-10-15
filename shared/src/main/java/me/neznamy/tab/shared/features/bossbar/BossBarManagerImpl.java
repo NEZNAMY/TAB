@@ -75,7 +75,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		lineValues = lines.values().toArray(new BossBar[0]);
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
 		if (rememberToggleChoice) {
-			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off");
+			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off", new ArrayList<>());
 		}
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%countdown%", 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
 		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
