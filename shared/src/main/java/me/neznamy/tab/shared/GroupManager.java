@@ -22,12 +22,11 @@ public class GroupManager {
 	private Object luckPermsSub;
 	private PermissionPlugin plugin;
 	private boolean groupsByPermissions;
-	private List<String> primaryGroupFindingList;
+	private List<String> primaryGroupFindingList = new ArrayList<>();
 	
 	public GroupManager(PermissionPlugin plugin) {
 		this.plugin = plugin;
 		groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
-		primaryGroupFindingList = new ArrayList<>();
 		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
 			primaryGroupFindingList.add(group.toString());
 		}
