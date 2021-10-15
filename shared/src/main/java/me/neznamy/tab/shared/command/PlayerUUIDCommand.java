@@ -34,7 +34,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
 		}
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
-		if (type.equals("remove")) {
+		if ("remove".equals(type)) {
 			if (hasPermission(sender, "tab.remove")) {
 				TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
 				changed.forceRefresh();

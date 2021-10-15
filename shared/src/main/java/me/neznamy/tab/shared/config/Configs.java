@@ -59,6 +59,9 @@ public class Configs {
 	private PropertyConfiguration userFile;
 	
 	private MySQL mysql;
+	
+	private final List<String> disabledWorld = Collections.singletonList("disabledworld");
+	private final List<String> disabledServer = Collections.singletonList("disabledServer");
 
 	/**
 	 * Constructs new instance with given parameter
@@ -247,9 +250,6 @@ public class Configs {
 		}
 	}
 
-	private final List<String> disabledWorld = Collections.singletonList("disabledworld");
-	private final List<String> disabledServer = Collections.singletonList("disabledServer");
-
 	private void createConfigYml(Map<String, ConfigurationFile> yamls) throws YAMLException {
 		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 		tab.sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
@@ -257,7 +257,7 @@ public class Configs {
 		tab.sendConsoleMessage("&e[TAB] Review your configuration and verify everything is as you want it to be",true);
 		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 		String worldOrServer = tab.getPlatform().getSeparatorType();
-		boolean isProxy = worldOrServer.equals("server");
+		boolean isProxy = "server".equals(worldOrServer);
 
 		ConfigurationFile premium = yamls.get("premiumconfig.yml");
 		ConfigurationFile bossbar = yamls.get("bossbar.yml");
@@ -278,9 +278,9 @@ public class Configs {
 				if (type.equalsIgnoreCase("GROUPS") || type.equalsIgnoreCase("GROUP_PERMISSIONS")) {
 					List<String> sortinglist = config.getStringList("group-sorting-priority-list", Arrays.asList("owner", "admin", "mod", "helper", "builder", "premium", "player", "default"));
 
-					StringBuilder groups = new StringBuilder((type.equals("GROUP_PERMISSIONS") ? "PERMISSIONS" : "GROUPS") + ":");
+					StringBuilder groups = new StringBuilder(("GROUP_PERMISSIONS".equals(type) ? "PERMISSIONS" : "GROUPS") + ":");
 					for (String group : sortinglist) {
-						groups.append((type.equals("GROUP_PERMISSIONS") ? "tab.sort." : ""));
+						groups.append(("GROUP_PERMISSIONS".equals(type) ? "tab.sort." : ""));
 						groups.append(group);
 						if (sortinglist.indexOf(group) != sortinglist.size() - 1)
 							groups.append(",");

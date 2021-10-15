@@ -157,7 +157,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 					packet.getPct(),
 					BossColor.valueOf(packet.getColor().name()), 
 					BossStyle.valueOf(packet.getOverlay().getBukkitName()));
-//			if (packet.isCreateWorldFog()) flags.add(BossFlag.CREATE_FOG); //???
+			//fog missing from via API
 			if (packet.isDarkenScreen()) bar.addFlag(BossFlag.DARKEN_SKY);
 			if (packet.isPlayMusic()) bar.addFlag(BossFlag.PLAY_BOSS_MUSIC);
 			viaBossbars.put(packet.getId(), bar);
@@ -179,7 +179,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			break;
 		case UPDATE_PROPERTIES:
 			bar = viaBossbars.get(packet.getId());
-//			processFlagVia(bar, packet.isCreateWorldFog(), BossFlag.CREATE_FOG);
+			//fog missing from via API
 			processFlagVia(bar, packet.isDarkenScreen(), BossFlag.DARKEN_SKY);
 			processFlagVia(bar, packet.isPlayMusic(), BossFlag.PLAY_BOSS_MUSIC);
 			break;

@@ -57,13 +57,13 @@ public class TabExpansion extends PlaceholderExpansion {
 	public String onPlaceholderRequest(Player player, String identifier){
 		if (player == null) return "";
 		TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
-		if (identifier.equals("scoreboard_visible")) {
+		if ("scoreboard_visible".equals(identifier)) {
 			return translate(hasScoreboardVisible(p));
 		}
-		if (identifier.equals("bossbar_visible")) {
+		if ("bossbar_visible".equals(identifier)) {
 			return translate(hasBossBarVisible(p));
 		}
-		if (identifier.equals("ntpreview")) {
+		if ("ntpreview".equals(identifier)) {
 			return translate(p.isPreviewingNametag());
 		}
 		if (identifier.startsWith("replace_")) {

@@ -22,30 +22,30 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	@Override
 	public void setProperty(String name, String property, String server, String world, String value) {
 		if (server != null) {
-			set("per-server." + server + "." + name + "." + property, value);
+			set(String.format("per-server.%s.%s.%s", server, name, property), value);
 		} else if (world != null) {
-			set("per-world." + world + "." + name + "." + property, value);
+			set(String.format("per-world.%s.%s.%s", world, name, property), value);
 		} else {
-			set(name + "." + property, value);
+			set(String.format("%s.%s", name, property), value);
 		}
 	}
 
 	@Override
 	public String[] getProperty(String name, String property, String server, String world) {
 		Object value = null;
-		if ((value = getObject("per-server." + server + "." + name + "." + property)) != null) {
+		if ((value = getObject(String.format("per-server.%s.%s.%s", server, name, property))) != null) {
 			return new String[] {toString(value), category + "=" + name + ", server=" + server};
 		}
-		if ((value = getObject("per-server." + server + "._DEFAULT_." + property)) != null) {
+		if ((value = getObject(String.format("per-server.%s._DEFAULT_.%s", server, property))) != null) {
 			return new String[] {toString(value), category + "=_DEFAULT_, server=" + server};
 		}
-		if ((value = getObject("per-world." + world + "." + name + "." + property)) != null) {
+		if ((value = getObject(String.format("per-world.%s.%s.%s", world, name, property))) != null) {
 			return new String[] {toString(value), category + "=" + name + ", world=" + world};
 		}
-		if ((value = getObject("per-world." + world + "._DEFAULT_." + property)) != null) {
+		if ((value = getObject(String.format("per-world.%s._DEFAULT_.%s", world, property))) != null) {
 			return new String[] {toString(value), category + "=_DEFAULT_, world=" + world};
 		}
-		if ((value = getObject(name + "." + property)) != null) {
+		if ((value = getObject(String.format("%s.%s", name, property))) != null) {
 			return new String[] {toString(value), category + "=" + name};
 		}
 		if ((value = getObject("_DEFAULT_." + property)) != null) {

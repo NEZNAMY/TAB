@@ -617,28 +617,30 @@ public class NMSStorage {
 	}
 	
 	private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
-		main:
+		List<Method> list = new ArrayList<>();
 		for (Method m : clazz.getMethods()) {
 			if (!m.getName().equals(name) || m.getParameterCount() != parameterTypes.length) continue;
 			Class<?>[] types = m.getParameterTypes();
+			boolean valid = true;
 			for (int i=0; i<types.length; i++) {
-				if (types[i] != parameterTypes[i]) continue main;
+				if (types[i] != parameterTypes[i]) valid = false;
 			}
-			return m;
+			if (valid) list.add(m);
 		}
+		if (list.size() > 0) return list.get(0);
 		throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
 	}
 	
 	private List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes){
 		List<Method> list = new ArrayList<>();
-		main:
 		for (Method m : clazz.getDeclaredMethods()) {
 			if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
 			Class<?>[] types = m.getParameterTypes();
+			boolean valid = true;
 			for (int i=0; i<types.length; i++) {
-				if (types[i] != parameterTypes[i]) continue main;
+				if (types[i] != parameterTypes[i]) valid = false;
 			}
-			list.add(m);
+			if (valid) list.add(m);
 		}
 		return list;
 	}

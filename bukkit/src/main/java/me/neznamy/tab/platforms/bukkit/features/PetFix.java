@@ -110,7 +110,6 @@ public class PetFix extends TabFeature {
 					Object value = nms.DataWatcherItem_VALUE.get(item);
 					if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) {
 						removedEntry = item;
-						break;
 					}
 				}
 			}

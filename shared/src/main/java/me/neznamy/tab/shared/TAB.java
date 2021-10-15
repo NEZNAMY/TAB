@@ -337,7 +337,7 @@ public class TAB extends TabAPI {
 	
 	@Override
 	public CpuManager getThreadManager() {
-		return cpu;
+		return getCPUManager();
 	}
 
 	@Override

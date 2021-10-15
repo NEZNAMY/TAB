@@ -24,7 +24,7 @@ public class ScoreboardCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManagerImpl scoreboard = getScoreboardManager();
 		if (scoreboard == null) {
 			sendMessage(sender, "&cScoreboard feature is not enabled, therefore toggle command cannot be used.");
 			return;
@@ -62,7 +62,7 @@ public class ScoreboardCommand extends SubCommand {
 			sendMessage(sender, "Toggle command must be ran from the game");
 		} else {
 			if (hasPermission(sender, "tab.togglescoreboard")) {
-				ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+				ScoreboardManagerImpl scoreboard = getScoreboardManager();
 				if (scoreboard.getOtherPluginScoreboards().containsKey(sender)) return; //not overriding other plugins
 				scoreboard.toggleScoreboard(sender, true);
 			} else {
@@ -72,7 +72,7 @@ public class ScoreboardCommand extends SubCommand {
 	}
 	
 	private void show(TabPlayer sender, String[] args) {
-		ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManagerImpl scoreboard = getScoreboardManager();
 		Scoreboard sb = scoreboard.getRegisteredScoreboards().get(args[1]);
 		if (sb == null) {
 			sendMessage(sender, "&cNo scoreboard found with name \"" + args[1] + "\"");
@@ -110,10 +110,14 @@ public class ScoreboardCommand extends SubCommand {
 		}
 		return target;
 	}
+	
+	private ScoreboardManagerImpl getScoreboardManager() {
+		return (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+	}
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManagerImpl scoreboard = getScoreboardManager();
 		if (scoreboard == null) return new ArrayList<>();
 		if (arguments.length == 1) return getStartingArgument(Arrays.asList("on", "off", "toggle", "show"), arguments[0]);
 		if (arguments.length == 2) return arguments[0].equalsIgnoreCase("show") ? getStartingArgument(scoreboard.getRegisteredScoreboards().keySet(), arguments[1]) : getOnlinePlayers(arguments[1]);

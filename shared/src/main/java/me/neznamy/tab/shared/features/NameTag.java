@@ -299,8 +299,8 @@ public class NameTag extends TabFeature implements TeamManager {
 		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, getTeamVisibility(p, viewer)?"always":"never", 
-				getCollision(p)?"always":"never", Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
+				translate(getCollision(p)), Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
 	}
 
 	private void updateTeam(TabPlayer p) {

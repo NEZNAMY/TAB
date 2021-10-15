@@ -31,7 +31,7 @@ public class YellowNumber extends TabFeature {
 		super("Yellow number", TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-worlds"));
 		rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
-		if (rawValue.equals("%health%") || rawValue.equals("%player_health%") || rawValue.equals("%player_health_rounded%")) {
+		if ("%health%".equals(rawValue) || "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue)) {
 			displayType = EnumScoreboardHealthDisplay.HEARTS;
 		} else {
 			displayType = EnumScoreboardHealthDisplay.INTEGER;

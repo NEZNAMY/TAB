@@ -27,11 +27,11 @@ public class GroupCommand extends PropertyCommand {
 		String group = args[0];
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
-		if (type.equals("remove")) {
+		if ("remove".equals(type)) {
 			if (hasPermission(sender, "tab.remove")) {
 				TAB.getInstance().getConfiguration().getGroups().remove(group);
 				for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-					if (pl.getGroup().equals(group) || group.equals("_DEFAULT_")){
+					if (pl.getGroup().equals(group) || "_DEFAULT_".equals(group)){
 						pl.forceRefresh();
 					}
 				}

@@ -250,10 +250,9 @@ public class ChatModifier {
 			hover.put("action", hoverEvent.getAction().toString().toLowerCase());
 			if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
 				hover.put("contents", hoverEvent.getValue());
-			} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
-				hover.put("value", hoverEvent.getValue());
 			} else {
-				hover.put("value", hoverEvent.getValue().toRawText());
+				hover.put("value", TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+						hoverEvent.getValue() : hoverEvent.getValue().toRawText());
 			}
 			json.put("hoverEvent", hover);
 		}

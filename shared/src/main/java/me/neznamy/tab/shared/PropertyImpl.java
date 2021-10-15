@@ -159,7 +159,7 @@ public class PropertyImpl implements Property {
 		long time = System.nanoTime();
 		String string;
 		if (placeholders.length > 0) {
-			if (rawFormattedValue.equals("%s")) {
+			if ("%s".equals(rawFormattedValue)) {
 				string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
 			} else {
 				String[] values = new String[placeholders.length];

@@ -28,7 +28,7 @@ public class PlayerCommand extends PropertyCommand {
 		String player = args[0];
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
-		if (type.equals("remove")) {
+		if ("remove".equals(type)) {
 			if (hasPermission(sender, "tab.remove")) {
 				TAB.getInstance().getConfiguration().getUsers().remove(player);
 				TabPlayer pl = TAB.getInstance().getPlayer(player);

@@ -18,9 +18,9 @@ public class PlaceholderReplacementPattern {
 			String value = entry.getValue().toString();
 			replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
 			//snakeyaml converts yes & no to booleans, making them not work when used without "
-			if (key.equals("true")) {
+			if ("true".equals(key)) {
 				replacements.put("yes", value);
-			} else if (key.equals("false")) {
+			} else if ("false".equals(key)) {
 				replacements.put("no", value);
 			} else if (key.contains("-")) {
 				float[] interval = new float[2];

@@ -59,12 +59,12 @@ public abstract class PluginMessageHandler {
 			if (!pl.getForceUpdate().contains(player.getName())) pl.getForceUpdate().add(player.getName());
 			TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
 		}
-		if (subChannel.equals("Attribute")) {
+		if ("Attribute".equals(subChannel)) {
 			String attribute = in.readUTF();
 			String value = in.readUTF();
 			player.setAttribute(attribute, value);
 		}
-		if (subChannel.equals("Group")) {
+		if ("Group".equals(subChannel)) {
 			String group = in.readUTF();
 			((ITabPlayer) player).setGroup(group, true);
 		}

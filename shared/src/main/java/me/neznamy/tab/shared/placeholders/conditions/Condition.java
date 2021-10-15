@@ -46,8 +46,8 @@ public class Condition {
 	protected Condition(ConditionType type, String name, List<String> conditions, String yes, String no) {
 		this.type = type;
 		this.name = name;
-		this.yes = yes.equals("null") ? "true" : yes;
-		this.no = no.equals("null") ? "false" : no;
+		this.yes = "null".equals(yes) ? "true" : yes;
+		this.no = "null".equals(no) ? "false" : no;
 		if (conditions == null) {
 			TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
 			return;

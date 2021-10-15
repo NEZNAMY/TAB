@@ -14,11 +14,14 @@ import me.neznamy.tab.shared.TAB;
  */
 public class PlayerPlaceholder extends Placeholder {
 
+	/** Internal constant used to detect if placeholder threw an error */
+	private static final String ERROR_VALUE = "ERROR";
+
 	private Function<TabPlayer, Object> function;
-	
+
 	//last known values
 	private Map<String, String> lastValues = new HashMap<>();
-	
+
 	//list of players with force update
 	private List<String> forceUpdate = new ArrayList<>();
 
@@ -31,7 +34,7 @@ public class PlayerPlaceholder extends Placeholder {
 		super(identifier, refresh);
 		this.function = function;
 	}
-	
+
 	/**
 	 * Gets new value of the placeholder, saves it to map and returns true if value changed, false if not
 	 * @param p - player to replace placeholder for
@@ -40,13 +43,13 @@ public class PlayerPlaceholder extends Placeholder {
 	public boolean update(TabPlayer p) {
 		Object obj = get(p);
 		String newValue = obj == null ? identifier : String.valueOf(setPlaceholders(obj, p));
-		
+
 		//make invalid placeholders return identifier instead of nothing
 		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
 			lastValues.put(p.getName(), identifier);
 		}
-		if (!lastValues.containsKey(p.getName()) || (!"ERROR".equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p.getName()).equals(newValue))) {
-			lastValues.put(p.getName(), "ERROR".equals(newValue) ? identifier : newValue);
+		if (!lastValues.containsKey(p.getName()) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p.getName()).equals(newValue))) {
+			lastValues.put(p.getName(), ERROR_VALUE.equals(newValue) ? identifier : newValue);
 			return true;
 		}
 		if (forceUpdate.contains(p.getName())) {
@@ -64,7 +67,7 @@ public class PlayerPlaceholder extends Placeholder {
 		}
 		return lastValues.get(p.getName());
 	}
-	
+
 	/**
 	 * Calls the placeholder replace code and returns the output
 	 * @param p - player to get placeholder value for
@@ -75,7 +78,7 @@ public class PlayerPlaceholder extends Placeholder {
 			return function.apply(p);
 		} catch (Throwable t) {
 			TAB.getInstance().getErrorManager().placeholderError("Player placeholder " + identifier + " generated an error when setting for player " + p.getName(), t);
-			return "ERROR";
+			return ERROR_VALUE;
 		}
 	}
 

@@ -294,8 +294,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void showScoreboard(TabPlayer player, Scoreboard scoreboard) {
-		Preconditions.checkNotNull(player, "player");
-		Preconditions.checkNotNull(scoreboard, "scoreboard");
+		if (player == null) throw new IllegalArgumentException("player cannot be null");
+		if (scoreboard == null) throw new IllegalArgumentException("scoreboard cannot be null");
 		if (forcedScoreboard.containsKey(player)) {
 			forcedScoreboard.get(player).removePlayer(player);
 		}
