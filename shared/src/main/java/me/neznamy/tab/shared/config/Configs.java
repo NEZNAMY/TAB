@@ -261,6 +261,7 @@ public class Configs {
 		finalCfg.set("scoreboard-teams.enabled",config.getBoolean("change-nametag-prefix-suffix",true));
 		finalCfg.set("scoreboard-teams.invisible-nametags",config.getBoolean("invisible-nametags",false));
 		finalCfg.set("scoreboard-teams.anti-override",config.getBoolean("anti-override.scoreboard-teams",true));
+		finalCfg.set("scoreboard-teams.enable-collision",config.getBoolean("enable-collision",true));
 
 		List<String> sortingtypes = new ArrayList<>();
 		String sortingtype = premium.getString("sorting-type");
