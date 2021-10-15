@@ -202,24 +202,22 @@ public class Configs {
 		return mysql;
 	}
 
-	public void convertToV3() {
+	public void convertToV3() throws YAMLException, IOException {
 		config.setValues(new HashMap<>());
 		Map<String, ConfigurationFile> yamls = new HashMap<>();
 		File folder = tab.getPlatform().getDataFolder();
 		String path = folder.getPath();
 		for (File file : folder.listFiles()) if (!checkFiles(file,yamls)) return;
 
-		try {
-			Files.createFile(Paths.get(path+File.separator+"config.yml"));
-			if (!Files.exists(Paths.get(path+File.separator+"groups.yml")))
-				Files.createFile(Paths.get(path+File.separator+"groups.yml"));
-			if (!Files.exists(Paths.get(path+File.separator+"users.yml")))
-				Files.createFile(Paths.get(path+File.separator+"users.yml"));
-			yamls.put("finalConfig", new YamlConfigurationFile(null, new File(path+File.separator+"config.yml")));
-			yamls.put("groups.yml", new YamlConfigurationFile(null, new File(path+File.separator+"groups.yml")));
-			yamls.put("users.yml", new YamlConfigurationFile(null, new File(path+File.separator+"users.yml")));
-			config = yamls.get("finalConfig");
-		} catch (IOException e) {e.printStackTrace();}
+		Files.createFile(Paths.get(path+File.separator+"config.yml"));
+		if (!Files.exists(Paths.get(path+File.separator+"groups.yml")))
+			Files.createFile(Paths.get(path+File.separator+"groups.yml"));
+		if (!Files.exists(Paths.get(path+File.separator+"users.yml")))
+			Files.createFile(Paths.get(path+File.separator+"users.yml"));
+		yamls.put("finalConfig", new YamlConfigurationFile(null, new File(path+File.separator+"config.yml")));
+		yamls.put("groups.yml", new YamlConfigurationFile(null, new File(path+File.separator+"groups.yml")));
+		yamls.put("users.yml", new YamlConfigurationFile(null, new File(path+File.separator+"users.yml")));
+		config = yamls.get("finalConfig");
 
 		createConfigYml(yamls);
 	}
