@@ -207,6 +207,10 @@ public class Configs {
 		Map<String, ConfigurationFile> yamls = new HashMap<>();
 		File folder = tab.getPlatform().getDataFolder();
 		String path = folder.getPath();
+		File premiumcfg = new File(tab.getPlatform().getDataFolder(), "premiumconfig.yml");
+		if (!premiumcfg.exists()) {
+			Files.copy(Configs.class.getClassLoader().getResourceAsStream("premiumconfig.yml"), premiumcfg.toPath());
+		}
 		for (File file : folder.listFiles()) if (!checkFiles(file,yamls)) return;
 
 		Files.createFile(Paths.get(path+File.separator+"config.yml"));
@@ -246,7 +250,7 @@ public class Configs {
 	private final List<String> disabledWorld = Collections.singletonList("disabledworld");
 	private final List<String> disabledServer = Collections.singletonList("disabledServer");
 
-	private void createConfigYml(Map<String, ConfigurationFile> yamls) {
+	private void createConfigYml(Map<String, ConfigurationFile> yamls) throws YAMLException, IOException {
 		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 		tab.sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
 		tab.sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
