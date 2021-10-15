@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.base.Preconditions;
-
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
@@ -280,8 +278,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public Scoreboard createScoreboard(String name, String title, List<String> lines) {
-		Preconditions.checkNotNull(name, "name");
-		Preconditions.checkNotNull(lines, "lines");
+		if (name == null) throw new IllegalArgumentException("name cannot be null");
+		if (title == null) throw new IllegalArgumentException("title cannot be null");
+		if (lines == null) throw new IllegalArgumentException("lines cannot be null");
 		Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
 		scoreboards.put(name, sb);
 		return sb;

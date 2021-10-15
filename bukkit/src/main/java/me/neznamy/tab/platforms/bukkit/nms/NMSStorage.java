@@ -627,7 +627,7 @@ public class NMSStorage {
 			}
 			if (valid) list.add(m);
 		}
-		if (list.size() > 0) return list.get(0);
+		if (!list.isEmpty()) return list.get(0);
 		throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
 	}
 	
