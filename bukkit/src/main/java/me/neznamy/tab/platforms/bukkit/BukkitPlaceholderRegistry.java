@@ -159,9 +159,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		public Function<TabPlayer, Object> getFunction() {
 			return p -> {
 				try {
-					if (essentials != null) {
-						if (((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
-					}
+					if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
 					if (antiafkplus) {
 						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
 						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;

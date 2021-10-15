@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -239,8 +240,7 @@ public class Configs {
 
 			yamls.put(file.getName(), new YamlConfigurationFile(null,file));
 
-			file.delete();
-
+			Files.delete(file.toPath());
 			return true;
 		} catch (Exception ex) {
 			return false;
@@ -250,7 +250,7 @@ public class Configs {
 	private final List<String> disabledWorld = Collections.singletonList("disabledworld");
 	private final List<String> disabledServer = Collections.singletonList("disabledServer");
 
-	private void createConfigYml(Map<String, ConfigurationFile> yamls) throws YAMLException, IOException {
+	private void createConfigYml(Map<String, ConfigurationFile> yamls) throws YAMLException {
 		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 		tab.sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
 		tab.sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
@@ -278,25 +278,26 @@ public class Configs {
 				if (type.equalsIgnoreCase("GROUPS") || type.equalsIgnoreCase("GROUP_PERMISSIONS")) {
 					List<String> sortinglist = config.getStringList("group-sorting-priority-list", Arrays.asList("owner", "admin", "mod", "helper", "builder", "premium", "player", "default"));
 
-					String groups = (type.equals("GROUP_PERMISSIONS") ? "PERMISSIONS" : "GROUPS") + ":";
+					StringBuilder groups = new StringBuilder((type.equals("GROUP_PERMISSIONS") ? "PERMISSIONS" : "GROUPS") + ":");
 					for (String group : sortinglist) {
-						groups += (type.equals("GROUP_PERMISSIONS") ? "tab.sort." : "") + group;
+						groups.append((type.equals("GROUP_PERMISSIONS") ? "tab.sort." : ""));
+						groups.append(group);
 						if (sortinglist.indexOf(group) != sortinglist.size() - 1)
-							groups += ",";
+							groups.append(",");
 					}
-					sortingtypes.add(groups);
+					sortingtypes.add(groups.toString());
 				}
 				else if (type.equalsIgnoreCase("PLACEHOLDER")) {
 					List<String> sortinglist = config.getStringList("placeholder-order", Arrays.asList("value1", "value2"));
 					String placeholder = premium.getString("sorting-placeholder", "%some_level_maybe?%");
 
-					String groups = "PLACEHOLDER:"+placeholder+":";
+					StringBuilder groups = new StringBuilder("PLACEHOLDER:"+placeholder+":");
 					for (String group : sortinglist) {
-						groups += group;
+						groups.append(group);
 						if (sortinglist.indexOf(group) != sortinglist.size() - 1)
-							groups += ",";
+							groups.append(",");
 					}
-					sortingtypes.add(groups);
+					sortingtypes.add(groups.toString());
 				}
 				else {
 					String placeholder = premium.getString("sorting-placeholder", "%some_level_maybe?%");
@@ -361,8 +362,9 @@ public class Configs {
 		Map<String,Map<String,String>> bossbars = bossbar.getConfigurationSection("bars");
 		Map<String,List<String>> perworldBossbars = bossbar.getConfigurationSection("per-world");
 		if (perworldBossbars != null) {
-			for (String world : perworldBossbars.keySet()) {
-				for (String bar : perworldBossbars.get(world)) {
+			for (Entry<String, List<String>> entry : perworldBossbars.entrySet()) {
+				String world = entry.getKey();
+				for (String bar : entry.getValue()) {
 					if (!bossbars.containsKey(bar)) continue;
 					if (bossbars.get(bar).containsKey("display-condition"))
 						bossbars.get(bar).put("display-condition", bossbars.get(bar).get("display-condition")+";%"+worldOrServer+"%="+world);
@@ -428,19 +430,21 @@ public class Configs {
 		Map<String,Object> headerFooterMap = new HashMap<>();
 		if (perworldsettings != null) {
 			Map<String,Map<String,Object>> worldMap = new HashMap<>(perworldsettings);
-			for (String world : worldMap.keySet()) {
-				Map<String, Object> map = new HashMap<>(worldMap.get(world));
+			for (Entry<String, Map<String, Object>> entry : worldMap.entrySet()) {
+				String world = entry.getKey();
+				Map<String, Object> map = new HashMap<>(entry.getValue());
 				Map<String,Object> headerFooter = new HashMap<>();
-				for (String value : map.keySet()) {
+				for (Entry<String, Object> entry2 : map.entrySet()) {
+					String value = entry2.getKey();
 					if (value.equalsIgnoreCase("Groups"))
-						groupMap.put(world,map.get(value));
+						groupMap.put(world,entry2.getValue());
 					else if (value.equalsIgnoreCase("Users"))
-						userMap.put(world,map.get(value));
+						userMap.put(world,entry2.getValue());
 					else if (value.equalsIgnoreCase("header") || value.equalsIgnoreCase("footer"))
-						headerFooter.put(value,map.get(value));
+						headerFooter.put(value,entry2.getValue());
 				}
 				headerFooterMap.put(world,headerFooter);
-				if (worldMap.get(world).isEmpty())
+				if (entry.getValue().isEmpty())
 					perworldsettings.remove(world);
 			}
 		}

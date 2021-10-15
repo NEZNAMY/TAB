@@ -16,11 +16,15 @@ public abstract class NumericCondition extends SimpleCondition {
 		try {
 			leftSideValue = Float.parseFloat(leftSide);
 			leftSideStatic = true;
-		} catch (NumberFormatException e) {}
+		} catch (NumberFormatException e) {
+			//not a valid number
+		}
 		try {
 			rightSideValue = Float.parseFloat(rightSide);
 			rightSideStatic = true;
-		} catch (NumberFormatException e) {}
+		} catch (NumberFormatException e) {
+			//not a valid number
+		}
 	}
 	
 	public double getLeftSide(TabPlayer p) {
