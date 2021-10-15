@@ -247,7 +247,11 @@ public class Configs {
 	private final List<String> disabledServer = Collections.singletonList("disabledServer");
 
 	private void createConfigYml(Map<String, ConfigurationFile> yamls) {
-		tab.sendConsoleMessage("&c[TAB v" + TAB.PLUGIN_VERSION + "] Converting legacy 2.9.2 config to 3.0",true);
+		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
+		tab.sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
+		tab.sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
+		tab.sendConsoleMessage("&e[TAB] Review your configuration and verify everything is as you want it to be",true);
+		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 		String worldOrServer = tab.getPlatform().getSeparatorType();
 		boolean isProxy = worldOrServer.equals("server");
 
