@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ public class LayoutManager extends TabFeature {
 	private Map<TabPlayer, Layout> playerViews = new HashMap<>();
 	private Map<Integer, UUID> uuids = new HashMap<>();
 	private SkinManager skinManager;
-	private Map<TabPlayer, String> sortedPlayers = new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName()));
+	private Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
 
 	public LayoutManager() {
 		super("Layout");
@@ -174,7 +175,9 @@ public class LayoutManager extends TabFeature {
 		sortedPlayers.remove(p);
 		((ITabPlayer) p).setTeamName(teamName);
 		sortedPlayers.put(p, teamName);
-		layouts.values().forEach(Layout::tick);
+		synchronized (sortedPlayers) {
+			layouts.values().forEach(Layout::tick);
+		}
 	}
 
 	public boolean isRemainingPlayersTextEnabled() {
