@@ -103,12 +103,12 @@ public class CpuManager implements ThreadManager {
 	}
 
 	@Override
-	public Future<?> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
+	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
 		return runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
 	}
 	
 	@Override
-	public Future<?> runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
+	public Future<Void> runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
 		return submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
@@ -117,17 +117,17 @@ public class CpuManager implements ThreadManager {
 	}
 
 	@Override
-	public Future<?> runTask(String errorDescription, Runnable task) {
+	public Future<Void> runTask(String errorDescription, Runnable task) {
 		return submit(errorDescription, task);
 	}
 	
 	@Override
-	public Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
 		return startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
 	@Override
-	public Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
+	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
 		if (intervalMilliseconds <= 0) return null;
 		return submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
@@ -153,12 +153,12 @@ public class CpuManager implements ThreadManager {
 	}
 
 	@Override
-	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
 		return runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
 	@Override
-	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
+	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
 		return submit(errorDescription, () -> {
 			try {
 				Thread.sleep(delayMilliseconds);
@@ -171,8 +171,9 @@ public class CpuManager implements ThreadManager {
 		});
 	}
 	
-	private Future<?> submit(String errorDescription, Runnable task) {
-		return exe.submit(() -> {
+	@SuppressWarnings("unchecked")
+	private Future<Void> submit(String errorDescription, Runnable task) {
+		return (Future<Void>) exe.submit(() -> {
 			try {
 				task.run();
 			} catch (Exception | NoClassDefFoundError e) {
