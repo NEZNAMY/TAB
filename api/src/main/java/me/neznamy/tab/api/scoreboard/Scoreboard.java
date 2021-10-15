@@ -2,8 +2,6 @@ package me.neznamy.tab.api.scoreboard;
 
 import java.util.List;
 
-import me.neznamy.tab.api.TabPlayer;
-
 /**
  * An interface allowing to work with scoreboard, such as adding plyaers,
  * removing players and changing lines. New instance can be created using
