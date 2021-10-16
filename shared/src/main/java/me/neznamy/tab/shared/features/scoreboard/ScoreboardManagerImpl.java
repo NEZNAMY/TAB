@@ -310,6 +310,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	public void resetScoreboard(TabPlayer player) {
 		if (!forcedScoreboard.containsKey(player)) return;
 		forcedScoreboard.get(player).removePlayer(player);
+		forcedScoreboard.remove(player);
 		Scoreboard sb = detectHighestScoreboard(player);
 		if (sb == null) return; //no scoreboard available
 		activeScoreboard.put(player, (ScoreboardImpl) sb);
