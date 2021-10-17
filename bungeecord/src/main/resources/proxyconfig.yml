@@ -1,5 +1,21 @@
 # Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
 
+scoreboard-teams:
+  enabled: true
+  enable-collision: true
+  invisible-nametags: false
+  anti-override: true
+
+  # types: GROUPS:<group1>,<group2>... , PERMISSIONS:<permission1>,<perm2>... , PLACEHOLDER:<output1>,<output2>... , PLACEHOLDER_A_TO_Z, PLACEHOLDER_Z_TO_A, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_LOW_TO_HIGH
+  sorting-types:
+    - "GROUPS:owner,admin,mod,helper,builder,vip,default"
+    - "PLACEHOLDER_A_TO_Z:%player%"
+  case-sentitive-sorting: true
+  disable-in-worlds:
+    - disabledworld
+  disable-in-servers:
+    - disabledserver
+
 tablist-name-formatting:
   enabled: true
   align-tabsuffix-on-the-right: false
@@ -40,6 +56,28 @@ header-footer:
       header:
         - "This is a shared header for"
         - "world2 and world3"
+
+
+yellow-number-in-tablist:
+  enabled: true
+  value: "%ping%"
+  disable-in-worlds:
+    - disabledworld
+  disable-in-servers:
+    - disabledserver
+
+belowname-objective:
+  enabled: false
+  number: "%health%"
+  text: "&c❤"
+  disable-in-worlds:
+    - disabledworld
+  disable-in-servers:
+    - disabledserver
+
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
+prevent-spectator-effect:
+  enabled: false
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar
 bossbar:
@@ -85,6 +123,60 @@ global-playerlist:
       - server1
       - server2
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard-(premium-only)
+scoreboard:
+  enabled: false
+  # show/hide the scoreboard
+  toggle-command: /sb
+  remember-toggle-choice: false
+  hidden-by-default: false
+  # when enabled, will show 0-14 in red next to lines 
+  use-numbers: false
+  # if use-numbers is disabled, this number will show in red next to all lines
+  static-number: 0
+  delay-on-join-milliseconds: 0
+  respect-other-plugins: true
+  disable-in-worlds: 
+    - disabledworld
+  disable-in-servers:
+    - disabledserver
+  scoreboards:
+    admin:
+      # Only players with tab.scoreboard.admin can see this scoreboard, others will see scoreboard1
+      display-condition: "permission:tab.scoreboard.admin"
+      title: "Admin scoreboard"
+      lines:
+        - "%animation:MyAnimation1%"
+        - "&6Online:"
+        - "* &eOnline&7: &f%online%&7/&4%maxplayers%"
+        - "* &eCurrent World&7: &f%worldonline%"
+        - "* &eStaff&7: &f%staffonline%"
+        - ""
+        - "&6Server Info:"
+        - "* &bTPS&7: %tps%"
+        - "* &bUptime&7: &f%server_uptime%"
+        - "* &bMemory&7: &f%memory-used%&7/&4%memory-max%"
+        - "%animation:MyAnimation1%"
+    scoreboard1:
+      title: "Default"
+      lines:
+        - "%animation:MyAnimation1%"
+        - "&6My Stats:"
+        - "* &eKills&7: &f%statistic_player_kills%"
+        - "* &eDeaths&7: &f%statistic_deaths%"
+        - "* &eHealth&7: &f%health%"
+        - ""
+        - "&6Personal Info:"
+        - "* &bRank&7: &f%rank%"
+        - "* &bPing&7: &f%ping%&7ms"
+        - "* &bWorld&7: &f%world%"
+        - "%animation:MyAnimation1%"
+
+ping-spoof:
+  enabled: false
+  # when enabled, all players will have this value as their ping
+  value: 0
+
 # https://github.com/NEZNAMY/TAB/wiki/config.yml#placeholders
 placeholders:
   date-format: "dd.MM.yyyy"
@@ -107,7 +199,7 @@ conditions:
       - "%player%=%essentials_nickname%"
     yes: "%player%"
     no: "~%essentials_nickname%"
-   tps:
+  tps:
     conditions:
       - "%server_tps_1%>=19"
     yes: "<#55FF55>%server_tps_1%</#00AA00>"

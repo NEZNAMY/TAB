@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
@@ -40,7 +38,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	//the velocity player
 	private Player player;
 	
-	// uuid used in tablist
+	//uuid used in tablist
 	private UUID tablistId;
 	
 	//player's visible boss bars
@@ -51,22 +49,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	 * @param p - velocity player
 	 */
 	public VelocityTabPlayer(Player p, PluginMessageHandler plm) {
-		super(plm);
+		super(plm, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-", "N/A");
 		player = p;
-		Optional<ServerConnection> server = p.getCurrentServer();
-		if (server.isPresent()) {
-			super.server = server.get().getServerInfo().getName();
-		} else {
-			//tab reload while a player is connecting, how unfortunate
-			super.server = "<null>";
-		}
-		world = "N/A";
-		name = p.getUsername();
-		uniqueId = p.getUniqueId();
-		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? uniqueId : offlineId;
+		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
+		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
 		version = ProtocolVersion.fromNetworkId(player.getProtocolVersion().getProtocol());
-		init();
 	}
 	
 	@Override

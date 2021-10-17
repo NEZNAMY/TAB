@@ -54,22 +54,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * @throws IllegalAccessException 
 	 */
 	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) {
-		super (plm);
+		super(plm, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", "N/A");
 		player = p;
-		if (p.getServer() != null) {
-			server = p.getServer().getInfo().getName();
-		} else {
-			server = "-";
-		}
-		world = "N/A";
 		try {
 			channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
 		} catch (IllegalAccessException e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + player.getName(), e);
 		}
-		uniqueId = p.getUniqueId();
-		name = p.getName();
-		init();
 	}
 	
 	@Override

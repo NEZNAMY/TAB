@@ -71,7 +71,7 @@ public class TabCommand extends SubCommand {
 	private void help(TabPlayer sender){
 		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + TAB.PLUGIN_VERSION, true);
 		if ((sender == null || sender.hasPermission("tab.admin"))) {
-			String command = tab.getPlatform().getSeparatorType().equals("world") ? "/tab" : "/btab";
+			String command = !tab.getPlatform().isProxy() ? "/tab" : "/btab";
 			String prefix = " &8>> &3&l";
 			sendMessage(sender, "&m                                                                                ");
 			sendMessage(sender, prefix + command + " reload");

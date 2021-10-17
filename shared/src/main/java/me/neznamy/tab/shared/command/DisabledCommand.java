@@ -28,7 +28,7 @@ public class DisabledCommand {
 			}
 		} else {
 			if (hasAdminPermission) {
-				String command = TAB.getInstance().getPlatform().getSeparatorType().equals("world") ? "/tab" : "/btab";
+				String command = !TAB.getInstance().getPlatform().isProxy() ? "/tab" : "/btab";
 				messages.add("&m                                                                                ");
 				messages.add(" &cPlugin is disabled due to an error. Check console for more details.");
 				messages.add(" &8>> &3&l" + command + " reload");

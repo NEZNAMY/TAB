@@ -35,7 +35,7 @@ public class UltraPermissions implements PermissionPlugin {
 	@SuppressWarnings("unchecked")
 	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Object api = null;
-		if (TAB.getInstance().getPlatform().getSeparatorType().equals("server")) { //meh solution but whatever
+		if (TAB.getInstance().getPlatform().isProxy()) { //meh solution but whatever
 			api = Class.forName("me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee").getMethod("getAPI").invoke(null);
 		} else {
 			api = Class.forName("me.TechsCode.UltraPermissions.UltraPermissions").getMethod("getAPI").invoke(null);

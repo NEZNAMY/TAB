@@ -6,18 +6,14 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
+import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerlist;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.permission.VaultBridge;
-import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -60,12 +56,8 @@ public class BungeePlatform extends ProxyPlatform {
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector());
-		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag());
 		new BungeePlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		tab.loadUniversalFeatures();
-		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
-		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
+		super.loadFeatures();
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			tab.addPlayer(new BungeeTabPlayer(p, plm));
 		}
@@ -79,11 +71,6 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public String getServerVersion() {
 		return ProxyServer.getInstance().getVersion();
-	}
-
-	@Override
-	public String getSeparatorType() {
-		return "server";
 	}
 
 	@Override
@@ -105,11 +92,6 @@ public class BungeePlatform extends ProxyPlatform {
 	public int getMaxPlayers() {
 		return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers();
 	}
-	
-	@Override
-	public String getConfigName() {
-		return "bungeeconfig.yml";
-	}
 
 	@Override
 	public PacketBuilder getPacketBuilder() {
@@ -123,5 +105,10 @@ public class BungeePlatform extends ProxyPlatform {
 		array[0][1] = properties.get(0);
 		array[0][2] = properties.get(1);
 		return array;
+	}
+
+	@Override
+	public boolean isProxy() {
+		return true;
 	}
 }

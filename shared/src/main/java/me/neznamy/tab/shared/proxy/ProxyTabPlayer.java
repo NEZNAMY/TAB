@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.proxy;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -12,7 +13,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	private PluginMessageHandler plm;
 	private Map<String, String> attributes = new HashMap<>();
 	
-	protected ProxyTabPlayer(PluginMessageHandler plm) {
+	protected ProxyTabPlayer(PluginMessageHandler plm, UUID uniqueId, String name, String server, String world) {
+		super(uniqueId, name, server, world);
 		this.plm = plm;
 	}
 	

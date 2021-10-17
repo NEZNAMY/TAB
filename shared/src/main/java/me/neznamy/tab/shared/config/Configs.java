@@ -91,7 +91,7 @@ public class Configs {
 	 * @throws YAMLException 
 	 */
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().isProxy() ? "proxyconfig.yml" : "bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		if (!config.hasConfigOption("mysql"))
 			convertToV3();
 		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
@@ -100,15 +100,14 @@ public class Configs {
 			removeStrings[i] = EnumChatFormat.color(list.get(i));
 		}
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
-		if (tab.getPlatform().getSeparatorType().equals("world")) {
+		if (!tab.getPlatform().isProxy()) {
 			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
+		} else {
+			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
-		if (tab.getPlatform().getSeparatorType().equals("server")) {
-			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
-		}
 		if (config.getBoolean("mysql.enabled", false)) {
 			try {
 				mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
@@ -256,7 +255,7 @@ public class Configs {
 		tab.sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
 		tab.sendConsoleMessage("&e[TAB] Review your configuration and verify everything is as you want it to be",true);
 		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
-		String worldOrServer = tab.getPlatform().getSeparatorType();
+		String worldOrServer = tab.getPlatform().isProxy() ? "server" : "world";
 		boolean isProxy = "server".equals(worldOrServer);
 
 		ConfigurationFile premium = yamls.get("premiumconfig.yml");

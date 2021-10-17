@@ -136,7 +136,7 @@ public class DebugCommand extends SubCommand {
 	private String getTeamName(TabPlayer analyzed) {
 		if (TAB.getInstance().getTeamManager() != null) {
 			if (((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
-				return "&eTeam name: &cSorting is disabled in player's " + TAB.getInstance().getPlatform().getSeparatorType();
+				return "&eTeam name: &cSorting is disabled in player's world/server";
 			} else {
 				return "&eTeam name: &a" + analyzed.getTeamName();
 			}
@@ -181,7 +181,7 @@ public class DebugCommand extends SubCommand {
 	 */
 	private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
 		if (disabled) {
-			sendMessage(sender, "&a" + property + ": &cDisabled in player's " + TAB.getInstance().getPlatform().getSeparatorType());
+			sendMessage(sender, "&a" + property + ": &cDisabled in player's world/server");
 		} else {
 			PropertyImpl pr = (PropertyImpl) analyzed.getProperty(property);
 			String rawValue = EnumChatFormat.decolor(pr.getCurrentRawValue());

@@ -17,7 +17,7 @@ public class PluginInfo extends TabFeature {
 
 	@Override
 	public boolean onCommand(TabPlayer sender, String message) {
-		String command = TAB.getInstance().getPlatform().getSeparatorType().equals("server")? "/btab" : "/tab";
+		String command = TAB.getInstance().getPlatform().isProxy() ? "/btab" : "/tab";
 		if (message.equalsIgnoreCase(command) && sender.hasPermission("tab.admin")){
 			IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
 			component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's spigot page")));

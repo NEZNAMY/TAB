@@ -54,24 +54,17 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 * @param p - bukkit player
 	 */
 	public BukkitTabPlayer(Player p, int protocolVersion){
+		super(p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName());
 		player = p;
-		world = p.getWorld().getName();
 		try {
 			handle = NMSStorage.getInstance().getHandle.invoke(player);
 			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
-		} catch (InvocationTargetException | IllegalAccessException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
-		}
-		try {
 			if (NMSStorage.getInstance().CHANNEL != null)
 				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
-		} catch (IllegalAccessException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getName(), e);
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection or channel of " + p.getName(), e);
 		}
-		uniqueId = p.getUniqueId();
-		name = p.getName();
 		version = ProtocolVersion.fromNetworkId(protocolVersion);
-		init();
 	}
 
 	@Override

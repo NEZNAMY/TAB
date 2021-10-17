@@ -211,11 +211,6 @@ public class BukkitPlatform implements Platform {
 	}
 
 	@Override
-	public String getSeparatorType() {
-		return "world";
-	}
-
-	@Override
 	public File getDataFolder() {
 		return plugin.getDataFolder();
 	}
@@ -233,11 +228,6 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public int getMaxPlayers() {
 		return Bukkit.getMaxPlayers();
-	}
-
-	@Override
-	public String getConfigName() {
-		return "bukkitconfig.yml";
 	}
 
 	public boolean isViaversionEnabled() {
@@ -267,5 +257,10 @@ public class BukkitPlatform implements Platform {
 		PropertyMap map = new PropertyMap();
 		map.put("textures", new Property("textures", properties.get(0), properties.get(1)));
 		return map;
+	}
+	
+	@Override
+	public boolean isProxy() {
+		return false;
 	}
 }

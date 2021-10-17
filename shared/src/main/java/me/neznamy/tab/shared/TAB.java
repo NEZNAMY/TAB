@@ -203,7 +203,7 @@ public class TAB extends TabAPI {
 			featureManager.registerFeature("layout", new LayoutManager());
 		}
 		featureManager.registerFeature("info", new PluginInfo());
-		if (platform.getSeparatorType().equals("server")) {
+		if (platform.isProxy()) {
 			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
 				
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

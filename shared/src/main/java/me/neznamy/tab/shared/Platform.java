@@ -42,13 +42,7 @@ public interface Platform {
 	 * @return server's version
 	 */
 	public String getServerVersion();
-	
-	/**
-	 * Returns the word used to separate config options. It's value is "world" for bukkit and "server" for proxies
-	 * @return "world" on bukkit, "server" on proxies
-	 */
-	public String getSeparatorType();
-	
+
 	/**
 	 * Returns plugin's data folder
 	 * @return plugin's data folder
@@ -74,12 +68,6 @@ public interface Platform {
 	public int getMaxPlayers();
 	
 	/**
-	 * Returns name of config file in the jar file on specific platform
-	 * @return name of config file of the platform
-	 */
-	public String getConfigName();
-	
-	/**
 	 * Returns platform-specific packet builder
 	 * @return platform-specific packet builder
 	 */
@@ -91,4 +79,6 @@ public interface Platform {
 	 * @return platform-specific skin object
 	 */
 	public Object getSkin(List<String> properties);
+	
+	public boolean isProxy();
 }

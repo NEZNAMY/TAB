@@ -95,7 +95,7 @@ public class StableDynamicLine extends ScoreboardLine {
 	 */
 	private String[] split(TabPlayer p, String text) {
 		int charLimit = 16;
-		if (TAB.getInstance().getPlatform().getSeparatorType().equals("world") && 
+		if (!TAB.getInstance().getPlatform().isProxy() && 
 			TAB.getInstance().getServerVersion().getMinorVersion() >= 13 && 
 			p.getVersion().getMinorVersion() < 13) {
 			//ProtocolSupport bug

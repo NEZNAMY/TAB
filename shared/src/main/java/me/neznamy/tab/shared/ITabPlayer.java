@@ -23,10 +23,10 @@ import me.neznamy.tab.api.protocol.TabPacket;
  */
 public abstract class ITabPlayer implements TabPlayer {
 
-	protected String name;
-	protected UUID uniqueId;
-	protected String world;
-	protected String server;
+	private String name;
+	private UUID uniqueId;
+	private String world;
+	private String server;
 	private String permissionGroup = GroupManager.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
@@ -41,7 +41,11 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean previewingNametag;
 	private boolean onJoinFinished;
 
-	protected void init() {
+	protected ITabPlayer(UUID uniqueId, String name, String server, String world) {
+		this.uniqueId = uniqueId;
+		this.name = name;
+		this.server = server;
+		this.world = world;
 		setGroup(TAB.getInstance().getGroupManager().detectPermissionGroup(this), false);
 		try {
 			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
