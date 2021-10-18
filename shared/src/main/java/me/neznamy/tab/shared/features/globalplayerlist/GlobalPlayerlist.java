@@ -59,7 +59,7 @@ public class GlobalPlayerlist extends TabFeature {
 		return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
 	}
 
-	private String getServerGroup(String serverName) {
+	public String getServerGroup(String serverName) {
 		for (Entry<String, List<String>> group : sharedServers.entrySet()) {
 			if (group.getValue().contains(serverName)) return group.getKey();
 		}
@@ -162,5 +162,9 @@ public class GlobalPlayerlist extends TabFeature {
 
 	public boolean isVanishedAsSpectators() {
 		return vanishedAsSpectators;
+	}
+
+	public List<String> getSpyServers() {
+		return spyServers;
 	}
 }
