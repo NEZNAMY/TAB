@@ -305,6 +305,7 @@ public class Configs {
 				}
 			}
 		}
+		sortingtypes.add("PLACEHOLDER_A_TO_Z:%player%");
 		finalCfg.set("scoreboard-teams.sorting-types",sortingtypes);
 
 		finalCfg.set("scoreboard-teams.case-sensitive-sorting",premium.getBoolean("case-sensitive-sorting",true));
