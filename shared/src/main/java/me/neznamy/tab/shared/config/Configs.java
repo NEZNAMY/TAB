@@ -310,7 +310,7 @@ public class Configs {
 		finalCfg.set("scoreboard-teams.case-sensitive-sorting",premium.getBoolean("case-sensitive-sorting",true));
 		finalCfg.set("scoreboard-teams.disable-in-worlds",config.getStringList("disable-features-in-worlds.nametag",disabledWorld));
 		if (isProxy)
-			finalCfg.set("scoreboard-teams.case-disable-in-servers",config.getStringList("disable-features-in-servers.nametag",disabledServer));
+			finalCfg.set("scoreboard-teams.disable-in-servers",config.getStringList("disable-features-in-servers.nametag",disabledServer));
 		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.enabled",config.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled",false));
 		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients",config.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients",false));
 		finalCfg.set("scoreboard-teams.unlimited-nametag-mode.disable-on-boats",config.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats",true));
