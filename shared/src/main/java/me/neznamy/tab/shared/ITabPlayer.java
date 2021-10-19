@@ -144,6 +144,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void sendCustomPacket(TabPacket packet) {
+		if (packet == null) return;
 		try {
 			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
 		} catch (Exception e) {
