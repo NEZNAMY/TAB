@@ -36,9 +36,6 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitTabPlayer extends ITabPlayer {
 
-	//bukkit player
-	private Player player;
-
 	//nms handle
 	private Object handle;
 
@@ -54,8 +51,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 * @param p - bukkit player
 	 */
 	public BukkitTabPlayer(Player p, int protocolVersion){
-		super(p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName());
-		player = p;
+		super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName());
 		try {
 			handle = NMSStorage.getInstance().getHandle.invoke(player);
 			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -69,7 +65,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
-		return player.hasPermission(permission);
+		return getPlayer().hasPermission(permission);
 	}
 
 	@Override
@@ -85,7 +81,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public void sendPacket(Object nmsPacket) {
-		if (nmsPacket == null || !player.isOnline()) return;
+		if (nmsPacket == null || !getPlayer().isOnline()) return;
 		long time = System.nanoTime();
 		try {
 			if (nmsPacket instanceof PacketPlayOutBoss) {
@@ -115,10 +111,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (packet.isPlayMusic()) bar.addFlag(BarFlag.PLAY_BOSS_MUSIC);
 			bar.setProgress(packet.getPct());
 			bossbars.put(packet.getId(), bar);
-			bar.addPlayer(player);
+			bar.addPlayer(getPlayer());
 			break;
 		case REMOVE:
-			bossbars.get(packet.getId()).removePlayer(player);
+			bossbars.get(packet.getId()).removePlayer(getPlayer());
 			bossbars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
@@ -154,10 +150,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (packet.isDarkenScreen()) bar.addFlag(BossFlag.DARKEN_SKY);
 			if (packet.isPlayMusic()) bar.addFlag(BossFlag.PLAY_BOSS_MUSIC);
 			viaBossbars.put(packet.getId(), bar);
-			bar.addPlayer(player.getUniqueId());
+			bar.addPlayer(getPlayer().getUniqueId());
 			break;
 		case REMOVE:
-			viaBossbars.get(packet.getId()).removePlayer(player.getUniqueId());
+			viaBossbars.get(packet.getId()).removePlayer(getPlayer().getUniqueId());
 			viaBossbars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
@@ -207,14 +203,14 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean hasInvisibilityPotion() {
-		return player.hasPotionEffect(PotionEffectType.INVISIBILITY);
+		return getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY);
 	}
 
 	@Override
 	public boolean isDisguised() {
 		try {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
-			return DisguiseAPI.isDisguised(player);
+			return DisguiseAPI.isDisguised(getPlayer());
 		} catch (NoClassDefFoundError | ExceptionInInitializerError e) {
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
 			return false;
@@ -233,25 +229,25 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public Player getPlayer() {
-		return player;
+		return (Player) player;
 	}
 
 	@Override
 	public boolean isOnline() {
-		return player.isOnline();
+		return getPlayer().isOnline();
 	}
 
 	@Override
 	public boolean isVanished() {
 		Essentials essentials = ((BukkitPlatform)TAB.getInstance().getPlatform()).getEssentials();
 		if (essentials != null && essentials.getUser(getUniqueId()).isVanished()) return true;
-		List<MetadataValue> metadata = player.getMetadata("vanished");
+		List<MetadataValue> metadata = getPlayer().getMetadata("vanished");
 		return !metadata.isEmpty() && metadata.get(0).asBoolean();
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public int getGamemode() {
-		return player.getGameMode().getValue();
+		return getPlayer().getGameMode().getValue();
 	}
 }

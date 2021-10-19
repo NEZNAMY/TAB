@@ -35,9 +35,6 @@ import net.kyori.adventure.text.Component;
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-	//the velocity player
-	private Player player;
-	
 	//uuid used in tablist
 	private UUID tablistId;
 	
@@ -49,27 +46,26 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	 * @param p - velocity player
 	 */
 	public VelocityTabPlayer(Player p, PluginMessageHandler plm) {
-		super(plm, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-", "N/A");
-		player = p;
+		super(plm, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-", "N/A");
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
-		version = ProtocolVersion.fromNetworkId(player.getProtocolVersion().getProtocol());
+		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
 	}
 	
 	@Override
 	public boolean hasPermission0(String permission) {
-		return player.hasPermission(permission);
+		return getPlayer().hasPermission(permission);
 	}
 	
 	@Override
 	public int getPing() {
-		return (int) player.getPing();
+		return (int) getPlayer().getPing();
 	}
 	
 	@Override
 	public void sendPacket(Object packet) {
 		long time = System.nanoTime();
-		if (packet == null || !player.isActive()) return;
+		if (packet == null || !getPlayer().isActive()) return;
 		if (packet instanceof PacketPlayOutChat){
 			handle((PacketPlayOutChat) packet);
 		}
@@ -86,11 +82,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 
 	private void handle(PacketPlayOutChat packet) {
-		player.sendMessage(Identity.nil(), Main.stringToComponent(packet.getMessage().toString(getVersion())), MessageType.valueOf(packet.getType().name()));
+		getPlayer().sendMessage(Identity.nil(), Main.stringToComponent(packet.getMessage().toString(getVersion())), MessageType.valueOf(packet.getType().name()));
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-		player.getTabList().setHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
+		getPlayer().getTabList().setHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
@@ -105,10 +101,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
 			if (packet.isPlayMusic()) bar.addFlag(Flag.PLAY_BOSS_MUSIC);
 			bossbars.put(packet.getId(), bar);
-			player.showBossBar(bar);
+			getPlayer().showBossBar(bar);
 			break;
 		case REMOVE:
-			player.hideBossBar(bossbars.get(packet.getId()));
+			getPlayer().hideBossBar(bossbars.get(packet.getId()));
 			bossbars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
@@ -150,9 +146,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		for (PlayerInfoData data : packet.getEntries()) {
 			switch (packet.getAction()) {
 			case ADD_PLAYER:
-				if (player.getTabList().containsEntry(data.getUniqueId())) continue;
-				player.getTabList().addEntry(TabListEntry.builder()
-						.tabList(player.getTabList())
+				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
+				getPlayer().getTabList().addEntry(TabListEntry.builder()
+						.tabList(getPlayer().getTabList())
 						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
 						.gameMode(data.getGameMode().ordinal()-1)
 						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
@@ -160,7 +156,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 						.build());
 				break;
 			case REMOVE_PLAYER:
-				player.getTabList().removeEntry(data.getUniqueId());
+				getPlayer().getTabList().removeEntry(data.getUniqueId());
 				break;
 			case UPDATE_DISPLAY_NAME:
 				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
@@ -178,13 +174,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 	
 	private TabListEntry getEntry(UUID id) {
-		for (TabListEntry entry : player.getTabList().getEntries()) {
+		for (TabListEntry entry : getPlayer().getTabList().getEntries()) {
 			if (entry.getProfile().getId().equals(id)) return entry;
 		}
 		//return dummy entry to not cause NPE
 		//possibly add logging into the future to see when this happens
 		return TabListEntry.builder()
-				.tabList(player.getTabList())
+				.tabList(getPlayer().getTabList())
 				.displayName(Component.text(""))
 				.gameMode(0)
 				.profile(new GameProfile(UUID.randomUUID(), "empty", new ArrayList<>()))
@@ -194,12 +190,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public Object getSkin() {
-		return player.getGameProfile().getProperties();
+		return getPlayer().getGameProfile().getProperties();
 	}
 	
 	@Override
 	public Player getPlayer() {
-		return player;
+		return (Player) player;
 	}
 	
 	@Override
@@ -209,7 +205,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public boolean isOnline() {
-		return player.isActive();
+		return getPlayer().isActive();
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import me.neznamy.tab.api.protocol.TabPacket;
  */
 public abstract class ITabPlayer implements TabPlayer {
 
+	protected Object player;
 	private String name;
 	private UUID uniqueId;
 	private String world;
@@ -41,7 +42,8 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean previewingNametag;
 	private boolean onJoinFinished;
 
-	protected ITabPlayer(UUID uniqueId, String name, String server, String world) {
+	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world) {
+		this.player = player;
 		this.uniqueId = uniqueId;
 		this.name = name;
 		this.server = server;

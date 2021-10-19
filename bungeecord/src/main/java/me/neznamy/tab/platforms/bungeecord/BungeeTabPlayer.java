@@ -44,9 +44,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 			TAB.getInstance().getErrorManager().criticalError("Failed to initialize fields for packet analysis", e);
 		}
 	}
-	
-	//proxy player
-	private ProxiedPlayer player;
 
 	/**
 	 * Constructs new instance for given player
@@ -54,35 +51,34 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * @throws IllegalAccessException 
 	 */
 	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) {
-		super(plm, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", "N/A");
-		player = p;
+		super(plm, p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", "N/A");
 		try {
-			channel = ((ChannelWrapper) wrapperField.get(player.getPendingConnection())).getHandle();
+			channel = ((ChannelWrapper) wrapperField.get(getPlayer().getPendingConnection())).getHandle();
 		} catch (IllegalAccessException e) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + player.getName(), e);
+			TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + getPlayer().getName(), e);
 		}
 	}
 	
 	@Override
 	public boolean hasPermission0(String permission) {
-		return player.hasPermission(permission);
+		return getPlayer().hasPermission(permission);
 	}
 	
 	@Override
 	public int getPing() {
-		return player.getPing();
+		return getPlayer().getPing();
 	}
 	
 	@Override
 	public void sendPacket(Object nmsPacket) {
 		long time = System.nanoTime();
-		if (nmsPacket != null && player.isConnected()) player.unsafe().sendPacket((DefinedPacket) nmsPacket);
+		if (nmsPacket != null && getPlayer().isConnected()) getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 	
 	@Override
 	public Object getSkin() {
-		LoginResult loginResult = ((InitialHandler)player.getPendingConnection()).getLoginProfile();
+		LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
 		if (loginResult == null || loginResult.getProperties() == null) return new String[0][0];
 		String[][] s = new String[loginResult.getProperties().length][3];
 		for (int i = 0;i<loginResult.getProperties().length;i++){
@@ -96,7 +92,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public ProxiedPlayer getPlayer() {
-		return player;
+		return (ProxiedPlayer) player;
 	}
 	
 	/**
@@ -106,27 +102,27 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 */
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
 		try {
-			return (int) getId.invoke(directionData, clazz, player.getPendingConnection().getVersion());
+			return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz + " with client version " + player.getPendingConnection().getVersion(), e);
+			TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz + " with client version " + getPlayer().getPendingConnection().getVersion(), e);
 			return -1;
 		}
 	}
 	
 	@Override
 	public ProtocolVersion getVersion() {
-		return ProtocolVersion.fromNetworkId(player.getPendingConnection().getVersion());
+		return ProtocolVersion.fromNetworkId(getPlayer().getPendingConnection().getVersion());
 	}
 	
 	@Override
 	public boolean isVanished() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(player)) return true;
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(getPlayer())) return true;
 		return super.isVanished();
 	}
 
 	@Override
 	public boolean isOnline() {
-		return player.isConnected();
+		return getPlayer().isConnected();
 	}
 
 	@Override
