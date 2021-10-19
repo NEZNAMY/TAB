@@ -99,6 +99,8 @@ public class YellowNumber extends TabFeature {
 		}
 		if (!disabledNow && disabledBefore) {
 			onJoin(p);
+			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			if (redis != null) redis.updateYellowNumber(p, p.getProperty(PropertyUtils.YELLOW_NUMBER).get());
 		}
 	}
 
@@ -113,6 +115,8 @@ public class YellowNumber extends TabFeature {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed, all), value), this);
 		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(PropertyUtils.YELLOW_NUMBER).get());
 	}
 
 	private String getName(TabPlayer p, TabPlayer viewer) {

@@ -14,6 +14,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisBungeeSupport;
+import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisPlayer;
 import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
@@ -110,6 +112,15 @@ public class BungeePipelineInjector extends PipelineInjector {
 						!TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
 					logTeamOverride(packet.getName(), p.getName());
 					col.remove(p.getName());
+				}
+			}
+			RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			if (redis != null) {
+				for (RedisPlayer p : redis.getRedisPlayers().values()) {
+					if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
+						logTeamOverride(packet.getName(), p.getName());
+						col.remove(p.getName());
+					}
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));

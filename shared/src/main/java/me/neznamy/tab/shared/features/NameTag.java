@@ -248,6 +248,8 @@ public class NameTag extends TabFeature implements TeamManager {
 			boolean visible = getTeamVisibility(p, viewer);
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		if (redis != null) redis.updateNameTag(p, p.getProperty(PropertyUtils.TAGPREFIX).get(), p.getProperty(PropertyUtils.TAGSUFFIX).get());
 	}
 
 	public void updateTeamData(TabPlayer p, TabPlayer viewer) {

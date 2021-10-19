@@ -79,6 +79,8 @@ public class Playerlist extends TabFeature {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
 					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p, viewer))), this);
 				}
+				RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+				if (redis != null) redis.updateTabFormat(p, p.getProperty(PropertyUtils.TABPREFIX).get() + p.getProperty(PropertyUtils.CUSTOMTABNAME).get() + p.getProperty(PropertyUtils.TABSUFFIX).get());
 			}
 		} else {
 			refresh(p, true);
@@ -113,6 +115,8 @@ public class Playerlist extends TabFeature {
 				if (viewer.getVersion().getMinorVersion() < 8) continue;
 				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), getTabFormat(refreshed, viewer, true))), this);
 			}
+			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			if (redis != null) redis.updateTabFormat(refreshed, refreshed.getProperty(PropertyUtils.TABPREFIX).get() + refreshed.getProperty(PropertyUtils.CUSTOMTABNAME).get() + refreshed.getProperty(PropertyUtils.TABSUFFIX).get());
 		}
 	}
 	

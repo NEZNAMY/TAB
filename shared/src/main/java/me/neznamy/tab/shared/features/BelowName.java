@@ -109,6 +109,8 @@ public class BelowName extends TabFeature {
 				if (all.isLoaded()) p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getName(), getValue(all)), this);
 			}
 		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		if (redis != null) redis.updateBelowname(p, p.getProperty(PropertyUtils.BELOWNAME_NUMBER).get());
 	}
 
 	private int getValue(TabPlayer p) {
@@ -123,6 +125,8 @@ public class BelowName extends TabFeature {
 			if (all.getWorld().equals(refreshed.getWorld()) && Objects.equals(all.getServer(), refreshed.getServer()))
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getName(), number), this);
 		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		if (redis != null) redis.updateBelowname(refreshed, refreshed.getProperty(PropertyUtils.BELOWNAME_NUMBER).get());
 	}
 
 	public class TextRefresher extends TabFeature {

@@ -22,6 +22,12 @@
 			<id>luck-repo</id>
 			<url>https://ci.lucko.me/plugin/repository/everything/</url>
 		</repository>
+		
+		<!-- RedisBungee -->
+		<repository>
+			<id>codemc-repo</id>
+			<url>https://repo.codemc.org/repository/maven-public/</url>
+		</repository>
 
 	</repositories>
 
@@ -154,6 +160,14 @@
 			<artifactId>bstats-bungeecord</artifactId>
 			<version>2.2.1</version>
 			<scope>compile</scope>
+		</dependency>
+
+		<!-- RedisBungee -->
+		<dependency>
+			<groupId>com.imaginarycode.minecraft</groupId>
+			<artifactId>RedisBungee</artifactId>
+			<version>0.6.5-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
