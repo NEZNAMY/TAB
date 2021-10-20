@@ -73,11 +73,11 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
 		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-			return new LuckPerms(Bukkit.getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
+			return new LuckPerms(getPluginVersion("LuckPerms"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
-			return new UltraPermissions(Bukkit.getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
+			return new UltraPermissions(getPluginVersion("UltraPermissions"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider(), Bukkit.getPluginManager().getPlugin("Vault").getDescription().getVersion());
+			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider(), getPluginVersion("Vault"));
 		} else {
 			return new None();
 		}
@@ -91,7 +91,7 @@ public class BukkitPlatform implements Platform {
 				Class.forName("com.viaversion.viaversion.api.Via");
 				viaversion = true;
 			} catch (ClassNotFoundException e) {
-				TAB.getInstance().sendConsoleMessage("&c[TAB] An outdated version of ViaVersion (" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ") was detected.", true);
+				TAB.getInstance().sendConsoleMessage("&c[TAB] An outdated version of ViaVersion (" + getPluginVersion("ViaVersion") + ") was detected.", true);
 				TAB.getInstance().sendConsoleMessage("&c[TAB] TAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
 				TAB.getInstance().sendConsoleMessage("&c[TAB] This might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
 			}
@@ -120,6 +120,10 @@ public class BukkitPlatform implements Platform {
 		for (Player p : getOnlinePlayers()) {
 			tab.addPlayer(new BukkitTabPlayer(p, plugin.getProtocolVersion(p)));
 		}
+	}
+	
+	private String getPluginVersion(String plugin) {
+		return Bukkit.getPluginManager().getPlugin(plugin).getDescription().getVersion();
 	}
 
 	/**
