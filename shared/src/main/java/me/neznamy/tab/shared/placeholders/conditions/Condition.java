@@ -70,7 +70,7 @@ public class Condition {
 		List<String> placeholdersInConditions = new ArrayList<>();
 		for (String subcondition : conditions) {
 			if (subcondition.startsWith("permission:")) {
-				refresh = 1000; //permission refreshing will be done every second
+				if (refresh > 1000) refresh = 1000; //permission refreshing will be done every second
 			} else {
 				placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
 			}
