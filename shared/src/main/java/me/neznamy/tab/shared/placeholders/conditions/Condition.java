@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
@@ -35,6 +36,8 @@ public class Condition {
 	
 	//value to return if condition is not met
 	private String no;
+	
+	private int refresh = 10000;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -66,11 +69,25 @@ public class Condition {
 		PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
 		List<String> placeholdersInConditions = new ArrayList<>();
 		for (String subcondition : conditions) {
-			placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
+			if (subcondition.startsWith("permission:")) {
+				refresh = 1000; //permission refreshing will be done every second
+			} else {
+				placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
+			}
 		}
 		placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
 		placeholdersInConditions.addAll(pm.detectPlaceholders(no));
+		for (String placeholder : placeholdersInConditions) {
+			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
+			if (pl.getRefresh() < refresh) {
+				refresh = pl.getRefresh();
+			}
+		}
 		pm.addUsedPlaceholders(placeholdersInConditions);
+	}
+	
+	public int getRefresh() {
+		return refresh;
 	}
 	
 	/**
@@ -141,14 +158,8 @@ public class Condition {
 			return getConditions().get(string);
 		} else {
 			Condition c = Condition.compile(UUID.randomUUID().toString(), Lists.newArrayList(string.split(";")), "AND", "yes", "no");
-			String identifier = "%condition:" + c.getName() + "%";
-			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-			if (TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-				refresh = TAB.getInstance().getPlaceholderManager().getPlayerPlaceholderRefreshIntervals().get(identifier);
-			}
-			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, c::getText);
+			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%condition:" + c.getName() + "%", c.getRefresh(), c::getText);
 			return c;
-			
 		}
 	}
 

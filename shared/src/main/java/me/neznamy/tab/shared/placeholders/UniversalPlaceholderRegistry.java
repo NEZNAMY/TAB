@@ -113,12 +113,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			Condition c = Condition.compile(condition.getKey(), list, type, yes, no);
 			Condition.getConditions().put(condition.getKey(), c);
 			String identifier = "%condition:" + c.getName() + "%";
-			PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
-			int refresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-			if (pm.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-				refresh = pm.getPlayerPlaceholderRefreshIntervals().get(identifier);
-			}
-			manager.registerPlayerPlaceholder(identifier, refresh, c::getText);
+			manager.registerPlayerPlaceholder(identifier, c.getRefresh(), c::getText);
 		}
 	}
 }
