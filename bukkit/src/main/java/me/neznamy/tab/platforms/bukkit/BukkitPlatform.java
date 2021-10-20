@@ -86,7 +86,16 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public void loadFeatures() {
 		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
+		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+			try {
+				Class.forName("com.viaversion.viaversion.api.Via");
+				viaversion = true;
+			} catch (ClassNotFoundException e) {
+				TAB.getInstance().sendConsoleMessage("&c[TAB] An outdated version of ViaVersion (" + Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion() + ") was detected.", true);
+				TAB.getInstance().sendConsoleMessage("&c[TAB] TAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
+				TAB.getInstance().sendConsoleMessage("&c[TAB] This might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
+			}
+		}
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
