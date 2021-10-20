@@ -381,6 +381,7 @@ public class Configs {
 		finalCfg.set("scoreboard.permission-required-to-toggle", null);
 		Map<String,Map<String,Object>> scoreboards = premium.getConfigurationSection("scoreboards");
 		Map<String,String> perworldScoreboards = premium.getConfigurationSection("scoreboard.per-world");
+		finalCfg.set("scoreboard.default-scoreboard", null);
 		finalCfg.set("scoreboard.per-world", null);
 		if (perworldScoreboards != null)
 			perworldScoreboards.forEach((world,sb)->{
