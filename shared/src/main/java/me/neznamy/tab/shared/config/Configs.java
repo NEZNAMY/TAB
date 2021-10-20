@@ -204,6 +204,20 @@ public class Configs {
 	public MySQL getMysql() {
 		return mysql;
 	}
+	
+	public String getGroup(List<Object> serverGroups, String element) {
+		if (serverGroups.isEmpty()) return element;
+		for (Object worldGroup : serverGroups) {
+			for (String definedWorld : worldGroup.toString().split(";")) {
+				if (definedWorld.endsWith("*")) {
+					if (element.toLowerCase().startsWith(definedWorld.substring(0, definedWorld.length()-1).toLowerCase())) return worldGroup.toString();
+				} else {
+					if (element.equalsIgnoreCase(definedWorld)) return worldGroup.toString();
+				}
+			}
+		}
+		return element;
+	}
 
 	public void convertToV3() throws YAMLException, IOException {
 		config.setValues(new HashMap<>());

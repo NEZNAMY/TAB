@@ -17,9 +17,14 @@ import me.neznamy.tab.shared.TAB;
  */
 public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	
+	private List<Object> worldGroups = new ArrayList<>();
+	private List<Object> serverGroups = new ArrayList<>();
+	
 	public HeaderFooter() {
 		super("Header/Footer", TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-worlds"));
+		serverGroups.addAll(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
+		worldGroups.addAll(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
 		TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s, disabledServers=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
 	}
 	
@@ -112,9 +117,9 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 		if (value.length > 0) {
 			return value[0];
 		}
-		List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-server." + p.getServer() + "." + property);
+		List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getGroup(serverGroups, p.getServer()) + "." + property);
 		if (lines == null) {
-			lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + p.getWorld() + "." + property);
+			lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
 		}
 		if (lines == null) {
 			 lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer." + property);

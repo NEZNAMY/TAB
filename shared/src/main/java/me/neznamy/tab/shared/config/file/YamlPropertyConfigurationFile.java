@@ -3,20 +3,26 @@ package me.neznamy.tab.shared.config.file;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.TAB;
 
 public class YamlPropertyConfigurationFile extends YamlConfigurationFile implements PropertyConfiguration {
 
 	private String category;
+	private List<Object> worldGroups = new ArrayList<>();
+	private List<Object> serverGroups = new ArrayList<>();
 	
 	public YamlPropertyConfigurationFile(InputStream source, File destination) throws IllegalStateException, YAMLException, IOException {
 		super(source, destination);
 		category = destination.getName().contains("groups") ? "group" : "user";
+		serverGroups.addAll(getConfigurationSection("per-server").keySet());
+		worldGroups.addAll(getConfigurationSection("per-world").keySet());
 	}
 
 	@Override
@@ -33,16 +39,16 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	@Override
 	public String[] getProperty(String name, String property, String server, String world) {
 		Object value = null;
-		if ((value = getObject(String.format("per-server.%s.%s.%s", server, name, property))) != null) {
+		if ((value = getObject(String.format("per-server.%s.%s.%s", TAB.getInstance().getConfiguration().getGroup(serverGroups, server), name, property))) != null) {
 			return new String[] {toString(value), category + "=" + name + ", server=" + server};
 		}
-		if ((value = getObject(String.format("per-server.%s._DEFAULT_.%s", server, property))) != null) {
+		if ((value = getObject(String.format("per-server.%s._DEFAULT_.%s", TAB.getInstance().getConfiguration().getGroup(serverGroups, server), property))) != null) {
 			return new String[] {toString(value), category + "=_DEFAULT_, server=" + server};
 		}
-		if ((value = getObject(String.format("per-world.%s.%s.%s", world, name, property))) != null) {
+		if ((value = getObject(String.format("per-world.%s.%s.%s", TAB.getInstance().getConfiguration().getGroup(worldGroups, world), name, property))) != null) {
 			return new String[] {toString(value), category + "=" + name + ", world=" + world};
 		}
-		if ((value = getObject(String.format("per-world.%s._DEFAULT_.%s", world, property))) != null) {
+		if ((value = getObject(String.format("per-world.%s._DEFAULT_.%s", TAB.getInstance().getConfiguration().getGroup(worldGroups, world), property))) != null) {
 			return new String[] {toString(value), category + "=_DEFAULT_, world=" + world};
 		}
 		if ((value = getObject(String.format("%s.%s", name, property))) != null) {
