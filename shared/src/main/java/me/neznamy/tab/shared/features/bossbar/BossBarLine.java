@@ -42,6 +42,8 @@ public class BossBarLine implements BossBar {
 	//bossabr progress
 	private String progress;
 	
+	private boolean announcementOnly;
+	
 	//set of players seeing this bossbar
 	private List<TabPlayer> players = new ArrayList<>();
 	
@@ -66,7 +68,7 @@ public class BossBarLine implements BossBar {
 	 * @param title - bossbar title
 	 * @param progress - bossbar progress
 	 */
-	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition, String color, String style, String title, String progress) {
+	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition, String color, String style, String title, String progress, boolean announcementOnly) {
 		this.manager = manager;
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
@@ -78,6 +80,7 @@ public class BossBarLine implements BossBar {
 		this.style = style;
 		this.title = title;
 		this.progress = progress;
+		this.announcementOnly = announcementOnly;
 		textRefresher = new TextRefresher(this);
 		progressRefresher = new ProgressRefresher(this);
 		colorAndStyleRefresher = new ColorAndStyleRefresher(this);
@@ -249,5 +252,9 @@ public class BossBarLine implements BossBar {
 	@Override
 	public List<TabPlayer> getPlayers() {
 		return players;
+	}
+	
+	public boolean isAnnouncementOnly() {
+		return announcementOnly;
 	}
 }

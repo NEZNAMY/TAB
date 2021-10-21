@@ -22,7 +22,7 @@ import me.neznamy.tab.shared.TAB;
 public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	//default bossbars
-	private List<String> defaultBars;
+	private List<String> defaultBars = new ArrayList<>();
 
 	//registered bossbars
 	private Map<String, BossBar> lines = new HashMap<>();
@@ -59,18 +59,13 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		super("BossBar", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-worlds"));
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
-		defaultBars = TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.default-bars", new ArrayList<>());
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
 		toggleOnMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on");
 		toggleOffMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off");
 		for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
-			lines.put(bar.toString(), loadFromConfig(bar.toString()));
-		}
-		for (String bar : new ArrayList<>(defaultBars)) {
-			if (lines.get(bar) == null) {
-				TAB.getInstance().getErrorManager().startupWarn("BossBar \"&e" + bar + "&c\" is defined as default bar, but does not exist! &bIgnoring.");
-				defaultBars.remove(bar);
-			}
+			BossBarLine line = loadFromConfig(bar.toString());
+			lines.put(bar.toString(), line);
+			if (!line.isAnnouncementOnly()) defaultBars.add(bar.toString());
 		}
 		lineValues = lines.values().toArray(new BossBar[0]);
 		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
@@ -110,7 +105,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			text = "";
 			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "text");
 		}
-		return new BossBarLine(this, bar, condition, color, style, text, progress);
+		return new BossBarLine(this, bar, condition, color, style, text, progress, (boolean) bossbar.getOrDefault("announcement-bar", false));
 	}
 
 	@Override
@@ -213,7 +208,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	@Override
 	public BossBar createBossBar(String title, String progress, String color, String style) {
 		UUID id = UUID.randomUUID();
-		BossBar bar = new BossBarLine(this, id.toString(), null, color, style, title, progress);
+		BossBar bar = new BossBarLine(this, id.toString(), null, color, style, title, progress, true);
 		lines.put(id.toString(), bar);
 		lineValues = lines.values().toArray(new BossBar[0]);
 		return bar;
