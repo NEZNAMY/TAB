@@ -206,7 +206,7 @@ public class Configs {
 	}
 	
 	public String getGroup(List<Object> serverGroups, String element) {
-		if (serverGroups.isEmpty()) return element;
+		if (serverGroups.isEmpty() || element == null) return element;
 		for (Object worldGroup : serverGroups) {
 			for (String definedWorld : worldGroup.toString().split(";")) {
 				if (definedWorld.endsWith("*")) {
