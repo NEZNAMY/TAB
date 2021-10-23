@@ -77,7 +77,7 @@ public class TAB {
 	 * @return true if this is premium version, false if not
 	 */
 	public boolean isPremium() {
-		return false;
+		return true;
 	}
 	
 	/**
