@@ -73,20 +73,15 @@ public class MySQL {
 
 	private PreparedStatement prepareStatement(String query, Object... vars) throws SQLException {
 		if (isConnected()) {
-			PreparedStatement ps = null;
-			try { 
-				ps = con.prepareStatement(query);
-				int i = 0;
-				if (query.contains("?") && vars.length != 0) {
-					for (Object obj : vars) {
-						i++;
-						ps.setObject(i, obj);
-					}
+			PreparedStatement ps = con.prepareStatement(query);
+			int i = 0;
+			if (query.contains("?") && vars.length != 0) {
+				for (Object obj : vars) {
+					i++;
+					ps.setObject(i, obj);
 				}
-				return ps;
-			} finally {
-				if (ps != null) ps.close();
 			}
+			return ps;
 		} else {
 			openConnection();
 			return prepareStatement(query, vars);
