@@ -250,7 +250,8 @@ public class NameTagX extends NameTag {
 		playersInVehicle.remove(disconnectedPlayer);
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
-		TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, CpuConstants.UsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+		if (disconnectedPlayer.getArmorStandManager() != null) //player was not loaded yet
+			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, CpuConstants.UsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
 
 	@Override
