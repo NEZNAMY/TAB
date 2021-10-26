@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -157,7 +156,7 @@ public class Condition {
 		if (getConditions().containsKey(string)) {
 			return getConditions().get(string);
 		} else {
-			Condition c = Condition.compile(UUID.randomUUID().toString(), Lists.newArrayList(string.split(";")), "AND", "yes", "no");
+			Condition c = Condition.compile("AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "AND", "yes", "no");
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%condition:" + c.getName() + "%", c.getRefresh(), c::getText);
 			return c;
 		}
