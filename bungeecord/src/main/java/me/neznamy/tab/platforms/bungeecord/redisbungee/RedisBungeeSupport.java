@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bungeecord.redisbungee;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
 import org.json.simple.JSONObject;
@@ -37,7 +37,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 
 	private static final String CHANNEL_NAME = "TAB";
 
-	private Map<String, RedisPlayer> redisPlayers = new HashMap<>();
+	private Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
 	private GlobalPlayerlist global;
 	private Playerlist playerlist;
 	private NameTag nametags;
