@@ -27,7 +27,7 @@ public class ArmorStandManager {
 	 * @param name - key name of the armor stand
 	 * @param as - armor stand to add
 	 */
-	public void addArmorStand(String name, ArmorStand as) {
+	public synchronized void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
 		armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
 		for (TabPlayer p : nearbyPlayerArray) as.spawn(p);
