@@ -103,6 +103,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			if (bossbars.containsKey(packet.getId())) return;
 			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
 					BarStyle.valueOf(packet.getOverlay().getBukkitName()));
@@ -142,6 +143,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		com.viaversion.viaversion.api.legacy.bossbar.BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			if (viaBossbars.containsKey(packet.getId())) return;
 			bar = Via.getAPI().legacyAPI().createLegacyBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16), 
 					packet.getPct(),
 					BossColor.valueOf(packet.getColor().name()), 

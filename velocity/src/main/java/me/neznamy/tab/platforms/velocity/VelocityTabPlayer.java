@@ -93,6 +93,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			if (bossbars.containsKey(packet.getId())) return;
 			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
 					packet.getPct(), 
 					Color.valueOf(packet.getColor().toString()), 
