@@ -98,32 +98,33 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
+		TAB tab = TAB.getInstance();
+
 		boolean disabledBefore = playersInDisabledWorlds.contains(p);
-		boolean disabledNow = false;
 		if (isDisabledWorld(disabledWorlds, p.getWorldName())) {
-			disabledNow = true;
 			playersInDisabledWorlds.add(p);
-		} else {
-			playersInDisabledWorlds.remove(p);
-		}
-		if (disabledNow) {
+
 			if (!disabledBefore) {
-				for (TabPlayer viewer : tab.getPlayers()) {
+				for (TabPlayer viewer : this.tab.getPlayers()) {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
 					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID())), TabFeature.TABLIST_NAMES);
 				}
 			}
 		} else {
+			playersInDisabledWorlds.remove(p);
 			refresh(p, true);
-			if (TAB.getInstance().getPlatform().getSeparatorType().equals("server")) {
+			if (tab.getPlatform().getSeparatorType().equals("server")) {
 				//temporary solution for velocity
-				TAB.getInstance().getCPUManager().runTaskLater(TAB.getInstance().getConfiguration().getConfig().getInt("server-switch-tablist-update-delay", 1000), "", TabFeature.TABLIST_NAMES, UsageType.WORLD_SWITCH_EVENT, () -> {
-					PacketPlayOutPlayerInfo switchedPlayer = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID(), getTabFormat(p, null)));
+				tab.getCPUManager().runTaskLater(tab.getConfiguration().getConfig().getInt("server-switch-tablist-update-delay", 1000), "", TabFeature.TABLIST_NAMES, UsageType.WORLD_SWITCH_EVENT, () -> {
 					List<PlayerInfoData> others = new ArrayList<>();
-					for (TabPlayer all : TAB.getInstance().getPlayers()) {
+
+					for (TabPlayer all : tab.getPlayers()) {
 						others.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, p)));
+
+						PacketPlayOutPlayerInfo switchedPlayer = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(p.getTablistUUID(), getTabFormat(p, all)));
 						all.sendCustomPacket(switchedPlayer, TabFeature.TABLIST_NAMES);
 					}
+
 					p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, others), TabFeature.TABLIST_NAMES);
 				});
 			}
@@ -202,9 +203,14 @@ public class Playerlist implements JoinEventListener, QuitEventListener, Loadabl
 			refresh(connectedPlayer, true);
 			if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
 			List<PlayerInfoData> list = new ArrayList<>();
-			for (TabPlayer all : tab.getPlayers()) {
-				if (all == connectedPlayer) continue; //already sent 4 lines above
-				list.add(new PlayerInfoData(all.getTablistUUID(), getTabFormat(all, connectedPlayer)));
+
+			for (TabPlayer player : tab.getPlayers()) {
+				if (player == connectedPlayer) {
+					continue; //already sent 4 lines above
+				}
+
+				updateProperties(player);
+				list.add(new PlayerInfoData(player.getTablistUUID(), getTabFormat(player, connectedPlayer)));
 			}
 			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), getFeatureType());
 		};

@@ -183,12 +183,20 @@ public class FeatureManager {
 	 * @param disconnectedPlayer - player who disconnected
 	 */
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (disconnectedPlayer == null) return;
-		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof QuitEventListener)) continue;
+		if (disconnectedPlayer == null) {
+			return;
+		}
+
+		for (Feature feature : getAllFeatures()) {
+			if (!(feature instanceof QuitEventListener)) {
+				continue;
+			}
+
 			long time = System.nanoTime();
-			((QuitEventListener)f).onQuit(disconnectedPlayer);
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
+			QuitEventListener quitListener = (QuitEventListener) feature;
+
+			quitListener.onQuit(disconnectedPlayer);
+			tab.getCPUManager().addTime(feature.getFeatureType(), UsageType.PLAYER_QUIT_EVENT, System.nanoTime()-time);
 		}
 		tab.removePlayer(disconnectedPlayer);
 	}
@@ -205,11 +213,16 @@ public class FeatureManager {
 		}
 		long millis = System.currentTimeMillis();
 		tab.addPlayer(connectedPlayer);
-		for (Feature f : getAllFeatures()) {
-			if (!(f instanceof JoinEventListener)) continue;
+		for (Feature feature : getAllFeatures()) {
+			if (!(feature instanceof JoinEventListener)) {
+				continue;
+			}
+
 			long time = System.nanoTime();
-			((JoinEventListener)f).onJoin(connectedPlayer);
-			tab.getCPUManager().addTime(f.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
+			JoinEventListener joinEvent = (JoinEventListener) feature;
+
+			joinEvent.onJoin(connectedPlayer);
+			tab.getCPUManager().addTime(feature.getFeatureType(), UsageType.PLAYER_JOIN_EVENT, System.nanoTime()-time);
 		}
 		((ITabPlayer)connectedPlayer).markAsLoaded();
 		tab.debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
@@ -228,8 +241,10 @@ public class FeatureManager {
 			tab.getCPUManager().runTaskLater(100, "processing delayed world/server switch", TabFeature.OTHER, UsageType.WORLD_SWITCH_EVENT, () -> onWorldChange(playerUUID, to));
 			return;
 		}
+
 		String from = changed.getWorldName();
-		((ITabPlayer)changed).setWorldName(to);
+		((ITabPlayer) changed).setWorldName(to);
+
 		for (Feature f : getAllFeatures()) {
 			if (!(f instanceof WorldChangeListener)) continue;
 			long time = System.nanoTime();

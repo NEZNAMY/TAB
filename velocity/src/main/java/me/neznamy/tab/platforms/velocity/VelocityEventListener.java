@@ -2,14 +2,18 @@ package me.neznamy.tab.platforms.velocity;
 
 import java.util.Optional;
 
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.player.ServerPostConnectEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 
+import com.velocitypowered.api.proxy.server.ServerInfo;
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.FeatureManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 
@@ -18,7 +22,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
  */
 public class VelocityEventListener {
 
-	private PluginMessageHandler plm;
+	private final PluginMessageHandler plm;
 	
 	public VelocityEventListener(PluginMessageHandler plm) {
 		this.plm = plm;
@@ -26,40 +30,73 @@ public class VelocityEventListener {
 	
 	/**
 	 * Disconnect event listener to forward the event to all features
-	 * @param e - disconnect event
+	 * @param event - disconnect event
 	 */
 	@Subscribe
-	public void onQuit(DisconnectEvent e){
-		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()));
+	public void onQuit(DisconnectEvent event) {
+		TAB tab = TAB.getInstance();
+
+		if (tab.isDisabled()) {
+			return;
+		}
+
+		tab.getFeatureManager().onQuit(tab.getPlayer(event.getPlayer().getUniqueId()));
 	}
-	
+
 	/**
 	 * Listener to join / server switch to forward the event to all features
-	 * @param e
+	 * @param event
 	 */
 	@Subscribe
-	public void onConnect(ServerPostConnectEvent e){
-		if (TAB.getInstance().isDisabled()) return;
+	public void onConnect(ServerConnectedEvent event) {
+		TAB tab = TAB.getInstance();
+
+		if (tab.isDisabled()) {
+			return;
+		}
+
+		FeatureManager featureManager = tab.getFeatureManager();
+		ServerInfo serverInfo = event.getServer().getServerInfo();
+		Player player = event.getPlayer();
+
+		TabPlayer oldTabPlayer = tab.getPlayer(player.getUniqueId());
 		try {
-			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-				TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer(), plm));
+			if (oldTabPlayer == null) {
+				VelocityTabPlayer tabPlayer = new VelocityTabPlayer(player, plm);
+				tabPlayer.setWorldName(serverInfo.getName());
+				featureManager.onJoin(tabPlayer);
 			} else {
-				Optional<ServerConnection> server = e.getPlayer().getCurrentServer();
-				TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), server.isPresent() ? server.get().getServerInfo().getName() : "null");
+				featureManager.onWorldChange(player.getUniqueId(), serverInfo.getName());
+				featureManager.onJoin(oldTabPlayer);
 			}
+
 		} catch (Exception ex){
-			TAB.getInstance().getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
+			tab.getErrorManager().criticalError("An error occurred when player joined/changed server", ex);
 		}
 	}
 	
 	/**
 	 * Listener to commands to forward the event to all features
-	 * @param e
+	 * @param event
 	 */
 	@Subscribe
-	public void onCommand(CommandExecuteEvent e) {
-		if (TAB.getInstance().isDisabled()) return;
-		if (e.getCommandSource() instanceof Player && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand())) e.setResult(CommandResult.denied());
+	public void onCommand(CommandExecuteEvent event) {
+		TAB tab = TAB.getInstance();
+
+		if (tab.isDisabled()) {
+			return;
+		}
+
+		CommandSource source = event.getCommandSource();
+
+		if (!(source instanceof Player)) {
+			return;
+		}
+
+		Player player = (Player) source;
+
+		if (tab.getFeatureManager().onCommand(tab.getPlayer(player.getUniqueId()), event.getCommand())) {
+			event.setResult(CommandResult.denied());
+		}
 	}
 }
