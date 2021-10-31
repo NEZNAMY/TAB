@@ -81,11 +81,19 @@ public class TAB extends TabAPI {
 	private ProtocolVersion serverVersion;
 	
 	private GroupManager groupManager;
+	
+	private boolean floodgate;
 
 	public TAB(Platform platform, ProtocolVersion serverVersion) {
 		this.platform = platform;
 		this.serverVersion = serverVersion;
 		TabAPI.setInstance(this);
+		try {
+			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+			floodgate = true;
+		} catch (ClassNotFoundException e) {
+			//plugin not installed
+		}
 	}
 
 	@Override
@@ -352,5 +360,9 @@ public class TAB extends TabAPI {
 
 	public GroupManager getGroupManager() {
 		return groupManager;
+	}
+
+	public boolean isFloodgateInstalled() {
+		return floodgate;
 	}
 }
