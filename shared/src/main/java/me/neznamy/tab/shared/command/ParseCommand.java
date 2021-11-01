@@ -39,7 +39,7 @@ public class ParseCommand extends SubCommand {
 			}
 		}
 		String replaced = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-		String message = EnumChatFormat.color("&6Replacing placeholder &e%placeholder%" + (target == null ? "" : "&6 for player &e" + target.getName())).replace("%placeholder%", replaced);
+		String message = EnumChatFormat.color("&6Replacing placeholder &e%placeholder% &6for player &e" + target.getName()).replace("%placeholder%", replaced);
 		sendRawMessage(sender, message);
 		try {
 			replaced = new PropertyImpl(null, target, replaced).get();
