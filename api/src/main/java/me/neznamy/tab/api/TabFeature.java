@@ -214,8 +214,7 @@ public abstract class TabFeature {
 		if (contains) return true;
 		contains = contains(disabledServers, server);
 		if (serverWhitelistMode) contains = !contains;
-		if (contains) return true;
-		return false;
+		return contains;
 	}
 	
 	protected boolean contains(String[] list, String element) {
