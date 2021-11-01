@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 public class WitherBossBar extends BossBarManagerImpl implements Listener {
 
 	//distance of wither in blocks
-	private static final int WITHER_DISTANCE = 75;
+	private static final int WITHER_DISTANCE = 60;
 	
 	/**
 	 * Constructs a new instance of the class
