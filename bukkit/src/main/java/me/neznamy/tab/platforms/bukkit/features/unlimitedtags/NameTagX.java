@@ -306,7 +306,6 @@ public class NameTagX extends NameTag {
 	 * @param p - player to fix armor stands heights for
 	 */
 	public void fixArmorStandHeights(TabPlayer p) {
-		p.getArmorStandManager().refresh();
 		double currentY = -spaceBetweenLines;
 		for (ArmorStand as : p.getArmorStandManager().getArmorStands()) {
 			if (as.hasStaticOffset()) continue;
