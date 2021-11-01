@@ -7,6 +7,8 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 
@@ -72,6 +74,11 @@ public class TabCommand extends SubCommand {
 	private void help(TabPlayer sender){
 		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + TAB.PLUGIN_VERSION, true);
 		if ((sender == null || sender.hasPermission("tab.admin"))) {
+			IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
+			component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's page")));
+			component.getModifier().onClickOpenUrl("https://www.mc-market.org/resources/14009/");
+			component.addExtra(new IChatBaseComponent(EnumChatFormat.color("&0 by _NEZNAMY_")));
+			sender.sendMessage(component);
 			String command = !tab.getPlatform().isProxy() ? "/tab" : "/btab";
 			String prefix = " &8>> &3&l";
 			sendMessage(sender, "&m                                                                                ");
@@ -83,7 +90,7 @@ public class TabCommand extends SubCommand {
 			sendMessage(sender, "      - &7Shows your nametag for yourself, for testing purposes");
 			sendMessage(sender, prefix + command + " announce bar &3<name> &9<seconds>");
 			sendMessage(sender, "      - &7Temporarily displays bossbar to all players");
-			sendMessage(sender, prefix + command + " parse <placeholder> ");
+			sendMessage(sender, prefix + command + " parse <player> <placeholder> ");
 			sendMessage(sender, "      - &7Test if a placeholder works");
 			sendMessage(sender, prefix + command + " debug [player]");
 			sendMessage(sender, "      - &7displays debug information about player");

@@ -26,7 +26,6 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
@@ -210,7 +209,6 @@ public class TAB extends TabAPI {
 			}
 			featureManager.registerFeature("layout", new LayoutManager());
 		}
-		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.isProxy()) {
 			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
 				
