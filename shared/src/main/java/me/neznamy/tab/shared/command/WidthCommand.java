@@ -103,7 +103,7 @@ public class WidthCommand extends SubCommand {
 			text += "i";
 		}
 		IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
-		component.getModifier().onClickRunCommand("/tab width " + (int)c + " " + width);
+		component.getModifier().onClickRunCommand("/tab width " + c + " " + width);
 		component.getModifier().onHoverShowText(new IChatBaseComponent("Click to set width to " + width + " pixels"));
 		return component;
 	}
