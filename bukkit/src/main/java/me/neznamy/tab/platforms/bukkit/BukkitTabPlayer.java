@@ -65,7 +65,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
-		return getPlayer().hasPermission(permission);
+		long time = System.nanoTime();
+		boolean value = getPlayer().hasPermission(permission);
+		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
+		return value;
 	}
 
 	@Override

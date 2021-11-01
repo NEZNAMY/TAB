@@ -54,7 +54,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public boolean hasPermission0(String permission) {
-		return getPlayer().hasPermission(permission);
+		long time = System.nanoTime();
+		boolean value = getPlayer().hasPermission(permission);
+		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
+		return value;
 	}
 	
 	@Override
