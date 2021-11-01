@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -33,7 +34,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSneak(PlayerToggleSneakEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || !p.isLoaded() || feature.isInDisabledWorld(p)) return;
+		if (p == null || !p.isLoaded() || feature.isPlayerDisabled(p)) return;
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", feature, CpuConstants.UsageCategory.PLAYER_SNEAK, () -> {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
 		});
@@ -47,8 +48,35 @@ public class EventListener implements Listener {
 	public void onRespawn(PlayerRespawnEvent e) {
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", feature, CpuConstants.UsageCategory.PLAYER_RESPAWN, () -> {
 			TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-			if (feature.isInDisabledWorld(respawned)) return;
+			if (feature.isPlayerDisabled(respawned)) return;
 			respawned.getArmorStandManager().teleport();
 		});
+	}
+	
+	@EventHandler
+	public void onWorldChange(PlayerChangedWorldEvent e) {
+		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+		if (p == null) return;
+		long time = System.nanoTime();
+		String to = e.getPlayer().getWorld().getName();
+		if (feature.isDisabled(to)) {
+			if (!feature.getPlayersInDisabledUnlimitedWorlds().contains(p))
+				feature.getPlayersInDisabledUnlimitedWorlds().add(p);
+		} else {
+			feature.getPlayersInDisabledUnlimitedWorlds().remove(p);
+		}
+		//TODO delete the block below
+		TabPlayer[] nearby = p.getArmorStandManager().getNearbyPlayers();
+		p.getArmorStandManager().destroy();
+		feature.loadArmorStands(p);
+		feature.loadPassengers(p);
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			if (viewer.getArmorStandManager() != null) viewer.getArmorStandManager().destroy(p);
+			if (!to.equals(viewer.getWorld())) continue;
+			for (TabPlayer player : nearby) {
+				if (player == viewer) feature.spawnArmorStands(p, viewer, true);
+			}
+		}
+		TAB.getInstance().getCPUManager().addTime(feature, CpuConstants.UsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 	}
 }
