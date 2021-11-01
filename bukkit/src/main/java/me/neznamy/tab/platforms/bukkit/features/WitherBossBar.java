@@ -28,28 +28,31 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	
 	/**
 	 * Constructs a new instance of the class
-	 * @param mainFeature - main bossbar feature
+	 * @param plugin - plugin instance
 	 */
 	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%location%", 900, p -> ((Player)p.getPlayer()).getLocation());
+		//when MC is on fullscreen, bossbar disappears after 1 second of not being seen
+		//when in a small window, it's about 100ms
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%location%", 100, p -> ((Player)p.getPlayer()).getLocation());
 		addUsedPlaceholders(Arrays.asList("%location%"));
 	}
 	
 	@Override
 	public void load() {
 		super.load();
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers())
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			refresh(p, false);
+		}
 	}
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		for (BossBar line : getRegisteredBossBars().values()) {
-			for (TabPlayer all : line.getPlayers()) {
-				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-				all.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), getWitherLocation(all)), CpuConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
-			}
+			if (p.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
+			Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+			if (loc.getY() < 1) loc.setY(1);
+			p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc), CpuConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
 		}
 	}
 	
@@ -65,17 +68,5 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, CpuConstants.UsageCategory.PLAYER_RESPAWN, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
-	}
-	
-	/**
-	 * Returns location where wither should be located based on where player is looking
-	 * @param p - player to get wither location for
-	 * @return location of wither
-	 */
-	public Location getWitherLocation(TabPlayer p) {
-		Player pl = (Player) p.getPlayer();
-		Location loc = pl.getEyeLocation().add(pl.getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
-		if (loc.getY() < 1) loc.setY(1);
-		return loc;
 	}
 }
