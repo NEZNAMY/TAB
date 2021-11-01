@@ -210,16 +210,9 @@ public class TAB extends TabAPI {
 			featureManager.registerFeature("layout", new LayoutManager());
 		}
 		if (platform.isProxy()) {
-			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
-				
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					String world = ((ProxyTabPlayer)all).getAttribute("world", "N/A");
-					if (!String.valueOf(all.getWorld()).equals(world)){
-						((ITabPlayer)all).setWorld(world);
-						TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
-					}
-				}
-			});
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");
+			}
 		}
 	}
 
