@@ -253,6 +253,10 @@ public class BukkitPlatform implements Platform {
 	public boolean isLibsdisguisesEnabled() {
 		return libsdisguises;
 	}
+	
+	public void setLibsdisguisesEnabled(boolean enabled) {
+		libsdisguises = enabled;
+	}
 
 	public boolean isIdisguiseEnabled() {
 		return idisguise;

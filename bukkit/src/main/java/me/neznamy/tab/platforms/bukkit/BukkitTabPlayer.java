@@ -217,7 +217,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return DisguiseAPI.isDisguised(getPlayer());
 		} catch (NoClassDefFoundError | ExceptionInInitializerError e) {
+			//java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
+			((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsdisguisesEnabled(false);
 			return false;
 		}
 	}
