@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.ThreadManager;
+import me.neznamy.tab.api.task.RepeatingTask;
+import me.neznamy.tab.api.task.ThreadManager;
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -115,28 +116,10 @@ public class CpuManager implements ThreadManager {
 	public Future<Void> runTask(String errorDescription, Runnable task) {
 		return submit(errorDescription, task);
 	}
-	
+
 	@Override
-	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		if (intervalMilliseconds <= 0) return null;
-		return submit(errorDescription, () -> {
-			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
-			while (true) {
-				try {
-					long sleep = intervalMilliseconds - (System.currentTimeMillis()-lastLoop);
-					if (sleep > 0) Thread.sleep(sleep);
-					lastLoop = System.currentTimeMillis();
-					long time = System.nanoTime();
-					task.run();
-					addTime(feature, type, System.nanoTime()-time);
-				} catch (InterruptedException pluginDisabled) {
-					Thread.currentThread().interrupt();
-					break;
-				} catch (Exception | NoClassDefFoundError e) {
-					errorManager.printError("An error occurred when " + errorDescription, e);
-				}
-			}
-		});
+	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+		return new TabRepeatingTask(this.exe, task, errorDescription, feature, type, intervalMilliseconds);
 	}
 
 	@Override
