@@ -42,8 +42,8 @@ public abstract class ProxyPlatform implements Platform {
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag());
+		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 	}
