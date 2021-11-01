@@ -92,17 +92,17 @@ public class WidthCommand extends SubCommand {
 	 * @return line of text with characters that build specified text width
 	 */
 	private IChatBaseComponent getText(int width, int c) {
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		int pixelsRemaining = width + 1;
 		while (pixelsRemaining % 2 != 0) {
 			pixelsRemaining -= 3;
-			text += "l";
+			text.append('l');
 		}
 		while (pixelsRemaining > 0) {
 			pixelsRemaining -= 2;
-			text += "i";
+			text.append('i');
 		}
-		IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
+		IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text.toString() + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
 		component.getModifier().onClickRunCommand("/tab width " + c + " " + width);
 		component.getModifier().onHoverShowText(new IChatBaseComponent("Click to set width to " + width + " pixels"));
 		return component;
