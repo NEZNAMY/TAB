@@ -72,13 +72,16 @@ public class TabCommand extends SubCommand {
 	 * @param sender - player who ran command or null if from console
 	 */
 	private void help(TabPlayer sender){
-		if (sender == null) tab.getPlatform().sendConsoleMessage("&3TAB v" + TAB.PLUGIN_VERSION, true);
 		if ((sender == null || sender.hasPermission("tab.admin"))) {
-			IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
-			component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's page")));
-			component.getModifier().onClickOpenUrl("https://www.mc-market.org/resources/14009/");
-			component.addExtra(new IChatBaseComponent(EnumChatFormat.color("&0 by _NEZNAMY_")));
-			sender.sendMessage(component);
+			if (sender != null) {
+				IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
+				component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's page")));
+				component.getModifier().onClickOpenUrl("https://www.mc-market.org/resources/14009/");
+				component.addExtra(new IChatBaseComponent(EnumChatFormat.color("&0 by _NEZNAMY_")));
+				sender.sendMessage(component);
+			} else {
+				tab.getPlatform().sendConsoleMessage("&3TAB v" + TAB.PLUGIN_VERSION, true);
+			}
 			String command = !tab.getPlatform().isProxy() ? "/tab" : "/btab";
 			String prefix = " &8>> &3&l";
 			sendMessage(sender, "&m                                                                                ");
