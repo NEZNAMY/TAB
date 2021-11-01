@@ -124,10 +124,7 @@ public class CpuManager implements ThreadManager {
 			while (true) {
 				try {
 					long sleep = intervalMilliseconds - (System.currentTimeMillis()-lastLoop);
-					if (sleep < 0) {
-						sleep = 0;
-					}
-					Thread.sleep(sleep);
+					if (sleep > 0) Thread.sleep(sleep);
 					lastLoop = System.currentTimeMillis();
 					long time = System.nanoTime();
 					task.run();
