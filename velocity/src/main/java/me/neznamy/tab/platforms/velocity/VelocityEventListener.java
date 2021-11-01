@@ -41,9 +41,9 @@ public class VelocityEventListener {
 		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
 			TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer(), plm));
 		} else {
-			TAB.getInstance().getCPUManager().runTaskLater(100, "processing server switch", () -> {
-				TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getCurrentServer().isPresent() ? e.getPlayer().getCurrentServer().get().getServerInfo().getName() : "null");
-			});
+			TAB.getInstance().getCPUManager().runTaskLater(100, "processing server switch", () -> 
+				TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getCurrentServer().isPresent() ? e.getPlayer().getCurrentServer().get().getServerInfo().getName() : "null")
+			);
 		}
 	}
 	
