@@ -104,11 +104,6 @@ public class CpuManager implements ThreadManager {
 
 	@Override
 	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
-		return runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
-	}
-	
-	@Override
-	public Future<Void> runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
 		return submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
@@ -123,11 +118,6 @@ public class CpuManager implements ThreadManager {
 	
 	@Override
 	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
-	}
-	
-	@Override
-	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
 		if (intervalMilliseconds <= 0) return null;
 		return submit(errorDescription, () -> {
 			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
