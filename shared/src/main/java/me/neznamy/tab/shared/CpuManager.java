@@ -171,6 +171,18 @@ public class CpuManager implements ThreadManager {
 		});
 	}
 	
+	@Override
+	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
+		return submit(errorDescription, () -> {
+			try {
+				Thread.sleep(delayMilliseconds);
+				task.run();
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
+			}
+		});
+	}
+	
 	@SuppressWarnings("unchecked")
 	private Future<Void> submit(String errorDescription, Runnable task) {
 		return (Future<Void>) exe.submit(() -> {

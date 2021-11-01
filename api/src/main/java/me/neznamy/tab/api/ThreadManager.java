@@ -68,4 +68,6 @@ public interface ThreadManager {
 	 * @param task - the task
 	 */
 	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task);
+	
+	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task);
 }
