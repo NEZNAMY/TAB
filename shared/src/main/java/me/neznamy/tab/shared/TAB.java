@@ -144,6 +144,7 @@ public class TAB extends TabAPI {
 			placeholderManager = new PlaceholderManagerImpl();
 			featureManager.registerFeature("placeholders", placeholderManager);
 			groupManager = new GroupManager(platform.detectPermissionPlugin());
+			featureManager.registerFeature("groups", groupManager);
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
@@ -172,7 +173,6 @@ public class TAB extends TabAPI {
 		disabled = true;
 		try {
 			long time = System.currentTimeMillis();
-			groupManager.unregisterHook();
 			cpu.cancelAllTasks();
 			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
