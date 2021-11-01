@@ -210,10 +210,8 @@ public class NameTagX extends NameTag {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (isDisabled(connectedPlayer.getWorld())) {
-			if (!playersInDisabledUnlimitedWorlds.contains(connectedPlayer))
-				playersInDisabledUnlimitedWorlds.add(connectedPlayer);
-		}
+		if (isDisabled(connectedPlayer.getWorld()) && !playersInDisabledUnlimitedWorlds.contains(connectedPlayer))
+			playersInDisabledUnlimitedWorlds.add(connectedPlayer);
 		super.onJoin(connectedPlayer);
 		getEntityIdMap().put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		loadArmorStands(connectedPlayer);
