@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -30,20 +32,19 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
-		//bar disappears in client after ~1 second of not seeing boss entity
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(900, "refreshing bossbar", this, CpuConstants.UsageCategory.TELEPORTING_WITHER, this::teleport);
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%location%", 900, p -> ((Player)p.getPlayer()).getLocation());
+		addUsedPlaceholders(Arrays.asList("%location%"));
 	}
 	
 	@Override
 	public void load() {
 		super.load();
-		teleport();
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers())
+			refresh(p, false);
 	}
 	
-	/**
-	 * Updates wither location for all players
-	 */
-	private void teleport() {
+	@Override
+	public void refresh(TabPlayer p, boolean force) {
 		for (BossBar line : getRegisteredBossBars().values()) {
 			for (TabPlayer all : line.getPlayers()) {
 				if (all.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
@@ -51,7 +52,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 			}
 		}
 	}
-
+	
 	@Override
 	public void unload() {
 		super.unload();
