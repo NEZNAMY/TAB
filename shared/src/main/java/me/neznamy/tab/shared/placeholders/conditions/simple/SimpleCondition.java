@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -22,13 +21,13 @@ public abstract class SimpleCondition {
 	private String leftSide;
 	
 	//placeholders used in left side of condition
-	private List<String> leftSidePlaceholders;
+	private String[] leftSidePlaceholders;
 	
 	//ride side of condition
 	private String rightSide;
 	
 	//placeholders used in right side of condition
-	private List<String> rightSidePlaceholders;
+	private String[] rightSidePlaceholders;
 	
 	/**
 	 * Registering all condition types
@@ -51,9 +50,9 @@ public abstract class SimpleCondition {
 	 */
 	protected void setSides(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
-		leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(leftSide);
+		leftSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(leftSide).toArray(new String[0]);
 		this.rightSide = rightSide;
-		rightSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(rightSide);
+		rightSidePlaceholders = TAB.getInstance().getPlaceholderManager().detectPlaceholders(rightSide).toArray(new String[0]);
 	}
 	
 	/**
@@ -81,7 +80,7 @@ public abstract class SimpleCondition {
 	 * @param placeholders - used placeholders
 	 * @return replaced string
 	 */
-	public String parseSide(TabPlayer p, String value, List<String> placeholders) {
+	public String parseSide(TabPlayer p, String value, String[] placeholders) {
 		Object result = value;
 		for (String identifier : placeholders) {
 			result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result.toString(), p);
