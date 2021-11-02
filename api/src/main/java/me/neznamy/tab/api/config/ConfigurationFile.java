@@ -117,6 +117,17 @@ public abstract class ConfigurationFile {
 	public Object getObject(String path) {
 		return getObject(path, null);
 	}
+	
+	public Object getObject(String[] path) {
+		Object value = values;
+		for (String section : path) {
+			if (!(value instanceof Map)) {
+				return null;
+			}
+			value = getIgnoreCase((Map<Object, Object>) value, section);
+		}
+		return value;
+	}
 
 	/**
 	 * Returns value from map without case sensitivity of the key. Returns
