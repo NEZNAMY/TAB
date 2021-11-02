@@ -91,12 +91,12 @@ public abstract class ConfigurationFile {
 	 */
 	public Object getObject(String path, Object defaultValue) {
 		Object value = values;
-		for (String tab : path.split("\\.")) {
+		for (String section : path.contains(".") ? path.split("\\.") : new String[] {path}) {
 			if (!(value instanceof Map)) {
 				if (defaultValue != null) set(path, defaultValue);
 				return defaultValue;
 			}
-			value = getIgnoreCase((Map<Object, Object>) value, tab);
+			value = getIgnoreCase((Map<Object, Object>) value, section);
 		}
 		if (value == null && defaultValue != null) {
 			TabAPI.getInstance().debug("Inserting missing config option \"" + path + "\" with value \"" + defaultValue + "\" into " + file.getName());
