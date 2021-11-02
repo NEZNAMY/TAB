@@ -57,7 +57,7 @@ public abstract class Placeholder {
 	public String set(String s, TabPlayer p) {
 		String originalvalue = getLastValue(p);
 		String value = replacements.findReplacement(originalvalue);
-		value = replace(value, "%value%", originalvalue);
+		value = String.valueOf(setPlaceholders(value, p));
 		return replace(s, identifier, value);
 	}
 	
@@ -82,7 +82,7 @@ public abstract class Placeholder {
 		if (!(text instanceof String) || identifier.equals(text)) return text;
 		Object replaced = text;
 		for (String s : getNestedPlaceholders((String) text)) {
-			if ("%value%".equals(s) || s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
+			if (s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
 			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
 		}
 		return replaced;
