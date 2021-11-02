@@ -35,6 +35,7 @@ public class CpuConstants {
 		
 		public static final String V1_8_0_BUG_COMPENSATION = "Compensating for 1.8.0 bugs";
 		public static final String REFRESHING_NAMETAG_VISIBILITY = "Refreshing nametag visibility";
+		public static final String REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION = "Refreshing nametag visibility and collision";
 		public static final String TICKING_VEHICLES = "Ticking vehicles";
 		public static final String TELEPORTING_WITHER = "Teleporting Wither entity";
 		public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";

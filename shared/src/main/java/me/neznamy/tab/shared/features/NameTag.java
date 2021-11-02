@@ -263,7 +263,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	private void startRefreshingTask() {
 		//workaround for a 1.8.x client-sided bug
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility and collision", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isDisabledPlayer(p)) continue;
