@@ -59,7 +59,7 @@ public class RelationalPlaceholder extends Placeholder {
 	
 	@Override
 	public String getLastValue(TabPlayer p) {
-		throw new IllegalStateException("Not supported for relational placeholders");
+		return identifier;
 	}
 
 	/**

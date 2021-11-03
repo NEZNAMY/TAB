@@ -67,10 +67,9 @@ public class PropertyImpl implements Property {
 		List<String> placeholders0 = new ArrayList<>();
 		List<String> relPlaceholders0 = new ArrayList<>();
 		for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(value)) {
+			placeholders0.add(identifier);
 			if (identifier.startsWith("%rel_")) {
 				relPlaceholders0.add(identifier);
-			} else {
-				placeholders0.add(identifier);
 			}
 		}
 		String rawFormattedValue0 = value;
@@ -91,7 +90,6 @@ public class PropertyImpl implements Property {
 		rawFormattedValue = applyRemoveStrings(rawFormattedValue0); //this should never be needed
 		if (listener != null) {
 			listener.addUsedPlaceholders(placeholders0);
-			listener.addUsedPlaceholders(relPlaceholders0);
 		}
 	}
 
