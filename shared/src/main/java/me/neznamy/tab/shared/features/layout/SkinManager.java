@@ -73,7 +73,7 @@ public class SkinManager {
 			return defaultSkin;
 		}
 		if (skin.startsWith("texture:")) {
-			String texture = skin.substring(9);
+			String texture = skin.substring(8);
 			if (textures.containsKey(texture)) {
 				return TAB.getInstance().getPlatform().getSkin(textures.get(texture));
 			}
