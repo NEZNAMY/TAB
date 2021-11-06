@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -61,28 +62,26 @@ public class CpuManager implements ThreadManager {
 	public CpuManager(ErrorManager errorManager) {
 		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
-		submit("refreshing cpu stats", () -> {
+	}
+	
+	public void registerPlaceholder() {
+		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%cpu%", BUFFER_SIZE_MILLIS, () -> {
+			
+			//dummy placeholder to trigger refresh periodically from placeholder refreshing thread to not need a new thread just for this
+			featureUsagePrevious = featureUsageCurrent;
+			placeholderUsagePrevious = placeholderUsageCurrent;
+			bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
+			methodUsagePrevious = methodUsageCurrent;
+			packetsPrevious = packetsCurrent;
 
-			try {
-				while (true) {
-					Thread.sleep(BUFFER_SIZE_MILLIS);
-
-					featureUsagePrevious = featureUsageCurrent;
-					placeholderUsagePrevious = placeholderUsageCurrent;
-					bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
-					methodUsagePrevious = methodUsageCurrent;
-					packetsPrevious = packetsCurrent;
-
-					featureUsageCurrent = new ConcurrentHashMap<>();
-					placeholderUsageCurrent = new ConcurrentHashMap<>();
-					bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
-					methodUsageCurrent = new ConcurrentHashMap<>();
-					packetsCurrent = new ConcurrentHashMap<>();
-				}
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
-			}
+			featureUsageCurrent = new ConcurrentHashMap<>();
+			placeholderUsageCurrent = new ConcurrentHashMap<>();
+			bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
+			methodUsageCurrent = new ConcurrentHashMap<>();
+			packetsCurrent = new ConcurrentHashMap<>();
+			return "";
 		});
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Arrays.asList("%cpu%"));
 	}
 
 	/**

@@ -142,6 +142,7 @@ public class TAB extends TabAPI {
 			configuration = new Configs(this);
 			configuration.loadFiles();
 			placeholderManager = new PlaceholderManagerImpl();
+			cpu.registerPlaceholder();
 			featureManager.registerFeature("placeholders", placeholderManager);
 			groupManager = new GroupManager(platform.detectPermissionPlugin());
 			featureManager.registerFeature("groups", groupManager);
