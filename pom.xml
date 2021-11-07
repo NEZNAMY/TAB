@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.neznamy</groupId>
 	<artifactId>TAB</artifactId>
-	<version>3.0.0-pre1</version>
+	<version>3.0.0-pre2</version>
 	<packaging>pom</packaging>
 	<description>An all-in-one solution that works</description>
 	<modules>
