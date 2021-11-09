@@ -54,7 +54,7 @@ public class PropertyImpl implements Property {
 		this.listener = listener;
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
+		this.rawValue = (rawValue == null ? "" : rawValue);
 		analyze(this.rawValue);
 		update();
 	}
@@ -72,7 +72,7 @@ public class PropertyImpl implements Property {
 				relPlaceholders0.add(identifier);
 			}
 		}
-		String rawFormattedValue0 = value;
+		String rawFormattedValue0 = RGBUtils.getInstance().applyFormats(value, true);
 		for (String placeholder : placeholders0) {
 			rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
 		}
@@ -96,7 +96,7 @@ public class PropertyImpl implements Property {
 	@Override
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {
-			this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
+			this.temporaryValue = temporaryValue;
 			analyze(this.temporaryValue);
 		} else {
 			this.temporaryValue = null;
@@ -108,7 +108,7 @@ public class PropertyImpl implements Property {
 	@Override
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
-		rawValue = RGBUtils.getInstance().applyFormats(newValue, true);
+		rawValue = newValue;
 		if (temporaryValue == null) {
 			analyze(rawValue);
 			update();
