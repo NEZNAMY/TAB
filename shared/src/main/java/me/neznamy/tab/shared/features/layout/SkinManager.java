@@ -1,29 +1,28 @@
 package me.neznamy.tab.shared.features.layout;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.TAB;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
-import me.neznamy.tab.shared.TAB;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class SkinManager {
 
 	private ConfigurationFile cache;
 	private Map<String, List<String>> players;
 	private Map<Integer, List<String>> mineskin;
-	private List<String> invalidSkins = new ArrayList<>();
+	private Map<String, List<String>> textures;
+	private final List<String> invalidSkins = new ArrayList<>();
 	private Object defaultSkin;
 
 	public SkinManager(String defaultSkin) {
@@ -33,6 +32,7 @@ public class SkinManager {
 				cache = new YamlConfigurationFile(null, f);
 				players = cache.getConfigurationSection("players");
 				mineskin = cache.getConfigurationSection("mineskin");
+				textures = cache.getConfigurationSection("textures");
 				this.defaultSkin = getSkin(defaultSkin);
 			} else {
 				TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
@@ -72,6 +72,20 @@ public class SkinManager {
 			invalidSkins.add(skin);
 			return defaultSkin;
 		}
+		if (skin.startsWith("texture:")) {
+			String texture = skin.substring(8);
+			if (textures.containsKey(texture)) {
+				return TAB.getInstance().getPlatform().getSkin(textures.get(texture));
+			}
+			List<String> properties = downloadTexture(texture);
+			if (!properties.isEmpty()) {
+				textures.put(texture, properties);
+				cache.set("textures", textures);
+				return TAB.getInstance().getPlatform().getSkin(properties);
+			}
+			invalidSkins.add(skin);
+			return defaultSkin;
+		}
 		TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
 		return null;
 	}
@@ -106,6 +120,33 @@ public class SkinManager {
 			return new ArrayList<>();
 		} catch (IOException | ParseException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to load skin by id: " + e.getMessage(), e);
+			return new ArrayList<>();
+		}
+	}
+
+	public List<String> downloadTexture(String texture) {
+		try {
+			URL url = new URL("https://api.mineskin.org/generate/url/");
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestProperty("User-Agent", "ExampleApp/v1.0");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestMethod("POST");
+			con.setDoOutput(true);
+			String jsonInputString = "{\"variant\":\"classic\",\"name\":\"string\",\"visibility\":0,\"url\":\"http://textures.minecraft.net/texture/" + texture + "\"}";
+			try (OutputStream os = con.getOutputStream()) {
+				byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+				os.write(input, 0, input.length);
+			}
+
+			InputStreamReader reader = new InputStreamReader(con.getInputStream());
+			JSONObject json = (JSONObject) new JSONParser().parse(reader);
+			JSONObject data = (JSONObject) json.get("data");
+			JSONObject texture2 = (JSONObject) data.get("texture");
+			String value = (String) texture2.get("value");
+			String signature = (String) texture2.get("signature");
+			return Arrays.asList(value, signature);
+		} catch (IOException | ParseException e) {
+			TAB.getInstance().getErrorManager().printError("Failed to load skin by texture: " + e.getMessage(), e);
 			return new ArrayList<>();
 		}
 	}

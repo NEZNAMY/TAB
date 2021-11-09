@@ -48,13 +48,8 @@ public abstract class ITabPlayer implements TabPlayer {
 		this.name = name;
 		this.server = server;
 		this.world = world;
+		bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
 		setGroup(TAB.getInstance().getGroupManager().detectPermissionGroup(this), false);
-		try {
-			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
-			bedrockPlayer = FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
-		} catch (ClassNotFoundException e) {
-			//plugin not installed
-		}
 	}
 
 	@Override

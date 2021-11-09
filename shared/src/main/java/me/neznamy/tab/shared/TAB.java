@@ -26,7 +26,6 @@ import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.PluginInfo;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
@@ -43,7 +42,7 @@ public class TAB extends TabAPI {
 	private static TAB instance;
 
 	//version of plugin
-	public static final String PLUGIN_VERSION = "3.0.0-pre1";
+	public static final String PLUGIN_VERSION = "3.0.0-pre2";
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
@@ -81,11 +80,19 @@ public class TAB extends TabAPI {
 	private ProtocolVersion serverVersion;
 	
 	private GroupManager groupManager;
+	
+	private boolean floodgate;
 
 	public TAB(Platform platform, ProtocolVersion serverVersion) {
 		this.platform = platform;
 		this.serverVersion = serverVersion;
 		TabAPI.setInstance(this);
+		try {
+			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+			floodgate = true;
+		} catch (ClassNotFoundException e) {
+			//plugin not installed
+		}
 	}
 
 	@Override
@@ -135,8 +142,10 @@ public class TAB extends TabAPI {
 			configuration = new Configs(this);
 			configuration.loadFiles();
 			placeholderManager = new PlaceholderManagerImpl();
+			cpu.registerPlaceholder();
 			featureManager.registerFeature("placeholders", placeholderManager);
 			groupManager = new GroupManager(platform.detectPermissionPlugin());
+			featureManager.registerFeature("groups", groupManager);
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
@@ -165,7 +174,6 @@ public class TAB extends TabAPI {
 		disabled = true;
 		try {
 			long time = System.currentTimeMillis();
-			groupManager.unregisterHook();
 			cpu.cancelAllTasks();
 			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
@@ -202,18 +210,10 @@ public class TAB extends TabAPI {
 			}
 			featureManager.registerFeature("layout", new LayoutManager());
 		}
-		featureManager.registerFeature("info", new PluginInfo());
 		if (platform.isProxy()) {
-			cpu.startRepeatingMeasuredTask(1000, "refreshing player world", "World refreshing", "Refreshing", () -> {
-				
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					String world = ((ProxyTabPlayer)all).getAttribute("world", "N/A");
-					if (!String.valueOf(all.getWorld()).equals(world)){
-						((ITabPlayer)all).setWorld(world);
-						TAB.getInstance().getFeatureManager().onWorldChange(all.getUniqueId(), all.getWorld());
-					}
-				}
-			});
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");
+			}
 		}
 	}
 
@@ -352,5 +352,9 @@ public class TAB extends TabAPI {
 
 	public GroupManager getGroupManager() {
 		return groupManager;
+	}
+
+	public boolean isFloodgateInstalled() {
+		return floodgate;
 	}
 }

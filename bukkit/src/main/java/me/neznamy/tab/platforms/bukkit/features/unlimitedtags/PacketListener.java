@@ -59,11 +59,9 @@ public class PacketListener extends TabFeature {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException  {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
-		//using bukkit player to check world due to old data on world change due to asynchronous processing & world name changing
-		String world = ((Player)receiver.getPlayer()).getWorld().getName();
-		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.isDisabled(world)) return;
+		if (!receiver.isLoaded() || nameTagX.isPlayerDisabled(receiver)) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		} else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {

@@ -44,7 +44,6 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				return count;
 		});
 		manager.registerPlayerPlaceholder("%player%", 100000000, TabPlayer::getName);
-		manager.registerPlayerPlaceholder("%group%", 1000, TabPlayer::getGroup);
 		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
 		SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
 		manager.registerServerPlaceholder("%time%", 500, () -> timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));

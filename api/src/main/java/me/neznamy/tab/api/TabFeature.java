@@ -209,17 +209,12 @@ public abstract class TabFeature {
 	 * @return true if feature should be disabled, false if not
 	 */
 	public boolean isDisabled(String server, String world) {
-		if (disabledWorlds != null) {
-			boolean contains = contains(disabledWorlds, world);
-			if (worldWhitelistMode) contains = !contains;
-			if (contains) return true;
-		}
-		if (disabledServers != null) {
-			boolean contains = contains(disabledServers, server);
-			if (serverWhitelistMode) contains = !contains;
-			if (contains) return true;
-		}
-		return false;
+		boolean contains = contains(disabledWorlds, world);
+		if (worldWhitelistMode) contains = !contains;
+		if (contains) return true;
+		contains = contains(disabledServers, server);
+		if (serverWhitelistMode) contains = !contains;
+		return contains;
 	}
 	
 	protected boolean contains(String[] list, String element) {

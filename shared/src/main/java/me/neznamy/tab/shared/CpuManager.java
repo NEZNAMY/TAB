@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,7 +20,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.ThreadManager;
+import me.neznamy.tab.api.task.RepeatingTask;
+import me.neznamy.tab.api.task.ThreadManager;
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -60,28 +62,26 @@ public class CpuManager implements ThreadManager {
 	public CpuManager(ErrorManager errorManager) {
 		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
-		submit("refreshing cpu stats", () -> {
+	}
+	
+	public void registerPlaceholder() {
+		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%cpu%", BUFFER_SIZE_MILLIS, () -> {
+			
+			//dummy placeholder to trigger refresh periodically from placeholder refreshing thread to not need a new thread just for this
+			featureUsagePrevious = featureUsageCurrent;
+			placeholderUsagePrevious = placeholderUsageCurrent;
+			bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
+			methodUsagePrevious = methodUsageCurrent;
+			packetsPrevious = packetsCurrent;
 
-			try {
-				while (true) {
-					Thread.sleep(BUFFER_SIZE_MILLIS);
-
-					featureUsagePrevious = featureUsageCurrent;
-					placeholderUsagePrevious = placeholderUsageCurrent;
-					bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
-					methodUsagePrevious = methodUsageCurrent;
-					packetsPrevious = packetsCurrent;
-
-					featureUsageCurrent = new ConcurrentHashMap<>();
-					placeholderUsageCurrent = new ConcurrentHashMap<>();
-					bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
-					methodUsageCurrent = new ConcurrentHashMap<>();
-					packetsCurrent = new ConcurrentHashMap<>();
-				}
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
-			}
+			featureUsageCurrent = new ConcurrentHashMap<>();
+			placeholderUsageCurrent = new ConcurrentHashMap<>();
+			bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
+			methodUsageCurrent = new ConcurrentHashMap<>();
+			packetsCurrent = new ConcurrentHashMap<>();
+			return "";
 		});
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Arrays.asList("%cpu%"));
 	}
 
 	/**
@@ -104,11 +104,6 @@ public class CpuManager implements ThreadManager {
 
 	@Override
 	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
-		return runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
-	}
-	
-	@Override
-	public Future<Void> runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
 		return submit(errorDescription, () -> {
 			long time = System.nanoTime();
 			task.run();
@@ -120,36 +115,10 @@ public class CpuManager implements ThreadManager {
 	public Future<Void> runTask(String errorDescription, Runnable task) {
 		return submit(errorDescription, task);
 	}
-	
+
 	@Override
-	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return startRepeatingMeasuredTask(intervalMilliseconds, errorDescription, feature.getFeatureName(), type, task);
-	}
-	
-	@Override
-	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task) {
-		if (intervalMilliseconds <= 0) return null;
-		return submit(errorDescription, () -> {
-			long lastLoop = System.currentTimeMillis()-intervalMilliseconds;
-			while (true) {
-				try {
-					long sleep = intervalMilliseconds - (System.currentTimeMillis()-lastLoop);
-					if (sleep < 0) {
-						sleep = 0;
-					}
-					Thread.sleep(sleep);
-					lastLoop = System.currentTimeMillis();
-					long time = System.nanoTime();
-					task.run();
-					addTime(feature, type, System.nanoTime()-time);
-				} catch (InterruptedException pluginDisabled) {
-					Thread.currentThread().interrupt();
-					break;
-				} catch (Exception | NoClassDefFoundError e) {
-					errorManager.printError("An error occurred when " + errorDescription, e);
-				}
-			}
-		});
+	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+		return new TabRepeatingTask(this.exe, task, errorDescription, feature, type, intervalMilliseconds);
 	}
 
 	@Override
@@ -165,6 +134,18 @@ public class CpuManager implements ThreadManager {
 				long time = System.nanoTime();
 				task.run();
 				addTime(feature, type, System.nanoTime()-time);
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
+			}
+		});
+	}
+	
+	@Override
+	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
+		return submit(errorDescription, () -> {
+			try {
+				Thread.sleep(delayMilliseconds);
+				task.run();
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}

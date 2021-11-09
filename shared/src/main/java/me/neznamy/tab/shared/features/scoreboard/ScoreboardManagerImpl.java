@@ -32,6 +32,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	
 	//defined scoreboards
 	private Map<String, Scoreboard> scoreboards = new LinkedHashMap<>();
+	private Scoreboard[] definedScoreboards;
 	
 	//using 1-15
 	private boolean useNumbers;
@@ -110,6 +111,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			scoreboards.put(entry.getKey(), sb);
 			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + entry.getKey(), sb);
 		}
+		definedScoreboards = scoreboards.values().toArray(new Scoreboard[0]);
 		if (respectOtherPlugins) {
 			PipelineInjector inj = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature("injection");
 			//null check if injection was disabled in config or velocity
@@ -140,10 +142,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void unload() {
-		for (Scoreboard board : scoreboards.values()) {
+		for (Scoreboard board : definedScoreboards) {
 			board.unregister();
 		}
-		scoreboards.clear();
 	}
 
 	@Override
@@ -239,8 +240,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 */
 	public Scoreboard detectHighestScoreboard(TabPlayer p) {
 		if (forcedScoreboard.containsKey(p)) return forcedScoreboard.get(p);
-		for (Entry<String, Scoreboard> entry : scoreboards.entrySet()) {
-			if (((ScoreboardImpl)entry.getValue()).isConditionMet(p)) return entry.getValue();
+		for (Scoreboard sb : definedScoreboards) {
+			if (((ScoreboardImpl)sb).isConditionMet(p)) return sb;
 		}
 		return null;
 	}
@@ -283,6 +284,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		if (lines == null) throw new IllegalArgumentException("lines cannot be null");
 		Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
 		scoreboards.put(name, sb);
+		definedScoreboards = scoreboards.values().toArray(new Scoreboard[0]);
 		return sb;
 	}
 

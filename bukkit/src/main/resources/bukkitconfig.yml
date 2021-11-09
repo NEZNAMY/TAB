@@ -89,9 +89,6 @@ bossbar:
   toggle-command: /bossbar
   remember-toggle-choice: false
   hidden-by-default: false
-  default-bars:
-    - ServerInfo
-    - tpsbar
   disable-in-worlds:
     - disabledworld
   bars:
@@ -102,7 +99,7 @@ bossbar:
       text: "&fWebsite: &bwww.domain.com"
     #equivalent of purpur's tps bar
     tpsbar:
-      display-condition: "permission:tab.bossbar.tpsbar"
+      announcement-bar: true #marks this bossbar as announcement one and doesn't send it always
       style: NOTCHED_20
       color: GREEN
       progress: "%math_0_{tab_placeholder_mspt}*2%"

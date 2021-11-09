@@ -1,6 +1,8 @@
-package me.neznamy.tab.api;
+package me.neznamy.tab.api.task;
 
 import java.util.concurrent.Future;
+
+import me.neznamy.tab.api.TabFeature;
 
 public interface ThreadManager {
 
@@ -12,15 +14,6 @@ public interface ThreadManager {
 	 * @param task - the task
 	 */
 	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task);
-	
-	/**
-	 * Starts a task in new thread and measures how long it took to process
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public Future<Void> runMeasuredTask(String errorDescription, String feature, String type, Runnable task);
 	
 	/**
 	 * Runs task in a new thread
@@ -37,17 +30,7 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
-	
-	/**
-	 * Starts a new task with defined repeat interval that measures cpu usage
-	 * @param intervalMilliseconds - task interval
-	 * @param errorDescription - description to use if this task throws an error
-	 * @param feature - feature to add cpu usage to
-	 * @param type - usage type to add cpu usage to
-	 * @param task - the task
-	 */
-	public Future<Void> startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, String feature, String type, Runnable task);
+	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
 	
 	/**
 	 * Runs task with a delay and measures how long it took to process
@@ -68,4 +51,6 @@ public interface ThreadManager {
 	 * @param task - the task
 	 */
 	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task);
+	
+	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task);
 }

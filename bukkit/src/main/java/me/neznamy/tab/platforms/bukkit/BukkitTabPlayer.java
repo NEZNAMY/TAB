@@ -65,7 +65,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
-		return getPlayer().hasPermission(permission);
+		long time = System.nanoTime();
+		boolean value = getPlayer().hasPermission(permission);
+		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
+		return value;
 	}
 
 	@Override
@@ -103,6 +106,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			if (bossbars.containsKey(packet.getId())) return;
 			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
 					BarStyle.valueOf(packet.getOverlay().getBukkitName()));
@@ -142,6 +146,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		com.viaversion.viaversion.api.legacy.bossbar.BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			if (viaBossbars.containsKey(packet.getId())) return;
 			bar = Via.getAPI().legacyAPI().createLegacyBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16), 
 					packet.getPct(),
 					BossColor.valueOf(packet.getColor().name()), 
@@ -212,7 +217,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
 			return DisguiseAPI.isDisguised(getPlayer());
 		} catch (NoClassDefFoundError | ExceptionInInitializerError e) {
+			//java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
+			((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsdisguisesEnabled(false);
 			return false;
 		}
 	}

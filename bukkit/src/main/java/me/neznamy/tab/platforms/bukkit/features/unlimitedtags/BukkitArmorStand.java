@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
@@ -299,7 +300,11 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if it's empty, false if not
 	 */
 	private boolean isNameVisiblyEmpty(String displayName) {
-		return IChatBaseComponent.fromColoredText(displayName).toRawText().replace(" ", "").length() == 0;
+		if (displayName.length() == 0) return true;
+		if (!displayName.startsWith(EnumChatFormat.COLOR_STRING) && !displayName.startsWith("&") && !displayName.startsWith("#")) return false;
+		String text = IChatBaseComponent.fromColoredText(displayName).toRawText();
+		if (text.contains(" ")) text = text.replace(" ", "");
+		return text.length() == 0;
 	}
 
 	/**

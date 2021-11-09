@@ -85,7 +85,6 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void loadFeatures() {
-		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			try {
 				Class.forName("com.viaversion.viaversion.api.Via");
@@ -96,6 +95,10 @@ public class BukkitPlatform implements Platform {
 				TAB.getInstance().sendConsoleMessage("&c[TAB] This might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
 			}
 		}
+		if (Bukkit.getPluginManager().isPluginEnabled("Tablisknu")) {
+			TAB.getInstance().sendConsoleMessage("&c[TAB] Detected plugin \"Tablisknu\", which causes TAB to not work properly. Consider removing the plugin.", true);
+		}
+		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
@@ -249,6 +252,10 @@ public class BukkitPlatform implements Platform {
 
 	public boolean isLibsdisguisesEnabled() {
 		return libsdisguises;
+	}
+	
+	public void setLibsdisguisesEnabled(boolean enabled) {
+		libsdisguises = enabled;
 	}
 
 	public boolean isIdisguiseEnabled() {

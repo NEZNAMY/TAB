@@ -5,6 +5,7 @@ import java.util.UUID;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
+import me.neznamy.tab.api.task.ThreadManager;
 import me.neznamy.tab.api.team.TeamManager;
 
 /**

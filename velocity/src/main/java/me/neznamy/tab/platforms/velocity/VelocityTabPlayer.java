@@ -62,7 +62,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public boolean hasPermission0(String permission) {
-		return getPlayer().hasPermission(permission);
+		long time = System.nanoTime();
+		boolean value = getPlayer().hasPermission(permission);
+		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
+		return value;
 	}
 	
 	@Override
@@ -104,6 +107,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
+			if (bossbars.containsKey(packet.getId())) return;
 			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
 					packet.getPct(), 
 					Color.valueOf(packet.getColor().toString()), 

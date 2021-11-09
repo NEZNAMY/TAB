@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.task.RepeatingTask;
 import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
@@ -50,14 +51,16 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private Placeholder[] usedPlaceholders = new Placeholder[0];
 	
 	private AtomicInteger atomic = new AtomicInteger();
+	private RepeatingTask refreshTask;
 
 	public PlaceholderManagerImpl(){
 		super("Refreshing placeholders");
 		loadRefreshIntervals();
+		refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100000, "refreshing placeholders", this, "Refreshing placeholders", this::refresh);
 	}
 	
 	private void refresh() {
-		int loopTime = atomic.addAndGet(50);
+		int loopTime = atomic.addAndGet(refreshTask.getInterval());
 		int size = TAB.getInstance().getOnlinePlayers().length;
 		Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
 		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
@@ -206,7 +209,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			onJoin(p);
 		}
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "refreshing placeholders", this, CpuConstants.UsageCategory.PLACEHOLDER_REFRESHING, this::refresh);
 	}
 
 	@Override
@@ -285,6 +287,12 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public void addUsedPlaceholder(String identifier, TabFeature feature) {
 		if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
 			usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+			Placeholder p = getPlaceholder(identifier);
+			if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh()) {
+				TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + p.getRefresh() + "ms due to placeholder " + identifier);
+				refreshTask.setInterval(p.getRefresh());
+				atomic.set(0);
+			} 
 		}
 	}
 
