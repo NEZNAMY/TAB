@@ -12,6 +12,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -28,7 +29,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = TAB.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(id = "tab", name = "TAB", version = TAB.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"}, dependencies = {@Dependency(id = "velocitypacketinjector")})
 public class Main {
 
 	//instance of proxyserver

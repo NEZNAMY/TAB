@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 
+import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
@@ -50,6 +52,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
 		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
+		try {
+			Object connection = player.getClass().getMethod("getConnection").invoke(player);
+			channel = (Channel) connection.getClass().getMethod("getChannel").invoke(connection);
+		} catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+			TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + getPlayer().getUsername(), e);
+		}
 	}
 	
 	@Override
@@ -69,14 +77,17 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		if (packet instanceof PacketPlayOutChat){
 			handle((PacketPlayOutChat) packet);
 		}
-		if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+		else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
 			handle((PacketPlayOutPlayerListHeaderFooter) packet);
 		}
-		if (packet instanceof PacketPlayOutBoss) {
+		else if (packet instanceof PacketPlayOutBoss) {
 			handle((PacketPlayOutBoss) packet);
 		}
-		if (packet instanceof PacketPlayOutPlayerInfo) {
+		else if (packet instanceof PacketPlayOutPlayerInfo) {
 			handle((PacketPlayOutPlayerInfo) packet);
+		}
+		else {
+			channel.write(packet, channel.voidPromise());
 		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
@@ -86,7 +97,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-		getPlayer().getTabList().setHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
+		getPlayer().sendPlayerListHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
@@ -108,7 +119,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			bossbars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			bossbars.get(packet.getId()).percent(packet.getPct());
+			bossbars.get(packet.getId()).progress(packet.getPct());
 			break;
 		case UPDATE_NAME:
 			bossbars.get(packet.getId()).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())));

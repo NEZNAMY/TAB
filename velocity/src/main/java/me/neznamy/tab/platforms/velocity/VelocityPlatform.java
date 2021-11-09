@@ -59,6 +59,7 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
+		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new VelocityPipelineInjector());
 		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
 		super.loadFeatures();
 		for (Player p : server.getAllPlayers()) {
