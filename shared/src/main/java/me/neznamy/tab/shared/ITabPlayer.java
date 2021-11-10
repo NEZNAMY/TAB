@@ -17,6 +17,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.api.team.TeamManager;
 
 /**
  * The core class for player
@@ -31,7 +32,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String permissionGroup = GroupManager.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
-	private String forcedTeamName;
 	private boolean bedrockPlayer;
 
 	private Map<String, Property> properties = new HashMap<>();
@@ -236,7 +236,8 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public String getTeamName() {
-		if (forcedTeamName != null) return forcedTeamName;
+		TeamManager teams = TAB.getInstance().getTeamManager();
+		if (teams != null && teams.getForcedTeamName(this) != null) return teams.getForcedTeamName(this);
 		return teamName;
 	}
 
