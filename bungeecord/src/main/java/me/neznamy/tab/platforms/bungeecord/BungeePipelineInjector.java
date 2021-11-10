@@ -21,7 +21,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.OverflowPacketException;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
@@ -145,8 +144,8 @@ public class BungeePipelineInjector extends PipelineInjector {
 						return packet;
 					}
 				}
-			} catch (OverflowPacketException e) {
-				//OverflowPacketException someone got, no idea why
+			} catch (Exception e) {
+				//rare OverflowPacketException or IndexOutOfBoundsException
 			}
 			buf.readerIndex(marker);
 			return buf;
