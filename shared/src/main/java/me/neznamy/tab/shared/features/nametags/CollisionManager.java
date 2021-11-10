@@ -11,17 +11,19 @@ import me.neznamy.tab.shared.TAB;
 public class CollisionManager extends TabFeature {
 
 	private NameTag nametags;
-	
+	private boolean collisionRule;
 	private Map<TabPlayer, Boolean> collision = new HashMap<>();
 	private Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
 
 	public CollisionManager(NameTag nametags, boolean collisionRule) {
 		super(nametags.getFeatureName());
 		this.nametags = nametags;
+		this.collisionRule = collisionRule;
+		if (!collisionRule) return; //no need to refresh disguise status since collision is disabled anyway
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%collision%", 500, p -> {
 
 			if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
-			boolean newCollision = !p.isDisguised() && collisionRule;
+			boolean newCollision = !p.isDisguised();
 			collision.put(p, newCollision);
 			return newCollision;
 		});
@@ -30,20 +32,20 @@ public class CollisionManager extends TabFeature {
 	
 	public boolean getCollision(TabPlayer p) {
 		if (forcedCollision.get(p) != null) return forcedCollision.get(p);
-		if (!collision.containsKey(p)) return true;
+		if (!collision.containsKey(p)) return collisionRule;
 		return collision.get(p);
 	}
 
 	@Override
 	public void load() {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			collision.put(all, true);
+			collision.put(all, collisionRule);
 		}
 	}
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		collision.put(connectedPlayer, true);
+		collision.put(connectedPlayer, collisionRule);
 	}
 	
 	@Override
