@@ -24,7 +24,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NameTag;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 
 /**
  * The core class for unlimited nametag mode
@@ -383,7 +383,7 @@ public class NameTagX extends NameTag {
 	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
 		//only visible if player is on boat & config option is enabled and player is not invisible (1.8 bug) or feature is disabled
-		return (getPlayersOnBoats().contains(p) && !invisiblePlayers.contains(p.getName())) || isPlayerDisabled(p);
+		return (getPlayersOnBoats().contains(p) && !p.hasInvisibilityPotion()) || isPlayerDisabled(p);
 	}
 
 	public Map<Integer, TabPlayer> getEntityIdMap() {

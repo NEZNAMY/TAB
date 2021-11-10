@@ -11,8 +11,8 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 
 /**
  * Handler for "/tab debug" subcommand

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.nametags;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
@@ -23,7 +24,6 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	private boolean collisionRule;
 	private boolean invisibleNametags;
-	protected List<String> invisiblePlayers = new ArrayList<>();
 	private Sorting sorting;
 	protected Map<String, Boolean> collision = new HashMap<>();
 	private List<TabPlayer> hiddenNametag = new ArrayList<>();
@@ -39,6 +39,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
 		sorting = new Sorting(this);
 		TAB.getInstance().getFeatureManager().registerFeature("sorting", sorting);
+		TAB.getInstance().getFeatureManager().registerFeature("nametags-visibility", new VisibilityRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNametags=%s",
 				collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNametags));
 	}
@@ -50,7 +51,6 @@ public class NameTag extends TabFeature implements TeamManager {
 			updateProperties(all);
 			collision.put(all.getName(), true);
 			hiddenNametagFor.put(all, new ArrayList<>());
-			if (all.hasInvisibilityPotion()) invisiblePlayers.add(all.getName());
 			if (isDisabled(all.getServer(), all.getWorld())) {
 				addDisabledPlayer(all);
 				continue;
@@ -114,7 +114,6 @@ public class NameTag extends TabFeature implements TeamManager {
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
 		if (!isDisabledPlayer(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
-		invisiblePlayers.remove(disconnectedPlayer.getName());
 		collision.remove(disconnectedPlayer.getName());
 		hiddenNametag.remove(disconnectedPlayer);
 		hiddenNametagFor.remove(disconnectedPlayer);
@@ -265,23 +264,12 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	private void startRefreshingTask() {
-		//workaround for a 1.8.x client-sided bug
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility and collision", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY_AND_COLLISION, () -> {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return;
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing collision", this, CpuConstants.UsageCategory.REFRESHING_COLLISION, () -> {
 
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isDisabledPlayer(p)) continue;
-				//nametag visibility
-				boolean invisible = p.hasInvisibilityPotion();
-				if (invisible && !invisiblePlayers.contains(p.getName())) {
-					invisiblePlayers.add(p.getName());
-					updateTeamData(p);
-				}
-				if (!invisible && invisiblePlayers.contains(p.getName())) {
-					invisiblePlayers.remove(p.getName());
-					updateTeamData(p);
-				}
-				//cannot control collision rule on <1.9 servers in any way
-				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) updateCollision(p);
+				updateCollision(p);
 			}
 		});
 	}
@@ -364,8 +352,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
-		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && 
-				!invisibleNametags && !invisiblePlayers.contains(p.getName());
+		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNametags && !p.hasInvisibilityPotion();
 	}
 
 	public Sorting getSorting() {

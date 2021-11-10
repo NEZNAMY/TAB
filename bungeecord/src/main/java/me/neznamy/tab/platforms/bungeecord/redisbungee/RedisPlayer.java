@@ -17,8 +17,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.YellowNumber;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 
 public class RedisPlayer {
 
