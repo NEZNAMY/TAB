@@ -22,24 +22,26 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public class NameTag extends TabFeature implements TeamManager {
 
-	private boolean collisionRule;
 	private boolean invisibleNametags;
 	private Sorting sorting;
-	protected Map<String, Boolean> collision = new HashMap<>();
 	private List<TabPlayer> hiddenNametag = new ArrayList<>();
 	private Map<TabPlayer, List<TabPlayer>> hiddenNametagFor = new HashMap<>();
 	private List<TabPlayer> teamHandlingPaused = new ArrayList<>();
 	private Map<TabPlayer, String> forcedTeamName = new HashMap<>();
-	private Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
+	private CollisionManager collisionManager;
 
 	public NameTag() {
 		super("Nametags", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
-		collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
 		invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
+		boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
 		sorting = new Sorting(this);
 		TAB.getInstance().getFeatureManager().registerFeature("sorting", sorting);
 		TAB.getInstance().getFeatureManager().registerFeature("nametags-visibility", new VisibilityRefresher(this));
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
+			collisionManager = new CollisionManager(this, collisionRule);
+			TAB.getInstance().getFeatureManager().registerFeature("nametags-collision", collisionManager);
+		}
 		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNametags=%s",
 				collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNametags));
 	}
@@ -49,7 +51,6 @@ public class NameTag extends TabFeature implements TeamManager {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			((ITabPlayer) all).setTeamName(getSorting().getTeamName(all));
 			updateProperties(all);
-			collision.put(all.getName(), true);
 			hiddenNametagFor.put(all, new ArrayList<>());
 			if (isDisabled(all.getServer(), all.getWorld())) {
 				addDisabledPlayer(all);
@@ -57,7 +58,6 @@ public class NameTag extends TabFeature implements TeamManager {
 			}
 			registerTeam(all);
 		}
-		startRefreshingTask();
 	}
 
 	@Override
@@ -95,7 +95,6 @@ public class NameTag extends TabFeature implements TeamManager {
 	public void onJoin(TabPlayer connectedPlayer) {
 		((ITabPlayer) connectedPlayer).setTeamName(getSorting().getTeamName(connectedPlayer));
 		updateProperties(connectedPlayer);
-		collision.put(connectedPlayer.getName(), true);
 		hiddenNametagFor.put(connectedPlayer, new ArrayList<>());
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
@@ -114,7 +113,6 @@ public class NameTag extends TabFeature implements TeamManager {
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
 		if (!isDisabledPlayer(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
-		collision.remove(disconnectedPlayer.getName());
 		hiddenNametag.remove(disconnectedPlayer);
 		hiddenNametagFor.remove(disconnectedPlayer);
 		teamHandlingPaused.remove(disconnectedPlayer);
@@ -228,16 +226,12 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public void setCollisionRule(TabPlayer player, Boolean collision) {
-		if (collision == null) {
-			forcedCollision.remove(player);
-		} else {
-			forcedCollision.put(player, collision);
-		}
+		collisionManager.setCollisionRule(player, collision);
 	}
 
 	@Override
 	public Boolean getCollisionRule(TabPlayer player) {
-		return forcedCollision.get(player);
+		return collisionManager.getCollisionRule(player);
 	}
 	
 	@Override
@@ -248,7 +242,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
 		if (redis != null) redis.updateNameTag(p, p.getProperty(PropertyUtils.TAGPREFIX).get(), p.getProperty(PropertyUtils.TAGSUFFIX).get());
@@ -260,18 +254,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
-	}
-
-	private void startRefreshingTask() {
-		if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return;
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing collision", this, CpuConstants.UsageCategory.REFRESHING_COLLISION, () -> {
-
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || isDisabledPlayer(p)) continue;
-				updateCollision(p);
-			}
-		});
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 	}
 
 	public void unregisterTeam(TabPlayer p) {
@@ -298,7 +281,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
-				translate(getCollision(p)), Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+				translate(collisionManager.getCollision(p)), Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
 	}
 
 	private void updateTeam(TabPlayer p) {
@@ -320,31 +303,6 @@ public class NameTag extends TabFeature implements TeamManager {
 	private String translate(boolean b) {
 		return b ? "always" : "never";
 	}
-
-	private void updateCollision(TabPlayer p) {
-		if (!p.isOnline()) return;
-		if (forcedCollision.containsKey(p)) {
-			if (getCollision(p) != forcedCollision.get(p).booleanValue()) {
-				collision.put(p.getName(), getCollisionRule(p));
-				updateTeamData(p);
-			}
-		} else {
-			boolean newCollision = !p.isDisguised() && collisionRule;
-			if (collision.get(p.getName()) == null || getCollision(p) != newCollision) {
-				collision.put(p.getName(), newCollision);
-				updateTeamData(p);
-			}
-		}
-	}
-
-	protected boolean getCollision(TabPlayer p) {
-		if (!p.isOnline()) return false;
-		if (getCollisionRule(p) != null) return getCollisionRule(p);
-		if (!collision.containsKey(p.getName())) {
-			collision.put(p.getName(), collisionRule);
-		}
-		return collision.get(p.getName());
-	}
 	
 	protected void updateProperties(TabPlayer p) {
 		p.loadPropertyFromConfig(this, PropertyUtils.TAGPREFIX);
@@ -358,5 +316,4 @@ public class NameTag extends TabFeature implements TeamManager {
 	public Sorting getSorting() {
 		return sorting;
 	}
-
 }
