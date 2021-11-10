@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabFeature;
@@ -211,7 +212,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public void forceTeamName(TabPlayer player, String name) {
-		if (String.valueOf(forcedTeamName.get(player)).equals(name)) return;
+		if (Objects.equals(forcedTeamName.get(player), name)) return;
 		if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
 		unregisterTeam(player);
 		forcedTeamName.put(player, name);
