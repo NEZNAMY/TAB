@@ -59,11 +59,13 @@ public class CollisionManager extends TabFeature {
 	}
 	
 	public void setCollisionRule(TabPlayer player, Boolean collision) {
+		if (forcedCollision.get(player) == collision) return;
 		if (collision == null) {
 			forcedCollision.remove(player);
 		} else {
 			forcedCollision.put(player, collision);
 		}
+		nametags.updateTeamData(player);
 	}
 
 	public Boolean getCollisionRule(TabPlayer player) {
