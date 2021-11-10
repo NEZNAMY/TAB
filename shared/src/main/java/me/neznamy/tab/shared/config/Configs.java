@@ -474,6 +474,7 @@ public class Configs {
 			groups.set(gPath+"._OTHER_",null);
 		}
 		finalCfg.set("header-footer.per-"+worldOrServer, headerFooterMap);
+		premium.getFile().delete();
 	}
 
 }

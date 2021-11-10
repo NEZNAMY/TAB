@@ -1,5 +1,5 @@
 # this is a copy of latest version of the file to take default options from for config conversion
-sorting-type: PLACEHOLDER_THEN_GROUPS
+sorting-type: GROUPS
 sorting-placeholder: ''
 placeholder-order:
 - ''
@@ -24,6 +24,7 @@ scoreboard:
   disable-in-worlds:
   - disabledworld
   default-scoreboard: admin
+  respect-other-plugins: true
   per-world:
     testworld: twscoreboard
 scoreboards:

@@ -408,4 +408,8 @@ public abstract class ConfigurationFile {
 			Files.write(file.toPath(), content);
 		}
 	}
+
+	public File getFile() {
+		return file;
+	}
 }
