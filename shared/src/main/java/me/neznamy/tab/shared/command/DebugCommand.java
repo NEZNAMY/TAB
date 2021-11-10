@@ -75,7 +75,7 @@ public class DebugCommand extends SubCommand {
 		} else {
 			sendMessage(sender, "&atabprefix: &cDisabled");
 			sendMessage(sender, "&atabsuffix: &cDisabled");
-			sendMessage(sender, "&atabname: &cDisabled");
+			sendMessage(sender, "&acustomtabname: &cDisabled");
 		}
 		if (tab.getTeamManager() != null) {
 			boolean disabledNametags = ((TabFeature) tab.getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
