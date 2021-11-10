@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
-import org.json.simple.parser.ParseException;
 
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
@@ -319,7 +318,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, IllegalArgumentException, ParseException {
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, IllegalArgumentException {
 		if (nms.getMinorVersion() < 8) return null;
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 		List<PlayerInfoData> listData = new ArrayList<>();
@@ -337,7 +336,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
+	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String objective = (String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
 		String displayName;
 		Object component = nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
@@ -450,9 +449,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * @throws IllegalAccessException 
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
-	 * @throws ParseException 
 	 */
-	private IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ParseException {
+	private IChatBaseComponent fromNMSComponent(Object component) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (!nms.ChatComponentText.isInstance(component)) return null; //paper
 		IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
 		Object modifier = nms.ChatBaseComponent_modifier.get(component);

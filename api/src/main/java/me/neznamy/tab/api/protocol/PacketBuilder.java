@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.simple.parser.ParseException;
-
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -248,10 +246,8 @@ public abstract class PacketBuilder {
 	 * 			if thrown by reflective operation
 	 * @throws	InvocationTargetException
 	 * 			if thrown by reflective operation
-	 * @throws	ParseException 
-	 * 			if client is 1.13+, but display name was not a valid serialized component
 	 */
-	public abstract PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, ParseException;
+	public abstract PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * Converts platform-specific instance of objective packet into 
@@ -266,10 +262,8 @@ public abstract class PacketBuilder {
 	 * 			if thrown by reflective operation
 	 * @throws	InvocationTargetException
 	 * 			if thrown by reflective operation
-	 * @throws	ParseException 
-	 * 			if client is 1.13+, but title was not a valid serialized component
 	 */
-	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, ParseException, InvocationTargetException;
+	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException;
 
 	/**
 	 * Converts platform-specific instance of display objective packet into 

@@ -357,4 +357,9 @@ public class TAB extends TabAPI {
 	public boolean isFloodgateInstalled() {
 		return floodgate;
 	}
+
+	@Override
+	public void logError(String message, Throwable t) {
+		errorManager.printError(message, t);
+	}
 }

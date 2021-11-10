@@ -99,4 +99,6 @@ public abstract class TabAPI {
 	public abstract PropertyConfiguration getUsers();
 	
 	public abstract void debug(String message);
+	
+	public abstract void logError(String message, Throwable t);
 }
