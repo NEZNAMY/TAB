@@ -20,6 +20,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NameTag;
@@ -192,6 +193,17 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 				viewer.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
 			}
 			break;
+		case "team":
+			target = redisPlayers.get(id.toString());
+			if (target == null) break;
+			PacketPlayOutScoreboardTeam unregister = target.getUnregisterTeamPacket();
+			target.setTeamName((String) message.get("to"));
+			PacketPlayOutScoreboardTeam register = target.getRegisterTeamPacket();
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+				viewer.sendCustomPacket(unregister, this);
+				viewer.sendCustomPacket(register, this);
+			}
+			break;
 		case "quit":
 			target = redisPlayers.get(id.toString());
 			if (target == null) break; //player left current proxy and was unloaded from memory, therefore null check didn't pass
@@ -326,6 +338,16 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		json.put("action", "yellow-number");
 		json.put("UUID", p.getTablistUUID().toString());
 		json.put("yellow-number", value);
+		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
+	}
+	
+	@Override
+	public void updateTeamName(TabPlayer p, String to) {
+		JSONObject json = new JSONObject();
+		json.put("proxy", proxy.toString());
+		json.put("action", "team");
+		json.put("UUID", p.getTablistUUID().toString());
+		json.put("to", to);
 		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
 	}
 	

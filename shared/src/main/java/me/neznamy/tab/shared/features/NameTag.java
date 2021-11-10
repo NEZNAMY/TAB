@@ -217,6 +217,8 @@ public class NameTag extends TabFeature implements TeamManager {
 		forcedTeamName.put(player, name);
 		registerTeam(player);
 		if (name != null) ((ITabPlayer)player).setTeamNameNote("Set using API");
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		if (redis != null) redis.updateTeamName(player, player.getTeamName());
 	}
 
 	@Override
@@ -321,6 +323,8 @@ public class NameTag extends TabFeature implements TeamManager {
 			if (layout != null) layout.updateTeamName(p, newName);
 			((ITabPlayer) p).setTeamName(newName);
 			registerTeam(p);
+			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			if (redis != null) redis.updateTeamName(p, p.getTeamName());
 		}
 	}
 

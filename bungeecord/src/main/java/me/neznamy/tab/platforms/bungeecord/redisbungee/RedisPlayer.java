@@ -243,4 +243,8 @@ public class RedisPlayer {
 	public boolean hasDisabledPlayerlist() {
 		return disabledPlayerlist;
 	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
 }
