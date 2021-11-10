@@ -118,7 +118,7 @@ public class CpuManager implements ThreadManager {
 
 	@Override
 	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return new TabRepeatingTask(this.exe, task, errorDescription, feature, type, intervalMilliseconds);
+		return new TabRepeatingTask(exe, task, errorDescription, feature, type, intervalMilliseconds);
 	}
 
 	@Override
