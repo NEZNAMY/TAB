@@ -81,4 +81,6 @@ public interface Platform {
 	public Object getSkin(List<String> properties);
 	
 	public boolean isProxy();
+	
+	public boolean isPluginEnabled(String plugin);
 }

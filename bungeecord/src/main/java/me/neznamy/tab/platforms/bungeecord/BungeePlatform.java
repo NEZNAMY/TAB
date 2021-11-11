@@ -115,4 +115,9 @@ public class BungeePlatform extends ProxyPlatform {
 	public boolean isProxy() {
 		return true;
 	}
+	
+	@Override
+	public boolean isPluginEnabled(String plugin) {
+		return ProxyServer.getInstance().getPluginManager().getPlugin(plugin) != null;
+	}
 }

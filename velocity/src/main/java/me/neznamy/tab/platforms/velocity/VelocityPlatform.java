@@ -110,4 +110,9 @@ public class VelocityPlatform extends ProxyPlatform {
 	public boolean isProxy() {
 		return true;
 	}
+	
+	@Override
+	public boolean isPluginEnabled(String plugin) {
+		return server.getPluginManager().getPlugin(plugin).isPresent();
+	}
 }

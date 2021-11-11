@@ -283,4 +283,9 @@ public class BukkitPlatform implements Platform {
 	public boolean isProxy() {
 		return false;
 	}
+
+	@Override
+	public boolean isPluginEnabled(String plugin) {
+		return Bukkit.getPluginManager().isPluginEnabled(plugin);
+	}
 }
