@@ -20,6 +20,7 @@ public class CollisionManager extends TabFeature {
 		this.nametags = nametags;
 		this.collisionRule = collisionRule;
 		if (!collisionRule) return; //no need to refresh disguise status since collision is disabled anyway
+		if (!TAB.getInstance().getPlatform().isPluginEnabled("LibsDisguises") && !TAB.getInstance().getPlatform().isProxy()) return; //no disguise plugin available
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%collision%", 500, p -> {
 
 			if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
