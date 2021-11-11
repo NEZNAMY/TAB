@@ -50,7 +50,7 @@ public class CpuManager implements ThreadManager {
 	private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
 	//thread pool
-	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 
 	//error manager
 	private ErrorManager errorManager;
@@ -60,7 +60,6 @@ public class CpuManager implements ThreadManager {
 	 * @param errorManager - error manager
 	 */
 	public CpuManager(ErrorManager errorManager) {
-		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
 	}
 	
