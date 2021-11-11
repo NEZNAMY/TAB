@@ -274,4 +274,7 @@ public class ChatModifier {
 		this.targetVersion = targetVersion;
 	}
 	
+	public ProtocolVersion getTargetVersion() {
+		return targetVersion;
+	}
 }

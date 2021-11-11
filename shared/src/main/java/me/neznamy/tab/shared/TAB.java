@@ -22,6 +22,7 @@ import me.neznamy.tab.shared.features.AlignedPlayerlist;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.HeaderFooter;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.Playerlist;
@@ -210,6 +211,7 @@ public class TAB extends TabAPI {
 			}
 			featureManager.registerFeature("layout", new LayoutManager());
 		}
+		featureManager.registerFeature("nick", new NickCompatibility());
 		if (platform.isProxy()) {
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");

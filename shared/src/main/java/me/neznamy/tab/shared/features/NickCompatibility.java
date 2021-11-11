@@ -1,0 +1,84 @@
+package me.neznamy.tab.shared.features;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
+
+import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.PropertyUtils;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+
+public class NickCompatibility extends TabFeature {
+
+	private HashMap<TabPlayer, String> nickedPlayers = new HashMap<>();
+	private NameTag nametags;
+	private BelowName belowname;
+	private YellowNumber yellownumber;
+	
+	public NickCompatibility() {
+		super("Nick compatibility");
+		nametags = (NameTag) TAB.getInstance().getTeamManager();
+		belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature("belowname");
+		yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
+		TAB.getInstance().debug("Loaded NickCompatibility feature");
+	}
+	
+	@Override
+	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
+		if (packet.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+		for (PlayerInfoData data : packet.getEntries()) {
+			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(data.getUniqueId());
+			if (packetPlayer == null || packetPlayer == receiver) continue;
+			if (!packetPlayer.getName().equals(data.getName())) {
+				nickedPlayers.put(packetPlayer, data.getName());
+				TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + data.getName());
+				processNameChange(packetPlayer, data.getName());
+			} else if (nickedPlayers.containsKey(packetPlayer)) {
+				nickedPlayers.remove(packetPlayer);
+				TAB.getInstance().debug("Processing name restore of player " + packetPlayer.getName());
+				processNameChange(packetPlayer, data.getName());
+			}
+		}
+	}
+	
+	private void processNameChange(TabPlayer player, String name) {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing nickname change", this, CpuConstants.UsageCategory.PACKET_PLAYER_INFO, () -> {
+			
+			if (nametags != null && !nametags.hasTeamHandlingPaused(player)) {
+				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName()), this);
+					String replacedPrefix = player.getProperty(PropertyUtils.TAGPREFIX).getFormat(viewer);
+					String replacedSuffix = player.getProperty(PropertyUtils.TAGSUFFIX).getFormat(viewer);
+					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName(), replacedPrefix, replacedSuffix, nametags.translate(nametags.getTeamVisibility(player, viewer)), 
+							nametags.translate(nametags.getCollisionManager().getCollision(player)), Arrays.asList(name), 0), this);
+				}
+			}
+			if (belowname != null) {
+				int value = belowname.getValue(player);
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+					if (all.getWorld().equals(player.getWorld()) && Objects.equals(all.getServer(), player.getServer()))
+						all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, getNickname(player), value), this);
+				}
+			}
+			if (yellownumber != null) {
+				int value = yellownumber.getValue(player);
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+					all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, getNickname(player), value), this);
+				}
+			}
+		});
+	}
+	
+	public String getNickname(TabPlayer player) {
+		return nickedPlayers.getOrDefault(player, player.getName());
+	}
+}

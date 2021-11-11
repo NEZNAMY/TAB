@@ -191,6 +191,7 @@ public class IChatBaseComponent {
 	public String toString() {
 		JSONObject json = new JSONObject();
 		if (text != null) json.put("text", text);
+		if (modifier.getTargetVersion() == null) modifier.setTargetVersion(TabAPI.getInstance().getServerVersion()); //packet.toString() was called as a part of a debug message
 		json.putAll(modifier.serialize());
 		if (extra != null) json.put("extra", extra);
 		return json.toString();

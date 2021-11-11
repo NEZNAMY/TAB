@@ -204,7 +204,7 @@ public class RedisPlayer {
 		return tabformat;
 	}
 
-	public Object getTeamName() {
+	public String getTeamName() {
 		return teamName;
 	}
 

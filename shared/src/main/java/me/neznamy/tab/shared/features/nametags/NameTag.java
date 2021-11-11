@@ -16,6 +16,7 @@ import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -285,7 +286,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
-				translate(collisionManager.getCollision(p)), Arrays.asList(p.getName()), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+				translate(collisionManager.getCollision(p)), Arrays.asList(getName(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
 	}
 
 	private void updateTeam(TabPlayer p) {
@@ -304,7 +305,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		}
 	}
 
-	private String translate(boolean b) {
+	public String translate(boolean b) {
 		return b ? "always" : "never";
 	}
 	
@@ -319,5 +320,17 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	public Sorting getSorting() {
 		return sorting;
+	}
+
+	public CollisionManager getCollisionManager() {
+		return collisionManager;
+	}
+	
+	private String getName(TabPlayer p) {
+		NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
+		if (nick != null) {
+			return nick.getNickname(p);
+		}
+		return p.getName();
 	}
 }

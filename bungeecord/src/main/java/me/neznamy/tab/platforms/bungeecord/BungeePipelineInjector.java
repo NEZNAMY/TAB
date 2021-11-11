@@ -18,6 +18,7 @@ import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisBungeeSupport;
 import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisPlayer;
 import me.neznamy.tab.shared.CpuConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -107,23 +108,31 @@ public class BungeePipelineInjector extends PipelineInjector {
 			if (packet.getPlayers() == null) return;
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (col.contains(p.getName()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) && 
+				if (col.contains(getName(p)) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) && 
 						!TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
-					logTeamOverride(packet.getName(), p.getName());
-					col.remove(p.getName());
+					logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+					col.remove(getName(p));
 				}
 			}
 			RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
 			if (redis != null) {
 				for (RedisPlayer p : redis.getRedisPlayers().values()) {
 					if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
-						logTeamOverride(packet.getName(), p.getName());
+						logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
 						col.remove(p.getName());
 					}
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
 			TAB.getInstance().getCPUManager().addTime("Nametags", CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+		}
+
+		private String getName(TabPlayer p) {
+			NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
+			if (nick != null) {
+				return nick.getNickname(p);
+			}
+			return p.getName();
 		}
 
 		/**

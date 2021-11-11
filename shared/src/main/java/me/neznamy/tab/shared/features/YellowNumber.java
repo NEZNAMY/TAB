@@ -104,7 +104,7 @@ public class YellowNumber extends TabFeature {
 		}
 	}
 
-	private int getValue(TabPlayer p) {
+	public int getValue(TabPlayer p) {
 		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PropertyUtils.YELLOW_NUMBER).updateAndGet(), 0, "yellow number");
 	}
 
@@ -129,6 +129,10 @@ public class YellowNumber extends TabFeature {
 					return slot.getFakePlayer();
 				}
 			}
+		}
+		NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
+		if (nick != null) {
+			return nick.getNickname(p);
 		}
 		return p.getName(); //layout not enabled or player not visible to viewer
 	}

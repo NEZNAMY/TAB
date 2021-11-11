@@ -95,8 +95,8 @@ public abstract class PipelineInjector extends TabFeature {
 		inject(connectedPlayer);
 	}
 
-	protected void logTeamOverride(String team, String player) {
-		String message = "Something just tried to add player " + player + " into team " + team + " (expected team: " + TAB.getInstance().getPlayer(player).getTeamName() + ")";
+	protected void logTeamOverride(String team, String player, String expectedTeam) {
+		String message = "Something just tried to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
 		//not logging the same message for every online player who received the packet
 		if (lastTeamOverrideMessage == null || !message.equals(lastTeamOverrideMessage)) {
 			lastTeamOverrideMessage = message;
