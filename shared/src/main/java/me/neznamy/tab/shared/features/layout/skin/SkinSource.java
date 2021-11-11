@@ -15,11 +15,13 @@ import me.neznamy.tab.api.config.ConfigurationFile;
 public abstract class SkinSource {
 
 	private ConfigurationFile file;
+	private String path;
 	private Map<String, List<String>> cache;
 	
-	protected SkinSource(ConfigurationFile file, Map<String, List<String>> cache) {
+	protected SkinSource(ConfigurationFile file, String path) {
 		this.file = file;
-		this.cache = cache;
+		this.path = path;
+		this.cache = file.getConfigurationSection(path);
 	}
 	
 	public List<String> getSkin(String skin) {
@@ -29,7 +31,7 @@ public abstract class SkinSource {
 		List<String> properties = download(skin);
 		if (!properties.isEmpty()) {
 			cache.put(skin, properties);
-			file.save();
+			file.set(path, cache);
 			return properties;
 		}
 		return null;

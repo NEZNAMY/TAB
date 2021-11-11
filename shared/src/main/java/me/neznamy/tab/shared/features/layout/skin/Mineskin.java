@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -15,8 +14,8 @@ import me.neznamy.tab.shared.TAB;
 
 public class Mineskin extends SkinSource {
 
-	protected Mineskin(ConfigurationFile file, Map<String, List<String>> cache) {
-		super(file, cache);
+	protected Mineskin(ConfigurationFile file, String path) {
+		super(file, path);
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,8 +19,8 @@ import me.neznamy.tab.shared.TAB;
 
 public class Texture extends SkinSource {
 
-	protected Texture(ConfigurationFile file, Map<String, List<String>> cache) {
-		super(file, cache);
+	protected Texture(ConfigurationFile file, String path) {
+		super(file, path);
 	}
 
 	@Override

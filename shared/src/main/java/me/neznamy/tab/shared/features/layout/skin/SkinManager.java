@@ -24,9 +24,9 @@ public class SkinManager {
 			File f = new File(TAB.getInstance().getPlatform().getDataFolder(), "skincache.yml");
 			if (f.exists() || f.createNewFile()) {
 				cache = new YamlConfigurationFile(null, f);
-				sources.put("player", new PlayerSkin(cache, cache.getConfigurationSection("players")));
-				sources.put("mineskin", new Mineskin(cache, cache.getConfigurationSection("mineskin")));
-				sources.put("texture", new Texture(cache, cache.getConfigurationSection("textures")));
+				sources.put("player", new PlayerSkin(cache, "players"));
+				sources.put("mineskin", new Mineskin(cache, "mineskin"));
+				sources.put("texture", new Texture(cache, "textures"));
 				this.defaultSkin = getSkin(defaultSkin);
 			} else {
 				TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
