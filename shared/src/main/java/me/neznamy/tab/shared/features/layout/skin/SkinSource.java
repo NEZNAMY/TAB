@@ -34,7 +34,7 @@ public abstract class SkinSource {
 			file.set(path, cache);
 			return properties;
 		}
-		return null;
+		return properties;
 	}
 	
 	public abstract List<String> download(String input);

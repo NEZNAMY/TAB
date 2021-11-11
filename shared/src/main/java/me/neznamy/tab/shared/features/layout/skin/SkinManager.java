@@ -41,7 +41,7 @@ public class SkinManager {
 		for (Entry<String, SkinSource> entry : sources.entrySet()) {
 			if (skin.startsWith(entry.getKey() + ":")) {
 				List<String> value = entry.getValue().getSkin(skin.substring(entry.getKey().length()+1));
-				if (value == null) {
+				if (value.isEmpty()) {
 					invalidSkins.add(skin);
 					return defaultSkin;
 				}
