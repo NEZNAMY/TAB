@@ -380,6 +380,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
 		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
 		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+		nms.ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
+		nms.ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
 		return team;
 	}
 
@@ -396,6 +398,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
 		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
 		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+		nms.ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
+		nms.ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
 		return team;
 	}
 

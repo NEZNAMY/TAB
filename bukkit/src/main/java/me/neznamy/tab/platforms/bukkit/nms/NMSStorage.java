@@ -203,6 +203,8 @@ public class NMSStorage {
 	public Method ScoreboardTeam_setPrefix;
 	public Method ScoreboardTeam_setSuffix;
 	public Method ScoreboardTeam_setColor;
+	public Method ScoreboardTeam_setAllowFriendlyFire;
+	public Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
 	public Method PacketPlayOutScoreboardTeam_of;
 	public Method PacketPlayOutScoreboardTeam_ofBoolean;
 	public Method PacketPlayOutScoreboardTeam_ofString;
@@ -526,6 +528,8 @@ public class NMSStorage {
 		PacketPlayOutScoreboardTeam_NAME = getFields(PacketPlayOutScoreboardTeam, String.class).get(0);
 		PacketPlayOutScoreboardTeam_PLAYERS = getFields(PacketPlayOutScoreboardTeam, Collection.class).get(0);
 		ScoreboardTeam_getPlayerNameSet = getMethods(ScoreboardTeam, Collection.class).get(0);
+		ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, "setAllowFriendlyFire", boolean.class);
+		ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, "setCanSeeFriendlyInvisibles", boolean.class);
 		if (minorVersion >= 8) {
 			Class<?> EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
 			EnumNameTagVisibility_values = getEnumValues(EnumNameTagVisibility);
