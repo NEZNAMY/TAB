@@ -54,14 +54,15 @@ public class PlaceholderReplacementPattern {
 		}
 		
 		//number interval
-		float actualValue = 0; //only trying to parse if something actually uses numbers intervals
-		boolean valueSet = false;
-		for (String key : numberIntervalKeys) {
-			if (!valueSet) {
-				actualValue = Float.parseFloat(output.contains(",") ? output.replace(",", "") : output); //supporting placeholders with fancy output using "," every 3 digits
-				valueSet = true;
+		if (numberIntervalKeys.length > 0) {
+			try {
+				float value = Float.parseFloat(output.contains(",") ? output.replace(",", "") : output); //supporting placeholders with fancy output using "," every 3 digits
+				for (String key : numberIntervalKeys) {
+					if (numberIntervals.get(key)[0] <= value && value <= numberIntervals.get(key)[1]) return replacements.get(key);
+				}
+			} catch (NumberFormatException e) {
+				//not a number
 			}
-			if (numberIntervals.get(key)[0] <= actualValue && actualValue <= numberIntervals.get(key)[1]) return replacements.get(key);
 		}
 
 		//else
