@@ -39,9 +39,11 @@ public class NickCompatibility extends TabFeature {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(data.getUniqueId());
 			if (packetPlayer == null || packetPlayer == receiver) continue;
 			if (!packetPlayer.getName().equals(data.getName())) {
-				nickedPlayers.put(packetPlayer, data.getName());
-				TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + data.getName());
-				processNameChange(packetPlayer, data.getName());
+				if (!nickedPlayers.containsKey(packetPlayer)) {
+					nickedPlayers.put(packetPlayer, data.getName());
+					TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + data.getName());
+					processNameChange(packetPlayer, data.getName());
+				}
 			} else if (nickedPlayers.containsKey(packetPlayer)) {
 				nickedPlayers.remove(packetPlayer);
 				TAB.getInstance().debug("Processing name restore of player " + packetPlayer.getName());
