@@ -43,10 +43,8 @@ public class NameTag extends TabFeature implements TeamManager {
 				TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 		if (accepting18x)
 			TAB.getInstance().getFeatureManager().registerFeature("nametags-visibility", new VisibilityRefresher(this));
-		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
-			collisionManager = new CollisionManager(this, collisionRule);
-			TAB.getInstance().getFeatureManager().registerFeature("nametags-collision", collisionManager);
-		}
+		collisionManager = new CollisionManager(this, collisionRule);
+		TAB.getInstance().getFeatureManager().registerFeature("nametags-collision", collisionManager);
 		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNametags=%s",
 				collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNametags));
 	}
