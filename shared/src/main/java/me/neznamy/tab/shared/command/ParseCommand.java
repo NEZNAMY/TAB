@@ -59,6 +59,9 @@ public class ParseCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		return arguments.length == 1 ? getOnlinePlayers(arguments[0]) : new ArrayList<>();
+		if (arguments.length != 1) return new ArrayList<>();
+		List<String> suggestions = getOnlinePlayers(arguments[0]);
+		if ("me".startsWith(arguments[0].toLowerCase())) suggestions.add("me");
+		return suggestions;
 	}
 }
