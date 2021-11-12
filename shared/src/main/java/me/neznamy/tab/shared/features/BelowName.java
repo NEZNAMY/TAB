@@ -73,6 +73,7 @@ public class BelowName extends TabFeature {
 		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, connectedPlayer.getProperty(PropertyUtils.BELOWNAME_TEXT).get(), DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, textRefresher);
 		int number = getValue(connectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (!all.isLoaded()) continue; //objective not registered yet or player == connectedPlayer
 			if (all.getWorld().equals(connectedPlayer.getWorld()) && Objects.equals(all.getServer(), connectedPlayer.getServer())) {
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), number), this);
 				if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
@@ -104,6 +105,7 @@ public class BelowName extends TabFeature {
 		}
 		int number = getValue(p);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (!all.isLoaded()) continue; //objective not registered yet
 			if (all.getWorld().equals(p.getWorld()) && Objects.equals(all.getServer(), p.getServer())) {
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(p), number), this);
 				if (all.isLoaded()) p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
@@ -122,6 +124,7 @@ public class BelowName extends TabFeature {
 		if (isDisabledPlayer(refreshed)) return;
 		int number = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (!all.isLoaded()) continue; //objective not registered yet
 			if (all.getWorld().equals(refreshed.getWorld()) && Objects.equals(all.getServer(), refreshed.getServer()))
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), number), this);
 		}
@@ -145,7 +148,7 @@ public class BelowName extends TabFeature {
 
 		@Override
 		public void refresh(TabPlayer refreshed, boolean force) {
-			if (!refreshed.isLoaded() || isDisabledPlayer(refreshed)) return;
+			if (isDisabledPlayer(refreshed)) return;
 			refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(PropertyUtils.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), textRefresher);
 		}
 	}
