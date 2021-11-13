@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,12 +29,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	//formatter for 2 decimal places
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 
-	//vault chat
 	private Object chat;
-
+	private Plugin essentials;
 	private Object server;
 	private Field recentTps;
 	private boolean paperTps;
+	private boolean paperMspt;
+	private boolean purpur;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -43,6 +43,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 */
 	public BukkitPlaceholderRegistry() {
 		decimal2.applyPattern("#.##");
+		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
@@ -63,6 +64,18 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		} catch (NoSuchMethodException e) {
 			//not paper
 		}
+		try {
+			Bukkit.class.getMethod("getAverageTickTime");
+			paperMspt = true;
+		} catch (NoSuchMethodException e) {
+			//not paper
+		}
+		try {
+			Player.class.getMethod("isAfk");
+			purpur = true;
+		} catch (NoSuchMethodException e) {
+			//not purpur
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -73,33 +86,41 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		roundDown.setMaximumFractionDigits(2);
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());
 		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
-		manager.registerServerPlaceholder("%tps%", 1000, () -> {
-			try {
-				double[] tps;
-				if (paperTps) {
-					tps = Bukkit.getTPS();
-				} else if (recentTps != null){
-					tps = (double[]) recentTps.get(server);
-				} else {
-					tps = new double[] {-1};
+		if (paperTps) {
+			manager.registerServerPlaceholder("%tps%", 1000, () -> formatTPS(Bukkit.getTPS()[0]));
+		} else if (recentTps != null) {
+			manager.registerServerPlaceholder("%tps%", 1000, () -> {
+				try {
+					return formatTPS(((double[]) recentTps.get(server))[0]);
+				} catch (IllegalAccessException e) {
+					return "-1";
 				}
-				return decimal2.format(Math.min(20, tps[0]));
-			} catch (IllegalAccessException t) {
-				return "-1";
-			}
-		});
-		try {
-			Class.forName("com.destroystokyo.paper.PaperConfig");
+			});
+		} else {
+			manager.registerServerPlaceholder("%tps%", 1000000000, () -> "-1");
+		}
+		if (paperMspt) {
 			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
-		} catch (ClassNotFoundException e){
-			//not paper
 		}
 		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
 			manager.registerPlayerPlaceholder("%health%", 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
 		}
-		manager.registerPlayerPlaceholder("%afk%", 500, new AFKPlaceholder().getFunction());
+		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
+			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
+			return purpur && ((Player)p.getPlayer()).isAfk();
+		});
+		if (chat != null) {
+			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
+			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
+		} else {
+			manager.registerServerPlaceholder("%vault-prefix%", 1000000, () -> "");
+			manager.registerServerPlaceholder("%vault-suffix%", 1000000, () -> "");
+		}
 		registerOnlinePlaceholders(manager);
-		registerVaultPlaceholders(manager);
+	}
+	
+	private String formatTPS(double tps) {
+		return decimal2.format(Math.min(20, tps));
 	}
 
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
@@ -124,41 +145,5 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			}
 			return count;
 		});
-	}
-
-	/**
-	 * Registers vault placeholders
-	 */
-	private void registerVaultPlaceholders(PlaceholderManager manager) {
-		if (chat != null) {
-			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
-			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
-		} else {
-			manager.registerServerPlaceholder("%vault-prefix%", 1000000, () -> "");
-			manager.registerServerPlaceholder("%vault-suffix%", 1000000, () -> "");
-		}
-	}
-
-	public class AFKPlaceholder {
-
-		private Plugin essentials;
-		private boolean purpur;
-		
-		protected AFKPlaceholder() {
-			essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-			try {
-				Player.class.getMethod("isAfk");
-				purpur = true;
-			} catch (NoSuchMethodException e) {
-				//not purpur
-			}
-		}
-		
-		public Function<TabPlayer, Object> getFunction() {
-			return p -> {
-				if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
-				return purpur && ((Player)p.getPlayer()).isAfk();
-			};
-		}
 	}
 }
