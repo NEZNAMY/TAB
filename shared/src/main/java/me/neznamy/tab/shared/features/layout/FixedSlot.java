@@ -15,7 +15,6 @@ public class FixedSlot extends TabFeature {
 
 	private Layout layout;
 	private UUID id;
-	private int slot;
 	private String text;
 	private String propertyName;
 	private Object skin;
@@ -24,7 +23,6 @@ public class FixedSlot extends TabFeature {
 		super(layout.getFeatureName());
 		this.layout = layout;
 		this.id = layout.getManager().getUUID(slot);
-		this.slot = slot;
 		this.text = text;
 		propertyName = "Layout-" + layout.getName() + "SLOT-" + slot;
 		this.skin = layout.getManager().getSkinManager().getSkin(skin);
@@ -38,7 +36,7 @@ public class FixedSlot extends TabFeature {
 		if (!layout.containsViewer(p)) return;
 		p.setProperty(this, propertyName, text);
 		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(layout.getManager().formatSlot(slot), id, skin, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()))), CpuConstants.PacketCategory.LAYOUT_FIXED_SLOTS);
+		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData("", id, skin, 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()))), CpuConstants.PacketCategory.LAYOUT_FIXED_SLOTS);
 	}	
 
 	@Override

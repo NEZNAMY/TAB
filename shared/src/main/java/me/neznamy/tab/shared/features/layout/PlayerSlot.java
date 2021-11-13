@@ -5,43 +5,31 @@ import java.util.UUID;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.CpuConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
-import me.neznamy.tab.shared.features.YellowNumber;
 
 public class PlayerSlot {
 
-	private YellowNumber yellowNumber;
 	private Playerlist playerlist;
 	private Layout layout;
 	private UUID id;
-	private String fakeplayer;
 	private TabPlayer player;
 	private String text = "";
 	
-	public PlayerSlot(Layout layout, UUID id, int slot) {
-		yellowNumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
+	public PlayerSlot(Layout layout, UUID id) {
 		playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 		this.layout = layout;
 		this.id = id;
-		this.fakeplayer = layout.getManager().formatSlot(slot);
 	}
 	
 	public UUID getUUID() {
 		return id;
 	}
-	
-	public String getFakePlayer() {
-		return fakeplayer;
-	}
-	
+
 	public void setPlayer(TabPlayer newPlayer) {
 		if (player == newPlayer) return;
 		this.player = newPlayer;
@@ -51,10 +39,6 @@ public class PlayerSlot {
 			if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
 			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			sendSlot(viewer);
-			if (yellowNumber != null) {
-				int newYellowNumber = player == null ? 0 : TAB.getInstance().getErrorManager().parseInteger(player.getProperty(PropertyUtils.YELLOW_NUMBER).get(), 0, "yellow number");
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, fakeplayer, newYellowNumber), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
-			}
 		}
 	}
 	
@@ -62,9 +46,9 @@ public class PlayerSlot {
 		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		PlayerInfoData data;
 		if (player != null) {
-			data = new PlayerInfoData(fakeplayer, id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p, false));
+			data = new PlayerInfoData("", id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p, false));
 		} else {
-			data = new PlayerInfoData(fakeplayer, id, layout.getManager().getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
+			data = new PlayerInfoData("", id, layout.getManager().getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 	}

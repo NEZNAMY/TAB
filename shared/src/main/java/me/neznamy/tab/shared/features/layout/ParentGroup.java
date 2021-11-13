@@ -25,7 +25,7 @@ public class ParentGroup {
 		}
 		this.slots = slots;
 		for (int slot : slots) {
-			playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot), slot));
+			playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot)));
 		}
 	}
 

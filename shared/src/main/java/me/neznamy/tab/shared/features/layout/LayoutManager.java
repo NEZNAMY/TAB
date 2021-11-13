@@ -42,7 +42,7 @@ public class LayoutManager extends TabFeature {
 		remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
 		skinManager = new SkinManager(defaultSkin);
 		for (int slot=1; slot<=80; slot++) {
-			uuids.put(slot, UUID.randomUUID());
+			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}
 		loadLayouts();
 		TAB.getInstance().debug("Loaded Layout feature");
@@ -55,10 +55,6 @@ public class LayoutManager extends TabFeature {
 			TAB.getInstance().getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(Direction.values()) + ". &bUsing COLUMNS");
 			return Direction.COLUMNS;
 		}
-	}
-
-	public String formatSlot(int slot) {
-		return (char)1 + String.format("SLOT%02d", translateSlot(slot));
 	}
 
 	@SuppressWarnings("unchecked")

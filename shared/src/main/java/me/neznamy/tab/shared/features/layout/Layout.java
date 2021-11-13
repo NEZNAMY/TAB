@@ -46,7 +46,7 @@ public class Layout extends TabFeature {
 		fixedSlots.values().forEach(s -> s.sendTo(p));
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (int slot : emptySlots) {
-			list.add(new PlayerInfoData(manager.formatSlot(slot), manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
+			list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
 		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
