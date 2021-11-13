@@ -16,6 +16,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
@@ -85,7 +86,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 
 	private void handle(PacketPlayOutChat packet) {
-		getPlayer().sendMessage(Identity.nil(), Main.stringToComponent(packet.getMessage().toString(getVersion())), MessageType.valueOf(packet.getType().name()));
+		Component message = Main.stringToComponent(packet.getMessage().toString(getVersion()));
+		if (packet.getType() == ChatMessageType.GAME_INFO) {
+			getPlayer().sendActionBar(message);
+		} else {
+			getPlayer().sendMessage(Identity.nil(), message, MessageType.valueOf(packet.getType().name()));
+		}
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
