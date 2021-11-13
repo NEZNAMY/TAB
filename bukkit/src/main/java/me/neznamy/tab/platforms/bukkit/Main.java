@@ -74,8 +74,10 @@ public class Main extends JavaPlugin {
 				"v1_14_R1", "v1_15_R1", "v1_16_R1", "v1_16_R2", "v1_16_R3", "v1_17_R1");
 		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		try {
+			long time = System.currentTimeMillis();
 			NMSStorage.setInstance(new NMSStorage());
 			if (supportedVersions.contains(serverPackage)) {
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&7[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
 				return true;
 			} else {
 				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.17.1. Disabling just to stay safe."));
