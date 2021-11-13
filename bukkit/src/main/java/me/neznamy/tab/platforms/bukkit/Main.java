@@ -78,7 +78,7 @@ public class Main extends JavaPlugin {
 			if (supportedVersions.contains(serverPackage)) {
 				return true;
 			} else {
-				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.17. Disabling just to stay safe."));
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server version. This jar has only been tested on 1.5.x - 1.17.1. Disabling just to stay safe."));
 			}
 		} catch (Exception ex) {
 			if (supportedVersions.contains(serverPackage)) {
@@ -88,7 +88,7 @@ public class Main extends JavaPlugin {
 					Bukkit.getConsoleSender().sendMessage("\t" + e.toString());
 				}
 			} else {
-				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.17. Disabling."));
+				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.17.1. Disabling."));
 			}
 		}
 		return false;
