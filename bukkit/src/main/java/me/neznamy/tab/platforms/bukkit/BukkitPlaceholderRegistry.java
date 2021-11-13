@@ -142,12 +142,10 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	public class AFKPlaceholder {
 
 		private Plugin essentials;
-		private boolean antiafkplus;
 		private boolean purpur;
 		
 		protected AFKPlaceholder() {
 			essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-			antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
 			try {
 				Player.class.getMethod("isAfk");
 				purpur = true;
@@ -158,17 +156,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		
 		public Function<TabPlayer, Object> getFunction() {
 			return p -> {
-				try {
-					if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
-					if (antiafkplus) {
-						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
-					}
-					if (purpur && ((Player)p.getPlayer()).isAfk()) return true;
-				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
-					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
-				}
-				return false;
+				if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
+				return purpur && ((Player)p.getPlayer()).isAfk();
 			};
 		}
 	}
