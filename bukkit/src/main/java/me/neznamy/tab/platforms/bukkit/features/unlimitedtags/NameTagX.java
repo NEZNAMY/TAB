@@ -43,7 +43,7 @@ public class NameTagX extends NameTag {
 	private List<String> dynamicLines = Arrays.asList(PropertyUtils.BELOWNAME, PropertyUtils.NAMETAG, PropertyUtils.ABOVENAME);
 	
 	//map of defined static lines
-	private Map<String, Object> staticLines = new ConcurrentHashMap<>();
+	private Map<String, Object> staticLines;
 
 	//player data by entityId, used for better performance
 	private Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
