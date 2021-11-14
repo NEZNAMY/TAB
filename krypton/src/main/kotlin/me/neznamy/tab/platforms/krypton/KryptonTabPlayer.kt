@@ -68,7 +68,7 @@ class KryptonTabPlayer(
 
     override fun isOnline(): Boolean = true
 
-    override fun isVanished(): Boolean = false
+    override fun isVanished(): Boolean = delegate.isVanished
 
     override fun getGamemode(): Int = Registries.GAME_MODES.idOf(delegate.gameMode)
 
