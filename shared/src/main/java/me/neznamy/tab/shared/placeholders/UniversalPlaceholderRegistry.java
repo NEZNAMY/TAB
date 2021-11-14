@@ -27,6 +27,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
+		manager.registerServerPlaceholder("%%", 1000000000, () -> "%");
 		manager.registerPlayerPlaceholder("%world%", 1000, TabPlayer::getWorld);
 		manager.registerPlayerPlaceholder("%worldonline%", 1000, p -> {
 				int count = 0;
