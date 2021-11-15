@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id("org.sonarqube")
     `java-library`
@@ -5,9 +7,11 @@ plugins {
 
 tasks {
     processResources {
-        filesMatching(listOf("plugin.yml", "bungee.yml")) {
-            expand("name" to rootProject.name, "version" to project.version, "description" to project.description)
-        }
+        filter<ReplaceTokens>("tokens" to mapOf(
+            "name" to rootProject.name,
+            "version" to project.version,
+            "description" to project.description
+        ))
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name()

@@ -10,6 +10,7 @@ dependencies {
     compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.via)
     compileOnly(libs.spark)
+    kapt(libs.krypton.annotationProcessor)
 }
 
 tasks.compileKotlin {
