@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.bossbar;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 
 /**
@@ -33,6 +33,6 @@ public class ColorAndStyleRefresher extends TabFeature {
 		if (!line.getPlayers().contains(refreshed)) return;
 		refreshed.sendCustomPacket(new PacketPlayOutBoss(line.getUniqueId(), 
 				line.parseColor(refreshed.getProperty(colorProperty).updateAndGet()), 
-				line.parseStyle(refreshed.getProperty(styleProperty).updateAndGet())), CpuConstants.PacketCategory.BOSSBAR_COLOR_STYLE);
+				line.parseStyle(refreshed.getProperty(styleProperty).updateAndGet())), TabConstants.PacketCategory.BOSSBAR_COLOR_STYLE);
 	}
 }

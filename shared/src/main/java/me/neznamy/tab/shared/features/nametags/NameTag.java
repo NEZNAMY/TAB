@@ -12,7 +12,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
@@ -245,7 +245,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
 			boolean visible = getTeamVisibility(p, viewer);
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
 		if (redis != null) redis.updateNameTag(p, p.getProperty(PropertyUtils.TAGPREFIX).get(), p.getProperty(PropertyUtils.TAGSUFFIX).get());
@@ -257,14 +257,14 @@ public class NameTag extends TabFeature implements TeamManager {
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
-		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 	}
 
 	public void unregisterTeam(TabPlayer p) {
 		if (hasTeamHandlingPaused(p)) return;
 		if (p.getTeamName() == null) return;
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 	}
 
@@ -281,10 +281,10 @@ public class NameTag extends TabFeature implements TeamManager {
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
 		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
-			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), CpuConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
-				translate(collisionManager.getCollision(p)), Arrays.asList(getName(p)), 0), CpuConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+				translate(collisionManager.getCollision(p)), Arrays.asList(getName(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
 	}
 
 	private void updateTeam(TabPlayer p) {

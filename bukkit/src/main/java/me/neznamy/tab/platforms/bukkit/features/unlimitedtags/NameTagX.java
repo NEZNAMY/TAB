@@ -21,7 +21,7 @@ import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -114,7 +114,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isPlayerDisabled(p)) continue;
@@ -141,7 +141,7 @@ public class NameTagX extends NameTag {
 	}
 	
 	private void startVehicleTickingTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(200, "ticking vehicles", this, CpuConstants.UsageCategory.TICKING_VEHICLES, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(200, "ticking vehicles", this, TabConstants.CpuUsageCategory.TICKING_VEHICLES, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
@@ -255,7 +255,7 @@ public class NameTagX extends NameTag {
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
 		if (disconnectedPlayer.getArmorStandManager() != null) //player was not loaded yet
-			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, CpuConstants.UsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
 
 	/**

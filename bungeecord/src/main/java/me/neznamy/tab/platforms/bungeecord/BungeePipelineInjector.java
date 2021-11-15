@@ -16,7 +16,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisBungeeSupport;
 import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisPlayer;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
@@ -62,7 +62,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
 			Object modifiedPacket = packet instanceof ByteBuf && bytebufDeserialization ? deserialize((ByteBuf) packet) : packet;
-			TAB.getInstance().getCPUManager().addTime("Packet deserializing", CpuConstants.UsageCategory.BYTEBUF, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTEBUF, System.nanoTime()-time);
 			try {
 				switch(modifiedPacket.getClass().getSimpleName()) {
 				case "PlayerListItem":
@@ -124,7 +124,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
-			TAB.getInstance().getCPUManager().addTime("Nametags", CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 
 		private String getName(TabPlayer p) {

@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared;
 
-public class CpuConstants {
+public class TabConstants {
 
-	private CpuConstants() {}
+	private TabConstants() {}
 	
-	public static class UsageCategory {
+	public static class CpuUsageCategory {
 		
 		public static final String PLAYER_JOIN = "Player Join";
 		public static final String PLAYER_QUIT = "Player Quit";
@@ -41,7 +41,7 @@ public class CpuConstants {
 		public static final String REFRESHING_TEAM_NAMES = "Refreshing team names";
 		public static final String REFRESHING_GROUPS = "Refreshing player groups";
 		
-		private UsageCategory() {}
+		private CpuUsageCategory() {}
 	}
 	
 	public static class PacketCategory {

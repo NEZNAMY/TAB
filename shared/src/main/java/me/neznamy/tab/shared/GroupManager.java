@@ -41,7 +41,7 @@ public class GroupManager extends TabFeature {
 				if (p == null) return; //server still starting up and users connecting already (LP loading them)
 				refresh(p, false);
 				((PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).getLastValues().put(p.getName(), p.getGroup());
-				TAB.getInstance().getCPUManager().addTime("Permission group refreshing", CpuConstants.UsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
+				TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
 			});
 		} else if (!(plugin instanceof None)){
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000, this::detectPermissionGroup);

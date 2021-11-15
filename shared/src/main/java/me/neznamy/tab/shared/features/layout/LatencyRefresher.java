@@ -9,7 +9,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 public class LatencyRefresher extends TabFeature {
@@ -39,7 +39,7 @@ public class LatencyRefresher extends TabFeature {
 				list.add(new PlayerInfoData(group.getPlayers().get(all).getUUID(), all.getPing()));
 			}
 			if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), CpuConstants.PacketCategory.LAYOUT_LATENCY);
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), TabConstants.PacketCategory.LAYOUT_LATENCY);
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class LatencyRefresher extends TabFeature {
 				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, new PlayerInfoData(group.getPlayers().get(p).getUUID(), p.getPing()));
 				for (TabPlayer all : layout.getViewers()) {
 					if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
-					all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_LATENCY);
+					all.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_LATENCY);
 				}
 			}
 		}

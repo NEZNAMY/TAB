@@ -12,7 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -53,7 +53,7 @@ public class NickCompatibility extends TabFeature {
 	}
 	
 	private void processNameChange(TabPlayer player, String name) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing nickname change", this, CpuConstants.UsageCategory.PACKET_PLAYER_INFO, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing nickname change", this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
 			
 			if (nametags != null && !nametags.hasTeamHandlingPaused(player)) {
 				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

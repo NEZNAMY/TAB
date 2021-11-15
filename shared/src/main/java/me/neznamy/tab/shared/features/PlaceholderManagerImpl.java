@@ -24,7 +24,7 @@ import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.task.RepeatingTask;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
@@ -85,18 +85,18 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), true);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), TabConstants.CpuUsageCategory.UPDATING, System.nanoTime()-startTime);
 			}
 		}
 		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), false);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), CpuConstants.UsageCategory.UPDATING, System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), TabConstants.CpuUsageCategory.UPDATING, System.nanoTime()-startTime);
 			}
 		}
 		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
-		TAB.getInstance().getCPUManager().addTime(getFeatureName(), CpuConstants.UsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
+		TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
 	}
 
 	private boolean updateRelationalPlaceholder(RelationalPlaceholder placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {

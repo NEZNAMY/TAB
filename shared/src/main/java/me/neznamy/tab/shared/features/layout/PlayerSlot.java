@@ -8,7 +8,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
 
@@ -37,7 +37,7 @@ public class PlayerSlot {
 		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id));
 		for (TabPlayer viewer : layout.getViewers()) {
 			if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
-			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+			viewer.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			sendSlot(viewer);
 		}
 	}
@@ -50,7 +50,7 @@ public class PlayerSlot {
 		} else {
 			data = new PlayerInfoData("", id, layout.getManager().getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
 		}
-		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 	}
 	
 	public void setText(String text) {
@@ -62,7 +62,7 @@ public class PlayerSlot {
 			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, new IChatBaseComponent(text)));
 			for (TabPlayer all : layout.getViewers()) {
 				if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
-				all.sendCustomPacket(packet, CpuConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+				all.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 			}
 		}
 	}
