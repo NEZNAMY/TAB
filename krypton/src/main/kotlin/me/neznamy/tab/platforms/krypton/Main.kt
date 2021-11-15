@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger
 import org.kryptonmc.api.Server
 import org.kryptonmc.api.command.Sender
 import org.kryptonmc.api.command.SimpleCommand
-import org.kryptonmc.api.command.meta.simpleCommandMeta
+import org.kryptonmc.api.command.meta.SimpleCommandMeta
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.Listener
 import org.kryptonmc.api.event.server.ServerStartEvent
@@ -40,7 +40,7 @@ class Main @Inject constructor(
             ))
         }
         server.eventManager.register(this, KryptonEventListener(this))
-        server.commandManager.register(KryptonTABCommand(), simpleCommandMeta("tab") {})
+        server.commandManager.register(KryptonTABCommand(), SimpleCommandMeta.builder("tab").build())
         TAB.getInstance().load()
     }
 

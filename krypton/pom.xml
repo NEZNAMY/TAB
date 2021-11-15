@@ -136,7 +136,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>16</jvmTarget>
+                    <jvmTarget>1.8</jvmTarget>
                     <args>
                         <arg>-Xjvm-default=enable</arg>
                     </args>
