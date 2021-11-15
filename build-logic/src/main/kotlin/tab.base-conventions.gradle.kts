@@ -1,7 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id("org.sonarqube")
     `java-library`
 }
 
@@ -27,13 +26,5 @@ tasks {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(16))
-    }
-}
-
-sonarqube {
-    properties {
-        property("sonar.projectKey", "NEZNAMY_TAB")
-        property("sonar.moduleKey", project.name)
-        property("sonar.organization", "neznamy")
     }
 }
