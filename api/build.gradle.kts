@@ -3,9 +3,11 @@ plugins {
 }
 
 dependencies {
-    api(libs.netty)
-    api(libs.jsonSimple)
-    api(libs.snakeyaml)
+    compileOnlyApi(libs.netty)
+    api(libs.jsonSimple) {
+        exclude("junit", "junit")
+    }
+    compileOnlyApi(libs.snakeyaml)
     api(libs.yamlAssist)
-    api(libs.gson)
+    compileOnlyApi(libs.gson)
 }

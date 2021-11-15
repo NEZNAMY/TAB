@@ -1,5 +1,5 @@
 dependencies {
     implementation(projects.shared)
+    implementation(libs.bstats.velocity)
     compileOnly(libs.velocity)
-    compileOnly(libs.bstats.velocity)
 }
