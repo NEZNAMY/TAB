@@ -13,7 +13,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
@@ -35,7 +34,6 @@ public class Layout extends TabFeature {
 		this.fixedSlots = fixedSlots;
 		this.emptySlots = emptySlots;
 		this.groups = groups;
-		TAB.getInstance().getFeatureManager().registerFeature("latency-" + name, new LatencyRefresher(this));
 	}
 
 	public void sendTo(TabPlayer p) {
