@@ -27,7 +27,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	private Sorting sorting;
 	private List<TabPlayer> hiddenNametag = new ArrayList<>();
 	private Map<TabPlayer, List<TabPlayer>> hiddenNametagFor = new HashMap<>();
-	private List<TabPlayer> teamHandlingPaused = new ArrayList<>();
+	protected List<TabPlayer> teamHandlingPaused = new ArrayList<>();
 	private Map<TabPlayer, String> forcedTeamName = new HashMap<>();
 	private CollisionManager collisionManager;
 	private boolean accepting18x;

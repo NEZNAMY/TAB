@@ -382,8 +382,8 @@ public class NameTagX extends NameTag {
 
 	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
-		//only visible if player is on boat & config option is enabled and player is not invisible (1.8 bug) or feature is disabled
-		return (getPlayersOnBoats().contains(p) && !p.hasInvisibilityPotion()) || isPlayerDisabled(p);
+		if (p.hasInvisibilityPotion()) return false; //1.8.x client sided bug
+		return playersOnBoats.contains(p) || isPlayerDisabled(p);
 	}
 
 	public Map<Integer, TabPlayer> getEntityIdMap() {
@@ -405,7 +405,7 @@ public class NameTagX extends NameTag {
 	}
 
 	public boolean isPlayerDisabled(TabPlayer p) {
-		return isDisabledPlayer(p) || playersInDisabledUnlimitedWorlds.contains(p);
+		return isDisabledPlayer(p) || playersInDisabledUnlimitedWorlds.contains(p) || hasTeamHandlingPaused(p);
 	}
 
 	public boolean isMarkerFor18x() {
@@ -414,5 +414,25 @@ public class NameTagX extends NameTag {
 
 	public List<TabPlayer> getPlayersInDisabledUnlimitedWorlds() {
 		return playersInDisabledUnlimitedWorlds;
+	}
+	
+	@Override
+	public void pauseTeamHandling(TabPlayer player) {
+		if (teamHandlingPaused.contains(player)) return;
+		if (!isDisabledPlayer(player)) unregisterTeam(player);
+		teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
+		player.getArmorStandManager().destroy();
+	}
+	
+	@Override
+	public void resumeTeamHandling(TabPlayer player) {
+		if (!teamHandlingPaused.contains(player)) return;
+		teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
+		if (!isDisabledPlayer(player)) registerTeam(player);
+		if (!isPlayerDisabled(player)) {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+				spawnArmorStands(player, viewer, false);
+			}
+		}
 	}
 }

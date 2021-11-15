@@ -61,7 +61,7 @@ public class PacketListener extends TabFeature {
 	@Override
 	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
-		if (!receiver.isLoaded() || nameTagX.isPlayerDisabled(receiver)) return;
+		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.getPlayersInDisabledUnlimitedWorlds().contains(receiver)) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		} else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
@@ -93,6 +93,7 @@ public class PacketListener extends TabFeature {
 		List<Entity> vehicleList;
 		if (pl != null) {
 			//player moved
+			if (nameTagX.isPlayerDisabled(pl)) return;
 			tab.getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
 		} else if ((vehicleList = nameTagX.getVehicles().get(entityId)) != null){
 			//a vehicle carrying something moved
@@ -107,7 +108,7 @@ public class PacketListener extends TabFeature {
 	
 	private void onEntitySpawn(TabPlayer receiver, int entityId) {
 		TabPlayer spawnedPlayer = nameTagX.getEntityIdMap().get(entityId);
-		if (spawnedPlayer != null && spawnedPlayer.isLoaded()) {
+		if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
 			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
 		}
 	}
@@ -126,7 +127,7 @@ public class PacketListener extends TabFeature {
 	
 	private void onEntityDestroy(TabPlayer receiver, int entity) {
 		TabPlayer despawnedPlayer = nameTagX.getEntityIdMap().get(entity);
-		if (despawnedPlayer != null && despawnedPlayer.isLoaded()) 
+		if (despawnedPlayer != null && despawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(despawnedPlayer)) 
 			tab.getCPUManager().runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 	}
 }
