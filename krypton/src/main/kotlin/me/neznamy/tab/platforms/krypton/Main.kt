@@ -7,7 +7,6 @@ import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.apache.logging.log4j.Logger
 import org.kryptonmc.api.Server
 import org.kryptonmc.api.command.Sender
 import org.kryptonmc.api.command.SimpleCommand
@@ -26,7 +25,6 @@ import java.nio.file.Path
 @Plugin("tab", "TAB", TAB.PLUGIN_VERSION, "An all-in-one solution that works", ["NEZNAMY", "BomBardyGamer"])
 class Main @Inject constructor(
     val server: Server,
-    val logger: Logger,
     @DataFolder val folder: Path
 ) {
 

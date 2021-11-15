@@ -35,3 +35,7 @@ hs_err_pid*
 # other
 .gitattributes
 *.iml
+
+# Gradle
+.gradle/
+build/
