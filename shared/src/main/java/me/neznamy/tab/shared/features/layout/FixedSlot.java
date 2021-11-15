@@ -21,6 +21,7 @@ public class FixedSlot extends TabFeature {
 
 	public FixedSlot(Layout layout, int slot, String text, String skin) {
 		super(layout.getFeatureName());
+		setRefreshDisplayName("Updating fixed slots");
 		this.layout = layout;
 		this.id = layout.getManager().getUUID(slot);
 		this.text = text;

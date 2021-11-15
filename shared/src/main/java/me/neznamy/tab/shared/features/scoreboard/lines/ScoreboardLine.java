@@ -41,6 +41,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 */
 	protected ScoreboardLine(ScoreboardImpl parent, int lineNumber) {
 		super(parent.getFeatureName());
+		setRefreshDisplayName("Updating scoreboard lines");
 		this.parent = parent;
 		this.lineNumber = lineNumber;
 		teamName = "TAB-SB-TM-" + lineNumber;

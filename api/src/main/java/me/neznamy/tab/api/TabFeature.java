@@ -12,6 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 public abstract class TabFeature {
 
 	private String featureName;
+	private String refreshDisplayName = "Updating visuals";
 	protected String[] disabledServers = new String[0];
 	private boolean serverWhitelistMode;
 	protected String[] disabledWorlds = new String[0];
@@ -252,5 +253,13 @@ public abstract class TabFeature {
 	
 	public boolean removeDisabledPlayer(TabPlayer p) {
 		return disabledPlayers.remove(p);
+	}
+
+	public String getRefreshDisplayName() {
+		return refreshDisplayName;
+	}
+
+	public void setRefreshDisplayName(String refreshDisplayName) {
+		this.refreshDisplayName = refreshDisplayName;
 	}
 }

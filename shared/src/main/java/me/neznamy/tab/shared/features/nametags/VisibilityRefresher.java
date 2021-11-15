@@ -12,6 +12,7 @@ public class VisibilityRefresher extends TabFeature {
 
 	public VisibilityRefresher(NameTag nametags) {
 		super(nametags.getFeatureName());
+		setRefreshDisplayName("Updating nametag visibility");
 		this.nametags = nametags;
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%invisible%", 500, TabPlayer::hasInvisibilityPotion);
 		addUsedPlaceholders(Arrays.asList("%invisible%"));

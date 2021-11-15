@@ -23,6 +23,7 @@ public class ColorAndStyleRefresher extends TabFeature {
 	 */
 	public ColorAndStyleRefresher(BossBarLine line) {
 		super("BossBar");
+		setRefreshDisplayName("Updating color and style");
 		this.line = line;
 		colorProperty = PropertyUtils.bossbarColor(line.getName());
 		styleProperty = PropertyUtils.bossbarStyle(line.getName());

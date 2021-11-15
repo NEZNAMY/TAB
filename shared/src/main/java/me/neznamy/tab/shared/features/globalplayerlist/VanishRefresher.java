@@ -15,6 +15,7 @@ public class VanishRefresher extends TabFeature {
 	
 	protected VanishRefresher(GlobalPlayerlist playerlist) {
 		super("Global Playerlist");
+		setRefreshDisplayName("Updating vanished players");
 		this.playerlist = playerlist;
 		TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%vanished%", this);
 	}

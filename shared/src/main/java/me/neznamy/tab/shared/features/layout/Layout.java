@@ -28,6 +28,7 @@ public class Layout extends TabFeature {
 
 	public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
 		super(manager.getFeatureName());
+		setRefreshDisplayName("Updating player groups");
 		this.name = name;
 		this.manager = manager;
 		this.displayCondition = displayCondition;

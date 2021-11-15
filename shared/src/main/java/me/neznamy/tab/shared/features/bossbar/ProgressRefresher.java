@@ -22,6 +22,7 @@ public class ProgressRefresher extends TabFeature {
 	 */
 	public ProgressRefresher(BossBarLine line) {
 		super("BossBar");
+		setRefreshDisplayName("Updating progress");
 		this.line = line;
 		progressProperty = PropertyUtils.bossbarProgress(line.getName());
 	}

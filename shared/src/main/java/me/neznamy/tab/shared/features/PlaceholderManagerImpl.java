@@ -85,14 +85,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), true);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), TabConstants.CpuUsageCategory.UPDATING, System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime()-startTime);
 			}
 		}
 		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), false);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), TabConstants.CpuUsageCategory.UPDATING, System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime()-startTime);
 			}
 		}
 		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method

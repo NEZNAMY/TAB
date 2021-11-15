@@ -29,6 +29,7 @@ public class BelowName extends TabFeature {
 	public BelowName() {
 		super("Belowname number", TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-worlds"));
+		setRefreshDisplayName("Updating belowname number");
 		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
 		rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
 		textRefresher = new TextRefresher();
@@ -144,6 +145,7 @@ public class BelowName extends TabFeature {
 
 		public TextRefresher(){
 			super(TEXT_USAGE);
+			setRefreshDisplayName("Updating belowname text");
 		}
 
 		@Override

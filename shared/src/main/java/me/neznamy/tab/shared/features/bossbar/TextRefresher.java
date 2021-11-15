@@ -22,6 +22,7 @@ public class TextRefresher extends TabFeature {
 	 */
 	public TextRefresher(BossBarLine line) {
 		super("BossBar");
+		setRefreshDisplayName("Updating text");
 		this.line = line;
 		textProperty = PropertyUtils.bossbarTitle(line.getName());
 	}

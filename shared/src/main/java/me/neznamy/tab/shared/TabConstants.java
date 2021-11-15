@@ -31,7 +31,6 @@ public class TabConstants {
 		public static final String RAW_PACKET_OUT = "Packet reading (out)";
 		
 		public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
-		public static final String UPDATING = "Updating visuals";
 		
 		public static final String V1_8_0_BUG_COMPENSATION = "Compensating for 1.8.0 bugs";
 		public static final String REFRESHING_NAMETAG_VISIBILITY = "Refreshing nametag visibility";
