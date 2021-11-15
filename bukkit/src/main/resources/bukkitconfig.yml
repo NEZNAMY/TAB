@@ -10,7 +10,7 @@ scoreboard-teams:
   sorting-types:
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
     - "PLACEHOLDER_A_TO_Z:%player%"
-  case-sentitive-sorting: true
+  case-sensitive-sorting: true
   disable-in-worlds:
     - disabledworld
   unlimited-nametag-mode:
