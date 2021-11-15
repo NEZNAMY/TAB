@@ -30,6 +30,6 @@ sonarqube {
     properties {
         property("sonar.projectKey", "NEZNAMY_TAB")
         property("sonar.moduleKey", project.name)
-//        property("sonar.organization", "neznamy")
+        property("sonar.organization", "neznamy")
     }
 }
