@@ -12,13 +12,15 @@
 
     <repositories>
 
-        <!-- Krypton API -->
+        <!-- Krypton API & Server -->
         <repository>
-            <id>krypton-repo</id>
+            <id>krypton-releases</id>
             <url>https://repo.kryptonmc.org/releases</url>
         </repository>
-
-        <!-- For Krypton server -->
+        <repository>
+            <id>krypton-snapshots</id>
+            <url>https://repo.kryptonmc.org/snapshots</url>
+        </repository>
         <repository>
             <id>jitpack</id>
             <url>https://jitpack.io</url>
@@ -35,11 +37,6 @@
             <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
-
-		<repository>
-			<id>krypton-snapshots</id>
-			<url>https://repo.kryptonmc.org/snapshots</url>
-		</repository>
 
     </repositories>
 
@@ -103,6 +100,7 @@
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <finalName>TAB-Krypton-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -136,11 +134,45 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
+                    <jvmTarget>16</jvmTarget>
                     <args>
                         <arg>-Xjvm-default=enable</arg>
                     </args>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <artifactSet>
+                        <includes>
+                            <include>com.googlecode.json-simple:json-simple</include>
+                            <include>com.github.NEZNAMY:YamlAssist</include>
+                            <include>org.bstats:*</include>
+                            <include>me.neznamy:*</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>me.neznamy.tab.libs.org.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.json.simple</pattern>
+                            <shadedPattern>me.neznamy.tab.libs.org.json.simple</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
