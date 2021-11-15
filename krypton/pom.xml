@@ -36,6 +36,11 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
 
+		<repository>
+			<id>krypton-snapshots</id>
+			<url>https://repo.kryptonmc.org/snapshots</url>
+		</repository>
+
     </repositories>
 
     <dependencies>
