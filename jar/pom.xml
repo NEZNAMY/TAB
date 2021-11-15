@@ -66,11 +66,6 @@
 		</dependency>
 		<dependency>
 			<groupId>me.neznamy</groupId>
-			<artifactId>krypton</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>me.neznamy</groupId>
 			<artifactId>shared</artifactId>
 			<version>${project.version}</version>
 			<exclusions>
@@ -91,4 +86,8 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 </project>
