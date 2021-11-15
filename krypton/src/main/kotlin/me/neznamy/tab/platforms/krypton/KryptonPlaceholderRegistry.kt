@@ -20,7 +20,7 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
         manager.registerPlayerPlaceholder("%health%", 100) { ceil((it.player as Player).health) }
 
         if (plugin.server.pluginManager.isLoaded("spark")) {
-            val provider = plugin.server.servicesManager.provide<Spark>()
+            val provider = plugin.server.servicesManager.provide(Spark::class.java)
             val spark = provider?.service
             if (spark != null) {
                 // TPS
