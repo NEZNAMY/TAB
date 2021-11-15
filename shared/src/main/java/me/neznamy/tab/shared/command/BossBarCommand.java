@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.command;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab bossbar" subcommand
@@ -27,7 +28,7 @@ public class BossBarCommand extends SubCommand {
 			sendMessage(sender, getMessages().getCommandOnlyFromGame());
 			return;
 		}
-		if (sender.hasPermission("tab.togglebar")) {
+		if (sender.hasPermission(TabConstants.Permission.COMMAND_BOSSBAR_TOGGLE)) {
 			bossbar.toggleBossBar(sender, true);
 		} else {
 			sender.sendMessage(getMessages().getNoPermission(), true);

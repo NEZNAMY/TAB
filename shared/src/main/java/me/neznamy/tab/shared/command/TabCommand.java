@@ -11,6 +11,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * The core command handler
@@ -72,7 +73,7 @@ public class TabCommand extends SubCommand {
 	 * @param sender - player who ran command or null if from console
 	 */
 	private void help(TabPlayer sender){
-		if ((sender == null || sender.hasPermission("tab.admin"))) {
+		if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {
 			if (sender != null) {
 				IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
 				component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's page")));
@@ -107,7 +108,7 @@ public class TabCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (!hasPermission(sender, "tab.tabcomplete")) return new ArrayList<>();
+		if (!hasPermission(sender, TabConstants.Permission.COMMAND_AUTOCOMPLETE)) return new ArrayList<>();
 		return super.complete(sender, arguments);
 	}
 }

@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
 
 /**
@@ -19,7 +20,7 @@ public class AnnounceBarCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public AnnounceBarCommand() {
-		super("bar", "tab.announce.bar");
+		super("bar", TabConstants.Permission.COMMAND_BOSSBAR_ANNOUNCE);
 	}
 
 	@Override

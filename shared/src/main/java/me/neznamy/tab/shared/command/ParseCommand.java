@@ -9,6 +9,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab parse <player> <placeholder>" subcommand
@@ -19,7 +20,7 @@ public class ParseCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public ParseCommand() {
-		super("parse", "tab.parse");
+		super("parse", TabConstants.Permission.COMMAND_PARSE);
 	}
 
 	@Override

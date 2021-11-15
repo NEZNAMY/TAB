@@ -74,4 +74,37 @@ public class TabConstants {
 		
 		private PacketCategory() {}
 	}
+	
+	public static class Permission {
+		
+		public static final String COMMAND_ALL = "tab.admin";
+		public static final String COMMAND_RELOAD = "tab.reload";
+		public static final String COMMAND_BOSSBAR_ANNOUNCE = "tab.announce.bar";
+		public static final String COMMAND_BOSSBAR_TOGGLE = "tab.bossbar.toggle";
+		public static final String COMMAND_BOSSBAR_SEND = "tab.send.bar";
+		public static final String COMMAND_CPU = "tab.cpu";
+		public static final String COMMAND_DEBUG = "tab.debug";
+		public static final String COMMAND_NTPREVIEW = "tab.ntpreview";
+		public static final String COMMAND_PARSE = "tab.parse";
+		public static final String COMMAND_SCOREBOARD_ANNOUNCE = "tab.announce.scoreboard";
+		public static final String COMMAND_SCOREBOARD_TOGGLE = "tab.scoreboard.toggle";
+		public static final String COMMAND_SCOREBOARD_TOGGLE_OTHER = "tab.scoreboard.toggle.other";
+		public static final String COMMAND_SCOREBOARD_SHOW = "tab.scoreboard.show";
+		public static final String COMMAND_SCOREBOARD_SHOW_OTHER = "tab.scoreboard.show.other";
+		public static final String COMMAND_SETCOLLISION = "tab.setcollision";
+		public static final String COMMAND_AUTOCOMPLETE = "tab.tabcomplete";
+		public static final String COMMAND_DATA_REMOVE = "tab.remove";
+		public static final String COMMAND_PROPERTY_CHANGE_PREFIX = "tab.change.";
+		public static final String COMMAND_WIDTH = "tab.width";
+		
+		public static final String STAFF = "tab.staff";
+		
+		public static final String PER_WORLD_PLAYERLIST_BYPASS = "tab.bypass";
+		public static final String GLOBAL_PLAYERLIST_SEE_VANISHED = "tab.seevanished";
+		public static final String SPECTATOR_BYPASS = "tab.spectatorbypass";
+		
+		public static final String TEST_PERMISSION = "tab.testpermission";
+		
+		public static final String GROUP_PREFIX = "tab.group.";
+	}
 }

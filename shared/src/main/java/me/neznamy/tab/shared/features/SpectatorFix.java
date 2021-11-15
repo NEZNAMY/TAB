@@ -10,6 +10,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Cancelling gamemode change packet to spectator gamemode to avoid players being moved on
@@ -28,7 +29,7 @@ public class SpectatorFix extends TabFeature {
 	
 	@Override
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (receiver.hasPermission("tab.spectatorbypass")) return;
+		if (receiver.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			if (playerInfoData.getGameMode() == EnumGamemode.SPECTATOR) {
@@ -50,7 +51,7 @@ public class SpectatorFix extends TabFeature {
 	
 	private void updateAll(boolean realGamemode) {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (p.hasPermission("tab.spectatorbypass")) continue;
+			if (p.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
 				if (p == target) continue;

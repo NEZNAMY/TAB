@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab group" subcommand
@@ -28,7 +29,7 @@ public class GroupCommand extends PropertyCommand {
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 		if ("remove".equals(type)) {
-			if (hasPermission(sender, "tab.remove")) {
+			if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
 				TAB.getInstance().getConfiguration().getGroups().remove(group);
 				for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
 					if (pl.getGroup().equals(group) || "_DEFAULT_".equals(group)){
@@ -43,7 +44,7 @@ public class GroupCommand extends PropertyCommand {
 		}
 		for (String property : getAllProperties()) {
 			if (type.equals(property)) {
-				if (hasPermission(sender, "tab.change." + property)) {
+				if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
 					saveGroup(sender, group, type, value);
 					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
 						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());

@@ -11,6 +11,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
@@ -23,7 +24,7 @@ public class DebugCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public DebugCommand() {
-		super("debug", "tab.debug");
+		super("debug", TabConstants.Permission.COMMAND_DEBUG);
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.RedisSupport;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerlist;
@@ -63,20 +64,20 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%online%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (!all.isVanished() || p.hasPermission("tab.seevanished")) count++;
+				if (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) count++;
 			}
 			for (RedisPlayer all : redisPlayers.values()){
-				if (!all.isVanished() || p.hasPermission("tab.seevanished")) count++;
+				if (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) count++;
 			}
 			return count;
 		});
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%staffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (all.hasPermission("tab.staff") && (!all.isVanished() || p.hasPermission("tab.seevanished"))) count++;
+				if (all.hasPermission(TabConstants.Permission.STAFF) && (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED))) count++;
 			}
 			for (RedisPlayer all : redisPlayers.values()){
-				if (all.isStaff() && (!all.isVanished() || p.hasPermission("tab.seevanished"))) count++;
+				if (all.isStaff() && (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED))) count++;
 			}
 			return count;
 		});
@@ -247,7 +248,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	}
 	
 	private boolean shouldSee(TabPlayer viewer, String viewerServer, String server, boolean targetVanished) {
-		if (targetVanished && !viewer.hasPermission("tab.seevanished")) return false;
+		if (targetVanished && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
 		if (global != null) {
 			if (global.getSpyServers().contains(viewerServer)) return true;
 			return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));

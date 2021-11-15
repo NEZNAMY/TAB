@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
@@ -37,7 +38,7 @@ public class Permissions extends SortingType {
 			if (p.hasPermission(permission)) {
 				chars = sortedGroups.get(permission.toLowerCase());
 				p.setTeamNameNote("Highest sorting permission: &e" + permission + " &a(#" + Integer.parseInt(chars) + " in list). &r");
-				if (p.hasPermission("random.permission")) {
+				if (p.hasPermission(TabConstants.Permission.TEST_PERMISSION)) {
 					p.setTeamNameNote(p.getTeamNameNote() + "&cThis user appears to have all permissions. Is he OP? &r");
 				}
 				break;

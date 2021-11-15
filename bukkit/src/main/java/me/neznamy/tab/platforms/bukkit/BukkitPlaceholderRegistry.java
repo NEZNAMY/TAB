@@ -18,6 +18,7 @@ import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import net.milkbowl.vault.chat.Chat;
 
@@ -134,14 +135,14 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder("%staffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				if (all.hasPermission(TabConstants.Permission.STAFF) && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
 		});
 		manager.registerPlayerPlaceholder("%nonstaffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (!all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				if (!all.hasPermission(TabConstants.Permission.STAFF) && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
 		});

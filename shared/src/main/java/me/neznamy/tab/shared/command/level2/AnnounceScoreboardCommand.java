@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
 
 /**
@@ -19,7 +20,7 @@ public class AnnounceScoreboardCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public AnnounceScoreboardCommand() {
-		super("scoreboard", "tab.announce.scoreboard");
+		super("scoreboard", TabConstants.Permission.COMMAND_SCOREBOARD_ANNOUNCE);
 	}
 
 	@Override

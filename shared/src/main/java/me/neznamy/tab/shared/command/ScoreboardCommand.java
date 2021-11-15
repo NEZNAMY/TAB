@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
 /**
@@ -60,14 +61,14 @@ public class ScoreboardCommand extends SubCommand {
 	private void toggle(TabPlayer sender) {
 		if (sender == null) {
 			sendMessage(sender, getMessages().getCommandOnlyFromGame());
+			return;
+		}
+		if (sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE)) {
+			ScoreboardManagerImpl scoreboard = getScoreboardManager();
+			if (scoreboard.getOtherPluginScoreboards().containsKey(sender)) return; //not overriding other plugins
+			scoreboard.toggleScoreboard(sender, true);
 		} else {
-			if (hasPermission(sender, "tab.togglescoreboard")) {
-				ScoreboardManagerImpl scoreboard = getScoreboardManager();
-				if (scoreboard.getOtherPluginScoreboards().containsKey(sender)) return; //not overriding other plugins
-				scoreboard.toggleScoreboard(sender, true);
-			} else {
-				sendMessage(sender, getMessages().getNoPermission());
-			}
+			sender.sendMessage(getMessages().getNoPermission(), true);
 		}
 	}
 	
@@ -75,18 +76,18 @@ public class ScoreboardCommand extends SubCommand {
 		ScoreboardManagerImpl scoreboard = getScoreboardManager();
 		Scoreboard sb = scoreboard.getRegisteredScoreboards().get(args[1]);
 		if (sb == null) {
-			sendMessage(sender, "&cNo scoreboard found with name \"" + args[1] + "\"");
+			sendMessage(sender, getMessages().getScoreboardNotFound(args[1]));
 			return;
 		}
 		TabPlayer target;
 		if (args.length == 2) {
-			if (!sender.hasPermission("tab.scoreboard.show")) {
+			if (!sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
 			target = sender;
 		} else {
-			if (!sender.hasPermission("tab.scoreboard.show.other")) {
+			if (!sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
@@ -102,7 +103,7 @@ public class ScoreboardCommand extends SubCommand {
 	private TabPlayer getTarget(TabPlayer sender, String[] args) {
 		TabPlayer target = sender;
 		if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
-			if (hasPermission(sender, "tab.togglescoreboard.other")) {
+			if (hasPermission(sender, TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE_OTHER)) {
 				target = TAB.getInstance().getPlayer(args[1]);
 			} else {
 				sendMessage(sender, getMessages().getNoPermission());

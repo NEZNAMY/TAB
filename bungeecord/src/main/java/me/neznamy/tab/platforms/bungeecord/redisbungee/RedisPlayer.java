@@ -16,6 +16,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -99,7 +100,7 @@ public class RedisPlayer {
 		}
 		json.put("teamname", p.getTeamName());
 		json.put("vanished", p.isVanished());
-		json.put("staff", p.hasPermission("tab.staff"));
+		json.put("staff", p.hasPermission(TabConstants.Permission.STAFF));
 		String[][] skin = (String[][]) p.getSkin();
 		if (skin.length > 0) {
 			json.put("skin-value", skin[0][1]);

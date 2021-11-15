@@ -7,6 +7,7 @@ import java.util.List;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 public class SetCollisionCommand extends SubCommand {
 
@@ -14,7 +15,7 @@ public class SetCollisionCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public SetCollisionCommand() {
-		super("setcollision", "tab.setcollision");
+		super("setcollision", TabConstants.Permission.COMMAND_SETCOLLISION);
 	}
 
 	@Override

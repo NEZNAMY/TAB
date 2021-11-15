@@ -54,7 +54,7 @@ public class GlobalPlayerlist extends TabFeature {
 
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (displayed.isVanished() && !viewer.hasPermission("tab.seevanished")) return false;
+		if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
 		if (spyServers.contains(viewer.getServer())) return true;
 		return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
 	}

@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab width" subcommand
@@ -18,7 +19,7 @@ public class WidthCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public WidthCommand() {
-		super("width", "tab.width");
+		super("width", TabConstants.Permission.COMMAND_WIDTH);
 	}
 
 	@Override

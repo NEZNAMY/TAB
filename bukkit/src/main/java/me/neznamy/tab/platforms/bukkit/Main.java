@@ -22,6 +22,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Main class for Bukkit platform
@@ -160,7 +161,7 @@ public class Main extends JavaPlugin {
 		@Override
 		public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
-				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
 					sender.sendMessage(EnumChatFormat.color(message));
 				}
 			} else {

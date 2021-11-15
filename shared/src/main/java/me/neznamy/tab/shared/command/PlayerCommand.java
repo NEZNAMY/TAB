@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab player" subcommand
@@ -29,7 +30,7 @@ public class PlayerCommand extends PropertyCommand {
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 		if ("remove".equals(type)) {
-			if (hasPermission(sender, "tab.remove")) {
+			if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
 				TAB.getInstance().getConfiguration().getUsers().remove(player);
 				TabPlayer pl = TAB.getInstance().getPlayer(player);
 				if (pl != null) {
@@ -43,7 +44,7 @@ public class PlayerCommand extends PropertyCommand {
 		}
 		for (String property : getAllProperties()) {
 			if (type.equals(property)) {
-				if (hasPermission(sender, "tab.change." + property)) {
+				if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
 					savePlayer(sender, player, type, value);
 					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
 						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());

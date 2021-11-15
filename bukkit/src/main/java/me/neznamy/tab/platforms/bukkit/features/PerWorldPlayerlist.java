@@ -96,7 +96,7 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	
 	private boolean shouldSee(Player viewer, Player target) {
 		if (target == viewer) return true;
-		if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.getWorld().getName())) return true;
+		if ((allowBypass && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || ignoredWorlds.contains(viewer.getWorld().getName())) return true;
 		String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world
 		String targetWorldGroup = target.getWorld().getName() + "-default";
 		for (Entry<String, List<String>> group : sharedWorlds.entrySet()) {

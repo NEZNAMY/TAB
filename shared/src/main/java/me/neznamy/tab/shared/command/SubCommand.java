@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.MessageFile;
 /**
  * Abstract class representing a subcommand of "/tab" command
@@ -76,7 +77,7 @@ public abstract class SubCommand {
 	public boolean hasPermission(TabPlayer sender, String permission) {
 		if (permission == null) return true; //no permission required
 		if (sender == null) return true; //console
-		if (sender.hasPermission("tab.admin")) return true;
+		if (sender.hasPermission(TabConstants.Permission.COMMAND_ALL)) return true;
 		return sender.hasPermission(permission);
 	}
 	
