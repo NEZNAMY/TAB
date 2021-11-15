@@ -351,13 +351,11 @@ public class Configs {
 
 		finalCfg.set("yellow-number-in-tablist.enabled", !config.getString("yellow-number-in-tablist","%ping%").equals(""));
 		finalCfg.set("yellow-number-in-tablist.value", config.getString("yellow-number-in-tablist","%ping%"));
-		finalCfg.set("yellow-number-in-tablist.anti-override", config.getBoolean("anti-override.scoreboard-objectives",true));
 		finalCfg.set("yellow-number-in-tablist.disable-in-worlds", config.getStringList("disable-features-in-worlds.yellow-number",disabledWorld));
 		if (isProxy)
 			finalCfg.set("yellow-number.disable-in-servers",config.getStringList("disable-features-in-servers.yellow-number",disabledServer));
 
 		finalCfg.set("belowname-objective", config.getConfigurationSection("classic-vanilla-belowname"));
-		finalCfg.set("belowname-objective.anti-override", config.getBoolean("anti-override.scoreboard-objectives",true));
 		finalCfg.set("belowname-objective.disable-in-worlds", config.getStringList("disable-features-in-worlds.belowname",disabledWorld));
 		if (isProxy)
 			finalCfg.set("belowname-objective.disable-in-servers",config.getStringList("disable-features-in-servers.belowname",disabledServer));
