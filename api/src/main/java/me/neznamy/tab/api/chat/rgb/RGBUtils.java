@@ -11,6 +11,7 @@ import me.neznamy.tab.api.chat.rgb.format.CMIFormat;
 import me.neznamy.tab.api.chat.rgb.format.HtmlFormat;
 import me.neznamy.tab.api.chat.rgb.format.RGBFormatter;
 import me.neznamy.tab.api.chat.rgb.format.UnnamedFormat1;
+import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
@@ -42,9 +43,7 @@ public class RGBUtils {
 		};
 		gradients = new GradientPattern[] {
 				//{#RRGGBB>}text{#RRGGBB<}
-				new CommonGradient(Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-						Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-						"{#", 9, 2, 10, 8),
+				new CMIGradient(),
 				//<#RRGGBB>Text</#RRGGBB>
 				new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>"), 
 						Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>"), 
