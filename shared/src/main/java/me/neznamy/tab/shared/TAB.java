@@ -307,7 +307,7 @@ public class TAB extends TabAPI {
 	@Override
 	public TabPlayer getPlayer(String name) {
 		for (TabPlayer p : data.values()) {
-			if (p.getName().equals(name)) return p;
+			if (p.getName().equalsIgnoreCase(name)) return p;
 		}
 		return null;
 	}
