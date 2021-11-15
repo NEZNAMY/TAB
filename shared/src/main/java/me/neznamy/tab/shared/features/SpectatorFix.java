@@ -38,6 +38,18 @@ public class SpectatorFix extends TabFeature {
 			}
 		}
 	}
+	
+	@Override
+	public void onJoin(TabPlayer p) {
+		if (p.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) return;
+		List<PlayerInfoData> list = new ArrayList<>();
+		for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+			if (p == target || target.getGamemode() != 3) continue;
+			list.add(new PlayerInfoData(target.getUniqueId(), EnumGamemode.CREATIVE));
+		}
+		if (list.isEmpty()) return;
+		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), this);
+	}
 
 	@Override
 	public void load() {
