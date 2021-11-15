@@ -180,10 +180,10 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (armorStandManager == null) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		if (previewingNametag) {
 			armorStandManager.destroy(this);
-			sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("preview-off"), true);
+			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
 		} else {
 			armorStandManager.spawn(this);
-			sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("preview-on"), true);
+			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
 		}
 		previewingNametag = !previewingNametag;
 	}

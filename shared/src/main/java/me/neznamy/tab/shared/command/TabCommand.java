@@ -57,7 +57,7 @@ public class TabCommand extends SubCommand {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				} else {
-					sendMessage(sender, getTranslation("no_permission"));
+					sendMessage(sender, getMessages().getNoPermission());
 				}
 			} else {
 				help(sender);

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.config.MessageFile;
 /**
  * Abstract class representing a subcommand of "/tab" command
  */
@@ -163,14 +164,9 @@ public abstract class SubCommand {
 		}
 		return value;
 	}
-	
-	/**
-	 * Returns message with given key
-	 * @param key - message key
-	 * @return translation from file
-	 */
-	public String getTranslation(String key) {
-		return TAB.getInstance().getConfiguration().getTranslation().getString(key);
+
+	public MessageFile getMessages() {
+		return TAB.getInstance().getConfiguration().getMessages();
 	}
 	
 	/**

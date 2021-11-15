@@ -59,14 +59,14 @@ public class ScoreboardCommand extends SubCommand {
 
 	private void toggle(TabPlayer sender) {
 		if (sender == null) {
-			sendMessage(sender, "Toggle command must be ran from the game");
+			sendMessage(sender, getMessages().getCommandOnlyFromGame());
 		} else {
 			if (hasPermission(sender, "tab.togglescoreboard")) {
 				ScoreboardManagerImpl scoreboard = getScoreboardManager();
 				if (scoreboard.getOtherPluginScoreboards().containsKey(sender)) return; //not overriding other plugins
 				scoreboard.toggleScoreboard(sender, true);
 			} else {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 			}
 		}
 	}
@@ -81,18 +81,18 @@ public class ScoreboardCommand extends SubCommand {
 		TabPlayer target;
 		if (args.length == 2) {
 			if (!sender.hasPermission("tab.scoreboard.show")) {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
 			target = sender;
 		} else {
 			if (!sender.hasPermission("tab.scoreboard.show.other")) {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
 			target = TAB.getInstance().getPlayer(args[2]);
 			if (target == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
+				sendMessage(sender, getMessages().getPlayerNotFound(args[2]));
 				return;
 			}
 		}
@@ -105,7 +105,7 @@ public class ScoreboardCommand extends SubCommand {
 			if (hasPermission(sender, "tab.togglescoreboard.other")) {
 				target = TAB.getInstance().getPlayer(args[1]);
 			} else {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 			}
 		}
 		return target;

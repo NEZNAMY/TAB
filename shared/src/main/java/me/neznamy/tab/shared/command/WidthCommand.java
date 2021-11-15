@@ -24,7 +24,7 @@ public class WidthCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (sender == null) {
-			sendMessage(sender, "&cThis command must be ran from the game");
+			sendMessage(sender, getMessages().getCommandOnlyFromGame());
 			return;
 		}
 		if (args.length == 1) {

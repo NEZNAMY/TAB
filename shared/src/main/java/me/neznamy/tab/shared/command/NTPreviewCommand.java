@@ -21,10 +21,10 @@ public class NTPreviewCommand extends SubCommand{
 			if (sender != null) {
 				sender.toggleNametagPreview();
 			} else {
-				sendMessage(sender, "&c[TAB] This command must be ran from the game");
+				sendMessage(sender, getMessages().getCommandOnlyFromGame());
 			}
 		} else {
-			sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
+			sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
 		}
 	}
 }

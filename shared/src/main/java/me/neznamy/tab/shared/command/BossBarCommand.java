@@ -20,17 +20,17 @@ public class BossBarCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		BossBarManager bossbar = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (bossbar == null) {
-			sendMessage(sender, "&cBossbar feature is not enabled, therefore toggle command cannot be used.");
+			sendMessage(sender, getMessages().getBossBarNotEnabled());
 			return;
 		}
 		if (sender == null) {
-			sendMessage(sender, "&cThis command must be ran from the game");
+			sendMessage(sender, getMessages().getCommandOnlyFromGame());
 			return;
 		}
 		if (sender.hasPermission("tab.togglebar")) {
 			bossbar.toggleBossBar(sender, true);
 		} else {
-			sender.sendMessage(getTranslation("no_permission"), true);
+			sender.sendMessage(getMessages().getNoPermission(), true);
 		}
 	}
 }

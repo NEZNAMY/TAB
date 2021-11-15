@@ -25,7 +25,7 @@ public class ParseCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length < 2) {
-			sendMessage(sender, "Usage: /tab parse <player> <placeholder>");
+			sendMessage(sender, getMessages().getParseCommandUsage());
 			return;
 		}
 		TabPlayer target;
@@ -34,7 +34,7 @@ public class ParseCommand extends SubCommand {
 		} else {
 			target = TAB.getInstance().getPlayer(args[0]);
 			if (target == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
+				sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 				return;
 			}
 		}

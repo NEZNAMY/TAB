@@ -35,9 +35,9 @@ public class PlayerCommand extends PropertyCommand {
 				if (pl != null) {
 					pl.forceRefresh();
 				}
-				sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", player));
+				sendMessage(sender, getMessages().getPlayerDataRemoved(player));
 			} else {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 			}
 			return;
 		}
@@ -46,10 +46,10 @@ public class PlayerCommand extends PropertyCommand {
 				if (hasPermission(sender, "tab.change." + property)) {
 					savePlayer(sender, player, type, value);
 					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
-						sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
+						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
 					}
 				} else {
-					sendMessage(sender, getTranslation("no_permission"));
+					sendMessage(sender, getMessages().getNoPermission());
 				}
 				return;
 			}
@@ -66,9 +66,9 @@ public class PlayerCommand extends PropertyCommand {
 	 */
 	public void savePlayer(TabPlayer sender, String player, String type, String value){
 		if (value.length() > 0){
-			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player).replace("%category%", "player"));
+			sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
 		} else {
-			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player).replace("%category%", "player"));
+			sendMessage(sender, getMessages().getPlayerValueRemoved(type, player));
 		}
 		String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, null, null);
 		if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;

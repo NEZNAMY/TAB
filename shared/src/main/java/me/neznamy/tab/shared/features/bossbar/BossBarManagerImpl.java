@@ -60,8 +60,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-worlds"));
 		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
 		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
-		toggleOnMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-on");
-		toggleOffMessage = TAB.getInstance().getConfiguration().getTranslation().getString("bossbar-toggle-off");
+		toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
+		toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 		for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
 			BossBarLine line = loadFromConfig(bar.toString());
 			lines.put(bar.toString(), line);

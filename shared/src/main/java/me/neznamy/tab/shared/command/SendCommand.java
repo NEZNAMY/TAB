@@ -27,15 +27,13 @@ public class SendCommand extends SubCommand {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				} else {
-					sendMessage(sender, getTranslation("no_permission"));
+					sendMessage(sender, getMessages().getNoPermission());
 				}
 			} else {
-				sendMessage(sender, "Usage: /tab send <type> <player> <bar name> <length>");
-				sendMessage(sender, "Currently supported types: &lbar");
+				sendMessage(sender, getMessages().getSendCommandUsage());
 			}
 		} else {
-			sendMessage(sender, "Usage: /tab send <type> <player> <bar name> <length>");
-			sendMessage(sender, "Currently supported types: &lbar");
+			sendMessage(sender, getMessages().getSendCommandUsage());
 		}
 	}
 }

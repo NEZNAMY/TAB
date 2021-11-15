@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.command.SubCommand;
 /**
  * Handler for "/tab announce scoreboard" subcommand
  */
-public class AnnounceScoreboardCommand extends SubCommand{
+public class AnnounceScoreboardCommand extends SubCommand {
 
 	/**
 	 * Constructs new instance
@@ -26,11 +26,11 @@ public class AnnounceScoreboardCommand extends SubCommand{
 	public void execute(TabPlayer sender, String[] args) {
 		ScoreboardManager feature = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (feature == null) {
-			sendMessage(sender, "&4This command requires the scoreboard feature to be enabled.");
+			sendMessage(sender, getMessages().getScoreboardFeatureNotEnabled());
 			return;
 		}
 		if (args.length != 2) {
-			sendMessage(sender, "Usage: /tab announce scoreboard <scoreboard name> <length>");
+			sendMessage(sender, getMessages().getScoreboardAnnounceCommandUsage());
 			return;
 		}
 		String scoreboard = args[0];
@@ -38,12 +38,12 @@ public class AnnounceScoreboardCommand extends SubCommand{
 		try {
 			duration = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
-			sendMessage(sender, args[1] + " is not a number!");
+			sendMessage(sender, getMessages().getInvalidNumber(args[1]));
 			return;
 		}
 		Scoreboard sb = feature.getRegisteredScoreboards().get(scoreboard);
 		if (sb == null) {
-			sendMessage(sender, "Scoreboard not found");
+			sendMessage(sender, getMessages().getScoreboardNotFound(scoreboard));
 			return;
 		}
 		feature.announceScoreboard(sb.getName(), duration);

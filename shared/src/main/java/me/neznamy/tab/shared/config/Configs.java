@@ -43,8 +43,8 @@ public class Configs {
 	//animations.yml file
 	private ConfigurationFile animation;
 
-	//translation.yml file
-	private ConfigurationFile translation;
+	//messages.yml file
+	private MessageFile messages;
 
 	//default reload message in case plugin did not load translation file due to an error
 	private String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
@@ -80,9 +80,9 @@ public class Configs {
 		ClassLoader loader = Configs.class.getClassLoader();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
-		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
+		messages = new MessageFile();
 		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
-		reloadFailed = getTranslation().getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
+		reloadFailed = messages.getReloadFailBrokenFile();
 	}
 
 	/**
@@ -143,8 +143,8 @@ public class Configs {
 		return unregisterBeforeRegister;
 	}
 
-	public ConfigurationFile getTranslation() {
-		return translation;
+	public MessageFile getMessages() {
+		return messages;
 	}
 
 	public ConfigurationFile getConfig() {
@@ -244,7 +244,7 @@ public class Configs {
 	}
 
 	public boolean checkFiles(File file, Map<String,ConfigurationFile> yamls) {
-		if (!file.getName().equals("config.yml") && !file.getName().equals("premiumconfig.yml") && !file.getName().equals("bossbar.yml"))
+		if (!file.getName().equals("config.yml") && !file.getName().equals("premiumconfig.yml") && !file.getName().equals("bossbar.yml") && !file.getName().equals("translation.yml"))
 			return true;
 
 		try {

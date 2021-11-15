@@ -32,7 +32,7 @@ public class DebugCommand extends SubCommand {
 		if (args.length > 0) {
 			analyzed = TAB.getInstance().getPlayer(args[0]);
 			if (analyzed == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
+				sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 				return;
 			}
 		}

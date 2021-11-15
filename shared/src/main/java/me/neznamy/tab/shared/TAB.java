@@ -155,7 +155,7 @@ public class TAB extends TabAPI {
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();
 			disabled = false;
-			return configuration.getTranslation().getString("reloaded");
+			return configuration.getMessages().getReloadSuccess();
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;

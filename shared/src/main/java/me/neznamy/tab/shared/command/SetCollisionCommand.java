@@ -21,19 +21,19 @@ public class SetCollisionCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		TeamManager feature = TAB.getInstance().getTeamManager();
 		if (feature == null) {
-			sendMessage(sender, "This command requires nametag feature enabled");
+			sendMessage(sender, getMessages().getTeamFeatureRequired());
 			return;
 		}
 		if (args.length == 2) {
 			TabPlayer target = TAB.getInstance().getPlayer(args[0]);
 			if (target == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
+				sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 				return;
 			}
 			feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
 			feature.updateTeamData(target);
 		} else {
-			sendMessage(sender, "&cUsage: /tab setcollision <player> <true/false>");
+			sendMessage(sender, getMessages().getCollisionCommandUsage());
 		}
 	}
 	
