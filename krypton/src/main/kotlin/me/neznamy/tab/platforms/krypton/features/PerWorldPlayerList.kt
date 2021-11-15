@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.krypton.features
 
 import me.neznamy.tab.api.TabFeature
 import me.neznamy.tab.platforms.krypton.Main
-import me.neznamy.tab.shared.CpuConstants
+import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.TAB
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.Listener
@@ -41,7 +41,7 @@ class PerWorldPlayerList(private val plugin: Main) : TabFeature("Per world playe
     fun onJoin(event: JoinEvent) {
         val time = System.nanoTime()
         checkPlayer(event.player)
-        TAB.getInstance().cpuManager.addTime(featureName, CpuConstants.UsageCategory.PLAYER_JOIN, System.nanoTime() - time)
+        TAB.getInstance().cpuManager.addTime(featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime() - time)
     }
 
     override fun load() {

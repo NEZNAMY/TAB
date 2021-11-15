@@ -5,7 +5,7 @@ import me.neznamy.tab.api.Property
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.api.chat.IChatBaseComponent
-import me.neznamy.tab.shared.CpuConstants
+import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.EntityTypes
@@ -111,7 +111,7 @@ class KryptonArmorStand(
                     50,
                     "compensating for 1.8.0 bugs",
                     manager,
-                    CpuConstants.UsageCategory.V1_8_0_BUG_COMPENSATION,
+                    TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION,
                     spawn
                 )
                 return

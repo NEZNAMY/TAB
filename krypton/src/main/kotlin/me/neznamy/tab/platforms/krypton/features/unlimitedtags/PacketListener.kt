@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 
 import me.neznamy.tab.api.TabFeature
 import me.neznamy.tab.api.TabPlayer
-import me.neznamy.tab.shared.CpuConstants
+import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.TAB
 import org.kryptonmc.krypton.packet.EntityPacket
 import org.kryptonmc.krypton.packet.out.play.PacketOutDestroyEntities
@@ -33,7 +33,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntityMove(receiver: TabPlayer, entityId: Int) {
         val player = nameTagX.entityIdMap[entityId]
         if (player != null) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, CpuConstants.UsageCategory.PACKET_ENTITY_MOVE) {
+            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE) {
                 player.armorStandManager.teleport(receiver)
             }
         }
@@ -52,7 +52,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntitySpawn(receiver: TabPlayer, entityId: Int) {
         val spawnedPlayer = nameTagX.entityIdMap[entityId]
         if (spawnedPlayer != null && spawnedPlayer.isLoaded) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntitySpawn", nameTagX, CpuConstants.UsageCategory.PACKET_ENTITY_SPAWN) {
+            TAB.getInstance().cpuManager.runMeasuredTask("processing EntitySpawn", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN) {
                 spawnedPlayer.armorStandManager.spawn(receiver)
             }
         }
@@ -61,7 +61,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntityDestroy(receiver: TabPlayer, entity: Int) {
         val despawnedPlayer = nameTagX.entityIdMap[entity]
         if (despawnedPlayer != null && despawnedPlayer.isLoaded) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityDestroy", nameTagX, CpuConstants.UsageCategory.PACKET_ENTITY_DESTROY) {
+            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY) {
                 despawnedPlayer.armorStandManager.destroy(receiver)
             }
         }

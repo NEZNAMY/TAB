@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 import me.neznamy.tab.api.ArmorStandManager
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.platforms.krypton.Main
-import me.neznamy.tab.shared.CpuConstants
+import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.PropertyUtils
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.features.nametags.NameTag
@@ -109,7 +109,7 @@ class NameTagX : NameTag() {
 //        playersInVehicle.remove(disconnectedPlayer)
         playerLocations.remove(disconnectedPlayer)
         playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer)
-        TAB.getInstance().cpuManager.runTaskLater(100, "processing onQuit", this, CpuConstants.UsageCategory.PLAYER_QUIT) {
+        TAB.getInstance().cpuManager.runTaskLater(100, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT) {
             disconnectedPlayer.armorStandManager.destroy()
         }
     }
@@ -167,7 +167,7 @@ class NameTagX : NameTag() {
             500,
             "refreshing nametag visibility",
             this,
-            CpuConstants.UsageCategory.REFRESHING_NAMETAG_VISIBILITY
+            TabConstants.CpuUsageCategory.REFRESHING_NAMETAG_VISIBILITY
         ) {
             TAB.getInstance().onlinePlayers.forEach {
                 if (!it.isLoaded || isPlayerDisabled(it)) return@forEach
@@ -200,7 +200,7 @@ class NameTagX : NameTag() {
             100,
             "ticking vehicles",
             this,
-            CpuConstants.UsageCategory.TICKING_VEHICLES
+            TabConstants.CpuUsageCategory.TICKING_VEHICLES
         ) {
             TAB.getInstance().onlinePlayers.forEach {
                 if (!it.isLoaded) return@forEach
