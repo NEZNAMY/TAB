@@ -466,4 +466,83 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	public boolean hasDisabledArmorStands(TabPlayer player) {
 		return playersDisabledWithAPI.contains(player);
 	}
+	
+	@Override
+	public void setPrefix(TabPlayer player, String prefix) {
+		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(prefix);
+		rebuildNametagLine(player);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void setSuffix(TabPlayer player, String suffix) {
+		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(suffix);
+		rebuildNametagLine(player);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void resetPrefix(TabPlayer player) {
+		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(null);
+		rebuildNametagLine(player);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void resetSuffix(TabPlayer player) {
+		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(null);
+		rebuildNametagLine(player);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void setName(TabPlayer player, String customname) {
+		player.getProperty(PropertyUtils.CUSTOMTAGNAME).setTemporaryValue(customname);
+		rebuildNametagLine(player);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void setLine(TabPlayer player, String line, String value) {
+		player.getProperty(line).setTemporaryValue(value);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void resetName(TabPlayer player) {
+		player.getProperty(PropertyUtils.CUSTOMTAGNAME).setTemporaryValue(null);
+		rebuildNametagLine(player);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void resetLine(TabPlayer player, String line) {
+		player.getProperty(line).setTemporaryValue(null);
+		player.forceRefresh();
+	}
+
+	@Override
+	public String getCustomName(TabPlayer player) {
+		return player.getProperty(PropertyUtils.CUSTOMTAGNAME).getTemporaryValue();
+	}
+
+	@Override
+	public String getCustomLineValue(TabPlayer player, String line) {
+		return player.getProperty(line).getTemporaryValue();
+	}
+
+	@Override
+	public String getOriginalName(TabPlayer player) {
+		return player.getProperty(PropertyUtils.CUSTOMTAGNAME).getOriginalRawValue();
+	}
+
+	@Override
+	public String getOriginalLineValue(TabPlayer player, String line) {
+		return player.getProperty(line).getOriginalRawValue();
+	}
+	
+	private void rebuildNametagLine(TabPlayer player) {
+		player.setProperty(this, PropertyUtils.NAMETAG, player.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + 
+				player.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + player.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue());
+	}
 }

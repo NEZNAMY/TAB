@@ -8,7 +8,6 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
-import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
@@ -82,39 +81,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public UUID getTablistUUID() {
 		return uniqueId;
-	}
-
-	@Override
-	public void setValueTemporarily(EnumProperty type, String value) {
-		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " temporarily to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
-		Property pr = getProperty(type.toString());
-		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
-		pr.setTemporaryValue(value);
-		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty((TabFeature) TAB.getInstance().getTeamManager(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
-		}
-		forceRefresh();
-	}
-
-	@Override
-	public String getTemporaryValue(EnumProperty type) {
-		Property pr = getProperty(type.toString());
-		return pr == null ? null : pr.getTemporaryValue();
-	}
-
-	@Override
-	public boolean hasTemporaryValue(EnumProperty type) {
-		return getTemporaryValue(type) != null;
-	}
-
-	@Override
-	public void removeTemporaryValue(EnumProperty type) {
-		setValueTemporarily(type, null);
-	}
-
-	@Override
-	public String getOriginalValue(EnumProperty type) {
-		return getProperty(type.toString()).getOriginalRawValue();
 	}
 
 	@Override

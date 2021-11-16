@@ -74,6 +74,8 @@ public abstract class TabAPI {
 	 * @return feature manager instance
 	 */
 	public abstract FeatureManager getFeatureManager();
+	
+	public abstract TablistFormatManager getTablistFormatManager();
 
 	/**
 	 * Returns server version. On proxy installation returns PROXY.

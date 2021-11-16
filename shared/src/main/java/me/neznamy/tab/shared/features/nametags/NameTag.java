@@ -325,10 +325,50 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 	
 	private String getName(TabPlayer p) {
-		NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
-		if (nick != null) {
-			return nick.getNickname(p);
-		}
-		return p.getName();
+		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
+	}
+
+	@Override
+	public void setPrefix(TabPlayer player, String prefix) {
+		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(prefix);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void setSuffix(TabPlayer player, String suffix) {
+		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(suffix);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void resetPrefix(TabPlayer player) {
+		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(null);
+		player.forceRefresh();
+	}
+
+	@Override
+	public void resetSuffix(TabPlayer player) {
+		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(null);
+		player.forceRefresh();
+	}
+
+	@Override
+	public String getCustomPrefix(TabPlayer player) {
+		return player.getProperty(PropertyUtils.TAGPREFIX).getTemporaryValue();
+	}
+
+	@Override
+	public String getCustomSuffix(TabPlayer player) {
+		return player.getProperty(PropertyUtils.TAGSUFFIX).getTemporaryValue();
+	}
+
+	@Override
+	public String getOriginalPrefix(TabPlayer player) {
+		return player.getProperty(PropertyUtils.TAGPREFIX).getOriginalRawValue();
+	}
+
+	@Override
+	public String getOriginalSuffix(TabPlayer player) {
+		return player.getProperty(PropertyUtils.TAGSUFFIX).getOriginalRawValue();
 	}
 }

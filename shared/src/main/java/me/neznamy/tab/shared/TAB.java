@@ -11,6 +11,7 @@ import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.TablistFormatManager;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
@@ -363,5 +364,10 @@ public class TAB extends TabAPI {
 	@Override
 	public void logError(String message, Throwable t) {
 		errorManager.printError(message, t);
+	}
+
+	@Override
+	public TablistFormatManager getTablistFormatManager() {
+		return (TablistFormatManager) featureManager.getFeature("playerlist");
 	}
 }
