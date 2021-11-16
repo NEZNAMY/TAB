@@ -20,6 +20,7 @@ import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.team.UnlimitedNametagManager;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.PropertyUtils;
@@ -29,7 +30,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 /**
  * The core class for unlimited nametag mode
  */
-public class NameTagX extends NameTag {
+public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	//config options
 	private boolean markerFor18x;
@@ -65,6 +66,8 @@ public class NameTagX extends NameTag {
 	private List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
 	private String[] disabledUnlimitedWorldsArray = new String[0];
 	private boolean unlimitedWorldWhitelistMode;
+	
+	private List<TabPlayer> playersDisabledWithAPI = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -254,6 +257,7 @@ public class NameTagX extends NameTag {
 		playersInVehicle.remove(disconnectedPlayer);
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
+		playersDisabledWithAPI.remove(disconnectedPlayer);
 		if (disconnectedPlayer.getArmorStandManager() != null) //player was not loaded yet
 			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 	}
@@ -405,7 +409,7 @@ public class NameTagX extends NameTag {
 	}
 
 	public boolean isPlayerDisabled(TabPlayer p) {
-		return isDisabledPlayer(p) || playersInDisabledUnlimitedWorlds.contains(p) || hasTeamHandlingPaused(p);
+		return isDisabledPlayer(p) || playersInDisabledUnlimitedWorlds.contains(p) || hasTeamHandlingPaused(p) || hasDisabledArmorStands(p);
 	}
 
 	public boolean isMarkerFor18x() {
@@ -434,5 +438,30 @@ public class NameTagX extends NameTag {
 				spawnArmorStands(player, viewer, false);
 			}
 		}
+	}
+
+	@Override
+	public void disableArmorStands(TabPlayer player) {
+		if (playersDisabledWithAPI.contains(player)) return;
+		playersDisabledWithAPI.add(player);
+		player.getArmorStandManager().destroy();
+		updateTeamData(player);
+	}
+
+	@Override
+	public void enableArmorStands(TabPlayer player) {
+		if (!playersDisabledWithAPI.contains(player)) return;
+		playersDisabledWithAPI.remove(player);
+		if (!isPlayerDisabled(player)) {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+				spawnArmorStands(player, viewer, false);
+			}
+		}
+		updateTeamData(player);
+	}
+
+	@Override
+	public boolean hasDisabledArmorStands(TabPlayer player) {
+		return playersDisabledWithAPI.contains(player);
 	}
 }
