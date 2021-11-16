@@ -258,8 +258,10 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
 		playersDisabledWithAPI.remove(disconnectedPlayer);
-		if (disconnectedPlayer.getArmorStandManager() != null) //player was not loaded yet
+		if (disconnectedPlayer.getArmorStandManager() != null) { //player was not loaded yet
+			disconnectedPlayer.getArmorStandManager().destroy();
 			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+		}
 	}
 
 	/**
