@@ -201,11 +201,20 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-		Object team;
+		Object team = nms.newScoreboardTeam.newInstance(emptyScoreboard, packet.getName());
+		String prefix = packet.getPlayerPrefix();
+		String suffix = packet.getPlayerSuffix();
+		if (clientVersion.getMinorVersion() < 13) {
+			prefix = cutTo(prefix, 16);
+			suffix = cutTo(suffix, 16);
+		}
+		((Collection<String>)nms.ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(packet.getPlayers());
+		nms.ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
+		nms.ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
 		if (nms.getMinorVersion() >= 13) {
-			team = createTeamModern(packet, clientVersion);
+			team = createTeamModern(packet, clientVersion, team, prefix, suffix);
 		} else {
-			team = createTeamLegacy(packet, clientVersion);
+			team = createTeamLegacy(packet, clientVersion, team, prefix, suffix);
 		}
 		if (nms.getMinorVersion() >= 17) {
 			switch (packet.getMethod()) {
@@ -224,6 +233,24 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			}
 		}
 		return nms.newPacketPlayOutScoreboardTeam.newInstance(team, packet.getMethod());
+	}
+	
+	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		if (prefix != null && prefix.length() > 0) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
+		if (suffix != null && suffix.length() > 0) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
+		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
+		nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
+		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
+		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+		return team;
+	}
+
+	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
+		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
+		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
+		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+		return team;
 	}
 
 	/**
@@ -363,44 +390,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			nms.PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
 			(String) nms.PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
 		);
-	}
-
-	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		String prefix = packet.getPlayerPrefix();
-		String suffix = packet.getPlayerSuffix();
-		if (clientVersion.getMinorVersion() < 13) {
-			prefix = cutTo(prefix, 16);
-			suffix = cutTo(suffix, 16);
-		}
-		Object team = nms.newScoreboardTeam.newInstance(emptyScoreboard, packet.getName());
-		((Collection<String>)nms.ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(packet.getPlayers());
-		if (prefix != null && prefix.length() > 0) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
-		if (suffix != null && suffix.length() > 0) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
-		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
-		nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
-		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
-		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
-		nms.ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
-		nms.ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
-		return team;
-	}
-
-	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-		String prefix = packet.getPlayerPrefix();
-		String suffix = packet.getPlayerSuffix();
-		if (clientVersion.getMinorVersion() < 13) {
-			prefix = cutTo(prefix, 16);
-			suffix = cutTo(suffix, 16);
-		}
-		Object team = nms.newScoreboardTeam.newInstance(emptyScoreboard, packet.getName());
-		((Collection<String>)nms.ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(packet.getPlayers());
-		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
-		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
-		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
-		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
-		nms.ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
-		nms.ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
-		return team;
 	}
 
 	/**
