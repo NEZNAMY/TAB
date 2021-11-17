@@ -62,7 +62,7 @@ public class DataWatcher {
 	public Object toNMS() throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher;
-		if (nms.getMinorVersion() >= 7) {
+		if (nms.newDataWatcher.getParameterCount() == 1) { //1.7+
 			Object[] args = new Object[] {null};
 			nmsWatcher = nms.newDataWatcher.newInstance(args);
 		} else {
