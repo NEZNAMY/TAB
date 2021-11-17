@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,8 +16,6 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import com.google.common.base.Preconditions;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabFeature;
@@ -38,7 +35,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
-	private int defaultRefresh;
+	private int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 	private Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<>();
 	private Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<>();
 	private Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<>();
@@ -148,12 +145,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	private void loadRefreshIntervals() {
-		for (Object category : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals").keySet()) {
-			if (!Arrays.asList("default-refresh-interval", "server", "player", "relational").contains(category.toString())) {
-				TAB.getInstance().getErrorManager().startupWarn("Unknown placeholder category \"" + category + "\". Valid categories are \"server\", \"player\" and \"relational\"");
-			}
-		}
-		defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 		for (Entry<Object, Object> placeholder : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server").entrySet()) {
 			serverPlaceholderRefreshIntervals.put(placeholder.getKey().toString(), TAB.getInstance().getErrorManager().parseInteger(placeholder.getValue().toString(), getDefaultRefresh(), "refresh interval of server placeholder"));
 		}
@@ -178,7 +169,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	public void registerPlaceholder(Placeholder placeholder) {
-		Preconditions.checkNotNull(placeholder, "placeholder");
+		if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).collect(Collectors.toSet()).toArray(new Placeholder[0]);
 	}

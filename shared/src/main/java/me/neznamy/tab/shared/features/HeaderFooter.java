@@ -17,14 +17,12 @@ import me.neznamy.tab.shared.TabConstants;
  */
 public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	
-	private List<Object> worldGroups = new ArrayList<>();
-	private List<Object> serverGroups = new ArrayList<>();
+	private List<Object> worldGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
+	private List<Object> serverGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
 	
 	public HeaderFooter() {
 		super("Header/Footer", TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-worlds"));
-		serverGroups.addAll(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
-		worldGroups.addAll(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
 		TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s, disabledServers=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
 	}
 	

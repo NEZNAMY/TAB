@@ -31,11 +31,12 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitArmorStand implements ArmorStand {
 
+	private static boolean alwaysVisible = TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible();
 	//entity id counter to pick unique entity IDs
 	private static int idCounter = 2000000000;
 
 	//nametag feature
-	private NameTagX manager;
+	private NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
 
 	//owner of the armor stand
 	private TabPlayer owner;
@@ -75,7 +76,6 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param staticOffset - if offset is static or not
 	 */
 	public BukkitArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
-		this.manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = (Player) owner.getPlayer();
@@ -152,7 +152,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
-			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !alwaysVisible) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
 					viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
@@ -211,7 +211,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	public boolean getVisibility() {
 		if (((BukkitTabPlayer)owner).isDisguised() || manager.getPlayersOnBoats().contains(owner)) return false;
-		if (TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) return true;
+		if (alwaysVisible) return true;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
 

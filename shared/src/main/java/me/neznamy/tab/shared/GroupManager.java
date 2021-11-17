@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,16 +22,12 @@ public class GroupManager extends TabFeature {
 	
 	private Object luckPermsSub;
 	private PermissionPlugin plugin;
-	private boolean groupsByPermissions;
-	private List<String> primaryGroupFindingList = new ArrayList<>();
+	private boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);;
+	private List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 	
 	public GroupManager(PermissionPlugin plugin) {
 		super("Permission group refreshing");
 		this.plugin = plugin;
-		groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
-		for (Object group : TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"))){
-			primaryGroupFindingList.add(group.toString());
-		}
 		if (plugin instanceof LuckPerms) {
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, TabPlayer::getGroup);
 			luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {

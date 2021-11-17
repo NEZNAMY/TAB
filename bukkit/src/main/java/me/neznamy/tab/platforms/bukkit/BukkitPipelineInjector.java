@@ -17,16 +17,13 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 public class BukkitPipelineInjector extends PipelineInjector {
 
 	//nms storage
-	private NMSStorage nms;
+	private NMSStorage nms = NMSStorage.getInstance();
 
 	/**
-	 * Constructs new instance with given parameters
-	 * @param tab - tab instance
-	 * @param nms - nms storage
+	 * Constructs new instance
 	 */
-	public BukkitPipelineInjector(NMSStorage nms){
+	public BukkitPipelineInjector(){
 		super("packet_handler");
-		this.nms = nms;
 		channelFunction = BukkitChannelDuplexHandler::new;
 	}
 
@@ -114,21 +111,17 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
 			TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
-	}
-	
-	private TabPlayer getPlayer(String name) {
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (getName(p).equals(name)) return p;
+		
+		private TabPlayer getPlayer(String name) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+				if (getName(p).equals(name)) return p;
+			}
+			return null;
 		}
-		return null;
-	}
 
-	
-	private String getName(TabPlayer p) {
-		NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
-		if (nick != null) {
-			return nick.getNickname(p);
+		
+		private String getName(TabPlayer p) {
+			return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
 		}
-		return p.getName();
 	}
 }

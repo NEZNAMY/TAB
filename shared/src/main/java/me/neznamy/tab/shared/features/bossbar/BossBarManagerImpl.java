@@ -28,26 +28,21 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	private Map<String, BossBar> lines = new HashMap<>();
 	private BossBar[] lineValues;
 
-	//toggle command
-	private String toggleCommand;
-	
-	private String toggleOnMessage;
-	private String toggleOffMessage;
+	//config options
+	private String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
+	private boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
+	private boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
+	private String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
+	private String toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 
 	//list of currently running bossbar announcements
 	private List<BossBar> announcements = new ArrayList<>();
-
-	//saving toggle choice into file
-	private boolean rememberToggleChoice;
 
 	//players with toggled bossbar
 	private List<String> bossbarOffPlayers = new ArrayList<>();
 
 	//time when bossbar announce ends, used for placeholder
 	private long announceEndTime;
-
-	//if bossbar is hidden by default until toggle command is used
-	private boolean hiddenByDefault;
 
 	private List<TabPlayer> visiblePlayers = new ArrayList<>();
 
@@ -58,17 +53,12 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	public BossBarManagerImpl() {
 		super("BossBar", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-worlds"));
-		toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
-		hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
-		toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
-		toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 		for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
 			BossBarLine line = loadFromConfig(bar.toString());
 			lines.put(bar.toString(), line);
 			if (!line.isAnnouncementOnly()) defaultBars.add(bar.toString());
 		}
 		lineValues = lines.values().toArray(new BossBar[0]);
-		rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
 		if (rememberToggleChoice) {
 			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off", new ArrayList<>());
 		}

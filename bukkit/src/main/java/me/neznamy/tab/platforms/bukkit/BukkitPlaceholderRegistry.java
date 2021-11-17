@@ -31,7 +31,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 
 	private Object chat;
-	private Plugin essentials;
+	private Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 	private Object server;
 	private Field recentTps;
 	private boolean paperTps;
@@ -44,7 +44,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 */
 	public BukkitPlaceholderRegistry() {
 		decimal2.applyPattern("#.##");
-		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));

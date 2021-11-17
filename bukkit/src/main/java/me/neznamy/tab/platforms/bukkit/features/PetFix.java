@@ -19,26 +19,24 @@ import me.neznamy.tab.shared.TAB;
  */
 public class PetFix extends TabFeature {
 
+	//nms storage
+	private NMSStorage nms = NMSStorage.getInstance();
+
 	//datawatcher position of pet owner field
-	private int petOwnerPosition;
+	private int petOwnerPosition = getPetOwnerPosition();
 
 	//logger of last interacts to prevent feature not working on 1.16
 	private Map<String, Long> lastInteractFix = new HashMap<>();
-	
-	//nms storage
-	private NMSStorage nms;
-	
+
 	/**
 	 * Constructs new instance with given parameter
 	 * @param nms
 	 */
-	public PetFix(NMSStorage nms) {
+	public PetFix() {
 		super("Pet name fix");
-		this.nms = nms;
-		petOwnerPosition = getPetOwnerPosition();
 		TAB.getInstance().debug("Loaded PetFix feature");
 	}
-	
+
 	/**
 	 * Returns position of pet owner field based on server version
 	 * @return position of pet owner field based on server version
@@ -61,7 +59,7 @@ public class PetFix extends TabFeature {
 			return 13;
 		}
 	}
-	
+
 	/**
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
 	 * @throws IllegalAccessException 
@@ -80,7 +78,7 @@ public class PetFix extends TabFeature {
 		}
 		return false;
 	}
-	
+
 	private boolean isInteract(Object action) {
 		if (nms.getMinorVersion() >= 17) {
 			return nms.PacketPlayInUseEntity$d.isInstance(action);
@@ -88,7 +86,7 @@ public class PetFix extends TabFeature {
 			return action.toString().equals("INTERACT");
 		}
 	}
-	
+
 	/**
 	 * Removes pet owner field from datawatcher
 	 * @throws IllegalAccessException 

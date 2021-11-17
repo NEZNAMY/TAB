@@ -24,7 +24,6 @@ import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
@@ -47,10 +46,7 @@ public class BukkitPlatform implements Platform {
 	//plugin instance
 	private Main plugin;
 
-	//nms storage
-	private NMSStorage nms;
-
-	private BukkitPacketBuilder packetBuilder;
+	private BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
 
 	//booleans to check plugin presence
 	private boolean placeholderAPI;
@@ -62,12 +58,9 @@ public class BukkitPlatform implements Platform {
 	/**
 	 * Constructs new instance with given parameters
 	 * @param plugin - plugin instance
-	 * @param nms - nms storage
 	 */
-	public BukkitPlatform(Main plugin, NMSStorage nms) {
+	public BukkitPlatform(Main plugin) {
 		this.plugin = plugin;
-		this.nms = nms;
-		packetBuilder = new BukkitPacketBuilder(nms);
 	}
 
 	@Override
@@ -103,20 +96,20 @@ public class BukkitPlatform implements Platform {
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
+		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector());
 		new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		loadNametagFeature(tab);
 		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
-			if (nms.getMinorVersion() < 9) {
+			if (tab.getServerVersion().getMinorVersion() < 9) {
 				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));
 			} else {
 				tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 			}
 		}
-		if (nms.getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
-		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
+		if (tab.getServerVersion().getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix());
+		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin));
 		if (placeholderAPI) {
 			new TabExpansion(plugin);
 		}
@@ -135,8 +128,8 @@ public class BukkitPlatform implements Platform {
 	 */
 	private void loadNametagFeature(TAB tab) {
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && nms.getMinorVersion() >= 8) {
-				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms));
+			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
+				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin));
 			} else {
 				tab.getFeatureManager().registerFeature("nametag16", new NameTag());
 			}

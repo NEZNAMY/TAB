@@ -22,27 +22,23 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public class NameTag extends TabFeature implements TeamManager {
 
-	private boolean invisibleNametags;
-	private Sorting sorting;
+	private boolean invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
+	private boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
+	private Sorting sorting = new Sorting(this);
+	private CollisionManager collisionManager = new CollisionManager(this, collisionRule);
 	private List<TabPlayer> hiddenNametag = new ArrayList<>();
 	private Map<TabPlayer, List<TabPlayer>> hiddenNametagFor = new HashMap<>();
 	protected List<TabPlayer> teamHandlingPaused = new ArrayList<>();
 	private Map<TabPlayer, String> forcedTeamName = new HashMap<>();
-	private CollisionManager collisionManager;
-	private boolean accepting18x;
+
+	private boolean accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") || 
+			TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
 	public NameTag() {
 		super("Nametags", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
-		invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
-		boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
-		sorting = new Sorting(this);
 		TAB.getInstance().getFeatureManager().registerFeature("sorting", sorting);
-		accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") || 
-				TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
-		if (accepting18x)
-			TAB.getInstance().getFeatureManager().registerFeature("nametags-visibility", new VisibilityRefresher(this));
-		collisionManager = new CollisionManager(this, collisionRule);
+		if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature("nametags-visibility", new VisibilityRefresher(this));
 		TAB.getInstance().getFeatureManager().registerFeature("nametags-collision", collisionManager);
 		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNametags=%s",
 				collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNametags));

@@ -28,30 +28,18 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	private JavaPlugin plugin;
 	
 	//config options
-	private boolean allowBypass;
-	private List<String> ignoredWorlds;
-	private Map<String, List<String>> sharedWorlds;
+	private boolean allowBypass = TAB.getInstance().getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+	private List<String> ignoredWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+	private Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
 	 * @param plugin - plugin instance
-	 * @param tab - tab instance
 	 */
-	public PerWorldPlayerlist(JavaPlugin plugin, TAB tab) {
+	public PerWorldPlayerlist(JavaPlugin plugin) {
 		super("Per world playerlist");
 		this.plugin = plugin;
-		allowBypass = tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
-		ignoredWorlds = tab.getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-		sharedWorlds = tab.getConfiguration().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
-		for (Entry<String, List<String>> group : sharedWorlds.entrySet()) {
-			if (group.getValue() == null) {
-				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist does not contain any worlds. You can just remove the group.");
-			} else if (group.getValue().size() == 1) {
-				tab.getErrorManager().startupWarn("World group \"" + group + "\" in per-world-playerlist only contain a single world (\"" + group.getValue().get(0) +
-						"\"), which has no effect and only makes config less readable. Delete the group entirely for a cleaner config.");
-			}
-		}
-		tab.debug(String.format("Loaded PerWorldPlayerlist feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
+		TAB.getInstance().debug(String.format("Loaded PerWorldPlayerlist feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	

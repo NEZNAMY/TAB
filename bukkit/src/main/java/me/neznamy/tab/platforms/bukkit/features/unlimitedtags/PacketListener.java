@@ -21,22 +21,15 @@ public class PacketListener extends TabFeature {
 	private NameTagX nameTagX;
 	
 	//nms storage
-	private NMSStorage nms;
-	
-	//tab instance
-	private TAB tab;
+	private NMSStorage nms = NMSStorage.getInstance();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
 	 * @param nameTagX - main feature
-	 * @param nms - nms storage
-	 * @param tab - tab instance
 	 */
-	public PacketListener(NameTagX nameTagX, NMSStorage nms, TAB tab) {
+	public PacketListener(NameTagX nameTagX) {
 		super(nameTagX.getFeatureName());
 		this.nameTagX = nameTagX;
-		this.nms = nms;
-		this.tab = tab;
 	}
 
 	@Override
@@ -44,7 +37,7 @@ public class PacketListener extends TabFeature {
 		if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
 			TabPlayer attacked = null;
-			for (TabPlayer all : tab.getOnlinePlayers()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all.isLoaded() && all.getArmorStandManager().hasArmorStandWithID(entityId)) {
 					attacked = all;
 					break;
@@ -94,13 +87,13 @@ public class PacketListener extends TabFeature {
 		if (pl != null) {
 			//player moved
 			if (nameTagX.isPlayerDisabled(pl)) return;
-			tab.getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
 		} else if ((vehicleList = nameTagX.getVehicles().get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Entity entity : vehicleList) {
 				TabPlayer passenger = nameTagX.getEntityIdMap().get(entity.getEntityId());
 				if (passenger != null && passenger.getArmorStandManager() != null) {
-					tab.getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER, () -> passenger.getArmorStandManager().teleport(receiver));
+					TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
 		}
@@ -109,7 +102,7 @@ public class PacketListener extends TabFeature {
 	private void onEntitySpawn(TabPlayer receiver, int entityId) {
 		TabPlayer spawnedPlayer = nameTagX.getEntityIdMap().get(entityId);
 		if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
-			tab.getCPUManager().runMeasuredTask("processing NamedEntitySpawn", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask("processing NamedEntitySpawn", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
 		}
 	}
 
@@ -128,6 +121,6 @@ public class PacketListener extends TabFeature {
 	private void onEntityDestroy(TabPlayer receiver, int entity) {
 		TabPlayer despawnedPlayer = nameTagX.getEntityIdMap().get(entity);
 		if (despawnedPlayer != null && despawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(despawnedPlayer)) 
-			tab.getCPUManager().runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
 	}
 }

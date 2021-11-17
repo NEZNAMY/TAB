@@ -21,18 +21,13 @@ public class YellowNumber extends TabFeature {
 	public static final int DISPLAY_SLOT = 0;
 	private static final String TITLE = "PlayerlistObjectiveTitle";
 
-	private String rawValue;
-	private EnumScoreboardHealthDisplay displayType;
+	private String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
+	private EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) || 
+			"%player_health_rounded%".equals(rawValue) ? EnumScoreboardHealthDisplay.HEARTS : EnumScoreboardHealthDisplay.INTEGER;
 
 	public YellowNumber() {
 		super("Yellow number", TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-worlds"));
-		rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
-		if ("%health%".equals(rawValue) || "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue)) {
-			displayType = EnumScoreboardHealthDisplay.HEARTS;
-		} else {
-			displayType = EnumScoreboardHealthDisplay.INTEGER;
-		}
 		TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), displayType));
 	}
 

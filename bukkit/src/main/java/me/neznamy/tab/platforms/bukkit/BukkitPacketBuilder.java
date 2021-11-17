@@ -51,7 +51,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 public class BukkitPacketBuilder extends PacketBuilder {
 
 	//nms storage
-	private NMSStorage nms;
+	private NMSStorage nms = NMSStorage.getInstance();
 
 	//entity type ids
 	private EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
@@ -63,11 +63,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	private Object dummyEntity;
 
 	/**
-	 * Constructs new instance with given parameter
-	 * @param nms - nms storage
+	 * Constructs new instance
 	 */
-	public BukkitPacketBuilder(NMSStorage nms) {
-		this.nms = nms;
+	public BukkitPacketBuilder() {
 		if (nms.getMinorVersion() >= 13) {
 			entityIds.put(EntityType.ARMOR_STAND, 1);
 			entityIds.put(EntityType.WITHER, 83);

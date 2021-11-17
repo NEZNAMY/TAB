@@ -19,15 +19,12 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 public class NickCompatibility extends TabFeature {
 
 	private HashMap<TabPlayer, String> nickedPlayers = new HashMap<>();
-	private NameTag nametags;
-	private BelowName belowname;
-	private YellowNumber yellownumber;
+	private NameTag nametags = (NameTag) TAB.getInstance().getTeamManager();
+	private BelowName belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature("belowname");
+	private YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
 	
 	public NickCompatibility() {
 		super("Nick compatibility");
-		nametags = (NameTag) TAB.getInstance().getTeamManager();
-		belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature("belowname");
-		yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
 		TAB.getInstance().debug("Loaded NickCompatibility feature");
 	}
 	

@@ -29,13 +29,22 @@ public class Sorting extends TabFeature {
 	private NameTag nametags;
 	
 	//map of all registered sorting types
-	private Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
+	@SuppressWarnings("serial")
+	private Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<String, BiFunction<Sorting, String, SortingType>>() {{
+		put("GROUPS", Groups::new);
+		put("PERMISSIONS", Permissions::new);
+		put("PLACEHOLDER", Placeholder::new);
+		put("PLACEHOLDER_A_TO_Z", PlaceholderAtoZ::new);
+		put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
+		put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
+		put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
+	}};
 	
 	//if sorting is case senstitive or not
-	private boolean caseSensitiveSorting = true;
+	private boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
 	
 	//active sorting types
-	private SortingType[] usedSortingTypes;
+	private SortingType[] usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
@@ -45,15 +54,6 @@ public class Sorting extends TabFeature {
 	public Sorting(NameTag nametags) {
 		super("Team name refreshing");
 		this.nametags = nametags;
-		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
-		types.put("GROUPS", Groups::new);
-		types.put("PERMISSIONS", Permissions::new);
-		types.put("PLACEHOLDER", Placeholder::new);
-		types.put("PLACEHOLDER_A_TO_Z", PlaceholderAtoZ::new);
-		types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
-		types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
-		types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
-		usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
 	}
 	
 	@Override

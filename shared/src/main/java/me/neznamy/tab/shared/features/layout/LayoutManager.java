@@ -23,24 +23,19 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class LayoutManager extends TabFeature {
 
-	private Direction direction;
-	private String defaultSkin;
-	private boolean enableRemainingPlayersText;
-	private String remainingPlayersText;
-
+	private Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
+	private String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+	private boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
+	private String remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
+	private SkinManager skinManager = new SkinManager(defaultSkin);
+	
 	private Map<String, Layout> layouts = new LinkedHashMap<>();
 	private Map<TabPlayer, Layout> playerViews = new HashMap<>();
 	private Map<Integer, UUID> uuids = new HashMap<>();
-	private SkinManager skinManager;
 	private Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
 
 	public LayoutManager() {
 		super("Layout");
-		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
-		defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
-		enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
-		remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
-		skinManager = new SkinManager(defaultSkin);
 		for (int slot=1; slot<=80; slot++) {
 			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}

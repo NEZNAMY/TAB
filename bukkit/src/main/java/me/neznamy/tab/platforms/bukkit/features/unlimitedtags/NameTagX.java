@@ -32,18 +32,12 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	//config options
-	private boolean markerFor18x;
-	private boolean disableOnBoats;
-	private double spaceBetweenLines;
-	
-	//list of worlds with unlimited nametag mode disabled
-	protected List<String> disabledUnlimitedWorlds;
-	
-	//list of defined dynamic lines
-	private List<String> dynamicLines = Arrays.asList(TabConstants.Property.BELOWNAME, TabConstants.Property.NAMETAG, TabConstants.Property.ABOVENAME);
-	
-	//map of defined static lines
-	private Map<String, Object> staticLines;
+	private boolean markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
+	private boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
+	private double spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("scoreboard-teams.unlimited-nametag-mode.space-between-lines", 0.22);
+	protected List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());;
+	private List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
+	private Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
 
 	//player data by entityId, used for better performance
 	private Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
@@ -52,7 +46,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	private Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
 	
 	//bukkit event listener
-	private EventListener eventListener;
+	private EventListener eventListener = new EventListener(this);
 	
 	//list of players currently on boats
 	private List<TabPlayer> playersOnBoats = new ArrayList<>();
@@ -72,25 +66,15 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	 * Constructs new instance with given parameters and loads config options
 	 * @param plugin - plugin instance
 	 * @param nms - nms storage
-	 * @param tab - tab instance
 	 */
-	public NameTagX(JavaPlugin plugin, NMSStorage nms) {
-		markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
-		disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
-		spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("scoreboard-teams.unlimited-nametag-mode.space-between-lines", 0.22);
-		disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
+	public NameTagX(JavaPlugin plugin) {
 		if (disabledUnlimitedWorlds != null) {
 			disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
 			unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
 		}
-		List<String> realList = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another"));
-		dynamicLines = new ArrayList<>();
-		dynamicLines.addAll(realList);
 		Collections.reverse(dynamicLines);
-		staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
-		eventListener = new EventListener(this);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		TAB.getInstance().getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this, nms, TAB.getInstance()));
+		TAB.getInstance().getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this));
 		TAB.getInstance().debug(String.format("Loaded Unlimited nametag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}

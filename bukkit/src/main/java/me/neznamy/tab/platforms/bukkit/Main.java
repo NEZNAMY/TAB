@@ -41,7 +41,7 @@ public class Main extends JavaPlugin {
 		}
 		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
 		protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
-		TAB.setInstance(new TAB(new BukkitPlatform(this, NMSStorage.getInstance()), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
+		TAB.setInstance(new TAB(new BukkitPlatform(this), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
 		}

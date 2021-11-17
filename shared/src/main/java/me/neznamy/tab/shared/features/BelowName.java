@@ -22,19 +22,16 @@ public class BelowName extends TabFeature {
 	public static final int DISPLAY_SLOT = 2;
 	private static final String TEXT_USAGE = "Belowname text";
 
-	private String rawNumber;
-	private String rawText;
-	private TabFeature textRefresher;
+	private String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
+	private String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
+	private TabFeature textRefresher = new TextRefresher();
 
 	public BelowName() {
 		super("Belowname number", TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-worlds"));
 		setRefreshDisplayName("Updating belowname number");
-		rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
-		rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
-		textRefresher = new TextRefresher();
-		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
 		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", textRefresher);
+		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
 	}
 
 	@Override
