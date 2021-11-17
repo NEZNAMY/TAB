@@ -33,7 +33,7 @@ public class PacketListener extends TabFeature {
 	}
 
 	@Override
-	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
 			int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
 			TabPlayer attacked = null;
@@ -52,7 +52,7 @@ public class PacketListener extends TabFeature {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.getPlayersInDisabledUnlimitedWorlds().contains(receiver)) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets

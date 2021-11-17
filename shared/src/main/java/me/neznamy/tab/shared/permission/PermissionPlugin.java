@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared.permission;
 
-import java.lang.reflect.InvocationTargetException;
-
 import me.neznamy.tab.api.TabPlayer;
 
 /**
@@ -13,13 +11,9 @@ public interface PermissionPlugin {
 	 * Returns primary permission group of player
 	 * @param p - player to get group of
 	 * @return player's primary permission group
-	 * @throws ClassNotFoundException 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException 
 	 */
-	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException;
+	public String getPrimaryGroup(TabPlayer p) throws ReflectiveOperationException;
 	
 	/**
 	 * Returns version of the permission plugin

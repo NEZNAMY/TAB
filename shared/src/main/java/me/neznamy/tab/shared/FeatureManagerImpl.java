@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -87,11 +86,9 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param receiver - packet receiver
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws ReflectiveOperationException
 	 */
-	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		long time = System.nanoTime();
 		PacketPlayOutPlayerInfo info = TAB.getInstance().getPlatform().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
@@ -221,7 +218,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			long time = System.nanoTime();
 			try {
 				cancel = f.onPacketReceive(receiver, packet);
-			} catch (IllegalAccessException e) {
+			} catch (ReflectiveOperationException e) {
 				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_IN, System.nanoTime()-time);
@@ -241,7 +238,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			long time = System.nanoTime();
 			try {
 				f.onPacketSend(receiver, packet);
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
+			} catch (ReflectiveOperationException e) {
 				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
@@ -266,9 +263,9 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 * @param packet - the packet
 	 * @return true if packet should be cancelled, false if not
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException 
 	 */
-	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
+	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
@@ -285,11 +282,9 @@ public class FeatureManagerImpl implements FeatureManager {
 	/**
 	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
-	 * @throws IllegalAccessException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
+	 * @throws ReflectiveOperationException
 	 */
-	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);

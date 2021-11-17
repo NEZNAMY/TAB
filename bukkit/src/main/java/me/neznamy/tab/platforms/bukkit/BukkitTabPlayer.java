@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
 			if (NMSStorage.getInstance().CHANNEL != null)
 				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
-		} catch (InvocationTargetException | IllegalAccessException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection or channel of " + p.getName(), e);
 		}
 		version = ProtocolVersion.fromNetworkId(protocolVersion);
@@ -96,7 +95,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			} else {
 				NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 			}
-		} catch (IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
@@ -228,7 +227,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Object getSkin() {
 		try {
 			return ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties();
-		} catch (InvocationTargetException | IllegalAccessException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
 			return null;
 		}

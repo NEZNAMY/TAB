@@ -85,10 +85,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		/**
 		 * Removes all real players from team if packet does not come from TAB and reports this to override log
 		 * @param packetPlayOutScoreboardTeam - team packet
-		 * @throws IllegalAccessException 
+		 * @throws ReflectiveOperationException 
 		 */
 		@SuppressWarnings("unchecked")
-		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws IllegalAccessException {
+		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
 			long time = System.nanoTime();
 			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +54,9 @@ public class DataWatcher {
 	/**
 	 * Converts the class into an instance of NMS.DataWatcher
 	 * @return an instance of NMS.DataWatcher with same data
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws ReflectiveOperationException
 	 */
-	public Object toNMS() throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	public Object toNMS() throws ReflectiveOperationException {
 		NMSStorage nms = NMSStorage.getInstance();
 		Object nmsWatcher;
 		if (nms.newDataWatcher.getParameterCount() == 1) { //1.7+
@@ -84,13 +81,10 @@ public class DataWatcher {
 	 * Reads NMS data watcher and returns and instance of this class with same data
 	 * @param nmsWatcher - NMS datawatcher to read
 	 * @return an instance of this class with same values
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException
 	 */
 	@SuppressWarnings("unchecked")
-	public static DataWatcher fromNMS(Object nmsWatcher) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	public static DataWatcher fromNMS(Object nmsWatcher) throws ReflectiveOperationException {
 		DataWatcher watcher = new DataWatcher();
 		List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
 		if (items != null) {

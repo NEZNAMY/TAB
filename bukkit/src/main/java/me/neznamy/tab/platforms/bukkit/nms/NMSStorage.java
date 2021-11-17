@@ -4,7 +4,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -628,7 +627,7 @@ public class NMSStorage {
 		if (!enumClass.isEnum()) throw new IllegalArgumentException(enumClass.getName() + " is not an enum class");
 		try {
 			return (Enum[]) enumClass.getMethod("values").invoke(null);
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+		} catch (ReflectiveOperationException e) {
 			//this should never happen
 			TAB.getInstance().getErrorManager().criticalError("Failed to load enum constants of " + enumClass.getName(), e);
 			return new Enum[0];

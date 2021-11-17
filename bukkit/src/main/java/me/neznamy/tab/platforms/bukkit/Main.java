@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -123,7 +122,7 @@ public class Main extends JavaPlugin {
 			int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
 			TAB.getInstance().debug("ProtocolSupport returned protocol version " + version + " for " + player.getName() + "(online=" + player.isOnline() + ")");
 			return version;
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ProtocolSupport", player.getName()), e);
 			return TAB.getInstance().getServerVersion().getNetworkId();
 		}

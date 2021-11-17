@@ -1,6 +1,5 @@
 package me.neznamy.tab.api;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -165,9 +164,9 @@ public abstract class TabFeature {
 	 * @param sender - packet sender
 	 * @param packet - packet received
 	 * @return true if false should be cancelled, false if not
-	 * @throws IllegalAccessException
+	 * @throws ReflectiveOperationException 
 	 */
-	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		return false;
 	}
 	
@@ -175,13 +174,9 @@ public abstract class TabFeature {
 	 * Processes raw packet sent to client
 	 * @param receiver - packet receiver
 	 * @param packet - the packet
-	 * @throws IllegalAccessException 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws InstantiationException 
+	 * @throws ReflectiveOperationException
 	 */
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		//empty by default
 	}
 

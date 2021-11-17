@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,10 +61,10 @@ public class PetFix extends TabFeature {
 
 	/**
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException 
 	 */
 	@Override
-	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		if (nms.PacketPlayInUseEntity.isInstance(packet)) {
 			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
@@ -89,15 +88,11 @@ public class PetFix extends TabFeature {
 
 	/**
 	 * Removes pet owner field from datawatcher
-	 * @throws IllegalAccessException 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws InstantiationException 
+	 * @throws ReflectiveOperationException
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (nms.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			Object removedEntry = null;
 			List<Object> items = (List<Object>) nms.PacketPlayOutEntityMetadata_LIST.get(packet);

@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,8 +16,8 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
+import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
@@ -151,7 +150,7 @@ public class BukkitPlatform implements Platform {
 				//1.8+
 				return ((Collection<Player>)players).toArray(new Player[0]); 
 			}
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
 			return new Player[0];
 		}

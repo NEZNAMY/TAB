@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -55,7 +54,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		try {
 			server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
 			recentTps = server.getClass().getField("recentTps");
-		} catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			//not spigot
 		}
 		try {

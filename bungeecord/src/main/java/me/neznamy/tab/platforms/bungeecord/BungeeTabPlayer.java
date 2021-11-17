@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
@@ -47,8 +46,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
 	/**
 	 * Constructs new instance for given player
-	 * @param p - velocity player
-	 * @throws IllegalAccessException 
+	 * @param p - bungeecord player
 	 */
 	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) {
 		super(plm, p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", "N/A");
@@ -106,7 +104,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
 		try {
 			return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());
-		} catch (IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz + " with client version " + getPlayer().getPendingConnection().getVersion(), e);
 			return -1;
 		}

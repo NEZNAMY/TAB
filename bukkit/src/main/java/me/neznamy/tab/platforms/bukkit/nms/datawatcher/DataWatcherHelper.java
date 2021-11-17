@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 import me.neznamy.tab.api.ProtocolVersion;
@@ -72,7 +71,7 @@ public class DataWatcherHelper {
 		if (NMSStorage.getInstance().getMinorVersion() >= 13) {
 			try {
 				data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
-			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			} catch (ReflectiveOperationException e) {
 				TAB.getInstance().getErrorManager().printError("Failed to create component", e);
 			}
 		} else if (NMSStorage.getInstance().getMinorVersion() >= 8){
