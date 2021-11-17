@@ -23,7 +23,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
@@ -41,7 +40,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	protected List<String> disabledUnlimitedWorlds;
 	
 	//list of defined dynamic lines
-	private List<String> dynamicLines = Arrays.asList(PropertyUtils.BELOWNAME, PropertyUtils.NAMETAG, PropertyUtils.ABOVENAME);
+	private List<String> dynamicLines = Arrays.asList(TabConstants.Property.BELOWNAME, TabConstants.Property.NAMETAG, TabConstants.Property.ABOVENAME);
 	
 	//map of defined static lines
 	private Map<String, Object> staticLines;
@@ -84,7 +83,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 			disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
 			unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
 		}
-		List<String> realList = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another"));
+		List<String> realList = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another"));
 		dynamicLines = new ArrayList<>();
 		dynamicLines.addAll(realList);
 		Collections.reverse(dynamicLines);
@@ -287,9 +286,9 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	 */
 	public void loadArmorStands(TabPlayer pl) {
 		pl.setArmorStandManager(new ArmorStandManager());
-		pl.setProperty(this, PropertyUtils.NAMETAG, pl.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() 
-				+ pl.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue()
-				+ pl.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue());
+		pl.setProperty(this, TabConstants.Property.NAMETAG, pl.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() 
+				+ pl.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
+				+ pl.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
 		double height = 0;
 		for (String line : dynamicLines) {
 			Property p = pl.getProperty(line);
@@ -353,13 +352,13 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	@Override
 	public void updateProperties(TabPlayer p) {
 		super.updateProperties(p);
-		p.loadPropertyFromConfig(this, PropertyUtils.CUSTOMTAGNAME, p.getName());
-		p.setProperty(this, PropertyUtils.NAMETAG, p.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + p.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + p.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue());
+		p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTAGNAME, p.getName());
+		p.setProperty(this, TabConstants.Property.NAMETAG, p.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() + p.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + p.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
 		for (String property : dynamicLines) {
-			if (!property.equals(PropertyUtils.NAMETAG)) p.loadPropertyFromConfig(this, property);
+			if (!property.equals(TabConstants.Property.NAMETAG)) p.loadPropertyFromConfig(this, property);
 		}
 		for (String property : staticLines.keySet()) {
-			if (!property.equals(PropertyUtils.NAMETAG)) p.loadPropertyFromConfig(this, property);
+			if (!property.equals(TabConstants.Property.NAMETAG)) p.loadPropertyFromConfig(this, property);
 		}
 	}
 
@@ -469,35 +468,35 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	
 	@Override
 	public void setPrefix(TabPlayer player, String prefix) {
-		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(prefix);
+		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
 		rebuildNametagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void setSuffix(TabPlayer player, String suffix) {
-		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(suffix);
+		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
 		rebuildNametagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetPrefix(TabPlayer player) {
-		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
 		rebuildNametagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetSuffix(TabPlayer player) {
-		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
 		rebuildNametagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void setName(TabPlayer player, String customname) {
-		player.getProperty(PropertyUtils.CUSTOMTAGNAME).setTemporaryValue(customname);
+		player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(customname);
 		rebuildNametagLine(player);
 		player.forceRefresh();
 	}
@@ -510,7 +509,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	@Override
 	public void resetName(TabPlayer player) {
-		player.getProperty(PropertyUtils.CUSTOMTAGNAME).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(null);
 		rebuildNametagLine(player);
 		player.forceRefresh();
 	}
@@ -523,7 +522,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	@Override
 	public String getCustomName(TabPlayer player) {
-		return player.getProperty(PropertyUtils.CUSTOMTAGNAME).getTemporaryValue();
+		return player.getProperty(TabConstants.Property.CUSTOMTAGNAME).getTemporaryValue();
 	}
 
 	@Override
@@ -533,7 +532,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	@Override
 	public String getOriginalName(TabPlayer player) {
-		return player.getProperty(PropertyUtils.CUSTOMTAGNAME).getOriginalRawValue();
+		return player.getProperty(TabConstants.Property.CUSTOMTAGNAME).getOriginalRawValue();
 	}
 
 	@Override
@@ -542,7 +541,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	}
 	
 	private void rebuildNametagLine(TabPlayer player) {
-		player.setProperty(this, PropertyUtils.NAMETAG, player.getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + 
-				player.getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + player.getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue());
+		player.setProperty(this, TabConstants.Property.NAMETAG, player.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() + 
+				player.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + player.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
 	}
 }

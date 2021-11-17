@@ -4,7 +4,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 
 /**
  * An implementation of Refreshable for bossbar color and style
@@ -25,8 +24,8 @@ public class ColorAndStyleRefresher extends TabFeature {
 		super("BossBar");
 		setRefreshDisplayName("Updating color and style");
 		this.line = line;
-		colorProperty = PropertyUtils.bossbarColor(line.getName());
-		styleProperty = PropertyUtils.bossbarStyle(line.getName());
+		colorProperty = TabConstants.Property.bossbarColor(line.getName());
+		styleProperty = TabConstants.Property.bossbarStyle(line.getName());
 	}
 	
 	@Override

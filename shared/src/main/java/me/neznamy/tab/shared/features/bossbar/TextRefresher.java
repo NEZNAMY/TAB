@@ -4,7 +4,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 
 /**
  * An implementation of Refreshable for bossbar text
@@ -24,7 +23,7 @@ public class TextRefresher extends TabFeature {
 		super("BossBar");
 		setRefreshDisplayName("Updating text");
 		this.line = line;
-		textProperty = PropertyUtils.bossbarTitle(line.getName());
+		textProperty = TabConstants.Property.bossbarTitle(line.getName());
 	}
 	
 	@Override

@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
@@ -45,37 +44,37 @@ public class CustomLine extends ScoreboardLine {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
-		String oldName = refreshed.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get();
-		boolean prefixUpdate = refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).update();
-		boolean nameUpdate = refreshed.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).update();
-		boolean suffixUpdate = refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).update();
+		String oldName = refreshed.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get();
+		boolean prefixUpdate = refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).update();
+		boolean nameUpdate = refreshed.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).update();
+		boolean suffixUpdate = refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).update();
 		if (prefixUpdate || nameUpdate || suffixUpdate) {
 			if (nameUpdate) {
 				//name changed as well
 				removeLine(refreshed, oldName);
-				addLine(refreshed, refreshed.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get(), 
-						refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(), refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get());
+				addLine(refreshed, refreshed.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get(), 
+						refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(), refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get());
 			} else {
 				//only prefix/suffix changed
-				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(), 
-						refreshed.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+				refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(), 
+						refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
 			}
 		}
 	}
 
 	@Override
 	public void register(TabPlayer p) {
-		p.setProperty(this, PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber), prefix);
-		p.setProperty(this, PropertyUtils.scoreboardName(parent.getName(), lineNumber), name);
-		p.setProperty(this, PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber), suffix);
-		addLine(p, p.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get(), p.getProperty(PropertyUtils.scoreboardPrefix(parent.getName(), lineNumber)).get(),
-				p.getProperty(PropertyUtils.scoreboardSuffix(parent.getName(), lineNumber)).get());
+		p.setProperty(this, TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber), prefix);
+		p.setProperty(this, TabConstants.Property.scoreboardName(parent.getName(), lineNumber), name);
+		p.setProperty(this, TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber), suffix);
+		addLine(p, p.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get(), p.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(),
+				p.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get());
 	}
 
 	@Override
 	public void unregister(TabPlayer p) {
 		if (parent.getPlayers().contains(p)) {
-			removeLine(p, p.getProperty(PropertyUtils.scoreboardName(parent.getName(), lineNumber)).get());
+			removeLine(p, p.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get());
 		}
 	}
 

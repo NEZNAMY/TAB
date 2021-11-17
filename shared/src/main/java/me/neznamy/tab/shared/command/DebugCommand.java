@@ -9,7 +9,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.PropertyImpl;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.Playerlist;
@@ -70,9 +69,9 @@ public class DebugCommand extends SubCommand {
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
 			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
 			boolean disabledPlayerlist = playerlist.isDisabled(analyzed.getServer(), analyzed.getWorld());
-			showProperty(sender, analyzed, PropertyUtils.TABPREFIX, disabledPlayerlist);
-			showProperty(sender, analyzed, PropertyUtils.TABSUFFIX, disabledPlayerlist);
-			showProperty(sender, analyzed, PropertyUtils.CUSTOMTABNAME, disabledPlayerlist);
+			showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, disabledPlayerlist);
+			showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, disabledPlayerlist);
+			showProperty(sender, analyzed, TabConstants.Property.CUSTOMTABNAME, disabledPlayerlist);
 		} else {
 			sendMessage(sender, "&atabprefix: &cDisabled");
 			sendMessage(sender, "&atabsuffix: &cDisabled");
@@ -80,8 +79,8 @@ public class DebugCommand extends SubCommand {
 		}
 		if (tab.getTeamManager() != null) {
 			boolean disabledNametags = ((TabFeature) tab.getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
-			showProperty(sender, analyzed, PropertyUtils.TAGPREFIX, disabledNametags);
-			showProperty(sender, analyzed, PropertyUtils.TAGSUFFIX, disabledNametags);
+			showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
+			showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
 			for (Object line : getExtraLines()) {
 				showProperty(sender, analyzed, line.toString(), disabledNametags);
 			}
@@ -168,8 +167,8 @@ public class DebugCommand extends SubCommand {
 		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<>();
 		List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().getConfig().getObject("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
 		lines.addAll(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines").keySet());
-		lines.remove(PropertyUtils.NAMETAG);
-		lines.add(PropertyUtils.CUSTOMTAGNAME);
+		lines.remove(TabConstants.Property.NAMETAG);
+		lines.add(TabConstants.Property.CUSTOMTAGNAME);
 		return lines;
 	}
 

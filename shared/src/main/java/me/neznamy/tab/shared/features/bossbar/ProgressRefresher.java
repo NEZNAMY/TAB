@@ -4,7 +4,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 
 /**
  * An implementation of Refreshable for bossbar progress
@@ -24,7 +23,7 @@ public class ProgressRefresher extends TabFeature {
 		super("BossBar");
 		setRefreshDisplayName("Updating progress");
 		this.line = line;
-		progressProperty = PropertyUtils.bossbarProgress(line.getName());
+		progressProperty = TabConstants.Property.bossbarProgress(line.getName());
 	}
 	
 	@Override

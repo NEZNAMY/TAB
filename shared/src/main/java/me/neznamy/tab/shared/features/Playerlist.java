@@ -14,7 +14,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
@@ -84,7 +83,7 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p, viewer))), this);
 				}
 				RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-				if (redis != null) redis.updateTabFormat(p, p.getProperty(PropertyUtils.TABPREFIX).get() + p.getProperty(PropertyUtils.CUSTOMTABNAME).get() + p.getProperty(PropertyUtils.TABSUFFIX).get());
+				if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
 			}
 		} else {
 			refresh(p, true);
@@ -92,9 +91,9 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
-		Property prefix = p.getProperty(PropertyUtils.TABPREFIX);
-		Property name = p.getProperty(PropertyUtils.CUSTOMTABNAME);
-		Property suffix = p.getProperty(PropertyUtils.TABSUFFIX);
+		Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
+		Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
+		Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
 		if (prefix == null || name == null || suffix == null) {
 			return null;
 		}
@@ -109,9 +108,9 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.getProperty(PropertyUtils.TABPREFIX).update();
-			boolean name = refreshed.getProperty(PropertyUtils.CUSTOMTABNAME).update();
-			boolean suffix = refreshed.getProperty(PropertyUtils.TABSUFFIX).update();
+			boolean prefix = refreshed.getProperty(TabConstants.Property.TABPREFIX).update();
+			boolean name = refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).update();
+			boolean suffix = refreshed.getProperty(TabConstants.Property.TABSUFFIX).update();
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
@@ -120,14 +119,14 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), getTabFormat(refreshed, viewer, true))), this);
 			}
 			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-			if (redis != null) redis.updateTabFormat(refreshed, refreshed.getProperty(PropertyUtils.TABPREFIX).get() + refreshed.getProperty(PropertyUtils.CUSTOMTABNAME).get() + refreshed.getProperty(PropertyUtils.TABSUFFIX).get());
+			if (redis != null) redis.updateTabFormat(refreshed, refreshed.getProperty(TabConstants.Property.TABPREFIX).get() + refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + refreshed.getProperty(TabConstants.Property.TABSUFFIX).get());
 		}
 	}
 	
 	private void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(this, PropertyUtils.TABPREFIX);
-		p.loadPropertyFromConfig(this, PropertyUtils.CUSTOMTABNAME, p.getName());
-		p.loadPropertyFromConfig(this, PropertyUtils.TABSUFFIX);
+		p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
+		p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName());
+		p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX);
 	}
 
 	@Override
@@ -180,67 +179,67 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 
 	@Override
 	public void setPrefix(TabPlayer player, String prefix) {
-		player.getProperty(PropertyUtils.TABPREFIX).setTemporaryValue(prefix);
+		player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void setName(TabPlayer player, String customname) {
-		player.getProperty(PropertyUtils.CUSTOMTABNAME).setTemporaryValue(customname);
+		player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customname);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void setSuffix(TabPlayer player, String suffix) {
-		player.getProperty(PropertyUtils.TABSUFFIX).setTemporaryValue(suffix);
+		player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetPrefix(TabPlayer player) {
-		player.getProperty(PropertyUtils.TABPREFIX).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(null);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetName(TabPlayer player) {
-		player.getProperty(PropertyUtils.CUSTOMTABNAME).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(null);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetSuffix(TabPlayer player) {
-		player.getProperty(PropertyUtils.TABSUFFIX).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(null);
 		player.forceRefresh();
 	}
 
 	@Override
 	public String getCustomPrefix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TABPREFIX).getTemporaryValue();
+		return player.getProperty(TabConstants.Property.TABPREFIX).getTemporaryValue();
 	}
 
 	@Override
 	public String getCustomName(TabPlayer player) {
-		return player.getProperty(PropertyUtils.CUSTOMTABNAME).getTemporaryValue();
+		return player.getProperty(TabConstants.Property.CUSTOMTABNAME).getTemporaryValue();
 	}
 
 	@Override
 	public String getCustomSuffix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TABSUFFIX).getTemporaryValue();
+		return player.getProperty(TabConstants.Property.TABSUFFIX).getTemporaryValue();
 	}
 
 	@Override
 	public String getOriginalPrefix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TABPREFIX).getOriginalRawValue();
+		return player.getProperty(TabConstants.Property.TABPREFIX).getOriginalRawValue();
 	}
 
 	@Override
 	public String getOriginalName(TabPlayer player) {
-		return player.getProperty(PropertyUtils.CUSTOMTABNAME).getOriginalRawValue();
+		return player.getProperty(TabConstants.Property.CUSTOMTABNAME).getOriginalRawValue();
 	}
 
 	@Override
 	public String getOriginalSuffix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TABSUFFIX).getOriginalRawValue();
+		return player.getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
 	}
 }

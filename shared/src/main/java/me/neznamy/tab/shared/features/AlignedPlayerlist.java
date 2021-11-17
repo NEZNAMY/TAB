@@ -10,7 +10,7 @@ import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.PropertyUtils;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -51,7 +51,7 @@ public class AlignedPlayerlist extends Playerlist {
 			maxPlayer = player;
 			updateAllNames(player);
 		}
-		return formatName(player.getProperty(PropertyUtils.TABPREFIX).getFormat(viewer) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(viewer), player.getProperty(PropertyUtils.TABSUFFIX).getFormat(viewer));
+		return formatName(player.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) + player.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer), player.getProperty(TabConstants.Property.TABSUFFIX).getFormat(viewer));
 	}
 	
 	public String formatName(String prefixAndName, String suffix) {
@@ -97,7 +97,7 @@ public class AlignedPlayerlist extends Playerlist {
 	 * @return width of player's tablist name format
 	 */
 	private int getPlayerNameWidth(TabPlayer p) {
-		String format = p.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + p.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + p.getProperty(PropertyUtils.TABSUFFIX).getFormat(null);
+		String format = p.getProperty(TabConstants.Property.TABPREFIX).getFormat(null) + p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(null) + p.getProperty(TabConstants.Property.TABSUFFIX).getFormat(null);
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
 	
@@ -169,9 +169,9 @@ public class AlignedPlayerlist extends Playerlist {
 	
 	@Override
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
-		Property prefix = p.getProperty(PropertyUtils.TABPREFIX);
-		Property name = p.getProperty(PropertyUtils.CUSTOMTABNAME);
-		Property suffix = p.getProperty(PropertyUtils.TABSUFFIX);
+		Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
+		Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
+		Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
 		if (prefix == null || name == null || suffix == null) {
 			return null;
 		}

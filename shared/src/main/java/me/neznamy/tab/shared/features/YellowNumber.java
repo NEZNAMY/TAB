@@ -9,8 +9,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboa
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Feature handler for tablist objective feature
@@ -39,7 +39,7 @@ public class YellowNumber extends TabFeature {
 	@Override
 	public void load() {
 		for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()){
-			loaded.setProperty(this, PropertyUtils.YELLOW_NUMBER, rawValue);
+			loaded.setProperty(this, TabConstants.Property.YELLOW_NUMBER, rawValue);
 			if (isDisabled(loaded.getServer(), loaded.getWorld())) {
 				addDisabledPlayer(loaded);
 				continue;
@@ -63,7 +63,7 @@ public class YellowNumber extends TabFeature {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		connectedPlayer.setProperty(this, PropertyUtils.YELLOW_NUMBER, rawValue);
+		connectedPlayer.setProperty(this, TabConstants.Property.YELLOW_NUMBER, rawValue);
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
 			addDisabledPlayer(connectedPlayer);
 			return;
@@ -97,12 +97,12 @@ public class YellowNumber extends TabFeature {
 		if (!disabledNow && disabledBefore) {
 			onJoin(p);
 			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-			if (redis != null) redis.updateYellowNumber(p, p.getProperty(PropertyUtils.YELLOW_NUMBER).get());
+			if (redis != null) redis.updateYellowNumber(p, p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
 		}
 	}
 
 	public int getValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(PropertyUtils.YELLOW_NUMBER).updateAndGet(), 0, "yellow number");
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0, "yellow number");
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class YellowNumber extends TabFeature {
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), value), this);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-		if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(PropertyUtils.YELLOW_NUMBER).get());
+		if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
 	}
 
 	private String getName(TabPlayer p) {

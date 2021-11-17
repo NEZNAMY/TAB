@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 
@@ -42,7 +41,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new SetCollisionCommand());
 		registerSubCommand(new ScoreboardCommand());
 		registerSubCommand(new WidthCommand());
-		List<String> properties = Lists.newArrayList(PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
+		List<String> properties = Lists.newArrayList(TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
 			properties.add(line.toString());
 		}

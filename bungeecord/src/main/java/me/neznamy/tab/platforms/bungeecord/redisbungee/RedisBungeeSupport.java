@@ -21,7 +21,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.Playerlist;
@@ -177,8 +176,8 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		case "nametag":
 			target = redisPlayers.get(id.toString());
 			if (target == null) break;
-			target.setTagPrefix((String) message.get(PropertyUtils.TAGPREFIX));
-			target.setTagSuffix((String) message.get(PropertyUtils.TAGSUFFIX));
+			target.setTagPrefix((String) message.get(TabConstants.Property.TAGPREFIX));
+			target.setTagSuffix((String) message.get(TabConstants.Property.TAGSUFFIX));
 			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				viewer.sendCustomPacket(target.getUpdateTeamPacket(), this);
 			}
@@ -322,8 +321,8 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		json.put("proxy", proxy.toString());
 		json.put("action", "nametag");
 		json.put("UUID", p.getTablistUUID().toString());
-		json.put(PropertyUtils.TAGPREFIX, tagprefix);
-		json.put(PropertyUtils.TAGSUFFIX, tagsuffix);
+		json.put(TabConstants.Property.TAGPREFIX, tagprefix);
+		json.put(TabConstants.Property.TAGSUFFIX, tagsuffix);
 		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
 	}
 	

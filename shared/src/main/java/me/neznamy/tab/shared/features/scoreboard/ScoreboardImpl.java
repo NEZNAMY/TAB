@@ -12,7 +12,6 @@ import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
@@ -118,8 +117,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
-		p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
+		p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
@@ -147,9 +146,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE) == null) return;
+		if (refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE) == null) return;
 		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
-				refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
+				refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
 	}
 
 	@Override
@@ -174,7 +173,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void setTitle(String title) {
 		this.title = title;
 		for (TabPlayer p : players) {
-			p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
+			p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
 			refresh(p, false);
 		}
 	}

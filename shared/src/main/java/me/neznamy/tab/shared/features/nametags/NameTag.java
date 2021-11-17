@@ -14,7 +14,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.RedisSupport;
@@ -86,8 +85,8 @@ public class NameTag extends TabFeature implements TeamManager {
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			boolean prefix = refreshed.getProperty(PropertyUtils.TAGPREFIX).update();
-			boolean suffix = refreshed.getProperty(PropertyUtils.TAGSUFFIX).update();
+			boolean prefix = refreshed.getProperty(TabConstants.Property.TAGPREFIX).update();
+			boolean suffix = refreshed.getProperty(TabConstants.Property.TAGSUFFIX).update();
 			refresh = prefix || suffix;
 		}
 
@@ -239,8 +238,8 @@ public class NameTag extends TabFeature implements TeamManager {
 	
 	@Override
 	public void updateTeamData(TabPlayer p) {
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		Property tagprefix = p.getProperty(TabConstants.Property.TAGPREFIX);
+		Property tagsuffix = p.getProperty(TabConstants.Property.TAGSUFFIX);
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			String currentPrefix = tagprefix.getFormat(viewer);
 			String currentSuffix = tagsuffix.getFormat(viewer);
@@ -248,12 +247,12 @@ public class NameTag extends TabFeature implements TeamManager {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-		if (redis != null) redis.updateNameTag(p, p.getProperty(PropertyUtils.TAGPREFIX).get(), p.getProperty(PropertyUtils.TAGSUFFIX).get());
+		if (redis != null) redis.updateNameTag(p, p.getProperty(TabConstants.Property.TAGPREFIX).get(), p.getProperty(TabConstants.Property.TAGSUFFIX).get());
 	}
 
 	public void updateTeamData(TabPlayer p, TabPlayer viewer) {
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		Property tagprefix = p.getProperty(TabConstants.Property.TAGPREFIX);
+		Property tagsuffix = p.getProperty(TabConstants.Property.TAGSUFFIX);
 		boolean visible = getTeamVisibility(p, viewer);
 		String currentPrefix = tagprefix.getFormat(viewer);
 		String currentSuffix = tagsuffix.getFormat(viewer);
@@ -276,8 +275,8 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	private void registerTeam(TabPlayer p, TabPlayer viewer) {
 		if (hasTeamHandlingPaused(p)) return;
-		Property tagprefix = p.getProperty(PropertyUtils.TAGPREFIX);
-		Property tagsuffix = p.getProperty(PropertyUtils.TAGSUFFIX);
+		Property tagprefix = p.getProperty(TabConstants.Property.TAGPREFIX);
+		Property tagsuffix = p.getProperty(TabConstants.Property.TAGSUFFIX);
 		String replacedPrefix = tagprefix.getFormat(viewer);
 		String replacedSuffix = tagsuffix.getFormat(viewer);
 		if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
@@ -308,8 +307,8 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 	
 	protected void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(this, PropertyUtils.TAGPREFIX);
-		p.loadPropertyFromConfig(this, PropertyUtils.TAGSUFFIX);
+		p.loadPropertyFromConfig(this, TabConstants.Property.TAGPREFIX);
+		p.loadPropertyFromConfig(this, TabConstants.Property.TAGSUFFIX);
 	}
 
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
@@ -330,45 +329,45 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public void setPrefix(TabPlayer player, String prefix) {
-		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(prefix);
+		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void setSuffix(TabPlayer player, String suffix) {
-		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(suffix);
+		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetPrefix(TabPlayer player) {
-		player.getProperty(PropertyUtils.TAGPREFIX).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetSuffix(TabPlayer player) {
-		player.getProperty(PropertyUtils.TAGSUFFIX).setTemporaryValue(null);
+		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
 		player.forceRefresh();
 	}
 
 	@Override
 	public String getCustomPrefix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TAGPREFIX).getTemporaryValue();
+		return player.getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
 	}
 
 	@Override
 	public String getCustomSuffix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TAGSUFFIX).getTemporaryValue();
+		return player.getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
 	}
 
 	@Override
 	public String getOriginalPrefix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TAGPREFIX).getOriginalRawValue();
+		return player.getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
 	}
 
 	@Override
 	public String getOriginalSuffix(TabPlayer player) {
-		return player.getProperty(PropertyUtils.TAGSUFFIX).getOriginalRawValue();
+		return player.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
 	}
 }

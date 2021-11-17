@@ -13,7 +13,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
@@ -58,8 +57,8 @@ public class NickCompatibility extends TabFeature {
 			if (nametags != null && !nametags.hasTeamHandlingPaused(player)) {
 				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName()), this);
-					String replacedPrefix = player.getProperty(PropertyUtils.TAGPREFIX).getFormat(viewer);
-					String replacedSuffix = player.getProperty(PropertyUtils.TAGSUFFIX).getFormat(viewer);
+					String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
+					String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
 					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName(), replacedPrefix, replacedSuffix, nametags.translate(nametags.getTeamVisibility(player, viewer)), 
 							nametags.translate(nametags.getCollisionManager().getCollision(player)), Arrays.asList(name), 0), this);
 				}

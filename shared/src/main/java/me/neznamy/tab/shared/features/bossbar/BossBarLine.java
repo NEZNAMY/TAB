@@ -10,8 +10,8 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -84,10 +84,10 @@ public class BossBarLine implements BossBar {
 		textRefresher = new TextRefresher(this);
 		progressRefresher = new ProgressRefresher(this);
 		colorAndStyleRefresher = new ColorAndStyleRefresher(this);
-		propertyTitle = PropertyUtils.bossbarTitle(name);
-		propertyProgress = PropertyUtils.bossbarProgress(name);
-		propertyColor = PropertyUtils.bossbarColor(name);
-		propertyStyle = PropertyUtils.bossbarStyle(name);
+		propertyTitle = TabConstants.Property.bossbarTitle(name);
+		propertyProgress = TabConstants.Property.bossbarProgress(name);
+		propertyColor = TabConstants.Property.bossbarColor(name);
+		propertyStyle = TabConstants.Property.bossbarStyle(name);
 		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, textRefresher);
 		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, progressRefresher);
 		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, colorAndStyleRefresher);

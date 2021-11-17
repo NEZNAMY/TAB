@@ -4,7 +4,6 @@ import me.neznamy.tab.api.ArmorStandManager
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.platforms.krypton.Main
 import me.neznamy.tab.shared.TabConstants
-import me.neznamy.tab.shared.PropertyUtils
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.features.nametags.NameTag
 import org.kryptonmc.api.entity.Entity
@@ -35,7 +34,7 @@ class NameTagX : NameTag() {
         listOf("disabledworld")
     )
 
-    private var dynamicLines = mutableListOf(PropertyUtils.BELOWNAME, PropertyUtils.NAMETAG, PropertyUtils.ABOVENAME)
+    private var dynamicLines = mutableListOf(TabConstants.Property.BELOWNAME, TabConstants.Property.NAMETAG, TabConstants.Property.ABOVENAME)
     private val staticLines = ConcurrentHashMap<String, Any>()
     val entityIdMap = ConcurrentHashMap<Int, TabPlayer>()
     // TODO: Add this stuff back when we support entities
@@ -55,7 +54,7 @@ class NameTagX : NameTag() {
 
         val realList = TAB.getInstance().configuration.config.getStringList(
             "scoreboard-teams.unlimited-nametag-mode.dynamic-lines",
-            listOf(PropertyUtils.ABOVENAME, PropertyUtils.NAMETAG, PropertyUtils.BELOWNAME, "another")
+            listOf(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")
         )
         dynamicLines = mutableListOf()
         dynamicLines.addAll(realList)
@@ -139,12 +138,12 @@ class NameTagX : NameTag() {
 
     override fun updateProperties(player: TabPlayer) {
         super.updateProperties(player)
-        player.loadPropertyFromConfig(this, PropertyUtils.CUSTOMTAGNAME, player.name)
-        player.setProperty(this, PropertyUtils.NAMETAG, player.getProperty(PropertyUtils.TAGPREFIX).currentRawValue +
-            player.getProperty(PropertyUtils.CUSTOMTAGNAME).currentRawValue +
-            player.getProperty(PropertyUtils.TAGSUFFIX).currentRawValue)
-        dynamicLines.forEach { if (it != PropertyUtils.NAMETAG) player.loadPropertyFromConfig(this, it) }
-        staticLines.keys.forEach { if (it != PropertyUtils.NAMETAG) player.loadPropertyFromConfig(this, it) }
+        player.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTAGNAME, player.name)
+        player.setProperty(this, TabConstants.Property.NAMETAG, player.getProperty(TabConstants.Property.TAGPREFIX).currentRawValue +
+            player.getProperty(TabConstants.Property.CUSTOMTAGNAME).currentRawValue +
+            player.getProperty(TabConstants.Property.TAGSUFFIX).currentRawValue)
+        dynamicLines.forEach { if (it != TabConstants.Property.NAMETAG) player.loadPropertyFromConfig(this, it) }
+        staticLines.keys.forEach { if (it != TabConstants.Property.NAMETAG) player.loadPropertyFromConfig(this, it) }
     }
 
     override fun getFeatureName(): String = "Unlimited Nametags"
@@ -269,9 +268,9 @@ class NameTagX : NameTag() {
 
     private fun loadArmorStands(player: TabPlayer) {
         player.armorStandManager = ArmorStandManager()
-        player.setProperty(this, PropertyUtils.NAMETAG, player.getProperty(PropertyUtils.TAGPREFIX).currentRawValue +
-            player.getProperty(PropertyUtils.CUSTOMTAGNAME).currentRawValue +
-            player.getProperty(PropertyUtils.TAGSUFFIX).currentRawValue)
+        player.setProperty(this, TabConstants.Property.NAMETAG, player.getProperty(TabConstants.Property.TAGPREFIX).currentRawValue +
+            player.getProperty(TabConstants.Property.CUSTOMTAGNAME).currentRawValue +
+            player.getProperty(TabConstants.Property.TAGSUFFIX).currentRawValue)
         var height = 0.0
         dynamicLines.forEach {
             val property = player.getProperty(it)
