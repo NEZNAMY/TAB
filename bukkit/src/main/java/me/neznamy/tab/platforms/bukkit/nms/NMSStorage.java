@@ -356,10 +356,12 @@ public class NMSStorage {
 		if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
 			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
 			newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
-			PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d");
 		} else {
 			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
 			newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
+		}
+		if (minorVersion >= 17) {
+			PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d");
 		}
 		try {
 			newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
