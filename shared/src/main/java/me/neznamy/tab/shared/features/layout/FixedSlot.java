@@ -13,11 +13,11 @@ import me.neznamy.tab.shared.TabConstants;
 
 public class FixedSlot extends TabFeature {
 
-	private Layout layout;
-	private UUID id;
-	private String text;
-	private String propertyName;
-	private Object skin;
+	private final Layout layout;
+	private final UUID id;
+	private final String text;
+	private final String propertyName;
+	private final Object skin;
 
 	public FixedSlot(Layout layout, int slot, String text, String skin) {
 		super(layout.getFeatureName());

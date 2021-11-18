@@ -10,8 +10,8 @@ import me.neznamy.tab.shared.TAB;
 
 public class VanishRefresher extends TabFeature {
 
-	private GlobalPlayerlist playerlist;
-	private List<TabPlayer> vanishedPlayers = new ArrayList<>();
+	private final GlobalPlayerlist playerlist;
+	private final List<TabPlayer> vanishedPlayers = new ArrayList<>();
 	
 	protected VanishRefresher(GlobalPlayerlist playerlist) {
 		super("Global Playerlist");

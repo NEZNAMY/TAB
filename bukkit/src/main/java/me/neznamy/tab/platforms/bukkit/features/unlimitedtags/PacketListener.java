@@ -18,10 +18,10 @@ import me.neznamy.tab.shared.TAB;
 public class PacketListener extends TabFeature {
 
 	//main feature
-	private NameTagX nameTagX;
+	private final NameTagX nameTagX;
 	
 	//nms storage
-	private NMSStorage nms = NMSStorage.getInstance();
+	private final NMSStorage nms = NMSStorage.getInstance();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options

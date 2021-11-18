@@ -29,7 +29,7 @@ import net.md_5.bungee.protocol.packet.Team;
 public class BungeePipelineInjector extends PipelineInjector {
 
 	//packets that must be deserialized and bungeecord does not do it automatically
-	private Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
+	private final Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
 
 	/**
 	 * Constructs new instance of the feature

@@ -12,10 +12,10 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 public class DataWatcher {
 
 	//datawatcher data
-	private Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
+	private final Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
 	
 	//a helper for easier data write
-	private DataWatcherHelper helper = new DataWatcherHelper(this);
+	private final DataWatcherHelper helper = new DataWatcherHelper(this);
 
 	/**
 	 * Sets value into data values

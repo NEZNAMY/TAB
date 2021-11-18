@@ -15,7 +15,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 	private EnumPlayerInfoAction action;
 
 	/** List of affected entries */
-	private List<PlayerInfoData> entries;
+	private final List<PlayerInfoData> entries;
 
 	/**
 	 * Constructs new instance with given parameters.

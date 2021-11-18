@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
  */
 public class TabPlayerLoadEvent {
 
-	private TabPlayer player;
+	private final TabPlayer player;
 	
 	public TabPlayerLoadEvent(TabPlayer player) {
 		this.player = player;

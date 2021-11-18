@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.TAB;
 public class EventListener implements Listener {
 	
 	//the nametag feature handler
-	private NameTagX feature;
+	private final NameTagX feature;
 
 	/**
 	 * Constructs new instance with given parameters

@@ -16,11 +16,11 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
  */
 public class FeatureManagerImpl implements FeatureManager {
 
-	private String deserializing = "Packet deserializing";
-	private String serializing = "Packet serializing";
+	private final String deserializing = "Packet deserializing";
+	private final String serializing = "Packet serializing";
 
 	//list of registered features
-	private Map<String, TabFeature> features = new LinkedHashMap<>();
+	private final Map<String, TabFeature> features = new LinkedHashMap<>();
 	
 	private TabFeature[] values;
 

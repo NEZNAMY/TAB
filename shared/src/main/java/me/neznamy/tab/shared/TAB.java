@@ -59,7 +59,7 @@ public class TAB extends TabAPI {
 	private final DisabledCommand disabledCommand = new DisabledCommand();
 
 	//platform interface
-	private Platform platform;
+	private final Platform platform;
 
 	//cpu manager
 	private CpuManager cpu;
@@ -79,7 +79,7 @@ public class TAB extends TabAPI {
 	private PlaceholderManagerImpl placeholderManager;
 
 	//server version, always using latest on proxies
-	private ProtocolVersion serverVersion;
+	private final ProtocolVersion serverVersion;
 	
 	private GroupManager groupManager;
 	

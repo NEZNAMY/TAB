@@ -6,9 +6,9 @@ import com.google.gson.JsonObject;
 
 public class ChatComponentEntity extends IChatBaseComponent {
 
-	private String type;
-	private UUID id;
-	private String name;
+	private final String type;
+	private final UUID id;
+	private final String name;
 	
 	public ChatComponentEntity(String type, UUID id, String name) {
 		this.type = type;

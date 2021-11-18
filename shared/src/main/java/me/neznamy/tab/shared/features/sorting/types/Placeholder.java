@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 public class Placeholder extends SortingType {
 
 	//map Value-Number where number is used in team name based on value
-	private LinkedHashMap<String, String> sortingMap;
+	private final LinkedHashMap<String, String> sortingMap;
 	
 	/**
 	 * Constructs new instance with given parameter

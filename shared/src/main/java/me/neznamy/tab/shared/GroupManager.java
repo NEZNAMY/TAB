@@ -21,9 +21,9 @@ public class GroupManager extends TabFeature {
 	public static final String DEFAULT_GROUP = "NONE";
 	
 	private Object luckPermsSub;
-	private PermissionPlugin plugin;
-	private boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);;
-	private List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+	private final PermissionPlugin plugin;
+	private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);;
+	private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 	
 	public GroupManager(PermissionPlugin plugin) {
 		super("Permission group refreshing");

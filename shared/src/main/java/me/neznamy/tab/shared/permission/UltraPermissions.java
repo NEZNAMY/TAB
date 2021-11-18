@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.TAB;
 public class UltraPermissions implements PermissionPlugin {
 
 	//ultrapermissions version
-	private String version;
+	private final String version;
 	
 	/**
 	 * Constructs new instance with given parameter

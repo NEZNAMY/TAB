@@ -21,7 +21,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 public class VelocityPluginMessageHandler extends PluginMessageHandler {
 
 	//channel identifier
-	private MinecraftChannelIdentifier mc;
+	private final MinecraftChannelIdentifier mc;
 
 	/**
 	 * Constructs new instance with given parameter and registers events/channel

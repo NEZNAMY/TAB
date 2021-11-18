@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.TAB;
 
 public class LocationRefresher extends TabFeature {
 
-	private NameTagX feature;
+	private final NameTagX feature;
 	
 	public LocationRefresher(NameTagX feature) {
 		super(feature.getFeatureName());

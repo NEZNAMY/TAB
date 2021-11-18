@@ -17,13 +17,13 @@ public class PlayerPlaceholder extends Placeholder {
 	/** Internal constant used to detect if placeholder threw an error */
 	private static final String ERROR_VALUE = "ERROR";
 
-	private Function<TabPlayer, Object> function;
+	private final Function<TabPlayer, Object> function;
 
 	//last known values
-	private Map<String, String> lastValues = new HashMap<>();
+	private final Map<String, String> lastValues = new HashMap<>();
 
 	//list of players with force update
-	private List<String> forceUpdate = new ArrayList<>();
+	private final List<String> forceUpdate = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters

@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.TAB;
  */
 public class ServerPlaceholder extends Placeholder {
 
-	private Supplier<Object> supplier;
+	private final Supplier<Object> supplier;
 	
 	//last known value of the placeholder
 	private String lastValue;

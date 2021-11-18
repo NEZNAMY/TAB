@@ -18,9 +18,9 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	private static final String PER_WORLD = "per-world";
 	private static final String DEFAULT_GROUP = "_DEFAULT_";
 	
-	private String category;
-	private List<Object> worldGroups = new ArrayList<>();
-	private List<Object> serverGroups = new ArrayList<>();
+	private final String category;
+	private final List<Object> worldGroups = new ArrayList<>();
+	private final List<Object> serverGroups = new ArrayList<>();
 	
 	public YamlPropertyConfigurationFile(InputStream source, File destination) throws IllegalStateException, YAMLException, IOException {
 		super(source, destination);

@@ -15,7 +15,7 @@ import me.neznamy.tab.api.util.BiFunctionWithException;
 public abstract class PacketBuilder {
 
 	/** Function map turning custom packet class into platform-specific packets */
-	protected Map<Class<? extends TabPacket>, BiFunctionWithException<TabPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
+	protected final Map<Class<? extends TabPacket>, BiFunctionWithException<TabPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
 
 	/**
 	 * Constructs new instance and fills {@link #buildMap} with abstract build methods

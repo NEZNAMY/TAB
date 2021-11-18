@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.TAB;
 
 public class MessageFile {
 
-	private ConfigurationFile file;
+	private final ConfigurationFile file;
 	
 	public MessageFile() throws YAMLException, IOException {
 		file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getPlatform().getDataFolder(), "messages.yml"));

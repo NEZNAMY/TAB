@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 public class VaultBridge implements PermissionPlugin {
 
 	//plugin message handler to request groups through
-	private PluginMessageHandler plm;
+	private final PluginMessageHandler plm;
 	
 	/**
 	 * Constructs new instance with given parameter

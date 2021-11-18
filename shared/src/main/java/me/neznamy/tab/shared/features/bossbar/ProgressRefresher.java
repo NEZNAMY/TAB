@@ -13,7 +13,7 @@ public class ProgressRefresher extends TabFeature {
 	private final String progressProperty;
 	
 	//bossbar line this text belongs to
-	private BossBarLine line;
+	private final BossBarLine line;
 
 	/**
 	 * Constructs new instance with given parameter

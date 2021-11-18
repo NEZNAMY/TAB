@@ -11,11 +11,11 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
 
-	private Layout layout;
-	private Condition condition;
-	private int[] slots;
-	private Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
-	private Map<TabPlayer, PlayerSlot> players = new HashMap<>();
+	private final Layout layout;
+	private final Condition condition;
+	private final int[] slots;
+	private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
+	private final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
 	public ParentGroup(Layout layout, Condition condition, int[] slots) {
 		this.layout = layout;

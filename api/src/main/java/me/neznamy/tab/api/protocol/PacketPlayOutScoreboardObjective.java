@@ -6,13 +6,13 @@ package me.neznamy.tab.api.protocol;
 public class PacketPlayOutScoreboardObjective implements TabPacket {
 
 	/** Up to 16 characters long objective name */
-	private String objectiveName;
+	private final String objectiveName;
 
 	/** Display name */
-	private String displayName;
+	private final String displayName;
 
 	/** Display type, only takes effect in playertlist */
-	private EnumScoreboardHealthDisplay renderType;
+	private final EnumScoreboardHealthDisplay renderType;
 
 	/**
 	 * Packet action.
@@ -20,7 +20,7 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	 * 1 = unregister,
 	 * 2 = update title
 	 */
-	private int method;
+	private final int method;
 
 	/**
 	 * Constructs new instance with given parameters.
@@ -57,6 +57,7 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 		this.objectiveName = objectiveName;
 		this.displayName = ""; //avoiding NPE on <1.7
 		this.method = 1;
+		this.renderType = null;
 	}
 
 	@Override

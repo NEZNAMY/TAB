@@ -13,10 +13,10 @@ import me.neznamy.tab.shared.TAB;
  */
 public class RelationalPlaceholder extends Placeholder {
 	
-	private BiFunction<TabPlayer, TabPlayer, Object> function;
+	private final BiFunction<TabPlayer, TabPlayer, Object> function;
 	
 	//last known values with key formatted as "viewer-target" to avoid extra dimension
-	private Map<String, String> lastValue = new HashMap<>();
+	private final Map<String, String> lastValue = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameters

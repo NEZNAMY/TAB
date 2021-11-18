@@ -53,7 +53,7 @@ public class CpuManager implements ThreadManager {
 	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 
 	//error manager
-	private ErrorManager errorManager;
+	private final ErrorManager errorManager;
 
 	/**
 	 * Constructs new instance and starts repeating task that resets values every 10 seconds

@@ -10,8 +10,8 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
-	private PluginMessageHandler plm;
-	private Map<String, String> attributes = new HashMap<>();
+	private final PluginMessageHandler plm;
+	private final Map<String, String> attributes = new HashMap<>();
 	
 	protected ProxyTabPlayer(PluginMessageHandler plm, Object player, UUID uniqueId, String name, String server, String world) {
 		super(player, uniqueId, name, server, world);

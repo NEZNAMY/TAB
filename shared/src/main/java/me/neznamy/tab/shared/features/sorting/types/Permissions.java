@@ -15,7 +15,7 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 public class Permissions extends SortingType {
 
 	//map of sorted groups in config
-	private LinkedHashMap<String, String> sortedGroups;
+	private final LinkedHashMap<String, String> sortedGroups;
 	
 	/**
 	 * Constructs new instance

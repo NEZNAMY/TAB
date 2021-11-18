@@ -31,7 +31,7 @@ public abstract class ConfigurationFile {
 	protected Map<String, Object> values;
 
 	/** File to use */
-	protected File file;
+	protected final File file;
 
 	/**
 	 * Constructs new instance and attempts to load specified configuration file.

@@ -22,13 +22,13 @@ public class BossBarLine implements BossBar {
 	private BossBarManagerImpl manager;
 	
 	//bossbar name
-	private String name;
+	private final String name;
 	
 	//display condition
-	private Condition displayCondition;
+	private final Condition displayCondition;
 	
 	//uuid
-	private UUID uuid;
+	private final UUID uuid;
 	
 	//bossbar style
 	private String style;
@@ -42,21 +42,21 @@ public class BossBarLine implements BossBar {
 	//bossabr progress
 	private String progress;
 	
-	private boolean announcementOnly;
+	private final boolean announcementOnly;
 	
 	//set of players seeing this bossbar
-	private List<TabPlayer> players = new ArrayList<>();
+	private final List<TabPlayer> players = new ArrayList<>();
 	
 	//refreshers
-	private TextRefresher textRefresher;
-	private ProgressRefresher progressRefresher;
-	private ColorAndStyleRefresher colorAndStyleRefresher;
+	private final TextRefresher textRefresher;
+	private final ProgressRefresher progressRefresher;
+	private final ColorAndStyleRefresher colorAndStyleRefresher;
 	
 	//property names
-	private String propertyTitle;
-	private String propertyProgress;
-	private String propertyColor;
-	private String propertyStyle;
+	private final String propertyTitle;
+	private final String propertyProgress;
+	private final String propertyColor;
+	private final String propertyStyle;
 
 	/**
 	 * Constructs new instance with given parameters

@@ -38,11 +38,11 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 
 	private static final String CHANNEL_NAME = "TAB";
 
-	private Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
-	private GlobalPlayerlist global;
-	private Playerlist playerlist;
-	private NameTag nametags;
-	private UUID proxy = UUID.randomUUID();
+	private final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
+	private final GlobalPlayerlist global = (GlobalPlayerlist) TAB.getInstance().getFeatureManager().getFeature("globalplayerlist");
+	private final Playerlist playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
+	private final NameTag nametags = (NameTag) TAB.getInstance().getFeatureManager().getFeature("nametag16");
+	private final UUID proxy = UUID.randomUUID();
 
 	public RedisBungeeSupport(Plugin plugin) {
 		super("RedisBungee");
@@ -52,9 +52,6 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			return;
 		}
 		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
-		global = (GlobalPlayerlist) TAB.getInstance().getFeatureManager().getFeature("globalplayerlist");
-		playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
-		nametags = (NameTag) TAB.getInstance().getFeatureManager().getFeature("nametag16");
 		api.registerPubSubChannels(CHANNEL_NAME);
 		overridePlaceholders();
 	}

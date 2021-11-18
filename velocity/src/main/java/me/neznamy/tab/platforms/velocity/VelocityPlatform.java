@@ -30,9 +30,9 @@ import net.kyori.adventure.text.Component;
 public class VelocityPlatform extends ProxyPlatform {
 
 	//instance of proxyserver
-	private ProxyServer server;
+	private final ProxyServer server;
 	
-	private VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
+	private final VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
 	
 	/**
 	 * Constructs new instance with given parameter

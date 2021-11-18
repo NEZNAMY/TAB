@@ -8,10 +8,10 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
 	/** Tablist header */
-	private IChatBaseComponent header;
+	private final IChatBaseComponent header;
 
 	/** Tablist footer */
-	private IChatBaseComponent footer;
+	private final IChatBaseComponent footer;
 
 	/**
 	 * Constructs new instance with given parameters. They are converted to {@link IChatBaseComponent}

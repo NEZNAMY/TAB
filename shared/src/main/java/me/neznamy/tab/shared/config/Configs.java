@@ -26,7 +26,7 @@ import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
  */
 public class Configs {
 
-	private TAB tab;
+	private final TAB tab;
 
 	//config.yml file
 	private ConfigurationFile config;

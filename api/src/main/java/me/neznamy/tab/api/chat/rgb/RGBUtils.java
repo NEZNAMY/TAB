@@ -22,13 +22,13 @@ import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
 public class RGBUtils {
 
 	//instance of class
-	private static RGBUtils instance = new RGBUtils();
+	private final static RGBUtils instance = new RGBUtils();
 	
 	//rgb formatters
-	private RGBFormatter[] formats;
+	private final RGBFormatter[] formats;
 	
 	//gradient patterns
-	private GradientPattern[] gradients;
+	private final GradientPattern[] gradients;
 	
 	//TAB's RGB format
 	private final Pattern tabPattern = Pattern.compile("#[0-9a-fA-F]{6}");

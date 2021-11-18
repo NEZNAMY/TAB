@@ -26,9 +26,9 @@ public class AlignedPlayerlist extends Playerlist {
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
-	private Map<TabPlayer, Integer> playerWidths = new HashMap<>();
+	private final Map<TabPlayer, Integer> playerWidths = new HashMap<>();
 	
-	private byte[] widths = new byte[65536];
+	private final byte[] widths = new byte[65536];
 
 	public AlignedPlayerlist() {
 		int characterId = 1;

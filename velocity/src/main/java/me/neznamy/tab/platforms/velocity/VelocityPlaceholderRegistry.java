@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 
 	//instance of proxyserver
-	private ProxyServer server;
+	private final ProxyServer server;
 	
 	/**
 	 * Constructs new instance with given parameter

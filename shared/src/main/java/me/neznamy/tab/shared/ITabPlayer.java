@@ -23,9 +23,9 @@ import me.neznamy.tab.api.team.TeamManager;
  */
 public abstract class ITabPlayer implements TabPlayer {
 
-	protected Object player;
-	private String name;
-	private UUID uniqueId;
+	protected final Object player;
+	private final String name;
+	private final UUID uniqueId;
 	private String world;
 	private String server;
 	private String permissionGroup = GroupManager.DEFAULT_GROUP;
@@ -33,7 +33,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String teamNameNote;
 	private boolean bedrockPlayer;
 
-	private Map<String, Property> properties = new HashMap<>();
+	private final Map<String, Property> properties = new HashMap<>();
 	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version;
 	protected Channel channel;

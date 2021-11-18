@@ -42,8 +42,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	private Object playerConnection;
 	
 	//player's visible boss bars
-	private Map<UUID, BossBar> bossbars = new HashMap<>();
-	private Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossbars = new HashMap<>();
+	private final Map<UUID, BossBar> bossbars = new HashMap<>();
+	private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter

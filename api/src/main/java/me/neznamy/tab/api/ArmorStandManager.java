@@ -12,10 +12,10 @@ import java.util.Map;
 public class ArmorStandManager {
 
 	//map of registered armor stands
-	private Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
+	private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
 	
 	//players in entity tracking range
-	private List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<>());
+	private final List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<>());
 	
 	//array to iterate over to avoid concurrent modification and slightly boost performance & memory
 	private ArmorStand[] armorStandArray = new ArmorStand[0];

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,13 +16,13 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
 
-	private String name;
-	private LayoutManager manager;
-	private Condition displayCondition;
-	private Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
-	private List<Integer> emptySlots = new ArrayList<>();
-	private List<ParentGroup> groups = new ArrayList<>();
-	private List<TabPlayer> viewers = new ArrayList<>();
+	private final String name;
+	private final LayoutManager manager;
+	private final Condition displayCondition;
+	private final Map<Integer, FixedSlot> fixedSlots;
+	private final List<Integer> emptySlots;
+	private final List<ParentGroup> groups;
+	private final List<TabPlayer> viewers = new ArrayList<>();
 	private TabPlayer[] viewerArray = new TabPlayer[0];
 
 	public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {

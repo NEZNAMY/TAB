@@ -17,7 +17,7 @@ public class SkinManager {
 	private ConfigurationFile cache;
 	private final List<String> invalidSkins = new ArrayList<>();
 	private Object defaultSkin;
-	private Map<String, SkinSource> sources = new HashMap<>();
+	private final Map<String, SkinSource> sources = new HashMap<>();
 
 	public SkinManager(String defaultSkin) {
 		try {

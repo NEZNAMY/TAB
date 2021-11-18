@@ -12,11 +12,11 @@ import me.neznamy.tab.shared.config.MySQL;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
-	private MySQL mysql;
+	private final MySQL mysql;
 
-	private Map<String, Map<String, String>> values = new HashMap<>();
-	private Map<String, Map<String, Map<String, String>>> perWorld = new HashMap<>();
-	private Map<String, Map<String, Map<String, String>>> perServer = new HashMap<>();
+	private final Map<String, Map<String, String>> values = new HashMap<>();
+	private final Map<String, Map<String, Map<String, String>>> perWorld = new HashMap<>();
+	private final Map<String, Map<String, Map<String, String>>> perServer = new HashMap<>();
 
 	public MySQLGroupConfiguration(MySQL mysql) throws SQLException {
 		this.mysql = mysql;

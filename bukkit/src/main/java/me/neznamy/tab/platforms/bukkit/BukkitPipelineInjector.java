@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.features.PipelineInjector;
 public class BukkitPipelineInjector extends PipelineInjector {
 
 	//nms storage
-	private NMSStorage nms = NMSStorage.getInstance();
+	private final NMSStorage nms = NMSStorage.getInstance();
 
 	/**
 	 * Constructs new instance

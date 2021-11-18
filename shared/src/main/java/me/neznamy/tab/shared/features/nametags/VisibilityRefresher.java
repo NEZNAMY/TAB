@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.TAB;
 
 public class VisibilityRefresher extends TabFeature {
 
-	private NameTag nametags;
+	private final NameTag nametags;
 
 	public VisibilityRefresher(NameTag nametags) {
 		super(nametags.getFeatureName());

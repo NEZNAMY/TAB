@@ -13,7 +13,7 @@ public class TextRefresher extends TabFeature {
 	private final String textProperty;
 	
 	//bossbar line this text belongs to
-	private BossBarLine line;
+	private final BossBarLine line;
 	
 	/**
 	 * Constructs new instance with given parameter

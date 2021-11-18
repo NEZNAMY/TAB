@@ -17,15 +17,15 @@ import me.neznamy.tab.shared.TAB;
 public class VehicleRefresher extends TabFeature {
 
 	//list of players currently in a vehicle
-	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<>();
+	private final Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<>();
 	
 	//map of vehicles carrying players
-	private Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
+	private final Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
 	
 	//list of players currently on boats
-	private List<TabPlayer> playersOnBoats = new ArrayList<>();
+	private final List<TabPlayer> playersOnBoats = new ArrayList<>();
 	
-	private NameTagX feature;
+	private final NameTagX feature;
 		
 	public VehicleRefresher(NameTagX feature) {
 		super(feature.getFeatureName());

@@ -21,9 +21,9 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 @SuppressWarnings("unchecked")
 public class IChatBaseComponent {
 
-	private static Map<String, IChatBaseComponent> componentCache = new HashMap<>();
-	private static Map<IChatBaseComponent, String> serializeCacheModern = new HashMap<>();
-	private static Map<IChatBaseComponent, String> serializeCacheLegacy = new HashMap<>();
+	private static final Map<String, IChatBaseComponent> componentCache = new HashMap<>();
+	private static final Map<IChatBaseComponent, String> serializeCacheModern = new HashMap<>();
+	private static final Map<IChatBaseComponent, String> serializeCacheLegacy = new HashMap<>();
 	
 	//constants
 	private static final String EMPTY_TRANSLATABLE = "{\"translate\":\"\"}";

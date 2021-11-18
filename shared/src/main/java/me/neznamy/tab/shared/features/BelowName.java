@@ -22,9 +22,9 @@ public class BelowName extends TabFeature {
 	public static final int DISPLAY_SLOT = 2;
 	private static final String TEXT_USAGE = "Belowname text";
 
-	private String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
-	private String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
-	private TabFeature textRefresher = new TextRefresher();
+	private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
+	private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
+	private final TabFeature textRefresher = new TextRefresher();
 
 	public BelowName() {
 		super("Belowname number", TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-servers"),

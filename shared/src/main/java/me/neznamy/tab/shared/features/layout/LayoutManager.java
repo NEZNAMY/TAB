@@ -23,16 +23,16 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class LayoutManager extends TabFeature {
 
-	private Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
-	private String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
-	private boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
-	private String remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
-	private SkinManager skinManager = new SkinManager(defaultSkin);
+	private final Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
+	private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+	private final boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
+	private final String remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
+	private final SkinManager skinManager = new SkinManager(defaultSkin);
 	
-	private Map<String, Layout> layouts = new LinkedHashMap<>();
-	private Map<TabPlayer, Layout> playerViews = new HashMap<>();
-	private Map<Integer, UUID> uuids = new HashMap<>();
-	private Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
+	private final Map<String, Layout> layouts = new LinkedHashMap<>();
+	private final Map<TabPlayer, Layout> playerViews = new HashMap<>();
+	private final Map<Integer, UUID> uuids = new HashMap<>();
+	private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
 
 	public LayoutManager() {
 		super("Layout");

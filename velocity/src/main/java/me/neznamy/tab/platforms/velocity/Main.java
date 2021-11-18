@@ -33,10 +33,10 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 public class Main {
 
 	//instance of proxyserver
-	private ProxyServer server;
+	private final ProxyServer server;
 	
 	//metrics factory I guess
-	private Metrics.Factory metricsFactory;
+	private final Metrics.Factory metricsFactory;
 
 	@Inject
 	public Main(ProxyServer server, Metrics.Factory metricsFactory) {

@@ -25,10 +25,10 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	//scoreboard manager
-	private ScoreboardManagerImpl manager;
+	private final ScoreboardManagerImpl manager;
 
 	//name of this scoreboard
-	private String name;
+	private final String name;
 
 	//scoreboard title
 	private String title;
@@ -37,10 +37,10 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	private Condition displayCondition;
 
 	//lines of scoreboard
-	private List<Line> lines = new ArrayList<>();
+	private final List<Line> lines = new ArrayList<>();
 
 	//players currently seeing this scoreboard
-	private List<TabPlayer> players = new ArrayList<>();
+	private final List<TabPlayer> players = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters and registers lines to feature manager

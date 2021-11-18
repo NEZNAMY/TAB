@@ -29,7 +29,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 
 	private Object chat;
-	private Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
+	private final Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 	private Object server;
 	private Field recentTps;
 	private boolean paperTps;

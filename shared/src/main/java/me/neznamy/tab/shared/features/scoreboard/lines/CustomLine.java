@@ -22,7 +22,7 @@ public class CustomLine extends ScoreboardLine {
 	private String suffix;
 	
 	//configured score
-	private int score;
+	private final int score;
 	
 	/**
 	 * Constructs new instance with given parameters

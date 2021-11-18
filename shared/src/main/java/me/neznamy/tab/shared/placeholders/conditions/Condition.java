@@ -22,19 +22,19 @@ public class Condition {
 	private static Map<String, Condition> conditions = new HashMap<>();
 	
 	//condition type
-	private ConditionType type;
+	private final ConditionType type;
 	
 	//name of this condition
-	private String name;
+	private final String name;
 	
 	//list of subconditions
 	protected SimpleCondition[] subconditions;
 	
 	//value to return if condition is met
-	private String yes;
+	private final String yes;
 	
 	//value to return if condition is not met
-	private String no;
+	private final String no;
 	
 	private int refresh = 10000;
 

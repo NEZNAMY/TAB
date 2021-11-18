@@ -8,10 +8,10 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 public class PacketPlayOutChat implements TabPacket {
 
 	/** Message to be sent */
-	private IChatBaseComponent message;
+	private final IChatBaseComponent message;
 
 	/** Message position */
-	private ChatMessageType type;
+	private final ChatMessageType type;
 
 	/**
 	 * Constructs new instance with given parameters

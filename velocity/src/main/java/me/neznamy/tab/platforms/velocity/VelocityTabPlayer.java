@@ -37,10 +37,10 @@ import net.kyori.adventure.text.Component;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
 	//uuid used in tablist
-	private UUID tablistId;
+	private final UUID tablistId;
 	
 	//player's visible boss bars
-	private Map<UUID, BossBar> bossbars = new HashMap<>();
+	private final Map<UUID, BossBar> bossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance for given player

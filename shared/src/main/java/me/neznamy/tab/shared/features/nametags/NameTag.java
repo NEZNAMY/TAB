@@ -22,14 +22,14 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 
 public class NameTag extends TabFeature implements TeamManager {
 
-	private boolean invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
-	private boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
-	private Sorting sorting = new Sorting(this);
-	private CollisionManager collisionManager = new CollisionManager(this, collisionRule);
-	private List<TabPlayer> hiddenNametag = new ArrayList<>();
-	private Map<TabPlayer, List<TabPlayer>> hiddenNametagFor = new HashMap<>();
-	protected List<TabPlayer> teamHandlingPaused = new ArrayList<>();
-	private Map<TabPlayer, String> forcedTeamName = new HashMap<>();
+	private final boolean invisibleNametags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
+	private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
+	private final Sorting sorting = new Sorting(this);
+	private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
+	private final List<TabPlayer> hiddenNametag = new ArrayList<>();
+	private final Map<TabPlayer, List<TabPlayer>> hiddenNametagFor = new HashMap<>();
+	protected final List<TabPlayer> teamHandlingPaused = new ArrayList<>();
+	private final Map<TabPlayer, String> forcedTeamName = new HashMap<>();
 
 	private boolean accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") || 
 			TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;

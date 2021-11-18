@@ -25,12 +25,12 @@ import me.neznamy.tab.shared.TAB;
 public class PerWorldPlayerlist extends TabFeature implements Listener {
 	
 	//plugin instance
-	private JavaPlugin plugin;
+	private final JavaPlugin plugin;
 	
 	//config options
-	private boolean allowBypass = TAB.getInstance().getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
-	private List<String> ignoredWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-	private Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+	private final boolean allowBypass = TAB.getInstance().getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+	private final List<String> ignoredWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+	private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
 	/**
 	 * Constructs new instance with given parameters and loads config options

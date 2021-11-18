@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 
 public abstract class ProxyPlatform implements Platform {
 
-	protected PluginMessageHandler plm;
+	protected final PluginMessageHandler plm;
 	
 	protected ProxyPlatform(PluginMessageHandler plm) {
 		this.plm = plm;

@@ -17,7 +17,7 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	private static final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
 	//luckperms version
-	private String version;
+	private final String version;
 
 	/**
 	 * Constructs new instance with given parameter

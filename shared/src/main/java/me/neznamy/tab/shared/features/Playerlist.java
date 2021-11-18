@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.features.layout.PlayerSlot;
  */
 public class Playerlist extends TabFeature implements TablistFormatManager {
 
-	protected boolean antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
+	protected final boolean antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
 	private boolean disabling = false;
 
 	public Playerlist() {

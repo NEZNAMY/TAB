@@ -50,13 +50,13 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 public class BukkitPacketBuilder extends PacketBuilder {
 
 	//nms storage
-	private NMSStorage nms = NMSStorage.getInstance();
+	private final NMSStorage nms = NMSStorage.getInstance();
 
 	//entity type ids
-	private EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
+	private final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
 
-	private Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
-	private Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
+	private final Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
+	private final Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
 
 	private Object emptyScoreboard;
 	private Object dummyEntity;

@@ -6,9 +6,9 @@ import me.neznamy.tab.api.protocol.TabPacket;
 
 public class PacketPlayOutEntityTeleport implements TabPacket {
 
-	private int entityId;
+	private final int entityId;
 
-	private Location location;
+	private final Location location;
 
 	public PacketPlayOutEntityTeleport(int entityId, Location location) {
 		this.entityId = entityId;

@@ -22,21 +22,21 @@ import me.neznamy.tab.shared.TAB;
 public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
 	//default bossbars
-	private List<String> defaultBars = new ArrayList<>();
+	private final List<String> defaultBars = new ArrayList<>();
 
 	//registered bossbars
-	private Map<String, BossBar> lines = new HashMap<>();
+	private final Map<String, BossBar> lines = new HashMap<>();
 	private BossBar[] lineValues;
 
 	//config options
-	private String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
-	private boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
-	private boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
-	private String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
-	private String toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
+	private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
+	private final boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
+	private final boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
+	private final String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
+	private final String toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 
 	//list of currently running bossbar announcements
-	private List<BossBar> announcements = new ArrayList<>();
+	private final List<BossBar> announcements = new ArrayList<>();
 
 	//players with toggled bossbar
 	private List<String> bossbarOffPlayers = new ArrayList<>();
@@ -44,7 +44,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	//time when bossbar announce ends, used for placeholder
 	private long announceEndTime;
 
-	private List<TabPlayer> visiblePlayers = new ArrayList<>();
+	private final List<TabPlayer> visiblePlayers = new ArrayList<>();
 
 	/**
 	 * Constructs new instance and loads configuration

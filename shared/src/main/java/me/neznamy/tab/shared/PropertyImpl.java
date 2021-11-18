@@ -17,10 +17,10 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 public class PropertyImpl implements Property {
 
 	//feature using this property to track used placeholders and receive refresh()
-	private TabFeature listener;
+	private final TabFeature listener;
 	
 	//owner of the property
-	private TabPlayer owner;
+	private final TabPlayer owner;
 	
 	//raw value
 	private String rawValue;
@@ -43,8 +43,8 @@ public class PropertyImpl implements Property {
 	//used relational placeholders in current raw value
 	private String[] relPlaceholders;
 	
-	private StringBuilder formatBuffer = new StringBuilder();
-	private Formatter formatter = new Formatter(formatBuffer);
+	private final StringBuilder formatBuffer = new StringBuilder();
+	private final Formatter formatter = new Formatter(formatBuffer);
 
 	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
 		this(listener, owner, rawValue, null);

@@ -36,19 +36,19 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
 	private int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-	private Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<>();
-	private Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<>();
-	private Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<>();
+	private final Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<>();
+	private final Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<>();
+	private final Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<>();
 
 	//plugin internals + PAPI + API
-	private Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
+	private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
 	//map of String-Set of features using placeholder
-	private Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
+	private final Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
 	private Placeholder[] usedPlaceholders = new Placeholder[0];
 	
-	private AtomicInteger atomic = new AtomicInteger();
-	private RepeatingTask refreshTask;
+	private final AtomicInteger atomic = new AtomicInteger();
+	private final RepeatingTask refreshTask;
 
 	public PlaceholderManagerImpl(){
 		super("Refreshing placeholders");

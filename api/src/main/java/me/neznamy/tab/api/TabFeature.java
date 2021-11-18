@@ -10,14 +10,14 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 
 public abstract class TabFeature {
 
-	private String featureName;
+	private final String featureName;
 	private String refreshDisplayName = "Updating visuals";
 	protected String[] disabledServers = new String[0];
 	private boolean serverWhitelistMode;
 	protected String[] disabledWorlds = new String[0];
 	private boolean worldWhitelistMode;
-	private List<TabPlayer> disabledPlayers = new ArrayList<>();
-	private List<String> methodOverrides = new ArrayList<>();
+	private final List<TabPlayer> disabledPlayers = new ArrayList<>();
+	private final List<String> methodOverrides = new ArrayList<>();
 	
 	protected TabFeature(String featureName) {
 		this.featureName = featureName;

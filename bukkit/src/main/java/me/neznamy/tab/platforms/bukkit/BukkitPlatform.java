@@ -43,9 +43,9 @@ import net.milkbowl.vault.permission.Permission;
 public class BukkitPlatform implements Platform {
 
 	//plugin instance
-	private Main plugin;
+	private final Main plugin;
 
-	private BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
+	private final BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
 
 	//booleans to check plugin presence
 	private boolean placeholderAPI;

@@ -16,7 +16,7 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 public abstract class PluginMessageHandler {
 
 	//name of plugin messaging channel
-	protected String channelName = "tab:placeholders";
+	protected final String channelName = "tab:placeholders";
 	
 	/**
 	 * Requests placeholder from bukkit server

@@ -13,16 +13,16 @@ import me.neznamy.tab.shared.TAB;
 public class Animation {
 	
 	//name of the animations
-	private String name;
+	private final String name;
 	
 	//all defined messages
-	private String[] messages;
+	private final String[] messages;
 	
 	//change interval
-	private int interval;
+	private final int interval;
 	
 	//all nested placeholders used in animation frames
-	private String[] nestedPlaceholders;
+	private final String[] nestedPlaceholders;
 	
 	/**
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when

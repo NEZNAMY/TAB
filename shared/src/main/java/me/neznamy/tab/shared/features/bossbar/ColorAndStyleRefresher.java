@@ -14,7 +14,7 @@ public class ColorAndStyleRefresher extends TabFeature {
 	private final String styleProperty;
 	
 	//bossbar line this text belongs to
-	private BossBarLine line;
+	private final BossBarLine line;
 	
 	/**
 	 * Constructs new instance with given parameter

@@ -32,28 +32,27 @@ public enum EnumChatFormat {
 
 	public static final char COLOR_CHAR = 0x00a7;
 	public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
-	private static EnumChatFormat[] values = values();
 
 	//network id of the color
-	private int networkId;
+	private final int networkId;
 	
 	//characer representing the color
-	private char character;
+	private final char character;
 	
 	//red value of this color
-	private int red;
+	private final int red;
 	
 	//green value of this color
-	private int green;
+	private final int green;
 	
 	//blue value of this color
-	private int blue;
+	private final int blue;
 	
 	//hex code as string
-	private String hexCode;
+	private final String hexCode;
 	
 	//color char followed by color's character
-	private String chatFormat;
+	private final String chatFormat;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -62,7 +61,9 @@ public enum EnumChatFormat {
 	 * @param hexColor - hex code of the color
 	 */
 	private EnumChatFormat(int networkId, char character, String hexCode) {
-		this(networkId, character);
+		this.networkId = networkId;
+		this.character = character;
+		this.chatFormat = String.valueOf(COLOR_CHAR) + character;
 		this.hexCode = hexCode;
 		int hexColor = Integer.parseInt(hexCode, 16);
 		red = (hexColor >> 16) & 0xFF;
@@ -79,6 +80,10 @@ public enum EnumChatFormat {
 		this.networkId = networkId;
 		this.character = character;
 		this.chatFormat = String.valueOf(COLOR_CHAR) + character;
+		red = 0;
+		green = 0;
+		blue = 0;
+		hexCode = null;
 	}
 	
 	/**
@@ -119,7 +124,7 @@ public enum EnumChatFormat {
 	 * @return instance from the character
 	 */
 	public static EnumChatFormat getByChar(char c) {
-		for (EnumChatFormat format : values) {
+		for (EnumChatFormat format : values()) {
 			if (format.character == c) return format;
 		}
 		return null;
@@ -136,7 +141,7 @@ public enum EnumChatFormat {
 		String last = getLastColors(legacyText);
 		if (last.length() > 0) {
 			char c = last.toCharArray()[1];
-			for (EnumChatFormat e : values) {
+			for (EnumChatFormat e : values()) {
 				if (e.character == c) return e;
 			}
 		}
@@ -175,7 +180,7 @@ public enum EnumChatFormat {
 	 * @return enum value or null if no such combination exists
 	 */
 	public static EnumChatFormat fromRGBExact(int red, int green, int blue){
-		for (EnumChatFormat format : values) {
+		for (EnumChatFormat format : values()) {
 			if (format.red == red && format.green == green && format.blue == blue) return format;
 		}
 		return null;

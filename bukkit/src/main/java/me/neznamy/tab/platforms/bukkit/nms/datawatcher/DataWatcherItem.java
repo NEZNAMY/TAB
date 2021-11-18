@@ -6,10 +6,10 @@ import me.neznamy.tab.shared.TAB;
 public class DataWatcherItem {
 	
 	//type of value (position + data type (1.9+))
-	private DataWatcherObject type;
+	private final DataWatcherObject type;
 	
 	//actual data value
-	private Object value;
+	private final Object value;
 	
 	/**
 	 * Constructs new instance of the object with given parameters

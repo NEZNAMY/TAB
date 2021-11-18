@@ -14,14 +14,13 @@ import me.neznamy.tab.shared.features.Playerlist;
 
 public class PlayerSlot {
 
-	private Playerlist playerlist;
-	private Layout layout;
-	private UUID id;
+	private Playerlist playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
+	private final Layout layout;
+	private final UUID id;
 	private TabPlayer player;
 	private String text = "";
 	
 	public PlayerSlot(Layout layout, UUID id) {
-		playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 		this.layout = layout;
 		this.id = id;
 	}

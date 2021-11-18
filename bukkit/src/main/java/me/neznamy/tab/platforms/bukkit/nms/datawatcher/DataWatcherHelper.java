@@ -17,10 +17,10 @@ public class DataWatcherHelper {
 	private final int armorStandFlagsPosition = getArmorStandFlagsPosition();
 
 	//original datawatcher to write to
-	private DataWatcher data;
+	private final DataWatcher data;
 	
 	//data watcher registry
-	private DataWatcherRegistry registry;
+	private final DataWatcherRegistry registry;
 	
 	/**
 	 * Constructs new instance of this class with given parent

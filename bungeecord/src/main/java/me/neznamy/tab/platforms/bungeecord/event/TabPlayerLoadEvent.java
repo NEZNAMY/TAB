@@ -8,7 +8,7 @@ import net.md_5.bungee.api.plugin.Event;
  */
 public class TabPlayerLoadEvent extends Event {
 
-	private TabPlayer player;
+	private final TabPlayer player;
 	
 	public TabPlayerLoadEvent(TabPlayer player) {
 		this.player = player;

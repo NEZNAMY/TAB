@@ -10,10 +10,10 @@ import me.neznamy.tab.shared.TAB;
 
 public class CollisionManager extends TabFeature {
 
-	private NameTag nametags;
-	private boolean collisionRule;
-	private Map<TabPlayer, Boolean> collision = new HashMap<>();
-	private Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
+	private final NameTag nametags;
+	private final boolean collisionRule;
+	private final Map<TabPlayer, Boolean> collision = new HashMap<>();
+	private final Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
 
 	public CollisionManager(NameTag nametags, boolean collisionRule) {
 		super(nametags.getFeatureName());

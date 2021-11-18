@@ -32,22 +32,22 @@ public class BukkitArmorStand implements ArmorStand {
 	private static int idCounter = 2000000000;
 
 	//nametag feature
-	private NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
+	private final NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
 
 	//owner of the armor stand
-	private TabPlayer owner;
+	private final TabPlayer owner;
 
 	//instance of Bukkit player
-	private Player player;
+	private final Player player;
 
 	//offset in blocks, 0 for original height
 	private double yOffset;
 
 	//entity ID of this armor stand
-	private int entityId = idCounter++;
+	private final int entityId = idCounter++;
 
 	//unique ID of this armor stand
-	private UUID uuid = UUID.randomUUID();
+	private final UUID uuid = UUID.randomUUID();
 
 	//sneaking flag of armor stands
 	private boolean sneaking;
@@ -56,13 +56,13 @@ public class BukkitArmorStand implements ArmorStand {
 	private boolean visible;
 
 	//property dedicated to this armor stand
-	private Property property;
+	private final Property property;
 
 	//if offset is static or dynamic based on other armor stands
 	private boolean staticOffset;
 
 	//entity destroy packet
-	private PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
+	private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
 	/**
 	 * Constructs new instance with given parameters

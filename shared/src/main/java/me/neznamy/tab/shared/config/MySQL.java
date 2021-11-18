@@ -14,11 +14,11 @@ import me.neznamy.tab.shared.TAB;
 public class MySQL {
 
 	private Connection con;
-	private String host;
-	private String database;
-	private String username;
-	private String password;
-	private int port;
+	private final String host;
+	private final String database;
+	private final String username;
+	private final String password;
+	private final int port;
 
 	public MySQL(String host, int port, String database, String username, String password) throws SQLException {
 		this.host = host;

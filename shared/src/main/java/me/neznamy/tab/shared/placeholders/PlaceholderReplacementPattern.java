@@ -8,9 +8,9 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 
 public class PlaceholderReplacementPattern {
 
-	private Map<String, String> replacements = new HashMap<>();
-	private String[] numberIntervalKeys;
-	private Map<String, float[]> numberIntervals = new HashMap<>();
+	private final Map<String, String> replacements = new HashMap<>();
+	private final String[] numberIntervalKeys;
+	private final Map<String, float[]> numberIntervals = new HashMap<>();
 
 	public PlaceholderReplacementPattern(Map<Object, Object> map) {
 		for (Entry<Object, Object> entry : map.entrySet()) {

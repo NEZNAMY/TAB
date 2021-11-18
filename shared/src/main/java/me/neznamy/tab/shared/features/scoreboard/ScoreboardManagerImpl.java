@@ -28,21 +28,21 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	public static final int DISPLAY_SLOT = 1;
 
 	//config options
-	private String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
-	private boolean useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
-	private boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
-	private boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
-	private boolean respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
-	private int staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
-	private int joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
+	private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
+	private final boolean useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
+	private final boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
+	private final boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
+	private final boolean respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
+	private final int staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
+	private final int joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
 
 	//defined scoreboards
-	private Map<String, Scoreboard> scoreboards = new LinkedHashMap<>();
+	private final Map<String, Scoreboard> scoreboards = new LinkedHashMap<>();
 	private Scoreboard[] definedScoreboards;
 
 	//toggle messages
-	private String scoreboardOn = TAB.getInstance().getConfiguration().getMessages().getScoreboardOn();
-	private String scoreboardOff = TAB.getInstance().getConfiguration().getMessages().getScoreboardOff();
+	private final String scoreboardOn = TAB.getInstance().getConfiguration().getMessages().getScoreboardOn();
+	private final String scoreboardOff = TAB.getInstance().getConfiguration().getMessages().getScoreboardOff();
 
 	//list of players with disabled scoreboard
 	private List<String> sbOffPlayers = new ArrayList<>();
@@ -50,15 +50,15 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	//currently active scoreboard announcement
 	private Scoreboard announcement;
 
-	private List<TabPlayer> joinDelayed = new ArrayList<>();
+	private final List<TabPlayer> joinDelayed = new ArrayList<>();
 
-	private Map<TabPlayer, ScoreboardImpl> forcedScoreboard = new HashMap<>();
+	private final Map<TabPlayer, ScoreboardImpl> forcedScoreboard = new HashMap<>();
 
-	private Map<TabPlayer, ScoreboardImpl> activeScoreboard = new HashMap<>();
+	private final Map<TabPlayer, ScoreboardImpl> activeScoreboard = new HashMap<>();
 
-	private List<TabPlayer> visiblePlayers = new ArrayList<>();
+	private final List<TabPlayer> visiblePlayers = new ArrayList<>();
 
-	private Map<TabPlayer, String> otherPluginScoreboard = new HashMap<>();
+	private final Map<TabPlayer, String> otherPluginScoreboard = new HashMap<>();
 
 	/**
 	 * Constructs new instance and loads configuration

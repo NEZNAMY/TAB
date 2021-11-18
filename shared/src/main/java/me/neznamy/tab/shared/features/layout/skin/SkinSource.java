@@ -14,9 +14,9 @@ import me.neznamy.tab.api.config.ConfigurationFile;
 
 public abstract class SkinSource {
 
-	private ConfigurationFile file;
-	private String path;
-	private Map<String, List<String>> cache;
+	private final ConfigurationFile file;
+	private final String path;
+	private final Map<String, List<String>> cache;
 	
 	protected SkinSource(ConfigurationFile file, String path) {
 		this.file = file;

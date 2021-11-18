@@ -20,19 +20,19 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 public abstract class ScoreboardLine extends TabFeature implements Line {
 
 	//ID of this line
-	protected int lineNumber;
+	protected final int lineNumber;
 	
 	//text to display
 	protected String text;
 	
 	//scoreboard this line belongs to
-	protected ScoreboardImpl parent;
+	protected final ScoreboardImpl parent;
 	
 	//scoreboard team name of player in this line
-	protected String teamName;
+	protected final String teamName;
 	
 	//forced player name start to make lines unique & sort them by names
-	protected String playerName;
+	protected final String playerName;
 	
 	/**
 	 * Constructs new instance with given parameters

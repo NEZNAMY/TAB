@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.TabConstants;
 public class TabCommand extends SubCommand {
 
 	//tab instance
-	private TAB tab;
+	private final TAB tab;
 	
 	/**
 	 * Constructs new instance with given parameter and registers all subcommands

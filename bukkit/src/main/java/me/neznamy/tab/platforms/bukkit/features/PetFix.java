@@ -19,13 +19,13 @@ import me.neznamy.tab.shared.TAB;
 public class PetFix extends TabFeature {
 
 	//nms storage
-	private NMSStorage nms = NMSStorage.getInstance();
+	private final NMSStorage nms = NMSStorage.getInstance();
 
 	//datawatcher position of pet owner field
-	private int petOwnerPosition = getPetOwnerPosition();
+	private final int petOwnerPosition = getPetOwnerPosition();
 
 	//logger of last interacts to prevent feature not working on 1.16
-	private Map<String, Long> lastInteractFix = new HashMap<>();
+	private final Map<String, Long> lastInteractFix = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter

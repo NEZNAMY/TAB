@@ -12,12 +12,12 @@ public abstract class Placeholder {
 	private static final String[] EMPTY_ARRAY = new String[0];
 	
 	//refresh interval of the placeholder
-	private int refresh;
+	private final int refresh;
 	
 	//placeholder identifier including %
-	protected String identifier;
+	protected final String identifier;
 	
-	protected PlaceholderReplacementPattern replacements;
+	protected final PlaceholderReplacementPattern replacements;
 	
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements

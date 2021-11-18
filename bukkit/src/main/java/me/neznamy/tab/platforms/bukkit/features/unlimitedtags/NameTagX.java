@@ -29,26 +29,26 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	//config options
-	private boolean markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
-	private boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
-	private double spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("scoreboard-teams.unlimited-nametag-mode.space-between-lines", 0.22);
-	protected List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());;
-	private List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
-	private Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
+	private final boolean markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
+	private final boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
+	private final double spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("scoreboard-teams.unlimited-nametag-mode.space-between-lines", 0.22);
+	protected final List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
+	private final List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
+	private final Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
 
 	//player data by entityId, used for better performance
-	private Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
+	private final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
 
 	//bukkit event listener
-	private EventListener eventListener = new EventListener(this);
+	private final EventListener eventListener = new EventListener(this);
 	
-	private List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
-	private String[] disabledUnlimitedWorldsArray = new String[0];
-	private boolean unlimitedWorldWhitelistMode;
+	private final List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
+	private final String[] disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
+	private final boolean unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
 	
-	private List<TabPlayer> playersDisabledWithAPI = new ArrayList<>();
+	private final List<TabPlayer> playersDisabledWithAPI = new ArrayList<>();
 	
-	private VehicleRefresher vehicleManager = new VehicleRefresher(this);
+	private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -56,10 +56,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	 * @param nms - nms storage
 	 */
 	public NameTagX(JavaPlugin plugin) {
-		if (disabledUnlimitedWorlds != null) {
-			disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
-			unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
-		}
 		Collections.reverse(dynamicLines);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		TAB.getInstance().getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this));

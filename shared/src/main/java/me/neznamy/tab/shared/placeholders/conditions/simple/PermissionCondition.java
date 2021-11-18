@@ -8,7 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 public class PermissionCondition extends SimpleCondition {
 
 	//permission requirement
-	private String permission;
+	private final String permission;
 	
 	/**
 	 * Constructs new instance with given condition line

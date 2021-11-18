@@ -24,13 +24,13 @@ public abstract class SubCommand {
 	protected final List<String> extraProperties = Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 	
 	//name of this subcommand
-	private String name;
+	private final String name;
 	
 	//permission required to run this command
-	private String permission;
+	private final String permission;
 	
 	//subcommands of this command
-	private Map<String, SubCommand> subcommands = new HashMap<>();
+	private final Map<String, SubCommand> subcommands = new HashMap<>();
 	
 	/**
 	 * Constructs new instance with given parameters
@@ -186,9 +186,5 @@ public abstract class SubCommand {
 
 	public Map<String, SubCommand> getSubcommands() {
 		return subcommands;
-	}
-
-	public void setSubcommands(Map<String, SubCommand> subcommands) {
-		this.subcommands = subcommands;
 	}
 }

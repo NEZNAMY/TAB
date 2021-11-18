@@ -15,7 +15,7 @@ import net.md_5.bungee.event.EventPriority;
  */
 public class BungeeEventListener implements Listener {
 
-	private PluginMessageHandler plm;
+	private final PluginMessageHandler plm;
 	
 	public BungeeEventListener(PluginMessageHandler plm) {
 		this.plm = plm;

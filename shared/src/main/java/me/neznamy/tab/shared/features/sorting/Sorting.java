@@ -26,11 +26,11 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  */
 public class Sorting extends TabFeature {
 
-	private NameTag nametags;
+	private final NameTag nametags;
 	
 	//map of all registered sorting types
 	@SuppressWarnings("serial")
-	private Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<String, BiFunction<Sorting, String, SortingType>>() {{
+	private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<String, BiFunction<Sorting, String, SortingType>>() {{
 		put("GROUPS", Groups::new);
 		put("PERMISSIONS", Permissions::new);
 		put("PLACEHOLDER", Placeholder::new);
@@ -41,10 +41,10 @@ public class Sorting extends TabFeature {
 	}};
 	
 	//if sorting is case senstitive or not
-	private boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
+	private final boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
 	
 	//active sorting types
-	private SortingType[] usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
+	private final SortingType[] usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task

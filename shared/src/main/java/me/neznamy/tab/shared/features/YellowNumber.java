@@ -21,8 +21,8 @@ public class YellowNumber extends TabFeature {
 	public static final int DISPLAY_SLOT = 0;
 	private static final String TITLE = "PlayerlistObjectiveTitle";
 
-	private String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
-	private EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) || 
+	private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
+	private final EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) || 
 			"%player_health_rounded%".equals(rawValue) ? EnumScoreboardHealthDisplay.HEARTS : EnumScoreboardHealthDisplay.INTEGER;
 
 	public YellowNumber() {

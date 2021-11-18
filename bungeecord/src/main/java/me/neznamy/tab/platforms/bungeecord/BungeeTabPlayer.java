@@ -39,7 +39,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 			getId.setAccessible(true);
 			wrapperField = InitialHandler.class.getDeclaredField("ch");
 			wrapperField.setAccessible(true);
-		} catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().criticalError("Failed to initialize fields for packet analysis", e);
 		}
 	}
