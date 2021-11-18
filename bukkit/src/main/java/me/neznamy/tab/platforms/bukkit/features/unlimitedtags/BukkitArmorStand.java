@@ -2,13 +2,11 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.UUID;
 
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
-import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.Property;
@@ -16,7 +14,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
@@ -203,9 +200,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	public boolean getVisibility() {
-		if (((BukkitTabPlayer)owner).isDisguised() || manager.getVehicleManager().isOnBoat(owner)) return false;
+		if (owner.isDisguised() || manager.getVehicleManager().isOnBoat(owner)) return false;
 		if (alwaysVisible) return true;
-		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
+		return !owner.hasInvisibilityPotion() && owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
 
 	/**
