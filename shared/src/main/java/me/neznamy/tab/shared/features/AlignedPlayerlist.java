@@ -44,7 +44,7 @@ public class AlignedPlayerlist extends Playerlist {
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
 		int playerNameWidth = getPlayerNameWidth(player);
-		if (!playerWidths.containsKey(player)) playerWidths.put(player, playerNameWidth);
+		playerWidths.put(player, playerNameWidth);
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
 			//name became shorter, finding new max player
 			playerWidths.put(player, playerNameWidth);

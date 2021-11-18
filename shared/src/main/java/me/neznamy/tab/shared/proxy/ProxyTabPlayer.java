@@ -35,8 +35,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 
 	public String getAttribute(String name, Object def) {
 		plm.requestAttribute(this, name);
-		if (!attributes.containsKey(name)) return def.toString();
-		return attributes.get(name);
+		return attributes.getOrDefault(name, def.toString());
 	}
 	
 	@Override
@@ -44,8 +43,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			String merge = "hasPermission:" + permission;
 			plm.requestAttribute(this, merge);
-			if (!attributes.containsKey(merge)) return false;
-			return Boolean.parseBoolean(attributes.get(merge));
+			return Boolean.parseBoolean(attributes.getOrDefault(merge, "false"));
 		}
 		return hasPermission0(permission);
 	}

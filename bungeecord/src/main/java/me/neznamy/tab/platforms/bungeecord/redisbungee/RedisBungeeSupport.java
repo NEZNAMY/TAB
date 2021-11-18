@@ -119,7 +119,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		}
 		if (message.get("proxy").equals(proxy.toString())) return; //message coming from current proxy
 		String action = (String) message.get("action");
-		UUID id = message.containsKey("UUID") ? UUID.fromString((String) message.get("UUID")) : null;
+		UUID id = UUID.fromString((String) message.getOrDefault("UUID", proxy.toString()));
 		RedisPlayer target;
 		switch(action) {
 		case "loadrequest":

@@ -181,10 +181,8 @@ public class IChatBaseComponent {
 	 * @return value from json object or null if not present
 	 */
 	private static Boolean getBoolean(JSONObject jsonObject, String key) {
-		if (jsonObject.containsKey(key)) {
-			return Boolean.parseBoolean(String.valueOf(jsonObject.get(key)));
-		}
-		return null;
+		String value = String.valueOf(jsonObject.getOrDefault(key, null));
+		return "null".equals(value) ? null : Boolean.parseBoolean(value);
 	}
 
 	@Override

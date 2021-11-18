@@ -34,9 +34,7 @@ public class CollisionManager extends TabFeature {
 	}
 	
 	public boolean getCollision(TabPlayer p) {
-		if (forcedCollision.get(p) != null) return forcedCollision.get(p);
-		if (!collision.containsKey(p)) return collisionRule;
-		return collision.get(p);
+		return forcedCollision.getOrDefault(p, collision.getOrDefault(p, collisionRule));
 	}
 
 	@Override

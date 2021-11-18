@@ -171,14 +171,8 @@ public class BukkitPlatform implements Platform {
 		} else {
 			//normal placeholder
 			if (identifier.startsWith("%sync:")) {
-				int refresh;
-				if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
-				} else if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-				} else {
-					refresh = pl.getDefaultRefresh();
-				}
+				int refresh = pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier,
+						pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
 				pl.registerPlaceholder(new PlayerPlaceholder(identifier, refresh, null) {
 					
 					@Override
@@ -201,12 +195,7 @@ public class BukkitPlatform implements Platform {
 				TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () ->
 						placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
 			} else {
-				int refresh;
-				if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-				} else {
-					refresh = pl.getDefaultRefresh();
-				}
+				int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh());
 				TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> 
 					placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
 			}

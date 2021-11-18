@@ -157,11 +157,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	public int getRelationalRefresh(String identifier) {
-		if (relationalPlaceholderRefreshIntervals.containsKey(identifier)) {
-			return relationalPlaceholderRefreshIntervals.get(identifier);
-		} else {
-			return defaultRefresh;
-		}
+		return relationalPlaceholderRefreshIntervals.getOrDefault(identifier, defaultRefresh);
 	}
 
 	public Collection<Placeholder> getAllPlaceholders(){

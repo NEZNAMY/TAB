@@ -205,7 +205,7 @@ public class CpuManager implements ThreadManager {
 		String key;
 		for (Entry<String, AtomicLong> nanos : map.entrySet()) {
 			key = nanos.getKey();
-			if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
+			nanoMap.putIfAbsent(key, 0L);
 			nanoMap.put(key, nanoMap.get(key)+nanos.getValue().get());
 		}
 		Map<String, Float> percentMap = new HashMap<>();
@@ -223,14 +223,10 @@ public class CpuManager implements ThreadManager {
 		Map<String, Map<String, Long>> total = new HashMap<>();
 		for (Entry<String, Map<String, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
 			String key = nanos.getKey();
-			if (!total.containsKey(key)) {
-				total.put(key, new HashMap<>());
-			}
+			total.putIfAbsent(key, new HashMap<>());
 			Map<String, Long> usage = total.get(key);
 			for (Entry<String, AtomicLong> entry : nanos.getValue().entrySet()) {
-				if (!usage.containsKey(entry.getKey())) {
-					usage.put(entry.getKey(), 0L);
-				}
+				usage.putIfAbsent(entry.getKey(), 0L);
 				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().get());
 			}
 		}

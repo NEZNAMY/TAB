@@ -24,9 +24,7 @@ public abstract class ProxyPlatform implements Platform {
 	public void registerUnknownPlaceholder(String identifier) {
 		TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
-		int refresh = pl.getDefaultRefresh();
-		if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-		if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
+		int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
 		Placeholder p = new PlayerPlaceholder(identifier, refresh, null) {
 			
 			@Override
