@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.features.layout.PlayerSlot;
  */
 public class Playerlist extends TabFeature implements TablistFormatManager {
 
-	private boolean antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
+	protected boolean antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
 	private boolean disabling = false;
 
 	public Playerlist() {
@@ -122,7 +122,7 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 		}
 	}
 	
-	private void updateProperties(TabPlayer p) {
+	protected void updateProperties(TabPlayer p) {
 		p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
 		p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName());
 		p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX);
@@ -130,9 +130,9 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
+		updateProperties(connectedPlayer);
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
 			addDisabledPlayer(connectedPlayer);
-			updateProperties(connectedPlayer);
 			return;
 		}
 		Runnable r = () -> {
@@ -150,7 +150,7 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
-	private UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
+	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
 		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
 		if (manager != null) {
 			Layout layout = manager.getPlayerViews().get(viewer);
