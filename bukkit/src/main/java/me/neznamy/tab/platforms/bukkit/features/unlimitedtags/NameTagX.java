@@ -412,4 +412,11 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	public boolean isDisableOnBoats() {
 		return disableOnBoats;
 	}
+
+	@Override
+	public List<String> getDefinedLines() {
+		List<String> lines = new ArrayList<>(dynamicLines);
+		lines.addAll(staticLines.keySet());
+		return lines;
+	}
 }

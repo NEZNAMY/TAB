@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.team;
 
+import java.util.List;
+
 import me.neznamy.tab.api.TabPlayer;
 
 public interface UnlimitedNametagManager extends TeamManager {
@@ -25,4 +27,6 @@ public interface UnlimitedNametagManager extends TeamManager {
 	public String getOriginalName(TabPlayer player);
 	
 	public String getOriginalLineValue(TabPlayer player, String line);
+	
+	public List<String> getDefinedLines();
 }
