@@ -15,7 +15,6 @@ import com.earth2me.essentials.Essentials;
 
 import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
@@ -101,7 +100,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		if (paperMspt) {
 			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
 		}
-		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
 			manager.registerPlayerPlaceholder("%health%", 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
 		}
 		manager.registerPlayerPlaceholder("%afk%", 500, p -> {

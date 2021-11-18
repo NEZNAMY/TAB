@@ -87,7 +87,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		long time = System.nanoTime();
 		try {
 			if (nmsPacket instanceof PacketPlayOutBoss) {
-				if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
 					handle((PacketPlayOutBoss) nmsPacket);
 				} else {
 					handleVia((PacketPlayOutBoss) nmsPacket);
@@ -106,7 +106,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		switch (packet.getOperation()) {
 		case ADD:
 			if (bossbars.containsKey(packet.getId())) return;
-			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
+			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
 					BarStyle.valueOf(packet.getOverlay().getBukkitName()));
 			if (packet.isCreateWorldFog()) bar.addFlag(BarFlag.CREATE_FOG);
@@ -124,7 +124,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			bossbars.get(packet.getId()).setProgress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16));
+			bossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
 			break;
 		case UPDATE_STYLE:
 			bossbars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));

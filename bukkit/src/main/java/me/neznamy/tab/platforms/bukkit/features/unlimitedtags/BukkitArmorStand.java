@@ -14,7 +14,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
@@ -216,7 +215,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (player.isSleeping()) {
 			y -= 1.76;
 		} else {
-			if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+			if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
 				y -= (sneaking ? 0.45 : 0.18);
 			} else {
 				y -= (sneaking ? 0.30 : 0.18);
@@ -247,15 +246,15 @@ public class BukkitArmorStand implements ArmorStand {
 			}
 		}
 		//1.13+ swimming or 1.9+ flying with elytra
-		if (isSwimming() || (NMSStorage.getInstance().getMinorVersion() >= 9 && player.isGliding())) {
+		if (isSwimming() || (TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
 			return player.getLocation().getY()-1.22;
 		}
 		return player.getLocation().getY();
 	}
 
 	private boolean isSwimming() {
-		if (NMSStorage.getInstance().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
-		return NMSStorage.getInstance().getMinorVersion() == 13 && player.isSwimming();
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+		return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
 	}
 
 	/**
@@ -306,7 +305,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public TabPacket[] getSpawnPackets(TabPlayer viewer) {
 		visible = getVisibility();
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-		if (NMSStorage.getInstance().getMinorVersion() >= 15) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
 			return new TabPacket[] {
 					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
 					new PacketPlayOutEntityMetadata(entityId, dataWatcher)

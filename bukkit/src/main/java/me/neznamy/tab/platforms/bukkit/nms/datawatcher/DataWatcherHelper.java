@@ -36,16 +36,16 @@ public class DataWatcherHelper {
 	 * @return armor stand flags position based on server version
 	 */
 	private int getArmorStandFlagsPosition() {
-		if (NMSStorage.getInstance().getMinorVersion() >= 17) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 17) {
 			//1.17.x
 			return 15;
-		} else if (NMSStorage.getInstance().getMinorVersion() >= 15) {
+		} else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
 			//1.15.x, 1.16.x
 			return 14;
-		} else if (NMSStorage.getInstance().getMinorVersion() >= 14) {
+		} else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14) {
 			//1.14.x
 			return 13;
-		} else if (NMSStorage.getInstance().getMinorVersion() >= 10) {
+		} else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 10) {
 			//1.10.x - 1.13.x
 			return 11;
 		} else {
@@ -68,18 +68,18 @@ public class DataWatcherHelper {
 	 * @param clientVersion - client version
 	 */
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
-		if (NMSStorage.getInstance().getMinorVersion() >= 13) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 13) {
 			try {
 				data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
 			} catch (ReflectiveOperationException e) {
 				TAB.getInstance().getErrorManager().printError("Failed to create component", e);
 			}
-		} else if (NMSStorage.getInstance().getMinorVersion() >= 8){
+		} else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8){
 			data.setValue(new DataWatcherObject(2, registry.getString()), customName);
 		} else {
 			//name length is limited to 64 characters on <1.8
 			String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
-			if (NMSStorage.getInstance().getMinorVersion() >= 6){
+			if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6){
 				data.setValue(new DataWatcherObject(10, registry.getString()), cutName);
 			} else {
 				data.setValue(new DataWatcherObject(5, registry.getString()), cutName);
@@ -93,7 +93,7 @@ public class DataWatcherHelper {
 	 * @param visible - if visible or not
 	 */
 	public void setCustomNameVisible(boolean visible) {
-		if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
 			data.setValue(new DataWatcherObject(3, registry.getBoolean()), visible);
 		} else {
 			data.setValue(new DataWatcherObject(3, registry.getByte()), (byte)(visible?1:0));
@@ -105,7 +105,7 @@ public class DataWatcherHelper {
 	 * @param health - health of entity
 	 */
 	public void setHealth(float health) {
-		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
 			data.setValue(new DataWatcherObject(6, registry.getFloat()), health);
 		} else {
 			data.setValue(new DataWatcherObject(16, registry.getInteger()), (int)health);
