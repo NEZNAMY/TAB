@@ -69,7 +69,7 @@ public class EventListener implements Listener {
 		TabPlayer[] nearby = p.getArmorStandManager().getNearbyPlayers();
 		p.getArmorStandManager().destroy();
 		feature.loadArmorStands(p);
-		feature.loadPassengers(p);
+		feature.getVehicleManager().loadPassengers(p);
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			if (viewer.getArmorStandManager() != null) viewer.getArmorStandManager().destroy(p);
 			if (!to.equals(viewer.getWorld())) continue;

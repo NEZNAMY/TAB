@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -21,9 +20,8 @@ import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
 /**
@@ -41,26 +39,20 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	//player data by entityId, used for better performance
 	private Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
-	
-	//map of vehicles carrying players
-	private Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
-	
+
 	//bukkit event listener
 	private EventListener eventListener = new EventListener(this);
 	
 	//list of players currently on boats
 	private List<TabPlayer> playersOnBoats = new ArrayList<>();
 	
-	//list of players currently in a vehicle
-	private Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<>();
-	
-	private Map<TabPlayer, Location> playerLocations = new ConcurrentHashMap<>();
-	
 	private List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
 	private String[] disabledUnlimitedWorldsArray = new String[0];
 	private boolean unlimitedWorldWhitelistMode;
 	
 	private List<TabPlayer> playersDisabledWithAPI = new ArrayList<>();
+	
+	private VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -75,6 +67,8 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		Collections.reverse(dynamicLines);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		TAB.getInstance().getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this));
+		TAB.getInstance().getFeatureManager().registerFeature("nametagx-vehicle", vehicleManager);
+		TAB.getInstance().getFeatureManager().registerFeature("nametagx-location", new LocationRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded Unlimited nametag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
@@ -89,14 +83,13 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 				playersInDisabledUnlimitedWorlds.add(all);
 			}
 			if (isPlayerDisabled(all)) continue;
-			loadPassengers(all);
+			vehicleManager.loadPassengers(all);
 			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				spawnArmorStands(all, viewer, false);
 			}
 		}
 		super.load();
 		startVisibilityRefreshTask();
-		startVehicleTickingTask();
 	}
 	
 	private void startVisibilityRefreshTask() {
@@ -125,64 +118,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 			}
 		}
 	}
-	
-	private void startVehicleTickingTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(200, "ticking vehicles", this, TabConstants.CpuUsageCategory.TICKING_VEHICLES, () -> {
-			
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded()) continue;
-				if (isPlayerDisabled(p)) {
-					playersInVehicle.remove(p);
-					playerLocations.remove(p);
-				} else {
-					processVehicles(p);
-					if (!playerLocations.containsKey(p) || !playerLocations.get(p).equals(((Player)p.getPlayer()).getLocation())) {
-						playerLocations.put(p, ((Player)p.getPlayer()).getLocation());
-						processPassengers((Entity) p.getPlayer());
-						//also updating position if player is previewing since we're here as the code would be same if we want to avoid listening to move event
-						if (p.isPreviewingNametag() && p.getArmorStandManager() != null) {
-							p.getArmorStandManager().teleport(p);
-						}
-					}
-				}
-			}
-		});
-	}
-	
-	/**
-	 * Checks for vehicle changes of player and sends packets if needed
-	 * @param p - player to check
-	 */
-	private void processVehicles(TabPlayer p) {
-		Entity vehicle = ((Player)p.getPlayer()).getVehicle();
-		if (playersInVehicle.containsKey(p) && vehicle == null) {
-			//vehicle exit
-			getVehicles().remove(playersInVehicle.get(p).getEntityId());
-			p.getArmorStandManager().teleport();
-			playersInVehicle.remove(p);
-		}
-		if (!playersInVehicle.containsKey(p) && vehicle != null) {
-			//vehicle enter
-			getVehicles().put(vehicle.getEntityId(), getPassengers(vehicle));
-			p.getArmorStandManager().teleport();
-			playersInVehicle.put(p, vehicle);
-		}
-	}
-	
-	/**
-	 * Teleports armor stands of all passengers on specified vehicle
-	 * @param vehicle - entity to check passengers of
-	 */
-	private void processPassengers(Entity vehicle) {
-		for (Entity passenger : getPassengers(vehicle)) {
-			if (passenger instanceof Player) {
-				TabPlayer pl = TAB.getInstance().getPlayer(passenger.getUniqueId());
-				pl.getArmorStandManager().teleport();
-			} else {
-				processPassengers(passenger);
-			}
-		}
-	}
 
 	@Override
 	public void unload() {
@@ -202,7 +137,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		getEntityIdMap().put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
 		loadArmorStands(connectedPlayer);
 		if (isPlayerDisabled(connectedPlayer)) return;
-		loadPassengers(connectedPlayer);
+		vehicleManager.loadPassengers(connectedPlayer);
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			spawnArmorStands(connectedPlayer, viewer, true);
 		}
@@ -220,16 +155,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
 	}
 
-	/**
-	 * Loads all passengers riding this player and adds them to vehicle list
-	 * @param p - player to load passengers of
-	 */
-	public void loadPassengers(TabPlayer p) {
-		if (((Entity) p.getPlayer()).getVehicle() == null) return;
-		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
-		getVehicles().put(vehicle.getEntityId(), getPassengers(vehicle));
-	}
-
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
@@ -237,8 +162,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
 		getEntityIdMap().remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
-		playersInVehicle.remove(disconnectedPlayer);
-		playerLocations.remove(disconnectedPlayer);
 		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
 		playersDisabledWithAPI.remove(disconnectedPlayer);
 		if (disconnectedPlayer.getArmorStandManager() != null) { //player was not loaded yet
@@ -310,7 +233,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		if (force) {
 			refreshed.getArmorStandManager().destroy();
 			loadArmorStands(refreshed);
-			loadPassengers(refreshed);
+			vehicleManager.loadPassengers(refreshed);
 			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer == refreshed) continue;
 				if (viewer.getWorld().equals(refreshed.getWorld())) {
@@ -346,24 +269,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		}
 	}
 
-	/**
-	 * Returns list of all passengers on specified vehicle
-	 * @param vehicle - vehicle to check passengers of
-	 * @return list of passengers
-	 */
-	@SuppressWarnings("deprecation")
-	public List<Entity> getPassengers(Entity vehicle){
-		if (NMSStorage.getInstance().getMinorVersion() >= 11) {
-			return vehicle.getPassengers();
-		} else {
-			if (vehicle.getPassenger() != null) {
-				return Arrays.asList(vehicle.getPassenger());
-			} else {
-				return new ArrayList<>();
-			}
-		}
-	}
-
 	@Override
 	public String getFeatureName() {
 		return "Unlimited Nametags";
@@ -377,10 +282,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	public Map<Integer, TabPlayer> getEntityIdMap() {
 		return entityIdMap;
-	}
-
-	public Map<Integer, List<Entity>> getVehicles() {
-		return vehicles;
 	}
 
 	public List<TabPlayer> getPlayersOnBoats() {
@@ -403,6 +304,10 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	public List<TabPlayer> getPlayersInDisabledUnlimitedWorlds() {
 		return playersInDisabledUnlimitedWorlds;
+	}
+	
+	public VehicleRefresher getVehicleManager() {
+		return vehicleManager;
 	}
 	
 	@Override
