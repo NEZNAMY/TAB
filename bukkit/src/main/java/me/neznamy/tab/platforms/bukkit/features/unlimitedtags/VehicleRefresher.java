@@ -51,6 +51,7 @@ public class VehicleRefresher extends TabFeature {
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
+		vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
 		playersInVehicle.remove(disconnectedPlayer);
 	}
 	
