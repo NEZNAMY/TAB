@@ -198,6 +198,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		if (nms.PacketPlayOutScoreboardTeam == null) return null; //fabric
 		Object team = nms.newScoreboardTeam.newInstance(emptyScoreboard, packet.getName());
 		String prefix = packet.getPlayerPrefix();
 		String suffix = packet.getPlayerSuffix();

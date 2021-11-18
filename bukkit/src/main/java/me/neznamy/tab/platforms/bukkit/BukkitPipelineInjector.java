@@ -60,7 +60,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+				if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 					modifyPlayers(packet);
 					super.write(context, packet, channelPromise);
 					return;
