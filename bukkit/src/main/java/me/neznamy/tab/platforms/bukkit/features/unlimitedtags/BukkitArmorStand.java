@@ -161,14 +161,7 @@ public class BukkitArmorStand implements ArmorStand {
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
-				Runnable spawn = () -> spawn(viewer);
-				if (viewer.getVersion().getMinorVersion() == 8) {
-					//1.8.0 client sided bug
-					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
-				} else {
-					spawn.run();
-				}
+				respawn(viewer);
 			}
 		}
 	}
@@ -337,4 +330,15 @@ public class BukkitArmorStand implements ArmorStand {
 		return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 
+	@Override
+	public void respawn(TabPlayer viewer) {
+		viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		Runnable spawn = () -> spawn(viewer);
+		if (viewer.getVersion().getMinorVersion() == 8) {
+			//1.8.0 client sided bug
+			TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
+		} else {
+			spawn.run();
+		}
+	}
 }

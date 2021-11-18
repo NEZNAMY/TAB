@@ -28,7 +28,7 @@ public class VehicleRefresher extends TabFeature {
 		setRefreshDisplayName("Refreshing vehicles");
 		this.feature = feature;
 		addUsedPlaceholders(Arrays.asList("%vehicle%"));
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 200, p -> String.valueOf(((Player)p.getPlayer()).getVehicle()));
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> String.valueOf(((Player)p.getPlayer()).getVehicle()));
 	}
 	
 	@Override
@@ -44,7 +44,7 @@ public class VehicleRefresher extends TabFeature {
 		if (!playersInVehicle.containsKey(p) && vehicle != null) {
 			//vehicle enter
 			vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
-			p.getArmorStandManager().teleport();
+			p.getArmorStandManager().respawn(); //making teleport instant instead of showing teleport animation
 			playersInVehicle.put(p, vehicle);
 		}
 	}

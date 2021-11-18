@@ -202,6 +202,10 @@ class KryptonArmorStand(
         return text.isEmpty()
     }
 
+    override fun respawn(viewer: TabPlayer) {
+        //TODO
+    }
+
     companion object {
 
         private val ID_COUNTER = AtomicInteger(2000000000)

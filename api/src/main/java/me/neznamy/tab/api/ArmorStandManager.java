@@ -167,4 +167,12 @@ public class ArmorStandManager {
 	public boolean isNearby(TabPlayer viewer) {
 		return nearbyPlayers.contains(viewer);
 	}
+	
+	public void respawn() {
+		for (ArmorStand a : armorStandArray) {
+			for (TabPlayer viewer : nearbyPlayerArray) {
+				a.respawn(viewer);
+			}
+		}
+	}
 }
