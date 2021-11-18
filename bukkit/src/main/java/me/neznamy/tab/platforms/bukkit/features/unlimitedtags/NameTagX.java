@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,9 +41,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	//bukkit event listener
 	private EventListener eventListener = new EventListener(this);
-	
-	//list of players currently on boats
-	private List<TabPlayer> playersOnBoats = new ArrayList<>();
 	
 	private List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
 	private String[] disabledUnlimitedWorldsArray = new String[0];
@@ -98,25 +94,8 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isPlayerDisabled(p)) continue;
 				p.getArmorStandManager().updateVisibility(false);
-				if (disableOnBoats) processBoats(p);
-				
 			}
 		});
-	}
-	
-	private void processBoats(TabPlayer p) {
-		boolean onBoat = ((Player)p.getPlayer()).getVehicle() != null && ((Player)p.getPlayer()).getVehicle().getType() == EntityType.BOAT;
-		if (onBoat) {
-			if (!getPlayersOnBoats().contains(p)) {
-				getPlayersOnBoats().add(p);
-				updateTeamData(p);
-			}
-		} else {
-			if (getPlayersOnBoats().contains(p)) {
-				getPlayersOnBoats().remove(p);
-				updateTeamData(p);
-			}
-		}
 	}
 
 	@Override
@@ -277,17 +256,13 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
 		if (p.hasInvisibilityPotion()) return false; //1.8.x client sided bug
-		return playersOnBoats.contains(p) || isPlayerDisabled(p);
+		return vehicleManager.isOnBoat(p) || isPlayerDisabled(p);
 	}
 
 	public Map<Integer, TabPlayer> getEntityIdMap() {
 		return entityIdMap;
 	}
 
-	public List<TabPlayer> getPlayersOnBoats() {
-		return playersOnBoats;
-	}
-	
 	public boolean isDisabled(String world) {
 		boolean contains = contains(disabledUnlimitedWorldsArray, world);
 		if (unlimitedWorldWhitelistMode) contains = !contains;
@@ -432,5 +407,9 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	private void rebuildNametagLine(TabPlayer player) {
 		player.setProperty(this, TabConstants.Property.NAMETAG, player.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() + 
 				player.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + player.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
+	}
+
+	public boolean isDisableOnBoats() {
+		return disableOnBoats;
 	}
 }

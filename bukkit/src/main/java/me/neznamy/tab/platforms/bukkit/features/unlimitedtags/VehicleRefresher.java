@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TabFeature;
@@ -20,6 +21,9 @@ public class VehicleRefresher extends TabFeature {
 	
 	//map of vehicles carrying players
 	private Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
+	
+	//list of players currently on boats
+	private List<TabPlayer> playersOnBoats = new ArrayList<>();
 	
 	private NameTagX feature;
 		
@@ -40,19 +44,32 @@ public class VehicleRefresher extends TabFeature {
 			vehicles.remove(playersInVehicle.get(p).getEntityId());
 			p.getArmorStandManager().teleport();
 			playersInVehicle.remove(p);
+			if (feature.isDisableOnBoats() && playersOnBoats.contains(p)) {
+				playersOnBoats.remove(p);
+				feature.updateTeamData(p);
+			}
 		}
 		if (!playersInVehicle.containsKey(p) && vehicle != null) {
 			//vehicle enter
 			vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
 			p.getArmorStandManager().respawn(); //making teleport instant instead of showing teleport animation
 			playersInVehicle.put(p, vehicle);
+			if (feature.isDisableOnBoats() && vehicle.getType() == EntityType.BOAT) {
+				playersOnBoats.add(p);
+				feature.updateTeamData(p);
+			}
 		}
+	}
+
+	public boolean isOnBoat(TabPlayer p) {
+		return playersOnBoats.contains(p);
 	}
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
 		playersInVehicle.remove(disconnectedPlayer);
+		playersOnBoats.remove(disconnectedPlayer);
 	}
 	
 	public Map<Integer, List<Entity>> getVehicles() {

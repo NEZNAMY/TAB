@@ -203,7 +203,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	public boolean getVisibility() {
-		if (((BukkitTabPlayer)owner).isDisguised() || manager.getPlayersOnBoats().contains(owner)) return false;
+		if (((BukkitTabPlayer)owner).isDisguised() || manager.getVehicleManager().isOnBoat(owner)) return false;
 		if (alwaysVisible) return true;
 		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
