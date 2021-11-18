@@ -8,7 +8,7 @@ group-value-assigned: "&3[TAB] %property% '&r%value%&r&3' has been successfully 
 group-value-removed: "&3[TAB] %property% has been successfully removed from group &e%group%"
 user-data-removed: "&3[TAB] All data has been successfully removed from player &e%player%"
 user-value-assigned: "&3[TAB] %property% '&r%value%&r&3' has been successfully assigned to player &e%player%"
-group-value-removed: "&3[TAB] %property% has been successfully removed from player &e%player%"
+user-value-removed: "&3[TAB] %property% has been successfully removed from player &e%player%"
 parse-command-usage: "Usage: /tab parse <player> <placeholder>"
 send-command-usage: "Usage: /tab send <type> <player> <bar name> <length>\nCurrently supported types: &lbar"
 send-bar-command-usage: "Usage: /tab send bar <player> <bar name> <length>"

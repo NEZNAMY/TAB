@@ -61,7 +61,7 @@ public class MessageFile {
 	}
 	
 	public String getPlayerValueRemoved(String property, String player) {
-		return file.getString("group-value-removed", "&3[TAB] %property% has been successfully removed from player &e%player%")
+		return file.getString("user-value-removed", "&3[TAB] %property% has been successfully removed from player &e%player%")
 				.replace("%property%", property).replace("%player%", player);
 	}
 	
