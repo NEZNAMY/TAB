@@ -12,7 +12,7 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutEntityRotation
 import org.kryptonmc.krypton.packet.out.play.PacketOutEntityTeleport
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnPlayer
 
-class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featureName) {
+class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featureName, null) {
 
     // TODO: Use the interact packet when we support it
     override fun onPacketReceive(sender: TabPlayer, packet: Any): Boolean = false

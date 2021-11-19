@@ -8,7 +8,7 @@ import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.Listener
 import org.kryptonmc.api.event.player.JoinEvent
 
-class PerWorldPlayerList(private val plugin: Main) : TabFeature("Per world playerlist") {
+class PerWorldPlayerList(private val plugin: Main) : TabFeature("Per world playerlist", null) {
 
     private val allowBypass = TAB.getInstance().configuration.config.getBoolean(
         "per-world-playerlist.allow-bypass-permission",
