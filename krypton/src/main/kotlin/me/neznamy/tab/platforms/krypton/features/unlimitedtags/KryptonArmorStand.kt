@@ -40,8 +40,7 @@ class KryptonArmorStand(
     private var sneaking = false
     private var visible = calculateVisibility()
     private val destroyPacket = PacketOutDestroyEntities(entityId)
-
-    val location: Vector3d
+    private val location: Vector3d
         get() {
             val x = player.location.x()
             var y = calculateY() + yOffset + 2
@@ -63,24 +62,27 @@ class KryptonArmorStand(
     override fun setOffset(offset: Double) {
         if (yOffset == offset) return
         yOffset = offset
-        owner.armorStandManager.nearbyPlayers.forEach { (it.player as KryptonPlayer).session.send(getTeleportPacket(it)) }
+        owner.armorStandManager.nearbyPlayers.forEach {
+            it.sendPacket(getTeleportPacket(it), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE)
+        }
     }
 
     override fun spawn(viewer: TabPlayer) {
-        val session = (viewer.player as KryptonPlayer).session
-        getSpawnPackets(viewer).forEach(session::send)
+        getSpawnPackets(viewer).forEach { viewer.sendPacket(it, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN) }
     }
 
     override fun destroy() {
-        TAB.getInstance().onlinePlayers.forEach { (it.player as KryptonPlayer).session.send(destroyPacket) }
+        TAB.getInstance().onlinePlayers.forEach { it.sendPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN) }
     }
 
     override fun destroy(viewer: TabPlayer) {
-        (viewer.player as KryptonPlayer).session.send(destroyPacket)
+        viewer.sendPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN)
     }
 
     override fun teleport() {
-        owner.armorStandManager.nearbyPlayers.forEach { (it.player as KryptonPlayer).session.send(getTeleportPacket(it)) }
+        owner.armorStandManager.nearbyPlayers.forEach {
+            it.sendPacket(getTeleportPacket(it), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT)
+        }
     }
 
     override fun teleport(viewer: TabPlayer) {
@@ -88,35 +90,23 @@ class KryptonArmorStand(
             owner.armorStandManager.spawn(viewer)
             return
         }
-        (viewer.player as KryptonPlayer).session.send(getTeleportPacket(viewer))
+        viewer.sendPacket(getTeleportPacket(viewer), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT)
     }
 
     override fun sneak(sneaking: Boolean) {
         if (this.sneaking == sneaking) return // idk
         this.sneaking = sneaking
         owner.armorStandManager.nearbyPlayers.forEach {
-            val session = (it.player as KryptonPlayer).session
             if (it.version.minorVersion == 14 && !TAB.getInstance().configuration.isArmorStandsAlwaysVisible) {
                 if (sneaking) {
-                    session.send(destroyPacket)
+                    it.sendPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK)
                 } else {
                     spawn(it)
                 }
                 return@forEach
             }
-            session.send(destroyPacket)
-            val spawn = Runnable { spawn(it) }
-            if (it.version.minorVersion == 8) {
-                TAB.getInstance().cpuManager.runTaskLater(
-                    50,
-                    "compensating for 1.8.0 bugs",
-                    manager,
-                    TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION,
-                    spawn
-                )
-                return
-            }
-            spawn.run()
+            // respawning so there's no animation and it's instant
+            respawn(it)
         }
     }
 
@@ -132,19 +122,25 @@ class KryptonArmorStand(
 
     private fun updateMetadata() {
         owner.armorStandManager.nearbyPlayers.forEach {
-            val session = (it.player as KryptonPlayer).session
-            session.send(PacketOutMetadata(entityId, createMetadata(property.getFormat(it), it).all))
+            val packet = PacketOutMetadata(entityId, createMetadata(property.getFormat(it), it).all)
+            it.sendPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA)
         }
     }
 
-    private fun getTeleportPacket(viewer: TabPlayer): PacketOutEntityTeleport =
-        PacketOutEntityTeleport(entityId, armorStandLocationFor(viewer), Vector2f.ZERO, false)
+    private fun getTeleportPacket(viewer: TabPlayer): PacketOutEntityTeleport = PacketOutEntityTeleport(
+        entityId,
+        armorStandLocationFor(viewer),
+        Vector2f.ZERO,
+        false
+    )
 
-    private fun getSpawnPackets(viewer: TabPlayer): Array<Packet> {
+    // Using a sequence here makes sense because we only need the iteration behaviour, which is exactly what sequences are for.
+    // For those reading this from Java, a Sequence is kind of Kotlin's equivalent to Java's Stream.
+    private fun getSpawnPackets(viewer: TabPlayer): Sequence<Packet> {
         visible = calculateVisibility()
         val data = createMetadata(property.getFormat(viewer), viewer)
         val location = armorStandLocationFor(viewer)
-        return arrayOf(
+        return sequenceOf(
             PacketOutSpawnLivingEntity(
                 entityId,
                 uuid,
@@ -179,6 +175,7 @@ class KryptonArmorStand(
     }
 
     private fun calculateVisibility(): Boolean {
+        if (owner.isDisguised || manager.vehicleManager.isOnBoat(owner)) return false
         if (TAB.getInstance().configuration.isArmorStandsAlwaysVisible) return true
         return player.gameMode !== GameModes.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().isNotEmpty()
     }
@@ -203,11 +200,26 @@ class KryptonArmorStand(
     }
 
     override fun respawn(viewer: TabPlayer) {
-        //TODO
+        viewer.sendPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN)
+        val spawn = Runnable { spawn(viewer) }
+        if (viewer.version.minorVersion == 8) {
+            // 1.8.8 client sided bug
+            TAB.getInstance().cpuManager.runTaskLater(
+                50,
+                "compensating for 1.8.0 bugs",
+                manager,
+                TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION,
+                spawn
+            )
+        } else {
+            spawn.run()
+        }
     }
 
     companion object {
 
+        private val ALWAYS_VISIBLE = TAB.getInstance().configuration.isArmorStandsAlwaysVisible
+        // entity ID counter to pick (hopefully) unique entity IDs
         private val ID_COUNTER = AtomicInteger(2000000000)
         private val TYPE = Registries.ENTITY_TYPE.idOf(EntityTypes.ARMOR_STAND)
     }
