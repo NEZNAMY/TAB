@@ -130,11 +130,7 @@ public class BelowName extends TabFeature {
 	}
 	
 	private String getName(TabPlayer p) {
-		NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
-		if (nick != null) {
-			return nick.getNickname(p);
-		}
-		return p.getName();
+		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
 	}
 
 	public class TextRefresher extends TabFeature {
