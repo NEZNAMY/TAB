@@ -23,7 +23,7 @@ public class SpectatorFix extends TabFeature {
 	 * Constructs new instance and loads config options
 	 */
 	public SpectatorFix() {
-		super("Spectator fix");
+		super("Spectator fix", null);
 		TAB.getInstance().debug("Loaded SpectatorFix feature");
 	}
 	

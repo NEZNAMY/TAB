@@ -37,7 +37,7 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	 * @param plugin - plugin instance
 	 */
 	public PerWorldPlayerlist(JavaPlugin plugin) {
-		super("Per world playerlist");
+		super("Per world playerlist", null);
 		this.plugin = plugin;
 		TAB.getInstance().debug(String.format("Loaded PerWorldPlayerlist feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
 		Bukkit.getPluginManager().registerEvents(this, plugin);

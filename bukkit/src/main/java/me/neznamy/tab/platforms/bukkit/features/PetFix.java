@@ -29,10 +29,9 @@ public class PetFix extends TabFeature {
 
 	/**
 	 * Constructs new instance with given parameter
-	 * @param nms
 	 */
 	public PetFix() {
-		super("Pet name fix");
+		super("Pet name fix", null);
 		TAB.getInstance().debug("Loaded PetFix feature");
 	}
 

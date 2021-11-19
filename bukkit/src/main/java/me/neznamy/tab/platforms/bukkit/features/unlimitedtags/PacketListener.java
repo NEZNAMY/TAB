@@ -28,7 +28,7 @@ public class PacketListener extends TabFeature {
 	 * @param nameTagX - main feature
 	 */
 	public PacketListener(NameTagX nameTagX) {
-		super(nameTagX.getFeatureName());
+		super(nameTagX.getFeatureName(), null);
 		this.nameTagX = nameTagX;
 	}
 

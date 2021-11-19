@@ -24,7 +24,7 @@ public class NickCompatibility extends TabFeature {
 	private final YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
 	
 	public NickCompatibility() {
-		super("Nick compatibility");
+		super("Nick compatibility", null);
 		TAB.getInstance().debug("Loaded NickCompatibility feature");
 	}
 	

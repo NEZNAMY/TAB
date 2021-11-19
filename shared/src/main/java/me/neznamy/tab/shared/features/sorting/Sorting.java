@@ -52,7 +52,7 @@ public class Sorting extends TabFeature {
 	 * @param nametags - nametag feature
 	 */
 	public Sorting(NameTag nametags) {
-		super("Team name refreshing");
+		super("Team name refreshing", "Refreshing team name");
 		this.nametags = nametags;
 	}
 	

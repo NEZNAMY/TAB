@@ -15,7 +15,7 @@ public class LocationRefresher extends TabFeature {
 	private final NameTagX feature;
 	
 	public LocationRefresher(NameTagX feature) {
-		super(feature.getFeatureName());
+		super(feature.getFeatureName(), "Processing passengers / preview");
 		this.feature = feature;
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%location0%", 50, p -> {
 			

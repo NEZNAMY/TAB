@@ -22,7 +22,7 @@ public class PingSpoof extends TabFeature {
 	 * Constructs new instance and loads config options
 	 */
 	public PingSpoof() {
-		super("Ping spoof");
+		super("Ping spoof", null);
 		TAB.getInstance().debug(String.format("Loaded PingSpoof feature with parameters value=%s", value));
 	}
 	

@@ -20,8 +20,7 @@ public class TextRefresher extends TabFeature {
 	 * @param line - bossbar line this text belongs to
 	 */
 	public TextRefresher(BossBarLine line) {
-		super("BossBar");
-		setRefreshDisplayName("Updating text");
+		super("BossBar", "Updating text");
 		this.line = line;
 		textProperty = TabConstants.Property.bossbarTitle(line.getName());
 	}

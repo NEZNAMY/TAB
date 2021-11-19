@@ -35,7 +35,7 @@ public class LayoutManager extends TabFeature {
 	private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
 
 	public LayoutManager() {
-		super("Layout");
+		super("Layout", "Switching layouts");
 		for (int slot=1; slot<=80; slot++) {
 			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}

@@ -67,8 +67,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param lines - lines of scoreboard
 	 */
 	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, boolean dynamicLinesOnly) {
-		super(manager.getFeatureName());
-		setRefreshDisplayName("Updating scoreboard title");
+		super(manager.getFeatureName(), "Updating scoreboard title");
 		this.manager = manager;
 		this.name = name;
 		this.title = title;

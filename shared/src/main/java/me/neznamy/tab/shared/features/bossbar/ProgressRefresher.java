@@ -20,8 +20,7 @@ public class ProgressRefresher extends TabFeature {
 	 * @param line - bossbar line this text belongs to
 	 */
 	public ProgressRefresher(BossBarLine line) {
-		super("BossBar");
-		setRefreshDisplayName("Updating progress");
+		super("BossBar", "Updating progress");
 		this.line = line;
 		progressProperty = TabConstants.Property.bossbarProgress(line.getName());
 	}

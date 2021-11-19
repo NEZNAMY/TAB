@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.TAB;
 public class GhostPlayerFix extends TabFeature {
 
 	public GhostPlayerFix() {
-		super("Ghost player fix");
+		super("Ghost player fix", null);
 		TAB.getInstance().debug("Loaded GhostPlayerFix feature");
 	}
 	

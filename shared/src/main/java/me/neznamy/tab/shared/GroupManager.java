@@ -26,7 +26,7 @@ public class GroupManager extends TabFeature {
 	private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 	
 	public GroupManager(PermissionPlugin plugin) {
-		super("Permission group refreshing");
+		super("Permission group refreshing", "Refreshing group");
 		this.plugin = plugin;
 		if (plugin instanceof LuckPerms) {
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, TabPlayer::getGroup);

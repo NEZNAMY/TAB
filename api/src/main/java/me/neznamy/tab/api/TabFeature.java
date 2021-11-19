@@ -11,16 +11,27 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 public abstract class TabFeature {
 
 	private final String featureName;
-	private String refreshDisplayName = "Updating visuals";
-	protected String[] disabledServers = new String[0];
-	private boolean serverWhitelistMode;
-	protected String[] disabledWorlds = new String[0];
-	private boolean worldWhitelistMode;
+	private final String refreshDisplayName;
+	protected final String[] disabledServers;
+	private final boolean serverWhitelistMode;
+	protected final String[] disabledWorlds;
+	private final boolean worldWhitelistMode;
 	private final List<TabPlayer> disabledPlayers = new ArrayList<>();
 	private final List<String> methodOverrides = new ArrayList<>();
 	
-	protected TabFeature(String featureName) {
+	protected TabFeature(String featureName, String refreshDisplayName) {
+		this(featureName, refreshDisplayName, null, null);
+	}
+	
+	protected TabFeature(String featureName, String refreshDisplayName, List<String> disabledServers, List<String> disabledWorlds) {
 		this.featureName = featureName;
+		this.refreshDisplayName = refreshDisplayName;
+		if (disabledServers == null) disabledServers = new ArrayList<>();
+		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
+		this.disabledServers = disabledServers.toArray(new String[0]);
+		serverWhitelistMode = disabledServers.contains("WHITELIST");
+		this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+		worldWhitelistMode = disabledWorlds.contains("WHITELIST");
 		try {
 			if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onCommand");
@@ -48,18 +59,6 @@ public abstract class TabFeature {
 				methodOverrides.add("refresh");
 		} catch (NoSuchMethodException e) {
 			//this will never happen
-		}
-	}
-	
-	protected TabFeature(String featureName, List<String> disabledServers, List<String> disabledWorlds) {
-		this(featureName);
-		if (disabledServers != null) {
-			this.disabledServers = disabledServers.toArray(new String[0]);
-			serverWhitelistMode = disabledServers.contains("WHITELIST");
-		}
-		if (disabledWorlds != null) {
-			this.disabledWorlds = disabledWorlds.toArray(new String[0]);
-			worldWhitelistMode = disabledWorlds.contains("WHITELIST");
 		}
 	}
 	
@@ -252,9 +251,5 @@ public abstract class TabFeature {
 
 	public String getRefreshDisplayName() {
 		return refreshDisplayName;
-	}
-
-	public void setRefreshDisplayName(String refreshDisplayName) {
-		this.refreshDisplayName = refreshDisplayName;
 	}
 }

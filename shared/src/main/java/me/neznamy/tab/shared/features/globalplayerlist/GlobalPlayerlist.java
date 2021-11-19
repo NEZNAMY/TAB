@@ -30,7 +30,7 @@ public class GlobalPlayerlist extends TabFeature {
 	private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
 	public GlobalPlayerlist() {
-		super("Global Playerlist");
+		super("Global Playerlist", null);
 		if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_latency", new LatencyRefresher());
 		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_vanish", new VanishRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",

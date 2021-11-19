@@ -35,7 +35,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
 	public NameTag() {
-		super("Nametags", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
+		super("Nametags", "Updating prefix/suffix", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
 		TAB.getInstance().getFeatureManager().registerFeature("sorting", sorting);
 		if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature("nametags-visibility", new VisibilityRefresher(this));

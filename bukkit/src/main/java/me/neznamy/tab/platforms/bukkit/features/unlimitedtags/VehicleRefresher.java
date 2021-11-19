@@ -28,8 +28,7 @@ public class VehicleRefresher extends TabFeature {
 	private final NameTagX feature;
 		
 	public VehicleRefresher(NameTagX feature) {
-		super(feature.getFeatureName());
-		setRefreshDisplayName("Refreshing vehicles");
+		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
 		addUsedPlaceholders(Arrays.asList("%vehicle%"));
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> String.valueOf(((Player)p.getPlayer()).getVehicle()));

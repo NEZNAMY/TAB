@@ -42,7 +42,7 @@ public abstract class PipelineInjector extends TabFeature {
 	 * @param tab
 	 */
 	protected PipelineInjector(String injectPosition) {
-		super("Pipeline injection");
+		super("Pipeline injection", null);
 		this.injectPosition = injectPosition;
 		if (antiOverrideTeams) setByteBufDeserialization(true);
 	}

@@ -16,8 +16,7 @@ public class CollisionManager extends TabFeature {
 	private final Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
 
 	public CollisionManager(NameTag nametags, boolean collisionRule) {
-		super(nametags.getFeatureName());
-		setRefreshDisplayName("Updating collision");
+		super(nametags.getFeatureName(), "Updating collision");
 		this.nametags = nametags;
 		this.collisionRule = collisionRule;
 		if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway

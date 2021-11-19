@@ -51,7 +51,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private final RepeatingTask refreshTask;
 
 	public PlaceholderManagerImpl(){
-		super("Refreshing placeholders");
+		super("Refreshing placeholders", "Updating placeholders");
 		loadRefreshIntervals();
 		refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, "refreshing placeholders", this, "Refreshing placeholders", this::refresh);
 	}
