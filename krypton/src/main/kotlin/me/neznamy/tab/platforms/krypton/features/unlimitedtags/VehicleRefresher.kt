@@ -6,7 +6,7 @@ import org.kryptonmc.api.entity.Entity
 import org.kryptonmc.krypton.entity.KryptonEntity
 import java.util.concurrent.ConcurrentHashMap
 
-class VehicleRefresher(private val feature: NameTagX) : TabFeature(feature.featureName) {
+class VehicleRefresher(private val feature: NameTagX) : TabFeature(feature.featureName, "Refreshing vehicles") {
 
     // list of players currently in a vehicle
     private val playersInVehicle = ConcurrentHashMap<TabPlayer, KryptonEntity>()

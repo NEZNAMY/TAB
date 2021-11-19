@@ -5,7 +5,7 @@ import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
 import org.kryptonmc.api.entity.player.Player
 
-class LocationRefresher(feature: NameTagX) : TabFeature(feature.featureName) {
+class LocationRefresher(feature: NameTagX) : TabFeature(feature.featureName, "Processing passengers / preview") {
 
     init {
         TAB.getInstance().placeholderManager.registerPlayerPlaceholder("%location0%", 50) {
