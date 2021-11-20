@@ -12,6 +12,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 
+import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
@@ -51,6 +52,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
 		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
+		try {
+			Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
+			channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
+		} catch (ReflectiveOperationException e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getUsername(), e);
+		}
 	}
 	
 	@Override
@@ -72,16 +79,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		if (packet == null || !getPlayer().isActive()) return;
 		if (packet instanceof PacketPlayOutChat){
 			handle((PacketPlayOutChat) packet);
-		}
-		if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+		} else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
 			handle((PacketPlayOutPlayerListHeaderFooter) packet);
-		}
-		if (packet instanceof PacketPlayOutBoss) {
+		} else if (packet instanceof PacketPlayOutBoss) {
 			handle((PacketPlayOutBoss) packet);
-		}
-		if (packet instanceof PacketPlayOutPlayerInfo) {
+		} else if (packet instanceof PacketPlayOutPlayerInfo) {
 			handle((PacketPlayOutPlayerInfo) packet);
-		}
+		} else if (channel != null) channel.writeAndFlush(packet, channel.voidPromise());
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 
