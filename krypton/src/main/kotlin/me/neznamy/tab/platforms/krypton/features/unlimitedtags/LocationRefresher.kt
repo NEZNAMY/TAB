@@ -5,18 +5,18 @@ import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
 import org.kryptonmc.api.entity.player.Player
 
-class LocationRefresher(feature: NameTagX) : TabFeature(feature.featureName, "Processing passengers / preview") {
+class LocationRefresher(private val feature: NameTagX) : TabFeature(feature.featureName, "Processing passengers / preview") {
 
     init {
         TAB.getInstance().placeholderManager.registerPlayerPlaceholder("%location0%", 50) {
-            // TODO: Check if the player is in a vehicle
+            if (!feature.vehicleManager.isInVehicle(it) && !it.isPreviewingNametag) return@registerPlayerPlaceholder null
             val location = (it.player as Player).location
             location.x() + location.y() + location.z()
         }
     }
 
     override fun refresh(refreshed: TabPlayer, force: Boolean) {
-        // TODO: Handle vehicles
+        if (feature.vehicleManager.isInVehicle(refreshed)) feature.vehicleManager.processPassengers(refreshed.player as Player)
         if (refreshed.isPreviewingNametag) refreshed.armorStandManager.teleport(refreshed)
     }
 }

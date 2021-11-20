@@ -20,7 +20,7 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
         "unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients",
         false
     )
-    private val disableOnBoats = TAB.getInstance().configuration.config.getBoolean(
+    val disableOnBoats = TAB.getInstance().configuration.config.getBoolean(
         "unlimited-nametag-prefix-suffix-mode.disable-on-boats",
         true
     )
@@ -68,7 +68,7 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
             loadArmorStands(all)
             if (isDisabled(all.world)) playersInDisabledUnlimitedWorlds.add(all)
             if (isPlayerDisabled(all)) return@forEach
-//            vehicleManager.loadPassengers(all)
+            vehicleManager.loadPassengers(all)
             TAB.getInstance().onlinePlayers.forEach { spawnArmorStands(all, it, false) }
         }
         super.load()
@@ -89,7 +89,7 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
         entityIdMap[(connectedPlayer.player as KryptonPlayer).id] = connectedPlayer
         loadArmorStands(connectedPlayer)
         if (isPlayerDisabled(connectedPlayer)) return
-//        vehicleManager.loadPassengers(connectedPlayer)
+        vehicleManager.loadPassengers(connectedPlayer)
         TAB.getInstance().onlinePlayers.forEach { spawnArmorStands(connectedPlayer, it, true) }
     }
 
@@ -117,7 +117,7 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
         if (force) {
             refreshed.armorStandManager.destroy()
             loadArmorStands(refreshed)
-//            vehicleManager.loadPassengers(refreshed)
+            vehicleManager.loadPassengers(refreshed)
             TAB.getInstance().onlinePlayers.forEach {
                 if (it === refreshed) return@forEach
                 if (it.world == refreshed.world) refreshed.armorStandManager.spawn(it)
