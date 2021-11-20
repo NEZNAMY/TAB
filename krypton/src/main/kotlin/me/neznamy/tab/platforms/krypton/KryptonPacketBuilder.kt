@@ -22,14 +22,15 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfo
 import org.kryptonmc.krypton.packet.out.play.PacketOutTeam
 import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
 
+// All build functions that just return the packet parameter will be passed through to be handled in KryptonTabPlayer.
 object KryptonPacketBuilder : PacketBuilder() {
 
-    override fun build(packet: PacketPlayOutBoss, clientVersion: ProtocolVersion?) = packet
+    override fun build(packet: PacketPlayOutBoss, clientVersion: ProtocolVersion?): Any = packet
 
-    override fun build(packet: PacketPlayOutChat, clientVersion: ProtocolVersion?) = packet
+    override fun build(packet: PacketPlayOutChat, clientVersion: ProtocolVersion?): Any = packet
 
     @Suppress("UNCHECKED_CAST")
-    override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion?) = PacketOutPlayerInfo(
+    override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion?): Any = PacketOutPlayerInfo(
         PacketOutPlayerInfo.Action.valueOf(packet.action.name),
         packet.entries.map {
             PacketOutPlayerInfo.PlayerData(
@@ -43,32 +44,32 @@ object KryptonPacketBuilder : PacketBuilder() {
         }
     )
 
-    override fun build(packet: PacketPlayOutPlayerListHeaderFooter, clientVersion: ProtocolVersion?) = packet
+    override fun build(packet: PacketPlayOutPlayerListHeaderFooter, clientVersion: ProtocolVersion?): Any = packet
 
-    override fun build(packet: PacketPlayOutScoreboardDisplayObjective, clientVersion: ProtocolVersion?) = PacketOutDisplayObjective(
+    override fun build(packet: PacketPlayOutScoreboardDisplayObjective, clientVersion: ProtocolVersion?): Any = PacketOutDisplayObjective(
         packet.slot,
         packet.objectiveName
     )
 
-    override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion) = PacketOutObjective(
+    override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion): Any = PacketOutObjective(
         PacketOutObjective.Action.fromId(packet.method)!!,
         packet.objectiveName,
         Component.text(packet.displayName),
         packet.renderType.ordinal
     )
 
-    override fun build(packet: PacketPlayOutScoreboardScore, clientVersion: ProtocolVersion?) = PacketOutUpdateScore(
+    override fun build(packet: PacketPlayOutScoreboardScore, clientVersion: ProtocolVersion?): Any = PacketOutUpdateScore(
         PacketOutUpdateScore.Action.fromId(packet.action.ordinal)!!,
         Component.text(packet.player),
         packet.objectiveName,
         packet.score
     )
 
-    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion?): PacketOutTeam {
-        val action = PacketOutTeam.Action.fromId(packet.method)
-        val players = packet.players.map { Component.text(it) }
+    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion?): Any {
+        val action = PacketOutTeam.Action.fromId(packet.method)!!
+        val players = packet.players.map(Component::text)
         return PacketOutTeam(
-            PacketOutTeam.Action.fromId(packet.method)!!,
+            action,
             packet.name,
             Component.text(packet.name),
             packet.color.ordinal,
