@@ -75,9 +75,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
 					prefix.updateValue(p, prefix.request(p));
 				});
-			}, () -> {
-				if (luckPermsPrefixSub != null) ((EventSubscription<UserDataRecalculateEvent>)luckPermsPrefixSub).close();
-			});
+			}, () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsPrefixSub).close());
 			PlayerPlaceholder suffix = manager.registerPlayerPlaceholder("%luckperms-suffix%", -1, ((LuckPerms)plugin)::getSuffix);
 			suffix.enableTriggerMode(() -> {
 				luckPermsSuffixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
@@ -85,9 +83,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
 					suffix.updateValue(p, ((LuckPerms)plugin).getPrefix(p));
 				});
-			}, () -> {
-				if (luckPermsSuffixSub != null) ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close();
-			});
+			}, () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close());
 		}
 		registerAnimationPlaceholders(manager);
 		registerConditionPlaceholders(manager);

@@ -117,7 +117,7 @@ public abstract class TabPlaceholder implements Placeholder {
 	
 	@Override
 	public void unload() {
-		if (onDisable != null) onDisable.run();
+		if (onDisable != null && active) onDisable.run();
 	}
 
 	/**

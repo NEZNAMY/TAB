@@ -141,7 +141,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				};
 				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
 			}, () -> {
-				if (healthListener != null) HandlerList.unregisterAll(healthListener);
+				HandlerList.unregisterAll(healthListener);
 			});
 		}
 		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
