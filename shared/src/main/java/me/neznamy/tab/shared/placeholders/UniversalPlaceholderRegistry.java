@@ -81,7 +81,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				luckPermsSuffixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
 					TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
-					suffix.updateValue(p, ((LuckPerms)plugin).getPrefix(p));
+					suffix.updateValue(p, suffix.request(p));
 				});
 			}, () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close());
 		}
