@@ -45,4 +45,9 @@ public abstract class ProxyPlatform implements Platform {
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerlist());
 	}
+
+	@Override
+	public String getConfigName() {
+		return "proxyconfig.yml";
+	}
 }

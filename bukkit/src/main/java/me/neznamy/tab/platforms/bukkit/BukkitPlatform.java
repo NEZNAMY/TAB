@@ -269,4 +269,9 @@ public class BukkitPlatform implements Platform {
 	public boolean isPluginEnabled(String plugin) {
 		return Bukkit.getPluginManager().isPluginEnabled(plugin);
 	}
+
+	@Override
+	public String getConfigName() {
+		return "bukkitconfig.yml";
+	}
 }
