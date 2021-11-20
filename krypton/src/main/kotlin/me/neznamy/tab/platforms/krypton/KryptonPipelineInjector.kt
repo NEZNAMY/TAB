@@ -6,8 +6,6 @@ import io.netty.channel.ChannelPromise
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.features.PipelineInjector
-import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
-import org.kryptonmc.krypton.packet.out.play.PacketOutObjective
 import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfo
 import java.util.function.Function
 

@@ -6,7 +6,6 @@ import me.neznamy.tab.api.team.UnlimitedNametagManager
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.features.nametags.NameTag
-import org.kryptonmc.api.entity.Entity
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import java.util.concurrent.ConcurrentHashMap
