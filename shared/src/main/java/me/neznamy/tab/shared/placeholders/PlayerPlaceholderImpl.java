@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 
 /**
  * A player placeholder (output is different for every player)
  */
-public class PlayerPlaceholder extends Placeholder {
+public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlaceholder {
 
 	/** Internal constant used to detect if placeholder threw an error */
 	private static final String ERROR_VALUE = "ERROR";
@@ -30,7 +32,7 @@ public class PlayerPlaceholder extends Placeholder {
 	 * @param identifier - placeholder's identifier
 	 * @param refresh - refresh interval in milliseconds
 	 */
-	public PlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
+	public PlayerPlaceholderImpl(String identifier, int refresh, Function<TabPlayer, Object> function) {
 		super(identifier, refresh);
 		this.function = function;
 	}
@@ -41,8 +43,8 @@ public class PlayerPlaceholder extends Placeholder {
 	 * @return true if value changed since last time, false if not
 	 */
 	public boolean update(TabPlayer p) {
-		Object obj = get(p);
-		String newValue = obj == null ? identifier : String.valueOf(setPlaceholders(obj, p));
+		String obj = String.valueOf(request(p));
+		String newValue = obj == null ? identifier : setPlaceholders(obj, p);
 
 		//make invalid placeholders return identifier instead of nothing
 		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
@@ -73,7 +75,8 @@ public class PlayerPlaceholder extends Placeholder {
 	 * @param p - player to get placeholder value for
 	 * @return value placeholder returned
 	 */
-	public Object get(TabPlayer p) {
+	@Override
+	public Object request(TabPlayer p) {
 		try {
 			return function.apply(p);
 		} catch (Throwable t) {
@@ -88,5 +91,16 @@ public class PlayerPlaceholder extends Placeholder {
 
 	public List<String> getForceUpdate() {
 		return forceUpdate;
+	}
+
+	@Override
+	public void updateValue(TabPlayer player, Object value) {
+		if (lastValues.containsKey(player.getName()) && lastValues.get(player.getName()).equals(value)) return;
+		lastValues.put(player.getName(), String.valueOf(value));
+		for (TabFeature f : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier)) {
+			long time = System.nanoTime();
+			f.refresh(player, false);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+		}
 	}
 }

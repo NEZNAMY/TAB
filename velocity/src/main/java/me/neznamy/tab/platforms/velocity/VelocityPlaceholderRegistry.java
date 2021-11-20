@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 

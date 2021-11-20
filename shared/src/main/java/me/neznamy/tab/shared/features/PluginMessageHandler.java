@@ -7,7 +7,7 @@ import com.google.common.io.ByteStreams;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -54,7 +54,7 @@ public abstract class PluginMessageHandler {
 			String placeholder = in.readUTF();
 			String output = in.readUTF();
 			long cpu = in.readLong();
-			PlayerPlaceholder pl = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder); //all bridge placeholders are marked as player
+			PlayerPlaceholderImpl pl = (PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder); //all bridge placeholders are marked as player
 			pl.getLastValues().put(player.getName(), output);
 			if (!pl.getForceUpdate().contains(player.getName())) pl.getForceUpdate().add(player.getName());
 			TAB.getInstance().getCPUManager().addBridgePlaceholderTime(pl.getIdentifier(), cpu);
@@ -65,7 +65,6 @@ public abstract class PluginMessageHandler {
 			player.setAttribute(attribute, value);
 			if ("world".equals(attribute)) {
 				TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), player.getWorld());
-				player.setWorld(value);
 			}
 		}
 		if ("Group".equals(subChannel)) {

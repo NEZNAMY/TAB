@@ -33,7 +33,7 @@ import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
@@ -96,7 +96,7 @@ public class BukkitPlatform implements Platform {
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector());
-		new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		loadNametagFeature(tab);
 		tab.loadUniversalFeatures();
@@ -173,10 +173,10 @@ public class BukkitPlatform implements Platform {
 			if (identifier.startsWith("%sync:")) {
 				int refresh = pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier,
 						pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
-				pl.registerPlaceholder(new PlayerPlaceholder(identifier, refresh, null) {
+				pl.registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, null) {
 					
 					@Override
-					public Object get(TabPlayer p) {
+					public Object request(TabPlayer p) {
 						Bukkit.getScheduler().runTask(plugin, () -> {
 
 							long time = System.nanoTime();

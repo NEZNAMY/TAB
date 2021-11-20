@@ -9,7 +9,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 
 /**
  * A string with placeholders
@@ -201,7 +201,7 @@ public class PropertyImpl implements Property {
 	public String getFormat(TabPlayer viewer) {
 		String format = lastReplacedValue;
 		for (String identifier : relPlaceholders) {
-			RelationalPlaceholder pl = (RelationalPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+			RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 			format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
 		}
 		return format;

@@ -8,13 +8,21 @@ import java.util.Locale;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.earth2me.essentials.Essentials;
 
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
@@ -28,6 +36,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	//formatter for 2 decimal places
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 
+	private final Plugin plugin;
+	
 	private Object chat;
 	private final Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 	private Object server;
@@ -35,12 +45,15 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private boolean paperTps;
 	private boolean paperMspt;
 	private boolean purpur;
+	
+	private Listener healthListener = null;
 
 	/**
 	 * Constructs new instance with given parameter
 	 * @param plugin - plugin instance
 	 */
-	public BukkitPlaceholderRegistry() {
+	public BukkitPlaceholderRegistry(Plugin plugin) {
+		this.plugin = plugin;
 		decimal2.applyPattern("#.##");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -95,13 +108,41 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		} else {
-			manager.registerServerPlaceholder("%tps%", 1000000000, () -> "-1");
+			manager.registerServerPlaceholder("%tps%", -1, () -> "-1").enableTriggerMode();
 		}
 		if (paperMspt) {
 			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
 		}
 		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
-			manager.registerPlayerPlaceholder("%health%", 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+			PlayerPlaceholder health = manager.registerPlayerPlaceholder("%health%", -1, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+			health.enableTriggerMode(() -> {
+				healthListener = new Listener() {
+					
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onDamage(EntityDamageEvent e) {
+						if (e.getEntity() instanceof Player) {
+							Player p = (Player) e.getEntity();
+							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), Math.max(p.getHealth() - e.getFinalDamage(), 0));
+						}
+					}
+					
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onRegain(EntityRegainHealthEvent e) {
+						if (e.getEntity() instanceof Player) {
+							Player p = (Player) e.getEntity();
+							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), Math.min(p.getHealth() + e.getAmount(), p.getMaxHealth()));
+						}
+					}
+					
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onRespawn(PlayerRespawnEvent e) {
+						health.updateValue(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getMaxHealth());
+					}
+				};
+				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
+			}, () -> {
+				if (healthListener != null) HandlerList.unregisterAll(healthListener);
+			});
 		}
 		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
 			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
@@ -111,8 +152,8 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
 			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
 		} else {
-			manager.registerServerPlaceholder("%vault-prefix%", 1000000, () -> "");
-			manager.registerServerPlaceholder("%vault-suffix%", 1000000, () -> "");
+			manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "").enableTriggerMode();
+			manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "").enableTriggerMode();
 		}
 		registerOnlinePlaceholders(manager);
 	}
@@ -122,13 +163,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
-		manager.registerPlayerPlaceholder("%online%", 2000, p -> {
+		manager.registerPlayerPlaceholder("%online%", -1, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 				if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
-		});
+		}).enableTriggerMode();
 		manager.registerPlayerPlaceholder("%staffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){

@@ -5,10 +5,10 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventSubscription;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
@@ -24,31 +24,37 @@ public class GroupManager extends TabFeature {
 	private final PermissionPlugin plugin;
 	private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);;
 	private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
+	private PlayerPlaceholder groupPlaceholder;
 	
 	public GroupManager(PermissionPlugin plugin) {
 		super("Permission group refreshing", "Refreshing group");
 		this.plugin = plugin;
 		if (plugin instanceof LuckPerms) {
-			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, TabPlayer::getGroup);
-			luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
-				long time = System.nanoTime();
-				TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-				if (p == null) return; //server still starting up and users connecting already (LP loading them)
-				refresh(p, false);
-				((PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).getLastValues().put(p.getName(), p.getGroup());
-				TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
-			});
+			groupPlaceholder = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, TabPlayer::getGroup);
+			groupPlaceholder.enableTriggerMode();
+			registerLuckPermsSub();
 		} else if (!(plugin instanceof None)){
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000, this::detectPermissionGroup);
+			addUsedPlaceholders(Arrays.asList("%group%"));
 		} else {
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, p -> DEFAULT_GROUP);
 		}
-		addUsedPlaceholders(Arrays.asList("%group%"));
 	}
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		((ITabPlayer)p).setGroup(detectPermissionGroup(p), true);
+	}
+	
+	private void registerLuckPermsSub() {
+		luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
+			long time = System.nanoTime();
+			TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
+			if (p == null) return; //server still starting up and users connecting already (LP loading them)
+			refresh(p, false);
+			TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
+			groupPlaceholder.updateValue(p, p.getGroup());
+		});
 	}
 
 	@SuppressWarnings("unchecked")

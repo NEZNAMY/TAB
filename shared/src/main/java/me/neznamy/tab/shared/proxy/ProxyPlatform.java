@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.proxy;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
@@ -8,8 +9,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerlist;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.placeholders.Placeholder;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 
 public abstract class ProxyPlatform implements Platform {
@@ -25,10 +25,10 @@ public abstract class ProxyPlatform implements Platform {
 		TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
-		Placeholder p = new PlayerPlaceholder(identifier, refresh, null) {
+		Placeholder p = new PlayerPlaceholderImpl(identifier, refresh, null) {
 			
 			@Override
-			public Object get(TabPlayer p) {
+			public String request(TabPlayer p) {
 				plm.requestPlaceholder(p, identifier);
 				return getLastValues().get(p.getName());
 			}

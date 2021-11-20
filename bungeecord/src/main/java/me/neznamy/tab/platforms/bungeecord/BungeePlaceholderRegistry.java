@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import java.util.Map.Entry;
 
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;

@@ -2,12 +2,13 @@ package me.neznamy.tab.shared.placeholders;
 
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 
 /**
  * Representation of any placeholder
  */
-public abstract class Placeholder {
+public abstract class TabPlaceholder implements Placeholder {
 
 	private static final String[] EMPTY_ARRAY = new String[0];
 	
@@ -19,31 +20,30 @@ public abstract class Placeholder {
 	
 	protected final PlaceholderReplacementPattern replacements;
 	
+	private boolean active;
+	private boolean triggerMode;
+	private Runnable onActivation;
+	private Runnable onDisable;
+	
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval in millieconds
 	 */
-	protected Placeholder(String identifier, int refresh) {
-		if (refresh % 50 != 0) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
+	protected TabPlaceholder(String identifier, int refresh) {
+		if (refresh % 50 != 0 && refresh != -1) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
 		if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
 		this.identifier = identifier;
 		this.refresh = refresh;
 		replacements = new PlaceholderReplacementPattern(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier));
 	}
 
-	/**
-	 * Returns placeholder's identifier
-	 * @return placeholder's identifier
-	 */
+	@Override
 	public String getIdentifier() {
 		return identifier;
 	}
 	
-	/**
-	 * Returns placeholder's refresh interval
-	 * @return placeholder's refresh interval
-	 */
+	@Override
 	public int getRefresh() {
 		return refresh;
 	}
@@ -78,10 +78,10 @@ public abstract class Placeholder {
 	 * @param p - player to replace for
 	 * @return text with replaced placeholders in output
 	 */
-	protected Object setPlaceholders(Object text, TabPlayer p) {
-		if (!(text instanceof String) || identifier.equals(text)) return text;
-		Object replaced = text;
-		for (String s : getNestedPlaceholders((String) text)) {
+	protected String setPlaceholders(String text, TabPlayer p) {
+		if (identifier.equals(text)) return text;
+		String replaced = text;
+		for (String s : getNestedPlaceholders(text)) {
 			if (s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
 			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
 		}
@@ -90,6 +90,34 @@ public abstract class Placeholder {
 	
 	public PlaceholderReplacementPattern getReplacements() {
 		return replacements;
+	}
+	
+	@Override
+	public void enableTriggerMode() {
+		triggerMode = true;
+	}
+	
+	@Override
+	public void enableTriggerMode(Runnable onActivation, Runnable onDisable) {
+		triggerMode = true;
+		this.onActivation = onActivation;
+		this.onDisable = onDisable;
+	}
+	
+	public void markAsUsed() {
+		if (active) return;
+		active = true;
+		if (onActivation != null) onActivation.run();
+	}
+
+	@Override
+	public boolean isTriggerMode() {
+		return triggerMode;
+	}
+	
+	@Override
+	public void unload() {
+		if (onDisable != null) onDisable.run();
 	}
 
 	/**

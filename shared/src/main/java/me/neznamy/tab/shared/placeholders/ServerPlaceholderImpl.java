@@ -2,13 +2,15 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.util.function.Supplier;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 
 /**
  * A server placeholder (output same for all players)
  */
-public class ServerPlaceholder extends Placeholder {
+public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlaceholder {
 
 	private final Supplier<Object> supplier;
 	
@@ -20,7 +22,7 @@ public class ServerPlaceholder extends Placeholder {
 	 * @param identifier - placeholder identifier
 	 * @param refresh - refresh interval
 	 */
-	public ServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
+	public ServerPlaceholderImpl(String identifier, int refresh, Supplier<Object> supplier) {
 		super(identifier, refresh);
 		this.supplier = supplier;
 	}
@@ -30,8 +32,8 @@ public class ServerPlaceholder extends Placeholder {
 	 * @return true if value changed, false if not
 	 */
 	public boolean update() {
-		Object obj = get();
-		String newValue = obj == null ? identifier : String.valueOf(setPlaceholders(obj, null));
+		String obj = String.valueOf(request());
+		String newValue = obj == null ? identifier : setPlaceholders(obj, null);
 		
 		//make invalid placeholders return identifier instead of nothing
 		if (identifier.equals(newValue) && lastValue == null) {
@@ -54,12 +56,26 @@ public class ServerPlaceholder extends Placeholder {
 	 * Abstract method to be overridden by specific placeholders, returns new value of the placeholder
 	 * @return new value
 	 */
-	public Object get() {
+	@Override
+	public Object request() {
 		try {
 			return supplier.get();
 		} catch (Throwable t) {
 			TAB.getInstance().getErrorManager().placeholderError("Server placeholder " + identifier + " generated an error", t);
 			return "ERROR";
+		}
+	}
+
+	@Override
+	public void updateValue(Object value) {
+		if (value.equals(lastValue)) return;
+		lastValue = String.valueOf(value);
+		for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+			for (TabFeature f : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier)) {
+				long time = System.nanoTime();
+				f.refresh(player, false);
+				TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+			}
 		}
 	}
 }

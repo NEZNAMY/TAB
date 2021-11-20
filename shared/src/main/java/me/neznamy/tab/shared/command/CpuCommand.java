@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -89,7 +89,7 @@ public class CpuCommand extends SubCommand {
 			if (printCounter++ == 5) break;
 			String refresh = "";
 			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey());
-			if (p != null) refresh = " &8(" + p.getRefresh() + ")&7";
+			if (p != null && !p.isTriggerMode()) refresh = " &8(" + p.getRefresh() + ")&7";
 			String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
 			sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
 		}

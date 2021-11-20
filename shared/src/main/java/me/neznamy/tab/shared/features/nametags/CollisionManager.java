@@ -24,10 +24,10 @@ public class CollisionManager extends TabFeature {
 		if (!TAB.getInstance().getPlatform().isPluginEnabled("LibsDisguises") && !TAB.getInstance().getPlatform().isProxy()) return; //no disguise plugin available
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%collision%", 500, p -> {
 
-			if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
+			if (forcedCollision.containsKey(p)) return String.valueOf(forcedCollision.get(p));
 			boolean newCollision = !p.isDisguised();
 			collision.put(p, newCollision);
-			return newCollision;
+			return String.valueOf(newCollision);
 		});
 		addUsedPlaceholders(Arrays.asList("%collision%"));
 	}

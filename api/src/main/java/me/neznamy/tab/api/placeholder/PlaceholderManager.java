@@ -1,26 +1,29 @@
-package me.neznamy.tab.api;
+package me.neznamy.tab.api.placeholder;
 
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.TabPlayer;
+
 public interface PlaceholderManager {
 
 	/**
 	 * Registers a server placeholder (placeholder with same output for all players)
 	 */
-	public void registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier);
+	public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier);
 	
 	/**
 	 * Registers a player placeholder (placeholder with player-specific output)
 	 */
-	public void registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function);
+	public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function);
 
 	/**
 	 * Registers a relational placeholder (different output for each player pair)
 	 */
-	public void registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function);
+	public RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function);
 	
 	/**
 	 * Detects placeholders in text using %% pattern and returns list of all detected identifiers

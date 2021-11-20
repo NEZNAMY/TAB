@@ -7,6 +7,7 @@ import java.util.UUID;
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
@@ -164,6 +165,9 @@ public class FeatureManagerImpl implements FeatureManager {
 			f.onWorldChange(changed, from, to);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 		}
+		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%world%")).updateValue(changed, to);
+		PlayerPlaceholder worldonline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%worldonline%");
+		worldonline.updateValue(changed, worldonline.request(changed));
 	}
 
 	/**
@@ -183,6 +187,9 @@ public class FeatureManagerImpl implements FeatureManager {
 			f.onServerChange(changed, from, to);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
 		}
+		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
+		PlayerPlaceholder serveronline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%serveronline%");
+		serveronline.updateValue(changed, serveronline.request(changed));
 	}
 
 	/**

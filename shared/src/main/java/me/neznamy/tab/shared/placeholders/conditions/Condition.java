@@ -8,9 +8,9 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
