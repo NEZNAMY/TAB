@@ -14,7 +14,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TablistFormatManager;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
@@ -224,19 +223,11 @@ public class TAB extends TabAPI {
 	public void addPlayer(TabPlayer player) {
 		data.put(player.getUniqueId(), player);
 		players = data.values().toArray(new TabPlayer[0]);
-		PlayerPlaceholder online = (PlayerPlaceholder) placeholderManager.getPlaceholder("%online%");
-		for (TabPlayer all : players) {
-			online.updateValue(all, online.request(all));
-		}
 	}
 
 	public void removePlayer(TabPlayer player) {
 		data.remove(player.getUniqueId());
 		players = data.values().toArray(new TabPlayer[0]);
-		PlayerPlaceholder online = (PlayerPlaceholder) placeholderManager.getPlaceholder("%online%");
-		for (TabPlayer all : players) {
-			online.updateValue(all, online.request(all));
-		}
 	}
 
 	public static TAB getInstance() {
