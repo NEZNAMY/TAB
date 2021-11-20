@@ -30,8 +30,7 @@ class KryptonEventListener(private val plugin: Main) {
     @Listener(ListenerPriority.NONE)
     fun onCommand(event: CommandExecuteEvent) {
         if (TAB.getInstance().isDisabled) return
-        val player = event.sender as? Player ?: return
-        if (TAB.getInstance().featureManager.onCommand(TAB.getInstance().getPlayer(player.uuid), event.command)) {
+        if (TAB.getInstance().featureManager.onCommand(TAB.getInstance().getPlayer(event.sender.uuid), event.command)) {
             event.result = CommandResult.denied()
         }
     }

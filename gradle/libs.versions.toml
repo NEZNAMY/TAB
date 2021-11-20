@@ -18,7 +18,7 @@ kotlin = "1.6.0-RC"
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.17-R0.1-SNAPSHOT"
-krypton = "0.47"
+krypton = "0.48.1"
 velocity = "1.1.0"
 
 # Platform extras
@@ -31,7 +31,6 @@ libsDisguises = "10.0.26-SNAPSHOT"
 essentials = "2.19.0"
 premiumVanish = "2.0.3"
 redisBungee = "0.6.5-SNAPSHOT"
-spark = "0.1-SNAPSHOT"
 
 [libraries]
 
@@ -65,7 +64,6 @@ libsDisguises = { group = "LibsDisguises", name = "LibsDisguises", version.ref =
 essentials = { group = "net.essentialsx", name = "EssentialsX", version.ref = "essentials" }
 premiumVanish = { group = "com.github.MyzelYam", name = "PremiumVanishAPI", version.ref = "premiumVanish" }
 redisBungee = { group = "com.imaginarycode.minecraft", name = "RedisBungee", version.ref = "redisBungee" }
-spark = { group = "me.lucko", name = "spark-api", version.ref = "spark" }
 
 # Metrics
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }

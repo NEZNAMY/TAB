@@ -132,6 +132,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
+	public void sendPacket(Object packet, String feature) {
+		sendPacket(packet);
+		if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature);
+	}
+
+	@Override
 	public Property getProperty(String name) {
 		return properties.get(name);
 	}

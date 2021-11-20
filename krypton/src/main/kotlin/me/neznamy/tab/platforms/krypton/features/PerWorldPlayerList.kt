@@ -8,6 +8,7 @@ import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.Listener
 import org.kryptonmc.api.event.player.JoinEvent
 
+// TODO: Also check player on world change when Krypton supports world changing
 class PerWorldPlayerList(private val plugin: Main) : TabFeature("Per world playerlist", null) {
 
     private val allowBypass = TAB.getInstance().configuration.config.getBoolean(
@@ -22,16 +23,6 @@ class PerWorldPlayerList(private val plugin: Main) : TabFeature("Per world playe
         .getConfigurationSection<String, List<String>>("per-world-playerlist.shared-playerlist-world-groups")
 
     init {
-        sharedWorlds.forEach {
-            if (it.value == null) {
-                TAB.getInstance().errorManager.startupWarn("World group \"$it\" in per-world-playerlist does not contain any worlds. You can " +
-                    "just remove the group.")
-            } else if (it.value.size == 1) {
-                TAB.getInstance().errorManager.startupWarn("World group \"$it\" in per-world-playerlist only contains a single world " +
-                    "(\"${it.value.first()}\"), which has no effect and only makes config less readable. Delete the group entirely for" +
-                    "a cleaner config.")
-            }
-        }
         TAB.getInstance().debug("Loaded PerWorldPlayerList feature with parameters allowBypass=$allowBypass, ignoredWorlds=$ignoredWorlds, " +
             "sharedWorlds=$sharedWorlds")
         plugin.server.eventManager.register(plugin, this)
@@ -49,20 +40,25 @@ class PerWorldPlayerList(private val plugin: Main) : TabFeature("Per world playe
     }
 
     override fun unload() {
-        // TODO: Show players back to each other on unload
+        plugin.server.players.forEach { plugin.server.players.forEach(it::show) }
         plugin.server.eventManager.unregisterListener(plugin, this)
     }
 
     private fun checkPlayer(player: Player) {
         plugin.server.players.forEach {
             if (it === player) return@forEach
-            // TODO: Handle showing and hiding when it exists
+            if (!shouldSee(player, it) && player.canSee(it)) player.hide(it)
+            if (shouldSee(player, it) && !player.canSee(it)) player.show(it)
+            if (!shouldSee(it, player) && it.canSee(player)) it.hide(player)
+            if (shouldSee(it, player) && !it.canSee(player)) it.show(player)
         }
     }
 
     private fun shouldSee(viewer: Player, target: Player): Boolean {
         if (target === viewer) return true
-        if ((allowBypass && viewer.hasPermission("tab.bypass")) || ignoredWorlds.contains(viewer.world.name)) return true
+        if ((allowBypass && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || ignoredWorlds.contains(viewer.world.name)) {
+            return true
+        }
         var viewerWorldGroup = "${viewer.world.name}-default"
         var targetWorldGroup = "${target.world.name}-default"
         sharedWorlds.forEach { (key, value) ->

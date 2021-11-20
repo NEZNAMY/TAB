@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.6.0-RC2"
-    kotlin("kapt") version "1.6.0-RC2"
+    kotlin("jvm") version "1.6.0"
+    kotlin("kapt") version "1.6.0"
 }
 
 dependencies {
@@ -9,13 +9,12 @@ dependencies {
     compileOnly(libs.krypton.server)
     compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.via)
-    compileOnly(libs.spark)
     kapt(libs.krypton.annotationProcessor)
 }
 
 tasks.compileKotlin {
     kotlinOptions {
-        jvmTarget = "16"
+        jvmTarget = "17"
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
 }
