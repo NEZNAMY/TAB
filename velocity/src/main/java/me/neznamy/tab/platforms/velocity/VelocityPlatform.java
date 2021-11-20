@@ -32,7 +32,7 @@ public class VelocityPlatform extends ProxyPlatform {
 	//instance of proxyserver
 	private final ProxyServer server;
 	
-	private final VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
+	private VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -99,6 +99,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public PacketBuilder getPacketBuilder() {
 		return packetBuilder;
+	}
+	
+	public void setPacketBuilder(VelocityPacketBuilder builder) {
+		this.packetBuilder = builder;
 	}
 
 	@Override
