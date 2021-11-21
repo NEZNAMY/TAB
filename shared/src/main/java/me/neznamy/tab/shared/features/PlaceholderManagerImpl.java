@@ -172,6 +172,12 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+		if (placeholderUsage.containsKey(placeholder.getIdentifier())) {
+			((TabPlaceholder) placeholder).markAsUsed();
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+				placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
+			}
+		}
 		return placeholder;
 	}
 	
