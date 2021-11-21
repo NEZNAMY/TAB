@@ -26,6 +26,12 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
 // All build functions that just return the packet parameter will be passed through to be handled in KryptonTabPlayer.
 object KryptonPacketBuilder : PacketBuilder() {
 
+    @JvmStatic
+    fun toComponent(text: String?, clientVersion: ProtocolVersion): Component {
+        if (text == null || text.isEmpty()) return Component.empty()
+        return GsonComponentSerializer.gson().deserialize(IChatBaseComponent.optimizedComponent(text).toString(clientVersion))
+    }
+
     override fun build(packet: PacketPlayOutBoss, clientVersion: ProtocolVersion?): Any = packet
 
     override fun build(packet: PacketPlayOutChat, clientVersion: ProtocolVersion?): Any = packet
@@ -53,10 +59,10 @@ object KryptonPacketBuilder : PacketBuilder() {
         packet.objectiveName
     )
 
-    override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion?): Any = PacketOutObjective(
+    override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion): Any = PacketOutObjective(
         PacketOutObjective.Action.fromId(packet.method)!!,
         packet.objectiveName,
-        Component.text(packet.displayName),
+        toComponent(packet.displayName, clientVersion),
         packet.renderType?.ordinal ?: -1
     )
 
@@ -67,18 +73,22 @@ object KryptonPacketBuilder : PacketBuilder() {
         packet.score
     )
 
-    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion?): Any {
+    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): Any {
         val action = PacketOutTeam.Action.fromId(packet.method)!!
         val players = packet.players.map(Component::text)
-        val prefix = packet.playerPrefix
-        val suffix = packet.playerSuffix
+        var prefix = packet.playerPrefix
+        var suffix = packet.playerSuffix
+        if (clientVersion.minorVersion < 13) {
+            prefix = cutTo(prefix, 16)
+            suffix = cutTo(suffix, 16)
+        }
         return PacketOutTeam(
             action,
             packet.name,
             Component.text(packet.name),
             packet.color?.ordinal ?: EnumChatFormat.lastColorsOf(packet.playerPrefix).ordinal,
-            if (prefix != null) Component.text(prefix) else Component.empty(),
-            if (suffix != null) Component.text(suffix) else Component.empty(),
+            toComponent(prefix, clientVersion),
+            toComponent(suffix, clientVersion),
             packet.options and 1 > 0,
             packet.options and 2 > 0,
             packet.nametagVisibility ?: "",

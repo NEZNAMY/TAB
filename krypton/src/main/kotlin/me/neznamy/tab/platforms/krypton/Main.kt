@@ -16,13 +16,21 @@ import org.kryptonmc.api.event.Listener
 import org.kryptonmc.api.event.server.ServerStartEvent
 import org.kryptonmc.api.event.server.ServerStopEvent
 import org.kryptonmc.api.plugin.annotation.DataFolder
+import org.kryptonmc.api.plugin.annotation.Dependency
 import org.kryptonmc.api.plugin.annotation.Plugin
 import java.nio.file.Path
 
 /**
  * Main class for Krypton platform
  */
-@Plugin("tab", "TAB", TAB.PLUGIN_VERSION, "An all-in-one solution that works", ["NEZNAMY", "BomBardyGamer"])
+@Plugin(
+    "tab",
+    "TAB",
+    TAB.PLUGIN_VERSION,
+    "An all-in-one solution that works",
+    ["NEZNAMY", "BomBardyGamer"],
+    [Dependency("luckperms", true), Dependency("viaversion", true)]
+)
 class Main @Inject constructor(
     val server: Server,
     @DataFolder val folder: Path

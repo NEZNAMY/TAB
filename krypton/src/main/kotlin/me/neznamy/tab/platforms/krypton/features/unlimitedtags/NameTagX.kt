@@ -16,20 +16,20 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
 
     // config options
     val markerFor18x = TAB.getInstance().configuration.config.getBoolean(
-        "unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients",
+        "scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients",
         false
     )
     val disableOnBoats = TAB.getInstance().configuration.config.getBoolean(
-        "unlimited-nametag-prefix-suffix-mode.disable-on-boats",
+        "scoreboard-teams.unlimited-nametag-mode.disable-on-boats",
         true
     )
     private val spaceBetweenLines = TAB.getInstance().configuration.config.getDouble(
-        "unlimited-nametag-prefix-suffix-mode.space-between-lines",
+        "scoreboard-teams.unlimited-nametag-mode.space-between-lines",
         0.22
     )
     private val disabledUnlimitedWorlds: List<String> = TAB.getInstance().configuration.config.getStringList(
-        "disable-features-in-worlds.unlimited-nametags",
-        listOf("disabledworld")
+        "scoreboard-teams.unlimited-nametag-mode.disable-in-worlds",
+        emptyList()
     )
     private val dynamicLines = TAB.getInstance().configuration.config.getStringList(
         "scoreboard-teams.unlimited-nametag-mode.dynamic-lines",
@@ -256,11 +256,11 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
 
     private fun spawnArmorStands(owner: TabPlayer, viewer: TabPlayer, sendMutually: Boolean) {
         if (owner === viewer) return // not displaying own armor stands
-        if ((viewer.player as Player).world != (owner.player as Player).world) return // in different worlds
+        val ownerPlayer = owner.player as Player
+        val viewerPlayer = viewer.player as Player
+        if (viewerPlayer.world !== ownerPlayer.world) return // in different worlds
         if (isPlayerDisabled(owner)) return
         if (owner.distanceTo(viewer) <= 48) {
-            val ownerPlayer = owner.player as Player
-            val viewerPlayer = viewer.player as Player
             if (viewerPlayer.canSee(ownerPlayer) && !owner.isVanished) {
                 owner.armorStandManager.spawn(viewer)
             }

@@ -13,6 +13,7 @@ class LocationRefresher(private val feature: NameTagX) : TabFeature(feature.feat
             val location = (it.player as Player).location
             location.x() + location.y() + location.z()
         }
+        addUsedPlaceholders(listOf("%location0%"))
     }
 
     override fun refresh(refreshed: TabPlayer, force: Boolean) {

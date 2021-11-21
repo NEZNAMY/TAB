@@ -60,7 +60,7 @@ class KryptonPlatform(
     override fun registerUnknownPlaceholder(identifier: String) {
         val manager = TAB.getInstance().placeholderManager
         if (identifier.startsWith("%rel_")) {
-            manager.registerPlaceholder(PlayerPlaceholder(identifier, manager.defaultRefresh) { identifier })
+            manager.registerPlayerPlaceholder(identifier, manager.defaultRefresh) { identifier }
             return
         }
         val serverIntervals = manager.serverPlaceholderRefreshIntervals

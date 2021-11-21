@@ -6,12 +6,9 @@ import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.TabConstants.CpuUsageCategory
 import org.kryptonmc.krypton.entity.KryptonEntity
 import org.kryptonmc.krypton.packet.EntityPacket
+import org.kryptonmc.krypton.packet.MovementPacket
 import org.kryptonmc.krypton.packet.`in`.play.PacketInInteract
 import org.kryptonmc.krypton.packet.out.play.PacketOutDestroyEntities
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityPosition
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityPositionAndRotation
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityRotation
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityTeleport
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnPlayer
 
 class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featureName, null) {
@@ -35,9 +32,9 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
         if (receiver.version.minorVersion < 8) return
         if (!receiver.isLoaded || nameTagX.isPlayerDisabled(receiver)) return
         when (packet) {
-            is PacketOutEntityPosition, is PacketOutEntityRotation, is PacketOutEntityPositionAndRotation, is PacketOutEntityTeleport -> {
-                packet as EntityPacket
-                onEntityMove(receiver, packet.entityId)
+            is MovementPacket -> {
+                if (packet !is EntityPacket) return
+                onEntityMove(receiver, (packet as EntityPacket).entityId)
             }
             is PacketOutSpawnPlayer -> onEntitySpawn(receiver, packet.entityId)
             is PacketOutDestroyEntities -> packet.ids.forEach { onEntityDestroy(receiver, it) }
