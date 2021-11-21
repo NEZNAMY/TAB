@@ -76,7 +76,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 * Returns forced name start of this player
 	 * @return forced name start of this player
 	 */
-	protected String getPlayerName() {
+	public String getPlayerName() {
 		return playerName;
 	}
 
@@ -135,5 +135,9 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 		} else {
 			return parent.getManager().getStaticNumber();
 		}
+	}
+
+	public String getTeamName() {
+		return teamName;
 	}
 }

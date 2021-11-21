@@ -2,12 +2,15 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
@@ -123,6 +126,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		}
 		players.add(p);
 		manager.getActiveScoreboards().put(p, this);
+		recalculateScores(p);
 	}
 
 	@Override
@@ -184,6 +188,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		lines.add(line);
 		for (TabPlayer p : players) {
 			line.register(p);
+			recalculateScores(p);
 		}
 	}
 
@@ -194,11 +199,23 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		lines.remove(line);
 		for (TabPlayer p : players) {
 			line.unregister(p);
+			recalculateScores(p);
 		}
 		TAB.getInstance().getFeatureManager().unregisterFeature(featureName(name, index));
 	}
 	
 	private String featureName(String line, int index) {
 		return "scoreboard-score-" + line + "-" + index;
+	}
+	
+	public void recalculateScores(TabPlayer p) {
+		List<Line> linesReversed = new ArrayList<>(lines);
+		Collections.reverse(linesReversed);
+		int score = 1;
+		for (Line line : linesReversed) {
+			if (p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0){
+				p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(), score++), this);
+			}
+		}
 	}
 }

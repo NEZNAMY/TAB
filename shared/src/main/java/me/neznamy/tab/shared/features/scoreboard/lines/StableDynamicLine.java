@@ -74,6 +74,7 @@ public class StableDynamicLine extends ScoreboardLine {
 			if (emptyBefore) {
 				//was "", now it is not
 				addLine(p, getPlayerName(), split[0], split[1]);
+				parent.recalculateScores(p);
 				return EMPTY_ARRAY;
 			} else {
 				return split;
@@ -82,6 +83,7 @@ public class StableDynamicLine extends ScoreboardLine {
 			if (!suppressToggle) {
 				//new string is "", but before it was not
 				removeLine(p, getPlayerName());
+				parent.recalculateScores(p);
 			}
 			return EMPTY_ARRAY;
 		}
