@@ -104,6 +104,7 @@ public abstract class TabPlaceholder implements Placeholder {
 		this.onActivation = onActivation;
 		this.onDisable = onDisable;
 		TAB.getInstance().getPlaceholderManager().recalculateUsedPlaceholders();
+		if (active && onActivation != null) onActivation.run();
 	}
 	
 	public void markAsUsed() {
