@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.shared.TAB
-import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.Listener
 import org.kryptonmc.api.event.ListenerPriority
 import org.kryptonmc.api.event.command.CommandExecuteEvent

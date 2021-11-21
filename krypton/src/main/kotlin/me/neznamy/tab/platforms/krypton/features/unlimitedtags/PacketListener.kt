@@ -2,28 +2,39 @@ package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 
 import me.neznamy.tab.api.TabFeature
 import me.neznamy.tab.api.TabPlayer
-import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.TabConstants.CpuUsageCategory
+import org.kryptonmc.krypton.entity.KryptonEntity
 import org.kryptonmc.krypton.packet.EntityPacket
+import org.kryptonmc.krypton.packet.MovementPacket
+import org.kryptonmc.krypton.packet.`in`.play.PacketInInteract
 import org.kryptonmc.krypton.packet.out.play.PacketOutDestroyEntities
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityPosition
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityPositionAndRotation
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityRotation
-import org.kryptonmc.krypton.packet.out.play.PacketOutEntityTeleport
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnPlayer
 
 class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featureName, null) {
 
-    // TODO: Use the interact packet when we support it
-    override fun onPacketReceive(sender: TabPlayer, packet: Any): Boolean = false
+    override fun onPacketReceive(sender: TabPlayer, packet: Any): Boolean {
+        if (sender.version.minorVersion == 8 && packet is PacketInInteract) {
+            val entityId = packet.entityId
+            var attacked: TabPlayer? = null
+            for (player in TAB.getInstance().onlinePlayers) {
+                if (player.isLoaded && player.armorStandManager.hasArmorStandWithID(entityId)) {
+                    attacked = player
+                    break
+                }
+            }
+            if (attacked != null && attacked !== sender) packet.updateEntityId(entityId)
+        }
+        return false
+    }
 
     override fun onPacketSend(receiver: TabPlayer, packet: Any) {
         if (receiver.version.minorVersion < 8) return
         if (!receiver.isLoaded || nameTagX.isPlayerDisabled(receiver)) return
         when (packet) {
-            is PacketOutEntityPosition, is PacketOutEntityRotation, is PacketOutEntityPositionAndRotation, is PacketOutEntityTeleport -> {
-                packet as EntityPacket
-                onEntityMove(receiver, packet.entityId)
+            is MovementPacket -> {
+                if (packet !is EntityPacket) return
+                onEntityMove(receiver, (packet as EntityPacket).entityId)
             }
             is PacketOutSpawnPlayer -> onEntitySpawn(receiver, packet.entityId)
             is PacketOutDestroyEntities -> packet.ids.forEach { onEntityDestroy(receiver, it) }
@@ -33,26 +44,25 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntityMove(receiver: TabPlayer, entityId: Int) {
         val player = nameTagX.entityIdMap[entityId]
         if (player != null) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE) {
+            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, CpuUsageCategory.PACKET_ENTITY_MOVE) {
                 player.armorStandManager.teleport(receiver)
             }
+            return
         }
-        /*
-        nameTagX.vehicles[entityId]?.forEach {
+        nameTagX.vehicleManager.vehicles(entityId).forEach {
             val passenger = nameTagX.entityIdMap[(it as KryptonEntity).id]
             if (passenger != null && passenger.armorStandManager != null) {
-                tab.cpuManager.runMeasuredTask("processing EntityMove", featureType, UsageType.PACKET_ENTITY_MOVE) {
+                TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, CpuUsageCategory.PACKET_ENTITY_MOVE) {
                     passenger.armorStandManager.teleport(receiver)
                 }
             }
         }
-        */
     }
 
     private fun onEntitySpawn(receiver: TabPlayer, entityId: Int) {
         val spawnedPlayer = nameTagX.entityIdMap[entityId]
         if (spawnedPlayer != null && spawnedPlayer.isLoaded) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntitySpawn", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN) {
+            TAB.getInstance().cpuManager.runMeasuredTask("processing EntitySpawn", nameTagX, CpuUsageCategory.PACKET_ENTITY_SPAWN) {
                 spawnedPlayer.armorStandManager.spawn(receiver)
             }
         }
@@ -61,9 +71,16 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntityDestroy(receiver: TabPlayer, entity: Int) {
         val despawnedPlayer = nameTagX.entityIdMap[entity]
         if (despawnedPlayer != null && despawnedPlayer.isLoaded) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY) {
+            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityDestroy", nameTagX, CpuUsageCategory.PACKET_ENTITY_DESTROY) {
                 despawnedPlayer.armorStandManager.destroy(receiver)
             }
+        }
+    }
+
+    companion object {
+
+        private fun PacketInInteract.updateEntityId(id: Int) {
+            PacketInInteract::class.java.getDeclaredField("entityId").apply { isAccessible = true }.setInt(this, id)
         }
     }
 }

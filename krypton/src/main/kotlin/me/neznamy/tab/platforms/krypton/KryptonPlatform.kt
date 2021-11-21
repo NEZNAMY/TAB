@@ -60,7 +60,7 @@ class KryptonPlatform(
     override fun registerUnknownPlaceholder(identifier: String) {
         val manager = TAB.getInstance().placeholderManager
         if (identifier.startsWith("%rel_")) {
-            manager.registerPlaceholder(PlayerPlaceholder(identifier, manager.defaultRefresh) { identifier })
+            manager.registerPlayerPlaceholder(identifier, manager.defaultRefresh) { identifier }
             return
         }
         val serverIntervals = manager.serverPlaceholderRefreshIntervals
@@ -114,6 +114,8 @@ class KryptonPlatform(
     override fun isProxy(): Boolean = false
 
     override fun isPluginEnabled(plugin: String): Boolean = server.pluginManager.isLoaded(plugin)
+
+    override fun getConfigName(): String = "kryptonconfig.yml"
 
     private fun loadNametagFeature(tab: TAB) {
         if (!tab.config.getBoolean("scoreboard-teams.enabled", true)) return

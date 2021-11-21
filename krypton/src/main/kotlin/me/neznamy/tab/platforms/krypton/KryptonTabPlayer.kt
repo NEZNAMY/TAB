@@ -30,6 +30,7 @@ class KryptonTabPlayer(
     private val bossBars = mutableMapOf<UUID, BossBar>()
 
     init {
+        channel = this.delegate.session.channel
         version = ProtocolVersion.fromNetworkId(protocolVersion)
     }
 
@@ -66,7 +67,7 @@ class KryptonTabPlayer(
 
     override fun getPlayer(): Player = delegate
 
-    override fun isOnline(): Boolean = true
+    override fun isOnline(): Boolean = delegate.isOnline
 
     override fun isVanished(): Boolean = delegate.isVanished
 
