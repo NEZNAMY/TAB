@@ -91,7 +91,7 @@ public class Configs {
 	 * @throws YAMLException 
 	 */
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().isProxy() ? "proxyconfig.yml" : "bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		if (!config.hasConfigOption("mysql"))
 			convertToV3();
 		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));

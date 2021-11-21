@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
+import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketBuilder
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
@@ -25,21 +26,28 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
 // All build functions that just return the packet parameter will be passed through to be handled in KryptonTabPlayer.
 object KryptonPacketBuilder : PacketBuilder() {
 
+    @JvmStatic
+    fun toComponent(text: String?, clientVersion: ProtocolVersion): Component {
+        if (text == null || text.isEmpty()) return Component.empty()
+        return GsonComponentSerializer.gson().deserialize(IChatBaseComponent.optimizedComponent(text).toString(clientVersion))
+    }
+
     override fun build(packet: PacketPlayOutBoss, clientVersion: ProtocolVersion?): Any = packet
 
     override fun build(packet: PacketPlayOutChat, clientVersion: ProtocolVersion?): Any = packet
 
     @Suppress("UNCHECKED_CAST")
-    override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion?): Any = PacketOutPlayerInfo(
+    override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion): Any = PacketOutPlayerInfo(
         PacketOutPlayerInfo.Action.valueOf(packet.action.name),
         packet.entries.map {
+            val displayName = it.displayName?.toString(clientVersion)
             PacketOutPlayerInfo.PlayerData(
                 it.uniqueId,
-                it.name,
-                it.skin as List<ProfileProperty>,
-                Registries.GAME_MODES[it.gameMode.ordinal - 1] ?: GameModes.SURVIVAL,
+                it.name ?: "",
+                it.skin as? List<ProfileProperty> ?: emptyList(),
+                Registries.GAME_MODES[(it.gameMode?.ordinal ?: 0) - 1] ?: GameModes.SURVIVAL,
                 it.latency,
-                GsonComponentSerializer.gson().deserialize(it.displayName.toString())
+                if (displayName != null) GsonComponentSerializer.gson().deserialize(displayName) else Component.empty()
             )
         }
     )
@@ -54,8 +62,8 @@ object KryptonPacketBuilder : PacketBuilder() {
     override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion): Any = PacketOutObjective(
         PacketOutObjective.Action.fromId(packet.method)!!,
         packet.objectiveName,
-        Component.text(packet.displayName),
-        packet.renderType.ordinal
+        toComponent(packet.displayName, clientVersion),
+        packet.renderType?.ordinal ?: -1
     )
 
     override fun build(packet: PacketPlayOutScoreboardScore, clientVersion: ProtocolVersion?): Any = PacketOutUpdateScore(
@@ -65,20 +73,26 @@ object KryptonPacketBuilder : PacketBuilder() {
         packet.score
     )
 
-    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion?): Any {
+    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): Any {
         val action = PacketOutTeam.Action.fromId(packet.method)!!
         val players = packet.players.map(Component::text)
+        var prefix = packet.playerPrefix
+        var suffix = packet.playerSuffix
+        if (clientVersion.minorVersion < 13) {
+            prefix = cutTo(prefix, 16)
+            suffix = cutTo(suffix, 16)
+        }
         return PacketOutTeam(
             action,
             packet.name,
             Component.text(packet.name),
-            packet.color.ordinal,
-            Component.text(packet.playerPrefix),
-            Component.text(packet.playerSuffix),
+            packet.color?.ordinal ?: EnumChatFormat.lastColorsOf(packet.playerPrefix).ordinal,
+            toComponent(prefix, clientVersion),
+            toComponent(suffix, clientVersion),
             packet.options and 1 > 0,
             packet.options and 2 > 0,
-            packet.nametagVisibility,
-            packet.collisionRule,
+            packet.nametagVisibility ?: "",
+            packet.collisionRule ?: "",
             players,
             if (action == PacketOutTeam.Action.ADD_MEMBERS || action == PacketOutTeam.Action.REMOVE_MEMBERS) players else emptySet()
         )

@@ -5,9 +5,11 @@ import me.neznamy.tab.api.Property
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.api.chat.IChatBaseComponent
+import me.neznamy.tab.platforms.krypton.KryptonPacketBuilder
 import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.apache.logging.log4j.LogManager
 import org.kryptonmc.api.entity.EntityTypes
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.registry.Registries
@@ -16,8 +18,10 @@ import org.kryptonmc.krypton.entity.metadata.MetadataHolder
 import org.kryptonmc.krypton.entity.metadata.MetadataKeys
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.packet.Packet
+import org.kryptonmc.krypton.packet.out.play.PacketOutAttributes
 import org.kryptonmc.krypton.packet.out.play.PacketOutDestroyEntities
 import org.kryptonmc.krypton.packet.out.play.PacketOutEntityTeleport
+import org.kryptonmc.krypton.packet.out.play.PacketOutHeadLook
 import org.kryptonmc.krypton.packet.out.play.PacketOutMetadata
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnLivingEntity
 import org.spongepowered.math.vector.Vector2f
@@ -51,6 +55,7 @@ class KryptonArmorStand(
 
     override fun refresh() {
         visible = calculateVisibility()
+        updateMetadata()
     }
 
     override fun getProperty(): Property = property
@@ -97,16 +102,17 @@ class KryptonArmorStand(
         if (this.sneaking == sneaking) return // idk
         this.sneaking = sneaking
         owner.armorStandManager.nearbyPlayers.forEach {
-            if (it.version.minorVersion == 14 && !TAB.getInstance().configuration.isArmorStandsAlwaysVisible) {
+            if (it.version.minorVersion == 14 && !ALWAYS_VISIBLE) {
+                // 1.14.x client sided bug, despawning completely
                 if (sneaking) {
                     it.sendPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK)
                 } else {
                     spawn(it)
                 }
-                return@forEach
+            } else {
+                // respawning so there's no animation and it's instant
+                respawn(it)
             }
-            // respawning so there's no animation and it's instant
-            respawn(it)
         }
     }
 
@@ -155,33 +161,54 @@ class KryptonArmorStand(
                 0,
                 0
             ),
-            PacketOutMetadata(entityId, data.dirty)
+            PacketOutMetadata(entityId, data.all)
         )
     }
 
     private fun createMetadata(displayName: String, viewer: TabPlayer): MetadataHolder {
-        val holder = MetadataHolder(viewer.player as KryptonPlayer)
+        val viewerPlayer = viewer.player as KryptonPlayer
+        val holder = MetadataHolder(viewerPlayer).apply {
+            add(MetadataKeys.FLAGS)
+            add(MetadataKeys.CUSTOM_NAME)
+            add(MetadataKeys.CUSTOM_NAME_VISIBILITY)
+        }
 
         var flags = 32 // invisible
         if (sneaking) flags += 2
         holder[MetadataKeys.FLAGS] = flags.toByte()
-        holder[MetadataKeys.CUSTOM_NAME] = Optional.of(LegacyComponentSerializer.legacySection().deserialize(displayName))
+        holder[MetadataKeys.CUSTOM_NAME] = Optional.of(KryptonPacketBuilder.toComponent(displayName, viewer.version))
 
-        val visibility = if (isNameVisibilityEmpty(displayName) || manager.hasHiddenNametag(owner, viewer)) false else visible
-        holder[MetadataKeys.CUSTOM_NAME_VISIBILITY] = visibility
+        if (isNameVisibilityEmpty(displayName) || !viewerPlayer.canSee(player) || manager.hasHiddenNametag(owner, viewer)) {
+            holder[MetadataKeys.CUSTOM_NAME_VISIBILITY] = false
+        } else {
+            holder[MetadataKeys.CUSTOM_NAME_VISIBILITY] = visible
+        }
 
-        if (viewer.version.minorVersion > 8 || manager.markerFor18x) holder[MetadataKeys.ARMOR_STAND.FLAGS] = 16.toByte()
+        if (viewer.version.minorVersion > 8 || manager.markerFor18x) {
+            holder.add(MetadataKeys.ARMOR_STAND.FLAGS)
+            holder[MetadataKeys.ARMOR_STAND.FLAGS] = 16.toByte()
+        }
         return holder
     }
 
     private fun calculateVisibility(): Boolean {
         if (owner.isDisguised || manager.vehicleManager.isOnBoat(owner)) return false
-        if (TAB.getInstance().configuration.isArmorStandsAlwaysVisible) return true
-        return player.gameMode !== GameModes.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().isNotEmpty()
+        if (ALWAYS_VISIBLE) return true
+        return !owner.hasInvisibilityPotion() && owner.gamemode != 3 && !manager.hasHiddenNametag(owner) && property.get().isNotEmpty()
     }
 
     private fun calculateY(): Double {
-        // TODO: Handle vehicles
+        // 1.14+ server sided bug
+        val vehicle = player.vehicle
+        if (vehicle != null) {
+            val key = vehicle.type.key().asString()
+            when {
+                key.contains("horse") -> return vehicle.location.y() + 0.85
+                key.contains("donkey") -> return vehicle.location.y() + 0.525
+                vehicle.type === EntityTypes.PIG -> return vehicle.location.y() + 0.325
+                key.contains("strider") -> vehicle.location.y() + 1.15
+            }
+        }
         if (player.isSwimming || player.isFallFlying) return player.location.y() - 1.22
         return player.location.y()
     }
