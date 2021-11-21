@@ -56,7 +56,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!getLastValues().containsKey(key(viewer, target))) update(viewer, target);
 		String value = getLastValues().get(key(viewer, target));
-		return String.valueOf(setPlaceholders(replacements.findReplacement(EnumChatFormat.color(value)), target));
+		return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(value)), target);
 	}
 	
 	@Override

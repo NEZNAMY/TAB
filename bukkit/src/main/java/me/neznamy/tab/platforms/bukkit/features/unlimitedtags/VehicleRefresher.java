@@ -31,7 +31,7 @@ public class VehicleRefresher extends TabFeature {
 		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
 		addUsedPlaceholders(Arrays.asList("%vehicle%"));
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> String.valueOf(((Player)p.getPlayer()).getVehicle()));
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle());
 	}
 	
 	@Override
