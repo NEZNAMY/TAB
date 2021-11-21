@@ -171,7 +171,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public Placeholder registerPlaceholder(Placeholder placeholder) {
 		if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+		recalculateUsedPlaceholders();
 		if (placeholderUsage.containsKey(placeholder.getIdentifier())) {
 			((TabPlaceholder) placeholder).markAsUsed();
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
@@ -288,7 +288,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	@Override
 	public void addUsedPlaceholder(String identifier, TabFeature feature) {
 		if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
-			usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+			recalculateUsedPlaceholders();
 			TabPlaceholder p = getPlaceholder(identifier);
 			p.markAsUsed();
 			if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh() && !p.isTriggerMode()) {
@@ -297,6 +297,10 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 				atomic.set(0);
 			} 
 		}
+	}
+	
+	public void recalculateUsedPlaceholders() {
+		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).collect(Collectors.toSet()).toArray(new Placeholder[0]);
 	}
 
 	@Override
