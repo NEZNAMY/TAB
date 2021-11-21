@@ -122,7 +122,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					public void onDamage(EntityDamageEvent e) {
 						if (e.getEntity() instanceof Player) {
 							Player p = (Player) e.getEntity();
-							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), Math.max(p.getHealth() - e.getFinalDamage(), 0));
+							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), (int) Math.ceil(Math.max(p.getHealth() - e.getFinalDamage(), 0)));
 						}
 					}
 					
@@ -130,7 +130,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					public void onRegain(EntityRegainHealthEvent e) {
 						if (e.getEntity() instanceof Player) {
 							Player p = (Player) e.getEntity();
-							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), Math.min(p.getHealth() + e.getAmount(), p.getMaxHealth()));
+							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), (int) Math.ceil(Math.min(p.getHealth() + e.getAmount(), p.getMaxHealth())));
 						}
 					}
 					
