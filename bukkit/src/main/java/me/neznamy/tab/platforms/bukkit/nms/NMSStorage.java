@@ -245,7 +245,7 @@ public final class NMSStorage {
 		initializeScoreboardPackets();
 		try {
 			initializeTeamPackets();
-		} catch (ClassNotFoundException | NoSuchMethodException e) {
+		} catch (ClassNotFoundException e) {
 			Bukkit.getConsoleSender().sendMessage(me.neznamy.tab.api.chat.EnumChatFormat.color("&c[TAB] Failed to load PacketPlayOutScoreboardTeam"));
 			//fabric with missing team packet
 		}
