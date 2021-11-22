@@ -176,6 +176,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		if (override && placeholderUsage.containsKey(placeholder.getIdentifier())) {
 			((TabPlaceholder) placeholder).markAsUsed();
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+				if (!p.isLoaded()) continue;
 				placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
 			}
 		}
