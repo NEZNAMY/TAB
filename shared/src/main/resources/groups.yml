@@ -3,7 +3,7 @@ Owner:
   tagprefix: "&2&lOwner &a"
 Admin:
   tabprefix: "&0&l[&4&lAdmin&0&l] &1"
-  tagprefix: "%animation:admin_prefix%"
+  tagprefix: "&4&lAdmin &a"
 Player:
   tabprefix: "&0&l[&7&lPlayer&0&l] &3"
   tagprefix: "&2&lPlayer &3"
@@ -13,12 +13,14 @@ example_group:
   footer:
     - "applied to a group"
 
-  #default settings for all groups, all groups will take properties from this section unless player's primary group overrides a specific setting
+ # default settings for all groups, all groups will take properties from this section unless player's primary group overrides a specific setting
 _DEFAULT_:
   tabprefix: "%vault-prefix%"
   tagprefix: "%vault-prefix%"
-  tabsuffix: "%afk%"
-  tagsuffix: "%afk%"
+  customtabname: "%essentials_nickname%"
+  customtagname: "%essentials_nickname%" # don't forget to enable unlimited nametag mode to make this one work
+  tabsuffix: "%vault-suffix%%afk%"
+  tagsuffix: "%vault-suffix%%afk%"
 
 per-world:
   world1:
