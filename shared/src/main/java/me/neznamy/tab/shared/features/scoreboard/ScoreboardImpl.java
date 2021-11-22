@@ -209,6 +209,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	}
 	
 	public void recalculateScores(TabPlayer p) {
+		if (!manager.isUsingNumbers()) return;
 		List<Line> linesReversed = new ArrayList<>(lines);
 		Collections.reverse(linesReversed);
 		int score = 1;
