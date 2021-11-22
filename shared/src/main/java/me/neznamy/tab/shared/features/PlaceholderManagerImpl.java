@@ -170,9 +170,10 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	public Placeholder registerPlaceholder(Placeholder placeholder) {
 		if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
+		boolean override = registeredPlaceholders.containsKey(placeholder.getIdentifier());
 		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
 		recalculateUsedPlaceholders();
-		if (placeholderUsage.containsKey(placeholder.getIdentifier())) {
+		if (override && placeholderUsage.containsKey(placeholder.getIdentifier())) {
 			((TabPlaceholder) placeholder).markAsUsed();
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
