@@ -127,6 +127,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			if (hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName())) visiblePlayers.add(connectedPlayer);
 			addDisabledPlayer(connectedPlayer);
 			return;
 		}
