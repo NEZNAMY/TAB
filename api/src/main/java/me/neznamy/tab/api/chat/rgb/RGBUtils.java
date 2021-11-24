@@ -73,11 +73,11 @@ public class RGBUtils {
 	 */
 	public String applyFormats(String text, boolean ignorePlaceholders) {
 		String replaced = text;
-		for (RGBFormatter formatter : formats) {
-			replaced = formatter.reformat(replaced);
-		}
 		for (GradientPattern pattern : gradients) {
 			replaced = pattern.applyPattern(replaced, ignorePlaceholders);
+		}
+		for (RGBFormatter formatter : formats) {
+			replaced = formatter.reformat(replaced);
 		}
 		return replaced;
 	}
