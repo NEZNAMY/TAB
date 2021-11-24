@@ -313,4 +313,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public Map<String, Set<TabFeature>> getPlaceholderUsage(){
 		return placeholderUsage;
 	}
+	
+	public AtomicInteger getLoopTime() {
+		return atomic;
+	}
 }
