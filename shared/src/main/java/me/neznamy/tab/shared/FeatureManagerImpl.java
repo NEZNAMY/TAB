@@ -190,7 +190,6 @@ public class FeatureManagerImpl implements FeatureManager {
 		String from = changed.getServer();
 		((ITabPlayer)changed).setServer(to);
 		for (TabFeature f : values) {
-			if (!f.overridesMethod("onServerChange")) continue;
 			long time = System.nanoTime();
 			f.onServerChange(changed, from, to);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
