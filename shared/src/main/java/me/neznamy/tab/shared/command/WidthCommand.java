@@ -53,7 +53,8 @@ public class WidthCommand extends SubCommand {
 			}
 			sendWidth(sender,c ,  10);
 		} else if (args.length == 2) {
-			int c, width;
+			int c;
+			int width;
 			try{
 				c = Integer.parseInt(args[0]);
 				width = Integer.parseInt(args[1]);
