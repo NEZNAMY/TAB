@@ -49,12 +49,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 		}
 		refresh(connectedPlayer, true);
 	}
-	
-	@Override
-	public void onServerChange(TabPlayer p, String from, String to) {
-		onWorldChange(p, null, null);
-	}
-	
+
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		boolean disabledBefore = isDisabledPlayer(p);

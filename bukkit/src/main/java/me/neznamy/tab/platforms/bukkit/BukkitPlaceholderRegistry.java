@@ -37,7 +37,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 
 	private final Plugin plugin;
-	
+
 	private Object chat;
 	private final Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 	private Object server;
@@ -45,7 +45,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private boolean paperTps;
 	private boolean paperMspt;
 	private boolean purpur;
-	
+
 	private Listener healthListener = null;
 
 	/**
@@ -113,37 +113,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		if (paperMspt) {
 			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
 		}
-		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
-			PlayerPlaceholder health = manager.registerPlayerPlaceholder("%health%", -1, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
-			health.enableTriggerMode(() -> {
-				healthListener = new Listener() {
-					
-					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-					public void onDamage(EntityDamageEvent e) {
-						if (e.getEntity() instanceof Player) {
-							Player p = (Player) e.getEntity();
-							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), (int) Math.ceil(Math.max(p.getHealth() - e.getFinalDamage(), 0)));
-						}
-					}
-					
-					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-					public void onRegain(EntityRegainHealthEvent e) {
-						if (e.getEntity() instanceof Player) {
-							Player p = (Player) e.getEntity();
-							health.updateValue(TAB.getInstance().getPlayer(e.getEntity().getUniqueId()), (int) Math.ceil(Math.min(p.getHealth() + e.getAmount(), p.getMaxHealth())));
-						}
-					}
-					
-					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-					public void onRespawn(PlayerRespawnEvent e) {
-						health.updateValue(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getMaxHealth());
-					}
-				};
-				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
-			}, () -> {
-				HandlerList.unregisterAll(healthListener);
-			});
-		}
 		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
 			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
 			return purpur && ((Player)p.getPlayer()).isAfk();
@@ -156,8 +125,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "").enableTriggerMode();
 		}
 		registerOnlinePlaceholders(manager);
+		registerHealthPlaceholder(manager);
 	}
-	
+
 	private String formatTPS(double tps) {
 		return decimal2.format(Math.min(20, tps));
 	}
@@ -184,5 +154,44 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			}
 			return count;
 		});
+	}
+
+	@SuppressWarnings("deprecation")
+	private void registerHealthPlaceholder(PlaceholderManager manager) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
+			PlayerPlaceholder health = manager.registerPlayerPlaceholder("%health%", -1, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+			health.enableTriggerMode(() -> {
+				healthListener = new Listener() {
+
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onDamage(EntityDamageEvent e) {
+						if (e.getEntity() instanceof Player) {
+							Player p = (Player) e.getEntity();
+							TabPlayer tabp = TAB.getInstance().getPlayer(e.getEntity().getUniqueId());
+							if (tabp == null) return;
+							health.updateValue(tabp, (int) Math.ceil(Math.max(p.getHealth() - e.getFinalDamage(), 0)));
+						}
+					}
+
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onRegain(EntityRegainHealthEvent e) {
+						if (e.getEntity() instanceof Player) {
+							Player p = (Player) e.getEntity();
+							TabPlayer tabp = TAB.getInstance().getPlayer(e.getEntity().getUniqueId());
+							if (tabp == null) return;
+							health.updateValue(tabp, (int) Math.ceil(Math.min(p.getHealth() + e.getAmount(), p.getMaxHealth())));
+						}
+					}
+
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onRespawn(PlayerRespawnEvent e) {
+						health.updateValue(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getMaxHealth());
+					}
+				};
+				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
+			}, () -> {
+				HandlerList.unregisterAll(healthListener);
+			});
+		}
 	}
 }

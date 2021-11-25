@@ -26,12 +26,20 @@ public abstract class TabFeature {
 	protected TabFeature(String featureName, String refreshDisplayName, List<String> disabledServers, List<String> disabledWorlds) {
 		this.featureName = featureName;
 		this.refreshDisplayName = refreshDisplayName;
-		if (disabledServers == null) disabledServers = new ArrayList<>();
-		if (disabledWorlds == null) disabledWorlds = new ArrayList<>();
-		this.disabledServers = disabledServers.toArray(new String[0]);
-		serverWhitelistMode = disabledServers.contains("WHITELIST");
-		this.disabledWorlds = disabledWorlds.toArray(new String[0]);
-		worldWhitelistMode = disabledWorlds.contains("WHITELIST");
+		if (disabledServers != null) {
+			this.disabledServers = disabledServers.toArray(new String[0]);
+			serverWhitelistMode = disabledServers.contains("WHITELIST");
+		} else {
+			this.disabledServers = new String[0];
+			serverWhitelistMode = false;
+		}
+		if (disabledWorlds != null) {
+			this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+			worldWhitelistMode = disabledWorlds.contains("WHITELIST");
+		} else {
+			this.disabledWorlds = new String[0];
+			worldWhitelistMode = false;
+		}
 		try {
 			if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onCommand");

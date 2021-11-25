@@ -127,7 +127,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		List<Object> items = new ArrayList<>();
 		for (PlayerInfoData data : packet.getEntries()) {
 			GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
-
 			if (data.getSkin() != null) profile.getProperties().putAll((PropertyMap) data.getSkin());
 			List<Object> parameters = new ArrayList<>();
 			if (nms.newPlayerInfoData.getParameterCount() == 5) {
@@ -212,7 +211,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		if (nms.getMinorVersion() >= 13) {
 			team = createTeamModern(packet, clientVersion, team, prefix, suffix);
 		} else {
-			team = createTeamLegacy(packet, clientVersion, team, prefix, suffix);
+			team = createTeamLegacy(packet, team, prefix, suffix);
 		}
 		if (nms.getMinorVersion() >= 17) {
 			switch (packet.getMethod()) {
@@ -231,24 +230,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			}
 		}
 		return nms.newPacketPlayOutScoreboardTeam.newInstance(team, packet.getMethod());
-	}
-	
-	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws ReflectiveOperationException {
-		if (prefix != null && prefix.length() > 0) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
-		if (suffix != null && suffix.length() > 0) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
-		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
-		nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
-		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
-		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
-		return team;
-	}
-
-	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws ReflectiveOperationException {
-		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
-		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
-		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
-		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
-		return team;
 	}
 
 	/**
@@ -334,6 +315,24 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_YAW, (byte) (packet.getLocation().getYaw()/360*256));
 		nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_PITCH, (byte) (packet.getLocation().getPitch()/360*256));
 		return nmsPacket;
+	}
+	
+	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws ReflectiveOperationException {
+		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
+		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
+		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
+		nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
+		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
+		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+		return team;
+	}
+
+	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix) throws ReflectiveOperationException {
+		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
+		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
+		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
+		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+		return team;
 	}
 	
 	@Override

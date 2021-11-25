@@ -102,6 +102,38 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		getPlayer().getTabList().setHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void handle(PacketPlayOutPlayerInfo packet) {
+		for (PlayerInfoData data : packet.getEntries()) {
+			switch (packet.getAction()) {
+			case ADD_PLAYER:
+				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
+				getPlayer().getTabList().addEntry(TabListEntry.builder()
+						.tabList(getPlayer().getTabList())
+						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
+						.gameMode(data.getGameMode().ordinal()-1)
+						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
+						.latency(data.getLatency())
+						.build());
+				break;
+			case REMOVE_PLAYER:
+				getPlayer().getTabList().removeEntry(data.getUniqueId());
+				break;
+			case UPDATE_DISPLAY_NAME:
+				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
+				break;
+			case UPDATE_LATENCY:
+				getEntry(data.getUniqueId()).setLatency(data.getLatency());
+				break;
+			case UPDATE_GAME_MODE:
+				getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	
 	private void handle(PacketPlayOutBoss packet) {
 		BossBar bar;
 		switch (packet.getOperation()) {
@@ -151,38 +183,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		} else {
 			if (bar.hasFlag(flag)) {
 				bar.removeFlag(flag);
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void handle(PacketPlayOutPlayerInfo packet) {
-		for (PlayerInfoData data : packet.getEntries()) {
-			switch (packet.getAction()) {
-			case ADD_PLAYER:
-				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
-				getPlayer().getTabList().addEntry(TabListEntry.builder()
-						.tabList(getPlayer().getTabList())
-						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
-						.gameMode(data.getGameMode().ordinal()-1)
-						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
-						.latency(data.getLatency())
-						.build());
-				break;
-			case REMOVE_PLAYER:
-				getPlayer().getTabList().removeEntry(data.getUniqueId());
-				break;
-			case UPDATE_DISPLAY_NAME:
-				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
-				break;
-			case UPDATE_LATENCY:
-				getEntry(data.getUniqueId()).setLatency(data.getLatency());
-				break;
-			case UPDATE_GAME_MODE:
-				getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
-				break;
-			default:
-				break;
 			}
 		}
 	}

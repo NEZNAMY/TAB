@@ -83,7 +83,7 @@ public abstract class TabPlaceholder implements Placeholder {
 		String replaced = text;
 		for (String s : getNestedPlaceholders(text)) {
 			if (s.equals(identifier) || (identifier.startsWith("%sync:") && ("%" + identifier.substring(6)).equals(s)) || s.startsWith("%rel_")) continue;
-			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced.toString(), p);
+			replaced = TAB.getInstance().getPlaceholderManager().getPlaceholder(s).set(replaced, p);
 		}
 		return replaced;
 	}
