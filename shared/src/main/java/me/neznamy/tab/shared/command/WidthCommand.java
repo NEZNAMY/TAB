@@ -209,6 +209,6 @@ public class WidthCommand extends SubCommand {
 				suggestions.add("<new width>");
 			}
 		}
-		return suggestions;
+		return getStartingArgument(suggestions, arguments[arguments.length - 1]);
 	}
 } 
