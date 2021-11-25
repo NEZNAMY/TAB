@@ -25,7 +25,7 @@ public class WidthCommand extends SubCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (sender == null) {
-			sendMessage(sender, getMessages().getCommandOnlyFromGame());
+			sendMessage(null, getMessages().getCommandOnlyFromGame());
 			return;
 		}
 		if (args.length == 1) {
@@ -51,30 +51,27 @@ public class WidthCommand extends SubCommand {
 					return;
 				}
 			}
-			List<IChatBaseComponent> messages = new ArrayList<>();
-			IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("&2" + c + " &d|"));
-			messages.add(new IChatBaseComponent(EnumChatFormat.color("&b[TAB] Click the line with closest width")));
-			messages.add(getText(1, c));
-			messages.add(charMessage);
-			messages.add(getText(2, c));
-			messages.add(getText(3, c));
-			messages.add(charMessage);
-			messages.add(getText(4, c));
-			messages.add(getText(5, c));
-			messages.add(charMessage);
-			messages.add(getText(6, c));
-			messages.add(getText(7, c));
-			messages.add(charMessage);
-			messages.add(getText(8, c));
-			messages.add(getText(9, c));
-			messages.add(charMessage);
-			messages.add(getText(10, c));
-			for (IChatBaseComponent message : messages) {
-				sender.sendMessage(message);
-			}
+			sendWidth(sender,c ,  10);
 		} else if (args.length == 2) {
-			int c = Integer.parseInt(args[0]);
-			int width = Integer.parseInt(args[1]);
+			int c, width;
+			try{
+				c = Integer.parseInt(args[0]);
+				width = Integer.parseInt(args[1]);
+			}catch (NumberFormatException e){
+				//Sender probably tried to enter the character as the first argument and the amount of width lines displayed as the second argument:
+				int amount;
+				try{
+					amount = Integer.parseInt(args[1]);
+				}catch (NumberFormatException ignored){
+					sendMessage(sender, "&cUsage 1: &f/tab width &7<character>");
+					sendMessage(sender, "&cUsage 2: &f/tab width &7<character> <amount>");
+					sendMessage(sender, "&cUsage 3: &f/tab width &7<character ID> <new width>");
+					return;
+				}
+
+				sendWidth(sender, args[0].charAt(0), amount);
+				return;
+			}
 			TAB.getInstance().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides").put(c, width);
 			TAB.getInstance().getConfig().save();
 			sendMessage(sender, "&2[TAB] Successfully set width of &6" + (char)c + " &2(&6" + c + "&2) to &6" + width + "&2 pixels.");
@@ -82,7 +79,27 @@ public class WidthCommand extends SubCommand {
 				execute(sender, new String[] {String.valueOf(c+1)});
 			}
 		} else {
-			sendMessage(sender, "Usage: /tab width <character>");
+			sendMessage(sender, "&cUsage 1: &f/tab width &7<character>");
+			sendMessage(sender, "&cUsage 2: &f/tab width &7<character> <amount>");
+			sendMessage(sender, "&cUsage 3: &f/tab width &7<character ID> <new width>");
+		}
+	}
+
+	public void sendWidth(TabPlayer sender, char c, int amount){
+		List<IChatBaseComponent> messages = new ArrayList<>();
+		IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("&2" + c + " &d|"));
+
+		messages.add(new IChatBaseComponent(EnumChatFormat.color("&b[TAB] Click the line with closest width &7(ID: &f" + (int)c + "&7)" )));
+
+		for(int i=1; i<=amount; i++){
+			messages.add(getText(i, c));
+			if(i % 2 != 0){
+				messages.add(charMessage);
+			}
+		}
+
+		for (IChatBaseComponent message : messages) {
+			sender.sendMessage(message);
 		}
 	}
 
@@ -103,7 +120,7 @@ public class WidthCommand extends SubCommand {
 			pixelsRemaining -= 2;
 			text.append('i');
 		}
-		IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text.toString() + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
+		IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
 		component.getModifier().onClickRunCommand("/tab width " + c + " " + width);
 		component.getModifier().onHoverShowText(new IChatBaseComponent("Click to set width to " + width + " pixels"));
 		return component;
