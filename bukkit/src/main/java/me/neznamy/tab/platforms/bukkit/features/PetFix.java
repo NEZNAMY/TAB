@@ -106,9 +106,8 @@ public class PetFix extends TabFeature {
 				}
 			}
 			if (removedEntry != null) items.remove(removedEntry);
-		}
-		//<1.15
-		if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
+		} else if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
+			//<1.15
 			DataWatcher watcher = DataWatcher.fromNMS(nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(packet));
 			DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
 			if (petOwner != null && (petOwner.getValue() instanceof java.util.Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
