@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabFeature;
@@ -97,7 +98,9 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	public void updateValue(TabPlayer player, Object value) {
 		if (lastValues.containsKey(player.getName()) && lastValues.get(player.getName()).equals(value)) return;
 		lastValues.put(player.getName(), String.valueOf(value));
-		for (TabFeature f : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier)) {
+		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
+		if (usage == null) return;
+		for (TabFeature f : usage) {
 			long time = System.nanoTime();
 			f.refresh(player, false);
 			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);

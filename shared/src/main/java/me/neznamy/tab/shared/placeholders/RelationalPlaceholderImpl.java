@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 import me.neznamy.tab.api.TabFeature;
@@ -89,7 +90,9 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	public void updateValue(TabPlayer viewer, TabPlayer target, Object value) {
 		if (lastValues.containsKey(key(viewer, target)) && lastValues.get(key(viewer, target)).equals(value)) return;
 		lastValues.put(key(viewer, target), String.valueOf(value));
-		for (TabFeature f : TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier)) {
+		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
+		if (usage == null) return;
+		for (TabFeature f : usage) {
 			long time = System.nanoTime();
 			f.refresh(viewer, true);
 			f.refresh(target, true);
