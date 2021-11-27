@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.nms.packet;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
