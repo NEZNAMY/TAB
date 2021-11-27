@@ -1,12 +1,10 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.packet;
 
 import java.util.UUID;
-
-import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
-
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 
 public class PacketPlayOutSpawnEntityLiving implements TabPacket {
 

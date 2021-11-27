@@ -19,7 +19,6 @@ import com.viaversion.viaversion.api.Via;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 
@@ -75,7 +74,6 @@ public class Main extends JavaPlugin {
 		String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 		try {
 			long time = System.currentTimeMillis();
-			NMSStorage.setInstance(new NMSStorage());
 			if (supportedVersions.contains(serverPackage)) {
 				Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&7[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
 				return true;

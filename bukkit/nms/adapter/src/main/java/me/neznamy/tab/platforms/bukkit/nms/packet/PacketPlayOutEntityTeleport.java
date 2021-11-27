@@ -1,8 +1,7 @@
-package me.neznamy.tab.platforms.bukkit.nms;
-
-import org.bukkit.Location;
+package me.neznamy.tab.platforms.bukkit.nms.packet;
 
 import me.neznamy.tab.api.protocol.TabPacket;
+import org.bukkit.Location;
 
 public class PacketPlayOutEntityTeleport implements TabPacket {
 
