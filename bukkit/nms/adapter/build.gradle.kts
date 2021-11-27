@@ -1,4 +1,4 @@
 dependencies {
-    implementation(projects.shared)
-    compileOnly(libs.bukkit)
+    api(projects.shared)
+    compileOnlyApi(libs.bukkit)
 }
