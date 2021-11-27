@@ -83,7 +83,7 @@ global-playerlist:
 belowname-objective:
   enabled: false
   number: "%health%"
-  text: "&c❤"
+  text: "&cHealth"
   disable-in-worlds:
     - disabledworld
   disable-in-servers:
