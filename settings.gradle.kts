@@ -18,16 +18,11 @@ dependencyResolutionManagement {
         maven("https://nexus.velocitypowered.com/repository/maven-public/")
         maven("https://repo.opencollab.dev/maven-snapshots/")
     }
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
 
 pluginManagement {
     includeBuild("build-logic")
-    repositories {
-        maven("https://papermc.io/repo/repository/maven-public/")
-    }
-    plugins {
-        id("io.papermc.paperweight.userdev") version "1.2.0"
-    }
 }
 
 rootProject.name = "TAB"
@@ -37,7 +32,5 @@ include(":shared")
 //include(":krypton")
 include(":velocity")
 include(":bukkit")
-include(":bukkit:nms:adapter")
-include(":bukkit:nms:v1_17_R1")
 include(":bungeecord")
 include(":jar")

@@ -2,10 +2,6 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.UUID;
 
-import me.neznamy.tab.platforms.bukkit.nms.packet.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.nms.packet.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.nms.packet.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.bukkit.nms.packet.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -18,6 +14,10 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
