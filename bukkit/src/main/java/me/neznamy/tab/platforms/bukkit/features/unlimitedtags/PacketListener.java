@@ -1,15 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.List;
-
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.platforms.bukkit.nms.AdapterProvider;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 /**
  * The packet listening part for securing proper functionality of armor stands
@@ -19,9 +17,6 @@ public class PacketListener extends TabFeature {
 
 	//main feature
 	private final NameTagX nameTagX;
-	
-	//nms storage
-	private final NMSStorage nms = NMSStorage.getInstance();
 
 	/**
 	 * Constructs new instance with given parameters and loads config options
@@ -34,8 +29,8 @@ public class PacketListener extends TabFeature {
 
 	@Override
 	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
-		if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
-			int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
+		if (sender.getVersion().getMinorVersion() == 8 && AdapterProvider.get().isInteractPacket(packet)) {
+			int entityId = AdapterProvider.get().getInteractEntityId(packet);
 			TabPlayer attacked = null;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all.isLoaded() && all.getArmorStandManager().hasArmorStandWithID(entityId)) {
@@ -44,7 +39,7 @@ public class PacketListener extends TabFeature {
 				}
 			}
 			if (attacked != null && attacked != sender) {
-				nms.setField(packet, nms.PacketPlayInUseEntity_ENTITY, ((Player) attacked.getPlayer()).getEntityId());
+				AdapterProvider.get().setInteractEntityId(packet, ((Player) attacked.getPlayer()).getEntityId());
 			}
 		}
 		return false;
@@ -55,24 +50,14 @@ public class PacketListener extends TabFeature {
 	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
 		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.getPlayersInDisabledUnlimitedWorlds().contains(receiver)) return;
-		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
-			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
-		} else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
-			onEntityMove(receiver, nms.PacketPlayOutEntityTeleport_ENTITYID.getInt(packet));
-		} else if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-			onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-		} else if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
-			if (nms.getMinorVersion() >= 17) {
-				Object entities = nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet);
-				if (entities instanceof List) {
-					onEntityDestroy(receiver, (List<Integer>) entities);
-				} else {
-					//1.17.0
-					onEntityDestroy(receiver, (int) entities);
-				}
-			} else {
-				onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
-			}
+		if (AdapterProvider.get().isMovePacket(packet) && !AdapterProvider.get().isHeadLookPacket(packet)) { //ignoring head rotation only packets
+			onEntityMove(receiver, AdapterProvider.get().getMoveEntityId(packet));
+		} else if (AdapterProvider.get().isTeleportPacket(packet)) {
+			onEntityMove(receiver, AdapterProvider.get().getTeleportEntityId(packet));
+		} else if (AdapterProvider.get().isSpawnPlayerPacket(packet)) {
+			onEntitySpawn(receiver, AdapterProvider.get().getPlayerSpawnId(packet));
+		} else if (AdapterProvider.get().isDestroyPacket(packet)) {
+			onEntityDestroy(receiver, AdapterProvider.get().getDestroyEntities(packet));
 		}
 	}
 

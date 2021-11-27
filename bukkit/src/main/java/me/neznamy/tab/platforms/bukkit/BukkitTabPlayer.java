@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import me.neznamy.tab.platforms.bukkit.nms.AdapterProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -15,18 +16,15 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
 import com.earth2me.essentials.Essentials;
-import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
-import io.netty.channel.Channel;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 
@@ -34,12 +32,6 @@ import me.neznamy.tab.shared.TAB;
  * TabPlayer for Bukkit
  */
 public class BukkitTabPlayer extends ITabPlayer {
-
-	//nms handle
-	private Object handle;
-
-	//nms player connection
-	private Object playerConnection;
 	
 	//player's visible boss bars
 	private final Map<UUID, BossBar> bossbars = new HashMap<>();
@@ -51,14 +43,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	public BukkitTabPlayer(Player p, int protocolVersion){
 		super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName());
-		try {
-			handle = NMSStorage.getInstance().getHandle.invoke(player);
-			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
-			if (NMSStorage.getInstance().CHANNEL != null)
-				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
-		} catch (ReflectiveOperationException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection or channel of " + p.getName(), e);
-		}
+		channel = AdapterProvider.get().getChannel(p);
 		version = ProtocolVersion.fromNetworkId(protocolVersion);
 	}
 
@@ -72,31 +57,23 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public int getPing() {
-		try {
-			int ping = NMSStorage.getInstance().PING.getInt(handle);
-			if (ping > 10000 || ping < 0) ping = -1;
-			return ping;
-		} catch (IllegalAccessException e) {
-			return -1;
-		}
+		int ping = AdapterProvider.get().getPing(getPlayer());
+		if (ping > 10000 || ping < 0) ping = -1;
+		return ping;
 	}
 
 	@Override
 	public void sendPacket(Object nmsPacket) {
 		if (nmsPacket == null || !getPlayer().isOnline()) return;
 		long time = System.nanoTime();
-		try {
-			if (nmsPacket instanceof PacketPlayOutBoss) {
-				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
-					handle((PacketPlayOutBoss) nmsPacket);
-				} else {
-					handleVia((PacketPlayOutBoss) nmsPacket);
-				}
+		if (nmsPacket instanceof PacketPlayOutBoss) {
+			if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
+				handle((PacketPlayOutBoss) nmsPacket);
 			} else {
-				NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
+				handleVia((PacketPlayOutBoss) nmsPacket);
 			}
-		} catch (ReflectiveOperationException e) {
-			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
+		} else {
+			AdapterProvider.get().sendPacket(getPlayer(), nmsPacket);
 		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
@@ -225,12 +202,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public Object getSkin() {
-		try {
-			return ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties();
-		} catch (ReflectiveOperationException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
-			return null;
-		}
+		return AdapterProvider.get().getSkin(getPlayer());
 	}
 
 	@Override

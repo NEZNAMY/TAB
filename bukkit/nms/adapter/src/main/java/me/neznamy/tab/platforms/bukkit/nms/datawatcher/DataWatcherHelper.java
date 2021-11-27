@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import java.util.Optional;
-
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.AdapterProvider;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -28,7 +26,7 @@ public class DataWatcherHelper {
 	 */
 	public DataWatcherHelper(DataWatcher data) {
 		this.data = data;
-		this.registry = NMSStorage.getInstance().getDataWatcherRegistry();
+		this.registry = AdapterProvider.get().getDataWatcherRegistry();
 	}
 	
 	/**
@@ -69,11 +67,7 @@ public class DataWatcherHelper {
 	 */
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
 		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 13) {
-			try {
-				data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
-			} catch (ReflectiveOperationException e) {
-				TAB.getInstance().getErrorManager().printError("Failed to create component", e);
-			}
+			data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(AdapterProvider.get().adaptComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
 		} else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8){
 			data.setValue(new DataWatcherObject(2, registry.getString()), customName);
 		} else {

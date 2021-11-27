@@ -1,7 +1,6 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.packet;
 
 import java.util.Arrays;
-
 import me.neznamy.tab.api.protocol.TabPacket;
 
 public class PacketPlayOutEntityDestroy implements TabPacket {
