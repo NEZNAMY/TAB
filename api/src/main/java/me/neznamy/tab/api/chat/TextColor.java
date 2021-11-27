@@ -19,6 +19,15 @@ public class TextColor {
 	//true if legacy color was forced via constructor, false if automatically
 	private boolean legacyColorForced;
 	
+	public TextColor(TextColor color) {
+		red = color.red;
+		green = color.green;
+		blue = color.blue;
+		legacyColor = color.legacyColor;
+		hexCode = color.hexCode;
+		legacyColorForced = color.legacyColorForced;
+	}
+	
 	/**
 	 * Constructs new instance based on hex code as string
 	 * @param hexCode - a 6-digit combination of hex numbers
