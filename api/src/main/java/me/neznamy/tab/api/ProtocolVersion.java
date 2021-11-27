@@ -7,6 +7,7 @@ public enum ProtocolVersion {
 
 	UNKNOWN	(999, "Unknown"),
 	PROXY	(999, "Proxy"),
+	V1_18	(757),
 	V1_17_1	(756),
 	V1_17	(755),
 	V1_16_5 (754),

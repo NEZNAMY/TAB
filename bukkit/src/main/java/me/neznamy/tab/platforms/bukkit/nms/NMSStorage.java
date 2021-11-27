@@ -197,7 +197,7 @@ public final class NMSStorage {
 	public final Field IScoreboardCriteria_self = getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
 	public Field PacketPlayOutScoreboardObjective_RENDERTYPE;
 	public Field PacketPlayOutScoreboardObjective_DISPLAYNAME;
-	public final Method ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "func_96647_c", "method_1128"}, int.class);
+	public final Method ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "func_96647_c", "method_1128", "b"}, int.class);
 	public Enum[] EnumScoreboardHealthDisplay_values;
 	public Enum[] EnumScoreboardAction_values;
 	
@@ -344,7 +344,7 @@ public final class NMSStorage {
 			DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);
 			DataWatcherObject_SLOT = getFields(DataWatcherObject, int.class).get(0);
 			DataWatcherObject_SERIALIZER = getFields(DataWatcherObject, DataWatcherSerializer).get(0);
-			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"register", "method_12784"}, DataWatcherObject, Object.class);
+			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"register", "method_12784", "a"}, DataWatcherObject, Object.class);
 		} else {
 			DataWatcherItem_TYPE = getFields(DataWatcherItem, int.class).get(1);
 			DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
@@ -459,8 +459,8 @@ public final class NMSStorage {
 		PacketPlayOutScoreboardTeam_NAME = getFields(PacketPlayOutScoreboardTeam, String.class).get(0);
 		PacketPlayOutScoreboardTeam_PLAYERS = getFields(PacketPlayOutScoreboardTeam, Collection.class).get(0);
 		ScoreboardTeam_getPlayerNameSet = getMethods(ScoreboardTeam, Collection.class).get(0);
-		ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, "setAllowFriendlyFire", boolean.class);
-		ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, "setCanSeeFriendlyInvisibles", boolean.class);
+		ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "b"}, boolean.class);
+		ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class);
 		if (minorVersion >= 8) {
 			Class<?> EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
 			EnumNameTagVisibility_values = getEnumValues(EnumNameTagVisibility);
@@ -472,8 +472,8 @@ public final class NMSStorage {
 			ScoreboardTeam_setCollisionRule = getMethods(ScoreboardTeam, void.class, EnumTeamPush).get(0);
 		}
 		if (minorVersion >= 13) {
-			ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "method_1138"}, IChatBaseComponent);
-			ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "method_1139"}, IChatBaseComponent);
+			ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "method_1138", "b"}, IChatBaseComponent);
+			ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "method_1139", "c"}, IChatBaseComponent);
 			ScoreboardTeam_setColor = getMethods(ScoreboardTeam, void.class, EnumChatFormat).get(0);
 		} else {
 			ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "func_96666_b"}, String.class);
