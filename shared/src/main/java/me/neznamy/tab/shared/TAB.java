@@ -44,7 +44,7 @@ public class TAB extends TabAPI {
 	private static TAB instance;
 
 	//version of plugin
-	public static final String PLUGIN_VERSION = "3.0.0-pre4";
+	public static final String PLUGIN_VERSION = "@plugin_version@";
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
