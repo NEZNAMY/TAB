@@ -11,6 +11,7 @@ import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 
 /**
  * Feature registration which offers calls to features and measures how long it took them to process
@@ -61,6 +62,10 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void load() {
 		for (TabFeature f : values) f.load();
+		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
+			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) users.load(p);
+		}
 	}
 
 	/**
@@ -124,6 +129,10 @@ public class FeatureManagerImpl implements FeatureManager {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.isLoaded()) online.updateValue(all, online.request(all));
 		}
+		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
+			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
+			users.unload(disconnectedPlayer);
+		}
 	}
 
 	/**
@@ -149,6 +158,10 @@ public class FeatureManagerImpl implements FeatureManager {
 		PlayerPlaceholder online = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%online%");
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.isLoaded()) online.updateValue(all, online.request(all));
+		}
+		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
+			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
+			users.load(connectedPlayer);
 		}
 	}
 
