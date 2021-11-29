@@ -131,7 +131,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			List<String> list = (List<String>) condition.getValue().get("conditions");
 			String type = String.valueOf(condition.getValue().get("type"));
 			String yes = condition.getValue().getOrDefault(true, true).toString();
-			String no = condition.getValue().getOrDefault(false, true).toString();
+			String no = condition.getValue().getOrDefault(false, false).toString();
 			Condition c = Condition.compile(condition.getKey(), list, type, yes, no);
 			Condition.getConditions().put(condition.getKey(), c);
 			String identifier = "%condition:" + c.getName() + "%";
