@@ -414,8 +414,8 @@ public class Configs {
 		finalCfg.set("placeholders", placeholders);
 
 		finalCfg.set("placeholder-output-replacements", premium.getConfigurationSection("placeholder-output-replacements"));
-		finalCfg.set("placeholder-output-replacements.%afk%.yes", afkyes);
-		finalCfg.set("placeholder-output-replacements.%afk%.no", afkno);
+		finalCfg.set("placeholder-output-replacements.%afk%.true", afkyes);
+		finalCfg.set("placeholder-output-replacements.%afk%.false", afkno);
 
 		finalCfg.set("conditions",premium.getConfigurationSection("conditions"));
 
