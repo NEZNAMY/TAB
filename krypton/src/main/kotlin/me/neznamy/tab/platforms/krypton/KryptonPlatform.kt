@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag
 import me.neznamy.tab.shared.permission.LuckPerms
 import me.neznamy.tab.shared.permission.None
 import me.neznamy.tab.shared.permission.PermissionPlugin
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -71,9 +71,9 @@ class KryptonPlatform(
                 playerIntervals.containsKey(identifier) -> playerIntervals[identifier]!!
                 else -> manager.defaultRefresh
             }
-            manager.registerPlaceholder(object : PlayerPlaceholder(identifier, refresh, null) {
+            manager.registerPlaceholder(object : PlayerPlaceholderImpl(identifier, refresh, null) {
 
-                override fun get(player: TabPlayer): Any? {
+                override fun request(player: TabPlayer): Any? {
                     server.scheduler.run(plugin) {
                         val time = System.nanoTime()
                         lastValues[player.name] = identifier

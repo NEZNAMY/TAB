@@ -116,7 +116,7 @@ object KryptonPacketBuilder : PacketBuilder() {
         return PacketPlayOutPlayerInfo(action, listData)
     }
 
-    override fun readObjective(packet: Any?, clientVersion: ProtocolVersion?) = null
+    override fun readObjective(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutScoreboardObjective? = null
 
-    override fun readDisplayObjective(packet: Any?, clientVersion: ProtocolVersion?) = null
+    override fun readDisplayObjective(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutScoreboardDisplayObjective? = null
 }
