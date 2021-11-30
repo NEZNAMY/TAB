@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,33 +18,30 @@ import me.neznamy.tab.shared.TAB;
  */
 public class PetFix extends TabFeature {
 
+	//nms storage
+	private final NMSStorage nms = NMSStorage.getInstance();
+
 	//datawatcher position of pet owner field
-	private int petOwnerPosition;
+	private final int petOwnerPosition = getPetOwnerPosition();
 
 	//logger of last interacts to prevent feature not working on 1.16
-	private Map<String, Long> lastInteractFix = new HashMap<>();
-	
-	//nms storage
-	private NMSStorage nms;
-	
+	private final Map<String, Long> lastInteractFix = new HashMap<>();
+
 	/**
 	 * Constructs new instance with given parameter
-	 * @param nms
 	 */
-	public PetFix(NMSStorage nms) {
-		super("Pet name fix");
-		this.nms = nms;
-		petOwnerPosition = getPetOwnerPosition();
+	public PetFix() {
+		super("Pet name fix", null);
 		TAB.getInstance().debug("Loaded PetFix feature");
 	}
-	
+
 	/**
 	 * Returns position of pet owner field based on server version
 	 * @return position of pet owner field based on server version
 	 */
 	private int getPetOwnerPosition() {
 		if (nms.getMinorVersion() >= 17) {
-			//1.17.x
+			//1.17.x, 1.18.x
 			return 18;
 		} else if (nms.getMinorVersion() >= 15) {
 			//1.15.x, 1.16.x
@@ -61,13 +57,13 @@ public class PetFix extends TabFeature {
 			return 13;
 		}
 	}
-	
+
 	/**
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException 
 	 */
 	@Override
-	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		if (nms.PacketPlayInUseEntity.isInstance(packet)) {
 			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
@@ -80,7 +76,7 @@ public class PetFix extends TabFeature {
 		}
 		return false;
 	}
-	
+
 	private boolean isInteract(Object action) {
 		if (nms.getMinorVersion() >= 17) {
 			return nms.PacketPlayInUseEntity$d.isInstance(action);
@@ -88,18 +84,14 @@ public class PetFix extends TabFeature {
 			return action.toString().equals("INTERACT");
 		}
 	}
-	
+
 	/**
 	 * Removes pet owner field from datawatcher
-	 * @throws IllegalAccessException 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws InstantiationException 
+	 * @throws ReflectiveOperationException
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (nms.PacketPlayOutEntityMetadata.isInstance(packet)) {
 			Object removedEntry = null;
 			List<Object> items = (List<Object>) nms.PacketPlayOutEntityMetadata_LIST.get(packet);
@@ -114,9 +106,8 @@ public class PetFix extends TabFeature {
 				}
 			}
 			if (removedEntry != null) items.remove(removedEntry);
-		}
-		//<1.15
-		if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
+		} else if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
+			//<1.15
 			DataWatcher watcher = DataWatcher.fromNMS(nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(packet));
 			DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
 			if (petOwner != null && (petOwner.getValue() instanceof java.util.Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {

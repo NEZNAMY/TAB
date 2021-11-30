@@ -13,7 +13,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.Playerlist;
 
@@ -22,20 +22,15 @@ import me.neznamy.tab.shared.features.Playerlist;
  */
 public class GlobalPlayerlist extends TabFeature {
 
-	private List<String> spyServers;
-	private Map<String, List<String>> sharedServers;
-	private boolean displayAsSpectators;
-	private boolean vanishedAsSpectators;
-	private boolean isolateUnlistedServers;
+	private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Arrays.asList("spyserver1"));
+	private final Map<String, List<String>> sharedServers = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
+	private final boolean displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
+	private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
+	private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
+	private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
 	public GlobalPlayerlist() {
-		super("Global Playerlist");
-		spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Arrays.asList("spyserver1"));
-		sharedServers = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
-		displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
-		vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
-		isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
-		boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
+		super("Global Playerlist", null);
 		if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_latency", new LatencyRefresher());
 		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_vanish", new VanishRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded GlobalPlayerlist feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",
@@ -54,7 +49,7 @@ public class GlobalPlayerlist extends TabFeature {
 
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (displayed.isVanished() && !viewer.hasPermission("tab.seevanished")) return false;
+		if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
 		if (spyServers.contains(viewer.getServer())) return true;
 		return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
 	}
@@ -92,7 +87,7 @@ public class GlobalPlayerlist extends TabFeature {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		//delay due to waterfall bug calling server switch when players leave
-		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, CpuConstants.UsageCategory.PLAYER_QUIT, () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
 
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

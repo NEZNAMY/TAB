@@ -9,6 +9,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab parse <player> <placeholder>" subcommand
@@ -19,13 +20,13 @@ public class ParseCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public ParseCommand() {
-		super("parse", "tab.parse");
+		super("parse", TabConstants.Permission.COMMAND_PARSE);
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		if (args.length < 2) {
-			sendMessage(sender, "Usage: /tab parse <player> <placeholder>");
+			sendMessage(sender, getMessages().getParseCommandUsage());
 			return;
 		}
 		TabPlayer target;
@@ -34,7 +35,7 @@ public class ParseCommand extends SubCommand {
 		} else {
 			target = TAB.getInstance().getPlayer(args[0]);
 			if (target == null) {
-				sendMessage(sender, getTranslation("player_not_found"));
+				sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 				return;
 			}
 		}
@@ -45,7 +46,7 @@ public class ParseCommand extends SubCommand {
 			replaced = new PropertyImpl(null, target, replaced).get();
 		} catch (Exception e) {
 			sendMessage(sender, "&cThe placeholder threw an exception when parsing. Check console for more info.");
-			TAB.getInstance().getErrorManager().printError("", e, true);
+			TAB.getInstance().getErrorManager().printError("Placeholder " + replaced + " threw an exception when parsing for player " + target.getName(), e, true);
 			return;
 		}
 		IChatBaseComponent colored = IChatBaseComponent.optimizedComponent("With colors: " + replaced);
@@ -59,6 +60,9 @@ public class ParseCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		return arguments.length == 1 ? getOnlinePlayers(arguments[0]) : new ArrayList<>();
+		if (arguments.length != 1) return new ArrayList<>();
+		List<String> suggestions = getOnlinePlayers(arguments[0]);
+		if ("me".startsWith(arguments[0].toLowerCase())) suggestions.add("me");
+		return suggestions;
 	}
 }

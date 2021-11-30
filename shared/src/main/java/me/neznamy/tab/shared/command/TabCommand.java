@@ -9,8 +9,8 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * The core command handler
@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.TAB;
 public class TabCommand extends SubCommand {
 
 	//tab instance
-	private TAB tab;
+	private final TAB tab;
 	
 	/**
 	 * Constructs new instance with given parameter and registers all subcommands
@@ -41,7 +41,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new SetCollisionCommand());
 		registerSubCommand(new ScoreboardCommand());
 		registerSubCommand(new WidthCommand());
-		List<String> properties = Lists.newArrayList(PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
+		List<String> properties = Lists.newArrayList(TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
 			properties.add(line.toString());
 		}
@@ -57,7 +57,7 @@ public class TabCommand extends SubCommand {
 				if (command.hasPermission(sender)) {
 					command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
 				} else {
-					sendMessage(sender, getTranslation("no_permission"));
+					sendMessage(sender, getMessages().getNoPermission());
 				}
 			} else {
 				help(sender);
@@ -72,7 +72,7 @@ public class TabCommand extends SubCommand {
 	 * @param sender - player who ran command or null if from console
 	 */
 	private void help(TabPlayer sender){
-		if ((sender == null || sender.hasPermission("tab.admin"))) {
+		if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {
 			if (sender != null) {
 				IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TAB.PLUGIN_VERSION);
 				component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's page")));
@@ -107,7 +107,7 @@ public class TabCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (!hasPermission(sender, "tab.tabcomplete")) return new ArrayList<>();
+		if (!hasPermission(sender, TabConstants.Permission.COMMAND_AUTOCOMPLETE)) return new ArrayList<>();
 		return super.complete(sender, arguments);
 	}
 }

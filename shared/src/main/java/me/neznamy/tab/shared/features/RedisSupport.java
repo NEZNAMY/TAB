@@ -11,4 +11,6 @@ public interface RedisSupport {
 	public void updateBelowname(TabPlayer p, String value);
 	
 	public void updateYellowNumber(TabPlayer p, String value);
+	
+	public void updateTeamName(TabPlayer p, String to);
 }

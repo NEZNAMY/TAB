@@ -16,14 +16,13 @@ import me.neznamy.tab.shared.TAB;
 public class PingSpoof extends TabFeature {
 
 	//fake ping value
-	private int value;
+	private final int value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);
 	
 	/**
 	 * Constructs new instance and loads config options
 	 */
 	public PingSpoof() {
-		super("Ping spoof");
-		value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);
+		super("Ping spoof", null);
 		TAB.getInstance().debug(String.format("Loaded PingSpoof feature with parameters value=%s", value));
 	}
 	

@@ -10,8 +10,8 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
-	private PluginMessageHandler plm;
-	private Map<String, String> attributes = new HashMap<>();
+	private final PluginMessageHandler plm;
+	private final Map<String, String> attributes = new HashMap<>();
 	
 	protected ProxyTabPlayer(PluginMessageHandler plm, Object player, UUID uniqueId, String name, String server, String world) {
 		super(player, uniqueId, name, server, world);
@@ -35,8 +35,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 
 	public String getAttribute(String name, Object def) {
 		plm.requestAttribute(this, name);
-		if (!attributes.containsKey(name)) return def.toString();
-		return attributes.get(name);
+		return attributes.getOrDefault(name, def.toString());
 	}
 	
 	@Override
@@ -44,8 +43,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			String merge = "hasPermission:" + permission;
 			plm.requestAttribute(this, merge);
-			if (!attributes.containsKey(merge)) return false;
-			return Boolean.parseBoolean(attributes.get(merge));
+			return Boolean.parseBoolean(attributes.getOrDefault(merge, "false"));
 		}
 		return hasPermission0(permission);
 	}

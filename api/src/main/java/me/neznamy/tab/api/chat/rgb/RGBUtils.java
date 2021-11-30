@@ -9,8 +9,10 @@ import me.neznamy.tab.api.chat.TextColor;
 import me.neznamy.tab.api.chat.rgb.format.BukkitFormat;
 import me.neznamy.tab.api.chat.rgb.format.CMIFormat;
 import me.neznamy.tab.api.chat.rgb.format.HtmlFormat;
+import me.neznamy.tab.api.chat.rgb.format.HtmlFormat2;
 import me.neznamy.tab.api.chat.rgb.format.RGBFormatter;
 import me.neznamy.tab.api.chat.rgb.format.UnnamedFormat1;
+import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
@@ -21,13 +23,13 @@ import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
 public class RGBUtils {
 
 	//instance of class
-	private static RGBUtils instance = new RGBUtils();
+	private final static RGBUtils instance = new RGBUtils();
 	
 	//rgb formatters
-	private RGBFormatter[] formats;
+	private final RGBFormatter[] formats;
 	
 	//gradient patterns
-	private GradientPattern[] gradients;
+	private final GradientPattern[] gradients;
 	
 	//TAB's RGB format
 	private final Pattern tabPattern = Pattern.compile("#[0-9a-fA-F]{6}");
@@ -38,13 +40,12 @@ public class RGBUtils {
 				new BukkitFormat(),
 				new CMIFormat(),
 				new UnnamedFormat1(),
-				new HtmlFormat()
+				new HtmlFormat(),
+				new HtmlFormat2()
 		};
 		gradients = new GradientPattern[] {
 				//{#RRGGBB>}text{#RRGGBB<}
-				new CommonGradient(Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-						Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-						"{#", 9, 2, 10, 8),
+				new CMIGradient(),
 				//<#RRGGBB>Text</#RRGGBB>
 				new CommonGradient(Pattern.compile("<#[0-9a-fA-F]{6}>[^<]*</#[0-9a-fA-F]{6}>"), 
 						Pattern.compile("<#[0-9a-fA-F]{6}\\|.>[^<]*</#[0-9a-fA-F]{6}>"), 
@@ -72,11 +73,11 @@ public class RGBUtils {
 	 */
 	public String applyFormats(String text, boolean ignorePlaceholders) {
 		String replaced = text;
-		for (RGBFormatter formatter : formats) {
-			replaced = formatter.reformat(replaced);
-		}
 		for (GradientPattern pattern : gradients) {
 			replaced = pattern.applyPattern(replaced, ignorePlaceholders);
+		}
+		for (RGBFormatter formatter : formats) {
+			replaced = formatter.reformat(replaced);
 		}
 		return replaced;
 	}

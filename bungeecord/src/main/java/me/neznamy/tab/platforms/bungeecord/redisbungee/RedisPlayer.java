@@ -14,11 +14,11 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.YellowNumber;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 
 public class RedisPlayer {
 
@@ -80,26 +80,26 @@ public class RedisPlayer {
 		json.put("name", p.getName());
 		json.put("server", p.getServer());
 		if (redis.getPlayerlist() != null) {
-			json.put("tabformat", p.getProperty(PropertyUtils.TABPREFIX).get() + p.getProperty(PropertyUtils.CUSTOMTABNAME).get() + p.getProperty(PropertyUtils.TABSUFFIX).get());
+			json.put("tabformat", p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
 		}
-		if (p.getProperty(PropertyUtils.TAGPREFIX) != null) {
-			json.put(PropertyUtils.TAGPREFIX, p.getProperty(PropertyUtils.TAGPREFIX).get());
-			json.put(PropertyUtils.TAGSUFFIX, p.getProperty(PropertyUtils.TAGSUFFIX).get());
+		if (p.getProperty(TabConstants.Property.TAGPREFIX) != null) {
+			json.put(TabConstants.Property.TAGPREFIX, p.getProperty(TabConstants.Property.TAGPREFIX).get());
+			json.put(TabConstants.Property.TAGSUFFIX, p.getProperty(TabConstants.Property.TAGSUFFIX).get());
 			json.put("namevisibility", ((NameTag)TAB.getInstance().getFeatureManager().getFeature("nametag16")).getTeamVisibility(p, p));
 		} else {
-			json.put(PropertyUtils.TAGPREFIX, "");
-			json.put(PropertyUtils.TAGSUFFIX, "");
+			json.put(TabConstants.Property.TAGPREFIX, "");
+			json.put(TabConstants.Property.TAGSUFFIX, "");
 			json.put("namevisibility", true);
 		}
-		if (p.getProperty(PropertyUtils.BELOWNAME_NUMBER) != null) {
-			json.put("belowname", p.getProperty(PropertyUtils.BELOWNAME_NUMBER).get());
+		if (p.getProperty(TabConstants.Property.BELOWNAME_NUMBER) != null) {
+			json.put("belowname", p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
 		}
-		if (p.getProperty(PropertyUtils.YELLOW_NUMBER) != null) {
-			json.put("yellow-number", p.getProperty(PropertyUtils.YELLOW_NUMBER).get());
+		if (p.getProperty(TabConstants.Property.YELLOW_NUMBER) != null) {
+			json.put("yellow-number", p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
 		}
 		json.put("teamname", p.getTeamName());
 		json.put("vanished", p.isVanished());
-		json.put("staff", p.hasPermission("tab.staff"));
+		json.put("staff", p.hasPermission(TabConstants.Permission.STAFF));
 		String[][] skin = (String[][]) p.getSkin();
 		if (skin.length > 0) {
 			json.put("skin-value", skin[0][1]);
@@ -204,7 +204,7 @@ public class RedisPlayer {
 		return tabformat;
 	}
 
-	public Object getTeamName() {
+	public String getTeamName() {
 		return teamName;
 	}
 
@@ -242,5 +242,9 @@ public class RedisPlayer {
 
 	public boolean hasDisabledPlayerlist() {
 		return disabledPlayerlist;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
 	}
 }

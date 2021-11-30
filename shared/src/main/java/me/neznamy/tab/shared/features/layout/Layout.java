@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,29 +12,27 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
 
-	private String name;
-	private LayoutManager manager;
-	private Condition displayCondition;
-	private Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
-	private List<Integer> emptySlots = new ArrayList<>();
-	private List<ParentGroup> groups = new ArrayList<>();
-	private List<TabPlayer> viewers = new ArrayList<>();
+	private final String name;
+	private final LayoutManager manager;
+	private final Condition displayCondition;
+	private final Map<Integer, FixedSlot> fixedSlots;
+	private final List<Integer> emptySlots;
+	private final List<ParentGroup> groups;
+	private final List<TabPlayer> viewers = new ArrayList<>();
 	private TabPlayer[] viewerArray = new TabPlayer[0];
 
 	public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
-		super(manager.getFeatureName());
+		super(manager.getFeatureName(), "Updating player groups");
 		this.name = name;
 		this.manager = manager;
 		this.displayCondition = displayCondition;
 		this.fixedSlots = fixedSlots;
 		this.emptySlots = emptySlots;
 		this.groups = groups;
-		TAB.getInstance().getFeatureManager().registerFeature("latency-" + name, new LatencyRefresher(this));
 	}
 
 	public void sendTo(TabPlayer p) {
@@ -46,7 +43,7 @@ public class Layout extends TabFeature {
 		fixedSlots.values().forEach(s -> s.sendTo(p));
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (int slot : emptySlots) {
-			list.add(new PlayerInfoData(manager.formatSlot(slot), manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
+			list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
 		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);

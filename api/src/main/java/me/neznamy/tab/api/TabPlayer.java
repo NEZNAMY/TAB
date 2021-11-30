@@ -12,42 +12,6 @@ import me.neznamy.tab.api.protocol.TabPacket;
 public interface TabPlayer {
 
 	/**
-	 * Changes the requested property of a player temporarily (until next restart, reload or /tab reload)
-	 * @param type Type of property
-	 * @param value The value to be used
-	 */
-	public void setValueTemporarily(EnumProperty type, String value);
-
-	/**
-	 * Returns temporary value of player's property or null if not set
-	 * @param type Type of property
-	 * @return Temporary value of player's property or null if not set
-	 * @see hasTemporaryValue
-	 * @see setValueTemporarily
-	 */
-	public String getTemporaryValue(EnumProperty type);
-
-	/**
-	 * Returns Whether player has temporary value or not
-	 * @param type Type of property
-	 * @return Whether player has temporary value or not
-	 */
-	public boolean hasTemporaryValue(EnumProperty type);
-
-	/**
-	 * Removes temporary value from player if set
-	 * @param type Type of property
-	 */
-	public void removeTemporaryValue(EnumProperty type);
-
-	/**
-	 * Returns original value of property of player
-	 * @param type Type of property
-	 * @return Original value of property of player
-	 */
-	public String getOriginalValue(EnumProperty type);
-
-	/**
 	 * Refreshes all visuals on the player
 	 */
 	public void forceRefresh();
@@ -137,6 +101,14 @@ public interface TabPlayer {
 	 * @param feature - feature to increment sent packet counter of 
 	 */
 	public void sendPacket(Object packet, TabFeature feature);
+
+	/**
+	 * Sends the player a platform-specific packet and adds that packet into counter that
+	 * is displayed in /tab cpu
+	 * @param packet - an instance of packet depending on platform
+	 * @param feature - feature to increment sent packet counter of
+	 */
+	public void sendPacket(Object packet, String feature);
 
 	/**
 	 * Returns player's property by name

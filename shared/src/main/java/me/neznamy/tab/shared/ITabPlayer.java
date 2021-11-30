@@ -8,7 +8,6 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
-import me.neznamy.tab.api.EnumProperty;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
@@ -17,24 +16,24 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.api.team.TeamManager;
 
 /**
  * The core class for player
  */
 public abstract class ITabPlayer implements TabPlayer {
 
-	protected Object player;
-	private String name;
-	private UUID uniqueId;
+	protected final Object player;
+	private final String name;
+	private final UUID uniqueId;
 	private String world;
 	private String server;
 	private String permissionGroup = GroupManager.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
-	private String forcedTeamName;
 	private boolean bedrockPlayer;
 
-	private Map<String, Property> properties = new HashMap<>();
+	private final Map<String, Property> properties = new HashMap<>();
 	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version;
 	protected Channel channel;
@@ -82,39 +81,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public UUID getTablistUUID() {
 		return uniqueId;
-	}
-
-	@Override
-	public void setValueTemporarily(EnumProperty type, String value) {
-		TAB.getInstance().debug("Received API request to set property " + type + " of " + getName() + " temporarily to " + value + " by " + Thread.currentThread().getStackTrace()[2].toString());
-		Property pr = getProperty(type.toString());
-		if (pr == null) throw new IllegalStateException("Feature handling this property (" + type + ") is not enabled");
-		pr.setTemporaryValue(value);
-		if (TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") && type.toString().contains("tag")) {
-			setProperty((TabFeature) TAB.getInstance().getTeamManager(), PropertyUtils.NAMETAG, getProperty(PropertyUtils.TAGPREFIX).getCurrentRawValue() + getProperty(PropertyUtils.CUSTOMTAGNAME).getCurrentRawValue() + getProperty(PropertyUtils.TAGSUFFIX).getCurrentRawValue(), null);
-		}
-		forceRefresh();
-	}
-
-	@Override
-	public String getTemporaryValue(EnumProperty type) {
-		Property pr = getProperty(type.toString());
-		return pr == null ? null : pr.getTemporaryValue();
-	}
-
-	@Override
-	public boolean hasTemporaryValue(EnumProperty type) {
-		return getTemporaryValue(type) != null;
-	}
-
-	@Override
-	public void removeTemporaryValue(EnumProperty type) {
-		setValueTemporarily(type, null);
-	}
-
-	@Override
-	public String getOriginalValue(EnumProperty type) {
-		return getProperty(type.toString()).getOriginalRawValue();
 	}
 
 	@Override
@@ -166,6 +132,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
+	public void sendPacket(Object packet, String feature) {
+		sendPacket(packet);
+		if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature);
+	}
+
+	@Override
 	public Property getProperty(String name) {
 		return properties.get(name);
 	}
@@ -180,10 +152,10 @@ public abstract class ITabPlayer implements TabPlayer {
 		if (armorStandManager == null) throw new IllegalStateException("Unlimited nametag mode is not enabled");
 		if (previewingNametag) {
 			armorStandManager.destroy(this);
-			sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("preview-off"), true);
+			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
 		} else {
 			armorStandManager.spawn(this);
-			sendMessage(TAB.getInstance().getConfiguration().getTranslation().getString("preview-on"), true);
+			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
 		}
 		previewingNametag = !previewingNametag;
 	}
@@ -236,7 +208,8 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public String getTeamName() {
-		if (forcedTeamName != null) return forcedTeamName;
+		TeamManager teams = TAB.getInstance().getTeamManager();
+		if (teams != null && teams.getForcedTeamName(this) != null) return teams.getForcedTeamName(this);
 		return teamName;
 	}
 

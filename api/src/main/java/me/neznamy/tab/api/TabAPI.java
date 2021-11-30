@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.task.ThreadManager;
 import me.neznamy.tab.api.team.TeamManager;
@@ -74,6 +75,8 @@ public abstract class TabAPI {
 	 * @return feature manager instance
 	 */
 	public abstract FeatureManager getFeatureManager();
+	
+	public abstract TablistFormatManager getTablistFormatManager();
 
 	/**
 	 * Returns server version. On proxy installation returns PROXY.
@@ -99,4 +102,6 @@ public abstract class TabAPI {
 	public abstract PropertyConfiguration getUsers();
 	
 	public abstract void debug(String message);
+	
+	public abstract void logError(String message, Throwable t);
 }

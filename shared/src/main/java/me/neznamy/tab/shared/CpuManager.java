@@ -50,17 +50,16 @@ public class CpuManager implements ThreadManager {
 	private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
 	//thread pool
-	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 
 	//error manager
-	private ErrorManager errorManager;
+	private final ErrorManager errorManager;
 
 	/**
 	 * Constructs new instance and starts repeating task that resets values every 10 seconds
 	 * @param errorManager - error manager
 	 */
 	public CpuManager(ErrorManager errorManager) {
-		exe.setThreadFactory(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
 		this.errorManager = errorManager;
 	}
 	
@@ -118,7 +117,7 @@ public class CpuManager implements ThreadManager {
 
 	@Override
 	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return new TabRepeatingTask(this.exe, task, errorDescription, feature, type, intervalMilliseconds);
+		return new TabRepeatingTask(exe, task, errorDescription, feature, type, intervalMilliseconds);
 	}
 
 	@Override
@@ -206,7 +205,7 @@ public class CpuManager implements ThreadManager {
 		String key;
 		for (Entry<String, AtomicLong> nanos : map.entrySet()) {
 			key = nanos.getKey();
-			if (!nanoMap.containsKey(key)) nanoMap.put(key, 0L);
+			nanoMap.putIfAbsent(key, 0L);
 			nanoMap.put(key, nanoMap.get(key)+nanos.getValue().get());
 		}
 		Map<String, Float> percentMap = new HashMap<>();
@@ -224,14 +223,10 @@ public class CpuManager implements ThreadManager {
 		Map<String, Map<String, Long>> total = new HashMap<>();
 		for (Entry<String, Map<String, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
 			String key = nanos.getKey();
-			if (!total.containsKey(key)) {
-				total.put(key, new HashMap<>());
-			}
+			total.putIfAbsent(key, new HashMap<>());
 			Map<String, Long> usage = total.get(key);
 			for (Entry<String, AtomicLong> entry : nanos.getValue().entrySet()) {
-				if (!usage.containsKey(entry.getKey())) {
-					usage.put(entry.getKey(), 0L);
-				}
+				usage.putIfAbsent(entry.getKey(), 0L);
 				usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().get());
 			}
 		}

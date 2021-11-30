@@ -15,7 +15,7 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitEventListener implements Listener {
 
-	private Main main;
+	private final Main main;
 	
 	public BukkitEventListener(Main main) {
 		this.main = main;

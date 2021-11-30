@@ -21,6 +21,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -33,10 +34,10 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 public class Main {
 
 	//instance of proxyserver
-	private ProxyServer server;
+	private final ProxyServer server;
 	
 	//metrics factory I guess
-	private Metrics.Factory metricsFactory;
+	private final Metrics.Factory metricsFactory;
 
 	@Inject
 	public Main(ProxyServer server, Metrics.Factory metricsFactory) {
@@ -107,7 +108,7 @@ public class Main {
 		public void execute(Invocation invocation) {
 			CommandSource sender = invocation.source();
 			if (TAB.getInstance().isDisabled()) {
-				for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission("tab.reload"), sender.hasPermission("tab.admin"))) {
+				for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
 					sender.sendMessage(Identity.nil(), Component.text(EnumChatFormat.color(message)));
 				}
 			} else {

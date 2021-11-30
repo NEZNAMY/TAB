@@ -25,18 +25,18 @@ public class ErrorManager {
 	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
 	//one time messages already sent into console so they are not sent again
-	private List<String> oneTimeMessages = new ArrayList<>();
+	private final List<String> oneTimeMessages = new ArrayList<>();
 
 	//amount of logged startup warns
 	private int startupWarns = 0;
 
 	//error logs
-	private File errorLog;
-	private File antiOverrideLog;
-	private File placeholderErrorLog;
+	private final File errorLog;
+	private final File antiOverrideLog;
+	private final File placeholderErrorLog;
 
 	//plugin instance
-	private TAB tab;
+	private final TAB tab;
 
 	/**
 	 * Constructs new instance

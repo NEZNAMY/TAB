@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab playeruuid" subcommand
@@ -26,33 +27,32 @@ public class PlayerUUIDCommand extends PropertyCommand {
 			return;
 		}
 
-		String name = args[0];
-		TabPlayer changed = TAB.getInstance().getPlayer(name);
+		TabPlayer changed = TAB.getInstance().getPlayer(args[0]);
 		if (changed == null) {
-			sendMessage(sender, getTranslation("player_not_found"));
+			sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 			return;
 		}
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 		if ("remove".equals(type)) {
-			if (hasPermission(sender, "tab.remove")) {
+			if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
 				TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
 				changed.forceRefresh();
-				sendMessage(sender, getTranslation("data_removed").replace("%category%", "player").replace("%value%", changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
+				sendMessage(sender, getMessages().getPlayerDataRemoved(changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
 			} else {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 			}
 			return;
 		}
 		for (String property : getAllProperties()) {
 			if (type.equals(property)) {
-				if (hasPermission(sender, "tab.change." + property)) {
+				if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
 					savePlayer(sender, changed, type, value);
 					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
-						sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
+						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
 					}
 				} else {
-					sendMessage(sender, getTranslation("no_permission"));
+					sendMessage(sender, getMessages().getNoPermission());
 				}
 				return;
 			}
@@ -69,9 +69,9 @@ public class PlayerUUIDCommand extends PropertyCommand {
 	 */
 	public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value){
 		if (value.length() > 0){
-			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
+			sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player.getName() + "(" + player.getUniqueId().toString() + ")"));
 		} else {
-			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", player.getName() + "(" + player.getUniqueId().toString() + ")").replace("%category%", "UUID"));
+			sendMessage(sender, getMessages().getPlayerValueRemoved(type, player.getName() + "(" + player.getUniqueId().toString() + ")"));
 		}
 		String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, null, null);
 		if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;

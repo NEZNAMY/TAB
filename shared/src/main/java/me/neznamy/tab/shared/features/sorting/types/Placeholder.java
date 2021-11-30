@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 public class Placeholder extends SortingType {
 
 	//map Value-Number where number is used in team name based on value
-	private LinkedHashMap<String, String> sortingMap;
+	private final LinkedHashMap<String, String> sortingMap;
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -32,7 +32,7 @@ public class Placeholder extends SortingType {
 		if (sortingValue == null) {
 			sortingValue = String.valueOf(sortingMap.size()+1);
 			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by predefined placeholder values is enabled, but output \"" + output + "\" is not listed. List: " + sortingMap.keySet());
-			p.setTeamNameNote(p.getTeamNameNote() + "&c (not in list). &r");
+			p.setTeamNameNote(p.getTeamNameNote() + "&c (not in list)&r. ");
 		} else {
 			p.setTeamNameNote(p.getTeamNameNote() + " (#" + Integer.parseInt(sortingMap.get(output)) + " in list). &r");
 		}

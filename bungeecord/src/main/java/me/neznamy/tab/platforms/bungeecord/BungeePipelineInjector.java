@@ -16,12 +16,12 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisBungeeSupport;
 import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisPlayer;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.OverflowPacketException;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
@@ -29,7 +29,7 @@ import net.md_5.bungee.protocol.packet.Team;
 public class BungeePipelineInjector extends PipelineInjector {
 
 	//packets that must be deserialized and bungeecord does not do it automatically
-	private Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
+	private final Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
 
 	/**
 	 * Constructs new instance of the feature
@@ -62,7 +62,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
 			Object modifiedPacket = packet instanceof ByteBuf && bytebufDeserialization ? deserialize((ByteBuf) packet) : packet;
-			TAB.getInstance().getCPUManager().addTime("Packet deserializing", CpuConstants.UsageCategory.BYTEBUF, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTEBUF, System.nanoTime()-time);
 			try {
 				switch(modifiedPacket.getClass().getSimpleName()) {
 				case "PlayerListItem":
@@ -108,23 +108,31 @@ public class BungeePipelineInjector extends PipelineInjector {
 			if (packet.getPlayers() == null) return;
 			Collection<String> col = Lists.newArrayList(packet.getPlayers());
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (col.contains(p.getName()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) && 
+				if (col.contains(getName(p)) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) && 
 						!TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
-					logTeamOverride(packet.getName(), p.getName());
-					col.remove(p.getName());
+					logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+					col.remove(getName(p));
 				}
 			}
 			RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
 			if (redis != null) {
 				for (RedisPlayer p : redis.getRedisPlayers().values()) {
 					if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
-						logTeamOverride(packet.getName(), p.getName());
+						logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
 						col.remove(p.getName());
 					}
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
-			TAB.getInstance().getCPUManager().addTime("Nametags", CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+		}
+
+		private String getName(TabPlayer p) {
+			NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
+			if (nick != null) {
+				return nick.getNickname(p);
+			}
+			return p.getName();
 		}
 
 		/**
@@ -145,8 +153,8 @@ public class BungeePipelineInjector extends PipelineInjector {
 						return packet;
 					}
 				}
-			} catch (OverflowPacketException e) {
-				//OverflowPacketException someone got, no idea why
+			} catch (Exception e) {
+				//rare OverflowPacketException or IndexOutOfBoundsException
 			}
 			buf.readerIndex(marker);
 			return buf;

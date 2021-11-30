@@ -1,29 +1,28 @@
 package me.neznamy.tab.shared;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.json.simple.parser.ParseException;
-
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 
 /**
  * Feature registration which offers calls to features and measures how long it took them to process
  */
 public class FeatureManagerImpl implements FeatureManager {
 
-	private String deserializing = "Packet deserializing";
-	private String serializing = "Packet serializing";
+	private final String deserializing = "Packet deserializing";
+	private final String serializing = "Packet serializing";
 
 	//list of registered features
-	private Map<String, TabFeature> features = new LinkedHashMap<>();
+	private final Map<String, TabFeature> features = new LinkedHashMap<>();
 	
 	private TabFeature[] values;
 
@@ -63,6 +62,10 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void load() {
 		for (TabFeature f : values) f.load();
+		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
+			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) users.load(p);
+		}
 	}
 
 	/**
@@ -89,25 +92,22 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param receiver - packet receiver
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws ParseException 
+	 * @throws ReflectiveOperationException
 	 */
-	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, InstantiationException, ParseException {
+	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
 		long time = System.nanoTime();
 		PacketPlayOutPlayerInfo info = TAB.getInstance().getPlatform().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
-		TAB.getInstance().getCPUManager().addTime(deserializing, CpuConstants.UsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onPlayerInfo")) continue;
 			time = System.nanoTime();
 			f.onPlayerInfo(receiver, info);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		}
 		time = System.nanoTime();
 		Object pack = TAB.getInstance().getPlatform().getPacketBuilder().build(info, receiver.getVersion());
-		TAB.getInstance().getCPUManager().addTime(serializing, CpuConstants.UsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(serializing, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
 		return pack;
 	}
 
@@ -122,9 +122,17 @@ public class FeatureManagerImpl implements FeatureManager {
 			if (!f.overridesMethod("onQuit")) continue;
 			long time = System.nanoTime();
 			f.onQuit(disconnectedPlayer);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.PLAYER_QUIT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
 		}
 		TAB.getInstance().removePlayer(disconnectedPlayer);
+		PlayerPlaceholder online = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%online%");
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (all.isLoaded()) online.updateValue(all, online.request(all));
+		}
+		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
+			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
+			users.unload(disconnectedPlayer);
+		}
 	}
 
 	/**
@@ -143,10 +151,18 @@ public class FeatureManagerImpl implements FeatureManager {
 			if (!f.overridesMethod("onJoin")) continue;
 			long time = System.nanoTime();
 			f.onJoin(connectedPlayer);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
 		}
 		((ITabPlayer)connectedPlayer).markAsLoaded();
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
+		PlayerPlaceholder online = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%online%");
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (all.isLoaded()) online.updateValue(all, online.request(all));
+		}
+		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
+			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
+			users.load(connectedPlayer);
+		}
 	}
 
 	/**
@@ -168,8 +184,11 @@ public class FeatureManagerImpl implements FeatureManager {
 			if (!f.overridesMethod("onWorldChange")) continue;
 			long time = System.nanoTime();
 			f.onWorldChange(changed, from, to);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.WORLD_SWITCH, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 		}
+		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%world%")).updateValue(changed, to);
+		PlayerPlaceholder worldonline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%worldonline%");
+		worldonline.updateValue(changed, worldonline.request(changed));
 	}
 
 	/**
@@ -184,11 +203,13 @@ public class FeatureManagerImpl implements FeatureManager {
 		String from = changed.getServer();
 		((ITabPlayer)changed).setServer(to);
 		for (TabFeature f : values) {
-			if (!f.overridesMethod("onServerChange")) continue;
 			long time = System.nanoTime();
 			f.onServerChange(changed, from, to);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.SERVER_SWITCH, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
 		}
+		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
+		PlayerPlaceholder serveronline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%serveronline%");
+		serveronline.updateValue(changed, serveronline.request(changed));
 	}
 
 	/**
@@ -205,7 +226,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			if (!f.overridesMethod("onCommand")) continue;
 			long time = System.nanoTime();
 			if (f.onCommand(sender, command)) cancel = true;
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.COMMAND_PREPROCESS, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.COMMAND_PREPROCESS, System.nanoTime()-time);
 		}
 		return cancel;
 	}
@@ -224,10 +245,10 @@ public class FeatureManagerImpl implements FeatureManager {
 			long time = System.nanoTime();
 			try {
 				cancel = f.onPacketReceive(receiver, packet);
-			} catch (IllegalAccessException e) {
+			} catch (ReflectiveOperationException e) {
 				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.RAW_PACKET_IN, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_IN, System.nanoTime()-time);
 		}
 		return cancel;
 	}
@@ -244,10 +265,10 @@ public class FeatureManagerImpl implements FeatureManager {
 			long time = System.nanoTime();
 			try {
 				f.onPacketSend(receiver, packet);
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
+			} catch (ReflectiveOperationException e) {
 				TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
 			}
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
 		}
 	}
 
@@ -260,7 +281,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			if (!f.overridesMethod("onLoginPacket")) continue;
 			long time = System.nanoTime();
 			f.onLoginPacket(packetReceiver);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.PACKET_JOIN_GAME, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_JOIN_GAME, System.nanoTime()-time);
 		}
 	}
 
@@ -269,17 +290,17 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 * @param packet - the packet
 	 * @return true if packet should be cancelled, false if not
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException 
 	 */
-	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException {
+	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
-		TAB.getInstance().getCPUManager().addTime(deserializing, CpuConstants.UsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onDisplayObjective")) continue;
 			time = System.nanoTime();
 			boolean cancel = f.onDisplayObjective(packetReceiver, display);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 			if (cancel) return true;
 		}
 		return false;
@@ -288,20 +309,17 @@ public class FeatureManagerImpl implements FeatureManager {
 	/**
 	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
-	 * @throws IllegalAccessException 
-	 * @throws ParseException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
+	 * @throws ReflectiveOperationException
 	 */
-	public void onObjective(TabPlayer packetReceiver, Object packet) throws IllegalAccessException, ParseException, IllegalArgumentException, InvocationTargetException {
+	public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
-		TAB.getInstance().getCPUManager().addTime(deserializing, CpuConstants.UsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);
+		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onObjective")) continue;
 			time = System.nanoTime();
 			f.onObjective(packetReceiver, display);
-			TAB.getInstance().getCPUManager().addTime(f, CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}
 }

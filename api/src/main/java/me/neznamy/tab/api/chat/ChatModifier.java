@@ -30,6 +30,7 @@ public class ChatModifier {
 	}
 	
 	public ChatModifier(ChatModifier modifier) {
+		this.color = modifier.color == null ? null : new TextColor(modifier.color);
 		this.bold = modifier.bold;
 		this.italic = modifier.italic;
 		this.underlined = modifier.underlined;
@@ -274,4 +275,7 @@ public class ChatModifier {
 		this.targetVersion = targetVersion;
 	}
 	
+	public ProtocolVersion getTargetVersion() {
+		return targetVersion;
+	}
 }

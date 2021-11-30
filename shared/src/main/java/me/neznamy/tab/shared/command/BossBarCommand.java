@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.command;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab bossbar" subcommand
@@ -20,17 +21,17 @@ public class BossBarCommand extends SubCommand {
 	public void execute(TabPlayer sender, String[] args) {
 		BossBarManager bossbar = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (bossbar == null) {
-			sendMessage(sender, "&cBossbar feature is not enabled, therefore toggle command cannot be used.");
+			sendMessage(sender, getMessages().getBossBarNotEnabled());
 			return;
 		}
 		if (sender == null) {
-			sendMessage(sender, "&cThis command must be ran from the game");
+			sendMessage(sender, getMessages().getCommandOnlyFromGame());
 			return;
 		}
-		if (sender.hasPermission("tab.togglebar")) {
+		if (sender.hasPermission(TabConstants.Permission.COMMAND_BOSSBAR_TOGGLE)) {
 			bossbar.toggleBossBar(sender, true);
 		} else {
-			sender.sendMessage(getTranslation("no_permission"), true);
+			sender.sendMessage(getMessages().getNoPermission(), true);
 		}
 	}
 }

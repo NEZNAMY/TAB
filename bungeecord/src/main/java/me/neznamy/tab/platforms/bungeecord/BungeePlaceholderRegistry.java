@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import java.util.Map.Entry;
 
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 import net.md_5.bungee.api.ProxyServer;
@@ -23,7 +23,7 @@ public class BungeePlaceholderRegistry extends ProxyPlaceholderRegistry {
 			manager.registerServerPlaceholder("%online_" + server.getKey() + "%", 1000, () -> {
 				int count = 0;
 				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-					if (p.getServer() != null && p.getServer().equals(server.getValue().getName()) && p.isVanished()) count++;
+					if (p.getServer() != null && p.getServer().equals(server.getValue().getName()) && !p.isVanished()) count++;
 				}
 				return count;
 			});

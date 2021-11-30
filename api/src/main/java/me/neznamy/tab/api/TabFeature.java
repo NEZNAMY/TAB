@@ -1,6 +1,5 @@
 package me.neznamy.tab.api;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,16 +10,36 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 
 public abstract class TabFeature {
 
-	private String featureName;
-	protected String[] disabledServers = new String[0];
-	private boolean serverWhitelistMode;
-	protected String[] disabledWorlds = new String[0];
-	private boolean worldWhitelistMode;
-	private List<TabPlayer> disabledPlayers = new ArrayList<>();
-	private List<String> methodOverrides = new ArrayList<>();
+	private final String featureName;
+	private final String refreshDisplayName;
+	protected final String[] disabledServers;
+	private final boolean serverWhitelistMode;
+	protected final String[] disabledWorlds;
+	private final boolean worldWhitelistMode;
+	private final List<TabPlayer> disabledPlayers = new ArrayList<>();
+	private final List<String> methodOverrides = new ArrayList<>();
 	
-	protected TabFeature(String featureName) {
+	protected TabFeature(String featureName, String refreshDisplayName) {
+		this(featureName, refreshDisplayName, null, null);
+	}
+	
+	protected TabFeature(String featureName, String refreshDisplayName, List<String> disabledServers, List<String> disabledWorlds) {
 		this.featureName = featureName;
+		this.refreshDisplayName = refreshDisplayName;
+		if (disabledServers != null) {
+			this.disabledServers = disabledServers.toArray(new String[0]);
+			serverWhitelistMode = disabledServers.contains("WHITELIST");
+		} else {
+			this.disabledServers = new String[0];
+			serverWhitelistMode = false;
+		}
+		if (disabledWorlds != null) {
+			this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+			worldWhitelistMode = disabledWorlds.contains("WHITELIST");
+		} else {
+			this.disabledWorlds = new String[0];
+			worldWhitelistMode = false;
+		}
 		try {
 			if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onCommand");
@@ -30,8 +49,6 @@ public abstract class TabFeature {
 				methodOverrides.add("onQuit");
 			if (getClass().getMethod("onWorldChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onWorldChange");
-			if (getClass().getMethod("onServerChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
-				methodOverrides.add("onServerChange");
 			if (getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class) 
 				methodOverrides.add("onDisplayObjective");
 			if (getClass().getMethod("onLoginPacket", TabPlayer.class).getDeclaringClass() != TabFeature.class) 
@@ -48,18 +65,6 @@ public abstract class TabFeature {
 				methodOverrides.add("refresh");
 		} catch (NoSuchMethodException e) {
 			//this will never happen
-		}
-	}
-	
-	protected TabFeature(String featureName, List<String> disabledServers, List<String> disabledWorlds) {
-		this(featureName);
-		if (disabledServers != null) {
-			this.disabledServers = disabledServers.toArray(new String[0]);
-			serverWhitelistMode = disabledServers.contains("WHITELIST");
-		}
-		if (disabledWorlds != null) {
-			this.disabledWorlds = disabledWorlds.toArray(new String[0]);
-			worldWhitelistMode = disabledWorlds.contains("WHITELIST");
 		}
 	}
 	
@@ -164,9 +169,9 @@ public abstract class TabFeature {
 	 * @param sender - packet sender
 	 * @param packet - packet received
 	 * @return true if false should be cancelled, false if not
-	 * @throws IllegalAccessException
+	 * @throws ReflectiveOperationException 
 	 */
-	public boolean onPacketReceive(TabPlayer sender, Object packet) throws IllegalAccessException {
+	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		return false;
 	}
 	
@@ -174,13 +179,9 @@ public abstract class TabFeature {
 	 * Processes raw packet sent to client
 	 * @param receiver - packet receiver
 	 * @param packet - the packet
-	 * @throws IllegalAccessException 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws InstantiationException 
+	 * @throws ReflectiveOperationException
 	 */
-	public void onPacketSend(TabPlayer receiver, Object packet) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		//empty by default
 	}
 
@@ -252,5 +253,9 @@ public abstract class TabFeature {
 	
 	public boolean removeDisabledPlayer(TabPlayer p) {
 		return disabledPlayers.remove(p);
+	}
+
+	public String getRefreshDisplayName() {
+		return refreshDisplayName;
 	}
 }

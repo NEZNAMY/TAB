@@ -9,7 +9,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 
 /**
  * A string with placeholders
@@ -17,10 +17,10 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholder;
 public class PropertyImpl implements Property {
 
 	//feature using this property to track used placeholders and receive refresh()
-	private TabFeature listener;
+	private final TabFeature listener;
 	
 	//owner of the property
-	private TabPlayer owner;
+	private final TabPlayer owner;
 	
 	//raw value
 	private String rawValue;
@@ -43,8 +43,8 @@ public class PropertyImpl implements Property {
 	//used relational placeholders in current raw value
 	private String[] relPlaceholders;
 	
-	private StringBuilder formatBuffer = new StringBuilder();
-	private Formatter formatter = new Formatter(formatBuffer);
+	private final StringBuilder formatBuffer = new StringBuilder();
+	private final Formatter formatter = new Formatter(formatBuffer);
 
 	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
 		this(listener, owner, rawValue, null);
@@ -54,7 +54,7 @@ public class PropertyImpl implements Property {
 		this.listener = listener;
 		this.owner = owner;
 		this.source = source;
-		this.rawValue = RGBUtils.getInstance().applyFormats((rawValue == null ? "" : rawValue), true);
+		this.rawValue = (rawValue == null ? "" : rawValue);
 		analyze(this.rawValue);
 		update();
 	}
@@ -72,7 +72,7 @@ public class PropertyImpl implements Property {
 				relPlaceholders0.add(identifier);
 			}
 		}
-		String rawFormattedValue0 = value;
+		String rawFormattedValue0 = RGBUtils.getInstance().applyFormats(value, true);
 		for (String placeholder : placeholders0) {
 			rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
 		}
@@ -96,7 +96,7 @@ public class PropertyImpl implements Property {
 	@Override
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {
-			this.temporaryValue = RGBUtils.getInstance().applyFormats(temporaryValue, true);
+			this.temporaryValue = temporaryValue;
 			analyze(this.temporaryValue);
 		} else {
 			this.temporaryValue = null;
@@ -108,7 +108,7 @@ public class PropertyImpl implements Property {
 	@Override
 	public void changeRawValue(String newValue) {
 		if (rawValue.equals(newValue)) return;
-		rawValue = RGBUtils.getInstance().applyFormats(newValue, true);
+		rawValue = newValue;
 		if (temporaryValue == null) {
 			analyze(rawValue);
 			update();
@@ -201,7 +201,7 @@ public class PropertyImpl implements Property {
 	public String getFormat(TabPlayer viewer) {
 		String format = lastReplacedValue;
 		for (String identifier : relPlaceholders) {
-			RelationalPlaceholder pl = (RelationalPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+			RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
 			format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
 		}
 		return format;

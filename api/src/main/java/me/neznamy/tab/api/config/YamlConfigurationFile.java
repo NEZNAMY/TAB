@@ -25,7 +25,7 @@ import me.neznamy.yamlassist.YamlAssist;
 public class YamlConfigurationFile extends ConfigurationFile {
 
 	/** SnakeYAML instance */
-	private static Yaml yaml;
+	private static final Yaml yaml;
 	
 	/**
 	 * Initializes SnakeYAML instance with BLOCK flowstyle dumper option

@@ -1,5 +1,7 @@
 _NEZNAMY_:
-  tabprefix: "&6&lTAB Author &a"
-  tagprefix: "&6&lTAB &r&a"
+  tabprefix: "&6&lTAB&r &a"
+  tagprefix: "&6&lTAB&r &a"
   abovename: "&bOh look, 3 lines of text !"
   belowname: "&eThere's only one plugin out there supporting it"
+237d8b55-3f97-4749-aa60-e9fe97b45062: # my online uuid
+  tabsuffix: " &b&lVerified"

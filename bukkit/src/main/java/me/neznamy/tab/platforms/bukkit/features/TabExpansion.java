@@ -6,10 +6,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
 /**
  * TAB's expansion for PlaceholderAPI
@@ -17,7 +20,7 @@ import me.neznamy.tab.shared.TAB;
 public class TabExpansion extends PlaceholderExpansion {
 
 	//plugin to take plugin.yml data from
-	private JavaPlugin plugin;
+	private final JavaPlugin plugin;
 	
 	/**
 	 * Constructs new instance of the class and registers it
@@ -60,6 +63,9 @@ public class TabExpansion extends PlaceholderExpansion {
 		if ("scoreboard_visible".equals(identifier)) {
 			return translate(hasScoreboardVisible(p));
 		}
+		if ("scoreboard_name".equals(identifier)) {
+			return getActiveScoreboard(p);
+		}
 		if ("bossbar_visible".equals(identifier)) {
 			return translate(hasBossBarVisible(p));
 		}
@@ -85,6 +91,14 @@ public class TabExpansion extends PlaceholderExpansion {
 		ScoreboardManager scoreboard = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
 		if (scoreboard == null) return false;
 		return scoreboard.hasScoreboardVisible(p);
+	}
+	
+	private String getActiveScoreboard(TabPlayer p) {
+		ScoreboardManagerImpl sb = (ScoreboardManagerImpl) TabAPI.getInstance().getScoreboardManager();
+		if (sb == null) return "";
+		Scoreboard active = sb.getActiveScoreboards().get(p);
+		if (active == null) return "";
+		return active.getName();
 	}
 	
 	private String translate(boolean b) {

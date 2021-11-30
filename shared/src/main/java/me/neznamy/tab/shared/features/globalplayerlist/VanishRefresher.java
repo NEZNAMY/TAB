@@ -5,16 +5,16 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 public class VanishRefresher extends TabFeature {
 
-	private GlobalPlayerlist playerlist;
-	private List<TabPlayer> vanishedPlayers = new ArrayList<>();
+	private final GlobalPlayerlist playerlist;
+	private final List<TabPlayer> vanishedPlayers = new ArrayList<>();
 	
 	protected VanishRefresher(GlobalPlayerlist playerlist) {
-		super("Global Playerlist");
+		super("Global Playerlist", "Updating vanished players");
 		this.playerlist = playerlist;
 		TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%vanished%", this);
 	}
@@ -26,7 +26,7 @@ public class VanishRefresher extends TabFeature {
 			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 				if (viewer == p) continue;
 				if (playerlist.shouldSee(viewer, p)) {
-					viewer.sendCustomPacket(playerlist.getAddPacket(p, viewer), CpuConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
+					viewer.sendCustomPacket(playerlist.getAddPacket(p, viewer), TabConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
 				}
 			}
 		}
@@ -35,7 +35,7 @@ public class VanishRefresher extends TabFeature {
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == p) continue;
 				if (!playerlist.shouldSee(all, p)) {
-					all.sendCustomPacket(playerlist.getRemovePacket(p), CpuConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
+					all.sendCustomPacket(playerlist.getRemovePacket(p), TabConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
 				}
 			}
 		}

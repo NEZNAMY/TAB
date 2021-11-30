@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.permission;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,7 @@ import me.neznamy.tab.shared.TAB;
 public class UltraPermissions implements PermissionPlugin {
 
 	//ultrapermissions version
-	private String version;
+	private final String version;
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -26,14 +25,14 @@ public class UltraPermissions implements PermissionPlugin {
 	}
 	
 	@Override
-	public String getPrimaryGroup(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public String getPrimaryGroup(TabPlayer p) throws ReflectiveOperationException {
 		String[] groups = getAllGroups(p);
 		if (groups.length == 0) return GroupManager.DEFAULT_GROUP;
 		return groups[0];
 	}
 
 	@SuppressWarnings("unchecked")
-	public String[] getAllGroups(TabPlayer p) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public String[] getAllGroups(TabPlayer p) throws ReflectiveOperationException {
 		Object api = null;
 		if (TAB.getInstance().getPlatform().isProxy()) { //meh solution but whatever
 			api = Class.forName("me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee").getMethod("getAPI").invoke(null);

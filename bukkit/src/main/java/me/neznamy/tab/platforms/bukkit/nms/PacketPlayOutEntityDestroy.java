@@ -6,7 +6,7 @@ import me.neznamy.tab.api.protocol.TabPacket;
 
 public class PacketPlayOutEntityDestroy implements TabPacket {
 
-	private int[] entities;
+	private final int[] entities;
 
 	public PacketPlayOutEntityDestroy(int... entities) {
 		this.entities = entities;
