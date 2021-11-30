@@ -1,24 +1,30 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.earth2me.essentials.Essentials;
 
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
 import net.milkbowl.vault.chat.Chat;
 
@@ -30,18 +36,24 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	//formatter for 2 decimal places
 	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
 
-	//vault chat
-	private Object chat;
+	private final Plugin plugin;
 
+	private Object chat;
+	private final Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 	private Object server;
 	private Field recentTps;
 	private boolean paperTps;
+	private boolean paperMspt;
+	private boolean purpur;
+
+	private Listener healthListener = null;
 
 	/**
 	 * Constructs new instance with given parameter
 	 * @param plugin - plugin instance
 	 */
-	public BukkitPlaceholderRegistry() {
+	public BukkitPlaceholderRegistry(Plugin plugin) {
+		this.plugin = plugin;
 		decimal2.applyPattern("#.##");
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -54,7 +66,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		try {
 			server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
 			recentTps = server.getClass().getField("recentTps");
-		} catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			//not spigot
 		}
 		try {
@@ -62,6 +74,18 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			paperTps = true;
 		} catch (NoSuchMethodException e) {
 			//not paper
+		}
+		try {
+			Bukkit.class.getMethod("getAverageTickTime");
+			paperMspt = true;
+		} catch (NoSuchMethodException e) {
+			//not paper
+		}
+		try {
+			Player.class.getMethod("isAfk");
+			purpur = true;
+		} catch (NoSuchMethodException e) {
+			//not purpur
 		}
 	}
 
@@ -73,103 +97,101 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		roundDown.setMaximumFractionDigits(2);
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());
 		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
-		manager.registerServerPlaceholder("%tps%", 1000, () -> {
-			try {
-				double[] tps;
-				if (paperTps) {
-					tps = Bukkit.getTPS();
-				} else if (recentTps != null){
-					tps = (double[]) recentTps.get(server);
-				} else {
-					tps = new double[] {-1};
+		if (paperTps) {
+			manager.registerServerPlaceholder("%tps%", 1000, () -> formatTPS(Bukkit.getTPS()[0]));
+		} else if (recentTps != null) {
+			manager.registerServerPlaceholder("%tps%", 1000, () -> {
+				try {
+					return formatTPS(((double[]) recentTps.get(server))[0]);
+				} catch (IllegalAccessException e) {
+					return "-1";
 				}
-				return decimal2.format(Math.min(20, tps[0]));
-			} catch (IllegalAccessException t) {
-				return "-1";
-			}
-		});
-		try {
-			Class.forName("com.destroystokyo.paper.PaperConfig");
+			});
+		} else {
+			manager.registerServerPlaceholder("%tps%", -1, () -> "-1").enableTriggerMode();
+		}
+		if (paperMspt) {
 			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
-		} catch (ClassNotFoundException e){
-			//not paper
 		}
-		if (NMSStorage.getInstance().getMinorVersion() >= 6) {
-			manager.registerPlayerPlaceholder("%health%", 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
+			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
+			return purpur && ((Player)p.getPlayer()).isAfk();
+		});
+		if (chat != null) {
+			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
+			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
+		} else {
+			manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "").enableTriggerMode();
+			manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "").enableTriggerMode();
 		}
-		manager.registerPlayerPlaceholder("%afk%", 500, new AFKPlaceholder().getFunction());
 		registerOnlinePlaceholders(manager);
-		registerVaultPlaceholders(manager);
+		registerHealthPlaceholder(manager);
+	}
+
+	private String formatTPS(double tps) {
+		return decimal2.format(Math.min(20, tps));
 	}
 
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
-		manager.registerPlayerPlaceholder("%online%", 2000, p -> {
+		manager.registerPlayerPlaceholder("%online%", -1, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 				if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
-		});
+		}).enableTriggerMode();
 		manager.registerPlayerPlaceholder("%staffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				if (all.hasPermission(TabConstants.Permission.STAFF) && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
 		});
 		manager.registerPlayerPlaceholder("%nonstaffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (!all.hasPermission("tab.staff") && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
+				if (!all.hasPermission(TabConstants.Permission.STAFF) && ((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
 		});
 	}
 
-	/**
-	 * Registers vault placeholders
-	 */
-	private void registerVaultPlaceholders(PlaceholderManager manager) {
-		if (chat != null) {
-			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
-			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
-		} else {
-			manager.registerServerPlaceholder("%vault-prefix%", 1000000, () -> "");
-			manager.registerServerPlaceholder("%vault-suffix%", 1000000, () -> "");
-		}
-	}
+	@SuppressWarnings("deprecation")
+	private void registerHealthPlaceholder(PlaceholderManager manager) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
+			PlayerPlaceholder health = manager.registerPlayerPlaceholder("%health%", -1, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+			health.enableTriggerMode(() -> {
+				healthListener = new Listener() {
 
-	public class AFKPlaceholder {
-
-		private Plugin essentials;
-		private boolean antiafkplus;
-		private boolean purpur;
-		
-		protected AFKPlaceholder() {
-			essentials = Bukkit.getPluginManager().getPlugin("Essentials");
-			antiafkplus = Bukkit.getPluginManager().isPluginEnabled("AntiAFKPlus");
-			try {
-				Player.class.getMethod("isAfk");
-				purpur = true;
-			} catch (NoSuchMethodException e) {
-				//not purpur
-			}
-		}
-		
-		public Function<TabPlayer, Object> getFunction() {
-			return p -> {
-				try {
-					if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
-					if (antiafkplus) {
-						Object api = Class.forName("de.kinglol12345.AntiAFKPlus.api.AntiAFKPlusAPI").getDeclaredMethod("getAPI").invoke(null);
-						if ((boolean) api.getClass().getMethod("isAFK", Player.class).invoke(api, p.getPlayer())) return true;
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onDamage(EntityDamageEvent e) {
+						if (e.getEntity() instanceof Player) {
+							Player p = (Player) e.getEntity();
+							TabPlayer tabp = TAB.getInstance().getPlayer(e.getEntity().getUniqueId());
+							if (tabp == null) return;
+							health.updateValue(tabp, (int) Math.ceil(Math.max(p.getHealth() - e.getFinalDamage(), 0)));
+						}
 					}
-					if (purpur && ((Player)p.getPlayer()).isAfk()) return true;
-				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
-					TAB.getInstance().getErrorManager().printError("Failed to check AFK status of " + p.getName(), e);
-				}
-				return false;
-			};
+
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onRegain(EntityRegainHealthEvent e) {
+						if (e.getEntity() instanceof Player) {
+							Player p = (Player) e.getEntity();
+							TabPlayer tabp = TAB.getInstance().getPlayer(e.getEntity().getUniqueId());
+							if (tabp == null) return;
+							health.updateValue(tabp, (int) Math.ceil(Math.min(p.getHealth() + e.getAmount(), p.getMaxHealth())));
+						}
+					}
+
+					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+					public void onRespawn(PlayerRespawnEvent e) {
+						health.updateValue(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getMaxHealth());
+					}
+				};
+				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
+			}, () -> {
+				HandlerList.unregisterAll(healthListener);
+			});
 		}
 	}
 }

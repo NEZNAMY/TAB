@@ -9,11 +9,11 @@ import me.neznamy.tab.api.task.RepeatingTask;
 public class TabRepeatingTask implements RepeatingTask {
 	
 	private Future<Void> task;
-	private ThreadPoolExecutor executor;
+	private final ThreadPoolExecutor executor;
 	private Runnable runnable;
-	private String errorDescription;
-	private TabFeature feature;
-	private String type;
+	private final String errorDescription;
+	private final TabFeature feature;
+	private final String type;
 	private int interval;
 
 	public TabRepeatingTask(ThreadPoolExecutor executor, Runnable runnable, String errorDescription, TabFeature feature, String type, int interval) {
@@ -24,12 +24,12 @@ public class TabRepeatingTask implements RepeatingTask {
 		this.feature = feature;
 		this.type = type;
 		this.interval = interval;
-		createTask();
+		this.task = createTask();
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void createTask() {
-		task = (Future<Void>)executor.submit(() -> {
+	private Future<Void> createTask() {
+		return (Future<Void>)executor.submit(() -> {
 			long nextLoop = System.currentTimeMillis() - interval;
 			while (true) {
 				try {
@@ -59,7 +59,7 @@ public class TabRepeatingTask implements RepeatingTask {
 		if (interval < 0) throw new IllegalArgumentException("Interval cannot be negative");
 		cancel();
 		this.interval = interval;
-		createTask();
+		task = createTask();
 	}
 
 	@Override

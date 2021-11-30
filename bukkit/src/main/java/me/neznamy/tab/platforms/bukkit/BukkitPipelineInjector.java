@@ -9,23 +9,21 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 
 	//nms storage
-	private NMSStorage nms;
+	private final NMSStorage nms = NMSStorage.getInstance();
 
 	/**
-	 * Constructs new instance with given parameters
-	 * @param tab - tab instance
-	 * @param nms - nms storage
+	 * Constructs new instance
 	 */
-	public BukkitPipelineInjector(NMSStorage nms){
+	public BukkitPipelineInjector(){
 		super("packet_handler");
-		this.nms = nms;
 		channelFunction = BukkitChannelDuplexHandler::new;
 	}
 
@@ -62,7 +60,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				}
-				if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+				if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
 					modifyPlayers(packet);
 					super.write(context, packet, channelPromise);
 					return;
@@ -87,10 +85,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		/**
 		 * Removes all real players from team if packet does not come from TAB and reports this to override log
 		 * @param packetPlayOutScoreboardTeam - team packet
-		 * @throws IllegalAccessException 
+		 * @throws ReflectiveOperationException 
 		 */
 		@SuppressWarnings("unchecked")
-		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws IllegalAccessException {
+		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
 			long time = System.nanoTime();
 			Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
 			String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
@@ -98,20 +96,32 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			//creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
 			Collection<String> newList = new ArrayList<>();
 			for (String entry : players) {
-				TabPlayer p = TAB.getInstance().getPlayer(entry);
+				TabPlayer p = getPlayer(entry);
 				if (p == null) {
 					newList.add(entry);
 					continue;
 				}
 				if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) && 
 						!TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
-					logTeamOverride(teamName, entry);
+					logTeamOverride(teamName, p.getName(), p.getTeamName());
 				} else {
 					newList.add(entry);
 				}
 			}
 			nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
-			TAB.getInstance().getCPUManager().addTime("Nametags", CpuConstants.UsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+		}
+		
+		private TabPlayer getPlayer(String name) {
+			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+				if (getName(p).equals(name)) return p;
+			}
+			return null;
+		}
+
+		
+		private String getName(TabPlayer p) {
+			return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
 		}
 	}
 }

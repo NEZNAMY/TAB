@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
-import me.neznamy.tab.api.PlaceholderManager;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 
@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
 public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 
 	//instance of proxyserver
-	private ProxyServer server;
+	private final ProxyServer server;
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -31,7 +31,7 @@ public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 			manager.registerServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000, () -> {
 				int count = 0;
 				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-					if (p.getServer() != null && p.getServer().equals(rServer.getServerInfo().getName()) && p.isVanished()) count++;
+					if (p.getServer() != null && p.getServer().equals(rServer.getServerInfo().getName()) && !p.isVanished()) count++;
 				}
 				return count;
 			});

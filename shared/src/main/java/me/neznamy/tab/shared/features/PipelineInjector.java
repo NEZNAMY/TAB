@@ -30,7 +30,8 @@ public abstract class PipelineInjector extends TabFeature {
 	private String lastTeamOverrideMessage;
 	
 	//anti-override rules
-	protected boolean antiOverrideTeams;
+	protected final boolean antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
+			TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 	
 	protected Function<TabPlayer, ChannelDuplexHandler> channelFunction;
 	
@@ -41,10 +42,8 @@ public abstract class PipelineInjector extends TabFeature {
 	 * @param tab
 	 */
 	protected PipelineInjector(String injectPosition) {
-		super("Pipeline injection");
+		super("Pipeline injection", null);
 		this.injectPosition = injectPosition;
-		antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
-				TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 		if (antiOverrideTeams) setByteBufDeserialization(true);
 	}
 	
@@ -95,8 +94,8 @@ public abstract class PipelineInjector extends TabFeature {
 		inject(connectedPlayer);
 	}
 
-	protected void logTeamOverride(String team, String player) {
-		String message = "Something just tried to add player " + player + " into team " + team + "(expected team: " + TAB.getInstance().getPlayer(player).getTeamName() + ")";
+	protected void logTeamOverride(String team, String player, String expectedTeam) {
+		String message = "Something just tried to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
 		//not logging the same message for every online player who received the packet
 		if (lastTeamOverrideMessage == null || !message.equals(lastTeamOverrideMessage)) {
 			lastTeamOverrideMessage = message;

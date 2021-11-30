@@ -30,7 +30,7 @@ import net.kyori.adventure.text.Component;
 public class VelocityPlatform extends ProxyPlatform {
 
 	//instance of proxyserver
-	private ProxyServer server;
+	private final ProxyServer server;
 	
 	private VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
 	
@@ -102,6 +102,10 @@ public class VelocityPlatform extends ProxyPlatform {
 		return packetBuilder;
 	}
 
+	public void setPacketBuilder(VelocityPacketBuilder builder) {
+		this.packetBuilder = builder;
+	}
+
 	@Override
 	public Object getSkin(List<String> properties) {
 		return Arrays.asList(new Property("textures", properties.get(0), properties.get(1)));
@@ -110,5 +114,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public boolean isProxy() {
 		return true;
+	}
+	
+	@Override
+	public boolean isPluginEnabled(String plugin) {
+		return server.getPluginManager().getPlugin(plugin).isPresent();
 	}
 }

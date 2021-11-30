@@ -91,7 +91,23 @@ public interface TeamManager {
 	
 	/**
 	 * Sends update team properties packet of player's team to everyone
-	 * @param p - player to update team data of
+	 * @param player - player to update team data of
 	 */
-	public void updateTeamData(TabPlayer p);
+	public void updateTeamData(TabPlayer player);
+	
+	public void setPrefix(TabPlayer player, String prefix);
+	
+	public void setSuffix(TabPlayer player, String suffix);
+	
+	public void resetPrefix(TabPlayer player);
+	
+	public void resetSuffix(TabPlayer player);
+	
+	public String getCustomPrefix(TabPlayer player);
+	
+	public String getCustomSuffix(TabPlayer player);
+	
+	public String getOriginalPrefix(TabPlayer player);
+	
+	public String getOriginalSuffix(TabPlayer player);
 }

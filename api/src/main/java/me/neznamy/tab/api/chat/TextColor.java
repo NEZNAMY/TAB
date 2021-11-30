@@ -5,8 +5,6 @@ package me.neznamy.tab.api.chat;
  */
 public class TextColor {
 
-	private static EnumChatFormat[] legacyColors = EnumChatFormat.values();
-	
 	//rgb values, only initializing when they are actually requested
 	private int red = -1;
 	private int green = -1;
@@ -20,6 +18,15 @@ public class TextColor {
 	
 	//true if legacy color was forced via constructor, false if automatically
 	private boolean legacyColorForced;
+	
+	public TextColor(TextColor color) {
+		red = color.red;
+		green = color.green;
+		blue = color.blue;
+		legacyColor = color.legacyColor;
+		hexCode = color.hexCode;
+		legacyColorForced = color.legacyColorForced;
+	}
 	
 	/**
 	 * Constructs new instance based on hex code as string
@@ -70,7 +77,7 @@ public class TextColor {
 		double minMaxDist = 9999;
 		double maxDist;
 		EnumChatFormat closestColor = EnumChatFormat.WHITE;
-		for (EnumChatFormat color : legacyColors) {
+		for (EnumChatFormat color : EnumChatFormat.values()) {
 			int rDiff = color.getRed() - red;
 			int gDiff = color.getGreen() - green;
 			int bDiff = color.getBlue() - blue;

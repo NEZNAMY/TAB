@@ -10,8 +10,8 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.types.Groups;
 import me.neznamy.tab.shared.features.sorting.types.Permissions;
 import me.neznamy.tab.shared.features.sorting.types.Placeholder;
@@ -26,16 +26,16 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  */
 public class Sorting extends TabFeature {
 
-	private NameTag nametags;
+	private final NameTag nametags;
 	
 	//map of all registered sorting types
-	private Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
+	private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<String, BiFunction<Sorting, String, SortingType>>();
 	
 	//if sorting is case senstitive or not
-	private boolean caseSensitiveSorting = true;
+	private final boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
 	
 	//active sorting types
-	private SortingType[] usedSortingTypes;
+	private final SortingType[] usedSortingTypes;
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
@@ -43,9 +43,8 @@ public class Sorting extends TabFeature {
 	 * @param nametags - nametag feature
 	 */
 	public Sorting(NameTag nametags) {
-		super("Team name refreshing");
+		super("Team name refreshing", "Refreshing team name");
 		this.nametags = nametags;
-		caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
 		types.put("GROUPS", Groups::new);
 		types.put("PERMISSIONS", Permissions::new);
 		types.put("PLACEHOLDER", Placeholder::new);
@@ -94,8 +93,7 @@ public class Sorting extends TabFeature {
 			if (!types.containsKey(arr[0].toUpperCase())) {
 				TAB.getInstance().getErrorManager().startupWarn("\"&e" + arr[0].toUpperCase() + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ".");
 			} else {
-				SortingType type = types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1));
-				list.add(type);
+				list.add(types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1)));
 			}
 		}
 		return list.toArray(new SortingType[0]);

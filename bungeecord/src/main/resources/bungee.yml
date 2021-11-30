@@ -1,5 +1,6 @@
-name: ${project.parent.name}
+name: @name@
 main: me.neznamy.tab.platforms.bungeecord.Main
-version: ${project.parent.version}
+version: @version@
+description: @description@
 author: NEZNAMY
 softDepends: [RedisBungee]

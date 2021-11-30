@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,25 +16,24 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
+import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NameTag;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholder;
+import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
@@ -45,12 +43,9 @@ import net.milkbowl.vault.permission.Permission;
 public class BukkitPlatform implements Platform {
 
 	//plugin instance
-	private Main plugin;
+	private final Main plugin;
 
-	//nms storage
-	private NMSStorage nms;
-
-	private BukkitPacketBuilder packetBuilder;
+	private final BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
 
 	//booleans to check plugin presence
 	private boolean placeholderAPI;
@@ -62,12 +57,9 @@ public class BukkitPlatform implements Platform {
 	/**
 	 * Constructs new instance with given parameters
 	 * @param plugin - plugin instance
-	 * @param nms - nms storage
 	 */
-	public BukkitPlatform(Main plugin, NMSStorage nms) {
+	public BukkitPlatform(Main plugin) {
 		this.plugin = plugin;
-		this.nms = nms;
-		packetBuilder = new BukkitPacketBuilder(nms);
 	}
 
 	@Override
@@ -103,20 +95,20 @@ public class BukkitPlatform implements Platform {
 		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector(nms));
-		loadNametagFeature(tab);
-		new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector());
+		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		loadNametagFeature(tab);
 		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
-			if (nms.getMinorVersion() < 9) {
+			if (tab.getServerVersion().getMinorVersion() < 9) {
 				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));
 			} else {
 				tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
 			}
 		}
-		if (nms.getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix(nms));
-		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin, tab));
+		if (tab.getServerVersion().getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix());
+		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin));
 		if (placeholderAPI) {
 			new TabExpansion(plugin);
 		}
@@ -135,8 +127,8 @@ public class BukkitPlatform implements Platform {
 	 */
 	private void loadNametagFeature(TAB tab) {
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && nms.getMinorVersion() >= 8) {
-				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin, nms));
+			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
+				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin));
 			} else {
 				tab.getFeatureManager().registerFeature("nametag16", new NameTag());
 			}
@@ -158,7 +150,7 @@ public class BukkitPlatform implements Platform {
 				//1.8+
 				return ((Collection<Player>)players).toArray(new Player[0]); 
 			}
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
 			return new Player[0];
 		}
@@ -179,18 +171,12 @@ public class BukkitPlatform implements Platform {
 		} else {
 			//normal placeholder
 			if (identifier.startsWith("%sync:")) {
-				int refresh;
-				if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getServerPlaceholderRefreshIntervals().get(identifier);
-				} else if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-				} else {
-					refresh = pl.getDefaultRefresh();
-				}
-				pl.registerPlaceholder(new PlayerPlaceholder(identifier, refresh, null) {
+				int refresh = pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier,
+						pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
+				pl.registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, null) {
 					
 					@Override
-					public Object get(TabPlayer p) {
+					public Object request(TabPlayer p) {
 						Bukkit.getScheduler().runTask(plugin, () -> {
 
 							long time = System.nanoTime();
@@ -209,12 +195,7 @@ public class BukkitPlatform implements Platform {
 				TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () ->
 						placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
 			} else {
-				int refresh;
-				if (pl.getPlayerPlaceholderRefreshIntervals().containsKey(identifier)) {
-					refresh = pl.getPlayerPlaceholderRefreshIntervals().get(identifier);
-				} else {
-					refresh = pl.getDefaultRefresh();
-				}
+				int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh());
 				TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> 
 					placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
 			}
@@ -282,5 +263,15 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public boolean isProxy() {
 		return false;
+	}
+
+	@Override
+	public boolean isPluginEnabled(String plugin) {
+		return Bukkit.getPluginManager().isPluginEnabled(plugin);
+	}
+
+	@Override
+	public String getConfigName() {
+		return "bukkitconfig.yml";
 	}
 }

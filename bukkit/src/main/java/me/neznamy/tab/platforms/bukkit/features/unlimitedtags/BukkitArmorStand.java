@@ -2,13 +2,11 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.UUID;
 
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
-import org.bukkit.potion.PotionEffectType;
 
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.Property;
@@ -16,14 +14,12 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -31,26 +27,27 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitArmorStand implements ArmorStand {
 
+	private static boolean alwaysVisible = TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible();
 	//entity id counter to pick unique entity IDs
 	private static int idCounter = 2000000000;
 
 	//nametag feature
-	private NameTagX manager;
+	private final NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
 
 	//owner of the armor stand
-	private TabPlayer owner;
+	private final TabPlayer owner;
 
 	//instance of Bukkit player
-	private Player player;
+	private final Player player;
 
 	//offset in blocks, 0 for original height
 	private double yOffset;
 
 	//entity ID of this armor stand
-	private int entityId = idCounter++;
+	private final int entityId = idCounter++;
 
 	//unique ID of this armor stand
-	private UUID uuid = UUID.randomUUID();
+	private final UUID uuid = UUID.randomUUID();
 
 	//sneaking flag of armor stands
 	private boolean sneaking;
@@ -59,13 +56,13 @@ public class BukkitArmorStand implements ArmorStand {
 	private boolean visible;
 
 	//property dedicated to this armor stand
-	private Property property;
+	private final Property property;
 
 	//if offset is static or dynamic based on other armor stands
 	private boolean staticOffset;
 
 	//entity destroy packet
-	private PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
+	private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
 	/**
 	 * Constructs new instance with given parameters
@@ -75,7 +72,6 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @param staticOffset - if offset is static or not
 	 */
 	public BukkitArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
-		this.manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = (Player) owner.getPlayer();
@@ -110,31 +106,31 @@ public class BukkitArmorStand implements ArmorStand {
 		if (yOffset == offset) return;
 		yOffset = offset;
 		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
-			all.sendCustomPacket(getTeleportPacket(all), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE);
+			all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE);
 		}
 	}
 
 	@Override
 	public void spawn(TabPlayer viewer) {
 		for (TabPacket packet : getSpawnPackets(viewer)) {
-			viewer.sendCustomPacket(packet, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
+			viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
 		}
 	}
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 	
 	@Override
 	public void destroy(TabPlayer viewer) {
-		viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 
 	@Override
 	public void teleport() {
 		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
-			all.sendCustomPacket(getTeleportPacket(all), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
+			all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
 	}
 
@@ -143,7 +139,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (!owner.getArmorStandManager().isNearby(viewer) && viewer != owner) {
 			owner.getArmorStandManager().spawn(viewer);
 		} else {
-			viewer.sendCustomPacket(getTeleportPacket(viewer), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
+			viewer.sendCustomPacket(getTeleportPacket(viewer), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
 	}
 
@@ -152,23 +148,16 @@ public class BukkitArmorStand implements ArmorStand {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
-			if (viewer.getVersion().getMinorVersion() == 14 && !TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !alwaysVisible) {
 				//1.14.x client sided bug, despawning completely
 				if (sneaking) {
-					viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
+					viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
 				} else {
 					spawn(viewer);
 				}
 			} else {
 				//respawning so there's no animation and it's instant
-				viewer.sendCustomPacket(destroyPacket, CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
-				Runnable spawn = () -> spawn(viewer);
-				if (viewer.getVersion().getMinorVersion() == 8) {
-					//1.8.0 client sided bug
-					TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, CpuConstants.UsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
-				} else {
-					spawn.run();
-				}
+				respawn(viewer);
 			}
 		}
 	}
@@ -201,7 +190,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 */
 	public void updateMetadata() {
 		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
-			viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), CpuConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
+			viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
 		}
 	}
 
@@ -210,9 +199,9 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if should be visible, false if not
 	 */
 	public boolean getVisibility() {
-		if (((BukkitTabPlayer)owner).isDisguised() || manager.getPlayersOnBoats().contains(owner)) return false;
-		if (TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible()) return true;
-		return !player.hasPotionEffect(PotionEffectType.INVISIBILITY) && player.getGameMode() != GameMode.SPECTATOR && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
+		if (owner.isDisguised() || manager.getVehicleManager().isOnBoat(owner)) return false;
+		if (alwaysVisible) return true;
+		return !owner.hasInvisibilityPotion() && owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
 
 	/**
@@ -226,7 +215,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (player.isSleeping()) {
 			y -= 1.76;
 		} else {
-			if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+			if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
 				y -= (sneaking ? 0.45 : 0.18);
 			} else {
 				y -= (sneaking ? 0.30 : 0.18);
@@ -257,15 +246,15 @@ public class BukkitArmorStand implements ArmorStand {
 			}
 		}
 		//1.13+ swimming or 1.9+ flying with elytra
-		if (isSwimming() || (NMSStorage.getInstance().getMinorVersion() >= 9 && player.isGliding())) {
+		if (isSwimming() || (TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
 			return player.getLocation().getY()-1.22;
 		}
 		return player.getLocation().getY();
 	}
 
 	private boolean isSwimming() {
-		if (NMSStorage.getInstance().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
-		return NMSStorage.getInstance().getMinorVersion() == 13 && player.isSwimming();
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+		return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
 	}
 
 	/**
@@ -316,7 +305,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public TabPacket[] getSpawnPackets(TabPlayer viewer) {
 		visible = getVisibility();
 		DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-		if (NMSStorage.getInstance().getMinorVersion() >= 15) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
 			return new TabPacket[] {
 					new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
 					new PacketPlayOutEntityMetadata(entityId, dataWatcher)
@@ -337,4 +326,15 @@ public class BukkitArmorStand implements ArmorStand {
 		return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
 	}
 
+	@Override
+	public void respawn(TabPlayer viewer) {
+		viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		Runnable spawn = () -> spawn(viewer);
+		if (viewer.getVersion().getMinorVersion() == 8) {
+			//1.8.0 client sided bug
+			TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
+		} else {
+			spawn.run();
+		}
+	}
 }

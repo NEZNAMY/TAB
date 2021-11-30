@@ -26,7 +26,7 @@ import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
  */
 public class Configs {
 
-	private TAB tab;
+	private final TAB tab;
 
 	//config.yml file
 	private ConfigurationFile config;
@@ -43,8 +43,8 @@ public class Configs {
 	//animations.yml file
 	private ConfigurationFile animation;
 
-	//translation.yml file
-	private ConfigurationFile translation;
+	//messages.yml file
+	private MessageFile messages;
 
 	//default reload message in case plugin did not load translation file due to an error
 	private String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
@@ -80,9 +80,9 @@ public class Configs {
 		ClassLoader loader = Configs.class.getClassLoader();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
-		translation = new YamlConfigurationFile(loader.getResourceAsStream("translation.yml"), new File(tab.getPlatform().getDataFolder(), "translation.yml"));
+		messages = new MessageFile();
 		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
-		reloadFailed = getTranslation().getString("reload-failed", "&4Failed to reload, file %file% has broken syntax. Check console for more info.");
+		reloadFailed = messages.getReloadFailBrokenFile();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class Configs {
 	 * @throws YAMLException 
 	 */
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().isProxy() ? "proxyconfig.yml" : "bukkitconfig.yml"), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		if (!config.hasConfigOption("mysql"))
 			convertToV3();
 		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
@@ -143,8 +143,8 @@ public class Configs {
 		return unregisterBeforeRegister;
 	}
 
-	public ConfigurationFile getTranslation() {
-		return translation;
+	public MessageFile getMessages() {
+		return messages;
 	}
 
 	public ConfigurationFile getConfig() {
@@ -244,7 +244,7 @@ public class Configs {
 	}
 
 	public boolean checkFiles(File file, Map<String,ConfigurationFile> yamls) {
-		if (!file.getName().equals("config.yml") && !file.getName().equals("premiumconfig.yml") && !file.getName().equals("bossbar.yml"))
+		if (!file.getName().equals("config.yml") && !file.getName().equals("premiumconfig.yml") && !file.getName().equals("bossbar.yml") && !file.getName().equals("translation.yml"))
 			return true;
 
 		try {
@@ -351,13 +351,11 @@ public class Configs {
 
 		finalCfg.set("yellow-number-in-tablist.enabled", !config.getString("yellow-number-in-tablist","%ping%").equals(""));
 		finalCfg.set("yellow-number-in-tablist.value", config.getString("yellow-number-in-tablist","%ping%"));
-		finalCfg.set("yellow-number-in-tablist.anti-override", config.getBoolean("anti-override.scoreboard-objectives",true));
 		finalCfg.set("yellow-number-in-tablist.disable-in-worlds", config.getStringList("disable-features-in-worlds.yellow-number",disabledWorld));
 		if (isProxy)
 			finalCfg.set("yellow-number.disable-in-servers",config.getStringList("disable-features-in-servers.yellow-number",disabledServer));
 
 		finalCfg.set("belowname-objective", config.getConfigurationSection("classic-vanilla-belowname"));
-		finalCfg.set("belowname-objective.anti-override", config.getBoolean("anti-override.scoreboard-objectives",true));
 		finalCfg.set("belowname-objective.disable-in-worlds", config.getStringList("disable-features-in-worlds.belowname",disabledWorld));
 		if (isProxy)
 			finalCfg.set("belowname-objective.disable-in-servers",config.getStringList("disable-features-in-servers.belowname",disabledServer));
@@ -416,8 +414,8 @@ public class Configs {
 		finalCfg.set("placeholders", placeholders);
 
 		finalCfg.set("placeholder-output-replacements", premium.getConfigurationSection("placeholder-output-replacements"));
-		finalCfg.set("placeholder-output-replacements.%afk%.yes", afkyes);
-		finalCfg.set("placeholder-output-replacements.%afk%.no", afkno);
+		finalCfg.set("placeholder-output-replacements.%afk%.true", afkyes);
+		finalCfg.set("placeholder-output-replacements.%afk%.false", afkno);
 
 		finalCfg.set("conditions",premium.getConfigurationSection("conditions"));
 
@@ -474,6 +472,7 @@ public class Configs {
 			groups.set(gPath+"._OTHER_",null);
 		}
 		finalCfg.set("header-footer.per-"+worldOrServer, headerFooterMap);
+		premium.getFile().delete();
 	}
 
 }

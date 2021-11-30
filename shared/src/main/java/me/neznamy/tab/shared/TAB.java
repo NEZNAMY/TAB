@@ -11,6 +11,7 @@ import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.TablistFormatManager;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
@@ -22,13 +23,14 @@ import me.neznamy.tab.shared.features.AlignedPlayerlist;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NameTag;
+import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.Playerlist;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -42,7 +44,7 @@ public class TAB extends TabAPI {
 	private static TAB instance;
 
 	//version of plugin
-	public static final String PLUGIN_VERSION = "3.0.0-pre2";
+	public static final String PLUGIN_VERSION = "@plugin_version@";
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
@@ -57,7 +59,7 @@ public class TAB extends TabAPI {
 	private final DisabledCommand disabledCommand = new DisabledCommand();
 
 	//platform interface
-	private Platform platform;
+	private final Platform platform;
 
 	//cpu manager
 	private CpuManager cpu;
@@ -77,7 +79,7 @@ public class TAB extends TabAPI {
 	private PlaceholderManagerImpl placeholderManager;
 
 	//server version, always using latest on proxies
-	private ProtocolVersion serverVersion;
+	private final ProtocolVersion serverVersion;
 	
 	private GroupManager groupManager;
 	
@@ -154,7 +156,7 @@ public class TAB extends TabAPI {
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			platform.callLoadEvent();
 			disabled = false;
-			return configuration.getTranslation().getString("reloaded");
+			return configuration.getMessages().getReloadSuccess();
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
@@ -203,13 +205,14 @@ public class TAB extends TabAPI {
 		if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) featureManager.registerFeature("spectatorfix", new SpectatorFix());
 		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
 		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
-		if (configuration.getLayout().getBoolean("enabled", false)) {
+		if (serverVersion.getMinorVersion() >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
 			if (getTeamManager() == null) {
 				//sorting is disabled, but layout needs team names
 				featureManager.registerFeature("sorting", new Sorting(null));
 			}
 			featureManager.registerFeature("layout", new LayoutManager());
 		}
+		featureManager.registerFeature("nick", new NickCompatibility());
 		if (platform.isProxy()) {
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");
@@ -305,7 +308,7 @@ public class TAB extends TabAPI {
 	@Override
 	public TabPlayer getPlayer(String name) {
 		for (TabPlayer p : data.values()) {
-			if (p.getName().equals(name)) return p;
+			if (p.getName().equalsIgnoreCase(name)) return p;
 		}
 		return null;
 	}
@@ -356,5 +359,15 @@ public class TAB extends TabAPI {
 
 	public boolean isFloodgateInstalled() {
 		return floodgate;
+	}
+
+	@Override
+	public void logError(String message, Throwable t) {
+		errorManager.printError(message, t);
+	}
+
+	@Override
+	public TablistFormatManager getTablistFormatManager() {
+		return (TablistFormatManager) featureManager.getFeature("playerlist");
 	}
 }

@@ -12,7 +12,7 @@ public class TabPlayerLoadEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
 
-	private TabPlayer player;
+	private final TabPlayer player;
 	
 	public TabPlayerLoadEvent(TabPlayer player) {
 		this.player = player;

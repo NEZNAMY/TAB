@@ -8,9 +8,9 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.Placeholder;
 import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
 
 /**
@@ -22,19 +22,19 @@ public class Condition {
 	private static Map<String, Condition> conditions = new HashMap<>();
 	
 	//condition type
-	private ConditionType type;
+	private final ConditionType type;
 	
 	//name of this condition
-	private String name;
+	private final String name;
 	
 	//list of subconditions
 	protected SimpleCondition[] subconditions;
 	
 	//value to return if condition is met
-	private String yes;
+	private final String yes;
 	
 	//value to return if condition is not met
-	private String no;
+	private final String no;
 	
 	private int refresh = 10000;
 
@@ -48,8 +48,8 @@ public class Condition {
 	protected Condition(ConditionType type, String name, List<String> conditions, String yes, String no) {
 		this.type = type;
 		this.name = name;
-		this.yes = "null".equals(yes) ? "true" : yes;
-		this.no = "null".equals(no) ? "false" : no;
+		this.yes = yes;
+		this.no = no;
 		if (conditions == null) {
 			TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
 			return;
@@ -156,7 +156,7 @@ public class Condition {
 		if (getConditions().containsKey(string)) {
 			return getConditions().get(string);
 		} else {
-			Condition c = Condition.compile("AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "AND", "yes", "no");
+			Condition c = Condition.compile("AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "AND", "true", "false");
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%condition:" + c.getName() + "%", c.getRefresh(), c::getText);
 			return c;
 		}

@@ -18,7 +18,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
-import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +78,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws ParseException {
+	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) {
 		ScoreboardObjective newPacket = (ScoreboardObjective) packet;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {

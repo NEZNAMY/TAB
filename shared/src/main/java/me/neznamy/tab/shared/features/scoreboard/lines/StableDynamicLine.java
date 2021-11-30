@@ -5,7 +5,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
@@ -35,7 +35,7 @@ public class StableDynamicLine extends ScoreboardLine {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
 		String[] prefixsuffix = replaceText(refreshed, force, false);
 		if (prefixsuffix.length == 0) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix[0], prefixsuffix[1], "always", "always", 0), CpuConstants.PacketCategory.SCOREBOARD_LINES);
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix[0], prefixsuffix[1], "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
 	}
 
 	@Override
@@ -74,6 +74,7 @@ public class StableDynamicLine extends ScoreboardLine {
 			if (emptyBefore) {
 				//was "", now it is not
 				addLine(p, getPlayerName(), split[0], split[1]);
+				parent.recalculateScores(p);
 				return EMPTY_ARRAY;
 			} else {
 				return split;
@@ -82,6 +83,7 @@ public class StableDynamicLine extends ScoreboardLine {
 			if (!suppressToggle) {
 				//new string is "", but before it was not
 				removeLine(p, getPlayerName());
+				parent.recalculateScores(p);
 			}
 			return EMPTY_ARRAY;
 		}

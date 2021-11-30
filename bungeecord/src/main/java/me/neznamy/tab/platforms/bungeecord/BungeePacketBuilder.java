@@ -3,8 +3,6 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.parser.ParseException;
-
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -116,7 +114,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 	}
 	
 	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) throws ParseException {
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) {
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		List<PlayerInfoData> listData = new ArrayList<>();
 		for (Item i : item.getItems()) {
@@ -126,7 +124,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) throws ParseException {
+	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) {
 		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
 		String title;
 		if (clientVersion.getMinorVersion() >= 13) {

@@ -1,41 +1,5 @@
 # Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
 
-scoreboard-teams:
-  enabled: true
-  enable-collision: true
-  invisible-nametags: false
-  anti-override: true
-
-  # types: GROUPS:<group1>,<group2>... , PERMISSIONS:<permission1>,<perm2>... , PLACEHOLDER:<output1>,<output2>... , PLACEHOLDER_A_TO_Z, PLACEHOLDER_Z_TO_A, PLACEHOLDER_HIGH_TO_LOW, PLACEHOLDER_LOW_TO_HIGH
-  sorting-types:
-    - "GROUPS:owner,admin,mod,helper,builder,vip,default"
-    - "PLACEHOLDER_A_TO_Z:%player%"
-  case-sentitive-sorting: true
-  disable-in-worlds:
-    - disabledworld
-  unlimited-nametag-mode:
-    enabled: false
-    use-marker-tag-for-1-8-x-clients: false
-    disable-on-boats: true
-    space-between-lines: 0.22
-    disable-in-worlds:
-      - disabledworld
-    dynamic-lines:
-      - abovename
-      - nametag #the original one, combination of tagprefix + customtagname + tagsuffix
-      - belowname
-      - another
-    static-lines:
-      myCustomLine: 0.66
-
-tablist-name-formatting:
-  enabled: true
-  align-tabsuffix-on-the-right: false
-  character-width-overrides: {}
-  anti-override: true
-  disable-in-worlds:
-    - disabledworld
-
 header-footer:
   enabled: true
   disable-in-worlds:
@@ -60,11 +24,44 @@ header-footer:
         - "an example of world with custom"
       footer:
         - "header/footer and prefix/suffix"
-    world2-world3:
+    world2;world3:
       header:
         - "This is a shared header for"
         - "world2 and world3"
 
+tablist-name-formatting:
+  enabled: true
+  align-tabsuffix-on-the-right: false
+  character-width-overrides: {}
+  anti-override: true
+  disable-in-worlds:
+    - disabledworld
+
+scoreboard-teams:
+  enabled: true
+  enable-collision: true
+  invisible-nametags: false
+  anti-override: true
+  sorting-types:
+    - "GROUPS:owner,admin,mod,helper,builder,vip,default"
+    - "PLACEHOLDER_A_TO_Z:%player%"
+  case-sensitive-sorting: true
+  disable-in-worlds:
+    - disabledworld
+  unlimited-nametag-mode:
+    enabled: false
+    use-marker-tag-for-1-8-x-clients: false
+    disable-on-boats: true
+    space-between-lines: 0.22
+    disable-in-worlds:
+      - disabledworld
+    dynamic-lines:
+      - abovename
+      - nametag #the original one, combination of tagprefix + customtagname + tagsuffix
+      - belowname
+      - another
+    static-lines:
+      myCustomLine: 0.66
 
 yellow-number-in-tablist:
   enabled: true
@@ -75,15 +72,13 @@ yellow-number-in-tablist:
 belowname-objective:
   enabled: false
   number: "%health%"
-  text: "&c❤"
+  text: "&cHealth"
   disable-in-worlds:
     - disabledworld
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
 prevent-spectator-effect:
   enabled: false
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar
 bossbar:
   enabled: false
   toggle-command: /bossbar
@@ -105,12 +100,11 @@ bossbar:
       progress: "%math_0_{tab_placeholder_mspt}*2%"
       text: "&7TPS&e: %condition:tps% &7MSPT&e: %condition:mspt% &7Ping&e: %condition:ping%&7ms"
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Per-world-playerlist
 per-world-playerlist:
   enabled: false
   # players with tab.staff will always see all players
   allow-bypass-permission: false
-  # players in those worlds will always see all players
+  # players in these worlds will always see all players
   ignore-effect-in-worlds:
     - ignoredworld
     - build
@@ -122,16 +116,12 @@ per-world-playerlist:
       - paintball
       - bedwars
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard-(premium-only)
 scoreboard:
   enabled: false
-  # show/hide the scoreboard
   toggle-command: /sb
   remember-toggle-choice: false
   hidden-by-default: false
-  # when enabled, will show 0-14 in red next to lines 
   use-numbers: false
-  # if use-numbers is disabled, this number will show in red next to all lines
   static-number: 0
   delay-on-join-milliseconds: 0
   respect-other-plugins: true
@@ -171,14 +161,11 @@ scoreboard:
 
 ping-spoof:
   enabled: false
-  # when enabled, all players will have this value as their ping
   value: 0
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Pet-name-fix
 fix-pet-names:
   enabled: false
 
-# https://github.com/NEZNAMY/TAB/wiki/config.yml#placeholders
 placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
@@ -187,7 +174,6 @@ placeholders:
     - "[]"
     - "< >"
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements-(premium-only)
 placeholder-output-replacements:
   "%essentials_vanished%":
     "yes": "&7| Vanished"
@@ -195,8 +181,9 @@ placeholder-output-replacements:
   "%afk%":
     true: " &o[AFK]&r"
     false: ""
+  "%essentials_nickname%":
+    "%essentials_nickname%": "%player%" #placeholder did not parse correctly, show real name instead
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders-(premium-only)
 conditions:
   nick: # use it with %condition:nick%
     conditions:
@@ -234,12 +221,12 @@ conditions:
     yes: "<#FFFF55>%ping%</#FFAA00>"
     no: "<#FF5555>%ping%</#AA0000>"
 
-# https://github.com/NEZNAMY/TAB/wiki/Optimizing-the-plugin#3---placeholder-refresh-intervals
 placeholderapi-refresh-intervals:
   default-refresh-interval: 500
   server:
     "%server_uptime%": 1000
     "%server_tps_1_colored%": 1000
+    "%server_unique_joins%": 5000
   player:
     "%player_health%": 200
     "%player_ping%": 1000

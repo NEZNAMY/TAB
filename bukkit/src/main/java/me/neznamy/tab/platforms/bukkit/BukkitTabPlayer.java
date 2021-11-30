@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +42,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	private Object playerConnection;
 	
 	//player's visible boss bars
-	private Map<UUID, BossBar> bossbars = new HashMap<>();
-	private Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossbars = new HashMap<>();
+	private final Map<UUID, BossBar> bossbars = new HashMap<>();
+	private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -57,7 +56,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
 			if (NMSStorage.getInstance().CHANNEL != null)
 				channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
-		} catch (InvocationTargetException | IllegalAccessException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection or channel of " + p.getName(), e);
 		}
 		version = ProtocolVersion.fromNetworkId(protocolVersion);
@@ -88,7 +87,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		long time = System.nanoTime();
 		try {
 			if (nmsPacket instanceof PacketPlayOutBoss) {
-				if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+				if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
 					handle((PacketPlayOutBoss) nmsPacket);
 				} else {
 					handleVia((PacketPlayOutBoss) nmsPacket);
@@ -96,7 +95,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			} else {
 				NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
 			}
-		} catch (IllegalAccessException | InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
 		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
@@ -107,7 +106,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		switch (packet.getOperation()) {
 		case ADD:
 			if (bossbars.containsKey(packet.getId())) return;
-			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16), 
+			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
 					BarStyle.valueOf(packet.getOverlay().getBukkitName()));
 			if (packet.isCreateWorldFog()) bar.addFlag(BarFlag.CREATE_FOG);
@@ -125,7 +124,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			bossbars.get(packet.getId()).setProgress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && NMSStorage.getInstance().getMinorVersion() >= 16));
+			bossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
 			break;
 		case UPDATE_STYLE:
 			bossbars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));
@@ -228,7 +227,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public Object getSkin() {
 		try {
 			return ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties();
-		} catch (InvocationTargetException | IllegalAccessException e) {
+		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
 			return null;
 		}

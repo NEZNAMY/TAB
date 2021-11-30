@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
-import me.neznamy.tab.api.PlaceholderManager;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
 
 /**
  * An interface to be implemented by classes which offer internal placeholders that can be registered into the system

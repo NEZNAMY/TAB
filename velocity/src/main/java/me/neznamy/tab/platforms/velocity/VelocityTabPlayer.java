@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
@@ -38,10 +38,10 @@ import net.kyori.adventure.text.Component;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
 	//uuid used in tablist
-	private UUID tablistId;
+	private final UUID tablistId;
 	
 	//player's visible boss bars
-	private Map<UUID, BossBar> bossbars = new HashMap<>();
+	private final Map<UUID, BossBar> bossbars = new HashMap<>();
 
 	/**
 	 * Constructs new instance for given player
@@ -53,10 +53,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
 		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
 		try {
-			Object connection = player.getClass().getMethod("getConnection").invoke(player);
-			channel = (Channel) connection.getClass().getMethod("getChannel").invoke(connection);
-		} catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-			TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + getPlayer().getUsername(), e);
+			Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
+			channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
+		} catch (ReflectiveOperationException e) {
+			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getUsername(), e);
 		}
 	}
 	
@@ -79,28 +79,59 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		if (packet == null || !getPlayer().isActive()) return;
 		if (packet instanceof PacketPlayOutChat){
 			handle((PacketPlayOutChat) packet);
-		}
-		else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
+		} else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
 			handle((PacketPlayOutPlayerListHeaderFooter) packet);
-		}
-		else if (packet instanceof PacketPlayOutBoss) {
+		} else if (packet instanceof PacketPlayOutBoss) {
 			handle((PacketPlayOutBoss) packet);
-		}
-		else if (packet instanceof PacketPlayOutPlayerInfo) {
+		} else if (packet instanceof PacketPlayOutPlayerInfo) {
 			handle((PacketPlayOutPlayerInfo) packet);
-		}
-		else {
-			channel.write(packet, channel.voidPromise());
-		}
+		} else if (channel != null) channel.writeAndFlush(packet, channel.voidPromise());
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 
 	private void handle(PacketPlayOutChat packet) {
-		getPlayer().sendMessage(Identity.nil(), Main.stringToComponent(packet.getMessage().toString(getVersion())), MessageType.valueOf(packet.getType().name()));
+		Component message = Main.stringToComponent(packet.getMessage().toString(getVersion()));
+		if (packet.getType() == ChatMessageType.GAME_INFO) {
+			getPlayer().sendActionBar(message);
+		} else {
+			getPlayer().sendMessage(Identity.nil(), message, MessageType.valueOf(packet.getType().name()));
+		}
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
 		getPlayer().sendPlayerListHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void handle(PacketPlayOutPlayerInfo packet) {
+		for (PlayerInfoData data : packet.getEntries()) {
+			switch (packet.getAction()) {
+			case ADD_PLAYER:
+				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
+				getPlayer().getTabList().addEntry(TabListEntry.builder()
+						.tabList(getPlayer().getTabList())
+						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
+						.gameMode(data.getGameMode().ordinal()-1)
+						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
+						.latency(data.getLatency())
+						.build());
+				break;
+			case REMOVE_PLAYER:
+				getPlayer().getTabList().removeEntry(data.getUniqueId());
+				break;
+			case UPDATE_DISPLAY_NAME:
+				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
+				break;
+			case UPDATE_LATENCY:
+				getEntry(data.getUniqueId()).setLatency(data.getLatency());
+				break;
+			case UPDATE_GAME_MODE:
+				getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
@@ -152,38 +183,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		} else {
 			if (bar.hasFlag(flag)) {
 				bar.removeFlag(flag);
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void handle(PacketPlayOutPlayerInfo packet) {
-		for (PlayerInfoData data : packet.getEntries()) {
-			switch (packet.getAction()) {
-			case ADD_PLAYER:
-				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
-				getPlayer().getTabList().addEntry(TabListEntry.builder()
-						.tabList(getPlayer().getTabList())
-						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
-						.gameMode(data.getGameMode().ordinal()-1)
-						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
-						.latency(data.getLatency())
-						.build());
-				break;
-			case REMOVE_PLAYER:
-				getPlayer().getTabList().removeEntry(data.getUniqueId());
-				break;
-			case UPDATE_DISPLAY_NAME:
-				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
-				break;
-			case UPDATE_LATENCY:
-				getEntry(data.getUniqueId()).setLatency(data.getLatency());
-				break;
-			case UPDATE_GAME_MODE:
-				getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
-				break;
-			default:
-				break;
 			}
 		}
 	}

@@ -15,7 +15,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
  */
 public class VelocityEventListener {
 
-	private PluginMessageHandler plm;
+	private final PluginMessageHandler plm;
 	
 	public VelocityEventListener(PluginMessageHandler plm) {
 		this.plm = plm;

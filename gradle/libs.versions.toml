@@ -1,0 +1,73 @@
+metadata.format.version = "1.1"
+
+[versions]
+
+# API
+netty = "4.1.63.Final"
+jsonSimple = "1.1.1"
+snakeyaml = "1.28"
+yamlAssist = "1.0.5"
+gson = "2.8.7"
+
+# General
+luckperms = "5.2"
+guava = "30.1.1-jre"
+floodgate = "2.0-SNAPSHOT"
+kotlin = "1.6.0-RC"
+
+# Platforms
+bukkit = "1.16.5-R0.1-SNAPSHOT"
+bungeecord = "1.18-R0.1-SNAPSHOT"
+krypton = "0.50.2"
+velocity = "1.1.0"
+
+# Platform extras
+placeholderapi = "2.10.9"
+vault = "1.7"
+via = "4.0.0"
+authlib = "1.11"
+bstats = "2.2.1"
+libsDisguises = "10.0.26-SNAPSHOT"
+essentials = "2.19.0"
+premiumVanish = "2.0.3"
+redisBungee = "0.6.5-SNAPSHOT"
+velocityInjector = "1.1.0"
+
+[libraries]
+
+# API
+netty = { group = "io.netty", name = "netty-all", version.ref = "netty" }
+jsonSimple = { group = "com.googlecode.json-simple", name = "json-simple", version.ref = "jsonSimple" }
+snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
+yamlAssist = { group = "com.github.NEZNAMY", name = "YamlAssist", version.ref = "yamlAssist" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# General
+luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+
+# Platforms
+bukkit = { group = "net.pl3x.purpur", name = "purpur-api", version.ref = "bukkit" }
+bungeecord = { group = "net.md-5", name = "bungeecord-proxy", version.ref = "bungeecord" }
+krypton-api = { group = "org.kryptonmc", name = "krypton-api", version.ref = "krypton" }
+krypton-server = { group = "org.kryptonmc", name = "krypton-server", version.ref = "krypton" }
+krypton-annotationProcessor = { group = "org.kryptonmc", name = "krypton-annotation-processor", version.ref = "krypton" }
+velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
+
+# Platform extras
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+vault = { group = "com.github.MilkBowl", name = "VaultAPI", version.ref = "vault" }
+via = { group = "com.viaversion", name = "viaversion-api", version.ref = "via" }
+authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
+libsDisguises = { group = "LibsDisguises", name = "LibsDisguises", version.ref = "libsDisguises" }
+essentials = { group = "net.essentialsx", name = "EssentialsX", version.ref = "essentials" }
+premiumVanish = { group = "com.github.MyzelYam", name = "PremiumVanishAPI", version.ref = "premiumVanish" }
+redisBungee = { group = "com.imaginarycode.minecraft", name = "RedisBungee", version.ref = "redisBungee" }
+velocityInjector = { group = "com.github.NEZNAMY", name = "VelocityPacketInjector", version.ref = "velocityInjector" }
+
+# Metrics
+bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
+bstats-bungeecord = { group = "org.bstats", name = "bstats-bungeecord", version.ref = "bstats" }
+bstats-velocity = { group = "org.bstats", name = "bstats-velocity", version.ref = "bstats" }

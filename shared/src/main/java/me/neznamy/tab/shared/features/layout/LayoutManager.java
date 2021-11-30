@@ -18,30 +18,26 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class LayoutManager extends TabFeature {
 
-	private Direction direction;
-	private String defaultSkin;
-	private boolean enableRemainingPlayersText;
-	private String remainingPlayersText;
-
-	private Map<String, Layout> layouts = new LinkedHashMap<>();
-	private Map<TabPlayer, Layout> playerViews = new HashMap<>();
-	private Map<Integer, UUID> uuids = new HashMap<>();
-	private SkinManager skinManager;
-	private Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
+	private final Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
+	private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+	private final boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
+	private final String remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
+	private final SkinManager skinManager = new SkinManager(defaultSkin);
+	
+	private final Map<String, Layout> layouts = new LinkedHashMap<>();
+	private final Map<TabPlayer, Layout> playerViews = new HashMap<>();
+	private final Map<Integer, UUID> uuids = new HashMap<>();
+	private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
 
 	public LayoutManager() {
-		super("Layout");
-		direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
-		defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
-		enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
-		remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
-		skinManager = new SkinManager(defaultSkin);
+		super("Layout", "Switching layouts");
 		for (int slot=1; slot<=80; slot++) {
-			uuids.put(slot, UUID.randomUUID());
+			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}
 		loadLayouts();
 		TAB.getInstance().debug("Loaded Layout feature");
@@ -54,10 +50,6 @@ public class LayoutManager extends TabFeature {
 			TAB.getInstance().getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(Direction.values()) + ". &bUsing COLUMNS");
 			return Direction.COLUMNS;
 		}
-	}
-
-	public String formatSlot(int slot) {
-		return (char)1 + String.format("SLOT%02d", translateSlot(slot));
 	}
 
 	@SuppressWarnings("unchecked")

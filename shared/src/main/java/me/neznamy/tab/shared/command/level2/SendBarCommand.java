@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
 
 /**
@@ -19,23 +20,23 @@ public class SendBarCommand extends SubCommand {
 	 * Constructs new instance
 	 */
 	public SendBarCommand() {
-		super("bar", "tab.send.bar");
+		super("bar", TabConstants.Permission.COMMAND_BOSSBAR_SEND);
 	}
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		BossBarManager feature = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
 		if (feature == null) {
-			sendMessage(sender, "&4This command requires the bossbar feature to be enabled.");
+			sendMessage(sender, getMessages().getBossBarNotEnabled());
 			return;
 		}
 		if (args.length != 3) {
-			sendMessage(sender, "Usage: /tab send bar <player> <bar name> <length>");
+			sendMessage(sender, getMessages().getSendBarCommandUsage());
 			return;
 		}
 		TabPlayer target = TAB.getInstance().getPlayer(args[0]);
 		if (target == null) {
-			sendMessage(sender, getTranslation("player_not_found"));
+			sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 			return;
 		}
 		String barname = args[1];
@@ -43,12 +44,12 @@ public class SendBarCommand extends SubCommand {
 		try {
 			duration = Integer.parseInt(args[2]);
 		} catch (NumberFormatException e) {
-			sendMessage(sender, args[1] + " is not a number!");
+			sendMessage(sender, getMessages().getInvalidNumber(args[1]));
 			return;
 		}
 		BossBar bar = feature.getBossBar(barname);
 		if (bar == null) {
-			sendMessage(sender, "No bar found with name \"" + bar + "\"");
+			sendMessage(sender, getMessages().getBossBarNotFound(barname));
 			return;
 		}
 		feature.sendBossBarTemporarily(target, bar.getName(), duration);

@@ -2,6 +2,9 @@ package me.neznamy.tab.shared.features;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -10,7 +13,10 @@ import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.PropertyUtils;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -20,7 +26,9 @@ public class AlignedPlayerlist extends Playerlist {
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
-	private byte[] widths = new byte[65536];
+	private final Map<TabPlayer, Integer> playerWidths = new HashMap<>();
+	
+	private final byte[] widths = new byte[65536];
 
 	public AlignedPlayerlist() {
 		int characterId = 1;
@@ -36,22 +44,18 @@ public class AlignedPlayerlist extends Playerlist {
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
 		int playerNameWidth = getPlayerNameWidth(player);
+		playerWidths.put(player, playerNameWidth);
 		if (player == maxPlayer && playerNameWidth < maxWidth) {
-			maxWidth = playerNameWidth;
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				int localWidth = getPlayerNameWidth(all);
-				if (localWidth > maxWidth) {
-					maxWidth = localWidth;
-					maxPlayer = all;
-				}
-			}
+			//name became shorter, finding new max player
+			playerWidths.put(player, playerNameWidth);
+			recalculateMaxWidth(null);
 			updateAllNames(null);
 		} else if (playerNameWidth > maxWidth) {
 			maxWidth = playerNameWidth;
 			maxPlayer = player;
 			updateAllNames(player);
 		}
-		return formatName(player.getProperty(PropertyUtils.TABPREFIX).getFormat(viewer) + player.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(viewer), player.getProperty(PropertyUtils.TABSUFFIX).getFormat(viewer));
+		return formatName(player.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) + player.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer), player.getProperty(TabConstants.Property.TABSUFFIX).getFormat(viewer));
 	}
 	
 	public String formatName(String prefixAndName, String suffix) {
@@ -64,6 +68,7 @@ public class AlignedPlayerlist extends Playerlist {
 		} catch (IllegalArgumentException e) {
 			//will investigate later
 			newFormat.append(buildSpaces(12));
+			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + (maxWidth + 12 - playerNameWidth) + " pixels", e);
 		}
 		newFormat.append(EnumChatFormat.getLastColors(prefixAndName));
 		newFormat.append(suffix);
@@ -97,7 +102,7 @@ public class AlignedPlayerlist extends Playerlist {
 	 * @return width of player's tablist name format
 	 */
 	private int getPlayerNameWidth(TabPlayer p) {
-		String format = p.getProperty(PropertyUtils.TABPREFIX).getFormat(null) + p.getProperty(PropertyUtils.CUSTOMTABNAME).getFormat(null) + p.getProperty(PropertyUtils.TABSUFFIX).getFormat(null);
+		String format = p.getProperty(TabConstants.Property.TABPREFIX).getFormat(null) + p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(null) + p.getProperty(TabConstants.Property.TABSUFFIX).getFormat(null);
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
 	
@@ -129,17 +134,66 @@ public class AlignedPlayerlist extends Playerlist {
 	}
 	
 	@Override
+	public void load(){
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (isDisabled(all.getServer(), all.getWorld())) {
+				addDisabledPlayer(all);
+				updateProperties(all);
+				playerWidths.put(all, getPlayerNameWidth(all));
+				return;
+			}
+			refresh(all, true);
+		}
+		recalculateMaxWidth(null);
+	}
+	
+	@Override
+	public void onJoin(TabPlayer connectedPlayer) {
+		updateProperties(connectedPlayer);
+		int width = getPlayerNameWidth(connectedPlayer);
+		playerWidths.put(connectedPlayer, width);
+		if (width > maxWidth) {
+			maxWidth = width;
+			maxPlayer = connectedPlayer;
+			updateAllNames(connectedPlayer);
+		}
+		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
+			addDisabledPlayer(connectedPlayer);
+			return;
+		}
+		Runnable r = () -> {
+			refresh(connectedPlayer, true);
+			if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
+			List<PlayerInfoData> list = new ArrayList<>();
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (all == connectedPlayer) continue; //already sent 4 lines above
+				list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer, false)));
+			}
+			connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
+		};
+		r.run();
+		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
+		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+	}
+	
+	@Override
 	public void onQuit(TabPlayer p) {
 		super.onQuit(p);
-		if (recalculateMaxWidth(p)) {
+		if (maxPlayer == p && recalculateMaxWidth(p)) {
 			updateAllNames(p);
 		}
+		playerWidths.remove(p);
 	}
 	
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		super.onWorldChange(p, from, to);
-		if (recalculateMaxWidth(null)) {
+		int width = getPlayerNameWidth(p);
+		if (width != playerWidths.get(p)) {
+			playerWidths.put(p, width);
+			refresh(p, true);
+		}
+		if (maxPlayer == p && recalculateMaxWidth(null)) {
 			updateAllNames(null);
 		}
 	}
@@ -158,7 +212,7 @@ public class AlignedPlayerlist extends Playerlist {
 		maxPlayer = null;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == ignoredPlayer) continue;
-			int localWidth = getPlayerNameWidth(all);
+			int localWidth = playerWidths.get(all);
 			if (localWidth > maxWidth) {
 				maxWidth = localWidth;
 				maxPlayer = all;
@@ -169,9 +223,9 @@ public class AlignedPlayerlist extends Playerlist {
 	
 	@Override
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
-		Property prefix = p.getProperty(PropertyUtils.TABPREFIX);
-		Property name = p.getProperty(PropertyUtils.CUSTOMTABNAME);
-		Property suffix = p.getProperty(PropertyUtils.TABSUFFIX);
+		Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
+		Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
+		Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
 		if (prefix == null || name == null || suffix == null) {
 			return null;
 		}

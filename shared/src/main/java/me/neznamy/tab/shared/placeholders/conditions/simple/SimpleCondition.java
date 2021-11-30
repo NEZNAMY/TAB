@@ -15,7 +15,7 @@ import me.neznamy.tab.shared.TAB;
 public abstract class SimpleCondition {
 	
 	//all known condition types
-	private static Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
+	private static final Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
 	
 	//left side of condition
 	private String leftSide;

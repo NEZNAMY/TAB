@@ -6,16 +6,16 @@ package me.neznamy.tab.api.protocol;
 public class PacketPlayOutScoreboardScore implements TabPacket {
 
 	/** Packet action */
-	private Action action;
+	private final Action action;
 
 	/** Objective name */
-	private String objectiveName;
+	private final String objectiveName;
 
 	/** Affected player */
-	private String player;
+	private final String player;
 
 	/** Player's score */
-	private int score;
+	private final int score;
 
 	/**
 	 * Constructs new instance with given parameters

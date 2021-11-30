@@ -10,15 +10,15 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 
 public class PacketPlayOutSpawnEntityLiving implements TabPacket {
 
-	private int entityId;
+	private final int entityId;
 
-	private UUID uuid;
+	private final UUID uuid;
 
-	private EntityType entityType;
+	private final EntityType entityType;
 
-	private Location location;
+	private final Location location;
 
-	private DataWatcher dataWatcher;
+	private final DataWatcher dataWatcher;
 
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location location, DataWatcher dataWatcher) {
 		this.entityId = entityId;

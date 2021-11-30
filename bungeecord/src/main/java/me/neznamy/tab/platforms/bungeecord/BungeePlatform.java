@@ -27,9 +27,9 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class BungeePlatform extends ProxyPlatform {
 
 	//instance of plugin
-	private Plugin plugin;
+	private final Plugin plugin;
 	
-	private BungeePacketBuilder packetBuilder = new BungeePacketBuilder();
+	private final BungeePacketBuilder packetBuilder = new BungeePacketBuilder();
 	
 	/**
 	 * Constructs new instance with given parameter
@@ -114,5 +114,10 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public boolean isProxy() {
 		return true;
+	}
+	
+	@Override
+	public boolean isPluginEnabled(String plugin) {
+		return ProxyServer.getInstance().getPluginManager().getPlugin(plugin) != null;
 	}
 }

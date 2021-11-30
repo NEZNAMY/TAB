@@ -2,17 +2,19 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.CpuConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.PacketAPI;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
@@ -26,10 +28,10 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	//scoreboard manager
-	private ScoreboardManagerImpl manager;
+	private final ScoreboardManagerImpl manager;
 
 	//name of this scoreboard
-	private String name;
+	private final String name;
 
 	//scoreboard title
 	private String title;
@@ -38,10 +40,10 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	private Condition displayCondition;
 
 	//lines of scoreboard
-	private List<Line> lines = new ArrayList<>();
+	private final List<Line> lines = new ArrayList<>();
 
 	//players currently seeing this scoreboard
-	private List<TabPlayer> players = new ArrayList<>();
+	private final List<TabPlayer> players = new ArrayList<>();
 
 	/**
 	 * Constructs new instance with given parameters and registers lines to feature manager
@@ -68,7 +70,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param lines - lines of scoreboard
 	 */
 	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, boolean dynamicLinesOnly) {
-		super(manager.getFeatureName());
+		super(manager.getFeatureName(), "Updating scoreboard title");
 		this.manager = manager;
 		this.name = name;
 		this.title = title;
@@ -117,13 +119,14 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
-		p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(PropertyUtils.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
+		p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
 		players.add(p);
 		manager.getActiveScoreboards().put(p, this);
+		recalculateScores(p);
 	}
 
 	@Override
@@ -146,9 +149,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE) == null) return;
+		if (refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE) == null) return;
 		refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
-				refreshed.getProperty(PropertyUtils.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), CpuConstants.PacketCategory.SCOREBOARD_TITLE);
+				refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
 	}
 
 	@Override
@@ -173,7 +176,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void setTitle(String title) {
 		this.title = title;
 		for (TabPlayer p : players) {
-			p.setProperty(this, PropertyUtils.SCOREBOARD_TITLE, title);
+			p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
 			refresh(p, false);
 		}
 	}
@@ -185,6 +188,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		lines.add(line);
 		for (TabPlayer p : players) {
 			line.register(p);
+			recalculateScores(p);
 		}
 	}
 
@@ -195,11 +199,24 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		lines.remove(line);
 		for (TabPlayer p : players) {
 			line.unregister(p);
+			recalculateScores(p);
 		}
 		TAB.getInstance().getFeatureManager().unregisterFeature(featureName(name, index));
 	}
 	
 	private String featureName(String line, int index) {
 		return "scoreboard-score-" + line + "-" + index;
+	}
+	
+	public void recalculateScores(TabPlayer p) {
+		if (!manager.isUsingNumbers()) return;
+		List<Line> linesReversed = new ArrayList<>(lines);
+		Collections.reverse(linesReversed);
+		int score = 1;
+		for (Line line : linesReversed) {
+			if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0){
+				p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(), score++), this);
+			}
+		}
 	}
 }

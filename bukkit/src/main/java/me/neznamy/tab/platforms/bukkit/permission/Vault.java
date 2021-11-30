@@ -13,10 +13,10 @@ import net.milkbowl.vault.permission.Permission;
 public class Vault implements PermissionPlugin {
 
 	//permission plugin
-	private Permission permission;
+	private final Permission permission;
 	
 	//vault version
-	private String vaultVersion;
+	private final String vaultVersion;
 
 	/**
 	 * Constructs new instance with given parameters

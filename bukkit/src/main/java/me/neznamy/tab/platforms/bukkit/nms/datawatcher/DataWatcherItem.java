@@ -1,14 +1,15 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.shared.TAB;
 
 public class DataWatcherItem {
 	
 	//type of value (position + data type (1.9+))
-	private DataWatcherObject type;
+	private final DataWatcherObject type;
 	
 	//actual data value
-	private Object value;
+	private final Object value;
 	
 	/**
 	 * Constructs new instance of the object with given parameters
@@ -24,11 +25,11 @@ public class DataWatcherItem {
 	 * Returns and instance of this class from given NMS item
 	 * @param nmsItem - NMS item
 	 * @return instance of this class with same data
-	 * @throws IllegalAccessException 
+	 * @throws ReflectiveOperationException 
 	 */
-	public static DataWatcherItem fromNMS(Object nmsItem) throws IllegalAccessException {
+	public static DataWatcherItem fromNMS(Object nmsItem) throws ReflectiveOperationException {
 		NMSStorage nms = NMSStorage.getInstance();
-		if (NMSStorage.getInstance().getMinorVersion() >= 9) {
+		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
 			Object nmsObject = nms.DataWatcherItem_TYPE.get(nmsItem);
 			return new DataWatcherItem(new DataWatcherObject(nms.DataWatcherObject_SLOT.getInt(nmsObject), nms.DataWatcherObject_SERIALIZER.get(nmsObject)), nms.DataWatcherItem_VALUE.get(nmsItem));
 		} else {

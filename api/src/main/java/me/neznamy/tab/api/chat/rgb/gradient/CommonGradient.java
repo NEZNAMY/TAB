@@ -8,13 +8,13 @@ import me.neznamy.tab.api.chat.TextColor;
 
 public class CommonGradient implements GradientPattern {
 
-	private Pattern pattern;
-	private Pattern legacyPattern;
-	private String containCheck;
-	private int legacyCharPosition;
-	private int startColorStart;
-	private int messageStart;
-	private int endColorStartSub;
+	private final Pattern pattern;
+	private final Pattern legacyPattern;
+	private final String containCheck;
+	private final int legacyCharPosition;
+	private final int startColorStart;
+	private final int messageStart;
+	private final int endColorStartSub;
 	
 	public CommonGradient(Pattern pattern, Pattern legacyPattern, String containCheck, int legacyCharPosition,
 			int startColorStart, int messageStart, int endColorStartSub) {

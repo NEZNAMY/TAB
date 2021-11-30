@@ -11,10 +11,10 @@ public class PacketPlayOutScoreboardDisplayObjective implements TabPacket {
 	 * 1 = sidebar,
 	 * 2 = belowname.
 	 */
-	private int slot;
+	private final int slot;
 	
 	/** Up to 16 characters long objective name */
-	private String objectiveName;
+	private final String objectiveName;
 
 	/**
 	 * Constructs new instance with given parameters

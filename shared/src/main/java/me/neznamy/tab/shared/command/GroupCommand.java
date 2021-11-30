@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab group" subcommand
@@ -28,28 +29,28 @@ public class GroupCommand extends PropertyCommand {
 		String type = args[1].toLowerCase();
 		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
 		if ("remove".equals(type)) {
-			if (hasPermission(sender, "tab.remove")) {
+			if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
 				TAB.getInstance().getConfiguration().getGroups().remove(group);
 				for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
 					if (pl.getGroup().equals(group) || "_DEFAULT_".equals(group)){
 						pl.forceRefresh();
 					}
 				}
-				sendMessage(sender, getTranslation("data_removed").replace("%category%", "group").replace("%value%", group));
+				sendMessage(sender, getMessages().getGroupDataRemoved(group));
 			} else {
-				sendMessage(sender, getTranslation("no_permission"));
+				sendMessage(sender, getMessages().getNoPermission());
 			}
 			return;
 		}
 		for (String property : getAllProperties()) {
 			if (type.equals(property)) {
-				if (hasPermission(sender, "tab.change." + property)) {
+				if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
 					saveGroup(sender, group, type, value);
 					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
-						sendMessage(sender, getTranslation("unlimited_nametag_mode_not_enabled"));
+						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
 					}
 				} else {
-					sendMessage(sender, getTranslation("no_permission"));
+					sendMessage(sender, getMessages().getNoPermission());
 				}
 				return;
 			}
@@ -66,9 +67,9 @@ public class GroupCommand extends PropertyCommand {
 	 */
 	private void saveGroup(TabPlayer sender, String group, String type, String value){
 		if (value.length() > 0){
-			sendMessage(sender, getTranslation("value_assigned").replace("%type%", type).replace("%value%", value).replace("%unit%", group).replace("%category%", "group"));
+			sendMessage(sender, getMessages().getGroupValueAssigned(type, value, group));
 		} else {
-			sendMessage(sender, getTranslation("value_removed").replace("%type%", type).replace("%unit%", group).replace("%category%", "group"));
+			sendMessage(sender, getMessages().getGroupValueRemoved(type, group));
 		}
 		String[] property = TAB.getInstance().getConfiguration().getGroups().getProperty(group, type, null, null);
 		if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;

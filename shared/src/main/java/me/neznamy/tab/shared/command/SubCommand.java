@@ -9,27 +9,28 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.PropertyUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.config.MessageFile;
 /**
  * Abstract class representing a subcommand of "/tab" command
  */
 public abstract class SubCommand {
 
 	//all properties assignable with a command
-	private static String[] allProperties = {PropertyUtils.TABPREFIX, PropertyUtils.TABSUFFIX, PropertyUtils.TAGPREFIX, PropertyUtils.TAGSUFFIX, PropertyUtils.CUSTOMTABNAME, PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME};
+	private static String[] allProperties = {TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME};
 	
 	//properties that require unlimited nametag mode
-	protected final List<String> extraProperties = Arrays.asList(PropertyUtils.ABOVENAME, PropertyUtils.BELOWNAME, PropertyUtils.CUSTOMTAGNAME);
+	protected final List<String> extraProperties = Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 	
 	//name of this subcommand
-	private String name;
+	private final String name;
 	
 	//permission required to run this command
-	private String permission;
+	private final String permission;
 	
 	//subcommands of this command
-	private Map<String, SubCommand> subcommands = new HashMap<>();
+	private final Map<String, SubCommand> subcommands = new HashMap<>();
 	
 	/**
 	 * Constructs new instance with given parameters
@@ -75,7 +76,7 @@ public abstract class SubCommand {
 	public boolean hasPermission(TabPlayer sender, String permission) {
 		if (permission == null) return true; //no permission required
 		if (sender == null) return true; //console
-		if (sender.hasPermission("tab.admin")) return true;
+		if (sender.hasPermission(TabConstants.Permission.COMMAND_ALL)) return true;
 		return sender.hasPermission(permission);
 	}
 	
@@ -163,14 +164,9 @@ public abstract class SubCommand {
 		}
 		return value;
 	}
-	
-	/**
-	 * Returns message with given key
-	 * @param key - message key
-	 * @return translation from file
-	 */
-	public String getTranslation(String key) {
-		return TAB.getInstance().getConfiguration().getTranslation().getString(key);
+
+	public MessageFile getMessages() {
+		return TAB.getInstance().getConfiguration().getMessages();
 	}
 	
 	/**
@@ -190,9 +186,5 @@ public abstract class SubCommand {
 
 	public Map<String, SubCommand> getSubcommands() {
 		return subcommands;
-	}
-
-	public void setSubcommands(Map<String, SubCommand> subcommands) {
-		this.subcommands = subcommands;
 	}
 }
