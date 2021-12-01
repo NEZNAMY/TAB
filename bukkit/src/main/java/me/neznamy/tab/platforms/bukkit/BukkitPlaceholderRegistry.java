@@ -133,13 +133,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private void registerOnlinePlaceholders(PlaceholderManager manager) {
-		manager.registerPlayerPlaceholder("%online%", -1, p -> {
+		manager.registerPlayerPlaceholder("%online%", 1000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 				if (((Player) p.getPlayer()).canSee((Player) all.getPlayer())) count++;
 			}
 			return count;
-		}).enableTriggerMode();
+		});
 		manager.registerPlayerPlaceholder("%staffonline%", 2000, p -> {
 			int count = 0;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
