@@ -294,7 +294,7 @@ public class Configs {
 					StringBuilder groups = new StringBuilder(("GROUP_PERMISSIONS".equals(type) ? "PERMISSIONS" : "GROUPS") + ":");
 					for (String group : sortinglist) {
 						groups.append(("GROUP_PERMISSIONS".equals(type) ? "tab.sort." : ""));
-						groups.append(group);
+						groups.append(group.replace(" ", "|"));
 						if (sortinglist.indexOf(group) != sortinglist.size() - 1)
 							groups.append(",");
 					}
