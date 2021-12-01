@@ -1,15 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.UUID;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -32,7 +24,7 @@ public class LayoutManager extends TabFeature {
 	private final Map<String, Layout> layouts = new LinkedHashMap<>();
 	private final Map<TabPlayer, Layout> playerViews = new HashMap<>();
 	private final Map<Integer, UUID> uuids = new HashMap<>();
-	private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>((p1, p2) -> p1.getTeamName().compareTo(p2.getTeamName())));
+	private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(TabPlayer::getTeamName)));
 
 	public LayoutManager() {
 		super("Layout", "Switching layouts");
@@ -57,7 +49,7 @@ public class LayoutManager extends TabFeature {
 		for (Entry<Object, Object> layout : TAB.getInstance().getConfiguration().getLayout().getConfigurationSection("layouts").entrySet()) {
 			Map<String, Object> map = (Map<String, Object>) layout.getValue();
 			Condition displayCondition = Condition.getCondition((String) map.get("condition"));
-			if (displayCondition != null) addUsedPlaceholders(Arrays.asList("%condition:" + displayCondition.getName() + "%"));
+			if (displayCondition != null) addUsedPlaceholders(Collections.singletonList("%condition:" + displayCondition.getName() + "%"));
 			Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
 			List<Integer> emptySlots = new ArrayList<>();
 			List<ParentGroup> parentGroups = new ArrayList<>();
@@ -194,6 +186,6 @@ public class LayoutManager extends TabFeature {
 
 	public enum Direction {
 
-		COLUMNS, ROWS;
+		COLUMNS, ROWS
 	}
 }

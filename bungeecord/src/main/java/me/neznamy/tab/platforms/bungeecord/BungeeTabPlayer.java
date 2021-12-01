@@ -27,9 +27,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	private static Object directionData;
 	private static Method getId;
 	
-	/**
-	 * Initializes fields to get player channel later
-	 */
 	static {
 		try {
 			Field f = Protocol.class.getDeclaredField("TO_CLIENT");
@@ -46,10 +43,10 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
 	/**
 	 * Constructs new instance for given player
-	 * @param p - bungeecord player
+	 * @param p - BungeeCord player
 	 */
 	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) {
-		super(plm, p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", "N/A");
+		super(plm, p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-");
 		try {
 			channel = ((ChannelWrapper) wrapperField.get(getPlayer().getPendingConnection())).getHandle();
 		} catch (IllegalAccessException e) {

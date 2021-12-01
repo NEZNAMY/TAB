@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -26,9 +26,9 @@ public abstract class SortingType {
 	 */
 	protected SortingType(Sorting sorting, String sortingPlaceholder){
 		if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
-			TAB.getInstance().getErrorManager().startupWarn("\"" + sortingPlaceholder + "\" is not a valid placeholder for " + toString() + " sorting type");
+			TAB.getInstance().getErrorManager().startupWarn("\"" + sortingPlaceholder + "\" is not a valid placeholder for " + this + " sorting type");
 		} else {
-			sorting.addUsedPlaceholders(Arrays.asList(sortingPlaceholder));
+			sorting.addUsedPlaceholders(Collections.singletonList(sortingPlaceholder));
 			this.sortingPlaceholder = sortingPlaceholder;
 		}
 	}

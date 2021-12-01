@@ -14,8 +14,8 @@ import me.neznamy.tab.shared.TAB;
 
 public class PlayerSkin extends SkinSource {
 
-	protected PlayerSkin(ConfigurationFile file, String path) {
-		super(file, path);
+	protected PlayerSkin(ConfigurationFile file) {
+		super(file, "players");
 	}
 
 	@Override

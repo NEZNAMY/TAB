@@ -55,6 +55,6 @@ public class PacketPlayOutChat implements TabPacket {
 
 		CHAT,
 		SYSTEM,
-		GAME_INFO;
+		GAME_INFO
 	}
 }

@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,14 +29,14 @@ import net.kyori.adventure.text.Component;
  */
 public class VelocityPlatform extends ProxyPlatform {
 
-	//instance of proxyserver
+	//instance of ProxyServer
 	private final ProxyServer server;
 	
 	private VelocityPacketBuilder packetBuilder = new VelocityPacketBuilder();
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param server - instance of proxyserver
+	 * @param server - instance of ProxyServer
 	 */
 	public VelocityPlatform(ProxyServer server, PluginMessageHandler plm) {
 		super(plm);
@@ -49,8 +49,7 @@ public class VelocityPlatform extends ProxyPlatform {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			return new VaultBridge(plm);
 		} else if (luckperms.isPresent()) {
-			Optional<String> version = luckperms.get().getDescription().getVersion();
-			return new LuckPerms(version.isPresent() ? version.get() : "null");
+			return new LuckPerms(luckperms.get().getDescription().getVersion().orElse("null"));
 		} else {
 			return new VaultBridge(plm);
 		}
@@ -107,7 +106,7 @@ public class VelocityPlatform extends ProxyPlatform {
 
 	@Override
 	public Object getSkin(List<String> properties) {
-		return Arrays.asList(new Property("textures", properties.get(0), properties.get(1)));
+		return Collections.singletonList(new Property("textures", properties.get(0), properties.get(1)));
 	}
 	
 	@Override

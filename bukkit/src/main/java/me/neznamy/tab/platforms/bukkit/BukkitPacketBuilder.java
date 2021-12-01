@@ -95,7 +95,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
 		if (nms.getMinorVersion() >= 9 || clientVersion.getMinorVersion() >= 9) {
-			//1.9+ server or client, handled by bukkit api or viaversion
+			//1.9+ server or client, handled by bukkit api or ViaVersion
 			return packet;
 		}
 		//<1.9 client and server
@@ -209,9 +209,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		nms.ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
 		nms.ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
 		if (nms.getMinorVersion() >= 13) {
-			team = createTeamModern(packet, clientVersion, team, prefix, suffix);
+			createTeamModern(packet, clientVersion, team, prefix, suffix);
 		} else {
-			team = createTeamLegacy(packet, team, prefix, suffix);
+			createTeamLegacy(packet, team, prefix, suffix);
 		}
 		if (nms.getMinorVersion() >= 17) {
 			switch (packet.getMethod()) {
@@ -234,9 +234,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	/**
 	 * Builds entity destroy packet with given parameter
-	 * @param id - entity id to destroy
 	 * @return destroy packet
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
 		try {
@@ -253,13 +253,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	/**
 	 * Builds entity spawn packet with given parameters
-	 * @param entityId - entity id
-	 * @param uuid - entity uuid
-	 * @param entityType - entity type
-	 * @param loc - location to spawn at
-	 * @param dataWatcher - datawatcher
+	 *
 	 * @return entity spawn packet
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
 		Object nmsPacket;
@@ -290,10 +287,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
 	/**
 	 * Builds entity teleport packet with given parameters
-	 * @param entityId - entity id
-	 * @param location - location to teleport to
 	 * @return entity teleport packet
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException {
 		Object nmsPacket;
@@ -317,22 +313,20 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		return nmsPacket;
 	}
 	
-	private Object createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws ReflectiveOperationException {
+	private void createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws ReflectiveOperationException {
 		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
 		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
 		EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
 		nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
-		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
+		nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNameTagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
 		nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
-		return team;
 	}
 
-	private Object createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix) throws ReflectiveOperationException {
+	private void createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix) throws ReflectiveOperationException {
 		if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
 		if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
-		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNametagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
+		if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNameTagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
 		if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
-		return team;
 	}
 	
 	@Override
@@ -341,14 +335,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
 		List<PlayerInfoData> listData = new ArrayList<>();
 		for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
-			Object nmsGamemode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
-			EnumGamemode gamemode = (nmsGamemode == null) ? null : EnumGamemode.valueOf(nmsGamemode.toString());
+			Object nmsGameMode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
+			EnumGamemode gameMode = (nmsGameMode == null) ? null : EnumGamemode.valueOf(nmsGameMode.toString());
 			GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
 			Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
 			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
 			PropertyMap map = new PropertyMap();
 			map.putAll(profile.getProperties());
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), map, (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gamemode, listName));
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), map, (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}
@@ -384,11 +378,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	/**
-	 * Builds entity bossbar packet
+	 * Builds entity BossBar packet
 	 * @param packet - packet to build
 	 * @param clientVersion - client version
-	 * @return entity bossbar packet
-	 * @throws ReflectiveOperationException
+	 * @return entity BossBar packet
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
 		if (packet.getOperation() == Action.UPDATE_STYLE) return null; //nothing to do here
@@ -415,7 +410,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	/**
-	 * A method yoinked from minecraft code used to convert double to int
+	 * A method taken from minecraft code used to convert double to int
 	 * @param paramDouble double value
 	 * @return int value
 	 */
@@ -425,10 +420,11 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	/**
-	 * Converts minecraft IChatBaseComponent into TAB's component class. Currently does not support show_item hover event on 1.16+.
+	 * Converts minecraft IChatBaseComponent into TAB's component class. Currently, does not support show_item hover event on 1.16+.
 	 * @param component - component to convert
 	 * @return converted component
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	private IChatBaseComponent fromNMSComponent(Object component) throws ReflectiveOperationException {
 		if (!nms.ChatComponentText.isInstance(component)) return null; //paper
@@ -484,11 +480,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	/**
-	 * Converts TAB's IChatBaseComponent into minecraft's component. Currently does not support hover event.
+	 * Converts TAB's IChatBaseComponent into minecraft's component. Currently, does not support hover event.
 	 * @param component - component to convert
 	 * @param clientVersion - client version used to decide RGB conversion
 	 * @return converted component
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
 		Object obj;

@@ -19,17 +19,17 @@ public class BossBarCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		BossBarManager bossbar = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
-		if (bossbar == null) {
+		BossBarManager bossBar = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		if (bossBar == null) {
 			sendMessage(sender, getMessages().getBossBarNotEnabled());
 			return;
 		}
 		if (sender == null) {
-			sendMessage(sender, getMessages().getCommandOnlyFromGame());
+			sendMessage(null, getMessages().getCommandOnlyFromGame());
 			return;
 		}
 		if (sender.hasPermission(TabConstants.Permission.COMMAND_BOSSBAR_TOGGLE)) {
-			bossbar.toggleBossBar(sender, true);
+			bossBar.toggleBossBar(sender, true);
 		} else {
 			sender.sendMessage(getMessages().getNoPermission(), true);
 		}

@@ -45,7 +45,6 @@ public final class NMSStorage {
 	public final Class<?> EntityPlayer = getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer");
 	private final Class<?> Entity = getNMSClass("net.minecraft.world.entity.Entity", "Entity");
 	private final Class<?> EntityLiving = getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving");
-	private final Class<?> NetworkManager = getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager");
 	private final Class<?> PlayerConnection = getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection");
 	public Constructor<?> newEntityArmorStand;
 	public final Field PING = getField(EntityPlayer, "ping", "latency", "field_71138_i", "field_13967", "e");
@@ -224,9 +223,11 @@ public final class NMSStorage {
 
 	/**
 	 * Creates new instance, initializes required NMS classes and fields
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			If any class, field or method fails to load
 	 */
 	public NMSStorage() throws ReflectiveOperationException {
+		Class<?> NetworkManager = getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager");
 		if (minorVersion >= 7) {
 			NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
 		}
@@ -255,7 +256,7 @@ public final class NMSStorage {
 	 * Sets new instance
 	 * @param instance - new instance
 	 */
-	public final static void setInstance(NMSStorage instance) {
+	public static void setInstance(NMSStorage instance) {
 		NMSStorage.instance = instance;
 	}
 
@@ -263,11 +264,11 @@ public final class NMSStorage {
 	 * Returns instance
 	 * @return instance
 	 */
-	public final static NMSStorage getInstance() {
+	public static NMSStorage getInstance() {
 		return instance;
 	}
 
-	private final void initializeChatComponents() throws ReflectiveOperationException {
+	private void initializeChatComponents() throws ReflectiveOperationException {
 		if (minorVersion < 7) return;
 		Class<?> ChatBaseComponent = getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent");
 		Class<?> ChatClickable = getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable");
@@ -318,7 +319,7 @@ public final class NMSStorage {
 		}
 	}
 	
-	private final void initializeChatPacket() throws ReflectiveOperationException {
+	private void initializeChatPacket() throws ReflectiveOperationException {
 		Class<?> PacketPlayOutChat = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
 		if (minorVersion >= 12) {
 			ChatMessageType = getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
@@ -335,7 +336,7 @@ public final class NMSStorage {
 		}
 	}
 	
-	private final void initializeDataWatcher() throws ReflectiveOperationException {
+	private void initializeDataWatcher() throws ReflectiveOperationException {
 		if (minorVersion >= 9) {
 			Class<?> DataWatcherObject = getNMSClass("net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject");
 			DataWatcherRegistry = getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
@@ -352,7 +353,7 @@ public final class NMSStorage {
 		registry = new DataWatcherRegistry(this);
 	}
 	
-	private final void initializeEntityPackets() throws ReflectiveOperationException {
+	private void initializeEntityPackets() throws ReflectiveOperationException {
 		if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
 			newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
 			newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
@@ -395,7 +396,7 @@ public final class NMSStorage {
 		}
 	}
 
-	private final void initializeHeaderFooterPacket() throws ReflectiveOperationException {
+	private void initializeHeaderFooterPacket() throws ReflectiveOperationException {
 		if (minorVersion < 8) return;
 		Class<?> PacketPlayOutPlayerListHeaderFooter = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
 		PacketPlayOutPlayerListHeaderFooter_HEADER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(0);
@@ -407,7 +408,7 @@ public final class NMSStorage {
 		}
 	}
 
-	private final void initializePlayerInfoPacket() throws ReflectiveOperationException {
+	private void initializePlayerInfoPacket() throws ReflectiveOperationException {
 		if (minorVersion < 8) return;
 		PacketPlayOutPlayerInfo = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo");
 		Class<?> EnumPlayerInfoAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction", "net.minecraft.class_2703$class_5893");
@@ -425,7 +426,7 @@ public final class NMSStorage {
 		EnumGamemode_values = getEnumValues(EnumGamemode);
 	}
 
-	private final void initializeScoreboardPackets() throws ReflectiveOperationException {
+	private void initializeScoreboardPackets() throws ReflectiveOperationException {
 		List<Field> list = getFields(PacketPlayOutScoreboardObjective, int.class);
 		PacketPlayOutScoreboardObjective_METHOD = list.get(list.size()-1);
 		Class<?> EnumScoreboardAction = null;
@@ -452,7 +453,7 @@ public final class NMSStorage {
 		}
 	}
 	
-	private final void initializeTeamPackets() throws ReflectiveOperationException {
+	private void initializeTeamPackets() throws ReflectiveOperationException {
 		PacketPlayOutScoreboardTeam = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
 		Class<?> ScoreboardTeam = getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam");
 		newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
@@ -558,7 +559,10 @@ public final class NMSStorage {
 			Class<?>[] types = m.getParameterTypes();
 			boolean valid = true;
 			for (int i=0; i<types.length; i++) {
-				if (types[i] != parameterTypes[i]) valid = false;
+				if (types[i] != parameterTypes[i]) {
+					valid = false;
+					break;
+				}
 			}
 			if (valid) list.add(m);
 		}
@@ -573,7 +577,10 @@ public final class NMSStorage {
 			Class<?>[] types = m.getParameterTypes();
 			boolean valid = true;
 			for (int i=0; i<types.length; i++) {
-				if (types[i] != parameterTypes[i]) valid = false;
+				if (types[i] != parameterTypes[i]) {
+					valid = false;
+					break;
+				}
 			}
 			if (valid) list.add(m);
 		}

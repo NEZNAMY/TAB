@@ -136,7 +136,7 @@ public class IChatBaseComponent {
 			JSONObject jsonObject = (JSONObject) new JSONParser().parse(json);
 			IChatBaseComponent component;
 			if (jsonObject.containsKey("type")) {
-				return new ChatComponentEntity((String) jsonObject.get("type"), UUID.fromString((String) jsonObject.get("id")), IChatBaseComponent.deserialize(((JSONObject) jsonObject.get("name")).toString()).toFlatText());
+				return new ChatComponentEntity((String) jsonObject.get("type"), UUID.fromString((String) jsonObject.get("id")), IChatBaseComponent.deserialize(jsonObject.get("name").toString()).toFlatText());
 			}
 			component = new IChatBaseComponent();
 			component.setText((String) jsonObject.get("text"));
@@ -338,7 +338,7 @@ public class IChatBaseComponent {
 	}
 
 	/**
-	 * Converts this component into a simple text with legacy colors (closest match if color is set to RGB)
+	 * Converts this component into a simple text with legacy colors (the closest match if color is set to RGB)
 	 * @return The simple text format
 	 */
 	public String toLegacyText() {
@@ -349,7 +349,7 @@ public class IChatBaseComponent {
 
 	/**
 	 * Appends text to string builder, might also add color and magic codes if different
-	 * than previous component in chain
+	 * from previous component in chain
 	 * @param builder - builder to append text to
 	 * @param previousFormatting - colors and magic codes in previous component
 	 * @return New formatting, might be identical to previous one
@@ -407,7 +407,7 @@ public class IChatBaseComponent {
 	 */
 	public String toFlatText() {
 		StringBuilder builder = new StringBuilder();
-		if (modifier.getColor() != null) builder.append("#" + modifier.getColor().getHexCode());
+		if (modifier.getColor() != null) builder.append("#").append(modifier.getColor().getHexCode());
 		builder.append(modifier.getMagicCodes());
 		if (text != null) builder.append(text);
 		for (IChatBaseComponent child : getExtra()) {

@@ -12,12 +12,12 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
 	/**
 	 * Up to 16 characters long team name.
-	 * It is used to sort players alphabetically in tablist by team names.
-	 * Teamless players appear on top, sorted by usernames.
+	 * It is used to sort players alphabetically in TabList by team names.
+	 * Team-less players appear on top, sorted by usernames.
 	 * Players with teams are below them, players of the same team are
 	 * sorted alphabetically by usernames.
 	 */
-	private String name;
+	private final String name;
 
 	/** Team prefix, limited to 16 characters, on <1.13 */
 	private String playerPrefix;
@@ -26,10 +26,10 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	private String playerSuffix;
 
 	/** 
-	 * Nametag visibility rule since 1.8. Possible options are:
+	 * NameTag visibility rule since 1.8. Possible options are:
 	 * {@code always}, {@code hideForOtherTeams}, {@code hideForOwnTeam}, {@code never}
 	 */
-	private String nametagVisibility;
+	private String nameTagVisibility;
 
 	/**
 	 * Collision rule added in 1.9. Possible options are:
@@ -44,7 +44,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	private EnumChatFormat color;
 
 	/** 
-	 * Affected entities. For players it is their name, for other entities their UUID
+	 * Affected entities. For players, it is their name, for other entities their UUID
 	 * Player name length is limited to 16 characters for <1.8, 40 characters since 1.8.
 	 * Entity UUID option was added in 1.8.
 	 */
@@ -58,7 +58,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * 3 = add entries,
 	 * 4 = remove entries
 	 */
-	private int method;
+	private final int method;
 
 	/**
 	 * Bit mask.
@@ -96,7 +96,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * @param	suffix
 	 * 			Suffix of players in team
 	 * @param	visibility
-	 * 			Nametag visibility rule
+	 * 			NameTag visibility rule
 	 * @param	collision
 	 * 			Collision rule
 	 * @param	players
@@ -110,7 +110,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 		this(0, team);
 		this.playerPrefix = prefix;
 		this.playerSuffix = suffix;
-		this.nametagVisibility = visibility;
+		this.nameTagVisibility = visibility;
 		this.collisionRule = collision;
 		this.players = players;
 		this.options = options;
@@ -138,7 +138,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * @param	suffix
 	 * 			Suffix of players in team
 	 * @param	visibility
-	 * 			Nametag visibility rule
+	 * 			NameTag visibility rule
 	 * @param	collision
 	 * 			Collision rule
 	 * @param	options
@@ -150,7 +150,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 		this(2, team);
 		this.playerPrefix = prefix;
 		this.playerSuffix = suffix;
-		this.nametagVisibility = visibility;
+		this.nameTagVisibility = visibility;
 		this.collisionRule = collision;
 		this.options = options;
 	}
@@ -175,9 +175,9 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
 	@Override
 	public String toString() {
-		return String.format("PacketPlayOutScoreboardTeam{name=%s,playerPrefix=%s,playerSuffix=%s,nametagVisibility=%s,"
+		return String.format("PacketPlayOutScoreboardTeam{name=%s,playerPrefix=%s,playerSuffix=%s,nameTagVisibility=%s,"
 				+ "collisionRule=%s,color=%s,players=%s,method=%s,options=%s}",
-				name, playerPrefix, playerSuffix, nametagVisibility, collisionRule, color, players, method, options);
+				name, playerPrefix, playerSuffix, nameTagVisibility, collisionRule, color, players, method, options);
 	}
 
 	/**
@@ -205,11 +205,11 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	}
 
 	/**
-	 * Returns {@link #nametagVisibility}
-	 * @return	nametagVisibility
+	 * Returns {@link #nameTagVisibility}
+	 * @return	nameTagVisibility
 	 */
-	public String getNametagVisibility() {
-		return nametagVisibility;
+	public String getNameTagVisibility() {
+		return nameTagVisibility;
 	}
 	
 	/**

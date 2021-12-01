@@ -29,9 +29,6 @@ public abstract class SimpleCondition {
 	//placeholders used in right side of condition
 	private String[] rightSidePlaceholders;
 	
-	/**
-	 * Registering all condition types
-	 */
 	static {
 		conditionTypes.put("permission:", PermissionCondition::new);
 		conditionTypes.put("<-", ContainsCondition::new);
@@ -76,7 +73,7 @@ public abstract class SimpleCondition {
 	/**
 	 * Replaces placeholders in provided value
 	 * @param p - player to replace placeholders for
-	 * @param value - string to replaceplaceholders in
+	 * @param value - string to replace placeholders in
 	 * @param placeholders - used placeholders
 	 * @return replaced string
 	 */
@@ -107,9 +104,5 @@ public abstract class SimpleCondition {
 			}
 		}
 		return null;
-	}
-
-	public static Map<String, Function<String, SimpleCondition>> getConditionTypes() {
-		return conditionTypes;
 	}
 }

@@ -28,7 +28,7 @@ import net.md_5.bungee.protocol.packet.Team;
 
 public class BungeePipelineInjector extends PipelineInjector {
 
-	//packets that must be deserialized and bungeecord does not do it automatically
+	//packets that must be deserialized and BungeeCord does not do it automatically
 	private final Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
 
 	/**
@@ -48,7 +48,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 	public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
 
 		//injected player
-		private TabPlayer player;
+		private final TabPlayer player;
 
 		/**
 		 * Constructs new instance with given player
@@ -61,7 +61,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
-			Object modifiedPacket = packet instanceof ByteBuf && bytebufDeserialization ? deserialize((ByteBuf) packet) : packet;
+			Object modifiedPacket = packet instanceof ByteBuf && byteBufDeserialization ? deserialize((ByteBuf) packet) : packet;
 			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTEBUF, System.nanoTime()-time);
 			try {
 				switch(modifiedPacket.getClass().getSimpleName()) {
@@ -74,9 +74,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 					}
 					break;
 				case "ScoreboardDisplay":
-					if (TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket)) {
-						return;
-					}
+					TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket);
 					break;
 				case "ScoreboardObjective":
 					TAB.getInstance().getFeatureManager().onObjective(player, modifiedPacket);
@@ -124,7 +122,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 				}
 			}
 			packet.setPlayers(col.toArray(new String[0]));
-			TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 
 		private String getName(TabPlayer p) {
@@ -136,10 +134,10 @@ public class BungeePipelineInjector extends PipelineInjector {
 		}
 
 		/**
-		 * Deserializes bytebuf in case it is one of the tracked packets coming from backend server and returns it.
+		 * Deserializes byte buf in case it is one of the tracked packets coming from backend server and returns it.
 		 * If the packet is not one of them, returns input
-		 * @param buf - bytebuf to deserialize
-		 * @return deserialized packet or input bytebuf if packet is not tracked
+		 * @param buf - byte buf to deserialize
+		 * @return deserialized packet or input byte buf if packet is not tracked
 		 */
 		private Object deserialize(ByteBuf buf) {
 			int marker = buf.readerIndex();

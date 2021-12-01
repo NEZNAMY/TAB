@@ -10,13 +10,13 @@ import me.neznamy.tab.shared.TAB;
 
 /**
  * Packet intercepting to secure proper functionality of some features:
- * Tablist names - anti-override
- * Nametags - anti-override
+ * TabList names - anti-override
+ * NameTags - anti-override
  * Scoreboard - disabling tab's scoreboard to prevent conflict
- * SpectatorFix - to change gamemode to something else than spectator
+ * SpectatorFix - to change game mode to something else than spectator
  * PetFix - to remove owner field from entity data
  * PingSpoof - full feature functionality
- * Unlimited nametags - replacement for bukkit events with much better accuracy and reliability
+ * Unlimited name tags - replacement for bukkit events with much better accuracy and reliability
  */
 public abstract class PipelineInjector extends TabFeature {
 
@@ -35,11 +35,12 @@ public abstract class PipelineInjector extends TabFeature {
 	
 	protected Function<TabPlayer, ChannelDuplexHandler> channelFunction;
 	
-	protected boolean bytebufDeserialization;
+	protected boolean byteBufDeserialization;
 	
 	/**
-	 * Constructs new instance
-	 * @param tab
+	 * Constructs new instance with given parameter
+	 * @param	injectPosition
+	 * 			position to inject handler before
 	 */
 	protected PipelineInjector(String injectPosition) {
 		super("Pipeline injection", null);
@@ -49,7 +50,8 @@ public abstract class PipelineInjector extends TabFeature {
 	
 	/**
 	 * Injects custom channel duplex handler to prevent other plugins from overriding this one
-	 * @param uuid - player's uuid
+	 * @param	player
+	 * 			player to inject
 	 */
 	public void inject(TabPlayer player) {
 		if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
@@ -61,7 +63,7 @@ public abstract class PipelineInjector extends TabFeature {
 		try {
 			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, channelFunction.apply(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
-			//idk how does this keep happening but whatever
+			//I don't really know how does this keep happening but whatever
 		}
 	}
 
@@ -97,13 +99,13 @@ public abstract class PipelineInjector extends TabFeature {
 	protected void logTeamOverride(String team, String player, String expectedTeam) {
 		String message = "Something just tried to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
 		//not logging the same message for every online player who received the packet
-		if (lastTeamOverrideMessage == null || !message.equals(lastTeamOverrideMessage)) {
+		if (!message.equals(lastTeamOverrideMessage)) {
 			lastTeamOverrideMessage = message;
 			TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
 		}
 	}
 	
-	public void setByteBufDeserialization(boolean bytebufDeserialization) {
-		this.bytebufDeserialization = bytebufDeserialization;
+	public void setByteBufDeserialization(boolean byteBufDeserialization) {
+		this.byteBufDeserialization = byteBufDeserialization;
 	}
 }

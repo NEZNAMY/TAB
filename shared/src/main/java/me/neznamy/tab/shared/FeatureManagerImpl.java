@@ -14,12 +14,12 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 
 /**
- * Feature registration which offers calls to features and measures how long it took them to process
+ * Feature registration which offers calls to all features and measures how long it took them to process
  */
 public class FeatureManagerImpl implements FeatureManager {
 
-	private final String deserializing = "Packet deserializing";
-	private final String serializing = "Packet serializing";
+	private static final String deserializing = "Packet deserializing";
+	private static final String serializing = "Packet serializing";
 
 	//list of registered features
 	private final Map<String, TabFeature> features = new LinkedHashMap<>();
@@ -46,14 +46,6 @@ public class FeatureManagerImpl implements FeatureManager {
 	@Override
 	public TabFeature getFeature(String name) {
 		return features.get(name);
-	}
-
-	/**
-	 * Returns list of all loaded features
-	 * @return list of all loaded features
-	 */
-	public TabFeature[] getAllFeatures(){
-		return values;
 	}
 
 	/**
@@ -92,7 +84,8 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param receiver - packet receiver
 	 * @param packet - an instance of custom packet class PacketPlayOutPlayerInfo
 	 * @return altered packet or null if packet should be cancelled
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if reflective operation fails
 	 */
 	public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (receiver.getVersion().getMinorVersion() < 8) return packet;
@@ -168,8 +161,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	/**
 	 * Calls onWorldChange(...) on all features
 	 * 
-	 * @param changed - player who switched world
-	 * @param from - name of the previous world
+	 * @param playerUUID - player who switched world
 	 * @param to - name of the new world
 	 */
 	public void onWorldChange(UUID playerUUID, String to) {
@@ -187,15 +179,14 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 		}
 		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%world%")).updateValue(changed, to);
-		PlayerPlaceholder worldonline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%worldonline%");
-		worldonline.updateValue(changed, worldonline.request(changed));
+		PlayerPlaceholder worldOnline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%worldonline%");
+		worldOnline.updateValue(changed, worldOnline.request(changed));
 	}
 
 	/**
 	 * Calls onServerChange(...) on all features
 	 * 
-	 * @param changed - player who switched server
-	 * @param from - name of the previous server
+	 * @param playerUUID - player who switched server
 	 * @param to - name of the new server
 	 */
 	public void onServerChange(UUID playerUUID, String to) {
@@ -208,8 +199,8 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
 		}
 		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
-		PlayerPlaceholder serveronline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%serveronline%");
-		serveronline.updateValue(changed, serveronline.request(changed));
+		PlayerPlaceholder serverOnline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%serveronline%");
+		serverOnline.updateValue(changed, serverOnline.request(changed));
 	}
 
 	/**
@@ -273,7 +264,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	}
 
 	/**
-	 * Calls onLoginPacket on all featurs that implement LoginPacketListener and measures how long it took them to process
+	 * Calls onLoginPacket on all features that implement LoginPacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
 	 */
 	public void onLoginPacket(TabPlayer packetReceiver) {
@@ -286,30 +277,28 @@ public class FeatureManagerImpl implements FeatureManager {
 	}
 
 	/**
-	 * Calls onPacketSend on all featurs that implement DisplayObjectivePacketListener and measures how long it took them to process
+	 * Calls onPacketSend on all features that implement DisplayObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
 	 * @param packet - the packet
-	 * @return true if packet should be cancelled, false if not
-	 * @throws ReflectiveOperationException 
+	 * @throws	ReflectiveOperationException
+	 * 			if reflective operation fails
 	 */
-	public boolean onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
+	public void onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
 		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onDisplayObjective")) continue;
 			time = System.nanoTime();
-			boolean cancel = f.onDisplayObjective(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
-			if (cancel) return true;
 		}
-		return false;
 	}
 
 	/**
-	 * Calls onObjective on all featurs that implement ObjectivePacketListener and measures how long it took them to process
+	 * Calls onObjective on all features that implement ObjectivePacketListener and measures how long it took them to process
 	 * @param packetReceiver - player who received the packet
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if reflective operation fails
 	 */
 	public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();

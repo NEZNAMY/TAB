@@ -2,28 +2,28 @@ package me.neznamy.tab.api;
 
 public interface TablistFormatManager {
 
-	public void setPrefix(TabPlayer player, String prefix);
+	void setPrefix(TabPlayer player, String prefix);
 	
-	public void setName(TabPlayer player, String customname);
+	void setName(TabPlayer player, String customName);
 	
-	public void setSuffix(TabPlayer player, String suffix);
+	void setSuffix(TabPlayer player, String suffix);
 	
-	public void resetPrefix(TabPlayer player);
+	void resetPrefix(TabPlayer player);
 	
-	public void resetName(TabPlayer player);
+	void resetName(TabPlayer player);
 	
-	public void resetSuffix(TabPlayer player);
+	void resetSuffix(TabPlayer player);
 	
-	public String getCustomPrefix(TabPlayer player);
+	String getCustomPrefix(TabPlayer player);
 	
-	public String getCustomName(TabPlayer player);
+	String getCustomName(TabPlayer player);
 	
-	public String getCustomSuffix(TabPlayer player);
+	String getCustomSuffix(TabPlayer player);
 	
-	public String getOriginalPrefix(TabPlayer player);
+	String getOriginalPrefix(TabPlayer player);
 	
-	public String getOriginalName(TabPlayer player);
+	String getOriginalName(TabPlayer player);
 	
-	public String getOriginalSuffix(TabPlayer player);
+	String getOriginalSuffix(TabPlayer player);
 	
 }

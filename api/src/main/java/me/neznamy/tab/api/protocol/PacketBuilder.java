@@ -10,7 +10,7 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.util.BiFunctionWithException;
 
 /**
- * An interface represending a platform-specific packet builder
+ * An interface representing a platform-specific packet builder
  */
 public abstract class PacketBuilder {
 
@@ -180,7 +180,7 @@ public abstract class PacketBuilder {
 
 	/**
 	 * If {@code clientVersion} is >= 1.13, creates a component from given text and returns
-	 * it as a serialized component, which bungeecord uses.
+	 * it as a serialized component, which BungeeCord uses.
 	 * <p>
 	 * If {@code clientVersion} is < 1.12, the text is cut to {@code length} characters if
 	 * needed and returned.
@@ -202,13 +202,13 @@ public abstract class PacketBuilder {
 
 	/**
 	 * Converts platform-specific instance of player info packet into 
-	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo} object.
+	 * {@link PacketPlayOutPlayerInfo} object.
 	 * 
 	 * @param	packet
 	 * 			platform-specific info packet
 	 * @param	clientVersion
 	 * 			Version of client receiving the packet
-	 * @return	The packet converted into {@link me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo}
+	 * @return	The packet converted into {@link PacketPlayOutPlayerInfo}
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
@@ -216,13 +216,13 @@ public abstract class PacketBuilder {
 
 	/**
 	 * Converts platform-specific instance of objective packet into 
-	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective} object.
+	 * {@link PacketPlayOutScoreboardObjective} object.
 	 * 
 	 * @param	packet
 	 * 			platform-specific objective packet
 	 * @param	clientVersion
 	 * 			Version of client receiving the packet
-	 * @return	The packet converted into {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective}
+	 * @return	The packet converted into {@link PacketPlayOutScoreboardObjective}
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
@@ -230,13 +230,13 @@ public abstract class PacketBuilder {
 
 	/**
 	 * Converts platform-specific instance of display objective packet into 
-	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective} object.
+	 * {@link PacketPlayOutScoreboardDisplayObjective} object.
 	 * 
 	 * @param	packet
 	 * 			platform-specific display objective packet
 	 * @param	clientVersion
 	 * 			Version of client receiving the packet
-	 * @return	The packet converted into {@link me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective}
+	 * @return	The packet converted into {@link PacketPlayOutScoreboardDisplayObjective}
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */

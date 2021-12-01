@@ -39,6 +39,7 @@ public class ChatModifier {
 		this.clickEvent = modifier.clickEvent == null ? null : new ChatClickable(modifier.clickEvent.getAction(), modifier.clickEvent.getValue());
 		this.hoverEvent = modifier.hoverEvent == null ? null : new ChatHoverable(modifier.hoverEvent.getAction(), modifier.hoverEvent.getValue());
 		this.font = modifier.font;
+		this.targetVersion = modifier.targetVersion;
 	}
 
 	public TextColor getColor() {
@@ -156,7 +157,6 @@ public class ChatModifier {
 	/**
 	 * Sets click action to RUN_COMMAND and command to given value
 	 * @param command - command to perform, might be without / to send a chat message
-	 * @return self
 	 */
 	public void onClickRunCommand(String command) {
 		clickEvent = new ChatClickable(EnumClickAction.RUN_COMMAND, command);
@@ -172,11 +172,11 @@ public class ChatModifier {
 
 	/**
 	 * Sets click action to CHANGE_PAGE and page id to given value
-	 * @param newpage - id of new page
+	 * @param newPage - id of new page
 	 */
-	public void onClickChangePage(int newpage) {
+	public void onClickChangePage(int newPage) {
 		if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("change_page click action is not supported on <1.8");
-		clickEvent = new ChatClickable(EnumClickAction.CHANGE_PAGE, String.valueOf(newpage));
+		clickEvent = new ChatClickable(EnumClickAction.CHANGE_PAGE, String.valueOf(newPage));
 	}
 	
 	public void onClick(EnumClickAction action, String value) {

@@ -5,5 +5,5 @@ package me.neznamy.tab.shared.placeholders.conditions;
  */
 public enum ConditionType {
 
-	AND, OR;
+	AND, OR
 }

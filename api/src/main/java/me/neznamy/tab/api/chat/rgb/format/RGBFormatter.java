@@ -10,5 +10,5 @@ public interface RGBFormatter {
 	 * @param text - text to format
 	 * @return reformatted text
 	 */
-	public String reformat(String text);
+	String reformat(String text);
 }

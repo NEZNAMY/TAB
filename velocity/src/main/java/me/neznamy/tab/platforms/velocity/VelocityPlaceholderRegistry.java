@@ -13,12 +13,12 @@ import me.neznamy.tab.shared.proxy.ProxyPlaceholderRegistry;
  */
 public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 
-	//instance of proxyserver
+	//instance of ProxyServer
 	private final ProxyServer server;
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param server - instance of proxyserver
+	 * @param server - instance of ProxyServer
 	 */
 	public VelocityPlaceholderRegistry(ProxyServer server) {
 		this.server = server;

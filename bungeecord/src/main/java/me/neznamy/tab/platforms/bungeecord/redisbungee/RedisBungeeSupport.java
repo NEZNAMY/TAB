@@ -23,9 +23,9 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.RedisSupport;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerlist;
+import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -39,8 +39,8 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	private static final String CHANNEL_NAME = "TAB";
 
 	private final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
-	private final GlobalPlayerlist global = (GlobalPlayerlist) TAB.getInstance().getFeatureManager().getFeature("globalplayerlist");
-	private final Playerlist playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
+	private final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature("globalplayerlist");
+	private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 	private final NameTag nametags = (NameTag) TAB.getInstance().getFeatureManager().getFeature("nametag16");
 	private final UUID proxy = UUID.randomUUID();
 
@@ -324,7 +324,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	}
 	
 	@Override
-	public void updateBelowname(TabPlayer p, String value) {
+	public void updateBelowName(TabPlayer p, String value) {
 		JSONObject json = new JSONObject();
 		json.put("proxy", proxy.toString());
 		json.put("action", "belowname");
@@ -387,7 +387,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		return redisPlayers;
 	}
 
-	public Playerlist getPlayerlist() {
+	public PlayerList getPlayerlist() {
 		return playerlist;
 	}
 

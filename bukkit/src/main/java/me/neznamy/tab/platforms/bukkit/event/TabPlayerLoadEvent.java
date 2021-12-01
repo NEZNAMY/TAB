@@ -4,6 +4,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Bukkit event that is called when player is successfully loaded after joining. This also includes plugin reloading.
@@ -19,7 +20,7 @@ public class TabPlayerLoadEvent extends Event {
 	}
 	
 	@Override
-	public HandlerList getHandlers(){
+	public @NotNull HandlerList getHandlers(){
 		return getHandlerList();
 	}
 	

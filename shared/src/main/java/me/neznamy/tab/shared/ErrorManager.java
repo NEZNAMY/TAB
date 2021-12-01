@@ -6,10 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -22,9 +19,9 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 public class ErrorManager {
 
 	//date format used in error messages
-	private final SimpleDateFormat dateformat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
-	//one time messages already sent into console so they are not sent again
+	//one time messages already sent into console, so they are not sent again
 	private final List<String> oneTimeMessages = new ArrayList<>();
 
 	//amount of logged startup warns
@@ -168,7 +165,7 @@ public class ErrorManager {
 	 * @return current formatted time
 	 */
 	private String getCurrentTime() {
-		return dateformat.format(new Date());
+		return dateFormat.format(new Date());
 	}
 
 	/**
@@ -291,7 +288,7 @@ public class ErrorManager {
 	public List<String> fixAnimationFrames(String name, List<String> list) {
 		if (list == null) {
 			startupWarn("Animation \"&e" + name + "&c\" does not have any texts! &bIgnoring.");
-			return Arrays.asList("<Invalid Animation>");
+			return Collections.singletonList("<Invalid Animation>");
 		}
 		return list;
 	}

@@ -12,10 +12,10 @@ import org.json.simple.parser.ParseException;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
-public class Mineskin extends SkinSource {
+public class MineSkin extends SkinSource {
 
-	protected Mineskin(ConfigurationFile file, String path) {
-		super(file, path);
+	protected MineSkin(ConfigurationFile file) {
+		super(file, "mineskin");
 	}
 
 	@Override

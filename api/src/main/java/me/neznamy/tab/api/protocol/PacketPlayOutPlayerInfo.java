@@ -12,7 +12,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 public class PacketPlayOutPlayerInfo implements TabPacket {
 
 	/** Packet action */
-	private EnumPlayerInfoAction action;
+	private final EnumPlayerInfoAction action;
 
 	/** List of affected entries */
 	private final List<PlayerInfoData> entries;
@@ -72,12 +72,12 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		/** Latency */
 		private int latency;
 
-		/** Gamemode */
-		private EnumGamemode gameMode = EnumGamemode.SURVIVAL; //protocollib causes NPE even when action does not use gamemode
+		/** GameMode */
+		private EnumGamemode gameMode = EnumGamemode.SURVIVAL; //ProtocolLib causes NPE even when action does not use GameMode
 
 		/** 
-		 * Display name displayed in tablist. Using {@code null} results in no display name
-		 * and scoreboard team prefix/suffix being visible in tablist instead.
+		 * Display name displayed in TabList. Using {@code null} results in no display name
+		 * and scoreboard team prefix/suffix being visible in TabList instead.
 		 */
 		private IChatBaseComponent displayName;
 
@@ -103,7 +103,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * @param	latency
 		 * 			Player's ping
 		 * @param	gameMode
-		 * 			Player's gamemode
+		 * 			Player's GameMode
 		 * @param	displayName
 		 * 			Player's display name
 		 */
@@ -123,7 +123,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * @param	uniqueId
 		 * 			Player's uuid
 		 * @param	gameMode
-		 * 			Player's gamemode
+		 * 			Player's GameMode
 		 */
 		public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
 			this.uniqueId = uniqueId;
@@ -254,7 +254,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		/**
 		 * Sets {@link #gameMode} to specified value
 		 * @param	gameMode
-		 * 			Gamemode to use
+		 * 			GameMode to use
 		 */
 		public void setGameMode(EnumGamemode gameMode) {
 			this.gameMode = gameMode;
@@ -288,11 +288,11 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		UPDATE_GAME_MODE,
 		UPDATE_LATENCY,
 		UPDATE_DISPLAY_NAME,
-		REMOVE_PLAYER;
+		REMOVE_PLAYER
 	}
 
 	/**
-	 * An enum representing gamemode
+	 * An enum representing GameMode
 	 */
 	public enum EnumGamemode {
 
@@ -300,6 +300,6 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		SURVIVAL,
 		CREATIVE,
 		ADVENTURE,
-		SPECTATOR;
+		SPECTATOR
 	}
 }

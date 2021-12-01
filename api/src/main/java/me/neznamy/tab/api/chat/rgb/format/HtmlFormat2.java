@@ -16,9 +16,9 @@ public class HtmlFormat2 implements RGBFormatter {
 		Matcher m = pattern.matcher(text);
 		String replaced = text;
 		while (m.find()) {
-			String hexcode = m.group();
-			String fixed = hexcode.substring(2, 8);
-			replaced = replaced.replace(hexcode, "#" + fixed);
+			String hexCode = m.group();
+			String fixed = hexCode.substring(2, 8);
+			replaced = replaced.replace(hexCode, "#" + fixed);
 		}
 		return replaced;
 	}

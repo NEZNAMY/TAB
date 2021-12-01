@@ -17,14 +17,14 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * Class for handling bossbar feature
+ * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
-	//default bossbars
+	//default BossBars
 	private final List<String> defaultBars = new ArrayList<>();
 
-	//registered bossbars
+	//registered BossBars
 	private final Map<String, BossBar> lines = new HashMap<>();
 	private BossBar[] lineValues;
 
@@ -35,20 +35,19 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	private final String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();
 	private final String toggleOffMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOff();
 
-	//list of currently running bossbar announcements
+	//list of currently running BossBar announcements
 	private final List<BossBar> announcements = new ArrayList<>();
 
-	//players with toggled bossbar
-	private List<String> bossbarOffPlayers = new ArrayList<>();
+	//players with toggled BossBar
+	private List<String> bossBarOffPlayers = new ArrayList<>();
 
-	//time when bossbar announce ends, used for placeholder
+	//time when BossBar announce ends, used for placeholder
 	private long announceEndTime;
 
 	private final List<TabPlayer> visiblePlayers = new ArrayList<>();
 
 	/**
 	 * Constructs new instance and loads configuration
-	 * @param tab - tab instance
 	 */
 	public BossBarManagerImpl() {
 		super("BossBar", "Processing display conditions", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
@@ -60,25 +59,25 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		}
 		lineValues = lines.values().toArray(new BossBar[0]);
 		if (rememberToggleChoice) {
-			bossbarOffPlayers = TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off", new ArrayList<>());
+			bossBarOffPlayers = TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off", new ArrayList<>());
 		}
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%countdown%", 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
-		TAB.getInstance().debug(String.format("Loaded Bossbar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
+		TAB.getInstance().debug(String.format("Loaded BossBar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
 				Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), toggleCommand, defaultBars, hiddenByDefault, rememberToggleChoice));
 	}
 	
 	/**
-	 * Loads bossbar from config by it's name
-	 * @param bar - name of bossbar in config
-	 * @return loaded bossbar
+	 * Loads BossBar from config by its name
+	 * @param bar - name of BossBar in config
+	 * @return loaded BossBar
 	 */
 	private BossBarLine loadFromConfig(String bar) {
-		Map<String, Object> bossbar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
-		String condition = (String) bossbar.get("display-condition");
-		String style = (String) bossbar.get("style");
-		String color = (String) bossbar.get("color");
-		String progress = String.valueOf(bossbar.get("progress"));
-		String text = (String) bossbar.get("text");
+		Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
+		String condition = (String) bossBar.get("display-condition");
+		String style = (String) bossBar.get("style");
+		String color = (String) bossBar.get("color");
+		String progress = String.valueOf(bossBar.get("progress"));
+		String text = (String) bossBar.get("text");
 		if (style == null) {
 			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "style");
 			style = "PROGRESS";
@@ -95,7 +94,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			text = "";
 			TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "text");
 		}
-		return new BossBarLine(this, bar, condition, color, style, text, progress, (boolean) bossbar.getOrDefault("announcement-bar", false));
+		return new BossBarLine(this, bar, condition, color, style, text, progress, (boolean) bossBar.getOrDefault("announcement-bar", false));
 	}
 
 	@Override
@@ -131,7 +130,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			addDisabledPlayer(connectedPlayer);
 			return;
 		}
-		setBossBarVisible(connectedPlayer, !bossbarOffPlayers.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
+		setBossBarVisible(connectedPlayer, !bossBarOffPlayers.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
 	}
 
 	@Override
@@ -157,7 +156,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	/**
-	 * Clears and resends all bossbars to specified player
+	 * Clears and resends all BossBars to specified player
 	 * @param p - player to process
 	 */
 	protected void detectBossBarsAndSend(TabPlayer p) {
@@ -167,9 +166,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	/**
-	 * Shows bossbars to player if display condition is met
-	 * @param p - player to show bossbars to
-	 * @param bars - list of bossbars to check
+	 * Shows BossBars to player if display condition is met
+	 * @param p - player to show BossBars to
+	 * @param bars - list of BossBars to check
 	 */
 	private void showBossBars(TabPlayer p, List<String> bars) {
 		if (bars == null) return;
@@ -240,8 +239,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			detectBossBarsAndSend(player);
 			if (sendToggleMessage) player.sendMessage(toggleOnMessage, true);
 			if (rememberToggleChoice) {
-				bossbarOffPlayers.remove(player.getName());
-				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossbarOffPlayers);
+				bossBarOffPlayers.remove(player.getName());
+				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossBarOffPlayers);
 			}
 		} else {
 			visiblePlayers.remove(player);
@@ -249,18 +248,18 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				l.removePlayer(player);
 			}
 			if (sendToggleMessage) player.sendMessage(toggleOffMessage, true);
-			if (rememberToggleChoice && !bossbarOffPlayers.contains(player.getName())) {
-				bossbarOffPlayers.add(player.getName());
-				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossbarOffPlayers);
+			if (rememberToggleChoice && !bossBarOffPlayers.contains(player.getName())) {
+				bossBarOffPlayers.add(player.getName());
+				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossBarOffPlayers);
 			}
 		}
 	}
 
 	@Override
-	public void sendBossBarTemporarily(TabPlayer player, String bossbar, int duration) {
+	public void sendBossBarTemporarily(TabPlayer player, String bossBar, int duration) {
 		if (!hasBossBarVisible(player)) return;
-		BossBar line = lines.get(bossbar);
-		if (line == null) throw new IllegalArgumentException("No registered bossbar found with name " + bossbar);
+		BossBar line = lines.get(bossBar);
+		if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
 		new Thread(() -> {
 			try {
 				line.addPlayer(player);
@@ -273,13 +272,13 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	@Override
-	public void announceBossBar(String bossbar, int duration) {
-		BossBar line = lines.get(bossbar);
-		if (line == null) throw new IllegalArgumentException("No registered bossbar found with name " + bossbar);
+	public void announceBossBar(String bossBar, int duration) {
+		BossBar line = lines.get(bossBar);
+		if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
 		new Thread(() -> {
 			try {
 				announcements.add(line);
-				announceEndTime = (System.currentTimeMillis() + duration*1000);
+				announceEndTime = System.currentTimeMillis() + duration*1000;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasBossBarVisible(all)) continue;
 					if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);

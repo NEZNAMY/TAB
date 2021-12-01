@@ -11,21 +11,22 @@ public interface PermissionPlugin {
 	 * Returns primary permission group of player
 	 * @param p - player to get group of
 	 * @return player's primary permission group
-	 * @throws ReflectiveOperationException 
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
-	public String getPrimaryGroup(TabPlayer p) throws ReflectiveOperationException;
+	String getPrimaryGroup(TabPlayer p) throws ReflectiveOperationException;
 	
 	/**
 	 * Returns version of the permission plugin
 	 * @return version of the permission plugin
 	 */
-	public String getVersion();
+	String getVersion();
 	
 	/**
 	 * Returns name of the permission plugin
 	 * @return name of the permission plugin
 	 */
-	public default String getName() {
+	default String getName() {
 		return getClass().getSimpleName();
 	}
 }

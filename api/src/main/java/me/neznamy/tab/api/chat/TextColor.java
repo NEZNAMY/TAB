@@ -1,25 +1,42 @@
 package me.neznamy.tab.api.chat;
 
+import me.neznamy.tab.api.util.Preconditions;
+
 /**
- * A class used to represent any combination of RGB colors
+ * A class representing a component color, which can be either RGB or legacy code.
  */
 public class TextColor {
 
-	//rgb values, only initializing when they are actually requested
-	private int red = -1;
-	private int green = -1;
-	private int blue = -1;
+	/**
+	 * RGB values from 0 to 255.
+	 * They are only initialized if they are actually used to avoid
+	 * unnecessary memory allocations with string operations.
+	 */
+	private short red = -1;
+	private short green = -1;
+	private short blue = -1;
 	
-	//closest legacy color
+	/** Closest legacy color to this color object. */
 	private EnumChatFormat legacyColor;
 	
-	//6-digit combination of hexadecimal numbers
+	/** HEX code of this color as a 6-digit hexadecimal string without "#" prefix. */
 	private String hexCode;
 	
-	//true if legacy color was forced via constructor, false if automatically
+	/**
+	 * Boolean value whether the legacy color was forced with constructor or should be
+	 * automatically assigned as closest color.
+	 * This value is used in gradients when converting text for legacy players. */
 	private boolean legacyColorForced;
-	
+
+	/**
+	 * Constructs new instance as a clone of the provided color.
+	 * @param	color
+	 * 			color to create a clone of
+	 * @throws	IllegalArgumentException
+	 * 			if color is {@code null}
+	 */
 	public TextColor(TextColor color) {
+		Preconditions.checkNotNull(color, "color cannot be null");
 		red = color.red;
 		green = color.green;
 		blue = color.blue;
@@ -29,29 +46,43 @@ public class TextColor {
 	}
 	
 	/**
-	 * Constructs new instance based on hex code as string
-	 * @param hexCode - a 6-digit combination of hex numbers
+	 * Constructs new instance from provided 6-digit hex code string
+	 * @param	hexCode
+	 * 			a 6-digit combination of hex numbers as a string
+	 * @throws	IllegalArgumentException
+	 * 			if hexCode is {@code null}
 	 */
 	public TextColor(String hexCode) {
+		Preconditions.checkNotNull(hexCode, "hex code cannot be null");
 		this.hexCode = hexCode;
 	}
 	
 	/**
-	 * Constructs new instance from given 6-digit hex code and legacy color
-	 * @param hexCode - 6-digit hex code
-	 * @param legacyColor color to use for legacy clients
+	 * Constructs new instance from provided 6-digit hex code and forced legacy color
+	 * @param	hexCode
+	 * 			6-digit combination of hex numbers as a string
+	 * @param	legacyColor
+	 * 			color to use for legacy clients instead of using the closest legacy color
+	 * @throws	IllegalArgumentException
+	 * 			if {@code hexCode} is {@code null} or {@code legacyColor} is {@code null}
 	 */
 	public TextColor(String hexCode, EnumChatFormat legacyColor) {
+		Preconditions.checkNotNull(hexCode, "hex code cannot be null");
+		Preconditions.checkNotNull(legacyColor, "legacy color cannot be null");
 		this.hexCode = hexCode;
 		this.legacyColorForced = true;
 		this.legacyColor = legacyColor;
 	}
 	
 	/**
-	 * Constructs new instance with given parameter
-	 * @param legacyColor - legacy color
+	 * Constructs new instance from provided legacy color
+	 * @param	legacyColor
+	 * 			legacy color to construct the instance from
+	 * @throws	IllegalArgumentException
+	 * 			if {@code legacyColor} is {@code null}
 	 */
 	public TextColor(EnumChatFormat legacyColor) {
+		Preconditions.checkNotNull(legacyColor, "legacy color cannot be null");
 		this.red = legacyColor.getRed();
 		this.green = legacyColor.getGreen();
 		this.blue = legacyColor.getBlue();
@@ -59,31 +90,36 @@ public class TextColor {
 	}
 	
 	/**
-	 * Constructs new instance with given parameters
-	 * @param red - red value
-	 * @param green - green value
-	 * @param blue - blue value
+	 * Constructs new instance with red, green and blue values
+	 * @param	red
+	 * 			red value
+	 * @param	green
+	 * 			green value
+	 * @param	blue
+	 * 			blue value
+	 * @throws	IllegalArgumentException
+	 * 			if {@code red}, {@code green} or {@code blue} is out of range ({@code 0-255})
 	 */
 	public TextColor(int red, int green, int blue) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
+		Preconditions.checkRange(red, 0, 255);
+		Preconditions.checkRange(green, 0, 255);
+		Preconditions.checkRange(blue, 0, 255);
+		this.red = (short) red;
+		this.green = (short) green;
+		this.blue = (short) blue;
 	}
 	
 	/**
-	 * Gets closest legacy color based on rgb values
+	 * Loads the closest legacy color based currently provided values
 	 */
-	private EnumChatFormat getClosestColor(int red, int green, int blue) {
+	private EnumChatFormat loadClosestColor() {
 		double minMaxDist = 9999;
 		double maxDist;
 		EnumChatFormat closestColor = EnumChatFormat.WHITE;
 		for (EnumChatFormat color : EnumChatFormat.values()) {
-			int rDiff = color.getRed() - red;
-			int gDiff = color.getGreen() - green;
-			int bDiff = color.getBlue() - blue;
-			if (rDiff < 0) rDiff = -rDiff;
-			if (gDiff < 0) gDiff = -gDiff;
-			if (bDiff < 0) bDiff = -bDiff;
+			int rDiff = Math.abs(color.getRed() - getRed());
+			int gDiff = Math.abs(color.getGreen() - getGreen());
+			int bDiff = Math.abs(color.getBlue() - getBlue());
 			maxDist = rDiff;
 			if (gDiff > maxDist) maxDist = gDiff;
 			if (bDiff > maxDist) maxDist = bDiff;
@@ -96,61 +132,58 @@ public class TextColor {
 	}
 	
 	/**
-	 * Returns amount of red
-	 * @return amount of red
+	 * Returns {@code red} value
+	 * @return	red value
 	 */
 	public int getRed() {
-		if (red == -1) {
-			int hexColor = Integer.parseInt(hexCode, 16);
-			red = (hexColor >> 16) & 0xFF;
-			green = (hexColor >> 8) & 0xFF;
-			blue = hexColor & 0xFF;
-		}
+		if (red == -1) loadColors();
 		return red;
 	}
-	
+
 	/**
-	 * Returns amount of green
-	 * @return amount of green
+	 * Returns {@code green} value
+	 * @return	green value
 	 */
 	public int getGreen() {
-		if (green == -1) {
-			int hexColor = Integer.parseInt(hexCode, 16);
-			red = (hexColor >> 16) & 0xFF;
-			green = (hexColor >> 8) & 0xFF;
-			blue = hexColor & 0xFF;
-		}
+		if (green == -1) loadColors();
 		return green;
 	}
-	
+
 	/**
-	 * Returns amount of blue
-	 * @return amount of blue
+	 * Returns {@code blue} value
+	 * @return	blue value
 	 */
 	public int getBlue() {
-		if (blue == -1) {
-			int hexColor = Integer.parseInt(hexCode, 16);
-			red = (hexColor >> 16) & 0xFF;
-			green = (hexColor >> 8) & 0xFF;
-			blue = hexColor & 0xFF;
-		}
+		if (blue == -1) loadColors();
 		return blue;
+	}
+
+	/**
+	 * Loads red, green and blue values based on current hex code string
+	 */
+	private void loadColors(){
+		int hexColor = Integer.parseInt(hexCode, 16);
+		red = (short) ((hexColor >> 16) & 0xFF);
+		green = (short) ((hexColor >> 8) & 0xFF);
+		blue = (short) (hexColor & 0xFF);
 	}
 	
 	/**
-	 * Returns defined legacy color
-	 * @return defined legacy color
+	 * Returns the closest legacy color of this color object.
+	 * If the color was defined in constructor, it's returned.
+	 * Otherwise, the closest color is calculated the then returned.
+	 * @return	closest legacy color
 	 */
 	public EnumChatFormat getLegacyColor() {
 		if (legacyColor == null) {
-			legacyColor = getClosestColor(getRed(), getGreen(), getBlue());
+			legacyColor = loadClosestColor();
 		}
 		return legacyColor;
 	}
 	
 	/**
-	 * Returns hex code of this color
-	 * @return hex code of this color
+	 * Returns the rgb combination as a 6-digit hex code string
+	 * @return	the rgb combination as a 6-digit hex code string
 	 */
 	public String getHexCode() {
 		if (hexCode == null) {
@@ -160,8 +193,9 @@ public class TextColor {
 	}
 	
 	/**
-	 * Converts the color into a valid color value used in color field in chat component
-	 * @return the color converted into string acceptable by client
+	 * Converts the color into a valid color value used in color field in chat component.
+	 * That is either 6-digit hex code prefixed with '#', or lowercase legacy color.
+	 * @return	the color serialized for use in chat component
 	 */
 	public String toString() {
 		EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRed(), getGreen(), getBlue());
@@ -170,21 +204,24 @@ public class TextColor {
 			return legacyEquivalent.toString().toLowerCase();
 		}
 		return "#" + getHexCode();
-
 	}
 	
 	/**
-	 * Returns true if legacy color was forced with a constructor, false if automatically
-	 * @return true if forced, false if not
+	 * Returns true if legacy color was forced with a constructor, false if not
+	 * @return	true if forced, false if not
 	 */
 	public boolean isLegacyColorForced() {
 		return legacyColorForced;
 	}
 
 	/**
-	 * Reads the string and turns into text color. String is either #RRGGBB or a lowercased legacy color
-	 * @param string - string from color field in chat component
-	 * @return An instance from specified string
+	 * Reads the string as it appears in chat component and turns it into the color object.
+	 * If the entered string is null, returns null.
+	 * If it's prefixed with '#', it's considered as a hex code.
+	 * Otherwise, it is considered being a lowercase legacy color.
+	 * @param	string
+	 * 			string from color field in chat component
+	 * @return	An instance from specified string or null if string is null
 	 */
 	public static TextColor fromString(String string) {
 		if (string == null) return null;

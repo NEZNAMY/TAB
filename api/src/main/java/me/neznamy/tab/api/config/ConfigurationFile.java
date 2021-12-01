@@ -64,10 +64,7 @@ public abstract class ConfigurationFile {
 				while ((line = reader.readLine()) != null) {
 					writer.write(line + "\n");
 				}
-				reader.close();
-				writer.close();
 			}
-
 		}
 		detectHeader();
 	}
@@ -155,8 +152,8 @@ public abstract class ConfigurationFile {
 	 * @param	map
 	 * 			map to get value from
 	 * @param	key
-	 * 			case insensitive key name
-	 * @return	map value from case insensitive key
+	 * 			case-insensitive key name
+	 * @return	map value from case-insensitive key
 	 */
 	private Object getIgnoreCase(Map<Object, Object> map, String key) {
 		for (Entry<Object, Object> entry : map.entrySet()) {
@@ -360,11 +357,11 @@ public abstract class ConfigurationFile {
 	private Map<String, Object> set(Map<String, Object> map, String path, Object value) {
 		if (path.contains(".")) {
 			String keyWord = getRealKey(map, path.split("\\.")[0]);
-			Object submap = map.get(keyWord);
-			if (!(submap instanceof Map)) {
-				submap = new LinkedHashMap<>();
+			Object subMap = map.get(keyWord);
+			if (!(subMap instanceof Map)) {
+				subMap = new LinkedHashMap<>();
 			}
-			map.put(keyWord, set((Map<String, Object>) submap, path.substring(keyWord.length()+1, path.length()), value));
+			map.put(keyWord, set((Map<String, Object>) subMap, path.substring(keyWord.length()+1), value));
 		} else {
 			if (value == null) {
 				map.remove(getRealKey(map, path));
@@ -386,20 +383,19 @@ public abstract class ConfigurationFile {
 	 * @return	The real key name
 	 */
 	private String getRealKey(Map<?, ?> map, String key) {
-		for (Object mapkey : map.keySet()) {
-			if (mapkey.toString().equalsIgnoreCase(key)) return mapkey.toString();
+		for (Object mapKey : map.keySet()) {
+			if (mapKey.toString().equalsIgnoreCase(key)) return mapKey.toString();
 		}
 		return key;
 	}
 
 	/**
 	 * Detects header of a file (first lines of file starting with #).
-	 * 
-	 * @return	list of comment lines on top
+	 *
 	 * @throws	IOException
 	 * 			if I/O operation fails
 	 */
-	private List<String> detectHeader() throws IOException {
+	private void detectHeader() throws IOException {
 		header = new ArrayList<>();
 		for (String line : Files.readAllLines(file.toPath())) {
 			if (line.startsWith("#")) {
@@ -408,7 +404,6 @@ public abstract class ConfigurationFile {
 				break;
 			}
 		}
-		return header;
 	}
 
 	/**

@@ -14,12 +14,12 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  */
 public class StaticLine extends ScoreboardLine {
 
-	//values for 1.7 clients with 16 character limit for player name
+	//values for 1.7 clients with 16-character limit for player name
 	protected String prefix17;
 	protected String name17;
 	protected String suffix17;
 
-	//values for 1.8-1.12 clients with 40 character limit for player name
+	//values for 1.8-1.12 clients with 40-character limit for player name
 	protected String prefix;
 	protected String name;
 	protected String suffix;

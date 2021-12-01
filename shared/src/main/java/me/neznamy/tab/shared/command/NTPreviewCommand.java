@@ -22,7 +22,7 @@ public class NTPreviewCommand extends SubCommand{
 			if (sender != null) {
 				sender.toggleNametagPreview();
 			} else {
-				sendMessage(sender, getMessages().getCommandOnlyFromGame());
+				sendMessage(null, getMessages().getCommandOnlyFromGame());
 			}
 		} else {
 			sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());

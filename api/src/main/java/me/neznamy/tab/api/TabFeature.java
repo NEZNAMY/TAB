@@ -132,14 +132,13 @@ public abstract class TabFeature {
 	 * Processes the packet send and returns true if packet should be cancelled
 	 * @param receiver - player receiving packet
 	 * @param packet - received packet
-	 * @return true if packet should be cancelled, false if not
 	 */
-	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
-		return false;
+	public void onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+		//empty by default
 	}
 	
 	/**
-	 * Processes login packet, only available on bungeecord
+	 * Processes login packet, only available on BungeeCord
 	 * @param packetReceiver - player receiving client reset packet
 	 */
 	public void onLoginPacket(TabPlayer packetReceiver) {
@@ -158,7 +157,7 @@ public abstract class TabFeature {
 	/**
 	 * Processes the packet send and possibly modifies it
 	 * @param receiver - player receiving packet
-	 * @param packet - received packet
+	 * @param info - received packet
 	 */
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		//empty by default
@@ -169,7 +168,8 @@ public abstract class TabFeature {
 	 * @param sender - packet sender
 	 * @param packet - packet received
 	 * @return true if false should be cancelled, false if not
-	 * @throws ReflectiveOperationException 
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		return false;
@@ -179,7 +179,8 @@ public abstract class TabFeature {
 	 * Processes raw packet sent to client
 	 * @param receiver - packet receiver
 	 * @param packet - the packet
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		//empty by default
@@ -251,8 +252,8 @@ public abstract class TabFeature {
 		disabledPlayers.add(p);
 	}
 	
-	public boolean removeDisabledPlayer(TabPlayer p) {
-		return disabledPlayers.remove(p);
+	public void removeDisabledPlayer(TabPlayer p) {
+		disabledPlayers.remove(p);
 	}
 
 	public String getRefreshDisplayName() {

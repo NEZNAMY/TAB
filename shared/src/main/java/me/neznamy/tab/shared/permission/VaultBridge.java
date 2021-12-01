@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
- * Class to take groups from Vault on bukkit side if no permission plugin on bungeecord is found
+ * Class to take groups from Vault on bukkit side if no permission plugin on BungeeCord is found
  */
 public class VaultBridge implements PermissionPlugin {
 

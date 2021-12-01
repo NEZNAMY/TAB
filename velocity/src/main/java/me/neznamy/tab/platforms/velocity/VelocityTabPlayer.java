@@ -37,20 +37,20 @@ import net.kyori.adventure.text.Component;
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-	//uuid used in tablist
-	private final UUID tablistId;
+	//uuid used in TabList
+	private final UUID tabListId;
 	
 	//player's visible boss bars
-	private final Map<UUID, BossBar> bossbars = new HashMap<>();
+	private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
 	/**
 	 * Constructs new instance for given player
 	 * @param p - velocity player
 	 */
 	public VelocityTabPlayer(Player p, PluginMessageHandler plm) {
-		super(plm, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-", "N/A");
+		super(plm, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-");
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
-		tablistId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
+		tabListId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
 		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
 		try {
 			Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
@@ -138,7 +138,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
-			if (bossbars.containsKey(packet.getId())) return;
+			if (bossBars.containsKey(packet.getId())) return;
 			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
 					packet.getPct(), 
 					Color.valueOf(packet.getColor().toString()), 
@@ -146,26 +146,26 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			if (packet.isCreateWorldFog()) bar.addFlag(Flag.CREATE_WORLD_FOG);
 			if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
 			if (packet.isPlayMusic()) bar.addFlag(Flag.PLAY_BOSS_MUSIC);
-			bossbars.put(packet.getId(), bar);
+			bossBars.put(packet.getId(), bar);
 			getPlayer().showBossBar(bar);
 			break;
 		case REMOVE:
-			getPlayer().hideBossBar(bossbars.get(packet.getId()));
-			bossbars.remove(packet.getId());
+			getPlayer().hideBossBar(bossBars.get(packet.getId()));
+			bossBars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			bossbars.get(packet.getId()).percent(packet.getPct());
+			bossBars.get(packet.getId()).progress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.getId()).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())));
+			bossBars.get(packet.getId()).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())));
 			break;
 		case UPDATE_STYLE:
-			bar = bossbars.get(packet.getId());
+			bar = bossBars.get(packet.getId());
 			bar.overlay(Overlay.valueOf(packet.getOverlay().toString()));
 			bar.color(Color.valueOf(packet.getColor().toString()));
 			break;
 		case UPDATE_PROPERTIES:
-			bar = bossbars.get(packet.getId());
+			bar = bossBars.get(packet.getId());
 			processFlag(bar, packet.isCreateWorldFog(), Flag.CREATE_WORLD_FOG);
 			processFlag(bar, packet.isDarkenScreen(), Flag.DARKEN_SCREEN);
 			processFlag(bar, packet.isPlayMusic(), Flag.PLAY_BOSS_MUSIC);
@@ -214,7 +214,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public UUID getTablistUUID() {
-		return tablistId;
+		return tabListId;
 	}
 	
 	@Override

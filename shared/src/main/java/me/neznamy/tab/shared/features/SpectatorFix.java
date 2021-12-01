@@ -13,8 +13,8 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 
 /**
- * Cancelling gamemode change packet to spectator gamemode to avoid players being moved on
- * the bottom of tablist with transparent name. Does not work on self as that would result
+ * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
+ * the bottom of TabList with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
 public class SpectatorFix extends TabFeature {

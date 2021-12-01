@@ -12,12 +12,12 @@ public interface PrefixSuffixProvider {
 	 * @param p - player
 	 * @return prefix from permission plugin
 	 */
-	public String getPrefix(TabPlayer p);
+	String getPrefix(TabPlayer p);
 	
 	/**
 	 * Returns suffix for given player
 	 * @param p - player
 	 * @return suffix from permission plugin
 	 */
-	public String getSuffix(TabPlayer p);
+	String getSuffix(TabPlayer p);
 }

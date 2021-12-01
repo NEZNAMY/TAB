@@ -84,6 +84,6 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 	public enum Action {
 
 		CHANGE,
-		REMOVE;
+		REMOVE
 	}
 }

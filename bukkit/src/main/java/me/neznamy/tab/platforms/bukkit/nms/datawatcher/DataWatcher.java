@@ -11,7 +11,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
  */
 public class DataWatcher {
 
-	//datawatcher data
+	//DataWatcher data
 	private final Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
 	
 	//a helper for easier data write
@@ -54,7 +54,8 @@ public class DataWatcher {
 	/**
 	 * Converts the class into an instance of NMS.DataWatcher
 	 * @return an instance of NMS.DataWatcher with same data
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public Object toNMS() throws ReflectiveOperationException {
 		NMSStorage nms = NMSStorage.getInstance();
@@ -79,9 +80,10 @@ public class DataWatcher {
 	
 	/**
 	 * Reads NMS data watcher and returns and instance of this class with same data
-	 * @param nmsWatcher - NMS datawatcher to read
+	 * @param nmsWatcher - NMS DataWatcher to read
 	 * @return an instance of this class with same values
-	 * @throws ReflectiveOperationException
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	@SuppressWarnings("unchecked")
 	public static DataWatcher fromNMS(Object nmsWatcher) throws ReflectiveOperationException {

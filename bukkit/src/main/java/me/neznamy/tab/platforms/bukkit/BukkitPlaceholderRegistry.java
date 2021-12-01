@@ -189,9 +189,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 					}
 				};
 				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
-			}, () -> {
-				HandlerList.unregisterAll(healthListener);
-			});
+			}, () -> HandlerList.unregisterAll(healthListener));
 		}
 	}
 }

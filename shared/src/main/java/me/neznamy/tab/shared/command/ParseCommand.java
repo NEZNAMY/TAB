@@ -53,7 +53,7 @@ public class ParseCommand extends SubCommand {
 		if (sender != null) {
 			sender.sendMessage(colored);
 		} else {
-			sendRawMessage(sender, colored.toLegacyText());
+			sendRawMessage(null, colored.toLegacyText());
 		}
 		sendRawMessage(sender, "Without colors: " + EnumChatFormat.decolor(replaced));
 	}

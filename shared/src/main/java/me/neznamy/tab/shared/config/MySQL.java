@@ -59,12 +59,8 @@ public class MySQL {
 		if (isConnected()) {
 			openConnection();
 		}
-		PreparedStatement ps = null;
-		try {
-			ps = prepareStatement(query, vars);
+		try (PreparedStatement ps = prepareStatement(query, vars)){
 			ps.execute();
-		} finally {
-			if (ps != null) ps.close();
 		}
 	}
 
@@ -89,7 +85,7 @@ public class MySQL {
 		}
 		PreparedStatement ps = prepareStatement(query, vars);
 		ResultSet rs = ps.executeQuery();
-		CachedRowSet crs = null;
+		CachedRowSet crs;
 		try {
 			crs = RowSetProvider.newFactory().createCachedRowSet();
 			crs.populate(rs);

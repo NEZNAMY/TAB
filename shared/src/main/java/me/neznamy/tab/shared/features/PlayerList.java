@@ -20,17 +20,17 @@ import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 
 /**
- * Feature handler for tablist prefix/name/suffix
+ * Feature handler for TabList prefix/name/suffix
  */
-public class Playerlist extends TabFeature implements TablistFormatManager {
+public class PlayerList extends TabFeature implements TablistFormatManager {
 
-	protected final boolean antiOverrideTablist = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
+	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
 	private boolean disabling = false;
 
-	public Playerlist() {
-		super("Tablist prefix/suffix", "Updating tablist format", TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-servers"),
+	public PlayerList() {
+		super("TabList prefix/suffix", "Updating TabList format", TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-worlds"));
-		TAB.getInstance().debug(String.format("Loaded Playerlist feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTablist=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), antiOverrideTablist));
+		TAB.getInstance().debug(String.format("Loaded PlayerList feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTabList=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), antiOverrideTabList));
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+		if (!antiOverrideTabList) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
 	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
@@ -166,7 +166,7 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 
 	@Override
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (disabling || !antiOverrideTablist) return;
+		if (disabling || !antiOverrideTabList) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
@@ -183,8 +183,8 @@ public class Playerlist extends TabFeature implements TablistFormatManager {
 	}
 
 	@Override
-	public void setName(TabPlayer player, String customname) {
-		player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customname);
+	public void setName(TabPlayer player, String customName) {
+		player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
 		player.forceRefresh();
 	}
 

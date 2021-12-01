@@ -7,10 +7,10 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
  */
 public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
-	/** Tablist header */
+	/** TabList header */
 	private final IChatBaseComponent header;
 
-	/** Tablist footer */
+	/** TabList footer */
 	private final IChatBaseComponent footer;
 
 	/**
@@ -18,9 +18,9 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 	 * using {@link IChatBaseComponent#optimizedComponent(String)} method.
 	 * 
 	 * @param	header
-	 * 			Tablist header
+	 * 			TabList header
 	 * @param	footer
-	 * 			Tablist footer
+	 * 			TabList footer
 	 */
 	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
 		this.header = IChatBaseComponent.optimizedComponent(header);
@@ -31,9 +31,9 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 	 * Constructs new instance with given parameters.
 	 * 
 	 * @param	header
-	 * 			Tablist header
+	 * 			TabList header
 	 * @param	footer
-	 * 			Tablist footer
+	 * 			TabList footer
 	 */
 	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
 		this.header = header;

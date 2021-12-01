@@ -16,7 +16,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
 	 * Constructs new instance
 	 */
 	public PlayerUUIDCommand() {
-		super("playeruuid", null);
+		super("playeruuid");
 	}
 
 	@Override

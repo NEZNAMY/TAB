@@ -6,18 +6,18 @@ import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.TabConstants;
 
 /**
- * An implementation of Refreshable for bossbar text
+ * An implementation of Refreshable for BossBar text
  */
 public class TextRefresher extends TabFeature {
 
 	private final String textProperty;
 	
-	//bossbar line this text belongs to
+	//BossBar line this text belongs to
 	private final BossBarLine line;
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param line - bossbar line this text belongs to
+	 * @param line - BossBar line this text belongs to
 	 */
 	public TextRefresher(BossBarLine line) {
 		super("BossBar", "Updating text");
