@@ -526,8 +526,8 @@ public final class NMSStorage {
 				Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
 				if (clazz != null) return clazz;
 				throw new ClassNotFoundException(name);
-			} catch (ClassNotFoundException e1) {
-				//fabric
+			} catch (ClassNotFoundException | NullPointerException e1) {
+				//maybe fabric?
 				return Class.forName(name);
 			}
 		}
