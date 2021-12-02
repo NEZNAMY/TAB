@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
+import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 
 public abstract class ProxyPlatform implements Platform {
@@ -24,15 +25,21 @@ public abstract class ProxyPlatform implements Platform {
 	public void registerUnknownPlaceholder(String identifier) {
 		TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
-		int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
-		Placeholder p = new PlayerPlaceholderImpl(identifier, refresh, null) {
-			
-			@Override
-			public String request(TabPlayer p) {
-				plm.requestPlaceholder(p, identifier);
-				return getLastValues().get(p.getName());
-			}
-		};
+
+		Placeholder p;
+		if (identifier.startsWith("%rel_")) {
+			p = new RelationalPlaceholderImpl(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> ""); //bridge does not support relational placeholders yet
+		} else {
+			int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
+			p = new PlayerPlaceholderImpl(identifier, refresh, null) {
+
+				@Override
+				public String request(TabPlayer p) {
+					plm.requestPlaceholder(p, identifier);
+					return getLastValues().get(p.getName());
+				}
+			};
+		}
 		pl.registerPlaceholder(p);
 	}
 	
