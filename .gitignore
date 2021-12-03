@@ -35,6 +35,7 @@ hs_err_pid*
 # other
 .gitattributes
 *.iml
+run/
 
 # Gradle
 .gradle/
