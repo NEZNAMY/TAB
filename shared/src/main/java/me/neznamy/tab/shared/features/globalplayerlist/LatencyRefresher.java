@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.TAB;
 public class LatencyRefresher extends TabFeature {
 
 	public LatencyRefresher() {
-		super("Global Playerlist", "Updating latency");
+		super("Global PlayerList", "Updating latency");
 		TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%ping%", this);
 	}
 

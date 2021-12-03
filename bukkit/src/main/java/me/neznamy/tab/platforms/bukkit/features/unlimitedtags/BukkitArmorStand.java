@@ -27,11 +27,11 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitArmorStand implements ArmorStand {
 
-	private static boolean alwaysVisible = TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible();
+	private final boolean alwaysVisible = TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible();
 	//entity id counter to pick unique entity IDs
 	private static int idCounter = 2000000000;
 
-	//nametag feature
+	//NameTag feature
 	private final NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
 
 	//owner of the armor stand
@@ -59,7 +59,7 @@ public class BukkitArmorStand implements ArmorStand {
 	private final Property property;
 
 	//if offset is static or dynamic based on other armor stands
-	private boolean staticOffset;
+	private final boolean staticOffset;
 
 	//entity destroy packet
 	private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
@@ -149,7 +149,7 @@ public class BukkitArmorStand implements ArmorStand {
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
 			if (viewer.getVersion().getMinorVersion() == 14 && !alwaysVisible) {
-				//1.14.x client sided bug, despawning completely
+				//1.14.x client sided bug, de-spawning completely
 				if (sneaking) {
 					viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
 				} else {
@@ -196,7 +196,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	/**
 	 * Returns general visibility rule for everyone with limited info
-	 * @return true if should be visible, false if not
+	 * @return true if armor stand should be visible, false if not
 	 */
 	public boolean getVisibility() {
 		if (owner.isDisguised() || manager.getVehicleManager().isOnBoat(owner)) return false;
@@ -261,7 +261,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Creates data watcher with specified display name for viewer
 	 * @param displayName - armor stand name
 	 * @param viewer - player to apply checks against
-	 * @return datawatcher for viewer
+	 * @return DataWatcher for viewer
 	 */
 	public DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
 		DataWatcher datawatcher = new DataWatcher();
@@ -299,7 +299,6 @@ public class BukkitArmorStand implements ArmorStand {
 	/**
 	 * Returns list of packets to send to make armor stand spawn with metadata
 	 * @param viewer - viewer to apply relational placeholders for
-	 * @param addToRegistered - if player should be added to registered or not
 	 * @return List of packets that spawn the armor stand
 	 */
 	public TabPacket[] getSpawnPackets(TabPlayer viewer) {

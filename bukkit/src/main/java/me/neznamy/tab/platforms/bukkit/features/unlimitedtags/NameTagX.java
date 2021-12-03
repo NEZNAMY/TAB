@@ -24,7 +24,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
 /**
- * The core class for unlimited nametag mode
+ * The core class for unlimited NameTag mode
  */
 public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
@@ -53,15 +53,14 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	/**
 	 * Constructs new instance with given parameters and loads config options
 	 * @param plugin - plugin instance
-	 * @param nms - nms storage
 	 */
 	public NameTagX(JavaPlugin plugin) {
 		Collections.reverse(dynamicLines);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		TAB.getInstance().getFeatureManager().registerFeature("nametagx-packet", new PacketListener(this));
-		TAB.getInstance().getFeatureManager().registerFeature("nametagx-vehicle", vehicleManager);
-		TAB.getInstance().getFeatureManager().registerFeature("nametagx-location", new LocationRefresher(this));
-		TAB.getInstance().debug(String.format("Loaded Unlimited nametag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
+		TAB.getInstance().getFeatureManager().registerFeature("NameTagX-packet", new PacketListener(this));
+		TAB.getInstance().getFeatureManager().registerFeature("NameTagX-vehicle", vehicleManager);
+		TAB.getInstance().getFeatureManager().registerFeature("NameTagX-location", new LocationRefresher(this));
+		TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
 
@@ -85,7 +84,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing nametag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing NameTag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isPlayerDisabled(p)) continue;
@@ -152,7 +151,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	 * @param sendMutually - if packets should be sent both ways
 	 */
 	public void spawnArmorStands(TabPlayer owner, TabPlayer viewer, boolean sendMutually) {
-		if (owner == viewer) return; //not displaying own armorstands
+		if (owner == viewer) return; //not displaying own armor stands
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) owner.getPlayer()).getWorld()) return; //different world
 		if (isPlayerDisabled(owner)) return;
 		if (getDistance(viewer, owner) <= 48) {
@@ -246,7 +245,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	@Override
 	public String getFeatureName() {
-		return "Unlimited Nametags";
+		return "Unlimited NameTags";
 	}
 
 	@Override
@@ -329,35 +328,35 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	@Override
 	public void setPrefix(TabPlayer player, String prefix) {
 		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
-		rebuildNametagLine(player);
+		rebuildNameTagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void setSuffix(TabPlayer player, String suffix) {
 		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
-		rebuildNametagLine(player);
+		rebuildNameTagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetPrefix(TabPlayer player) {
 		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
-		rebuildNametagLine(player);
+		rebuildNameTagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
 	public void resetSuffix(TabPlayer player) {
 		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
-		rebuildNametagLine(player);
+		rebuildNameTagLine(player);
 		player.forceRefresh();
 	}
 
 	@Override
-	public void setName(TabPlayer player, String customname) {
-		player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(customname);
-		rebuildNametagLine(player);
+	public void setName(TabPlayer player, String customName) {
+		player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(customName);
+		rebuildNameTagLine(player);
 		player.forceRefresh();
 	}
 
@@ -370,7 +369,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	@Override
 	public void resetName(TabPlayer player) {
 		player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(null);
-		rebuildNametagLine(player);
+		rebuildNameTagLine(player);
 		player.forceRefresh();
 	}
 
@@ -400,7 +399,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		return player.getProperty(line).getOriginalRawValue();
 	}
 	
-	private void rebuildNametagLine(TabPlayer player) {
+	private void rebuildNameTagLine(TabPlayer player) {
 		player.setProperty(this, TabConstants.Property.NAMETAG, player.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() + 
 				player.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + player.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
 	}

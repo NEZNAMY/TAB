@@ -9,11 +9,11 @@ public interface Line {
 
 	/**
 	 * Returns configured raw text of this line. Placeholders
-	 * remain unparsed.
+	 * remain in raw format.
 	 * 
 	 * @return	raw text of this line
 	 */
-	public String getText();
+	String getText();
 	
 	/**
 	 * Changes text to new value. Supports placeholders, which are
@@ -25,5 +25,5 @@ public interface Line {
 	 * @param	text
 	 * 			Raw text to display in the line
 	 */
-	public void setText(String text);
+	void setText(String text);
 }

@@ -10,11 +10,11 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.PlayerList;
 
 public class PlayerSlot {
 
-	private Playerlist playerlist = (Playerlist) TAB.getInstance().getFeatureManager().getFeature("playerlist");
+	private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature("playerlist");
 	private final Layout layout;
 	private final UUID id;
 	private TabPlayer player;

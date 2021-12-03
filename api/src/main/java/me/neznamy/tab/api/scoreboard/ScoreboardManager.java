@@ -23,7 +23,7 @@ public interface ScoreboardManager {
 	 * Scoreboard {@code title} is limited to 32 characters on <1.13. If needed,
 	 * it will be cut to 32 character for those players (after replacing 
 	 * placeholders). RGB is supported using any of the supported formats.
-	 * Placholders are supported.
+	 * Placeholders are supported.
 	 * <p>
 	 * {@code lines} will display in the same order as contained in the list.
 	 * Client can only see up to 15 lines at a time, however you can define
@@ -39,7 +39,7 @@ public interface ScoreboardManager {
 	 * @throws	NullPointerException
 	 * 			if {@code name} or {@code lines} is {@code null}
 	 */
-	public Scoreboard createScoreboard(String name, String title, List<String> lines);
+	Scoreboard createScoreboard(String name, String title, List<String> lines);
 	
 	/**
 	 * Returns map of registered scoreboards via config and API.
@@ -49,7 +49,7 @@ public interface ScoreboardManager {
 	 * 
 	 * @return	map of registered scoreboards
 	 */
-	public Map<String, Scoreboard> getRegisteredScoreboards();
+	Map<String, Scoreboard> getRegisteredScoreboards();
 	
 	/**
 	 * Displays scoreboard to defined player. This will disable all display
@@ -66,7 +66,7 @@ public interface ScoreboardManager {
 	 * @see		#hasCustomScoreboard(TabPlayer)
 	 * @see		#resetScoreboard(TabPlayer)
 	 */
-	public void showScoreboard(TabPlayer player, Scoreboard scoreboard);
+	void showScoreboard(TabPlayer player, Scoreboard scoreboard);
 	
 	/**
 	 * Returns {@code true} if player has custom scoreboard set using
@@ -79,7 +79,7 @@ public interface ScoreboardManager {
 	 * @see		#showScoreboard(TabPlayer, Scoreboard)
 	 * @see		#resetScoreboard(TabPlayer)
 	 */
-	public boolean hasCustomScoreboard(TabPlayer player);
+	boolean hasCustomScoreboard(TabPlayer player);
 	
 	/**
 	 * Hides custom scoreboard sent using {@link #showScoreboard(TabPlayer, Scoreboard)}
@@ -91,7 +91,7 @@ public interface ScoreboardManager {
 	 * @see		#showScoreboard(TabPlayer, Scoreboard)
 	 * @see		#hasCustomScoreboard(TabPlayer)
 	 */
-	public void resetScoreboard(TabPlayer player);
+	void resetScoreboard(TabPlayer player);
 	
 	/**
 	 * Returns {@code true} if player has scoreboard enabled, {@code false} 
@@ -105,7 +105,7 @@ public interface ScoreboardManager {
 	 * @see		#setScoreboardVisible(TabPlayer, boolean, boolean)
 	 * @see		#toggleScoreboard(TabPlayer, boolean)
 	 */
-	public boolean hasScoreboardVisible(TabPlayer player);
+	boolean hasScoreboardVisible(TabPlayer player);
 	
 	/**
 	 * Sets scoreboard visibility of player to defined value. If visibility status
@@ -122,7 +122,7 @@ public interface ScoreboardManager {
 	 * @see		#toggleScoreboard(TabPlayer, boolean)
 	 * @see		#hasScoreboardVisible(TabPlayer)
 	 */
-	public void setScoreboardVisible(TabPlayer player, boolean visible, boolean sendToggleMessage);
+	void setScoreboardVisible(TabPlayer player, boolean visible, boolean sendToggleMessage);
 	
 	/**
 	 * Toggles scoreboard for specified player. If player had scoreboard visible,
@@ -136,7 +136,7 @@ public interface ScoreboardManager {
 	 * @see		#hasScoreboardVisible(TabPlayer)
 	 * @see		#setScoreboardVisible(TabPlayer, boolean, boolean)
 	 */
-	public void toggleScoreboard(TabPlayer player, boolean sendToggleMessage);
+	void toggleScoreboard(TabPlayer player, boolean sendToggleMessage);
 	
 	/**
 	 * Temporarily displays scoreboard to all players for specified amount of 
@@ -151,5 +151,5 @@ public interface ScoreboardManager {
 	 * 			if no scoreboard was found with such name or {@code duration}
 	 * 			is < 0.
 	 */
-	public void announceScoreboard(String scoreboard, int duration);
+	void announceScoreboard(String scoreboard, int duration);
 }

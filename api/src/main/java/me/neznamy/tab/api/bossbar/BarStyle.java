@@ -1,7 +1,7 @@
 package me.neznamy.tab.api.bossbar;
 
 /**
- * An enum representing all available bossbar styles.
+ * An enum representing all available BossBar styles.
  * Calling ordinal() will return style's network ID.
  * Style names are equal to NMS names.
  */
@@ -14,7 +14,7 @@ public enum BarStyle {
 	NOTCHED_20("SEGMENTED_20");
 
 	/** Style's name used in Bukkit API */
-	private String bukkitName;
+	private final String bukkitName;
 
 	/**
 	 * Initializes enum constant with given bukkit name
@@ -22,7 +22,7 @@ public enum BarStyle {
 	 * @param 	bukkitName
 	 * 			Name of color to be returned in {@code getBukkitName()}
 	 */
-	private BarStyle(String bukkitName){
+	BarStyle(String bukkitName){
 		this.bukkitName = bukkitName;
 	}
 

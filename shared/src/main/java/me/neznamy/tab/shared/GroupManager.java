@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.api.TabFeature;
@@ -35,7 +36,7 @@ public class GroupManager extends TabFeature {
 			registerLuckPermsSub();
 		} else if (!(plugin instanceof None)){
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000, this::detectPermissionGroup);
-			addUsedPlaceholders(Arrays.asList("%group%"));
+			addUsedPlaceholders(Collections.singletonList("%group%"));
 		} else {
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, p -> DEFAULT_GROUP);
 		}

@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.TAB;
 
 /**
  * The packet listening part for securing proper functionality of armor stands
- * Bukkit events are too unreliable and delayed/ahead which causes desync
+ * Bukkit events are too unreliable and delayed/ahead which causes de-sync
  */
 public class PacketListener extends TabFeature {
 
@@ -119,8 +119,8 @@ public class PacketListener extends TabFeature {
 	}
 	
 	private void onEntityDestroy(TabPlayer receiver, int entity) {
-		TabPlayer despawnedPlayer = nameTagX.getEntityIdMap().get(entity);
-		if (despawnedPlayer != null && despawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(despawnedPlayer)) 
-			TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> despawnedPlayer.getArmorStandManager().destroy(receiver));
+		TabPlayer deSpawnedPlayer = nameTagX.getEntityIdMap().get(entity);
+		if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer))
+			TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> deSpawnedPlayer.getArmorStandManager().destroy(receiver));
 	}
 }

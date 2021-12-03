@@ -11,7 +11,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
 /**
@@ -43,7 +43,7 @@ public class DebugCommand extends SubCommand {
 	}
 
 	/**
-	 * Peforms debug on player and displays output
+	 * Performs debug on player and displays output
 	 * @param sender - command sender or null if console
 	 * @param analyzed - player to be analyzed
 	 */
@@ -67,7 +67,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, getTeamName(analyzed));
 		sendMessage(sender, getTeamNameNote(analyzed));
 		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
-			Playerlist playerlist = (Playerlist) tab.getFeatureManager().getFeature("playerlist");
+			PlayerList playerlist = (PlayerList) tab.getFeatureManager().getFeature("playerlist");
 			boolean disabledPlayerlist = playerlist.isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, disabledPlayerlist);
 			showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, disabledPlayerlist);

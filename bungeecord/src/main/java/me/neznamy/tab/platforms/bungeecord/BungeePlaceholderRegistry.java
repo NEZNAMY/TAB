@@ -11,7 +11,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
- * Bungeecord registry to register bungeecord-only placeholders
+ * BungeeCord registry to register BungeeCord-only placeholders
  */
 public class BungeePlaceholderRegistry extends ProxyPlaceholderRegistry {
 

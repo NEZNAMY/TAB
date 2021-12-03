@@ -3,7 +3,7 @@ package me.neznamy.tab.api.scoreboard;
 import java.util.List;
 
 /**
- * An interface allowing to work with scoreboard, such as adding plyaers,
+ * An interface allowing to work with scoreboard, such as adding players,
  * removing players and changing lines. New instance can be created using
  * {@link ScoreboardManager#createScoreboard(String, String, List)},
  * for scoreboards from config {@link ScoreboardManager#getRegisteredScoreboards()}.
@@ -17,16 +17,16 @@ public interface Scoreboard {
 	 * 
 	 * @return	custom name of this scoreboard
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Returns raw title of this scoreboard. Placeholders stay in their
-	 * raw, unparsed format.
+	 * raw format.
 	 * 
 	 * @return	scoreboard title
 	 * @see		#setTitle(String)
 	 */
-	public String getTitle();
+	String getTitle();
 
 	/**
 	 * Sets title to specified value. Placeholders are refreshed automatically
@@ -43,7 +43,7 @@ public interface Scoreboard {
 	 * 			New title to use with placeholder support
 	 * @see		#getTitle()
 	 */
-	public void setTitle(String title);
+	void setTitle(String title);
 
 	/**
 	 * Returns list of lines in this scoreboard in the order they appear
@@ -54,7 +54,7 @@ public interface Scoreboard {
 	 * @see		#addLine(String)
 	 * @see		#removeLine(int)
 	 */
-	public List<Line> getLines();
+	List<Line> getLines();
 
 	/**
 	 * Adds line with specified text on the bottom of scoreboard. Supports
@@ -65,7 +65,7 @@ public interface Scoreboard {
 	 * @see		#getLines()
 	 * @see		#removeLine(int)
 	 */
-	public void addLine(String text);
+	void addLine(String text);
 
 	/**
 	 * Removes line with specified index. Index starts at {@code 0} and ends at 
@@ -78,12 +78,10 @@ public interface Scoreboard {
 	 * @see		#getLines()
 	 * @see		#addLine(String)
 	 */
-	public void removeLine(int index);
+	void removeLine(int index);
 
 	/**
 	 * Unregisters this scoreboard from all players who can see it.
-	 * Calling this method is equal to iterating over {@link #getPlayers()}
-	 * and calling {@link #removePlayer(TabPlayer)} on each player.
 	 */
-	public void unregister();
+	void unregister();
 }

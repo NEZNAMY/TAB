@@ -1,9 +1,6 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -15,13 +12,13 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
- * Class representing a bossbar from configuration
+ * Class representing a BossBar from configuration
  */
 public class BossBarLine implements BossBar {
 
-	private BossBarManagerImpl manager;
+	private final BossBarManagerImpl manager;
 	
-	//bossbar name
+	//BossBar name
 	private final String name;
 	
 	//display condition
@@ -30,21 +27,21 @@ public class BossBarLine implements BossBar {
 	//uuid
 	private final UUID uuid;
 	
-	//bossbar style
+	//BossBar style
 	private String style;
 	
-	//bossbar color
+	//BossBar color
 	private String color;
 	
-	//bossbar title
+	//BossBar title
 	private String title;
 	
-	//bossabr progress
+	//BossBar progress
 	private String progress;
 	
 	private final boolean announcementOnly;
 	
-	//set of players seeing this bossbar
+	//set of players seeing this BossBar
 	private final List<TabPlayer> players = new ArrayList<>();
 	
 	//refreshers
@@ -60,20 +57,20 @@ public class BossBarLine implements BossBar {
 
 	/**
 	 * Constructs new instance with given parameters
-	 * @param manager - bossbar manager to count sent packets for
-	 * @param name - name of bossbar
+	 * @param manager - BossBar manager to count sent packets for
+	 * @param name - name of BossBar
 	 * @param displayCondition - display condition
-	 * @param color - bossbar color
-	 * @param style - bossbar style
-	 * @param title - bossbar title
-	 * @param progress - bossbar progress
+	 * @param color - BossBar color
+	 * @param style - BossBar style
+	 * @param title - BossBar title
+	 * @param progress - BossBar progress
 	 */
 	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition, String color, String style, String title, String progress, boolean announcementOnly) {
 		this.manager = manager;
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
 		if (this.displayCondition != null) {
-			manager.addUsedPlaceholders(Arrays.asList("%condition:" + this.displayCondition.getName() + "%"));
+			manager.addUsedPlaceholders(Collections.singletonList("%condition:" + this.displayCondition.getName() + "%"));
 		}
 		this.uuid = UUID.randomUUID();
 		this.color = color;
@@ -88,9 +85,9 @@ public class BossBarLine implements BossBar {
 		propertyProgress = TabConstants.Property.bossbarProgress(name);
 		propertyColor = TabConstants.Property.bossbarColor(name);
 		propertyStyle = TabConstants.Property.bossbarStyle(name);
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-title-" + name, textRefresher);
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-progress-" + name, progressRefresher);
-		TAB.getInstance().getFeatureManager().registerFeature("bossbar-color-style-" + name, colorAndStyleRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature("BossBar-title-" + name, textRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature("BossBar-progress-" + name, progressRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature("BossBar-color-style-" + name, colorAndStyleRefresher);
 	}
 	
 	/**
@@ -110,7 +107,7 @@ public class BossBarLine implements BossBar {
 	 * @return parsed color
 	 */
 	public BarColor parseColor(String color) {
-		return TAB.getInstance().getErrorManager().parseColor(color, BarColor.PURPLE, "bossbar color");
+		return TAB.getInstance().getErrorManager().parseColor(color, BarColor.PURPLE, "BossBar color");
 	}
 	
 	/**
@@ -120,7 +117,7 @@ public class BossBarLine implements BossBar {
 	 * @return parsed style
 	 */
 	public BarStyle parseStyle(String style) {
-		return TAB.getInstance().getErrorManager().parseStyle(style, BarStyle.PROGRESS, "bossbar style");
+		return TAB.getInstance().getErrorManager().parseStyle(style, BarStyle.PROGRESS, "BossBar style");
 	}
 	
 	/**
@@ -130,7 +127,7 @@ public class BossBarLine implements BossBar {
 	 * @return parsed progress
 	 */
 	public float parseProgress(String progress) {
-		return TAB.getInstance().getErrorManager().parseFloat(progress, 100, "bossbar progress");
+		return TAB.getInstance().getErrorManager().parseFloat(progress, 100, "BossBar progress");
 	}
 
 	@Override

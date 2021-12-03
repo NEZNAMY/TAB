@@ -16,7 +16,7 @@ public class PlayerCommand extends PropertyCommand {
 	 * Constructs new instance
 	 */
 	public PlayerCommand() {
-		super("player", null);
+		super("player");
 	}
 
 	@Override

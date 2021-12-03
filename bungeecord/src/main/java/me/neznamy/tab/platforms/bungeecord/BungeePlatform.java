@@ -22,7 +22,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 /**
- * Bungeecord implementation of Platform
+ * BungeeCord implementation of Platform
  */
 public class BungeePlatform extends ProxyPlatform {
 

@@ -1,9 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Entity;
@@ -30,7 +27,7 @@ public class VehicleRefresher extends TabFeature {
 	public VehicleRefresher(NameTagX feature) {
 		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
-		addUsedPlaceholders(Arrays.asList("%vehicle%"));
+		addUsedPlaceholders(Collections.singletonList("%vehicle%"));
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle());
 	}
 	
@@ -86,7 +83,7 @@ public class VehicleRefresher extends TabFeature {
 			return vehicle.getPassengers();
 		} else {
 			if (vehicle.getPassenger() != null) {
-				return Arrays.asList(vehicle.getPassenger());
+				return Collections.singletonList(vehicle.getPassenger());
 			} else {
 				return new ArrayList<>();
 			}
@@ -98,8 +95,8 @@ public class VehicleRefresher extends TabFeature {
 	 * @param p - player to load passengers of
 	 */
 	public void loadPassengers(TabPlayer p) {
-		if (((Entity) p.getPlayer()).getVehicle() == null) return;
 		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
+		if (vehicle == null) return;
 		vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
 	}
 	

@@ -20,7 +20,7 @@ public abstract class SubCommand {
 	//all properties assignable with a command
 	private static String[] allProperties = {TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME};
 	
-	//properties that require unlimited nametag mode
+	//properties that require unlimited NameTag mode
 	protected final List<String> extraProperties = Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 	
 	//name of this subcommand
@@ -61,7 +61,7 @@ public abstract class SubCommand {
 	/**
 	 * Returns whether player has permission to run this command or not
 	 * @param sender - player who ran command or null if console
-	 * @return true if has permission or is console, false otherwise
+	 * @return true if sender has permission or is console, false otherwise
 	 */
 	public boolean hasPermission(TabPlayer sender) {
 		return hasPermission(sender, permission);
@@ -71,7 +71,7 @@ public abstract class SubCommand {
 	 * Returns whether player has given permission or not
 	 * @param sender - player who ran command or null if console
 	 * @param permission - permission to check for
-	 * @returntrue if has permission or is console, false otherwise
+	 * @return true if sender has permission or is console, false otherwise
 	 */
 	public boolean hasPermission(TabPlayer sender, String permission) {
 		if (permission == null) return true; //no permission required

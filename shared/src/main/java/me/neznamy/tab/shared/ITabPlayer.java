@@ -31,14 +31,14 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String permissionGroup = GroupManager.DEFAULT_GROUP;
 	private String teamName;
 	private String teamNameNote;
-	private boolean bedrockPlayer;
+	private final boolean bedrockPlayer;
 
 	private final Map<String, Property> properties = new HashMap<>();
 	private ArmorStandManager armorStandManager;
 	protected ProtocolVersion version;
 	protected Channel channel;
 
-	private boolean previewingNametag;
+	private boolean previewingNameTag;
 	private boolean onJoinFinished;
 
 	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world) {
@@ -149,20 +149,20 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public void toggleNametagPreview() {
-		if (armorStandManager == null) throw new IllegalStateException("Unlimited nametag mode is not enabled");
-		if (previewingNametag) {
+		if (armorStandManager == null) throw new IllegalStateException("Unlimited NameTag mode is not enabled");
+		if (previewingNameTag) {
 			armorStandManager.destroy(this);
 			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
 		} else {
 			armorStandManager.spawn(this);
 			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
 		}
-		previewingNametag = !previewingNametag;
+		previewingNameTag = !previewingNameTag;
 	}
 
 	@Override
 	public boolean isPreviewingNametag() {
-		return previewingNametag;
+		return previewingNameTag;
 	}
 
 	@Override

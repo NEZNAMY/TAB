@@ -107,10 +107,10 @@ public class BungeePacketBuilder extends PacketBuilder {
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
 		int color = 0;
 		if (clientVersion.getMinorVersion() >= 13) {
-			color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).getNetworkId();
+			color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal();
 		}
 		return new Team(packet.getName(), (byte)packet.getMethod(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16), 
-				packet.getNametagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers().toArray(new String[0]));
+				packet.getNameTagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers().toArray(new String[0]));
 	}
 	
 	@Override

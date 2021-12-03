@@ -3,81 +3,80 @@ package me.neznamy.tab.api.chat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 
 /**
- * A class representing the n.m.s.EnumChatFormat class to make work with it much easier
+ * An enum containing all possible legacy color codes and magic codes. Also contains handy color-related methods.
  */
 public enum EnumChatFormat {
 
-	BLACK(0, '0', "000000"),
-	DARK_BLUE(1, '1', "0000AA"),
-	DARK_GREEN(2, '2', "00AA00"),
-	DARK_AQUA(3, '3', "00AAAA"),
-	DARK_RED(4, '4', "AA0000"),
-	DARK_PURPLE(5, '5', "AA00AA"),
-	GOLD(6, '6', "FFAA00"),
-	GRAY(7, '7', "AAAAAA"),
-	DARK_GRAY(8, '8', "555555"),
-	BLUE(9, '9', "5555FF"),
-	GREEN(10, 'a', "55FF55"),
-	AQUA(11, 'b', "55FFFF"),
-	RED(12, 'c', "FF5555"),
-	LIGHT_PURPLE(13, 'd', "FF55FF"),
-	YELLOW(14, 'e', "FFFF55"),
-	WHITE(15, 'f', "FFFFFF"),
-	OBFUSCATED(16, 'k'),
-	BOLD(17, 'l'),
-	STRIKETHROUGH(18, 'm'),
-	UNDERLINE(19, 'n'),
-	ITALIC(20, 'o'),
-	RESET(21, 'r');
+	BLACK('0', "000000"),
+	DARK_BLUE('1', "0000AA"),
+	DARK_GREEN('2', "00AA00"),
+	DARK_AQUA('3', "00AAAA"),
+	DARK_RED('4', "AA0000"),
+	DARK_PURPLE('5', "AA00AA"),
+	GOLD('6', "FFAA00"),
+	GRAY('7', "AAAAAA"),
+	DARK_GRAY('8', "555555"),
+	BLUE('9', "5555FF"),
+	GREEN('a', "55FF55"),
+	AQUA('b', "55FFFF"),
+	RED('c', "FF5555"),
+	LIGHT_PURPLE('d', "FF55FF"),
+	YELLOW('e', "FFFF55"),
+	WHITE('f', "FFFFFF"),
+	OBFUSCATED('k'),
+	BOLD('l'),
+	STRIKETHROUGH('m'),
+	UNDERLINE('n'),
+	ITALIC('o'),
+	RESET('r');
 
+	/** The symbol minecraft uses to colorize text */
 	public static final char COLOR_CHAR = 0x00a7;
+
+	/** The color symbol in form of a string */
 	public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
 
-	//network id of the color
-	private final int networkId;
-	
-	//characer representing the color
+	/** Character representing the color or magic code */
 	private final char character;
 	
-	//red value of this color
-	private final int red;
+	/** Red value of this constant, 0 for magic codes */
+	private final short red;
+
+	/** Green value of this constant, 0 for magic codes */
+	private final short green;
+
+	/** Blue value of this constant, 0 for magic codes */
+	private final short blue;
 	
-	//green value of this color
-	private final int green;
-	
-	//blue value of this color
-	private final int blue;
-	
-	//hex code as string
+	/** Color as 6-digit hex code, null for magic codes */
 	private final String hexCode;
 	
-	//color char followed by color's character
+	/** Color symbol followed by constant's character */
 	private final String chatFormat;
 
 	/**
-	 * Constructs new instance with given parameters
-	 * @param networkId - network id of the color
-	 * @param character - character representing the color
-	 * @param hexColor - hex code of the color
+	 * Constructs new color instance with given character and hex code
+	 * @param	character
+	 * 			character which the color goes by
+	 * @param	hexCode
+	 * 			6-digit hex code of the color
 	 */
-	private EnumChatFormat(int networkId, char character, String hexCode) {
-		this.networkId = networkId;
+	EnumChatFormat(char character, String hexCode) {
 		this.character = character;
 		this.chatFormat = String.valueOf(COLOR_CHAR) + character;
 		this.hexCode = hexCode;
 		int hexColor = Integer.parseInt(hexCode, 16);
-		red = (hexColor >> 16) & 0xFF;
-		green = (hexColor >> 8) & 0xFF;
-		blue = hexColor & 0xFF;
+		red = (short) ((hexColor >> 16) & 0xFF);
+		green = (short) ((hexColor >> 8) & 0xFF);
+		blue = (short) (hexColor & 0xFF);
 	}
 	
 	/**
-	 * Constructs new instance with given parameters
-	 * @param networkId - network id of the color
-	 * @param character - character representing the color
+	 * Constructs new magic code instance with given character
+	 * @param	character
+	 * 			character representing the magic code
 	 */
-	private EnumChatFormat(int networkId, char character) {
-		this.networkId = networkId;
+	EnumChatFormat(char character) {
 		this.character = character;
 		this.chatFormat = String.valueOf(COLOR_CHAR) + character;
 		red = 0;
@@ -85,43 +84,36 @@ public enum EnumChatFormat {
 		blue = 0;
 		hexCode = null;
 	}
-	
+
 	/**
-	 * Returns network id of this color
-	 * @return network if of this color
+	 * Returns red value of this color code
+	 * @return	red value
 	 */
-	public int getNetworkId() {
-		return networkId;
-	}
-	
-	/**
-	 * Returns red value of this color
-	 * @return red value
-	 */
-	public int getRed() {
+	public short getRed() {
 		return red;
 	}
 	
 	/**
-	 * Returns green value of this color
-	 * @return green value
+	 * Returns green value of this color code
+	 * @return	green value
 	 */
-	public int getGreen() {
+	public short getGreen() {
 		return green;
 	}
 	
 	/**
-	 * Returns blue value of this color
-	 * @return blue value
+	 * Returns blue value of this color code
+	 * @return	blue value
 	 */
-	public int getBlue() {
+	public short getBlue() {
 		return blue;
 	}
 	
 	/**
-	 * Returns enum value based on inserted color or null if character is not valid
-	 * @param c - color code character (0-9, a-f, k-o, r)
-	 * @return instance from the character
+	 * Returns enum value based on provided character or null if character is not valid
+	 * @param	c
+	 * 			color code character (0-9, a-f, k-o, r)
+	 * @return	instance from the character or null if character is not valid
 	 */
 	public static EnumChatFormat getByChar(char c) {
 		for (EnumChatFormat format : values()) {
@@ -131,13 +123,15 @@ public enum EnumChatFormat {
 	}
 	
 	/**
-	 * Returns enum value of last colors used in given string
-	 * @param string - string to check last colors of
-	 * @return last used color code in given string
+	 * Returns enum value of last colors used in given string.
+	 * If it's null, empty or does not contain color codes, WHITE is returned.
+	 * @param	string
+	 * 			string to check last colors of
+	 * @return	last used color code in given string or WHITE if nothing is found
 	 */
 	public static EnumChatFormat lastColorsOf(String string) {
 		if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
-		String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string); //translating RGB into legacy for nametags
+		String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
 		String last = getLastColors(legacyText);
 		if (last.length() > 0) {
 			char c = last.toCharArray()[1];
@@ -173,11 +167,14 @@ public enum EnumChatFormat {
 	}
 	
 	/**
-	 * Returns enum value with exact red, green and blue values or null if no match
-	 * @param red - exact red value
-	 * @param green - exact green value
-	 * @param blue - exact blue value
-	 * @return enum value or null if no such combination exists
+	 * Returns enum value with exact red, green and blue values or null if no match was found
+	 * @param	red
+	 * 			exact red value
+	 * @param	green
+	 * 			exact green value
+	 * @param	blue
+	 * 			exact blue value
+	 * @return	enum value or null if no such combination exists
 	 */
 	public static EnumChatFormat fromRGBExact(int red, int green, int blue){
 		for (EnumChatFormat format : values()) {
@@ -185,8 +182,14 @@ public enum EnumChatFormat {
 		}
 		return null;
 	}
-	
-	//code taken from bukkit, so it can work on bungee too
+
+	/**
+	 * Color translation method taken from bukkit, which converts '&' symbol into
+	 * the actual color character if followed by a valid color character.
+	 * @param	textToTranslate
+	 * 			text to replace color symbol in
+	 * @return	colorized string from provided text
+	 */
 	public static String color(String textToTranslate){
 		if (textToTranslate == null) return null;
 		if (!textToTranslate.contains("&")) return textToTranslate;
@@ -199,13 +202,25 @@ public enum EnumChatFormat {
 		}
 		return new String(b);
 	}
-	
+
+	/**
+	 * Turns back the color symbol into '&' symbol in provided text.
+	 * @param	text
+	 * 			text to revert colors in
+	 * @return	reverted text
+	 */
 	public static String decolor(String text) {
+		if (text == null) return null;
 		if (!text.contains(COLOR_STRING)) return text;
 		return text.replace(COLOR_CHAR, '&');
 	}
-	
-	//code taken from bukkit, so it can work on bungee too
+
+	/**
+	 * Code taken from bukkit, which returns last color codes used in provided text.
+	 * @param	input
+	 * 			text to get last colors from
+	 * @return	last colors used in provided text or empty string if nothing was found
+	 */
 	public static String getLastColors(String input) {
 		StringBuilder result = new StringBuilder();
 		int length = input.length();

@@ -34,7 +34,7 @@ public class AnnounceBarCommand extends SubCommand {
 			sendMessage(sender, getMessages().getBossBarAnnounceCommandUsage());
 			return;
 		}
-		String barname = args[0];
+		String barName = args[0];
 		int duration;
 		try {
 			duration = Integer.parseInt(args[1]);
@@ -42,9 +42,9 @@ public class AnnounceBarCommand extends SubCommand {
 			sendMessage(sender, getMessages().getInvalidNumber(args[1]));
 			return;
 		}
-		BossBar bar = feature.getBossBar(barname);
+		BossBar bar = feature.getBossBar(barName);
 		if (bar == null) {
-			sendMessage(sender, getMessages().getBossBarNotFound(barname));
+			sendMessage(sender, getMessages().getBossBarNotFound(barName));
 			return;
 		}
 		if (feature.getAnnouncedBossBars().contains(bar)) {

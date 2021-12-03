@@ -42,8 +42,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	private Object playerConnection;
 	
 	//player's visible boss bars
-	private final Map<UUID, BossBar> bossbars = new HashMap<>();
-	private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossbars = new HashMap<>();
+	private final Map<UUID, BossBar> bossBars = new HashMap<>();
+	private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossBars = new HashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -105,7 +105,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
-			if (bossbars.containsKey(packet.getId())) return;
+			if (bossBars.containsKey(packet.getId())) return;
 			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16), 
 					BarColor.valueOf(packet.getColor().name()), 
 					BarStyle.valueOf(packet.getOverlay().getBukkitName()));
@@ -113,25 +113,25 @@ public class BukkitTabPlayer extends ITabPlayer {
 			if (packet.isDarkenScreen()) bar.addFlag(BarFlag.DARKEN_SKY);
 			if (packet.isPlayMusic()) bar.addFlag(BarFlag.PLAY_BOSS_MUSIC);
 			bar.setProgress(packet.getPct());
-			bossbars.put(packet.getId(), bar);
+			bossBars.put(packet.getId(), bar);
 			bar.addPlayer(getPlayer());
 			break;
 		case REMOVE:
-			bossbars.get(packet.getId()).removePlayer(getPlayer());
-			bossbars.remove(packet.getId());
+			bossBars.get(packet.getId()).removePlayer(getPlayer());
+			bossBars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			bossbars.get(packet.getId()).setProgress(packet.getPct());
+			bossBars.get(packet.getId()).setProgress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+			bossBars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
 			break;
 		case UPDATE_STYLE:
-			bossbars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));
-			bossbars.get(packet.getId()).setStyle(BarStyle.valueOf(packet.getOverlay().getBukkitName()));
+			bossBars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));
+			bossBars.get(packet.getId()).setStyle(BarStyle.valueOf(packet.getOverlay().getBukkitName()));
 			break;
 		case UPDATE_PROPERTIES:
-			bar = bossbars.get(packet.getId());
+			bar = bossBars.get(packet.getId());
 			processFlag(bar, packet.isCreateWorldFog(), BarFlag.CREATE_FOG);
 			processFlag(bar, packet.isDarkenScreen(), BarFlag.DARKEN_SKY);
 			processFlag(bar, packet.isPlayMusic(), BarFlag.PLAY_BOSS_MUSIC);
@@ -145,7 +145,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 		com.viaversion.viaversion.api.legacy.bossbar.BossBar bar;
 		switch (packet.getOperation()) {
 		case ADD:
-			if (viaBossbars.containsKey(packet.getId())) return;
+			if (viaBossBars.containsKey(packet.getId())) return;
 			bar = Via.getAPI().legacyAPI().createLegacyBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16), 
 					packet.getPct(),
 					BossColor.valueOf(packet.getColor().name()), 
@@ -153,25 +153,25 @@ public class BukkitTabPlayer extends ITabPlayer {
 			//fog missing from via API
 			if (packet.isDarkenScreen()) bar.addFlag(BossFlag.DARKEN_SKY);
 			if (packet.isPlayMusic()) bar.addFlag(BossFlag.PLAY_BOSS_MUSIC);
-			viaBossbars.put(packet.getId(), bar);
+			viaBossBars.put(packet.getId(), bar);
 			bar.addPlayer(getPlayer().getUniqueId());
 			break;
 		case REMOVE:
-			viaBossbars.get(packet.getId()).removePlayer(getPlayer().getUniqueId());
-			viaBossbars.remove(packet.getId());
+			viaBossBars.get(packet.getId()).removePlayer(getPlayer().getUniqueId());
+			viaBossBars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			viaBossbars.get(packet.getId()).setHealth(packet.getPct());
+			viaBossBars.get(packet.getId()).setHealth(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			viaBossbars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16));
+			viaBossBars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16));
 			break;
 		case UPDATE_STYLE:
-			viaBossbars.get(packet.getId()).setColor(BossColor.valueOf(packet.getColor().name()));
-			viaBossbars.get(packet.getId()).setStyle(BossStyle.valueOf(packet.getOverlay().getBukkitName()));
+			viaBossBars.get(packet.getId()).setColor(BossColor.valueOf(packet.getColor().name()));
+			viaBossBars.get(packet.getId()).setStyle(BossStyle.valueOf(packet.getOverlay().getBukkitName()));
 			break;
 		case UPDATE_PROPERTIES:
-			bar = viaBossbars.get(packet.getId());
+			bar = viaBossBars.get(packet.getId());
 			//fog missing from via API
 			processFlagVia(bar, packet.isDarkenScreen(), BossFlag.DARKEN_SKY);
 			processFlagVia(bar, packet.isPlayMusic(), BossFlag.PLAY_BOSS_MUSIC);
@@ -213,12 +213,12 @@ public class BukkitTabPlayer extends ITabPlayer {
 	@Override
 	public boolean isDisguised() {
 		try {
-			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsdisguisesEnabled()) return false;
+			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsDisguisesEnabled()) return false;
 			return DisguiseAPI.isDisguised(getPlayer());
 		} catch (NoClassDefFoundError | ExceptionInInitializerError e) {
 			//java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
-			((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsdisguisesEnabled(false);
+			((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsDisguisesEnabled(false);
 			return false;
 		}
 	}

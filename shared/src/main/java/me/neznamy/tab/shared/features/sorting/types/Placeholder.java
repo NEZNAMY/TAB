@@ -16,8 +16,11 @@ public class Placeholder extends SortingType {
 	private final LinkedHashMap<String, String> sortingMap;
 	
 	/**
-	 * Constructs new instance with given parameter
-	 * @param sortingPlaceholder - placeholder to sort by
+	 * Constructs new instance with given parameters
+	 * @param	sorting
+	 * 			sorting feature
+	 * @param 	options
+	 * 			options used by this sorting type
 	 */
 	public Placeholder(Sorting sorting, String options) {
 		super(sorting, options.split(":")[0]);

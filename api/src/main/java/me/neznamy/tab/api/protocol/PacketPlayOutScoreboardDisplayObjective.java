@@ -7,9 +7,9 @@ public class PacketPlayOutScoreboardDisplayObjective implements TabPacket {
 
 	/**
 	 * Display slot.
-	 * 0 = playerlist,
-	 * 1 = sidebar,
-	 * 2 = belowname.
+	 * 0 = PlayerList,
+	 * 1 = SideBar,
+	 * 2 = BelowName.
 	 */
 	private final int slot;
 	

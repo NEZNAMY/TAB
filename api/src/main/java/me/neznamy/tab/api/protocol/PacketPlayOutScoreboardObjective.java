@@ -11,7 +11,7 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	/** Display name */
 	private final String displayName;
 
-	/** Display type, only takes effect in playertlist */
+	/** Display type, only takes effect in PlayerList */
 	private final EnumScoreboardHealthDisplay renderType;
 
 	/**
@@ -100,10 +100,10 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 
 	/**
 	 * An enum representing available display types.
-	 * They only take effect in playerlist position.
+	 * They only take effect in PlayerList position.
 	 */
 	public enum EnumScoreboardHealthDisplay {
 
-		INTEGER, HEARTS;
+		INTEGER, HEARTS
 	}
 }

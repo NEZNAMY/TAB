@@ -6,19 +6,19 @@ import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.TabConstants;
 
 /**
- * An implementation of Refreshable for bossbar color and style
+ * An implementation of Refreshable for BossBar color and style
  */
 public class ColorAndStyleRefresher extends TabFeature {
 
 	private final String colorProperty;
 	private final String styleProperty;
 	
-	//bossbar line this text belongs to
+	//BossBar line this text belongs to
 	private final BossBarLine line;
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param line - bossbar line this text belongs to
+	 * @param line - BossBar line this text belongs to
 	 */
 	public ColorAndStyleRefresher(BossBarLine line) {
 		super("BossBar", "Updating color and style");

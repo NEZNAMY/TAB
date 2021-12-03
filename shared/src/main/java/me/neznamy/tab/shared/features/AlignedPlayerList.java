@@ -20,9 +20,9 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * Additional code for Playerlist class to secure alignment
+ * Additional code for PlayerList class to secure alignment
  */
-public class AlignedPlayerlist extends Playerlist {
+public class AlignedPlayerList extends PlayerList {
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
@@ -30,7 +30,7 @@ public class AlignedPlayerlist extends Playerlist {
 	
 	private final byte[] widths = new byte[65536];
 
-	public AlignedPlayerlist() {
+	public AlignedPlayerList() {
 		int characterId = 1;
 		for (String line : new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("widths.txt"))).lines().collect(Collectors.toList())) {
 			widths[characterId++] = (byte) Float.parseFloat(line);
@@ -97,9 +97,9 @@ public class AlignedPlayerlist extends Playerlist {
 	}
 	
 	/**
-	 * Returns width of player's tablist name format
+	 * Returns width of player's TabList name format
 	 * @param p - player to get width for
-	 * @return width of player's tablist name format
+	 * @return width of player's TabList name format
 	 */
 	private int getPlayerNameWidth(TabPlayer p) {
 		String format = p.getProperty(TabConstants.Property.TABPREFIX).getFormat(null) + p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(null) + p.getProperty(TabConstants.Property.TABSUFFIX).getFormat(null);
@@ -173,7 +173,7 @@ public class AlignedPlayerlist extends Playerlist {
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTablist) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+		if (!antiOverrideTabList) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -60,7 +61,7 @@ public class ScoreboardCommand extends SubCommand {
 
 	private void toggle(TabPlayer sender) {
 		if (sender == null) {
-			sendMessage(sender, getMessages().getCommandOnlyFromGame());
+			sendMessage(null, getMessages().getCommandOnlyFromGame());
 			return;
 		}
 		if (sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE)) {
@@ -122,7 +123,7 @@ public class ScoreboardCommand extends SubCommand {
 		if (scoreboard == null) return new ArrayList<>();
 		if (arguments.length == 1) return getStartingArgument(Arrays.asList("on", "off", "toggle", "show"), arguments[0]);
 		if (arguments.length == 2) return arguments[0].equalsIgnoreCase("show") ? getStartingArgument(scoreboard.getRegisteredScoreboards().keySet(), arguments[1]) : getOnlinePlayers(arguments[1]);
-		if (arguments.length == 3) return arguments[0].equalsIgnoreCase("show") ? getOnlinePlayers(arguments[2]) : getStartingArgument(Arrays.asList("-s"), arguments[2]);
+		if (arguments.length == 3) return arguments[0].equalsIgnoreCase("show") ? getOnlinePlayers(arguments[2]) : getStartingArgument(Collections.singletonList("-s"), arguments[2]);
 		return new ArrayList<>();
 	}
 }

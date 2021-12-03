@@ -26,7 +26,7 @@ public class BelowName extends TabFeature {
 	private final TabFeature textRefresher = new TextRefresher();
 
 	public BelowName() {
-		super("Belowname", "Updating belowname number", TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-servers"),
+		super("BelowName", "Updating BelowName number", TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("belowname-objective.disable-in-worlds"));
 		TAB.getInstance().getFeatureManager().registerFeature("belowname-text-refresher", textRefresher);
 		TAB.getInstance().debug(String.format("Loaded BelowName feature with parameters number=%s, text=%s, disabledWorlds=%s, disabledServers=%s", rawNumber, rawText, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
@@ -103,7 +103,7 @@ public class BelowName extends TabFeature {
 			}
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-		if (redis != null) redis.updateBelowname(p, p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
+		if (redis != null) redis.updateBelowName(p, p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
 	}
 
 	public int getValue(TabPlayer p) {
@@ -120,7 +120,7 @@ public class BelowName extends TabFeature {
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), number), this);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
-		if (redis != null) redis.updateBelowname(refreshed, refreshed.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
+		if (redis != null) redis.updateBelowName(refreshed, refreshed.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
 	}
 	
 	private String getName(TabPlayer p) {
@@ -130,7 +130,7 @@ public class BelowName extends TabFeature {
 	public class TextRefresher extends TabFeature {
 
 		public TextRefresher(){
-			super("Belowname", "Updating belowname text");
+			super("BelowName", "Updating BelowName text");
 		}
 
 		@Override

@@ -13,14 +13,14 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task);
+	Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task);
 	
 	/**
 	 * Runs task in a new thread
 	 * @param errorDescription - description to use if this task throws an error
 	 * @param task - the task
 	 */
-	public Future<Void> runTask(String errorDescription, Runnable task);
+	Future<Void> runTask(String errorDescription, Runnable task);
 	
 	/**
 	 * Starts a new task with defined repeat interval that measures cpu usage
@@ -30,7 +30,7 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
+	RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
 	
 	/**
 	 * Runs task with a delay and measures how long it took to process
@@ -40,7 +40,7 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
+	Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
 	
 	/**
 	 * Runs task with a delay and measures how long it took to process
@@ -50,7 +50,7 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task);
+	Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task);
 	
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task);
+	Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task);
 }

@@ -69,21 +69,19 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		PermissionPlugin plugin = TAB.getInstance().getGroupManager().getPlugin();
 		if (plugin instanceof LuckPerms) {
 			PlayerPlaceholder prefix = manager.registerPlayerPlaceholder("%luckperms-prefix%", -1, ((LuckPerms)plugin)::getPrefix);
-			prefix.enableTriggerMode(() -> {
+			prefix.enableTriggerMode(() ->
 				luckPermsPrefixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
 					TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
 					prefix.updateValue(p, prefix.request(p));
-				});
-			}, () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsPrefixSub).close());
+				}), () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsPrefixSub).close());
 			PlayerPlaceholder suffix = manager.registerPlayerPlaceholder("%luckperms-suffix%", -1, ((LuckPerms)plugin)::getSuffix);
-			suffix.enableTriggerMode(() -> {
+			suffix.enableTriggerMode(() ->
 				luckPermsSuffixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
 					TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
 					suffix.updateValue(p, suffix.request(p));
-				});
-			}, () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close());
+				}), () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close());
 		}
 		registerAnimationPlaceholders(manager);
 		registerConditionPlaceholders(manager);

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import me.neznamy.tab.shared.features.scoreboard.lines.StaticLine;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
- * A class representing a scoreboard configured in premiumconfig
+ * A class representing a scoreboard configured in config
  */
 public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
@@ -52,13 +51,12 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	 * @param title - scoreboard title
 	 * @param lines - lines of scoreboard
 	 * @param displayCondition - display condition
-	 * @param childBoard - scoreboard to display if condition is not met
 	 */
 	public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition) {
 		this(manager, name, title, lines, false);
 		this.displayCondition = Condition.getCondition(displayCondition);
 		if (this.displayCondition != null) {
-			manager.addUsedPlaceholders(Arrays.asList("%condition:" + this.displayCondition.getName() + "%"));
+			manager.addUsedPlaceholders(Collections.singletonList("%condition:" + this.displayCondition.getName() + "%"));
 		}
 	}
 

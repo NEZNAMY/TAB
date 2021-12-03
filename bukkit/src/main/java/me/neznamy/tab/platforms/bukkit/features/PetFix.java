@@ -12,8 +12,8 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * A feature to disable minecraft 1.9+ feature making tamed animals with custom names copy nametag properties of their owner
- * This is achieved by listening to entity spawn (<1.15) / entity metadata packets and removing owner field from the datawatcher list
+ * A feature to disable minecraft 1.9+ feature making tamed animals with custom names copy NameTag properties of their owner
+ * This is achieved by listening to entity spawn (<1.15) / entity metadata packets and removing owner field from the DataWatcher list
  * Since 1.16 this results in client sending entity use packet twice, so we must cancel the 2nd one to prevent double toggle
  */
 public class PetFix extends TabFeature {
@@ -21,7 +21,7 @@ public class PetFix extends TabFeature {
 	//nms storage
 	private final NMSStorage nms = NMSStorage.getInstance();
 
-	//datawatcher position of pet owner field
+	//DataWatcher position of pet owner field
 	private final int petOwnerPosition = getPetOwnerPosition();
 
 	//logger of last interacts to prevent feature not working on 1.16
@@ -60,7 +60,8 @@ public class PetFix extends TabFeature {
 
 	/**
 	 * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
-	 * @throws ReflectiveOperationException 
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	@Override
 	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
@@ -86,8 +87,9 @@ public class PetFix extends TabFeature {
 	}
 
 	/**
-	 * Removes pet owner field from datawatcher
-	 * @throws ReflectiveOperationException
+	 * Removes pet owner field from DataWatcher
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	@SuppressWarnings("unchecked")
 	@Override

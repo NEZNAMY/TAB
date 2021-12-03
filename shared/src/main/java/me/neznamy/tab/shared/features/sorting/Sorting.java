@@ -26,12 +26,12 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  */
 public class Sorting extends TabFeature {
 
-	private final NameTag nametags;
+	private final NameTag nameTags;
 	
 	//map of all registered sorting types
-	private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<String, BiFunction<Sorting, String, SortingType>>();
+	private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
 	
-	//if sorting is case senstitive or not
+	//if sorting is case-sensitive or not
 	private final boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
 	
 	//active sorting types
@@ -39,12 +39,11 @@ public class Sorting extends TabFeature {
 	
 	/**
 	 * Constructs new instance, loads data from configuration and starts repeating task
-	 * @param tab - tab instance
-	 * @param nametags - nametag feature
+	 * @param nameTags - NameTag feature
 	 */
-	public Sorting(NameTag nametags) {
+	public Sorting(NameTag nameTags) {
 		super("Team name refreshing", "Refreshing team name");
-		this.nametags = nametags;
+		this.nameTags = nameTags;
 		types.put("GROUPS", Groups::new);
 		types.put("PERMISSIONS", Permissions::new);
 		types.put("PLACEHOLDER", Placeholder::new);
@@ -57,20 +56,20 @@ public class Sorting extends TabFeature {
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || (nametags != null && (nametags.getForcedTeamName(p) != null || nametags.hasTeamHandlingPaused(p)))) return;
+		if (!p.isLoaded() || (nameTags != null && (nameTags.getForcedTeamName(p) != null || nameTags.hasTeamHandlingPaused(p)))) return;
 		String newName = getTeamName(p);
 		if (!p.getTeamName().equals(newName)) {
-			if (nametags != null) nametags.unregisterTeam(p);
+			if (nameTags != null) nameTags.unregisterTeam(p);
 			LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
 			if (layout != null) layout.updateTeamName(p, newName);
 			((ITabPlayer) p).setTeamName(newName);
-			if (nametags != null) nametags.registerTeam(p);
+			if (nameTags != null) nameTags.registerTeam(p);
 		}
 	}
 	
 	@Override
 	public void load(){
-		if (nametags != null) return; //handled by nametag feature
+		if (nameTags != null) return; //handled by NameTag feature
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			((ITabPlayer) all).setTeamName(getTeamName(all));
 		}
@@ -78,7 +77,7 @@ public class Sorting extends TabFeature {
 	
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (nametags != null) return; //handled by nametag feature
+		if (nameTags != null) return; //handled by NameTag feature
 		((ITabPlayer) connectedPlayer).setTeamName(getTeamName(connectedPlayer));
 	}
 	
@@ -119,7 +118,7 @@ public class Sorting extends TabFeature {
 	/**
 	 * Checks if team name is available and proceeds to try new values until free name is found
 	 * @param p - player to build team name for
-	 * @param currentName - current up to 15 character long teamname start
+	 * @param currentName - current up to 15 character long team name start
 	 * @param id - current character to check as 16th character
 	 * @return first available full team name
 	 */

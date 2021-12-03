@@ -16,9 +16,9 @@ public class CMIFormat implements RGBFormatter {
 		String replaced = text;
 		Matcher m = pattern.matcher(replaced);
 		while (m.find()) {
-			String hexcode = m.group();
-			String fixed = hexcode.substring(2, 8);
-			replaced = replaced.replace(hexcode, "#" + fixed);
+			String hexCode = m.group();
+			String fixed = hexCode.substring(2, 8);
+			replaced = replaced.replace(hexCode, "#" + fixed);
 		}
 		return replaced;
 	}

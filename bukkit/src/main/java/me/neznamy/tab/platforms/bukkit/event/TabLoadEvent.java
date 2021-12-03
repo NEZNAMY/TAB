@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Bukkit event that is called each time TAB fully loads. This includes server startup, reload,
@@ -12,7 +13,7 @@ public class TabLoadEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 
 	@Override
-	public HandlerList getHandlers(){
+	public @NotNull HandlerList getHandlers(){
 		return getHandlerList();
 	}
 	

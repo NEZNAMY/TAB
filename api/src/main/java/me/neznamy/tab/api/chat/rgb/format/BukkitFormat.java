@@ -18,9 +18,9 @@ public class BukkitFormat implements RGBFormatter {
 		String replaced = text;
 		Matcher m = pattern.matcher(replaced);
 		while (m.find()) {
-			String hexcode = m.group();
-			String fixed = new String(new char[] {'#', hexcode.charAt(3), hexcode.charAt(5), hexcode.charAt(7), hexcode.charAt(9), hexcode.charAt(11), hexcode.charAt(13)});
-			replaced = replaced.replace(hexcode, fixed);
+			String hexCode = m.group();
+			String fixed = new String(new char[] {'#', hexCode.charAt(3), hexCode.charAt(5), hexCode.charAt(7), hexCode.charAt(9), hexCode.charAt(11), hexCode.charAt(13)});
+			replaced = replaced.replace(hexCode, fixed);
 		}
 		return replaced;
 	}

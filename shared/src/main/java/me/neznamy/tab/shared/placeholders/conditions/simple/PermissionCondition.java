@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.placeholders.conditions.simple;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * "permission:permission.node" condition where permission.node is the permission
+ * "permission:permission.node" condition where "permission.node" is the permission
  */
 public class PermissionCondition extends SimpleCondition {
 

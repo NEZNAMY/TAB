@@ -91,7 +91,7 @@ object KryptonPacketBuilder : PacketBuilder() {
             toComponent(suffix, clientVersion),
             packet.options and 1 > 0,
             packet.options and 2 > 0,
-            packet.nametagVisibility ?: "",
+            packet.nameTagVisibility ?: "",
             packet.collisionRule ?: "",
             players,
             if (action == PacketOutTeam.Action.ADD_MEMBERS || action == PacketOutTeam.Action.REMOVE_MEMBERS) players else emptySet()
@@ -116,7 +116,7 @@ object KryptonPacketBuilder : PacketBuilder() {
         return PacketPlayOutPlayerInfo(action, listData)
     }
 
-    override fun readObjective(packet: Any?, clientVersion: ProtocolVersion?) = null
+    override fun readObjective(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutScoreboardObjective? = null
 
-    override fun readDisplayObjective(packet: Any?, clientVersion: ProtocolVersion?) = null
+    override fun readDisplayObjective(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutScoreboardDisplayObjective? = null
 }
