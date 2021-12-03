@@ -58,7 +58,7 @@ public class PlayerSlot {
 		if (player != null) {
 			setPlayer(null);
 		} else {
-			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, new IChatBaseComponent(text)));
+			PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, IChatBaseComponent.optimizedComponent(text)));
 			for (TabPlayer all : layout.getViewers()) {
 				if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
 				all.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
