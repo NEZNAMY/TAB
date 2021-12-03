@@ -1,9 +1,8 @@
 package me.neznamy.tab.shared;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import io.netty.channel.Channel;
@@ -40,6 +39,8 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	private boolean previewingNameTag;
 	private boolean onJoinFinished;
+
+	private List<String> registeredTeams = new ArrayList<>();
 
 	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world) {
 		this.player = player;
@@ -106,6 +107,18 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void sendCustomPacket(TabPacket packet) {
 		if (packet == null) return;
+		if (packet instanceof PacketPlayOutScoreboardTeam) {
+			String team = ((PacketPlayOutScoreboardTeam) packet).getName();
+			if (((PacketPlayOutScoreboardTeam) packet).getMethod() == 0) {
+				if (registeredTeams.contains(team)) {
+					TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + team + " to player " + getName());
+					return;
+				}
+				registeredTeams.add(team);
+			} else if (((PacketPlayOutScoreboardTeam) packet).getMethod() == 1) {
+				registeredTeams.remove(((PacketPlayOutScoreboardTeam) packet).getName());
+			}
+		}
 		try {
 			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
 		} catch (Exception e) {
