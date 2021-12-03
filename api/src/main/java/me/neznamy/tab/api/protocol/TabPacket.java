@@ -12,5 +12,5 @@ public interface TabPacket {
 	 * Returns user-friendly string representation of the packet
 	 * @return user-friendly string representation of the packet
 	 */
-	public String toString();
+	String toString();
 }

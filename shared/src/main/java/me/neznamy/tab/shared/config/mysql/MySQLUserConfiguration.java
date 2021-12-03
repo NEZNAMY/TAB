@@ -56,7 +56,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 	@Override
 	public String[] getProperty(String user, String property, String server, String world) {
 		user = user.toLowerCase();
-		String value = null;
+		String value;
 		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(user, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, String.format("user=%s,server=%s", user, server)};
 		}

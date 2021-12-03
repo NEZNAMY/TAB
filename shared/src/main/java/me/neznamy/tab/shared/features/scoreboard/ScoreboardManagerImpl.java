@@ -45,9 +45,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	private final String scoreboardOff = TAB.getInstance().getConfiguration().getMessages().getScoreboardOff();
 
 	//list of players with disabled scoreboard
-	private List<String> sbOffPlayers = new ArrayList<>();
+	private final List<String> sbOffPlayers;
 
-	//currently active scoreboard announcement
+	//active scoreboard announcement
 	private Scoreboard announcement;
 
 	private final List<TabPlayer> joinDelayed = new ArrayList<>();
@@ -62,7 +62,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	/**
 	 * Constructs new instance and loads configuration
-	 * @param tab - tab instance
 	 */
 	@SuppressWarnings("unchecked")
 	public ScoreboardManagerImpl() {
@@ -70,6 +69,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds"));
 		if (rememberToggleChoice) {
 			sbOffPlayers = Collections.synchronizedList(new ArrayList<>(TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("scoreboard-off", new ArrayList<>())));
+		} else {
+			sbOffPlayers = Collections.emptyList();
 		}
 		Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
 		for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
@@ -150,14 +151,14 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	 */
 	public void sendHighestScoreboard(TabPlayer p) {
 		if (isDisabledPlayer(p) || !hasScoreboardVisible(p)) return;
-		Scoreboard scoreboard = detectHighestScoreboard(p);
-		Scoreboard current = activeScoreboard.get(p);
+		ScoreboardImpl scoreboard = (ScoreboardImpl) detectHighestScoreboard(p);
+		ScoreboardImpl current = activeScoreboard.get(p);
 		if (scoreboard != current) {
 			if (current != null) {
-				((ScoreboardImpl) current).removePlayer(p);
+				current.removePlayer(p);
 			}
 			if (scoreboard != null) {
-				((ScoreboardImpl) scoreboard).addPlayer(p);
+				scoreboard.addPlayer(p);
 			}
 		}
 	}
@@ -213,7 +214,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	/**
-	 * Returns currently highest scoreboard in chain for specified player
+	 * Returns currently the highest scoreboard in chain for specified player
 	 * @param p - player to check
 	 * @return highest scoreboard player should see
 	 */
@@ -236,7 +237,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
-	public boolean onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+	public void onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
 		if (respectOtherPlugins && packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			otherPluginScoreboard.put(receiver, packet.getObjectiveName());
@@ -244,7 +245,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 				TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> activeScoreboard.get(receiver).removePlayer(receiver));
 			}
 		}
-		return false;
 	}
 
 	@Override
@@ -362,7 +362,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void announceScoreboard(String scoreboard, int duration) {
-		if (duration < 0) throw new IllegalArgumentException("Duration canont be negative");
+		if (duration < 0) throw new IllegalArgumentException("Duration cannot be negative");
 		ScoreboardImpl sb = (ScoreboardImpl) scoreboards.get(scoreboard);
 		if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
 		new Thread(() -> {

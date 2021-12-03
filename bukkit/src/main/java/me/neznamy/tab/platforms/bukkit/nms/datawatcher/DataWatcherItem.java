@@ -25,7 +25,8 @@ public class DataWatcherItem {
 	 * Returns and instance of this class from given NMS item
 	 * @param nmsItem - NMS item
 	 * @return instance of this class with same data
-	 * @throws ReflectiveOperationException 
+	 * @throws	ReflectiveOperationException
+	 * 			if thrown by reflective operation
 	 */
 	public static DataWatcherItem fromNMS(Object nmsItem) throws ReflectiveOperationException {
 		NMSStorage nms = NMSStorage.getInstance();

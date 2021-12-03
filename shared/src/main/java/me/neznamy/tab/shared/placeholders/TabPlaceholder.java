@@ -28,7 +28,7 @@ public abstract class TabPlaceholder implements Placeholder {
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements
 	 * @param identifier - placeholder identifier
-	 * @param refresh - refresh interval in millieconds
+	 * @param refresh - refresh interval in milliseconds
 	 */
 	protected TabPlaceholder(String identifier, int refresh) {
 		if (refresh % 50 != 0 && refresh != -1) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
@@ -55,8 +55,8 @@ public abstract class TabPlaceholder implements Placeholder {
 	 * @return string with this placeholder replaced
 	 */
 	public String set(String s, TabPlayer p) {
-		String originalvalue = getLastValue(p);
-		String value = replacements.findReplacement(originalvalue);
+		String originalValue = getLastValue(p);
+		String value = replacements.findReplacement(originalValue);
 		value = setPlaceholders(value, p);
 		return replace(s, identifier, value);
 	}

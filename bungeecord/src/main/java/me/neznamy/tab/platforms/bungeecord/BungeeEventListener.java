@@ -11,7 +11,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 /**
- * The core for bungeecord forwarding events into all enabled features
+ * The core for BungeeCord forwarding events into all enabled features
  */
 public class BungeeEventListener implements Listener {
 
@@ -33,7 +33,8 @@ public class BungeeEventListener implements Listener {
 
 	/**
 	 * Listener to join / server switch to forward the event to all features
-	 * @param e
+	 * @param	e
+	 * 			switch event
 	 */
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
@@ -47,7 +48,8 @@ public class BungeeEventListener implements Listener {
 
 	/**
 	 * Listener to chat packets to forward the event to all features
-	 * @param e
+	 * @param	e
+	 * 			chat event
 	 */
 	@EventHandler
 	public void onChat(ChatEvent e) {

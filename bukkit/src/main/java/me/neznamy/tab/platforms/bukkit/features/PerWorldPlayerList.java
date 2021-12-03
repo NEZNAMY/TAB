@@ -19,10 +19,10 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * Per-world-playerlist feature handler
+ * Per-world-PlayerList feature handler
  */
 @SuppressWarnings("deprecation")
-public class PerWorldPlayerlist extends TabFeature implements Listener {
+public class PerWorldPlayerList extends TabFeature implements Listener {
 	
 	//plugin instance
 	private final JavaPlugin plugin;
@@ -36,10 +36,10 @@ public class PerWorldPlayerlist extends TabFeature implements Listener {
 	 * Constructs new instance with given parameters and loads config options
 	 * @param plugin - plugin instance
 	 */
-	public PerWorldPlayerlist(JavaPlugin plugin) {
-		super("Per world playerlist", null);
+	public PerWorldPlayerList(JavaPlugin plugin) {
+		super("Per world PlayerList", null);
 		this.plugin = plugin;
-		TAB.getInstance().debug(String.format("Loaded PerWorldPlayerlist feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
+		TAB.getInstance().debug(String.format("Loaded PerWorldPlayerList feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	

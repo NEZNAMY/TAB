@@ -15,7 +15,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -39,7 +38,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
-	private int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
+	private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
 	private final Map<String, Integer> serverPlaceholderRefreshIntervals = new HashMap<>();
 	private final Map<String, Integer> playerPlaceholderRefreshIntervals = new HashMap<>();
 	private final Map<String, Integer> relationalPlaceholderRefreshIntervals = new HashMap<>();
@@ -213,7 +212,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	
 	@Override
 	public void unload() {
-		registeredPlaceholders.values().forEach(p -> p.unload());
+		registeredPlaceholders.values().forEach(Placeholder::unload);
 	}
 
 	@Override
@@ -302,7 +301,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 	
 	public void recalculateUsedPlaceholders() {
-		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).collect(Collectors.toSet()).toArray(new Placeholder[0]);
+		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).distinct().toArray(Placeholder[]::new);
 	}
 
 	@Override

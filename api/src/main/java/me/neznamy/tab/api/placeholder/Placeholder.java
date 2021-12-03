@@ -2,15 +2,15 @@ package me.neznamy.tab.api.placeholder;
 
 public interface Placeholder {
 
-	public int getRefresh();
+	int getRefresh();
 
-	public String getIdentifier();
+	String getIdentifier();
 
-	public boolean isTriggerMode();
+	boolean isTriggerMode();
 
-	public void enableTriggerMode();
+	void enableTriggerMode();
 
-	public void enableTriggerMode(Runnable onActivation, Runnable onDisable);
+	void enableTriggerMode(Runnable onActivation, Runnable onDisable);
 
-	public void unload();
+	void unload();
 }

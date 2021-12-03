@@ -1,14 +1,7 @@
 package me.neznamy.tab.shared;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,7 +73,7 @@ public class CpuManager implements ThreadManager {
 			packetsCurrent = new ConcurrentHashMap<>();
 			return "";
 		});
-		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Arrays.asList("%cpu%"));
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%cpu%"));
 	}
 
 	/**
@@ -172,7 +165,7 @@ public class CpuManager implements ThreadManager {
 
 	/**
 	 * Returns cpu usage map of placeholders on bukkit side from previous 10 seconds. This is only used
-	 * when TAB is on bungeecord with PAPI placeholder support
+	 * when TAB is on BungeeCord with PAPI placeholder support
 	 * @return cpu usage map of placeholders
 	 */
 	public Map<String, Float> getBridgeUsage(){
@@ -216,8 +209,8 @@ public class CpuManager implements ThreadManager {
 	}
 
 	/**
-	 * Returns map of CPU usage per feature per type in the previous 10 seconds
-	 * @return map of CPU usage per feature per type
+	 * Returns map of CPU usage per feature and type in the previous 10 seconds
+	 * @return map of CPU usage per feature and type
 	 */
 	public Map<String, Map<String, Float>> getFeatureUsage(){
 		Map<String, Map<String, Long>> total = new HashMap<>();
@@ -243,7 +236,7 @@ public class CpuManager implements ThreadManager {
 	}
 
 	/**
-	 * Converts nanoseconds to percentual usage
+	 * Converts nanoseconds to percent usage
 	 * @param nanos - nanoseconds worked
 	 * @return usage in % (0-100)
 	 */
@@ -254,36 +247,27 @@ public class CpuManager implements ThreadManager {
 	}
 
 	/**
-	 * Sorts map by value from higest to lowest
+	 * Sorts map by value from highest to lowest
 	 * @param <K> - map key
 	 * @param <V> - map value
 	 * @param map - map to sort
 	 * @return sorted map
 	 */
 	private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
-		Comparator<K> valueComparator = (k1, k2) -> {
-			int compare = map.get(k2).compareTo(map.get(k1));
-			if (compare == 0) return 1;
-			else return compare;
-		};
+		Comparator<K> valueComparator = (k1, k2) -> map.get(k2).compareTo(map.get(k1));
 		Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
 	}
 	
 	/**
-	 * Sorts map by value from higest to lowest
+	 * Sorts map by value from highest to lowest
 	 * @param <K> - map key
-	 * @param <V> - map value
 	 * @param map - map to sort
 	 * @return sorted map
 	 */
 	private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
-		Comparator<K> valueComparator = (k1, k2) -> {
-			int compare = ((Comparable<Integer>)map.get(k2).get()).compareTo(map.get(k1).get());
-			if (compare == 0) return 1;
-			else return compare;
-		};
+		Comparator<K> valueComparator = (k1, k2) -> ((Comparable<Integer>)map.get(k2).get()).compareTo(map.get(k1).get());
 		Map<K, AtomicInteger> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
@@ -292,9 +276,8 @@ public class CpuManager implements ThreadManager {
 	/**
 	 * Sorts keys by map nested values from highest to lowest and returns sorted list of keys
 	 * @param <K> - map key
-	 * @param <L> - nested map key
 	 * @param map - map to sort
-	 * @return list of keys sorted from highest usage to lowest
+	 * @return list of keys sorted from the highest usage to lowest
 	 */
 	private <K> List<K> sortKeys(Map<K, Map<String, Long>> map){
 		Map<K, Long> simplified = new LinkedHashMap<>();

@@ -10,22 +10,22 @@ import me.neznamy.tab.api.bossbar.BarStyle;
  */
 public class PacketPlayOutBoss implements TabPacket {
 
-	/** UUID of the bossbar */
-	private UUID id;
+	/** UUID of the BossBar */
+	private final UUID id;
 
 	/** Action of this packet */
-	private Action operation;
+	private final Action operation;
 
-	/** Bossbar title */
+	/** BossBar title */
 	private String name;
 
-	/** Bossbar progress (0-1)*/
+	/** BossBar progress (0-1)*/
 	private float pct;
 
-	/** Bossbar color */
+	/** BossBar color */
 	private BarColor color;
 
-	/** Bossbar style */
+	/** BossBar style */
 	private BarStyle overlay;
 
 	/** Darken screen flag */
@@ -42,15 +42,15 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.ADD action
 	 * 
 	 * @param	id
-	 * 			bossbar uuid
+	 * 			BossBar uuid
 	 * @param	name
-	 * 			bossbar title
+	 * 			BossBar title
 	 * @param	pct
-	 * 			bossbar progress
+	 * 			BossBar progress
 	 * @param	color
-	 * 			bossbar color
+	 * 			BossBar color
 	 * @param	overlay
-	 * 			bossbar style
+	 * 			BossBar style
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
 		this.operation = Action.ADD;
@@ -66,7 +66,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.REMOVE action
 	 * 
 	 * @param	id
-	 * 			bossbar uuid
+	 * 			BossBar uuid
 	 */
 	public PacketPlayOutBoss(UUID id) {
 		this.operation = Action.REMOVE;
@@ -78,9 +78,9 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PCT action
 	 * 
 	 * @param	id
-	 * 			bossbar uuid
+	 * 			BossBar uuid
 	 * @param	pct
-	 * 			bossbar progress
+	 * 			BossBar progress
 	 */
 	public PacketPlayOutBoss(UUID id, float pct) {
 		this.operation = Action.UPDATE_PCT;
@@ -93,9 +93,9 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_NAME action
 	 * 
 	 * @param	id
-	 * 			bossbar uuid
+	 * 			BossBar uuid
 	 * @param	name
-	 * 			bossbar title
+	 * 			BossBar title
 	 */
 	public PacketPlayOutBoss(UUID id, String name) {
 		this.operation = Action.UPDATE_NAME;
@@ -108,11 +108,11 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_STYLE action
 	 * 
 	 * @param	id
-	 * 			bossbar uuid
-	 * @param	name
-	 * 			bossbar color
+	 * 			BossBar uuid
+	 * @param	color
+	 * 			BossBar color
 	 * @param	overlay
-	 * 			bossbar style
+	 * 			BossBar style
 	 */
 	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
 		this.operation = Action.UPDATE_STYLE;
@@ -171,7 +171,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Returns {@link #style}
+	 * Returns {@link #overlay}
 	 * @return	style
 	 */
 	public BarStyle getOverlay() {
@@ -275,6 +275,6 @@ public class PacketPlayOutBoss implements TabPacket {
 		UPDATE_PCT,
 		UPDATE_NAME,
 		UPDATE_STYLE,
-		UPDATE_PROPERTIES;
+		UPDATE_PROPERTIES
 	}
 }

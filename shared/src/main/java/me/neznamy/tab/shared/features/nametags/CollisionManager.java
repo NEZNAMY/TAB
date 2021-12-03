@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.nametags;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,14 +10,14 @@ import me.neznamy.tab.shared.TAB;
 
 public class CollisionManager extends TabFeature {
 
-	private final NameTag nametags;
+	private final NameTag nameTags;
 	private final boolean collisionRule;
 	private final Map<TabPlayer, Boolean> collision = new HashMap<>();
 	private final Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
 
-	public CollisionManager(NameTag nametags, boolean collisionRule) {
-		super(nametags.getFeatureName(), "Updating collision");
-		this.nametags = nametags;
+	public CollisionManager(NameTag nameTags, boolean collisionRule) {
+		super(nameTags.getFeatureName(), "Updating collision");
+		this.nameTags = nameTags;
 		this.collisionRule = collisionRule;
 		if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
 		if (!collisionRule) return; //no need to refresh disguise status since collision is disabled
@@ -29,7 +29,7 @@ public class CollisionManager extends TabFeature {
 			collision.put(p, newCollision);
 			return newCollision;
 		});
-		addUsedPlaceholders(Arrays.asList("%collision%"));
+		addUsedPlaceholders(Collections.singletonList("%collision%"));
 	}
 	
 	public boolean getCollision(TabPlayer p) {
@@ -56,8 +56,8 @@ public class CollisionManager extends TabFeature {
 
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (nametags.isDisabledPlayer(p)) return;
-		nametags.updateTeamData(p);
+		if (nameTags.isDisabledPlayer(p)) return;
+		nameTags.updateTeamData(p);
 	}
 	
 	public void setCollisionRule(TabPlayer player, Boolean collision) {
@@ -67,7 +67,7 @@ public class CollisionManager extends TabFeature {
 		} else {
 			forcedCollision.put(player, collision);
 		}
-		nametags.updateTeamData(player);
+		nameTags.updateTeamData(player);
 	}
 
 	public Boolean getCollisionRule(TabPlayer player) {

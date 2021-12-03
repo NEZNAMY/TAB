@@ -4,13 +4,13 @@ import me.neznamy.tab.api.TabPlayer;
 
 public interface RedisSupport {
 
-	public void updateTabFormat(TabPlayer p, String format);
+	void updateTabFormat(TabPlayer p, String format);
 	
-	public void updateNameTag(TabPlayer p, String tagprefix, String tagsuffix);
+	void updateNameTag(TabPlayer p, String tagPrefix, String tagSuffix);
 	
-	public void updateBelowname(TabPlayer p, String value);
+	void updateBelowName(TabPlayer p, String value);
 	
-	public void updateYellowNumber(TabPlayer p, String value);
+	void updateYellowNumber(TabPlayer p, String value);
 	
-	public void updateTeamName(TabPlayer p, String to);
+	void updateTeamName(TabPlayer p, String to);
 }

@@ -16,19 +16,19 @@ import me.neznamy.tab.shared.TAB;
  */
 public class EventListener implements Listener {
 	
-	//the nametag feature handler
+	//the NameTag feature handler
 	private final NameTagX feature;
 
 	/**
 	 * Constructs new instance with given parameters
-	 * @param feature - nametagx feature handler
+	 * @param feature - NameTag feature handler
 	 */
 	public EventListener(NameTagX feature) {
 		this.feature = feature;
 	}
 	
 	/**
-	 * Sneak event listener to despawn & spawn armor stands to skip animation
+	 * Sneak event listener to de-spawn & spawn armor stands to skip animation
 	 * @param e - sneak event
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

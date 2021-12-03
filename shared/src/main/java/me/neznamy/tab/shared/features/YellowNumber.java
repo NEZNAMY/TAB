@@ -13,13 +13,13 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 
 /**
- * Feature handler for tablist objective feature
+ * Feature handler for TabList objective feature
  */
 public class YellowNumber extends TabFeature {
 
 	public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
 	public static final int DISPLAY_SLOT = 0;
-	private static final String TITLE = "PlayerlistObjectiveTitle";
+	private static final String TITLE = "PlayerListObjectiveTitle";
 
 	private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
 	private final EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) || 

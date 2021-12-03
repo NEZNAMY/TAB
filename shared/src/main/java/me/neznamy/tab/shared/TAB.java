@@ -19,14 +19,14 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.AlignedPlayerlist;
+import me.neznamy.tab.shared.features.AlignedPlayerList;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.HeaderFooter;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PingSpoof;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.Playerlist;
+import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.SpectatorFix;
 import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
@@ -78,7 +78,7 @@ public class TAB extends TabAPI {
 
 	private PlaceholderManagerImpl placeholderManager;
 
-	//server version, always using latest on proxies
+	//server version, always using the latest on proxies
 	private final ProtocolVersion serverVersion;
 	
 	private GroupManager groupManager;
@@ -103,13 +103,13 @@ public class TAB extends TabAPI {
 	}
 
 	/**
-	 * Returns player by tablist uuid. This is required due to Velocity as player uuid and tablist uuid do ont match there
-	 * @param tablistId - tablist id of player
+	 * Returns player by TabList UUID. This is required due to Velocity as player uuid and TabList uuid do ont match there
+	 * @param tabListId - TabList id of player
 	 * @return the player or null if not found
 	 */
-	public TabPlayer getPlayerByTablistUUID(UUID tablistId) {
+	public TabPlayer getPlayerByTablistUUID(UUID tabListId) {
 		for (TabPlayer p : data.values()) {
-			if (p.getTablistUUID().equals(tablistId)) return p;
+			if (p.getTablistUUID().equals(tabListId)) return p;
 		}
 		return null;
 	}
@@ -195,9 +195,9 @@ public class TAB extends TabAPI {
 		if (configuration.isRemoveGhostPlayers()) featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
 		if (serverVersion.getMinorVersion() >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
 			if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
-				featureManager.registerFeature("playerlist", new AlignedPlayerlist());
+				featureManager.registerFeature("playerlist", new AlignedPlayerList());
 			} else {
-				featureManager.registerFeature("playerlist", new Playerlist());
+				featureManager.registerFeature("playerlist", new PlayerList());
 			}
 		}
 		if (configuration.getConfig().getBoolean("ping-spoof.enabled", false)) featureManager.registerFeature("pingspoof", new PingSpoof());

@@ -8,8 +8,8 @@ import me.neznamy.tab.api.TabPlayer;
 
 public abstract class PropertyCommand extends SubCommand {
 
-	protected PropertyCommand(String name, String permission) {
-		super(name, permission);
+	protected PropertyCommand(String name) {
+		super(name, null);
 	}
 	
 	@Override

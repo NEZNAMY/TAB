@@ -13,6 +13,7 @@ import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TAB's expansion for PlaceholderAPI
@@ -42,22 +43,22 @@ public class TabExpansion extends PlaceholderExpansion {
 	}
 
 	@Override
-	public String getAuthor(){
+	public @NotNull String getAuthor(){
 		return plugin.getDescription().getAuthors().toString();
 	}
 
 	@Override
-	public String getIdentifier(){
+	public @NotNull String getIdentifier(){
 		return "tab";
 	}
 
 	@Override
-	public String getVersion(){
+	public @NotNull String getVersion(){
 		return plugin.getDescription().getVersion();
 	}
 
 	@Override
-	public String onPlaceholderRequest(Player player, String identifier){
+	public String onPlaceholderRequest(Player player, @NotNull String identifier){
 		if (player == null) return "";
 		TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
 		if ("scoreboard_visible".equals(identifier)) {

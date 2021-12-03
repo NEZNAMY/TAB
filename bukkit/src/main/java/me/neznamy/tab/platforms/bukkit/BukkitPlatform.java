@@ -18,7 +18,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
-import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerlist;
+import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
@@ -38,7 +38,7 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
 
 /**
- * Bukkit implementation of Platform
+ * Bukkit's implementation of Platform interface
  */
 public class BukkitPlatform implements Platform {
 
@@ -49,9 +49,7 @@ public class BukkitPlatform implements Platform {
 
 	//booleans to check plugin presence
 	private boolean placeholderAPI;
-	private boolean viaversion;
-	private boolean idisguise;
-	private boolean libsdisguises;
+	private boolean libsDisguises;
 	private Plugin essentials;
 
 	/**
@@ -80,7 +78,6 @@ public class BukkitPlatform implements Platform {
 		if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
 			try {
 				Class.forName("com.viaversion.viaversion.api.Via");
-				viaversion = true;
 			} catch (ClassNotFoundException e) {
 				TAB.getInstance().sendConsoleMessage("&c[TAB] An outdated version of ViaVersion (" + getPluginVersion("ViaVersion") + ") was detected.", true);
 				TAB.getInstance().sendConsoleMessage("&c[TAB] TAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
@@ -91,14 +88,13 @@ public class BukkitPlatform implements Platform {
 			TAB.getInstance().sendConsoleMessage("&c[TAB] Detected plugin \"Tablisknu\", which causes TAB to not work properly. Consider removing the plugin.", true);
 		}
 		placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
-		idisguise = Bukkit.getPluginManager().isPluginEnabled("iDisguise");
-		libsdisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
+		libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector());
 		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		loadNametagFeature(tab);
+		loadNameTagFeature(tab);
 		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
 			if (tab.getServerVersion().getMinorVersion() < 9) {
@@ -108,7 +104,7 @@ public class BukkitPlatform implements Platform {
 			}
 		}
 		if (tab.getServerVersion().getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix());
-		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerlist(plugin));
+		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerList(plugin));
 		if (placeholderAPI) {
 			new TabExpansion(plugin);
 		}
@@ -122,10 +118,10 @@ public class BukkitPlatform implements Platform {
 	}
 
 	/**
-	 * Loads nametag feature from config
+	 * Loads NameTag feature from config
 	 * @param tab - tab instance
 	 */
-	private void loadNametagFeature(TAB tab) {
+	private void loadNameTagFeature(TAB tab) {
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
 			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
 				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin));
@@ -227,20 +223,12 @@ public class BukkitPlatform implements Platform {
 		return Bukkit.getMaxPlayers();
 	}
 
-	public boolean isViaversionEnabled() {
-		return viaversion;
-	}
-
-	public boolean isLibsdisguisesEnabled() {
-		return libsdisguises;
+	public boolean isLibsDisguisesEnabled() {
+		return libsDisguises;
 	}
 	
-	public void setLibsdisguisesEnabled(boolean enabled) {
-		libsdisguises = enabled;
-	}
-
-	public boolean isIdisguiseEnabled() {
-		return idisguise;
+	public void setLibsDisguisesEnabled(boolean enabled) {
+		libsDisguises = enabled;
 	}
 
 	public Essentials getEssentials() {

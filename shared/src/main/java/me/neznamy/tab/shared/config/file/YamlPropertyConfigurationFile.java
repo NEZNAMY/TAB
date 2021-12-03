@@ -42,7 +42,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
 	@Override
 	public String[] getProperty(String name, String property, String server, String world) {
-		Object value = null;
+		Object value;
 		if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), name, property})) != null) {
 			return new String[] {toString(value), category + "=" + name + ", server=" + server};
 		}

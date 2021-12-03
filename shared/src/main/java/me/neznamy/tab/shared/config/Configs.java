@@ -73,8 +73,10 @@ public class Configs {
 
 	/**
 	 * Loads all configuration files and converts files to latest version
-	 * @throws IOException 
-	 * @throws YAMLException 
+	 * @throws	IOException
+	 * 			if File I/O operation fails
+	 * @throws	YAMLException
+	 * 			if files contain syntax errors
 	 */
 	public void loadFiles() throws YAMLException, IOException {
 		ClassLoader loader = Configs.class.getClassLoader();
@@ -86,9 +88,11 @@ public class Configs {
 	}
 
 	/**
-	 * Loads config.yml and some of it's values
-	 * @throws IOException 
-	 * @throws YAMLException 
+	 * Loads config.yml and some of its values
+	 * @throws	IOException
+	 * 			if File I/O operation fails
+	 * @throws	YAMLException
+	 * 			if files contain syntax errors
 	 */
 	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
@@ -248,11 +252,11 @@ public class Configs {
 			return true;
 
 		try {
-			File oldfolder = new File(file.getParent()+File.separator+"old_configs");
-			if (!oldfolder.exists()) oldfolder.mkdir();
+			File oldFolder = new File(file.getParent()+File.separator+"old_configs");
+			if (!oldFolder.exists()) oldFolder.mkdir();
 
-			Path oldconfig = Paths.get(file.getParent()+File.separator+"old_configs"+File.separator+file.getName());
-			Files.copy(file.toPath(), oldconfig, StandardCopyOption.REPLACE_EXISTING);
+			Path oldConfig = Paths.get(file.getParent()+File.separator+"old_configs"+File.separator+file.getName());
+			Files.copy(file.toPath(), oldConfig, StandardCopyOption.REPLACE_EXISTING);
 
 			yamls.put(file.getName(), new YamlConfigurationFile(null,file));
 
@@ -294,7 +298,7 @@ public class Configs {
 					StringBuilder groups = new StringBuilder(("GROUP_PERMISSIONS".equals(type) ? "PERMISSIONS" : "GROUPS") + ":");
 					for (String group : sortinglist) {
 						groups.append(("GROUP_PERMISSIONS".equals(type) ? "tab.sort." : ""));
-						groups.append(group);
+						groups.append(group.replace(" ", "|"));
 						if (sortinglist.indexOf(group) != sortinglist.size() - 1)
 							groups.append(",");
 					}

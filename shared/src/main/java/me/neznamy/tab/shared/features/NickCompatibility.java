@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -19,7 +19,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 public class NickCompatibility extends TabFeature {
 
 	private final HashMap<TabPlayer, String> nickedPlayers = new HashMap<>();
-	private final NameTag nametags = (NameTag) TAB.getInstance().getTeamManager();
+	private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
 	private final BelowName belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature("belowname");
 	private final YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
 	
@@ -51,13 +51,13 @@ public class NickCompatibility extends TabFeature {
 	private void processNameChange(TabPlayer player, String name) {
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing nickname change", this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
 			
-			if (nametags != null && !nametags.hasTeamHandlingPaused(player)) {
+			if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
 				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName()), this);
 					String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
 					String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName(), replacedPrefix, replacedSuffix, nametags.translate(nametags.getTeamVisibility(player, viewer)), 
-							nametags.translate(nametags.getCollisionManager().getCollision(player)), Arrays.asList(name), 0), this);
+					viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName(), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
+							nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(name), 0), this);
 				}
 			}
 			if (belowname != null) {

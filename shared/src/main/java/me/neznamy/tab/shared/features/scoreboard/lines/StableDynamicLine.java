@@ -33,17 +33,17 @@ public class StableDynamicLine extends ScoreboardLine {
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
-		String[] prefixsuffix = replaceText(refreshed, force, false);
-		if (prefixsuffix.length == 0) return;
-		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixsuffix[0], prefixsuffix[1], "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+		String[] prefixSuffix = replaceText(refreshed, force, false);
+		if (prefixSuffix.length == 0) return;
+		refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixSuffix[0], prefixSuffix[1], "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
 	}
 
 	@Override
 	public void register(TabPlayer p) {
 		p.setProperty(this, parent.getName() + "-" + teamName, text);
-		String[] prefixsuffix = replaceText(p, true, true);
-		if (prefixsuffix.length == 0) return;
-		addLine(p, getPlayerName(), prefixsuffix[0], prefixsuffix[1]);
+		String[] prefixSuffix = replaceText(p, true, true);
+		if (prefixSuffix.length == 0) return;
+		addLine(p, getPlayerName(), prefixSuffix[0], prefixSuffix[1]);
 	}
 
 	@Override
@@ -62,10 +62,10 @@ public class StableDynamicLine extends ScoreboardLine {
 	 * @return list of 2 elements for prefix/suffix
 	 */
 	private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
-		Property scoreproperty = p.getProperty(parent.getName() + "-" + teamName);
-		boolean emptyBefore = scoreproperty.get().length() == 0;
-		if (!scoreproperty.update() && !force) return EMPTY_ARRAY;
-		String replaced = scoreproperty.get();
+		Property scoreProperty = p.getProperty(parent.getName() + "-" + teamName);
+		boolean emptyBefore = scoreProperty.get().length() == 0;
+		if (!scoreProperty.update() && !force) return EMPTY_ARRAY;
+		String replaced = scoreProperty.get();
 		if (p.getVersion().getMinorVersion() < 16) {
 			replaced = RGBUtils.getInstance().convertRGBtoLegacy(replaced); //converting RGB to legacy here to avoid splitting in the middle of RGB code
 		}
@@ -91,7 +91,7 @@ public class StableDynamicLine extends ScoreboardLine {
 	
 	/**
 	 * Splits text into 2 values (prefix/suffix) based on client version and text itself
-	 * @param p - player to split text fr
+	 * @param p - player to split text for
 	 * @param text - text to split
 	 * @return array of 2 elements for prefix and suffix
 	 */

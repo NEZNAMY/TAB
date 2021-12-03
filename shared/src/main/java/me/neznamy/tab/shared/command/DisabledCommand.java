@@ -13,7 +13,7 @@ public class DisabledCommand {
 	/**
 	 * Performs command and return messages to be sent back
 	 * @param args - command arguments
-	 * @param hasReloadPermission - if player has reload permission or not
+	 * @param hasReloadPermission - if player has permission to reload or not
 	 * @param hasAdminPermission - if player has admin permission or not
 	 * @return list of messages to send back
 	 */

@@ -62,7 +62,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
 	@Override
 	public String[] getProperty(String group, String property, String server, String world) {
-		String value = null;
+		String value;
 		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, String.format("group=%s,server=%s", group, server)};
 		}

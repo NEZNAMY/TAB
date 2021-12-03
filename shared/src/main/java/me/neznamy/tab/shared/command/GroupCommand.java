@@ -15,7 +15,7 @@ public class GroupCommand extends PropertyCommand {
 	 * Constructs new instance
 	 */
 	public GroupCommand() {
-		super("group", null);
+		super("group");
 	}
 
 	@Override

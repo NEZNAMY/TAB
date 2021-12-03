@@ -31,7 +31,7 @@ public class Animation {
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when
 	 * refresh is not divisible by 50
 	 * @param name - animations name
-	 * @param list - list of animation framrs
+	 * @param list - list of animation frames
 	 * @param interval - refresh interval to next frame
 	 */
 	public Animation(String name, List<String> list, int interval){
@@ -55,21 +55,13 @@ public class Animation {
 		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(nestedPlaceholders0);
 		nestedPlaceholders = nestedPlaceholders0.toArray(new String[0]);
 	}
-	
-	/**
-	 * Returns all messages
-	 * @return all messages
-	 */
-	public String[] getAllMessages() {
-		return messages;
-	}
-	
+
 	/**
 	 * Current message depending on current system time
 	 * @return current message
 	 */
 	public String getMessage(){
-		return messages[(int) (((TAB.getInstance().getPlaceholderManager().getLoopTime().get())%(messages.length*interval))/interval)];
+		return messages[(((TAB.getInstance().getPlaceholderManager().getLoopTime().get())%(messages.length*interval))/interval)];
 	}
 	
 	/**
@@ -81,7 +73,7 @@ public class Animation {
 	}
 	
 	/**
-	 * Returns refresh interval how often should animation refresh including nested palceholders
+	 * Returns refresh interval how often should animation refresh including nested placeholders
 	 * @return refresh interval
 	 */
 	public int getRefresh() {

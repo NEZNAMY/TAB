@@ -13,8 +13,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	private final PluginMessageHandler plm;
 	private final Map<String, String> attributes = new HashMap<>();
 	
-	protected ProxyTabPlayer(PluginMessageHandler plm, Object player, UUID uniqueId, String name, String server, String world) {
-		super(player, uniqueId, name, server, world);
+	protected ProxyTabPlayer(PluginMessageHandler plm, Object player, UUID uniqueId, String name, String server) {
+		super(player, uniqueId, name, server, "N/A");
 		this.plm = plm;
 	}
 	

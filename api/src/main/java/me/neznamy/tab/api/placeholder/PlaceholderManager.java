@@ -13,24 +13,24 @@ public interface PlaceholderManager {
 	/**
 	 * Registers a server placeholder (placeholder with same output for all players)
 	 */
-	public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier);
+	ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier);
 	
 	/**
 	 * Registers a player placeholder (placeholder with player-specific output)
 	 */
-	public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function);
+	PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function);
 
 	/**
 	 * Registers a relational placeholder (different output for each player pair)
 	 */
-	public RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function);
+	RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function);
 	
 	/**
 	 * Detects placeholders in text using %% pattern and returns list of all detected identifiers
 	 * @param text - text to detect placeholders in
 	 * @return list of detected identifiers
 	 */
-	public List<String> detectPlaceholders(String text);
+	List<String> detectPlaceholders(String text);
 
 	/**
 	 * Adds placeholder to list of used placeholders and assigns this feature as using it,
@@ -38,7 +38,7 @@ public interface PlaceholderManager {
 	 * @param identifier - placeholder identifier
 	 * @param feature - feature using the placeholder
 	 */
-	public void addUsedPlaceholder(String identifier, TabFeature feature);
+	void addUsedPlaceholder(String identifier, TabFeature feature);
 	
-	public String findReplacement(String placeholder, String output);
+	String findReplacement(String placeholder, String output);
 }

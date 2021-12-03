@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -27,9 +26,6 @@ public class YamlConfigurationFile extends ConfigurationFile {
 	/** SnakeYAML instance */
 	private static final Yaml yaml;
 	
-	/**
-	 * Initializes SnakeYAML instance with BLOCK flowstyle dumper option
-	 */
 	static {
 		DumperOptions options = new DumperOptions();
 		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -53,13 +49,12 @@ public class YamlConfigurationFile extends ConfigurationFile {
 	 * @throws	IOException
 	 * 			if I/O operation with the file unexpectedly fails
 	 */
-	@SuppressWarnings("unchecked")
 	public YamlConfigurationFile(InputStream source, File destination) throws YAMLException, IOException {
 		super(source, destination);
 		FileInputStream input = null;
 		try {
 			input = new FileInputStream(file);
-			values = (Map<String, Object>) yaml.load(input);
+			values = yaml.load(input);
 			if (values == null) values = new LinkedHashMap<>();
 			input.close();
 		} catch (YAMLException e) {

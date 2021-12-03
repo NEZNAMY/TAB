@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -23,7 +23,7 @@ public class LocationRefresher extends TabFeature {
 			Location l = ((Player)p.getPlayer()).getLocation();
 			return l.getX()+l.getY()+l.getZ(); //less cpu usage than literal Location#toString() and then .equals() when comparing last value
 		});
-		addUsedPlaceholders(Arrays.asList("%location0%")); //making sure it's not the same one as in WiherBossBar
+		addUsedPlaceholders(Collections.singletonList("%location0%")); //making sure it's not the same one as in WitherBossBar
 	}
 	
 	@Override

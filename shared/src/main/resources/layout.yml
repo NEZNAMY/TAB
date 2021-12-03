@@ -29,7 +29,7 @@ layouts:
       - '4|&3Name&f:'
       - '5|&b%player%'
       - '7|&3Rank&f:'
-      - '8|vault_rank'
+      - '8|Rank: %group%'
       - '10|&3World&f:'
       - '11|&b%world%'
       - '13|&3Time&f:'

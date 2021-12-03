@@ -22,14 +22,15 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Main class for Bukkit platform
  */
 public class Main extends JavaPlugin {
 	
-	private boolean viaversion;
-	private boolean protocolsupport;
+	private boolean viaVersion;
+	private boolean protocolSupport;
 	
 	@Override
 	public void onEnable(){
@@ -38,8 +39,8 @@ public class Main extends JavaPlugin {
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
-		viaversion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
-		protocolsupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
+		viaVersion = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
+		protocolSupport = Bukkit.getPluginManager().isPluginEnabled("ProtocolSupport");
 		TAB.setInstance(new TAB(new BukkitPlatform(this), ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0])));
 		if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
 			Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
@@ -101,12 +102,12 @@ public class Main extends JavaPlugin {
 	 * @return protocol version of this player
 	 */
 	public int getProtocolVersion(Player player) {
-		if (protocolsupport){
+		if (protocolSupport){
 			int version = getProtocolVersionPS(player);
 			//some PS versions return -1 on unsupported server versions instead of throwing exception
 			if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
 		}
-		if (viaversion) {
+		if (viaVersion) {
 			return getProtocolVersionVia(player, 0);
 		}
 		return TAB.getInstance().getServerVersion().getNetworkId();
@@ -155,10 +156,10 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
-	public class TABCommand implements CommandExecutor, TabCompleter {
+	public static class TABCommand implements CommandExecutor, TabCompleter {
 
 		@Override
-		public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 			if (TAB.getInstance().isDisabled()) {
 				for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
 					sender.sendMessage(EnumChatFormat.color(message));
@@ -175,7 +176,7 @@ public class Main extends JavaPlugin {
 		}
 
 		@Override
-		public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+		public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
 			TabPlayer p = null;
 			if (sender instanceof Player) {
 				p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());

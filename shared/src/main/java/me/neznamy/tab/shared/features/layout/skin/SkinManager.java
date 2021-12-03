@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.TAB;
 
 public class SkinManager {
 
-	private ConfigurationFile cache;
 	private final List<String> invalidSkins = new ArrayList<>();
 	private Object defaultSkin;
 	private final Map<String, SkinSource> sources = new HashMap<>();
@@ -23,10 +22,10 @@ public class SkinManager {
 		try {
 			File f = new File(TAB.getInstance().getPlatform().getDataFolder(), "skincache.yml");
 			if (f.exists() || f.createNewFile()) {
-				cache = new YamlConfigurationFile(null, f);
-				sources.put("player", new PlayerSkin(cache, "players"));
-				sources.put("mineskin", new Mineskin(cache, "mineskin"));
-				sources.put("texture", new Texture(cache, "textures"));
+				ConfigurationFile cache = new YamlConfigurationFile(null, f);
+				sources.put("player", new PlayerSkin(cache));
+				sources.put("mineskin", new MineSkin(cache));
+				sources.put("texture", new Texture(cache));
 				this.defaultSkin = getSkin(defaultSkin);
 			} else {
 				TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);

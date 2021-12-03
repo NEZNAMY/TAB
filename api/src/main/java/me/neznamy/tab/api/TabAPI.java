@@ -45,8 +45,8 @@ public abstract class TabAPI {
 	public abstract TabPlayer[] getOnlinePlayers();
 
 	/**
-	 * Return bossbar manager instance if the feature is enabled. Returns null otherwise.
-	 * @return bossbar manager
+	 * Return BossBar manager instance if the feature is enabled. Returns null otherwise.
+	 * @return BossBar manager
 	 */
 	public abstract BossBarManager getBossBarManager();
 	

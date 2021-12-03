@@ -33,7 +33,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	public class BukkitChannelDuplexHandler extends ChannelDuplexHandler {
 		
 		//injected player
-		private TabPlayer player;
+		private final TabPlayer player;
 		
 		/**
 		 * Constructs new instance with given player
@@ -65,8 +65,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 					super.write(context, packet, channelPromise);
 					return;
 				}
-				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet) && TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
-					return;
+				if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet)){
+					TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
 				}
 				if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
 					TAB.getInstance().getFeatureManager().onObjective(player, packet);
@@ -85,7 +85,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		/**
 		 * Removes all real players from team if packet does not come from TAB and reports this to override log
 		 * @param packetPlayOutScoreboardTeam - team packet
-		 * @throws ReflectiveOperationException 
+		 * @throws	ReflectiveOperationException
+		 * 			nmsGameMode
 		 */
 		@SuppressWarnings("unchecked")
 		private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
@@ -109,7 +110,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 				}
 			}
 			nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
-			TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 		
 		private TabPlayer getPlayer(String name) {

@@ -9,14 +9,14 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * A class to help assigning DataWatcher items as positions often change per-version
+ * A class to help to assign DataWatcher items as positions often change per-version
  */
 public class DataWatcherHelper {
 
 	//position of armor stand flags
 	private final int armorStandFlagsPosition = getArmorStandFlagsPosition();
 
-	//original datawatcher to write to
+	//original DataWatcher to write to
 	private final DataWatcher data;
 	
 	//data watcher registry

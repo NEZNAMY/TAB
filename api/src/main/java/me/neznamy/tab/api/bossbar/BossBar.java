@@ -6,36 +6,36 @@ import java.util.UUID;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * An interface representing a bossbar line. 
+ * An interface representing a BossBar line.
  * <p>
  * For clients 1.8 and lower it uses wither, which only allows 1 bar 
- * to be displayed at a time. Entity packets are not available on bungeecord,
+ * to be displayed at a time. Entity packets are not available on BungeeCord,
  * where nothing will be displayed for these players.
  * <p>
- * For 1.9+ it uses the new bossbar feature, allowing configurable styles
+ * For 1.9+ it uses the new BossBar feature, allowing configurable styles
  * and colors, as well as display several bars at once. Limit of maximum 
- * displayed bossbars depends on client resolution and GUI scale, up to
- * 9 concurrent bossbars displayed at once.
+ * displayed BossBars depends on client resolution and GUI scale, up to
+ * 9 concurrent BossBars displayed at once.
  */
 public interface BossBar {
 
 	/**
-	 * Returns name of this bossbar. If it was defined in config, returns
+	 * Returns name of this BossBar. If it was defined in config, returns
 	 * the name specified in config. If it was made using the API, returns
-	 * randomly generated ID given to this bossbar when creating.
-	 * @return	name of bossbar
+	 * randomly generated ID given to this BossBar when creating.
+	 * @return	name of BossBar
 	 */
-	public String getName();
+	String getName();
 
 	/**
-	 * Returns randomly generated uuid of this bossbar used internally to match
-	 * the bossbar in client with packets or with Bukkit API bossbar instances.
-	 * @return	uuid of this bossbar
+	 * Returns randomly generated uuid of this BossBar used internally to match
+	 * the BossBar in client with packets or with Bukkit API BossBar instances.
+	 * @return	uuid of this BossBar
 	 */
-	public UUID getUniqueId();
+	UUID getUniqueId();
 
 	/**
-	 * Changes bossbar title to specified string, supporting placeholders.
+	 * Changes BossBar title to specified string, supporting placeholders.
 	 * <p>
 	 * If title contains new placeholders not used before, they are registered using
 	 * standard registration logic and refreshed periodically. No need to call
@@ -44,12 +44,12 @@ public interface BossBar {
 	 * If specified title is equal to the current one, nothing happens.
 	 * 
 	 * @param	title
-	 * 			New title to display in this bossbar
+	 * 			New title to display in this BossBar
 	 */
-	public void setTitle(String title);
+	void setTitle(String title);
 
 	/**
-	 * Changes bossbar progress to specified string, supporting placeholders.
+	 * Changes BossBar progress to specified string, supporting placeholders.
 	 * The string must be a string version of a float value, or a placeholder that 
 	 * outputs a float value with range 0-100.
 	 * <p>
@@ -60,21 +60,21 @@ public interface BossBar {
 	 * If specified progress is equal to the current one, nothing happens.
 	 * 
 	 * @param	progress
-	 * 			New progress to use in this bossbar
+	 * 			New progress to use in this BossBar
 	 */
-	public void setProgress(String progress);
+	void setProgress(String progress);
 
 	/**
-	 * Changes bossbar progress to specified value ranging from 0 to 100.
+	 * Changes BossBar progress to specified value ranging from 0 to 100.
 	 * <p>
 	 * If specified progress is equal to the current one, nothing happens.
 	 * @param	progress
-	 * 			New progress to use in this bossbar
+	 * 			New progress to use in this BossBar
 	 */
-	public void setProgress(float progress);
+	void setProgress(float progress);
 
 	/**
-	 * Changes bossbar color to specified string, supporting placeholders.
+	 * Changes BossBar color to specified string, supporting placeholders.
 	 * The string must be a string version of one of the supported values, 
 	 * or a placeholder that outputs one of them.
 	 * <p>
@@ -85,22 +85,22 @@ public interface BossBar {
 	 * If specified color is equal to the current one, nothing happens.
 	 * 
 	 * @param	color
-	 * 			New color to use in this bossbar
+	 * 			New color to use in this BossBar
 	 */
-	public void setColor(String color);
+	void setColor(String color);
 
 	/**
-	 * Changes bossbar color to specified enum constant.
+	 * Changes BossBar color to specified enum constant.
 	 * <p>
 	 * If specified color is equal to the current one, nothing happens.
 	 * 
 	 * @param	color
-	 * 			New color to use in this bossbar
+	 * 			New color to use in this BossBar
 	 */
-	public void setColor(BarColor color);
+	void setColor(BarColor color);
 
 	/**
-	 * Changes bossbar style to specified string, supporting placeholders.
+	 * Changes BossBar style to specified string, supporting placeholders.
 	 * The string must be a string version of one of the supported values, 
 	 * or a placeholder that outputs one of them.
 	 * <p>
@@ -111,75 +111,75 @@ public interface BossBar {
 	 * If specified style is equal to the current one, nothing happens.
 	 * 
 	 * @param	style
-	 * 			New style to use in this bossbar
+	 * 			New style to use in this BossBar
 	 */
-	public void setStyle(String style);
+	void setStyle(String style);
 
 	/**
-	 * Changes bossbar style to specified enum constant.
+	 * Changes BossBar style to specified enum constant.
 	 * <p>
 	 * If specified style is equal to the current one, nothing happens.
 	 * 
 	 * @param	style
-	 * 			New style to use in this bossbar
+	 * 			New style to use in this BossBar
 	 */
-	public void setStyle(BarStyle style);
+	void setStyle(BarStyle style);
 
 	/**
-	 * Returns current title of the bossbar in raw format. If it contains placeholders,
+	 * Returns current title of the BossBar in raw format. If it contains placeholders,
 	 * their raw identifiers are used in the result.
-	 * @return	title of the bossbar
+	 * @return	title of the BossBar
 	 */
-	public String getTitle();
+	String getTitle();
 
 	/**
-	 * Returns progress of the bossbar as a string, which is either entered string 
+	 * Returns progress of the BossBar as a string, which is either entered string
 	 * containing placeholders or entered number converted to string
 	 * @return	entered progress as a string
 	 */
-	public String getProgress();
+	String getProgress();
 
 	/**
-	 * Returns color of the bossbar as a string, which is either entered string 
+	 * Returns color of the BossBar as a string, which is either entered string
 	 * containing placeholders or entered enum value converted to string
 	 * @return	entered color as a string
 	 */
-	public String getColor();
+	String getColor();
 
 	/**
-	 * Returns style of the bossbar as a string, which is either entered string 
+	 * Returns style of the BossBar as a string, which is either entered string
 	 * containing placeholders or entered enum value converted to string
 	 * @return	entered style as a string
 	 */
-	public String getStyle();
+	String getStyle();
 
 	/**
-	 * Registers this bossbar to specified player.
+	 * Registers this BossBar to specified player.
 	 * <p>
-	 * If the player already sees this bossbar, nothing happens.
+	 * If the player already sees this BossBar, nothing happens.
 	 * 
 	 * @param	player
-	 * 			Player to register this bossbar to
+	 * 			Player to register this BossBar to
 	 */
-	public void addPlayer(TabPlayer player);
+	void addPlayer(TabPlayer player);
 
 	/**
-	 * Unregisters this bossbar from specified player.
+	 * Unregisters this BossBar from specified player.
 	 * <p>
-	 * If the player does not see this bossbar, nothing happens.
+	 * If the player does not see this BossBar, nothing happens.
 	 * 
 	 * @param	player
-	 * 			Player to unregister this bossbar from
+	 * 			Player to unregister this BossBar from
 	 */
-	public void removePlayer(TabPlayer player);
+	void removePlayer(TabPlayer player);
 
 	/**
-	 * Returns list of players who can see this bossbar.
+	 * Returns list of players who can see this BossBar.
 	 * <p>
 	 * The returned list can only be used to read. Writing
-	 * will not work properly. For adding/removing playes see {@link #addPlayer(TabPlayer)}
+	 * will not work properly. For adding/removing players see {@link #addPlayer(TabPlayer)}
 	 * and {@link #removePlayer(TabPlayer)}.
-	 * @return	List of players seeing this bossbar
+	 * @return	List of players seeing this BossBar
 	 */
-	public List<TabPlayer> getPlayers();
+	List<TabPlayer> getPlayers();
 }

@@ -19,8 +19,8 @@ import me.neznamy.tab.shared.TAB;
 
 public class Texture extends SkinSource {
 
-	protected Texture(ConfigurationFile file, String path) {
-		super(file, path);
+	protected Texture(ConfigurationFile file) {
+		super(file, "textures");
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,10 +32,10 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	public WitherBossBar(JavaPlugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
-		//when MC is on fullscreen, bossbar disappears after 1 second of not being seen
+		//when MC is on fullscreen, BossBar disappears after 1 second of not being seen
 		//when in a small window, it's about 100ms
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%location%", 100, p -> ((Player)p.getPlayer()).getLocation());
-		addUsedPlaceholders(Arrays.asList("%location%"));
+		addUsedPlaceholders(Collections.singletonList("%location%"));
 	}
 	
 	@Override

@@ -61,7 +61,7 @@ public class Main extends Plugin {
 	/**
 	 * TAB command for bungeecord
 	 */
-	public class BTABCommand extends Command implements TabExecutor {
+	public static class BTABCommand extends Command implements TabExecutor {
 
 		/**
 		 * Constructs new instance

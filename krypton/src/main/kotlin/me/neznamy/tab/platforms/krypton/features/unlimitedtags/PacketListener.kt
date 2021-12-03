@@ -69,10 +69,10 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     }
 
     private fun onEntityDestroy(receiver: TabPlayer, entity: Int) {
-        val despawnedPlayer = nameTagX.entityIdMap[entity]
-        if (despawnedPlayer != null && despawnedPlayer.isLoaded) {
+        val deSpawnedPlayer = nameTagX.entityIdMap[entity]
+        if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded) {
             TAB.getInstance().cpuManager.runMeasuredTask("processing EntityDestroy", nameTagX, CpuUsageCategory.PACKET_ENTITY_DESTROY) {
-                despawnedPlayer.armorStandManager.destroy(receiver)
+                deSpawnedPlayer.armorStandManager.destroy(receiver)
             }
         }
     }

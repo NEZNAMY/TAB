@@ -13,7 +13,7 @@ gson = "2.8.7"
 luckperms = "5.2"
 guava = "30.1.1-jre"
 floodgate = "2.0-SNAPSHOT"
-kotlin = "1.6.0-RC"
+kotlin = "1.6.0"
 
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"

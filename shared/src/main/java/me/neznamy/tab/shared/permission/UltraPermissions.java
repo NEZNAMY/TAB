@@ -13,12 +13,12 @@ import me.neznamy.tab.shared.TAB;
  */
 public class UltraPermissions implements PermissionPlugin {
 
-	//ultrapermissions version
+	//UltraPermissions version
 	private final String version;
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param version - ultrapermissions version
+	 * @param version - UltraPermissions version
 	 */
 	public UltraPermissions(String version) {
 		this.version = version;
@@ -33,8 +33,8 @@ public class UltraPermissions implements PermissionPlugin {
 
 	@SuppressWarnings("unchecked")
 	public String[] getAllGroups(TabPlayer p) throws ReflectiveOperationException {
-		Object api = null;
-		if (TAB.getInstance().getPlatform().isProxy()) { //meh solution but whatever
+		Object api;
+		if (TAB.getInstance().getPlatform().isProxy()) {
 			api = Class.forName("me.TechsCode.UltraPermissions.bungee.UltraPermissionsBungee").getMethod("getAPI").invoke(null);
 		} else {
 			api = Class.forName("me.TechsCode.UltraPermissions.UltraPermissions").getMethod("getAPI").invoke(null);

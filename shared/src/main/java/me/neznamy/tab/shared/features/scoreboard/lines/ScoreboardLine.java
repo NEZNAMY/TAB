@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -69,7 +69,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 		if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
 		int splitIndex = firstElementMaxLength;
 		if (string.charAt(splitIndex-1) == EnumChatFormat.COLOR_CHAR) splitIndex--;
-		return new String[] {string.substring(0, splitIndex), string.substring(splitIndex, string.length())};
+		return new String[] {string.substring(0, splitIndex), string.substring(splitIndex)};
 	}
 	
 	/**
@@ -94,28 +94,25 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	/**
 	 * Sends this line to player
 	 * @param p - player to send line to
-	 * @param team - team name of the line
-	 * @param fakeplayer - player name
+	 * @param fakePlayer - player name
 	 * @param prefix - prefix
 	 * @param suffix - suffix
-	 * @param value - number
 	 */
-	protected void addLine(TabPlayer p, String fakeplayer, String prefix, String suffix) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, getNumber(p)), TabConstants.PacketCategory.SCOREBOARD_LINES);
+	protected void addLine(TabPlayer p, String fakePlayer, String prefix, String suffix) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p)), TabConstants.PacketCategory.SCOREBOARD_LINES);
 		if (p.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
 			p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabConstants.PacketCategory.SCOREBOARD_LINES);
 		}
-		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Arrays.asList(fakeplayer), 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
 	}
 	
 	/**
 	 * Removes this line from player
 	 * @param p - player to remove line from
-	 * @param fakeplayer - player name
-	 * @param teamName - team name
+	 * @param fakePlayer - player name
 	 */
-	protected void removeLine(TabPlayer p, String fakeplayer) {
-		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakeplayer, 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+	protected void removeLine(TabPlayer p, String fakePlayer) {
+		p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
 		p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabConstants.PacketCategory.SCOREBOARD_LINES);
 	}
 	

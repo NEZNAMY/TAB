@@ -15,12 +15,12 @@ public class PacketAPI {
 	}
 
 	/**
-	 * Registers scoreboard objective with given properties but sends unregister packet first unless disabled to avoid bungeecord kick
+	 * Registers scoreboard objective with given properties but sends unregister packet first unless disabled to avoid BungeeCord kick
 	 * @param to - player to send the packet to
 	 * @param objectiveName - name of the objective
 	 * @param title - title
-	 * @param position - objective position (0 = Playerlist, 1 = Sidebar, 2 = Belowname)
-	 * @param displayType - display type of the value (only supported in Playerlist)
+	 * @param position - objective position (0 = PlayerList, 1 = Sidebar, 2 = BelowName)
+	 * @param displayType - display type of the value (only supported in PlayerList)
 	 */
 	public static synchronized void registerScoreboardObjective(TabPlayer to, String objectiveName, String title, int position, EnumScoreboardHealthDisplay displayType, TabFeature feature) {
 		registerScoreboardObjective(to, objectiveName, title, position, displayType, feature.getFeatureName());

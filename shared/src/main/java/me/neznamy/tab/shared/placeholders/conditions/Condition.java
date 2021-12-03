@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
  */
 public class Condition {
 	
-	//map of all defined conditions in premiumconfig
+	//map of all defined conditions in config
 	private static Map<String, Condition> conditions = new HashMap<>();
 	
 	//condition type
@@ -27,8 +27,8 @@ public class Condition {
 	//name of this condition
 	private final String name;
 	
-	//list of subconditions
-	protected SimpleCondition[] subconditions;
+	//list of sub-conditions
+	protected SimpleCondition[] subConditions;
 	
 	//value to return if condition is met
 	private final String yes;
@@ -63,15 +63,15 @@ public class Condition {
 				TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
 			}
 		}
-		subconditions = list.toArray(new SimpleCondition[0]);
-		//adding placeholders in conditions to the map so they are actually refreshed if not used anywhere else
+		subConditions = list.toArray(new SimpleCondition[0]);
+		//adding placeholders in conditions to the map, so they are actually refreshed if not used anywhere else
 		PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
 		List<String> placeholdersInConditions = new ArrayList<>();
-		for (String subcondition : conditions) {
-			if (subcondition.startsWith("permission:")) {
+		for (String subCondition : conditions) {
+			if (subCondition.startsWith("permission:")) {
 				if (refresh > 1000) refresh = 1000; //permission refreshing will be done every second
 			} else {
-				placeholdersInConditions.addAll(pm.detectPlaceholders(subcondition));
+				placeholdersInConditions.addAll(pm.detectPlaceholders(subCondition));
 			}
 		}
 		placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
@@ -113,12 +113,12 @@ public class Condition {
 	 */
 	public boolean isMet(TabPlayer p) {
 		if (type == ConditionType.AND) {
-			for (SimpleCondition condition : subconditions) {
+			for (SimpleCondition condition : subConditions) {
 				if (!condition.isMet(p)) return false;
 			}
 			return true;
 		} else {
-			for (SimpleCondition condition : subconditions) {
+			for (SimpleCondition condition : subConditions) {
 				if (condition.isMet(p)) return true;
 			}
 			return false;

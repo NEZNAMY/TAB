@@ -11,5 +11,5 @@ public interface PlaceholderRegistry {
 	 * Registers all placeholders into placeholder manager
 	 * @param manager - placeholder manager to register placeholders to
 	 */
-	public void registerPlaceholders(PlaceholderManager manager);
+	void registerPlaceholders(PlaceholderManager manager);
 }

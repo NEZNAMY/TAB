@@ -16,12 +16,12 @@ import net.luckperms.api.query.QueryOptions;
 public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 
 	private static final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
-	//luckperms version
+	//LuckPerms version
 	private final String version;
 
 	/**
 	 * Constructs new instance with given parameter
-	 * @param version - luckperms version
+	 * @param version - LuckPerms version
 	 */
 	public LuckPerms(String version) {
 		this.version = version;

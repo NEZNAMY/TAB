@@ -39,7 +39,7 @@ public class SendBarCommand extends SubCommand {
 			sendMessage(sender, getMessages().getPlayerNotFound(args[0]));
 			return;
 		}
-		String barname = args[1];
+		String barName = args[1];
 		int duration;
 		try {
 			duration = Integer.parseInt(args[2]);
@@ -47,9 +47,9 @@ public class SendBarCommand extends SubCommand {
 			sendMessage(sender, getMessages().getInvalidNumber(args[1]));
 			return;
 		}
-		BossBar bar = feature.getBossBar(barname);
+		BossBar bar = feature.getBossBar(barName);
 		if (bar == null) {
-			sendMessage(sender, getMessages().getBossBarNotFound(barname));
+			sendMessage(sender, getMessages().getBossBarNotFound(barName));
 			return;
 		}
 		feature.sendBossBarTemporarily(target, bar.getName(), duration);

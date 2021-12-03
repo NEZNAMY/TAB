@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.krypton
 import me.lucko.spark.api.statistic.StatisticWindow.CpuUsage
 import me.lucko.spark.api.statistic.StatisticWindow.MillisPerTick
 import me.lucko.spark.api.statistic.StatisticWindow.TicksPerSecond
-import me.neznamy.tab.api.PlaceholderManager
 import me.neznamy.tab.api.TabPlayer
+import me.neznamy.tab.api.placeholder.PlaceholderManager
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.placeholders.PlaceholderRegistry
 import org.kryptonmc.api.entity.player.Player

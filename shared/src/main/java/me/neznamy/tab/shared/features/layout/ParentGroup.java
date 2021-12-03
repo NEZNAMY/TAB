@@ -1,10 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -21,7 +17,7 @@ public class ParentGroup {
 		this.layout = layout;
 		this.condition = condition;
 		if (condition != null) {
-			layout.addUsedPlaceholders(Arrays.asList("%condition:" + condition.getName() + "%"));
+			layout.addUsedPlaceholders(Collections.singletonList("%condition:" + condition.getName() + "%"));
 		}
 		this.slots = slots;
 		for (int slot : slots) {
