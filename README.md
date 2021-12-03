@@ -1,3 +1,7 @@
+## Fork
+This fork adds back packet support to Velocity. This fork is unofficial and is in no way affiliated, endorsed, or maintained by NEZNAMY. Use at your own risk!  
+Requires [VelocityPacketInjector](https://github.com/NovaMC/VelocityPacketInjector) plugin on your proxy to work!
+
 # About
 This is where you can download the plugin for free without needing to buy me a coffee or just grab some code inspiration for your plugin. God bless opensource.  
   
