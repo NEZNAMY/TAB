@@ -30,7 +30,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
     public class VelocityChannelDuplexHandler extends ChannelDuplexHandler {
 
         //injected player
-        private TabPlayer player;
+        private final TabPlayer player;
 
         /**
          * Constructs new instance with given player
@@ -53,9 +53,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
                         }
                         break;
                     case "ScoreboardDisplay":
-                        if (TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet)) {
-                            return;
-                        }
+                        TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
                         break;
                     case "ScoreboardObjective":
                         TAB.getInstance().getFeatureManager().onObjective(player, packet);
@@ -94,7 +92,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
                 }
             }
             packet.setPlayers(col);
-            TAB.getInstance().getCPUManager().addTime("Nametags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
 
         private String getName(TabPlayer p) {
