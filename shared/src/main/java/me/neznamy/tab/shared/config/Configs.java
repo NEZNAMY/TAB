@@ -267,7 +267,7 @@ public class Configs {
 		}
 	}
 
-	private void createConfigYml(Map<String, ConfigurationFile> yamls) throws YAMLException {
+	private void createConfigYml(Map<String, ConfigurationFile> yamls) throws YAMLException, IOException {
 		tab.sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 		tab.sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
 		tab.sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
@@ -476,7 +476,6 @@ public class Configs {
 			groups.set(gPath+"._OTHER_",null);
 		}
 		finalCfg.set("header-footer.per-"+worldOrServer, headerFooterMap);
-		premium.getFile().delete();
+		Files.delete(premium.getFile().toPath());
 	}
-
 }
