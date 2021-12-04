@@ -38,7 +38,7 @@ redisBungee = "0.6.5-SNAPSHOT"
 netty = { group = "io.netty", name = "netty-all", version.ref = "netty" }
 jsonSimple = { group = "com.googlecode.json-simple", name = "json-simple", version.ref = "jsonSimple" }
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
-yamlAssist = { group = "com.github.NEZNAMY", name = "YamlAssist", version.ref = "yamlAssist" }
+yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 # General
