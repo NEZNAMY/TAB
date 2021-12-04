@@ -12,7 +12,7 @@ import java.util.function.Function
 class KryptonPipelineInjector : PipelineInjector("handler") {
 
     init {
-        channelFunction = Function { KryptonChannelDuplexHandler(it) }
+        channelFunction = Function(::KryptonChannelDuplexHandler)
     }
 
     inner class KryptonChannelDuplexHandler(private val player: TabPlayer) : ChannelDuplexHandler() {

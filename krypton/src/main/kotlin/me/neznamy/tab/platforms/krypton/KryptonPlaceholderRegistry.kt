@@ -22,40 +22,40 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
 
         // TPS
         val tps = plugin.server.spark.tps()!!
-        manager.registerServerPlaceholder("%tps_5s%", 5000) { format(tps.poll(TicksPerSecond.SECONDS_5)) }
-        manager.registerServerPlaceholder("%tps_10s%", 10000) { format(tps.poll(TicksPerSecond.SECONDS_10)) }
-        manager.registerServerPlaceholder("%tps_1m%", 1000000) { format(tps.poll(TicksPerSecond.MINUTES_1)) }
-        manager.registerServerPlaceholder("%tps_5m%", 5000000) { format(tps.poll(TicksPerSecond.MINUTES_5)) }
-        manager.registerServerPlaceholder("%tps_15m%", 15000000) { format(tps.poll(TicksPerSecond.MINUTES_15)) }
+        manager.registerServerPlaceholder("%tps_5s%", 1000) { format(tps.poll(TicksPerSecond.SECONDS_5)) }
+        manager.registerServerPlaceholder("%tps_10s%", 1000) { format(tps.poll(TicksPerSecond.SECONDS_10)) }
+        manager.registerServerPlaceholder("%tps_1m%", 1000) { format(tps.poll(TicksPerSecond.MINUTES_1)) }
+        manager.registerServerPlaceholder("%tps_5m%", 1000) { format(tps.poll(TicksPerSecond.MINUTES_5)) }
+        manager.registerServerPlaceholder("%tps_15m%", 1000) { format(tps.poll(TicksPerSecond.MINUTES_15)) }
 
         // MSPT
         val mspt = plugin.server.spark.mspt()!!
-        manager.registerServerPlaceholder("%mspt_min_10s%", 10000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).min()) }
-        manager.registerServerPlaceholder("%mspt_max_10s%", 10000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).max()) }
-        manager.registerServerPlaceholder("%mspt_mean_10s%", 10000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).mean()) }
-        manager.registerServerPlaceholder("%mspt_median_10s%", 10000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).median()) }
-        manager.registerServerPlaceholder("%mspt_percentile95_10s%", 10000) {
+        manager.registerServerPlaceholder("%mspt_min_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).min()) }
+        manager.registerServerPlaceholder("%mspt_max_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).max()) }
+        manager.registerServerPlaceholder("%mspt_mean_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).mean()) }
+        manager.registerServerPlaceholder("%mspt_median_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).median()) }
+        manager.registerServerPlaceholder("%mspt_percentile95_10s%", 1000) {
             formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).percentile95th())
         }
-        manager.registerServerPlaceholder("%mspt_min_1m%", 1000000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).min()) }
-        manager.registerServerPlaceholder("%mspt_max_1m%", 1000000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).max()) }
-        manager.registerServerPlaceholder("%mspt_mean_1m%", 1000000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).mean()) }
-        manager.registerServerPlaceholder("%mspt_median_1m%", 1000000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).median()) }
-        manager.registerServerPlaceholder("%mspt_percentile95_1m%", 1000000) {
+        manager.registerServerPlaceholder("%mspt_min_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).min()) }
+        manager.registerServerPlaceholder("%mspt_max_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).max()) }
+        manager.registerServerPlaceholder("%mspt_mean_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).mean()) }
+        manager.registerServerPlaceholder("%mspt_median_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).median()) }
+        manager.registerServerPlaceholder("%mspt_percentile95_1m%", 1000) {
             formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).percentile95th())
         }
 
         // CPU process
         val process = plugin.server.spark.cpuProcess()
-        manager.registerServerPlaceholder("%cpu_process_10s%", 10000) { format(process.poll(CpuUsage.SECONDS_10)) }
-        manager.registerServerPlaceholder("%cpu_process_1m%", 1000000) { format(process.poll(CpuUsage.MINUTES_1)) }
-        manager.registerServerPlaceholder("%cpu_process_15m%", 15000000) { format(process.poll(CpuUsage.MINUTES_15)) }
+        manager.registerServerPlaceholder("%cpu_process_10s%", 1000) { format(process.poll(CpuUsage.SECONDS_10)) }
+        manager.registerServerPlaceholder("%cpu_process_1m%", 1000) { format(process.poll(CpuUsage.MINUTES_1)) }
+        manager.registerServerPlaceholder("%cpu_process_15m%", 1000) { format(process.poll(CpuUsage.MINUTES_15)) }
 
         // CPU system
         val system = plugin.server.spark.cpuSystem()
-        manager.registerServerPlaceholder("%cpu_system_10s%", 10000) { format(system.poll(CpuUsage.SECONDS_10)) }
-        manager.registerServerPlaceholder("%cpu_system_1m%", 1000000) { format(system.poll(CpuUsage.MINUTES_1)) }
-        manager.registerServerPlaceholder("%cpu_system_15m%", 15000000) { format(system.poll(CpuUsage.MINUTES_15)) }
+        manager.registerServerPlaceholder("%cpu_system_10s%", 1000) { format(system.poll(CpuUsage.SECONDS_10)) }
+        manager.registerServerPlaceholder("%cpu_system_1m%", 1000) { format(system.poll(CpuUsage.MINUTES_1)) }
+        manager.registerServerPlaceholder("%cpu_system_15m%", 1000) { format(system.poll(CpuUsage.MINUTES_15)) }
 
         registerOnlinePlaceholders(manager)
     }
