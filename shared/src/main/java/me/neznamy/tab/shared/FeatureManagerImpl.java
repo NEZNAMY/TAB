@@ -291,6 +291,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onDisplayObjective")) continue;
 			time = System.nanoTime();
+			f.onDisplayObjective(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}
