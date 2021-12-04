@@ -288,4 +288,8 @@ public abstract class ITabPlayer implements TabPlayer {
 	public void setServer(String name) {
 		server = name;
 	}
+
+	public void clearRegisteredTeams() {
+		registeredTeams.clear();
+	}
 }
