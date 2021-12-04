@@ -62,12 +62,12 @@ public class VelocityPacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) {
+	public PacketPlayOutScoreboardObjective readObjective(Object packet) {
 		return null;
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) {
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) {
 		return null;
 	}
 }

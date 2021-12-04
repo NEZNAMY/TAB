@@ -286,7 +286,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
-		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
+		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet);
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onDisplayObjective")) continue;
@@ -304,7 +304,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
-		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
+		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet);
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onObjective")) continue;

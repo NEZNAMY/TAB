@@ -36,7 +36,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
@@ -348,29 +347,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-		String objective = (String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket);
-		String displayName;
-		Object component = nms.PacketPlayOutScoreboardObjective_DISPLAYNAME.get(nmsPacket);
-		if (nms.getMinorVersion() >= 13) {
-			IChatBaseComponent c = component == null ? null : fromNMSComponent(component);
-			displayName = c == null ? null : c.toLegacyText();
-		} else {
-			displayName = (String) component;
-		}
-		EnumScoreboardHealthDisplay renderType = null;
-		if (nms.getMinorVersion() >= 8) {
-			Object nmsRender = nms.PacketPlayOutScoreboardObjective_RENDERTYPE.get(nmsPacket);
-			if (nmsRender != null) {
-				renderType = EnumScoreboardHealthDisplay.valueOf(nmsRender.toString());
-			}
-		}
-		int method = nms.PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket);
-		return new PacketPlayOutScoreboardObjective(method, objective, displayName, renderType);
+	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket) throws ReflectiveOperationException {
+		return new PacketPlayOutScoreboardObjective(nms.PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket),
+				(String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket), null, null
+		);
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket) throws ReflectiveOperationException {
 		return new PacketPlayOutScoreboardDisplayObjective(
 			nms.PacketPlayOutScoreboardDisplayObjective_POSITION.getInt(nmsPacket),
 			(String) nms.PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME.get(nmsPacket)
