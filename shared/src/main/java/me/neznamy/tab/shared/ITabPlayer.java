@@ -40,7 +40,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean previewingNameTag;
 	private boolean onJoinFinished;
 
-	private List<String> registeredTeams = new ArrayList<>();
+	private final List<String> registeredTeams = new ArrayList<>();
 
 	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world) {
 		this.player = player;
