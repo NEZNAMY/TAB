@@ -1,5 +1,5 @@
 plugins {
-    id("tab.base-conventions")
+    id("tab.standard-conventions")
     id("com.github.johnrengelman.shadow")
 }
 
