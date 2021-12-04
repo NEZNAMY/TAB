@@ -4,4 +4,4 @@ version: @version@
 author: NEZNAMY
 description: @description@
 depends: []
-softDepends: [RedisBungee]
+softDepends: [RedisBungee, LuckPerms]
