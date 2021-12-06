@@ -7,7 +7,6 @@ import com.velocitypowered.proxy.protocol.packet.ScoreboardSetScore;
 import com.velocitypowered.proxy.protocol.packet.ScoreboardTeam;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
@@ -17,7 +16,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 
 import java.util.ArrayList;
 import java.util.List;
