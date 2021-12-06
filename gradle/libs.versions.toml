@@ -18,7 +18,7 @@ kotlin = "1.6.0"
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.18-R0.1-SNAPSHOT"
-krypton = "0.50.2"
+krypton = "0.57"
 velocity = "1.1.0"
 
 # Platform extras
@@ -39,7 +39,7 @@ velocityInjector = "1.1.0"
 netty = { group = "io.netty", name = "netty-all", version.ref = "netty" }
 jsonSimple = { group = "com.googlecode.json-simple", name = "json-simple", version.ref = "jsonSimple" }
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
-yamlAssist = { group = "com.github.NEZNAMY", name = "YamlAssist", version.ref = "yamlAssist" }
+yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 # General

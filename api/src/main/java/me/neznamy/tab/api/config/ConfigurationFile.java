@@ -52,12 +52,11 @@ public abstract class ConfigurationFile {
 		if (destination == null) throw new IllegalArgumentException("Destination cannot be null");
 		this.file = destination;
 		if (file.getParentFile() != null) file.getParentFile().mkdirs();
-		if (!file.exists()) {
-			if (source == null) throw new IllegalStateException("File does not exist and source is null");
+		if (!file.exists() && source == null) throw new IllegalStateException("File does not exist and source is null");
+		if (file.createNewFile()) {
 //			Files.copy(source, file.toPath());
 			//avoiding MalformedInputException thrown on fabric due to file not having UTF8 encoding by default
 			//also automatically using the encoding so users don't have to worry about it anymore
-			file.createNewFile();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8));
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))){
 				String line;

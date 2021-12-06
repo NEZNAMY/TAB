@@ -1,7 +1,3 @@
-plugins {
-    id("tab.publishing")
-}
-
 dependencies {
     compileOnlyApi(libs.netty)
     api(libs.jsonSimple) {

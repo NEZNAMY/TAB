@@ -124,20 +124,12 @@ public class BungeePacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket, ProtocolVersion clientVersion) {
-		ScoreboardObjective packet = (ScoreboardObjective) bungeePacket;
-		String title;
-		if (clientVersion.getMinorVersion() >= 13) {
-			title = packet.getValue() == null ? null : IChatBaseComponent.deserialize(packet.getValue()).toLegacyText();
-		} else {
-			title = packet.getValue();
-		}
-		EnumScoreboardHealthDisplay renderType = (packet.getType() == null ? null : EnumScoreboardHealthDisplay.valueOf(packet.getType().toString().toUpperCase()));
-		return new PacketPlayOutScoreboardObjective(packet.getAction(), packet.getName(), title, renderType);
+	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket) {
+		return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) bungeePacket).getAction(), ((ScoreboardObjective) bungeePacket).getName(), null, null);
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket, ProtocolVersion clientVersion){
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket){
 		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).getPosition(), ((ScoreboardDisplay) bungeePacket).getName());
 	}
 }

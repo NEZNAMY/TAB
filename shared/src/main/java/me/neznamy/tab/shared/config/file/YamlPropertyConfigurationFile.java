@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -67,7 +68,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	@SuppressWarnings("unchecked")
 	private String toString(Object obj) {
 		if (obj instanceof List) {
-			return String.join("\n", ((List<Object>)obj).toArray(new String[0]));
+			return ((List<Object>)obj).stream().map(Object::toString).collect(Collectors.joining("\n"));
 		}
 		return obj.toString();
 	}

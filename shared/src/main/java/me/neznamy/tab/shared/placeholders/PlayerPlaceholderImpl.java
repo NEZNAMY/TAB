@@ -35,6 +35,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	 */
 	public PlayerPlaceholderImpl(String identifier, int refresh, Function<TabPlayer, Object> function) {
 		super(identifier, refresh);
+		if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
 		this.function = function;
 	}
 

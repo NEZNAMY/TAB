@@ -78,20 +78,12 @@ public class VelocityPacketBuilder extends PacketBuilder {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) {
-		ScoreboardObjective newPacket = (ScoreboardObjective) packet;
-		String title;
-		if (clientVersion.getMinorVersion() >= 13) {
-			title = newPacket.getValue() == null ? null : IChatBaseComponent.deserialize(newPacket.getValue()).toLegacyText();
-		} else {
-			title = newPacket.getValue();
-		}
-		EnumScoreboardHealthDisplay renderType = (newPacket.getType() == null ? null : EnumScoreboardHealthDisplay.valueOf(newPacket.getType().toString().toUpperCase()));
-		return new PacketPlayOutScoreboardObjective(newPacket.getAction(), newPacket.getName(), title, renderType);
+	public PacketPlayOutScoreboardObjective readObjective(Object packet) {
+		return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName(), null, null);
 	}
 
 	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) {
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) {
 		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
 	}
 }

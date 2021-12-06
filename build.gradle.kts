@@ -15,9 +15,15 @@ val platforms = setOf(
     projects.velocity
 ).map { it.dependencyProject }
 
+val special = setOf(
+    projects.api,
+    projects.shared
+).map { it.dependencyProject }
+
 subprojects {
     when (this) {
         in platforms -> plugins.apply("tab.platform-conventions")
+        in special -> plugins.apply("tab.standard-conventions")
         else -> plugins.apply("tab.base-conventions")
     }
 }

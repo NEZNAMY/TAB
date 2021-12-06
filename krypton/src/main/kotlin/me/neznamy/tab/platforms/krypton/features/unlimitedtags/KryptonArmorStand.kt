@@ -209,7 +209,7 @@ class KryptonArmorStand(
                 key.contains("strider") -> vehicle.location.y() + 1.15
             }
         }
-        if (player.isSwimming || player.isFallFlying) return player.location.y() - 1.22
+        if (player.isSwimming || player.isGliding) return player.location.y() - 1.22
         return player.location.y()
     }
 

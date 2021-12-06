@@ -117,6 +117,12 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
 			return purpur && ((Player)p.getPlayer()).isAfk();
 		});
+		manager.registerPlayerPlaceholder("%essentialsnick%", 1000, p -> {
+			String nickname = null;
+			if (essentials != null)
+				nickname = ((Essentials)essentials).getUser(p.getUniqueId()).getNickname();
+			return nickname == null || nickname.length() == 0 ? p.getName() : nickname;
+		});
 		if (chat != null) {
 			manager.registerPlayerPlaceholder("%vault-prefix%", 500, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
 			manager.registerPlayerPlaceholder("%vault-suffix%", 500, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));

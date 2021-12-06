@@ -59,10 +59,9 @@ public class AlignedPlayerList extends PlayerList {
 	}
 	
 	public String formatName(String prefixAndName, String suffix) {
+		if (suffix.length() == 0) return prefixAndName;
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
-		StringBuilder newFormat = new StringBuilder(prefixAndName);
-		newFormat.append(EnumChatFormat.COLOR_CHAR);
-		newFormat.append("r");
+		StringBuilder newFormat = new StringBuilder(prefixAndName).append(EnumChatFormat.RESET.getFormat());
 		try {
 			newFormat.append(buildSpaces(maxWidth + 12 - playerNameWidth));
 		} catch (IllegalArgumentException e) {
@@ -70,9 +69,7 @@ public class AlignedPlayerList extends PlayerList {
 			newFormat.append(buildSpaces(12));
 			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + (maxWidth + 12 - playerNameWidth) + " pixels", e);
 		}
-		newFormat.append(EnumChatFormat.getLastColors(prefixAndName));
-		newFormat.append(suffix);
-		return newFormat.toString();
+		return newFormat.append(EnumChatFormat.getLastColors(prefixAndName)).append(suffix).toString();
 	}
 	
 	/**

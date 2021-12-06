@@ -48,14 +48,17 @@ public class GroupManager extends TabFeature {
 	}
 	
 	private void registerLuckPermsSub() {
-		luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
-			long time = System.nanoTime();
-			TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-			if (p == null) return; //server still starting up and users connecting already (LP loading them)
-			refresh(p, false);
-			TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
-			groupPlaceholder.updateValue(p, p.getGroup());
-		});
+		luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, this::processLPEvent);
+	}
+
+	//synchronized because LP spams the event
+	private synchronized void processLPEvent(UserDataRecalculateEvent event) {
+		long time = System.nanoTime();
+		TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
+		if (p == null) return; //server still starting up and users connecting already (LP loading them)
+		refresh(p, false);
+		TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
+		groupPlaceholder.updateValue(p, p.getGroup());
 	}
 
 	@SuppressWarnings("unchecked")
