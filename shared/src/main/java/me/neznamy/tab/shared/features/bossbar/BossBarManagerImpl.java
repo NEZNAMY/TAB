@@ -278,7 +278,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		new Thread(() -> {
 			try {
 				announcements.add(line);
-				announceEndTime = System.currentTimeMillis() + duration*1000;
+				announceEndTime = System.currentTimeMillis() + duration* 1000L;
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					if (!hasBossBarVisible(all)) continue;
 					if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);

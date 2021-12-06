@@ -103,20 +103,20 @@ object KryptonPacketBuilder : PacketBuilder() {
         val action = PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(packet.action.name)
         val listData = packet.players.map {
             val mode = PacketPlayOutPlayerInfo.EnumGamemode.valueOf(it.gameMode.key().value().uppercase())
-            val listName = IChatBaseComponent.deserialize(GsonComponentSerializer.gson().serialize(it.displayName))
+            val serializedListName = if (it.displayName != null) GsonComponentSerializer.gson().serialize(it.displayName!!) else null
             PacketPlayOutPlayerInfo.PlayerInfoData(
                 it.name,
                 it.uuid,
                 it.properties,
                 it.latency,
                 mode,
-                listName
+                if (serializedListName != null) IChatBaseComponent.deserialize(serializedListName) else null
             )
         }
         return PacketPlayOutPlayerInfo(action, listData)
     }
 
-    override fun readObjective(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutScoreboardObjective? = null
+    override fun readObjective(packet: Any?): PacketPlayOutScoreboardObjective? = null
 
-    override fun readDisplayObjective(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutScoreboardDisplayObjective? = null
+    override fun readDisplayObjective(packet: Any?): PacketPlayOutScoreboardDisplayObjective? = null
 }

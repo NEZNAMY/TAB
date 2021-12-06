@@ -251,6 +251,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	@Override
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
 		if (p.hasInvisibilityPotion()) return false; //1.8.x client sided bug
+		if (vehicleManager == null) return false; //class is still being initialized and this was called from super constructor
 		return vehicleManager.isOnBoat(p) || isPlayerDisabled(p);
 	}
 

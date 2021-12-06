@@ -23,9 +23,7 @@ public abstract class ProxyPlatform implements Platform {
 	
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
-		TAB.getInstance().debug("Detected used PlaceholderAPI placeholder " + identifier);
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
-
 		Placeholder p;
 		if (identifier.startsWith("%rel_")) {
 			p = new RelationalPlaceholderImpl(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> ""); //bridge does not support relational placeholders yet
@@ -36,7 +34,8 @@ public abstract class ProxyPlatform implements Platform {
 				@Override
 				public String request(TabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
-					return getLastValues().get(p.getName());
+					String value = getLastValues().get(p.getName());
+					return value == null ? identifier : value;
 				}
 			};
 		}

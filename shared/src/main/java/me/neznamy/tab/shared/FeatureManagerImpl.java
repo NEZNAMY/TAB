@@ -268,6 +268,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 */
 	public void onLoginPacket(TabPlayer packetReceiver) {
+		((ITabPlayer)packetReceiver).clearRegisteredTeams();
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onLoginPacket")) continue;
 			long time = System.nanoTime();
@@ -285,11 +286,12 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
-		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet, packetReceiver.getVersion());
+		PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet);
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onDisplayObjective")) continue;
 			time = System.nanoTime();
+			f.onDisplayObjective(packetReceiver, display);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
 		}
 	}
@@ -302,7 +304,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
 		long time = System.nanoTime();
-		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet, packetReceiver.getVersion());
+		PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet);
 		TAB.getInstance().getCPUManager().addTime(deserializing, TabConstants.CpuUsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onObjective")) continue;

@@ -68,10 +68,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 				refresh(p, true);
 				return;
 			}
-			boolean refresh = false;
-			if (p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER))) {
-				refresh = true;
-			}
+			boolean refresh = p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
 			if (p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER))) {
 				refresh = true;
 			}

@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -18,7 +19,7 @@ public class LayoutManager extends TabFeature {
 	private final Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
 	private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
 	private final boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
-	private final String remainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more");
+	private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more"));
 	private final SkinManager skinManager = new SkinManager(defaultSkin);
 	
 	private final Map<String, Layout> layouts = new LinkedHashMap<>();

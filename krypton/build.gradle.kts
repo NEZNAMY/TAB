@@ -6,7 +6,9 @@ plugins {
 dependencies {
     implementation(projects.shared)
     compileOnly(libs.krypton.api)
-    compileOnly(libs.krypton.server)
+    compileOnly(libs.krypton.server) {
+        exclude("ca.spottedleaf", "dataconverter")
+    }
     compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.via)
     kapt(libs.krypton.annotationProcessor)

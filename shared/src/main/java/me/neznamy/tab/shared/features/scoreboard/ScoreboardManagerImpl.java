@@ -103,12 +103,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	@Override
 	public void load() {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (isDisabled(p.getServer(), p.getWorld())) {
-				addDisabledPlayer(p);
-				if (hiddenByDefault == sbOffPlayers.contains(p.getName())) visiblePlayers.add(p);
-				return;
-			}
-			setScoreboardVisible(p, hiddenByDefault == sbOffPlayers.contains(p.getName()), false);
+			onJoin(p);
 		}
 	}
 

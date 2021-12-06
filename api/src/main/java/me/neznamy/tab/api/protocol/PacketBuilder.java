@@ -220,13 +220,11 @@ public abstract class PacketBuilder {
 	 * 
 	 * @param	packet
 	 * 			platform-specific objective packet
-	 * @param	clientVersion
-	 * 			Version of client receiving the packet
 	 * @return	The packet converted into {@link PacketPlayOutScoreboardObjective}
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException;
 
 	/**
 	 * Converts platform-specific instance of display objective packet into 
@@ -234,11 +232,9 @@ public abstract class PacketBuilder {
 	 * 
 	 * @param	packet
 	 * 			platform-specific display objective packet
-	 * @param	clientVersion
-	 * 			Version of client receiving the packet
 	 * @return	The packet converted into {@link PacketPlayOutScoreboardDisplayObjective}
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public abstract PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) throws ReflectiveOperationException;
 }
