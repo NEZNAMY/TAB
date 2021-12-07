@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 import me.neznamy.tab.api.ArmorStandManager
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.team.UnlimitedNametagManager
+import me.neznamy.tab.platforms.krypton.Main
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.features.nametags.NameTag
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class NameTagX : NameTag(), UnlimitedNametagManager {
+class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
 
     // config options
     val markerFor18x = TAB.getInstance().configuration.config.getBoolean(
@@ -48,9 +49,11 @@ class NameTagX : NameTag(), UnlimitedNametagManager {
     private val playersDisabledWithAPI = mutableListOf<TabPlayer>()
 
     val vehicleManager = VehicleRefresher(this)
+    private val eventListener = EventListener(this)
 
     init {
         dynamicLines.reverse()
+        plugin.server.eventManager.register(plugin, eventListener)
         TAB.getInstance().featureManager.registerFeature("nametagx-packet", PacketListener(this))
         TAB.getInstance().featureManager.registerFeature("nametagx-vehicle", vehicleManager)
         TAB.getInstance().featureManager.registerFeature("nametagx-location", LocationRefresher(this))

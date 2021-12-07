@@ -15,8 +15,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.auth.ProfileProperty
-import org.kryptonmc.api.registry.Registries
-import org.kryptonmc.api.world.GameModes
+import org.kryptonmc.api.world.GameMode
 import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
 import org.kryptonmc.krypton.packet.out.play.PacketOutObjective
 import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfo
@@ -45,7 +44,7 @@ object KryptonPacketBuilder : PacketBuilder() {
                 it.uniqueId,
                 it.name ?: "",
                 it.skin as? List<ProfileProperty> ?: emptyList(),
-                Registries.GAME_MODES[(it.gameMode?.ordinal ?: 0) - 1] ?: GameModes.SURVIVAL,
+                GameMode.fromId((it.gameMode?.ordinal ?: 0) - 1) ?: GameMode.SURVIVAL,
                 it.latency,
                 if (displayName != null) GsonComponentSerializer.gson().deserialize(displayName) else Component.empty()
             )
@@ -102,14 +101,13 @@ object KryptonPacketBuilder : PacketBuilder() {
         if (packet !is PacketOutPlayerInfo) return null
         val action = PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(packet.action.name)
         val listData = packet.players.map {
-            val mode = PacketPlayOutPlayerInfo.EnumGamemode.valueOf(it.gameMode.key().value().uppercase())
             val serializedListName = if (it.displayName != null) GsonComponentSerializer.gson().serialize(it.displayName!!) else null
             PacketPlayOutPlayerInfo.PlayerInfoData(
                 it.name,
                 it.uuid,
                 it.properties,
                 it.latency,
-                mode,
+                PacketPlayOutPlayerInfo.EnumGamemode.values()[it.gameMode.ordinal + 1],
                 if (serializedListName != null) IChatBaseComponent.deserialize(serializedListName) else null
             )
         }

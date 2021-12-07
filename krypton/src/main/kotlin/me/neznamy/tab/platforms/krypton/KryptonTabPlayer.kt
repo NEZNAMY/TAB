@@ -71,7 +71,7 @@ class KryptonTabPlayer(
 
     override fun isVanished(): Boolean = delegate.isVanished
 
-    override fun getGamemode(): Int = Registries.GAME_MODES.idOf(delegate.gameMode)
+    override fun getGamemode(): Int = delegate.gameMode.ordinal
 
     private fun handle(packet: PacketPlayOutBoss) {
         when (packet.operation) {

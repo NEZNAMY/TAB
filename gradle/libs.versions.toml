@@ -18,7 +18,7 @@ kotlin = "1.6.0"
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.18-R0.1-SNAPSHOT"
-krypton = "0.57"
+krypton = "0.58"
 velocity = "1.1.0"
 
 # Platform extras
