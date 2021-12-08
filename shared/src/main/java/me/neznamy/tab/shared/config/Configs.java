@@ -82,6 +82,12 @@ public class Configs {
 		ClassLoader loader = Configs.class.getClassLoader();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
+		Map<String, Object> values = animation.getValues();
+		if (values.size() == 1 && values.containsKey("animations")) {
+			animation.setValues(animation.getConfigurationSection("animations"));
+			animation.save();
+			TAB.getInstance().print('2', "Converted animations.yml to new format.");
+		}
 		messages = new MessageFile();
 		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
 		reloadFailed = messages.getReloadFailBrokenFile();
