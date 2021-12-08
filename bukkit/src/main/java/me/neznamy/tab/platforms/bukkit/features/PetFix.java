@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,14 +99,19 @@ public class PetFix extends TabFeature {
 			Object removedEntry = null;
 			List<Object> items = (List<Object>) nms.PacketPlayOutEntityMetadata_LIST.get(packet);
 			if (items == null) return;
-			for (Object item : items) {
-				if (item == null) continue;
-				if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == petOwnerPosition) {
-					Object value = nms.DataWatcherItem_VALUE.get(item);
-					if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) {
-						removedEntry = item;
+			try {
+				for (Object item : items) {
+					if (item == null) continue;
+					if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == petOwnerPosition) {
+						Object value = nms.DataWatcherItem_VALUE.get(item);
+						if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) {
+							removedEntry = item;
+						}
 					}
 				}
+			} catch (ConcurrentModificationException e) {
+				//no idea how can this list change in another thread since it's created for the packet but whatever, try again
+				onPacketSend(receiver, packet);
 			}
 			if (removedEntry != null) items.remove(removedEntry);
 		} else if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
