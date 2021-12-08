@@ -79,7 +79,11 @@ public class Condition {
 		for (String placeholder : placeholdersInConditions) {
 			Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
 			if (pl.getRefresh() < refresh) {
-				refresh = pl.getRefresh();
+				if (pl.getRefresh() == -1) {
+					if (refresh > 500) refresh = 500;
+				} else {
+					refresh = pl.getRefresh();
+				}
 			}
 		}
 		pm.addUsedPlaceholders(placeholdersInConditions);
