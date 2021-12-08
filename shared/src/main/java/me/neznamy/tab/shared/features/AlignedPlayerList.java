@@ -58,16 +58,17 @@ public class AlignedPlayerList extends PlayerList {
 		return formatName(player.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) + player.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer), player.getProperty(TabConstants.Property.TABSUFFIX).getFormat(viewer));
 	}
 	
-	public String formatName(String prefixAndName, String suffix) {
+	public synchronized String formatName(String prefixAndName, String suffix) {
 		if (suffix.length() == 0) return prefixAndName;
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		StringBuilder newFormat = new StringBuilder(prefixAndName).append(EnumChatFormat.RESET.getFormat());
+		int length = maxWidth + 12 - playerNameWidth;
 		try {
-			newFormat.append(buildSpaces(maxWidth + 12 - playerNameWidth));
+			newFormat.append(buildSpaces(length));
 		} catch (IllegalArgumentException e) {
 			//will investigate later
 			newFormat.append(buildSpaces(12));
-			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + (maxWidth + 12 - playerNameWidth) + " pixels", e);
+			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + length + " pixels", e);
 		}
 		return newFormat.append(EnumChatFormat.getLastColors(prefixAndName)).append(suffix).toString();
 	}
