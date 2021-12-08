@@ -79,8 +79,10 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
 
     companion object {
 
+        private val INTERACT_ENTITY_ID_FIELD = PacketInInteract::class.java.getDeclaredField("entityId").apply { isAccessible = true }
+
         private fun PacketInInteract.updateEntityId(id: Int) {
-            PacketInInteract::class.java.getDeclaredField("entityId").apply { isAccessible = true }.setInt(this, id)
+            INTERACT_ENTITY_ID_FIELD.setInt(this, id)
         }
     }
 }
