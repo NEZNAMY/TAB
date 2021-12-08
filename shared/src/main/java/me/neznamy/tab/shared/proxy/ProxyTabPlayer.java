@@ -16,6 +16,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	protected ProxyTabPlayer(PluginMessageHandler plm, Object player, UUID uniqueId, String name, String server) {
 		super(player, uniqueId, name, server, "N/A");
 		this.plm = plm;
+		plm.requestAttribute(this, "world");
 	}
 	
 	@Override

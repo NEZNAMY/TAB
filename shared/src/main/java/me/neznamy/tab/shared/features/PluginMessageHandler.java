@@ -63,7 +63,7 @@ public abstract class PluginMessageHandler {
 			String value = in.readUTF();
 			player.setAttribute(attribute, value);
 			if ("world".equals(attribute)) {
-				TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), player.getWorld());
+				TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), value);
 			}
 		}
 		if ("Group".equals(subChannel)) {
