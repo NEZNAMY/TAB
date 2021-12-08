@@ -107,6 +107,12 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
+			if (refreshed.getProperty(TabConstants.Property.TABPREFIX) == null) {
+				//this makes absolutely no sense, and I am not able to reproduce it myself
+				TAB.getInstance().getErrorManager().printError("Tablist formatting data not present for " + refreshed.getName() + " when refreshing, loading again.");
+				updateProperties(refreshed);
+				return;
+			}
 			boolean prefix = refreshed.getProperty(TabConstants.Property.TABPREFIX).update();
 			boolean name = refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).update();
 			boolean suffix = refreshed.getProperty(TabConstants.Property.TABSUFFIX).update();
