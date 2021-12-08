@@ -112,3 +112,10 @@ ping-tps:
   texts:
   - '&aPing: &2&n%ping%&r &ams'
   - '&bServer TPS: &8%tps%'
+barcolors:
+  change-interval: 1000
+  texts:
+    - RED
+    - BLUE
+    - GREEN
+    - YELLOW
