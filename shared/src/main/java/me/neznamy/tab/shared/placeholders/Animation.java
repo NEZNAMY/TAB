@@ -5,7 +5,6 @@ import java.util.List;
 
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -46,9 +45,17 @@ public class Animation {
 			nestedPlaceholders0.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(messages[i]));
 		}
 		for (String placeholder : nestedPlaceholders0) {
-			Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
-			if (p.getRefresh() != -1 && p.getRefresh() < refresh) {
-				refresh = p.getRefresh();
+			int localRefresh;
+			if (placeholder.startsWith("%animation:")) {
+				//nested animations may not be loaded into the system yet due to load order, manually getting the refresh interval
+				String nestedAnimation = placeholder.substring(11, placeholder.length()-1);
+				localRefresh = TAB.getInstance().getConfiguration().getAnimationFile().hasConfigOption(nestedAnimation + ".change-interval") ?
+						TAB.getInstance().getConfiguration().getAnimationFile().getInt(nestedAnimation + ".change-interval") : this.interval;
+			} else {
+				localRefresh = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).getRefresh();
+			}
+			if (localRefresh != -1 && localRefresh < refresh) {
+				refresh = localRefresh;
 			}
 		}
 		this.refresh = refresh;
