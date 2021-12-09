@@ -520,7 +520,7 @@ public final class NMSStorage {
 	private Class<?> getLegacyClass(String name) throws ClassNotFoundException {
 		try {
 			return Class.forName("net.minecraft.server." + serverPackage + "." + name);
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException | NullPointerException e) {
 			try {
 				//modded server?
 				Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
