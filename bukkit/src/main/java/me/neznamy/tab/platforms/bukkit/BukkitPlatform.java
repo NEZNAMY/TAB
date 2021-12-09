@@ -182,7 +182,8 @@ public class BukkitPlatform implements Platform {
 							if (!getForceUpdate().contains(p.getName())) getForceUpdate().add(p.getName());
 							TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
 						});
-						return getLastValues().get(p.getName());
+						String value = getLastValues().get(p.getName());
+						return value == null ? identifier : value;
 					}
 				});
 				return;
