@@ -35,7 +35,8 @@ public class TabRepeatingTask implements RepeatingTask {
 				try {
 					nextLoop += interval;
 					long sleep = nextLoop - System.currentTimeMillis();
-					if (sleep > 0) Thread.sleep(sleep); 
+					if (sleep > interval) sleep = interval; //time travelers who travel back in time
+					if (sleep > 0) Thread.sleep(sleep);
 					long time = System.nanoTime();
 					runnable.run();
 					TAB.getInstance().getCPUManager().addTime(feature, type, System.nanoTime() - time);
