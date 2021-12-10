@@ -63,7 +63,7 @@ public class BungeePlatform extends ProxyPlatform {
 			tab.getFeatureManager().registerFeature("redisbungee", new RedisBungeeSupport(plugin));
 		}
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			tab.addPlayer(new BungeeTabPlayer(p, plm));
+			tab.addPlayer(new BungeeTabPlayer(p));
 		}
 	}
 	

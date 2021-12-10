@@ -56,4 +56,8 @@ public abstract class ProxyPlatform implements Platform {
 	public String getConfigName() {
 		return "proxyconfig.yml";
 	}
+
+	public PluginMessageHandler getPluginMessageHandler() {
+		return plm;
+	}
 }

@@ -10,13 +10,11 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
-	private final PluginMessageHandler plm;
-	private final Map<String, String> attributes = new HashMap<>();
+	private Map<String, String> attributes = new HashMap<>();
 	
-	protected ProxyTabPlayer(PluginMessageHandler plm, Object player, UUID uniqueId, String name, String server) {
+	protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server) {
 		super(player, uniqueId, name, server, "N/A");
-		this.plm = plm;
-		plm.requestAttribute(this, "world");
+		getPluginMessageHandler().requestAttribute(this, "world");
 	}
 	
 	@Override
@@ -35,26 +33,31 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	}
 
 	public String getAttribute(String name, Object def) {
-		plm.requestAttribute(this, name);
-		return attributes.getOrDefault(name, def.toString());
+		getPluginMessageHandler().requestAttribute(this, name);
+		return getAttributes().getOrDefault(name, def.toString());
 	}
 	
 	@Override
 	public boolean hasPermission(String permission) {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
 			String merge = "hasPermission:" + permission;
-			plm.requestAttribute(this, merge);
-			return Boolean.parseBoolean(attributes.getOrDefault(merge, "false"));
+			getPluginMessageHandler().requestAttribute(this, merge);
+			return Boolean.parseBoolean(getAttributes().getOrDefault(merge, "false"));
 		}
 		return hasPermission0(permission);
 	}
 	
 	public void setAttribute(String attribute, String value) {
-		attributes.put(attribute, value);
+		getAttributes().put(attribute, value);
 	}
 	
 	public PluginMessageHandler getPluginMessageHandler() {
-		return plm;
+		return ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler();
+	}
+
+	private Map<String, String> getAttributes() {
+		if (attributes == null) attributes = new HashMap<>(); //called by superclass before initialized in constructor
+		return attributes;
 	}
 	
 	public abstract boolean hasPermission0(String permission);

@@ -40,7 +40,7 @@ public class BungeeEventListener implements Listener {
 	public void onSwitch(ServerSwitchEvent e){
 		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-			TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer(), plm));
+			TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 		} else {
 			TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
 		}

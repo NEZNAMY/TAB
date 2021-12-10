@@ -45,8 +45,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * Constructs new instance for given player
 	 * @param p - BungeeCord player
 	 */
-	public BungeeTabPlayer(ProxiedPlayer p, PluginMessageHandler plm) {
-		super(plm, p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-");
+	public BungeeTabPlayer(ProxiedPlayer p) {
+		super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-");
 		try {
 			channel = ((ChannelWrapper) wrapperField.get(getPlayer().getPendingConnection())).getHandle();
 		} catch (IllegalAccessException e) {
