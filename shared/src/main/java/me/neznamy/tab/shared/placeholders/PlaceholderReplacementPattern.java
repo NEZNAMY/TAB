@@ -35,6 +35,7 @@ public class PlaceholderReplacementPattern {
 	
 	public String findReplacement(String output) {
 		String replacement = findReplacement0(output);
+		if (replacement == null) return "";
 		if (replacement.contains("%value%")) {
 			replacement = replacement.replace("%value%", output);
 		}
