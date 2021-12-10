@@ -252,4 +252,10 @@ public interface TabPlayer {
 	int getGamemode();
 	
 	boolean isBedrockPlayer();
+
+	void setTemporaryGroup(String group);
+
+	boolean hasTemporaryGroup();
+
+	void resetTemporaryGroup();
 }
