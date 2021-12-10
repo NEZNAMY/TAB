@@ -13,7 +13,7 @@ unlimited-nametag-mode-dynamic-lines:
 unlimited-nametag-mode-static-lines:
   myCustomLine: 0.66
 scoreboard:
-  enabled: true
+  enabled: false
   toggle-command: /sb
   permission-required-to-toggle: false
   remember-toggle-choice: false
