@@ -82,13 +82,13 @@ public class ScoreboardCommand extends SubCommand {
 		}
 		TabPlayer target;
 		if (args.length == 2) {
-			if (!sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
+			if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
 			target = sender;
 		} else {
-			if (!sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
+			if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
