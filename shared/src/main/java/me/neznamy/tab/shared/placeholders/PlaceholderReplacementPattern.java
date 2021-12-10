@@ -14,8 +14,8 @@ public class PlaceholderReplacementPattern {
 
 	public PlaceholderReplacementPattern(Map<Object, Object> map) {
 		for (Entry<Object, Object> entry : map.entrySet()) {
-			String key = entry.getKey().toString();
-			String value = entry.getValue().toString();
+			String key = String.valueOf(entry.getKey());
+			String value = String.valueOf(entry.getValue());
 			replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
 			//snakeyaml converts yes & no to booleans, making them not work when used without "
 			if ("true".equals(key)) {
@@ -23,11 +23,8 @@ public class PlaceholderReplacementPattern {
 			} else if ("false".equals(key)) {
 				replacements.put("no", value);
 			} else if (key.contains("-")) {
-				float[] interval = new float[2];
 				try {
-					interval[0] = Float.parseFloat(key.split("-")[0]);
-					interval[1] = Float.parseFloat(key.split("-")[1]);
-					numberIntervals.put(key, interval);
+					numberIntervals.put(key, new float[]{Float.parseFloat(key.split("-")[0]), Float.parseFloat(key.split("-")[1])});
 				} catch (NumberFormatException e) {
 					//not a valid number interval
 				}
