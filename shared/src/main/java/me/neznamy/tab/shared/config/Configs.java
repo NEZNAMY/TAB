@@ -110,11 +110,10 @@ public class Configs {
 			removeStrings[i] = EnumChatFormat.color(list.get(i));
 		}
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
-		if (!tab.getPlatform().isProxy()) {
-			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
-		} else {
+		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
+		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
