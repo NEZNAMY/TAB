@@ -34,7 +34,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 	 * @return true if value changed, false if not
 	 */
 	public boolean update() {
-		String obj = String.valueOf(request());
+		String obj = getReplacements().findReplacement(String.valueOf(request()));
 		String newValue = obj == null ? identifier : setPlaceholders(obj, null);
 		
 		//make invalid placeholders return identifier instead of nothing

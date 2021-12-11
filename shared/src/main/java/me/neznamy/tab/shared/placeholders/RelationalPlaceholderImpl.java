@@ -40,7 +40,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	 */
 	public synchronized boolean update(TabPlayer viewer, TabPlayer target) {
 		String mapKey = key(viewer, target);
-		String newValue = String.valueOf(request(viewer, target));
+		String newValue = getReplacements().findReplacement(String.valueOf(request(viewer, target)));
 		if (!getLastValues().containsKey(mapKey) || !getLastValues().get(mapKey).equals(newValue)) {
 			getLastValues().put(mapKey, newValue);
 			return true;

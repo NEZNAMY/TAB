@@ -45,7 +45,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	 * @return true if value changed since last time, false if not
 	 */
 	public boolean update(TabPlayer p) {
-		String obj = String.valueOf(request(p));
+		String obj = getReplacements().findReplacement(String.valueOf(request(p)));
 		String newValue = obj == null ? identifier : setPlaceholders(obj, p);
 
 		//make invalid placeholders return identifier instead of nothing
