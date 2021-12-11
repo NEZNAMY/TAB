@@ -66,8 +66,8 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, getGroup(analyzed));
 		sendMessage(sender, getTeamName(analyzed));
 		sendMessage(sender, getTeamNameNote(analyzed));
-		if (tab.getFeatureManager().isFeatureEnabled("playerlist")) {
-			PlayerList playerlist = (PlayerList) tab.getFeatureManager().getFeature("playerlist");
+		if (tab.getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {
+			PlayerList playerlist = (PlayerList) tab.getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 			boolean disabledPlayerlist = playerlist.isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, disabledPlayerlist);
 			showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, disabledPlayerlist);
@@ -164,7 +164,7 @@ public class DebugCommand extends SubCommand {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Object> getExtraLines(){
-		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) return new ArrayList<>();
+		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) return new ArrayList<>();
 		List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().getConfig().getObject("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
 		lines.addAll(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines").keySet());
 		lines.remove(TabConstants.Property.NAMETAG);

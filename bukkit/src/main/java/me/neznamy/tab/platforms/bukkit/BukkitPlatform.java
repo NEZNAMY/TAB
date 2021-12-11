@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -91,20 +92,23 @@ public class BukkitPlatform implements Platform {
 		libsDisguises = Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
 		essentials = Bukkit.getPluginManager().getPlugin("Essentials");
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BukkitPipelineInjector());
+		if (tab.getConfiguration().isPipelineInjection())
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BukkitPipelineInjector());
 		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		loadNameTagFeature(tab);
 		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
 			if (tab.getServerVersion().getMinorVersion() < 9) {
-				tab.getFeatureManager().registerFeature("bossbar", new WitherBossBar(plugin));
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new WitherBossBar(plugin));
 			} else {
-				tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
 			}
 		}
-		if (tab.getServerVersion().getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false)) tab.getFeatureManager().registerFeature("petfix", new PetFix());
-		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false)) tab.getFeatureManager().registerFeature("pwp", new PerWorldPlayerList(plugin));
+		if (tab.getServerVersion().getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new PetFix());
+		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false))
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, new PerWorldPlayerList(plugin));
 		if (placeholderAPI) {
 			new TabExpansion(plugin);
 		}
@@ -124,9 +128,9 @@ public class BukkitPlatform implements Platform {
 	private void loadNameTagFeature(TAB tab) {
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
 			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
-				tab.getFeatureManager().registerFeature("nametagx", new NameTagX(plugin));
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new NameTagX(plugin));
 			} else {
-				tab.getFeatureManager().registerFeature("nametag16", new NameTag());
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
 			}
 		}
 	}

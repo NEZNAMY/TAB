@@ -120,9 +120,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
 			return null;
 		}
 
-		
 		private String getName(TabPlayer p) {
-			return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
+			return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 		}
 	}
 }

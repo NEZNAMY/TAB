@@ -32,7 +32,7 @@ public class BukkitArmorStand implements ArmorStand {
 	private static int idCounter = 2000000000;
 
 	//NameTag feature
-	private final NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature("nametagx");
+	private final NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 
 	//owner of the armor stand
 	private final TabPlayer owner;

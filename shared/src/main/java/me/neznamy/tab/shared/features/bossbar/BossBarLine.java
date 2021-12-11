@@ -85,9 +85,9 @@ public class BossBarLine implements BossBar {
 		propertyProgress = TabConstants.Property.bossbarProgress(name);
 		propertyColor = TabConstants.Property.bossbarColor(name);
 		propertyStyle = TabConstants.Property.bossbarStyle(name);
-		TAB.getInstance().getFeatureManager().registerFeature("BossBar-title-" + name, textRefresher);
-		TAB.getInstance().getFeatureManager().registerFeature("BossBar-progress-" + name, progressRefresher);
-		TAB.getInstance().getFeatureManager().registerFeature("BossBar-color-style-" + name, colorAndStyleRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name), textRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name), progressRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarColorStyle(name), colorAndStyleRefresher);
 	}
 	
 	/**

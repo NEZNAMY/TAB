@@ -66,7 +66,7 @@ public class Main {
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
-		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
 	}
 
 	/**

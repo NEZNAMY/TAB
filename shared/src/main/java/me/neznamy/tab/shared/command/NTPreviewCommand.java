@@ -18,7 +18,7 @@ public class NTPreviewCommand extends SubCommand{
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		if ((TAB.getInstance().getFeatureManager().getFeature("nametagx")) != null) {
+		if ((TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS)) != null) {
 			if (sender != null) {
 				sender.toggleNametagPreview();
 			} else {

@@ -54,9 +54,9 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
     init {
         dynamicLines.reverse()
         plugin.server.eventManager.register(plugin, eventListener)
-        TAB.getInstance().featureManager.registerFeature("nametagx-packet", PacketListener(this))
-        TAB.getInstance().featureManager.registerFeature("nametagx-vehicle", vehicleManager)
-        TAB.getInstance().featureManager.registerFeature("nametagx-location", LocationRefresher(this))
+        TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, PacketListener(this))
+        TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager)
+        TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_LOCATION_REFRESHER, LocationRefresher(this))
         TAB.getInstance().debug("Loaded Unlimited nametag featured with parameters markerFor18x=$markerFor18x, disableOnBoats=$disableOnBoats, " +
             "spaceBetweenLines=$spaceBetweenLines, disabledUnlimitedWorlds=$disabledUnlimitedWorlds")
     }
@@ -248,7 +248,7 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
             500,
             "refreshing nametag visibility",
             this,
-            TabConstants.CpuUsageCategory.REFRESHING_NAMETAG_VISIBILITY
+            TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY
         ) {
             TAB.getInstance().onlinePlayers.forEach {
                 if (!it.isLoaded || isPlayerDisabled(it)) return@forEach

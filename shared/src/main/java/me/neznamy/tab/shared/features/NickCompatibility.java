@@ -20,8 +20,8 @@ public class NickCompatibility extends TabFeature {
 
 	private final HashMap<TabPlayer, String> nickedPlayers = new HashMap<>();
 	private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
-	private final BelowName belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature("belowname");
-	private final YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature("tabobjective");
+	private final BelowName belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
+	private final YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
 	
 	public NickCompatibility() {
 		super("Nick compatibility", null);

@@ -145,9 +145,9 @@ public class TAB extends TabAPI {
 			configuration.loadFiles();
 			placeholderManager = new PlaceholderManagerImpl();
 			cpu.registerPlaceholder();
-			featureManager.registerFeature("placeholders", placeholderManager);
+			featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, placeholderManager);
 			groupManager = new GroupManager(platform.detectPermissionPlugin());
-			featureManager.registerFeature("groups", groupManager);
+			featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, groupManager);
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
@@ -191,28 +191,35 @@ public class TAB extends TabAPI {
 	 * Loads universal features present on all platforms with the same configuration
 	 */
 	public void loadUniversalFeatures() {
-		if (configuration.getConfig().getBoolean("header-footer.enabled", true)) featureManager.registerFeature("headerfooter", new HeaderFooter());
-		if (configuration.isRemoveGhostPlayers()) featureManager.registerFeature("ghostplayerfix", new GhostPlayerFix());
+		if (configuration.getConfig().getBoolean("header-footer.enabled", true))
+			featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
+		if (configuration.isRemoveGhostPlayers())
+			featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, new GhostPlayerFix());
 		if (serverVersion.getMinorVersion() >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
 			if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
-				featureManager.registerFeature("playerlist", new AlignedPlayerList());
+				featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new AlignedPlayerList());
 			} else {
-				featureManager.registerFeature("playerlist", new PlayerList());
+				featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
 			}
 		}
-		if (configuration.getConfig().getBoolean("ping-spoof.enabled", false)) featureManager.registerFeature("pingspoof", new PingSpoof());
-		if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) featureManager.registerFeature("tabobjective", new YellowNumber());
-		if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) featureManager.registerFeature("spectatorfix", new SpectatorFix());
-		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true)) featureManager.registerFeature("belowname", new BelowName());
-		if (configuration.getConfig().getBoolean("scoreboard.enabled", false)) featureManager.registerFeature("scoreboard", new ScoreboardManagerImpl());
+		if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
+			featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
+		if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
+			featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
+		if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
+			featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
+		if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
+			featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
+		if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
+			featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
 		if (serverVersion.getMinorVersion() >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
 			if (getTeamManager() == null) {
 				//sorting is disabled, but layout needs team names
-				featureManager.registerFeature("sorting", new Sorting(null));
+				featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting(null));
 			}
-			featureManager.registerFeature("layout", new LayoutManager());
+			featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
 		}
-		featureManager.registerFeature("nick", new NickCompatibility());
+		featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
 		if (platform.isProxy()) {
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");
@@ -286,18 +293,18 @@ public class TAB extends TabAPI {
 
 	@Override
 	public BossBarManager getBossBarManager() {
-		return (BossBarManager) featureManager.getFeature("bossbar");
+		return (BossBarManager) featureManager.getFeature(TabConstants.Feature.BOSS_BAR);
 	}
 
 	@Override
 	public ScoreboardManager getScoreboardManager() {
-		return (ScoreboardManager) featureManager.getFeature("scoreboard");
+		return (ScoreboardManager) featureManager.getFeature(TabConstants.Feature.SCOREBOARD);
 	}
 
 	@Override
 	public TeamManager getTeamManager() {
-		if (featureManager.isFeatureEnabled("nametag16")) return (NameTag) featureManager.getFeature("nametag16");
-		return (NameTag) featureManager.getFeature("nametagx");
+		if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return (NameTag) featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
+		return (NameTag) featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 	}
 
 	@Override
@@ -325,7 +332,7 @@ public class TAB extends TabAPI {
 
 	@Override
 	public HeaderFooterManager getHeaderFooterManager() {
-		return (HeaderFooterManager) featureManager.getFeature("headerfooter");
+		return (HeaderFooterManager) featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
 	}
 
 	@Override
@@ -368,6 +375,6 @@ public class TAB extends TabAPI {
 
 	@Override
 	public TablistFormatManager getTablistFormatManager() {
-		return (TablistFormatManager) featureManager.getFeature("playerlist");
+		return (TablistFormatManager) featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
 	}
 }

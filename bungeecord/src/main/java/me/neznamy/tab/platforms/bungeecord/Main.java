@@ -37,7 +37,7 @@ public class Main extends Plugin {
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 10535);
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
-		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
 	}
 	
 	/**

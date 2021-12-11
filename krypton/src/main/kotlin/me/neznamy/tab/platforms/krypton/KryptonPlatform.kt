@@ -8,6 +8,7 @@ import me.neznamy.tab.platforms.krypton.features.PerWorldPlayerList
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.NameTagX
 import me.neznamy.tab.shared.Platform
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl
 import me.neznamy.tab.shared.features.nametags.NameTag
 import me.neznamy.tab.shared.permission.LuckPerms
@@ -33,7 +34,7 @@ class KryptonPlatform(
 
     override fun loadFeatures() {
         if (TAB.getInstance().configuration.isPipelineInjection) {
-            TAB.getInstance().featureManager.registerFeature("injection", KryptonPipelineInjector())
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, KryptonPipelineInjector())
         }
 
         // Placeholders
@@ -44,10 +45,10 @@ class KryptonPlatform(
         loadNametagFeature()
         TAB.getInstance().loadUniversalFeatures()
         if (TAB.getInstance().config.getBoolean("bossbar.enabled", false)) {
-            TAB.getInstance().featureManager.registerFeature("bossbar", BossBarManagerImpl())
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, BossBarManagerImpl())
         }
         if (TAB.getInstance().config.getBoolean("per-world-playerlist.enabled", false)) {
-            TAB.getInstance().featureManager.registerFeature("pwp", PerWorldPlayerList(plugin))
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, PerWorldPlayerList(plugin))
         }
         server.players.forEach { TAB.getInstance().addPlayer(KryptonTabPlayer(it, plugin.protocolVersion(it))) }
     }
@@ -104,9 +105,9 @@ class KryptonPlatform(
     private fun loadNametagFeature() {
         if (!TAB.getInstance().config.getBoolean("scoreboard-teams.enabled", true)) return
         if (TAB.getInstance().config.getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
-            TAB.getInstance().featureManager.registerFeature("nametagx", NameTagX(plugin))
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, NameTagX(plugin))
         } else {
-            TAB.getInstance().featureManager.registerFeature("nametag16", NameTag())
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, NameTag())
         }
     }
 }

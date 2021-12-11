@@ -28,8 +28,8 @@ public class GlobalPlayerList extends TabFeature {
 	public GlobalPlayerList() {
 		super("Global PlayerList", null);
 		boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
-		if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_latency", new LatencyRefresher());
-		TAB.getInstance().getFeatureManager().registerFeature("globalplayerlist_vanish", new VanishRefresher(this));
+		if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_VANISH, new VanishRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded GlobalPlayerList feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",
 				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers, updateLatency));
 	}
@@ -120,7 +120,7 @@ public class GlobalPlayerList extends TabFeature {
 
 	public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
 		IChatBaseComponent format = null;
-		PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature("playerlist");
+		PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 		if (playerlist != null) {
 			format = playerlist.getTabFormat(p, viewer, false);
 		}

@@ -24,7 +24,8 @@ import me.neznamy.tab.shared.features.layout.PlayerSlot;
  */
 public class PlayerList extends TabFeature implements TablistFormatManager {
 
-	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) && TAB.getInstance().getFeatureManager().isFeatureEnabled("injection");
+	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) &&
+			TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION);
 	private boolean disabling = false;
 
 	public PlayerList() {
@@ -81,7 +82,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 					if (viewer.getVersion().getMinorVersion() < 8) continue;
 					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p, viewer))), this);
 				}
-				RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+				RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 				if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
 			}
 		} else {
@@ -123,7 +124,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 				if (viewer.getVersion().getMinorVersion() < 8) continue;
 				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), getTabFormat(refreshed, viewer, true))), this);
 			}
-			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 			if (redis != null) redis.updateTabFormat(refreshed, refreshed.getProperty(TabConstants.Property.TABPREFIX).get() + refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + refreshed.getProperty(TabConstants.Property.TABSUFFIX).get());
 		}
 	}
@@ -157,7 +158,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 	}
 	
 	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
-		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
+		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
 		if (manager != null) {
 			Layout layout = manager.getPlayerViews().get(viewer);
 			if (layout != null) {

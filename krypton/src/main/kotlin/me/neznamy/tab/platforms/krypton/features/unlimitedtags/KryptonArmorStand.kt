@@ -32,7 +32,7 @@ class KryptonArmorStand(
     private val staticOffset: Boolean
 ) : ArmorStand {
 
-    private val manager = TAB.getInstance().featureManager.getFeature("nametagx") as NameTagX
+    private val manager = TAB.getInstance().featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS) as NameTagX
     private val player = owner.player as Player
     private val entityId = ID_COUNTER.incrementAndGet()
     private val uuid = UUID.randomUUID()

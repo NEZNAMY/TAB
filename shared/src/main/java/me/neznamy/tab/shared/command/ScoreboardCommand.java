@@ -86,7 +86,7 @@ public class ScoreboardCommand extends SubCommand {
 			}
 			target = sender;
 		} else {
-			if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
+			if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW_OTHER)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
@@ -112,7 +112,7 @@ public class ScoreboardCommand extends SubCommand {
 	}
 	
 	private ScoreboardManagerImpl getScoreboardManager() {
-		return (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		return (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
 	}
 
 	@Override

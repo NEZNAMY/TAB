@@ -32,9 +32,9 @@ public class NameTag extends TabFeature implements TeamManager {
 	public NameTag() {
 		super("NameTags", "Updating prefix/suffix", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
-		TAB.getInstance().getFeatureManager().registerFeature("sorting", sorting);
-		if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature("NameTags-visibility", new VisibilityRefresher(this));
-		TAB.getInstance().getFeatureManager().registerFeature("NameTags-collision", collisionManager);
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.SORTING, sorting);
+		if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
 		TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNameTags=%s",
 				collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNameTags));
 	}
@@ -203,7 +203,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		forcedTeamName.put(player, name);
 		registerTeam(player);
 		if (name != null) ((ITabPlayer)player).setTeamNameNote("Set using API");
-		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 		if (redis != null) redis.updateTeamName(player, player.getTeamName());
 	}
 
@@ -232,7 +232,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			boolean visible = getTeamVisibility(p, viewer);
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
 		}
-		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 		if (redis != null) redis.updateNameTag(p, p.getProperty(TabConstants.Property.TAGPREFIX).get(), p.getProperty(TabConstants.Property.TAGSUFFIX).get());
 	}
 
@@ -275,11 +275,11 @@ public class NameTag extends TabFeature implements TeamManager {
 			updateTeamData(p);
 		} else {
 			unregisterTeam(p);
-			LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
+			LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
 			if (layout != null) layout.updateTeamName(p, newName);
 			((ITabPlayer) p).setTeamName(newName);
 			registerTeam(p);
-			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 			if (redis != null) redis.updateTeamName(p, p.getTeamName());
 		}
 	}
@@ -306,7 +306,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 	
 	private String getName(TabPlayer p) {
-		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
+		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 	}
 
 	@Override
