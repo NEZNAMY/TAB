@@ -42,20 +42,18 @@ public class ScoreboardCommand extends SubCommand {
 		TabPlayer p = getTarget(sender, args);
 		if (scoreboard.getOtherPluginScoreboards().containsKey(p)) return; //not overriding other plugins
 		boolean silent = args.length >= 3 && args[2].equals("-s");
-		if (args.length >= 1) {
-			switch(args[0]) {
-			case "on":
-				scoreboard.setScoreboardVisible(p, true, !silent);
-				break;
-			case "off":
-				scoreboard.setScoreboardVisible(p, false, !silent);
-				break;
-			case "toggle":
-				scoreboard.toggleScoreboard(p, !silent);
-				break;
-			default:
-				break;
-			}
+		switch(args[0]) {
+		case "on":
+			scoreboard.setScoreboardVisible(p, true, !silent);
+			break;
+		case "off":
+			scoreboard.setScoreboardVisible(p, false, !silent);
+			break;
+		case "toggle":
+			scoreboard.toggleScoreboard(p, !silent);
+			break;
+		default:
+			break;
 		}
 	}
 
