@@ -33,7 +33,7 @@ public interface EventBus {
      * @param handler the handler to register
      * @param <E> the type of the event
      */
-    <E extends TabEvent> void register(Class<E> type, ListenerPriority priority, EventHandler<E> handler);
+    <E extends TabEvent> void register(Class<E> type, EventHandler<E> handler);
 
     /**
      * Scans the given listener for any method that is annotated with

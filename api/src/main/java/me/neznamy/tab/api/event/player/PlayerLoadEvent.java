@@ -6,15 +6,12 @@ import me.neznamy.tab.api.event.TabEvent;
 /**
  * Called when the player has been fully loaded by TAB.
  */
-public final class PlayerLoadEvent implements TabEvent {
+public interface PlayerLoadEvent extends TabEvent {
 
-    private final TabPlayer player;
-
-    public PlayerLoadEvent(final TabPlayer player) {
-        this.player = player;
-    }
-
-    public TabPlayer getPlayer() {
-        return player;
-    }
+    /**
+     * Gets the player that was loaded.
+     *
+     * @return the player that was loaded
+     */
+    TabPlayer getPlayer();
 }

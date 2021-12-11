@@ -3,11 +3,11 @@ package me.neznamy.tab.shared.event;
 import java.lang.reflect.Method;
 import me.neznamy.tab.api.event.EventBus;
 import me.neznamy.tab.api.event.EventHandler;
-import me.neznamy.tab.api.event.ListenerPriority;
 import me.neznamy.tab.api.event.Subscribe;
 import me.neznamy.tab.api.event.TabEvent;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.event.EventSubscriber;
+import net.kyori.event.PostOrders;
 import net.kyori.event.PostResult;
 import net.kyori.event.SimpleEventBus;
 import net.kyori.event.method.MethodHandleEventExecutorFactory;
@@ -50,8 +50,8 @@ public final class EventBusImpl implements EventBus {
     }
 
     @Override
-    public <E extends TabEvent> void register(Class<E> type, ListenerPriority priority, EventHandler<E> handler) {
-        bus.register(type, new HandlerWrapper<>(handler, priority));
+    public <E extends TabEvent> void register(Class<E> type, EventHandler<E> handler) {
+        bus.register(type, new HandlerWrapper<>(handler));
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class EventBusImpl implements EventBus {
 
         @Override
         public int postOrder(@NonNull Object listener, @NonNull Method method) {
-            return method.getAnnotation(Subscribe.class).priority().ordinal();
+            return PostOrders.NORMAL;
         }
 
         @Override
@@ -85,21 +85,14 @@ public final class EventBusImpl implements EventBus {
     private static final class HandlerWrapper<E> implements EventSubscriber<E> {
 
         private final EventHandler<E> handler;
-        private final ListenerPriority priority;
 
-        public HandlerWrapper(final EventHandler<E> handler, final ListenerPriority priority) {
+        public HandlerWrapper(final EventHandler<E> handler) {
             this.handler = handler;
-            this.priority = priority;
         }
 
         @Override
         public void invoke(@NonNull E event) throws Throwable {
             handler.handle(event);
-        }
-
-        @Override
-        public int postOrder() {
-            return priority.ordinal();
         }
     }
 }

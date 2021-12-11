@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.neznamy.tab.api.event.plugin.TabLoadEvent;
 import me.neznamy.tab.shared.event.EventBusImpl;
+import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.HeaderFooterManager;
@@ -158,7 +158,7 @@ public class TAB extends TabAPI {
 			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded();
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-			eventBus.fire(new TabLoadEvent());
+			eventBus.fire(TabLoadEventImpl.getInstance());
 			platform.callLoadEvent();
 			disabled = false;
 			return configuration.getMessages().getReloadSuccess();
@@ -258,6 +258,7 @@ public class TAB extends TabAPI {
 		return cpu;
 	}
 
+	@Override
 	public EventBusImpl getEventBus() {
 		return eventBus;
 	}

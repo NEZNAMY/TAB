@@ -5,5 +5,5 @@ import me.neznamy.tab.api.event.TabEvent;
 /**
  * Called when TAB is fully loaded.
  */
-public final class TabLoadEvent implements TabEvent {
+public interface TabLoadEvent extends TabEvent {
 }
