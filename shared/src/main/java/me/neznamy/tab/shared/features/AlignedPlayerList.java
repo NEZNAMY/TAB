@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,15 +32,26 @@ public class AlignedPlayerList extends PlayerList {
 	private final byte[] widths = new byte[65536];
 
 	public AlignedPlayerList() {
+		loadWidths();
+	}
+
+	/**
+	 * Loads widths from included widths.txt file as well as width overrides from config
+	 */
+	private void loadWidths() {
+		InputStream file = getClass().getClassLoader().getResourceAsStream("widths.txt");
+		if (file == null) {
+			TAB.getInstance().getErrorManager().criticalError("Failed to load widths.txt file. Is it inside the jar? Aligned suffix will not work.", null);
+			return;
+		}
 		int characterId = 1;
-		for (String line : new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("widths.txt"))).lines().collect(Collectors.toList())) {
+		for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
 			widths[characterId++] = (byte) Float.parseFloat(line);
 		}
 		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
 			widths[entry.getKey()] = (byte)(int)entry.getValue();
 		}
-		TAB.getInstance().debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
 	}
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
