@@ -60,7 +60,7 @@ public class Main {
 		}
 		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
 		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.PROXY));
-		server.getEventManager().register(this, new VelocityEventListener(plm));
+		server.getEventManager().register(this, new VelocityEventListener());
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
