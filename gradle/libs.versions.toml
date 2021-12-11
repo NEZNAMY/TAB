@@ -14,6 +14,7 @@ luckperms = "5.2"
 guava = "30.1.1-jre"
 floodgate = "2.0-SNAPSHOT"
 kotlin = "1.6.0"
+event = "3.0.0"
 
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
@@ -46,6 +47,7 @@ luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+event = { group = "net.kyori", name = "event-method", version.ref = "event" }
 
 # Platforms
 bukkit = { group = "com.destroystokyo.paper", name = "paper-api", version.ref = "bukkit" }

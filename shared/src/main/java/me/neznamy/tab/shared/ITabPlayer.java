@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 
+import me.neznamy.tab.api.event.player.PlayerLoadEvent;
 import me.neznamy.tab.api.protocol.*;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -292,6 +293,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	
 	public void markAsLoaded() {
 		onJoinFinished = true;
+		TAB.getInstance().getEventBus().fire(new PlayerLoadEvent(this));
 		TAB.getInstance().getPlatform().callLoadEvent(this);
 	}
 
