@@ -8,19 +8,12 @@ import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
  * The core for velocity forwarding events into all enabled features
  */
 public class VelocityEventListener {
 
-	private final PluginMessageHandler plm;
-	
-	public VelocityEventListener(PluginMessageHandler plm) {
-		this.plm = plm;
-	}
-	
 	/**
 	 * Disconnect event listener to forward the event to all features
 	 * @param e - disconnect event
@@ -38,12 +31,13 @@ public class VelocityEventListener {
 	 */
 	@Subscribe
 	public void onConnect(ServerPostConnectEvent e){
+		Player p = e.getPlayer();
 		if (TAB.getInstance().isDisabled()) return;
-		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-			TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(e.getPlayer()));
+		if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
+			TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
 		} else {
 			TAB.getInstance().getCPUManager().runTaskLater(100, "processing server switch", () -> 
-				TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getCurrentServer().isPresent() ? e.getPlayer().getCurrentServer().get().getServerInfo().getName() : "null")
+				TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null")
 			);
 		}
 	}
