@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
