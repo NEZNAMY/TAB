@@ -17,8 +17,8 @@ import me.neznamy.tab.shared.TabConstants;
  */
 public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	
-	private final List<Object> worldGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
-	private final List<Object> serverGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
+	private final List<Object> worldGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
+	private final List<Object> serverGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
 	
 	public HeaderFooter() {
 		super("Header/Footer", "Updating header/footer", TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-servers"),
