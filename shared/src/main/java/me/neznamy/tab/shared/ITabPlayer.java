@@ -28,6 +28,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private String world;
 	private String server;
 	private String permissionGroup = GroupManager.DEFAULT_GROUP;
+	private String temporaryGroup;
 	private String teamName;
 	private String teamNameNote;
 	private final boolean bedrockPlayer;
@@ -157,7 +158,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	@Override
 	public String getGroup() {
-		return permissionGroup;
+		return temporaryGroup != null ? temporaryGroup : permissionGroup;
 	}
 
 	@Override
@@ -291,5 +292,19 @@ public abstract class ITabPlayer implements TabPlayer {
 
 	public void clearRegisteredTeams() {
 		registeredTeams.clear();
+	}
+
+	public void setTemporaryGroup(String group) {
+		if (Objects.equals(group, temporaryGroup)) return;
+		temporaryGroup = group;
+		forceRefresh();
+	}
+
+	public boolean hasTemporaryGroup() {
+		return temporaryGroup != null;
+	}
+
+	public void resetTemporaryGroup() {
+		setTemporaryGroup(null);
 	}
 }

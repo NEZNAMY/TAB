@@ -18,7 +18,7 @@ public class TabConstants {
 
 		public static final String ANTI_OVERRIDE = "Anti override";
 
-		public static final String BYTEBUF = "ByteBuf";
+		public static final String BYTE_BUF = "ByteBuf";
 		public static final String PACKET_PLAYER_INFO = "PacketPlayOutPlayerInfo";
 		public static final String PACKET_DISPLAY_OBJECTIVE = "PacketPlayOutScoreboardDisplayObjective";
 		public static final String PACKET_OBJECTIVE = "PacketPlayOutScoreboardObjective";
@@ -33,12 +33,8 @@ public class TabConstants {
 		public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
 
 		public static final String V1_8_0_BUG_COMPENSATION = "Compensating for 1.8.0 bugs";
-		public static final String REFRESHING_NAMETAG_VISIBILITY = "Refreshing nametag visibility";
-		public static final String TICKING_VEHICLES = "Ticking vehicles";
-		public static final String TELEPORTING_WITHER = "Teleporting Wither entity";
+		public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
 		public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
-		public static final String REFRESHING_TEAM_NAMES = "Refreshing team names";
-		public static final String REFRESHING_GROUPS = "Refreshing player groups";
 
 		private CpuUsageCategory() {}
 	}
@@ -50,26 +46,25 @@ public class TabConstants {
 		public static final String BOSSBAR_TEXT = "BossBar (Text)";
 		public static final String BOSSBAR_WITHER_TELEPORT = "BossBar (Teleporting Wither)";
 
-		public static final String GLOBAL_PLAYERLIST_LATENCY = "Global Playerlist (Updating latency)";
-		public static final String GLOBAL_PLAYERLIST_VANISH = "Global Playerlist (Vanishing)";
+		public static final String GLOBAL_PLAYERLIST_LATENCY = "Global PlayerList (Updating latency)";
+		public static final String GLOBAL_PLAYERLIST_VANISH = "Global PlayerList (Vanishing)";
 
 		public static final String LAYOUT_FIXED_SLOTS = "Layout (Fixed slots)";
-		public static final String LAYOUT_LATENCY = "Layout (Updating latency)";
 		public static final String LAYOUT_PLAYER_SLOTS = "Layout (Player slots)";
 
-		public static final String NAMETAGS_TEAM_REGISTER = "Nametags (Team register)";
-		public static final String NAMETAGS_TEAM_UNREGISTER = "Nametags (Team unregister)";
-		public static final String NAMETAGS_TEAM_UPDATE = "Nametags (Team update)";
+		public static final String NAMETAGS_TEAM_REGISTER = "NameTags (Team register)";
+		public static final String NAMETAGS_TEAM_UNREGISTER = "NameTags (Team unregister)";
+		public static final String NAMETAGS_TEAM_UPDATE = "NameTags (Team update)";
 
 		public static final String SCOREBOARD_TITLE = "Scoreboard (Title)";
 		public static final String SCOREBOARD_LINES = "Scoreboard (Lines)";
 
-		public static final String UNLIMITED_NAMETAGS_OFFSET_CHANGE = "Unlimited Nametags (Changing offset)";
-		public static final String UNLIMITED_NAMETAGS_SPAWN = "Unlimited Nametags (Spawning)";
-		public static final String UNLIMITED_NAMETAGS_DESPAWN = "Unlimited Nametags (Despawning)";
-		public static final String UNLIMITED_NAMETAGS_TELEPORT = "Unlimited Nametags (Teleporting)";
-		public static final String UNLIMITED_NAMETAGS_SNEAK = "Unlimited Nametags (Sneaking)";
-		public static final String UNLIMITED_NAMETAGS_METADATA = "Unlimited Nametags (Metadata)";
+		public static final String UNLIMITED_NAMETAGS_OFFSET_CHANGE = "Unlimited NameTags (Changing offset)";
+		public static final String UNLIMITED_NAMETAGS_SPAWN = "Unlimited NameTags (Spawning)";
+		public static final String UNLIMITED_NAMETAGS_DESPAWN = "Unlimited NameTags (Despawning)";
+		public static final String UNLIMITED_NAMETAGS_TELEPORT = "Unlimited NameTags (Teleporting)";
+		public static final String UNLIMITED_NAMETAGS_SNEAK = "Unlimited NameTags (Sneaking)";
+		public static final String UNLIMITED_NAMETAGS_METADATA = "Unlimited NameTags (Metadata)";
 
 		private PacketCategory() {}
 	}
@@ -160,6 +155,75 @@ public class TabConstants {
 
 		public static String scoreboardSuffix(String scoreboard, int lineNumber) {
 			return scoreboard + "-" + lineNumber + "-suffix";
+		}
+	}
+
+	public static class Feature {
+
+		//universal features
+		public static final String HEADER_FOOTER = "HeaderFooter";
+		public static final String GHOST_PLAYER_FIX = "GhostPlayerFix";
+		public static final String PLAYER_LIST = "PlayerList";
+		public static final String SPECTATOR_FIX = "SpectatorFix";
+		public static final String YELLOW_NUMBER = "YellowNumber";
+		public static final String BELOW_NAME = "BelowName";
+		public static final String BELOW_NAME_TEXT = "BelowNameText";
+		public static final String SCOREBOARD = "ScoreBoard";
+		public static final String PING_SPOOF = "PingSpoof";
+		public static final String SORTING = "sorting";
+		public static final String LAYOUT = "layout";
+		public static final String NICK_COMPATIBILITY = "nick";
+		public static final String PIPELINE_INJECTION = "injection";
+		public static final String BOSS_BAR = "BossBar";
+		public static final String NAME_TAGS = "NameTag16";
+		public static final String NAME_TAGS_COLLISION = "NameTagCollision";
+		public static final String NAME_TAGS_VISIBILITY = "NameTagVisibility";
+		public static final String GROUP_MANAGER = "GroupManager";
+		public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
+
+		//Bukkit only
+		public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
+		public static final String PET_FIX = "PetFix";
+		public static final String UNLIMITED_NAME_TAGS = "NameTagX";
+		public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
+		public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";
+		public static final String UNLIMITED_NAME_TAGS_LOCATION_REFRESHER = "nametagx-location";
+
+		//BungeeCord only
+		public static final String REDIS_BUNGEE = "RedisBungee";
+		public static final String GLOBAL_PLAYER_LIST = "GlobalPlayerList";
+		public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
+		public static final String GLOBAL_PLAYER_LIST_VANISH = "GlobalPlayerList-Vanish";
+
+		private Feature(){
+		}
+
+		public static String scoreboardLine(String line) {
+			return "scoreboard-" + line;
+		}
+
+		public static String layout(String name) {
+			return "layout-" + name;
+		}
+
+		public static String layoutSlot(String layout, int slot) {
+			return "layout-" + layout + "-slot-" + slot;
+		}
+
+		public static String bossBarTitle(String name) {
+			return "BossBar-title-" + name;
+		}
+
+		public static String bossBarProgress(String name) {
+			return "BossBar-progress-" + name;
+		}
+
+		public static String bossBarColorStyle(String name) {
+			return "BossBar-color-style-" + name;
+		}
+
+		public static String scoreboardLine(String scoreboard, int index) {
+			return "scoreboard-score-" + scoreboard + "-" + index;
 		}
 	}
 }

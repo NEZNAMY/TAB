@@ -17,7 +17,7 @@ class KryptonPipelineInjector : PipelineInjector("handler") {
 
     inner class KryptonChannelDuplexHandler(private val player: TabPlayer) : ChannelDuplexHandler() {
 
-        override fun channelRead(ctx: ChannelHandlerContext?, msg: Any?) {
+        override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
             try {
                 if (TAB.getInstance().featureManager.onPacketReceive(player, msg)) return
                 super.channelRead(ctx, msg)
@@ -26,7 +26,7 @@ class KryptonPipelineInjector : PipelineInjector("handler") {
             }
         }
 
-        override fun write(ctx: ChannelHandlerContext?, msg: Any?, promise: ChannelPromise?) {
+        override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
             try {
                 if (msg is PacketOutPlayerInfo) {
                     super.write(ctx, TAB.getInstance().featureManager.onPacketPlayOutPlayerInfo(player, msg), promise)
@@ -39,7 +39,7 @@ class KryptonPipelineInjector : PipelineInjector("handler") {
             try {
                 super.write(ctx, msg, promise)
             } catch (exception: Exception) {
-                TAB.getInstance().errorManager.printError("Failed to forward packet ${msg?.javaClass?.simpleName} to ${player.name}", exception)
+                TAB.getInstance().errorManager.printError("Failed to forward packet ${msg.javaClass.simpleName} to ${player.name}", exception)
             }
         }
     }

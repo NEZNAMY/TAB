@@ -66,8 +66,10 @@ public class YellowNumber extends TabFeature {
 		PacketAPI.registerScoreboardObjective(connectedPlayer, OBJECTIVE_NAME, TITLE, DISPLAY_SLOT, displayType, this);
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
-			if (all.isLoaded()) connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+			if (all.isLoaded()) {
+				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
+				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+			}
 		}
 	}
 
@@ -86,7 +88,7 @@ public class YellowNumber extends TabFeature {
 		}
 		if (!disabledNow && disabledBefore) {
 			onJoin(p);
-			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 			if (redis != null) redis.updateYellowNumber(p, p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
 		}
 	}
@@ -100,13 +102,14 @@ public class YellowNumber extends TabFeature {
 		if (isDisabledPlayer(refreshed)) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			if (!all.isLoaded()) continue;
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), value), this);
 		}
-		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 		if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
 	}
 
 	private String getName(TabPlayer p) {
-		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick")).getNickname(p);
+		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 	}
 }

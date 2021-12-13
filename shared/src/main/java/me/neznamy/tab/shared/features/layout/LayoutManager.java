@@ -11,6 +11,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
@@ -66,7 +67,7 @@ public class LayoutManager extends TabFeature {
 				FixedSlot f = new FixedSlot(l, slot, text, skin);
 				fixedSlots.put(slot, f);
 				emptySlots.remove((Integer)slot);
-				if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature("layout-" + layout.getKey() + "-slot-" + slot, f);
+				if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
 			}
 			for (Entry<String, Map<String, Object>> group : ((Map<String, Map<String, Object>>) map.get("groups")).entrySet()){
 				Condition condition = Condition.getCondition((String) group.getValue().get("condition"));
@@ -83,7 +84,7 @@ public class LayoutManager extends TabFeature {
 				emptySlots.removeAll(positions);
 			}
 			layouts.put(layout.getKey().toString(), l);
-			TAB.getInstance().getFeatureManager().registerFeature("layout-" + layout.getKey(), l);
+			TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layout(layout.getKey().toString()), l);
 		}
 	}
 

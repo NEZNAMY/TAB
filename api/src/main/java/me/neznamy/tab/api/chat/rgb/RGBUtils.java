@@ -8,7 +8,6 @@ import me.neznamy.tab.api.chat.TextColor;
 import me.neznamy.tab.api.chat.rgb.format.BukkitFormat;
 import me.neznamy.tab.api.chat.rgb.format.CMIFormat;
 import me.neznamy.tab.api.chat.rgb.format.HtmlFormat;
-import me.neznamy.tab.api.chat.rgb.format.HtmlFormat2;
 import me.neznamy.tab.api.chat.rgb.format.RGBFormatter;
 import me.neznamy.tab.api.chat.rgb.format.UnnamedFormat1;
 import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
@@ -44,8 +43,7 @@ public class RGBUtils {
 				new BukkitFormat(),
 				new CMIFormat(),
 				new UnnamedFormat1(),
-				new HtmlFormat(),
-				new HtmlFormat2()
+				new HtmlFormat()
 		};
 		gradients = new GradientPattern[] {
 				//{#RRGGBB>}text{#RRGGBB<}

@@ -55,10 +55,7 @@ public abstract class TabPlaceholder implements Placeholder {
 	 * @return string with this placeholder replaced
 	 */
 	public String set(String s, TabPlayer p) {
-		String originalValue = getLastValue(p);
-		String value = replacements.findReplacement(originalValue);
-		value = setPlaceholders(value, p);
-		return replace(s, identifier, value);
+		return replace(s, identifier, setPlaceholders(getLastValue(p), p));
 	}
 	
 	public String[] getNestedPlaceholders(String output) {

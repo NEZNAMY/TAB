@@ -7,6 +7,7 @@ public enum ProtocolVersion {
 
 	UNKNOWN	("Unknown"),
 	PROXY	("Proxy"),
+	V1_18_1	(757),
 	V1_18	(757),
 	V1_17_1	(756),
 	V1_17	(755),
@@ -84,7 +85,7 @@ public enum ProtocolVersion {
 	 */
 	ProtocolVersion(String friendlyName){
 		this.networkId = 999;
-		this.minorVersion = 17;
+		this.minorVersion = 18;
 		this.friendlyName = friendlyName;
 	}
 

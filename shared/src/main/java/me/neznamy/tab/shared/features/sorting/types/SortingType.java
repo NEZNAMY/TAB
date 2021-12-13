@@ -12,7 +12,7 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 public abstract class SortingType {
 
 	//number to add to / subtract from to prevent incorrect sorting with negative values
-	protected static final int DEFAULT_NUMBER = 500000000;
+	protected static final int DEFAULT_NUMBER = 5000000;
 	
 	//placeholder to sort by, if sorting type uses it
 	protected String sortingPlaceholder;

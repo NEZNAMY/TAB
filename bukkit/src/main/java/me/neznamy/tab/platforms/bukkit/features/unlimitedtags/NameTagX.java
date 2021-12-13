@@ -57,9 +57,9 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	public NameTagX(JavaPlugin plugin) {
 		Collections.reverse(dynamicLines);
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		TAB.getInstance().getFeatureManager().registerFeature("NameTagX-packet", new PacketListener(this));
-		TAB.getInstance().getFeatureManager().registerFeature("NameTagX-vehicle", vehicleManager);
-		TAB.getInstance().getFeatureManager().registerFeature("NameTagX-location", new LocationRefresher(this));
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, new PacketListener(this));
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_LOCATION_REFRESHER, new LocationRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
@@ -84,7 +84,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing NameTag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAMETAG_VISIBILITY, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing NameTag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded() || isPlayerDisabled(p)) continue;

@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.config.MySQL;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
+	private static final String DEFAULT_GROUP = "_DEFAULT_";
 	private final MySQL mysql;
 
 	private final Map<String, Map<String, String>> values = new HashMap<>();
@@ -66,11 +67,20 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, String.format("group=%s,server=%s", group, server)};
 		}
+		if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+			return new String[] {value, String.format("group=%s,server=%s", DEFAULT_GROUP, server)};
+		}
 		if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, String.format("group=%s,world=%s", group, world)};
 		}
+		if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+			return new String[] {value, String.format("group=%s,world=%s", DEFAULT_GROUP, world)};
+		}
 		if ((value = values.getOrDefault(group, new HashMap<>()).get(property)) != null) {
 			return new String[] {value, String.format("group=%s", group)};
+		}
+		if ((value = values.getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+			return new String[] {value, String.format("group=%s", DEFAULT_GROUP)};
 		}
 		return new String[0];
 	}

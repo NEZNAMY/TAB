@@ -6,11 +6,11 @@ import java.util.regex.Pattern;
 public class CMIGradient extends CommonGradient {
 
 	//pattern for {#RRGGBB<>}
-	private final Pattern shortcutPattern = Pattern.compile("\\{#[0-9a-fA-F]{6}<>\\}");
+	private final Pattern shortcutPattern = Pattern.compile("\\{#[0-9a-fA-F]{6}<>}");
 	
 	public CMIGradient() {
-		super(Pattern.compile("\\{#[0-9a-fA-F]{6}>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
-				Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>\\}[^\\{]*\\{#[0-9a-fA-F]{6}<\\}"), 
+		super(Pattern.compile("\\{#[0-9a-fA-F]{6}>}[^{]*\\{#[0-9a-fA-F]{6}<}"),
+				Pattern.compile("\\{#[0-9a-fA-F]{6}\\|.>}[^{]*\\{#[0-9a-fA-F]{6}<}"),
 				"{#", 9, 2, 10, 8);
 	}
 	

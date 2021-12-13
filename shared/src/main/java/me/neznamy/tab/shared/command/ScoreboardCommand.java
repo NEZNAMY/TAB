@@ -42,20 +42,18 @@ public class ScoreboardCommand extends SubCommand {
 		TabPlayer p = getTarget(sender, args);
 		if (scoreboard.getOtherPluginScoreboards().containsKey(p)) return; //not overriding other plugins
 		boolean silent = args.length >= 3 && args[2].equals("-s");
-		if (args.length >= 1) {
-			switch(args[0]) {
-			case "on":
-				scoreboard.setScoreboardVisible(p, true, !silent);
-				break;
-			case "off":
-				scoreboard.setScoreboardVisible(p, false, !silent);
-				break;
-			case "toggle":
-				scoreboard.toggleScoreboard(p, !silent);
-				break;
-			default:
-				break;
-			}
+		switch(args[0]) {
+		case "on":
+			scoreboard.setScoreboardVisible(p, true, !silent);
+			break;
+		case "off":
+			scoreboard.setScoreboardVisible(p, false, !silent);
+			break;
+		case "toggle":
+			scoreboard.toggleScoreboard(p, !silent);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -82,13 +80,13 @@ public class ScoreboardCommand extends SubCommand {
 		}
 		TabPlayer target;
 		if (args.length == 2) {
-			if (!sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
+			if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
 			target = sender;
 		} else {
-			if (!sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_SHOW)) {
+			if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW_OTHER)) {
 				sendMessage(sender, getMessages().getNoPermission());
 				return;
 			}
@@ -114,7 +112,7 @@ public class ScoreboardCommand extends SubCommand {
 	}
 	
 	private ScoreboardManagerImpl getScoreboardManager() {
-		return (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		return (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
 	}
 
 	@Override

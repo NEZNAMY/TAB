@@ -87,11 +87,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			}
 			ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition);
 			scoreboards.put(entry.getKey(), sb);
-			TAB.getInstance().getFeatureManager().registerFeature("scoreboard-" + entry.getKey(), sb);
+			TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);
 		}
 		definedScoreboards = scoreboards.values().toArray(new Scoreboard[0]);
 		if (respectOtherPlugins) {
-			PipelineInjector inj = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature("injection");
+			PipelineInjector inj = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PIPELINE_INJECTION);
 			//null check if injection was disabled in config or velocity
 			if (inj != null) inj.setByteBufDeserialization(true);
 		}

@@ -34,7 +34,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 	 * @return true if value changed, false if not
 	 */
 	public boolean update() {
-		String obj = String.valueOf(request());
+		String obj = getReplacements().findReplacement(String.valueOf(request()));
 		String newValue = obj == null ? identifier : setPlaceholders(obj, null);
 		
 		//make invalid placeholders return identifier instead of nothing
@@ -75,6 +75,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
 		if (usage == null) return;
 		for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+			if (!player.isLoaded()) continue;
 			for (TabFeature f : usage) {
 				long time = System.nanoTime();
 				f.refresh(player, false);

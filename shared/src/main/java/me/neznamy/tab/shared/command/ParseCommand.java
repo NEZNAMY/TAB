@@ -3,10 +3,12 @@ package me.neznamy.tab.shared.command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.PropertyImpl;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -60,9 +62,15 @@ public class ParseCommand extends SubCommand {
 	
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		if (arguments.length != 1) return new ArrayList<>();
-		List<String> suggestions = getOnlinePlayers(arguments[0]);
-		if ("me".startsWith(arguments[0].toLowerCase())) suggestions.add("me");
-		return suggestions;
+		if (arguments.length == 1) {
+			List<String> suggestions = getOnlinePlayers(arguments[0]);
+			if ("me".startsWith(arguments[0].toLowerCase())) suggestions.add("me");
+			return suggestions;
+		}
+		if (arguments.length == 2) {
+			return TAB.getInstance().getPlaceholderManager().getAllPlaceholders().stream().map(Placeholder::getIdentifier)
+					.filter(placeholder -> placeholder.toLowerCase().startsWith(arguments[1].toLowerCase())).collect(Collectors.toList());
+		}
+		return new ArrayList<>();
 	}
 }

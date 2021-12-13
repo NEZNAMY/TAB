@@ -25,7 +25,7 @@ public class AnnounceScoreboardCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		ScoreboardManager feature = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManager feature = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
 		if (feature == null) {
 			sendMessage(sender, getMessages().getScoreboardFeatureNotEnabled());
 			return;
@@ -52,7 +52,7 @@ public class AnnounceScoreboardCommand extends SubCommand {
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		ScoreboardManager s = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManager s = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
 		if (s == null) return new ArrayList<>();
 		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {

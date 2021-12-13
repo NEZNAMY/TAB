@@ -62,7 +62,7 @@ public class VelocityPlatform extends ProxyPlatform {
 		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
 		super.loadFeatures();
 		for (Player p : server.getAllPlayers()) {
-			tab.addPlayer(new VelocityTabPlayer(p, plm));
+			tab.addPlayer(new VelocityTabPlayer(p));
 		}
 	}
 	

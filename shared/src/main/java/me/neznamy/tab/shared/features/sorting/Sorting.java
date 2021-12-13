@@ -10,6 +10,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.types.Groups;
@@ -60,7 +61,7 @@ public class Sorting extends TabFeature {
 		String newName = getTeamName(p);
 		if (!p.getTeamName().equals(newName)) {
 			if (nameTags != null) nameTags.unregisterTeam(p);
-			LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature("layout");
+			LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
 			if (layout != null) layout.updateTeamName(p, newName);
 			((ITabPlayer) p).setTeamName(newName);
 			if (nameTags != null) nameTags.registerTeam(p);

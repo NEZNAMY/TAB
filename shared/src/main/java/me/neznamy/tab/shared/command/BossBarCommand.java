@@ -19,7 +19,7 @@ public class BossBarCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		BossBarManager bossBar = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		BossBarManager bossBar = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
 		if (bossBar == null) {
 			sendMessage(sender, getMessages().getBossBarNotEnabled());
 			return;

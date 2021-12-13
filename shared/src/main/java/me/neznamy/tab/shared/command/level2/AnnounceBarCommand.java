@@ -25,7 +25,7 @@ public class AnnounceBarCommand extends SubCommand {
 
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
-		BossBarManager feature = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		BossBarManager feature = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
 		if (feature == null) {
 			sendMessage(sender, getMessages().getBossBarNotEnabled());
 			return;
@@ -56,7 +56,7 @@ public class AnnounceBarCommand extends SubCommand {
 
 	@Override
 	public List<String> complete(TabPlayer sender, String[] arguments) {
-		BossBarManager b = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		BossBarManager b = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
 		if (b == null) return new ArrayList<>();
 		List<String> suggestions = new ArrayList<>();
 		if (arguments.length == 1) {

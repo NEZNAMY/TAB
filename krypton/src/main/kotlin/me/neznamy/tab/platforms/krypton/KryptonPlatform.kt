@@ -8,12 +8,12 @@ import me.neznamy.tab.platforms.krypton.features.PerWorldPlayerList
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.NameTagX
 import me.neznamy.tab.shared.Platform
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl
 import me.neznamy.tab.shared.features.nametags.NameTag
 import me.neznamy.tab.shared.permission.LuckPerms
 import me.neznamy.tab.shared.permission.None
 import me.neznamy.tab.shared.permission.PermissionPlugin
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -22,7 +22,7 @@ import java.io.File
 
 class KryptonPlatform(
     private val plugin: Main,
-    private val folder: File,
+    private val folder: File
 ) : Platform {
 
     private val server = plugin.server
@@ -33,23 +33,24 @@ class KryptonPlatform(
     }
 
     override fun loadFeatures() {
-        val tab = TAB.getInstance()
-        if (tab.configuration.isPipelineInjection) tab.featureManager.registerFeature("injection", KryptonPipelineInjector())
+        if (TAB.getInstance().configuration.isPipelineInjection) {
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, KryptonPipelineInjector())
+        }
 
         // Placeholders
-        KryptonPlaceholderRegistry(plugin).registerPlaceholders(tab.placeholderManager)
-        UniversalPlaceholderRegistry().registerPlaceholders(tab.placeholderManager)
+        KryptonPlaceholderRegistry(plugin).registerPlaceholders(TAB.getInstance().placeholderManager)
+        UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().placeholderManager)
 
         // Load features
-        loadNametagFeature(tab)
-        tab.loadUniversalFeatures()
-        if (tab.config.getBoolean("bossbar.enabled", false)) {
-            tab.featureManager.registerFeature("bossbar", BossBarManagerImpl())
+        loadNametagFeature()
+        TAB.getInstance().loadUniversalFeatures()
+        if (TAB.getInstance().config.getBoolean("bossbar.enabled", false)) {
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, BossBarManagerImpl())
         }
-        if (tab.config.getBoolean("per-world-playerlist.enabled", false)) {
-            tab.featureManager.registerFeature("pwp", PerWorldPlayerList(plugin))
+        if (TAB.getInstance().config.getBoolean("per-world-playerlist.enabled", false)) {
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, PerWorldPlayerList(plugin))
         }
-        server.players.forEach { tab.addPlayer(KryptonTabPlayer(it, plugin.protocolVersion(it))) }
+        server.players.forEach { TAB.getInstance().addPlayer(KryptonTabPlayer(it, plugin.protocolVersion(it))) }
     }
 
     override fun sendConsoleMessage(message: String, translateColors: Boolean) {
@@ -60,40 +61,24 @@ class KryptonPlatform(
     override fun registerUnknownPlaceholder(identifier: String) {
         val manager = TAB.getInstance().placeholderManager
         if (identifier.startsWith("%rel_")) {
-            manager.registerPlayerPlaceholder(identifier, manager.defaultRefresh) { identifier }
+            // One day, when PlaceholderAPI v3 is a thing, this will work. One day...
+            manager.registerRelationalPlaceholder(identifier, manager.getRelationalRefresh(identifier)) { _, _ -> "" }
             return
         }
         val serverIntervals = manager.serverPlaceholderRefreshIntervals
         val playerIntervals = manager.playerPlaceholderRefreshIntervals
-        if (identifier.startsWith("%sync:")) {
-            val refresh = when {
-                serverIntervals.containsKey(identifier) -> serverIntervals[identifier]!!
-                playerIntervals.containsKey(identifier) -> playerIntervals[identifier]!!
-                else -> manager.defaultRefresh
-            }
-            manager.registerPlaceholder(object : PlayerPlaceholderImpl(identifier, refresh, null) {
-
-                override fun request(player: TabPlayer): Any? {
-                    server.scheduler.run(plugin) {
-                        val time = System.nanoTime()
-                        lastValues[player.name] = identifier
-                        if (!forceUpdate.contains(player.name)) forceUpdate.add(player.name)
-                        TAB.getInstance().cpuManager.addPlaceholderTime(identifier, System.nanoTime() - time)
-                    }
-                    return lastValues[player.name]
-                }
-            })
-            return
-        }
         if (serverIntervals.containsKey(identifier)) {
             manager.registerServerPlaceholder(identifier, serverIntervals[identifier]!!) { identifier }
             return
         }
-        val refresh = if (serverIntervals.containsKey(identifier)) serverIntervals[identifier]!! else manager.defaultRefresh
-        manager.registerPlayerPlaceholder(identifier, refresh) { identifier }
+        if (playerIntervals.containsKey(identifier)) {
+            manager.registerPlayerPlaceholder(identifier, playerIntervals[identifier]!!) { identifier }
+            return
+        }
+        manager.registerPlayerPlaceholder(identifier, manager.defaultRefresh) { identifier }
     }
 
-    override fun getServerVersion(): String = "${server.platform.name}v${server.platform.version}"
+    override fun getServerVersion(): String = "${server.platform.name} ${server.platform.version}"
 
     override fun getDataFolder(): File = folder
 
@@ -117,12 +102,12 @@ class KryptonPlatform(
 
     override fun getConfigName(): String = "kryptonconfig.yml"
 
-    private fun loadNametagFeature(tab: TAB) {
-        if (!tab.config.getBoolean("scoreboard-teams.enabled", true)) return
-        if (tab.config.getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
-            tab.featureManager.registerFeature("nametagx", NameTagX())
+    private fun loadNametagFeature() {
+        if (!TAB.getInstance().config.getBoolean("scoreboard-teams.enabled", true)) return
+        if (TAB.getInstance().config.getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, NameTagX(plugin))
         } else {
-            tab.featureManager.registerFeature("nametag16", NameTag())
+            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, NameTag())
         }
     }
 }

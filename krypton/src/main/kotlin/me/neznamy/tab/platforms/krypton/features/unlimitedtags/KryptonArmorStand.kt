@@ -8,20 +8,15 @@ import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.platforms.krypton.KryptonPacketBuilder
 import me.neznamy.tab.shared.TabConstants
 import me.neznamy.tab.shared.TAB
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.apache.logging.log4j.LogManager
 import org.kryptonmc.api.entity.EntityTypes
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.registry.Registries
-import org.kryptonmc.api.world.GameModes
 import org.kryptonmc.krypton.entity.metadata.MetadataHolder
 import org.kryptonmc.krypton.entity.metadata.MetadataKeys
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.packet.Packet
-import org.kryptonmc.krypton.packet.out.play.PacketOutAttributes
 import org.kryptonmc.krypton.packet.out.play.PacketOutDestroyEntities
 import org.kryptonmc.krypton.packet.out.play.PacketOutEntityTeleport
-import org.kryptonmc.krypton.packet.out.play.PacketOutHeadLook
 import org.kryptonmc.krypton.packet.out.play.PacketOutMetadata
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnLivingEntity
 import org.spongepowered.math.vector.Vector2f
@@ -37,7 +32,7 @@ class KryptonArmorStand(
     private val staticOffset: Boolean
 ) : ArmorStand {
 
-    private val manager = TAB.getInstance().featureManager.getFeature("nametagx") as NameTagX
+    private val manager = TAB.getInstance().featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS) as NameTagX
     private val player = owner.player as Player
     private val entityId = ID_COUNTER.incrementAndGet()
     private val uuid = UUID.randomUUID()

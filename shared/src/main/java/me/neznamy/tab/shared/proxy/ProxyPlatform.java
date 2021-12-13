@@ -4,6 +4,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
@@ -46,14 +47,21 @@ public abstract class ProxyPlatform implements Platform {
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) tab.getFeatureManager().registerFeature("nametag16", new NameTag());
+		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true))
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
 		tab.loadUniversalFeatures();
-		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) tab.getFeatureManager().registerFeature("bossbar", new BossBarManagerImpl());
-		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false)) 	tab.getFeatureManager().registerFeature("globalplayerlist", new GlobalPlayerList());
+		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false))
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
+		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false))
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
 	}
 
 	@Override
 	public String getConfigName() {
 		return "proxyconfig.yml";
+	}
+
+	public PluginMessageHandler getPluginMessageHandler() {
+		return plm;
 	}
 }

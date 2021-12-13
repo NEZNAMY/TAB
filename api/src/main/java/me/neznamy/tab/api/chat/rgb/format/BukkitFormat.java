@@ -10,7 +10,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
  */
 public class BukkitFormat implements RGBFormatter {
 
-	private final Pattern pattern = Pattern.compile("[" + EnumChatFormat.COLOR_CHAR + "&]x[[" + EnumChatFormat.COLOR_CHAR + "&]\\p{XDigit}]{12}");
+	private final Pattern pattern = Pattern.compile("[" + EnumChatFormat.COLOR_CHAR + "&]x[" + EnumChatFormat.COLOR_CHAR + "&\\p{XDigit}]{12}");
 	
 	@Override
 	public String reformat(String text) {

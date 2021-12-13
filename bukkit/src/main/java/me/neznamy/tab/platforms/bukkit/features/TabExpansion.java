@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -83,13 +84,13 @@ public class TabExpansion extends PlaceholderExpansion {
 	}
 	
 	private boolean hasBossBarVisible(TabPlayer p) {
-		BossBarManager boss = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature("bossbar");
+		BossBarManager boss = (BossBarManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
 		if (boss == null) return false;
 		return boss.hasBossBarVisible(p);
 	}
 	
 	private boolean hasScoreboardVisible(TabPlayer p) {
-		ScoreboardManager scoreboard = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature("scoreboard");
+		ScoreboardManager scoreboard = (ScoreboardManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
 		if (scoreboard == null) return false;
 		return scoreboard.hasScoreboardVisible(p);
 	}

@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -15,12 +14,6 @@ import net.md_5.bungee.event.EventPriority;
  */
 public class BungeeEventListener implements Listener {
 
-	private final PluginMessageHandler plm;
-	
-	public BungeeEventListener(PluginMessageHandler plm) {
-		this.plm = plm;
-	}
-	
 	/**
 	 * Disconnect event listener to forward the event to all features
 	 * @param e - disconnect event
@@ -40,7 +33,7 @@ public class BungeeEventListener implements Listener {
 	public void onSwitch(ServerSwitchEvent e){
 		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-			TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer(), plm));
+			TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 		} else {
 			TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
 		}

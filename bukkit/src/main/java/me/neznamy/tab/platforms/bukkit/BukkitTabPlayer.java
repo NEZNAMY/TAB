@@ -102,7 +102,8 @@ public class BukkitTabPlayer extends ITabPlayer {
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
-		BossBar bar;
+		BossBar bar = bossBars.get(packet.getId());
+		if (bar == null && packet.getOperation() != PacketPlayOutBoss.Action.ADD) return; //no idea how
 		switch (packet.getOperation()) {
 		case ADD:
 			if (bossBars.containsKey(packet.getId())) return;
@@ -117,18 +118,18 @@ public class BukkitTabPlayer extends ITabPlayer {
 			bar.addPlayer(getPlayer());
 			break;
 		case REMOVE:
-			bossBars.get(packet.getId()).removePlayer(getPlayer());
+			bar.removePlayer(getPlayer());
 			bossBars.remove(packet.getId());
 			break;
 		case UPDATE_PCT:
-			bossBars.get(packet.getId()).setProgress(packet.getPct());
+			bar.setProgress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossBars.get(packet.getId()).setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+			bar.setTitle(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
 			break;
 		case UPDATE_STYLE:
-			bossBars.get(packet.getId()).setColor(BarColor.valueOf(packet.getColor().name()));
-			bossBars.get(packet.getId()).setStyle(BarStyle.valueOf(packet.getOverlay().getBukkitName()));
+			bar.setColor(BarColor.valueOf(packet.getColor().name()));
+			bar.setStyle(BarStyle.valueOf(packet.getOverlay().getBukkitName()));
 			break;
 		case UPDATE_PROPERTIES:
 			bar = bossBars.get(packet.getId());

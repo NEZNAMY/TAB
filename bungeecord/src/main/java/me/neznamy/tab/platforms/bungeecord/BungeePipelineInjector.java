@@ -62,7 +62,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
 			long time = System.nanoTime();
 			Object modifiedPacket = packet instanceof ByteBuf && byteBufDeserialization ? deserialize((ByteBuf) packet) : packet;
-			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTEBUF, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
 			try {
 				switch(modifiedPacket.getClass().getSimpleName()) {
 				case "PlayerListItem":
@@ -112,7 +112,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 					col.remove(getName(p));
 				}
 			}
-			RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature("redisbungee");
+			RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 			if (redis != null) {
 				for (RedisPlayer p : redis.getRedisPlayers().values()) {
 					if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
@@ -126,7 +126,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 		}
 
 		private String getName(TabPlayer p) {
-			NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
+			NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY);
 			if (nick != null) {
 				return nick.getNickname(p);
 			}

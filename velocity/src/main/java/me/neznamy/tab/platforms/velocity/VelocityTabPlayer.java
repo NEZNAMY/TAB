@@ -22,7 +22,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
@@ -47,8 +46,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	 * Constructs new instance for given player
 	 * @param p - velocity player
 	 */
-	public VelocityTabPlayer(Player p, PluginMessageHandler plm) {
-		super(plm, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-");
+	public VelocityTabPlayer(Player p) {
+		super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-");
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tabListId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
 		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());

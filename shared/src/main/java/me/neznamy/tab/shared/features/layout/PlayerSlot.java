@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.features.PlayerList;
 
 public class PlayerSlot {
 
-	private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature("playerlist");
+	private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 	private final Layout layout;
 	private final UUID id;
 	private TabPlayer player;

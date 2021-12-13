@@ -82,6 +82,12 @@ public class Configs {
 		ClassLoader loader = Configs.class.getClassLoader();
 		loadConfig();
 		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
+		Map<String, Object> values = animation.getValues();
+		if (values.size() == 1 && values.containsKey("animations")) {
+			animation.setValues(animation.getConfigurationSection("animations"));
+			animation.save();
+			TAB.getInstance().print('2', "Converted animations.yml to new format.");
+		}
 		messages = new MessageFile();
 		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
 		reloadFailed = messages.getReloadFailBrokenFile();
@@ -104,11 +110,10 @@ public class Configs {
 			removeStrings[i] = EnumChatFormat.color(list.get(i));
 		}
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
-		if (!tab.getPlatform().isProxy()) {
-			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
-		} else {
+		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		}
+		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
 		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;

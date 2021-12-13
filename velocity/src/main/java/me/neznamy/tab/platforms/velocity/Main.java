@@ -61,13 +61,13 @@ public class Main {
 		}
 		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
 		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.PROXY));
-		server.getEventManager().register(this, new VelocityEventListener(plm));
+		server.getEventManager().register(this, new VelocityEventListener());
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
-		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
 	}
 
 	/**

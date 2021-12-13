@@ -46,7 +46,7 @@ public class GroupCommand extends PropertyCommand {
 			if (type.equals(property)) {
 				if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
 					saveGroup(sender, group, type, value);
-					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx")) {
+					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) {
 						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
 					}
 				} else {

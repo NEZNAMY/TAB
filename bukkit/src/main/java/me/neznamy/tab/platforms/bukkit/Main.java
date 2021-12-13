@@ -51,7 +51,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginCommand("tab").setTabCompleter(command);
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 5304);
-		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("nametagx") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("server_version", () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));

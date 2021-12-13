@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisBungeeSupport;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -56,14 +57,15 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new BungeePipelineInjector());
+		if (tab.getConfiguration().isPipelineInjection())
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BungeePipelineInjector());
 		new BungeePlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		super.loadFeatures();
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
-			tab.getFeatureManager().registerFeature("redisbungee", new RedisBungeeSupport(plugin));
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport(plugin));
 		}
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			tab.addPlayer(new BungeeTabPlayer(p, plm));
+			tab.addPlayer(new BungeeTabPlayer(p));
 		}
 	}
 	

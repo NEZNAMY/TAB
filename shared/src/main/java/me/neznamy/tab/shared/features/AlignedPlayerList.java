@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,15 +32,26 @@ public class AlignedPlayerList extends PlayerList {
 	private final byte[] widths = new byte[65536];
 
 	public AlignedPlayerList() {
+		loadWidths();
+	}
+
+	/**
+	 * Loads widths from included widths.txt file as well as width overrides from config
+	 */
+	private void loadWidths() {
+		InputStream file = getClass().getClassLoader().getResourceAsStream("widths.txt");
+		if (file == null) {
+			TAB.getInstance().getErrorManager().criticalError("Failed to load widths.txt file. Is it inside the jar? Aligned suffix will not work.", null);
+			return;
+		}
 		int characterId = 1;
-		for (String line : new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("widths.txt"))).lines().collect(Collectors.toList())) {
+		for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
 			widths[characterId++] = (byte) Float.parseFloat(line);
 		}
 		Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
 		for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
 			widths[entry.getKey()] = (byte)(int)entry.getValue();
 		}
-		TAB.getInstance().debug(String.format("Loaded AlignedSuffix feature with parameters widthOverrides=%s", widthOverrides));
 	}
 
 	public String formatNameAndUpdateLeader(TabPlayer player, TabPlayer viewer) {
@@ -58,16 +70,17 @@ public class AlignedPlayerList extends PlayerList {
 		return formatName(player.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) + player.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer), player.getProperty(TabConstants.Property.TABSUFFIX).getFormat(viewer));
 	}
 	
-	public String formatName(String prefixAndName, String suffix) {
+	public synchronized String formatName(String prefixAndName, String suffix) {
 		if (suffix.length() == 0) return prefixAndName;
 		int playerNameWidth = getTextWidth(IChatBaseComponent.fromColoredText(prefixAndName + suffix));
 		StringBuilder newFormat = new StringBuilder(prefixAndName).append(EnumChatFormat.RESET.getFormat());
+		int length = maxWidth + 12 - playerNameWidth;
 		try {
-			newFormat.append(buildSpaces(maxWidth + 12 - playerNameWidth));
+			newFormat.append(buildSpaces(length));
 		} catch (IllegalArgumentException e) {
 			//will investigate later
 			newFormat.append(buildSpaces(12));
-			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + (maxWidth + 12 - playerNameWidth) + " pixels", e);
+			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + length + " pixels", e);
 		}
 		return newFormat.append(EnumChatFormat.getLastColors(prefixAndName)).append(suffix).toString();
 	}

@@ -32,12 +32,12 @@ public class Main extends Plugin {
 		}
 		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
 		TAB.setInstance(new TAB(new BungeePlatform(this, plm), ProtocolVersion.PROXY));
-		getProxy().getPluginManager().registerListener(this, new BungeeEventListener(plm));
+		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 10535);
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
-		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled("globalplayerlist") ? "Yes" : "No"));
+		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
 	}
 	
 	/**

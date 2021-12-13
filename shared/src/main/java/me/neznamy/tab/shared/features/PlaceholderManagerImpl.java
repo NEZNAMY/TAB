@@ -66,7 +66,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
 		boolean somethingChanged = false;
 		for (Placeholder placeholder : usedPlaceholders) {
-			if (loopTime % placeholder.getRefresh() != 0) continue;
+			if (placeholder.getRefresh() == -1 || loopTime % placeholder.getRefresh() != 0) continue;
 			if (placeholder instanceof RelationalPlaceholderImpl && updateRelationalPlaceholder((RelationalPlaceholderImpl) placeholder, forceUpdate)) somethingChanged = true;
 			if (placeholder instanceof PlayerPlaceholderImpl && updatePlayerPlaceholder((PlayerPlaceholderImpl) placeholder, update)) somethingChanged = true;
 			if (placeholder instanceof ServerPlaceholderImpl && updateServerPlaceholder((ServerPlaceholderImpl) placeholder, update)) somethingChanged = true;
@@ -81,15 +81,25 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			}
 		}
 		long startRefreshTime = System.nanoTime();
+		main:
 		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
+				if (!entry.getKey().isLoaded()) {
+					TAB.getInstance().getErrorManager().printError("Attempted to refresh player " + entry.getKey().getName() + " who is not loaded yet!");
+					continue main;
+				}
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), true);
 				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime()-startTime);
 			}
 		}
+		main:
 		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
+				if (!entry.getKey().isLoaded()) {
+					TAB.getInstance().getErrorManager().printError("Attempted to refresh player " + entry.getKey().getName() + " who is not loaded yet!");
+					continue main;
+				}
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), false);
 				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime()-startTime);
@@ -176,7 +186,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			((TabPlaceholder) placeholder).markAsUsed();
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
-				placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
+				new HashSet<>(placeholderUsage.get(placeholder.getIdentifier())).forEach(f -> f.refresh(p, true)); //trying to avoid rare concurrent modification
 			}
 		}
 		return placeholder;
@@ -232,7 +242,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		for (Placeholder pl : usedPlaceholders) {
+		for (Placeholder pl : registeredPlaceholders.values()) {
 			if (pl instanceof RelationalPlaceholderImpl) {
 				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 					((RelationalPlaceholderImpl)pl).getLastValues().remove(all.getName() + "-" + disconnectedPlayer.getName());
@@ -301,7 +311,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 	
 	public void recalculateUsedPlaceholders() {
-		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).filter(p -> !p.isTriggerMode()).distinct().toArray(Placeholder[]::new);
+		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).distinct().toArray(Placeholder[]::new);
 	}
 
 	@Override
