@@ -16,6 +16,7 @@ import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.velocity.event.TabLoadEvent;
 import me.neznamy.tab.platforms.velocity.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -58,7 +59,8 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().isPipelineInjection()) tab.getFeatureManager().registerFeature("injection", new VelocityPipelineInjector());
+		if (tab.getConfiguration().isPipelineInjection())
+			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new VelocityPipelineInjector());
 		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
 		super.loadFeatures();
 		for (Player p : server.getAllPlayers()) {

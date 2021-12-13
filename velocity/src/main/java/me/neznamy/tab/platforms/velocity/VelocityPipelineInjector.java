@@ -96,7 +96,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
         }
 
         private String getName(TabPlayer p) {
-            NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature("nick");
+            NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY);
             if (nick != null) {
                 return nick.getNickname(p);
             }
