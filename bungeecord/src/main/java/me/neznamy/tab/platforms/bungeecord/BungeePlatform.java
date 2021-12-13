@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import java.io.File;
 import java.util.List;
 
+import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
@@ -62,7 +63,11 @@ public class BungeePlatform extends ProxyPlatform {
 		new BungeePlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		super.loadFeatures();
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
-			tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport(plugin));
+			if (RedisBungeeAPI.getRedisBungeeApi() != null) {
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport(plugin));
+			} else {
+				TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
+			}
 		}
 		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
 			tab.addPlayer(new BungeeTabPlayer(p));
