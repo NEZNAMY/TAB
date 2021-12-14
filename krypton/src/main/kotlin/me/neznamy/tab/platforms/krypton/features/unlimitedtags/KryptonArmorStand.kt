@@ -21,7 +21,6 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutMetadata
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnLivingEntity
 import org.spongepowered.math.vector.Vector2f
 import org.spongepowered.math.vector.Vector3d
-import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -171,7 +170,7 @@ class KryptonArmorStand(
         var flags = 32 // invisible
         if (sneaking) flags += 2
         holder[MetadataKeys.FLAGS] = flags.toByte()
-        holder[MetadataKeys.CUSTOM_NAME] = Optional.of(KryptonPacketBuilder.toComponent(displayName, viewer.version))
+        holder[MetadataKeys.CUSTOM_NAME] = KryptonPacketBuilder.toComponent(displayName, viewer.version)
 
         if (isNameVisibilityEmpty(displayName) || !viewerPlayer.canSee(player) || manager.hasHiddenNametag(owner, viewer)) {
             holder[MetadataKeys.CUSTOM_NAME_VISIBILITY] = false
