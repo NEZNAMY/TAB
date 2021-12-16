@@ -220,11 +220,6 @@ public class TAB extends TabAPI {
 			featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
 		}
 		featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
-		if (platform.isProxy()) {
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");
-			}
-		}
 	}
 
 	public void addPlayer(TabPlayer player) {
