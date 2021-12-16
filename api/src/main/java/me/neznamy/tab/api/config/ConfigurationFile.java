@@ -308,7 +308,6 @@ public abstract class ConfigurationFile {
 	public <K, V> Map<K, V> getConfigurationSection(String path) {
 		if (path == null || path.length() == 0) return (Map<K, V>) values;
 		Object value = getObject(path, null);
-		if (value == null) return new LinkedHashMap<>();
 		if (value instanceof Map) {
 			return (Map<K, V>) value;
 		} else {
