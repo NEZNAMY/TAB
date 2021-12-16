@@ -384,6 +384,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
+	public Scoreboard getActiveScoreboard(TabPlayer player) {
+		return activeScoreboard.get(player);
+	}
+
+	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		ScoreboardImpl scoreboard = activeScoreboard.get(packetReceiver);
 		if (scoreboard != null) {
