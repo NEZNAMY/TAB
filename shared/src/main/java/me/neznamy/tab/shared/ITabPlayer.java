@@ -2,7 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.*;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import io.netty.channel.Channel;
@@ -12,9 +12,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.api.team.TeamManager;
 
 /**
@@ -42,6 +40,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean onJoinFinished;
 
 	private final List<String> registeredTeams = new ArrayList<>();
+	private final List<String> registeredObjectives = new ArrayList<>();
 
 	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world) {
 		this.player = player;
@@ -108,16 +107,42 @@ public abstract class ITabPlayer implements TabPlayer {
 	@Override
 	public void sendCustomPacket(TabPacket packet) {
 		if (packet == null) return;
+		//avoiding BungeeCord bug kicking all players
 		if (packet instanceof PacketPlayOutScoreboardTeam) {
 			String team = ((PacketPlayOutScoreboardTeam) packet).getName();
-			if (((PacketPlayOutScoreboardTeam) packet).getMethod() == 0) {
+			int method = ((PacketPlayOutScoreboardTeam) packet).getMethod();
+			if (method == 0) {
 				if (registeredTeams.contains(team)) {
 					TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + team + " to player " + getName());
 					return;
 				}
 				registeredTeams.add(team);
-			} else if (((PacketPlayOutScoreboardTeam) packet).getMethod() == 1) {
-				registeredTeams.remove(((PacketPlayOutScoreboardTeam) packet).getName());
+			} else if (method == 1) {
+				registeredTeams.remove(team);
+			}
+		}
+		//avoiding BungeeCord bug kicking all players
+		if (packet instanceof PacketPlayOutScoreboardObjective) {
+			String objective = ((PacketPlayOutScoreboardObjective) packet).getObjectiveName();
+			int method = ((PacketPlayOutScoreboardObjective) packet).getMethod();
+			if (method == 0) {
+				if (registeredObjectives.contains(objective)) {
+					TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objective + " to player " + getName());
+					return;
+				}
+				registeredObjectives.add(objective);
+			} else if (method == 1) {
+				registeredObjectives.remove(objective);
+			}
+		}
+		//avoiding console spam from geyser
+		if (packet instanceof PacketPlayOutScoreboardScore) {
+			String objective = ((PacketPlayOutScoreboardScore) packet).getObjectiveName();
+			String player = ((PacketPlayOutScoreboardScore) packet).getPlayer();
+			if (!registeredObjectives.contains(objective)) {
+				TAB.getInstance().getErrorManager().printError("Tried to update score (" + player + ") without the existence of its requested objective '" +
+						objective + "' to player " + getName());
+				return;
 			}
 		}
 		try {
@@ -290,8 +315,9 @@ public abstract class ITabPlayer implements TabPlayer {
 		server = name;
 	}
 
-	public void clearRegisteredTeams() {
+	public void clearRegisteredObjectives() {
 		registeredTeams.clear();
+		registeredObjectives.clear();
 	}
 
 	public void setTemporaryGroup(String group) {

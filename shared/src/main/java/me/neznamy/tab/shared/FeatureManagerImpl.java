@@ -268,7 +268,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 * @param packetReceiver - player who received the packet
 	 */
 	public void onLoginPacket(TabPlayer packetReceiver) {
-		((ITabPlayer)packetReceiver).clearRegisteredTeams();
+		((ITabPlayer)packetReceiver).clearRegisteredObjectives();
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onLoginPacket")) continue;
 			long time = System.nanoTime();
