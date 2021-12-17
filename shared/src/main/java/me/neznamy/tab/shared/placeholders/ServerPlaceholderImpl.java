@@ -70,8 +70,9 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
 	@Override
 	public void updateValue(Object value) {
-		if (value.equals(lastValue)) return;
-		lastValue = String.valueOf(value);
+		String s = getReplacements().findReplacement(String.valueOf(value));
+		if (s.equals(lastValue)) return;
+		lastValue = s;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
 		if (usage == null) return;
 		for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {

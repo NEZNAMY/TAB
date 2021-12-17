@@ -13,7 +13,6 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -96,9 +95,9 @@ public class TabExpansion extends PlaceholderExpansion {
 	}
 	
 	private String getActiveScoreboard(TabPlayer p) {
-		ScoreboardManagerImpl sb = (ScoreboardManagerImpl) TabAPI.getInstance().getScoreboardManager();
+		ScoreboardManager sb = TabAPI.getInstance().getScoreboardManager();
 		if (sb == null) return "";
-		Scoreboard active = sb.getActiveScoreboards().get(p);
+		Scoreboard active = sb.getActiveScoreboard(p);
 		if (active == null) return "";
 		return active.getName();
 	}

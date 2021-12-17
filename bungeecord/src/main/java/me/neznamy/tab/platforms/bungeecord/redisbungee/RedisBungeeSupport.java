@@ -46,13 +46,8 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 
 	public RedisBungeeSupport(Plugin plugin) {
 		super("RedisBungee", null);
-		RedisBungeeAPI api = RedisBungeeAPI.getRedisBungeeApi();
-		if (api == null) {
-			TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
-			return;
-		}
 		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
-		api.registerPubSubChannels(CHANNEL_NAME);
+		RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(CHANNEL_NAME);
 		overridePlaceholders();
 	}
 	

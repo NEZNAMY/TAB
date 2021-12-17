@@ -152,4 +152,14 @@ public interface ScoreboardManager {
 	 * 			is < 0.
 	 */
 	void announceScoreboard(String scoreboard, int duration);
+
+	/**
+	 * Returns player's currently displayed scoreboard. This can be either with
+	 * configuration, overridden with commands or the API. Will return {@code null}
+	 * if player does not see any scoreboard due to not meeting any display condition.
+	 * @param	player
+	 * 			player to get active scoreboard of
+	 * @return	player's active scoreboard or {@code null} if player has no scoreboard
+	 */
+	Scoreboard getActiveScoreboard(TabPlayer player);
 }
