@@ -44,9 +44,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
                 switch(packet.getClass().getSimpleName()) {
-                    //case "PlayerListItem":
-                    //    super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-                    //    return;
+                    case "PlayerListItem":
+                        super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+                        return;
                     case "ScoreboardTeam":
                         if (antiOverrideTeams) {
                             modifyPlayers((ScoreboardTeam) packet);

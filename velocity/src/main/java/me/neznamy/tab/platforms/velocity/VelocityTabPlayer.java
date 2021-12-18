@@ -82,8 +82,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			handle((PacketPlayOutPlayerListHeaderFooter) packet);
 		} else if (packet instanceof PacketPlayOutBoss) {
 			handle((PacketPlayOutBoss) packet);
-		} else if (packet instanceof PacketPlayOutPlayerInfo) {
-			handle((PacketPlayOutPlayerInfo) packet);
 		} else if (channel != null) channel.writeAndFlush(packet, channel.voidPromise());
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
@@ -99,38 +97,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
 		getPlayer().sendPlayerListHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void handle(PacketPlayOutPlayerInfo packet) {
-		for (PlayerInfoData data : packet.getEntries()) {
-			switch (packet.getAction()) {
-			case ADD_PLAYER:
-				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
-				getPlayer().getTabList().addEntry(TabListEntry.builder()
-						.tabList(getPlayer().getTabList())
-						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
-						.gameMode(data.getGameMode().ordinal()-1)
-						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
-						.latency(data.getLatency())
-						.build());
-				break;
-			case REMOVE_PLAYER:
-				getPlayer().getTabList().removeEntry(data.getUniqueId());
-				break;
-			case UPDATE_DISPLAY_NAME:
-				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
-				break;
-			case UPDATE_LATENCY:
-				getEntry(data.getUniqueId()).setLatency(data.getLatency());
-				break;
-			case UPDATE_GAME_MODE:
-				getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
-				break;
-			default:
-				break;
-			}
-		}
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
