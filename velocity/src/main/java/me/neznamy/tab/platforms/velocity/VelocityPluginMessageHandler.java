@@ -59,7 +59,7 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 			Optional<ServerConnection> server = sender.getCurrentServer();
 			if (server.isPresent()) {
 				server.get().sendPluginMessage(mc, message);
-				TAB.getInstance().getCPUManager().packetSent("Plugin Message");
+				TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");
 			}
 		} catch (IllegalStateException e) {
 			//java.lang.IllegalStateException: Not connected to server!

@@ -254,7 +254,10 @@ public class CpuManager implements ThreadManager {
 	 * @return sorted map
 	 */
 	private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
-		Comparator<K> valueComparator = (k1, k2) -> map.get(k2).compareTo(map.get(k1));
+		Comparator<K> valueComparator = (k1, k2) -> {
+			int diff = map.get(k2).compareTo(map.get(k1));
+			return diff == 0 ? 1 : diff; //otherwise, entries with duplicate values are lost
+		};
 		Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;
@@ -267,7 +270,10 @@ public class CpuManager implements ThreadManager {
 	 * @return sorted map
 	 */
 	private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
-		Comparator<K> valueComparator = (k1, k2) -> ((Comparable<Integer>)map.get(k2).get()).compareTo(map.get(k1).get());
+		Comparator<K> valueComparator = (k1, k2) -> {
+			int diff = map.get(k2).get() - map.get(k1).get();
+			return diff == 0 ? 1 : diff; //otherwise, entries with duplicate values are lost
+		};
 		Map<K, AtomicInteger> sortedByValues = new TreeMap<>(valueComparator);
 		sortedByValues.putAll(map);
 		return sortedByValues;

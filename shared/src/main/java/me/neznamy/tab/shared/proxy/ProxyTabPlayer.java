@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
 	private Map<String, String> attributes = new HashMap<>();
+	private final Map<String, Long> cooldowns = new HashMap<>();
 	
 	protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server) {
 		super(player, uniqueId, name, server, "N/A");
@@ -33,7 +34,10 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	}
 
 	public String getAttribute(String name, Object def) {
-		getPluginMessageHandler().requestAttribute(this, name);
+		if (!cooldowns.containsKey(name) || System.currentTimeMillis() - cooldowns.get(name) > 1000){
+			cooldowns.put(name, System.currentTimeMillis());
+			getPluginMessageHandler().requestAttribute(this, name);
+		}
 		return getAttributes().getOrDefault(name, def.toString());
 	}
 	

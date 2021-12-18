@@ -48,6 +48,6 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
 		if (((ProxiedPlayer) player.getPlayer()).getServer() == null) return; //not connected to any server yet
 		((ProxiedPlayer) player.getPlayer()).getServer().sendData(channelName, message);
-		TAB.getInstance().getCPUManager().packetSent("Plugin Message");
+		TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");
 	}
 }

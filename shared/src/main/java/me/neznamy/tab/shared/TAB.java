@@ -33,7 +33,6 @@ import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
-import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Universal variable and method storage
@@ -220,11 +219,6 @@ public class TAB extends TabAPI {
 			featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
 		}
 		featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
-		if (platform.isProxy()) {
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				((ProxyTabPlayer)all).getPluginMessageHandler().requestAttribute(all, "world");
-			}
-		}
 	}
 
 	public void addPlayer(TabPlayer player) {
