@@ -96,7 +96,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		roundDown.setRoundingMode(RoundingMode.DOWN);
 		roundDown.setMaximumFractionDigits(2);
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());
-		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
 		if (paperTps) {
 			manager.registerServerPlaceholder("%tps%", 1000, () -> formatTPS(Bukkit.getTPS()[0]));
 		} else if (recentTps != null) {

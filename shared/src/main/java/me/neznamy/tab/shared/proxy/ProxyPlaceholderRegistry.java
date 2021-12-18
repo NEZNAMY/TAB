@@ -24,6 +24,5 @@ public abstract class ProxyPlaceholderRegistry implements PlaceholderRegistry {
 			}
 			return count;
 		});
-		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
 	}
 }
