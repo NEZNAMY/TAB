@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -45,6 +47,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	private boolean paperTps;
 	private boolean paperMspt;
 	private boolean purpur;
+	private Method playerIsAfk;
 
 	private Listener healthListener = null;
 
@@ -82,7 +85,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			//not paper
 		}
 		try {
-			Player.class.getMethod("isAfk");
+			playerIsAfk = Player.class.getMethod("isAfk");
 			purpur = true;
 		} catch (NoSuchMethodException e) {
 			//not purpur
@@ -114,7 +117,13 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 		}
 		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
 			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
-			return purpur && ((Player)p.getPlayer()).isAfk();
+			if (!purpur || playerIsAfk == null) return false;
+			try {
+				return playerIsAfk.invoke(p.getPlayer());
+			} catch (final IllegalAccessException | InvocationTargetException exception) {
+				TAB.getInstance().getErrorManager().printError("Failed to invoke isAfk!", exception);
+			}
+			return false;
 		});
 		manager.registerPlayerPlaceholder("%essentialsnick%", 1000, p -> {
 			String nickname = null;
