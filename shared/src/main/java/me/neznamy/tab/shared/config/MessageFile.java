@@ -149,4 +149,8 @@ public class MessageFile {
 	public String getBossBarOff() {
 		return file.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
 	}
+
+	public String getScoreboardShowUsage() {
+		return file.getString("scoreboard-show-usage", "Usage: /tab scoreboard show <scoreboard> [player]");
+	}
 }
