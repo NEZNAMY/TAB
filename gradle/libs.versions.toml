@@ -3,11 +3,11 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.63.Final"
+netty = "4.1.72.Final"
 jsonSimple = "1.1.1"
-snakeyaml = "1.28"
+snakeyaml = "1.30"
 yamlAssist = "1.0.5"
-gson = "2.8.7"
+gson = "2.8.9"
 
 # General
 luckperms = "5.2"
@@ -27,8 +27,8 @@ vault = "1.7"
 via = "4.0.0"
 authlib = "1.11"
 bstats = "2.2.1"
-libsDisguises = "10.0.26-SNAPSHOT"
-essentials = "2.19.0"
+libsDisguises = "10.0.26"
+essentials = "2.19.2"
 premiumVanish = "2.0.3"
 redisBungee = "0.6.5-SNAPSHOT"
 
@@ -48,7 +48,7 @@ floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "flo
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 
 # Platforms
-bukkit = { group = "net.pl3x.purpur", name = "purpur-api", version.ref = "bukkit" }
+bukkit = { group = "com.destroystokyo.paper", name = "paper-api", version.ref = "bukkit" }
 bungeecord = { group = "net.md-5", name = "bungeecord-proxy", version.ref = "bungeecord" }
 krypton-api = { group = "org.kryptonmc", name = "krypton-api", version.ref = "krypton" }
 krypton-server = { group = "org.kryptonmc", name = "krypton-server", version.ref = "krypton" }
