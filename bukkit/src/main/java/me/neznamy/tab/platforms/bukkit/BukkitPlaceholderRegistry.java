@@ -122,7 +122,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			try {
 				return playerIsAfk.invoke(p.getPlayer());
 			} catch (final IllegalAccessException | InvocationTargetException exception) {
-				exception.printStackTrace();
+				TAB.getInstance().getErrorManager().printError("Failed to invoke isAfk!", exception);
 			}
 			return false;
 		});
