@@ -41,7 +41,7 @@ The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** availabl
 or other issues which are not directly a bug (performance issues, etc.).
 Support is provided on discord and feature requests are not accepted anymore, due to lack of 
 possible new features. No, we will not be adding chat function. 
-we would rather spend time improving existing features instead.  
+We would rather spend time improving existing features instead.  
   
 When opening a bug report, make sure you provide all necessary information to reproduce the bug,
 otherwise we will not able to fix it. Saying "it only occurs randomly" or "I don't know how to reproduce it"
