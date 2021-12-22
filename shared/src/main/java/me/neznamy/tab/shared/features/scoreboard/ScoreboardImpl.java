@@ -10,6 +10,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
@@ -138,8 +139,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void removePlayer(TabPlayer p) {
 		if (!players.contains(p)) return; //not registered
 		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), this);
-		for (Line s : lines) {
-			((ScoreboardLine)s).unregister(p);
+		for (Line line : lines) {
+			p.sendCustomPacket(new PacketPlayOutScoreboardTeam(((ScoreboardLine)line).getTeamName()), TabConstants.PacketCategory.SCOREBOARD_LINES);
 		}
 		players.remove(p);
 		manager.getActiveScoreboards().remove(p);
