@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.protocol.PacketBuilder
-import me.neznamy.tab.platforms.krypton.event.TabLoadEvent
-import me.neznamy.tab.platforms.krypton.event.TabPlayerLoadEvent
 import me.neznamy.tab.platforms.krypton.features.PerWorldPlayerList
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.NameTagX
 import me.neznamy.tab.shared.Platform
@@ -83,11 +81,11 @@ class KryptonPlatform(
     override fun getDataFolder(): File = folder
 
     override fun callLoadEvent() {
-        server.eventManager.fireAndForget(TabLoadEvent)
+        // do nothing here, this will be removed
     }
 
     override fun callLoadEvent(player: TabPlayer) {
-        server.eventManager.fireAndForget(TabPlayerLoadEvent(player))
+        // do nothing here, this will be removed
     }
 
     override fun getMaxPlayers(): Int = server.maxPlayers
