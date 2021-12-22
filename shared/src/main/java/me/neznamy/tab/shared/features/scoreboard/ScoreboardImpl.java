@@ -4,6 +4,7 @@ import java.util.*;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
@@ -12,7 +13,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
@@ -117,8 +117,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(),
-				ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TabConstants.PacketCategory.SCOREBOARD_TITLE);
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(),
+				EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
+		p.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(ScoreboardManagerImpl.DISPLAY_SLOT, ScoreboardManagerImpl.OBJECTIVE_NAME), TabConstants.PacketCategory.SCOREBOARD_TITLE);
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
