@@ -1,8 +1,6 @@
 package me.neznamy.tab.api;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
@@ -16,7 +14,7 @@ public abstract class TabFeature {
 	private final boolean serverWhitelistMode;
 	protected final String[] disabledWorlds;
 	private final boolean worldWhitelistMode;
-	private final List<TabPlayer> disabledPlayers = new ArrayList<>();
+	private final Set<TabPlayer> disabledPlayers = Collections.newSetFromMap(new WeakHashMap<>());
 	private final List<String> methodOverrides = new ArrayList<>();
 	
 	protected TabFeature(String featureName, String refreshDisplayName) {
@@ -105,7 +103,6 @@ public abstract class TabFeature {
 	 * @param disconnectedPlayer - player who disconnected
 	 */
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		disabledPlayers.remove(disconnectedPlayer);
 	}
 	
 	/**

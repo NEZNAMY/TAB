@@ -60,8 +60,7 @@ public class EventListener implements Listener {
 		long time = System.nanoTime();
 		String to = e.getPlayer().getWorld().getName();
 		if (feature.isDisabled(to)) {
-			if (!feature.getPlayersInDisabledUnlimitedWorlds().contains(p))
-				feature.getPlayersInDisabledUnlimitedWorlds().add(p);
+			feature.getPlayersInDisabledUnlimitedWorlds().add(p);
 		} else {
 			feature.getPlayersInDisabledUnlimitedWorlds().remove(p);
 		}

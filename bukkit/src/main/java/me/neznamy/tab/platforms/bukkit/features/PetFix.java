@@ -1,9 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -26,7 +23,7 @@ public class PetFix extends TabFeature {
 	private final int petOwnerPosition = getPetOwnerPosition();
 
 	//logger of last interacts to prevent feature not working on 1.16
-	private final Map<String, Long> lastInteractFix = new HashMap<>();
+	private final WeakHashMap<TabPlayer, Long> lastInteractFix = new WeakHashMap<>();
 
 	/**
 	 * Constructs new instance with given parameter
@@ -67,13 +64,13 @@ public class PetFix extends TabFeature {
 	@Override
 	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		if (nms.PacketPlayInUseEntity.isInstance(packet)) {
-			if (lastInteractFix.containsKey(sender.getName()) && (System.currentTimeMillis() - lastInteractFix.get(sender.getName()) < 5)) {
+			if (lastInteractFix.containsKey(sender) && (System.currentTimeMillis() - lastInteractFix.get(sender) < 5)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
 				return true;
 			}
 			if (isInteract(nms.PacketPlayInUseEntity_ACTION.get(packet))) {
 				//this is the first packet, saving player so the next packet can be cancelled
-				lastInteractFix.put(sender.getName(), System.currentTimeMillis());
+				lastInteractFix.put(sender, System.currentTimeMillis());
 			}
 		}
 		return false;
@@ -123,13 +120,5 @@ public class PetFix extends TabFeature {
 				nms.setField(packet, nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER, watcher.toNMS());
 			}
 		}
-	}
-
-	/**
-	 * Removing player data to not have a memory leak
-	 */
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		lastInteractFix.remove(disconnectedPlayer.getName());
 	}
 }

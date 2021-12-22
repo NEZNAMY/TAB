@@ -3,10 +3,7 @@ package me.neznamy.tab.shared.features;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -27,7 +24,7 @@ public class AlignedPlayerList extends PlayerList {
 
 	private int maxWidth;
 	private TabPlayer maxPlayer;
-	private final Map<TabPlayer, Integer> playerWidths = new HashMap<>();
+	private final WeakHashMap<TabPlayer, Integer> playerWidths = new WeakHashMap<>();
 	
 	private final byte[] widths = new byte[65536];
 
@@ -112,7 +109,7 @@ public class AlignedPlayerList extends PlayerList {
 	 * @return width of player's TabList name format
 	 */
 	private int getPlayerNameWidth(TabPlayer p) {
-		String format = p.getProperty(TabConstants.Property.TABPREFIX).getFormat(null) + p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(null) + p.getProperty(TabConstants.Property.TABSUFFIX).getFormat(null);
+		String format = p.getProperty(TabConstants.Property.TABPREFIX).getFormat(p) + p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(p) + p.getProperty(TabConstants.Property.TABSUFFIX).getFormat(p);
 		return getTextWidth(IChatBaseComponent.fromColoredText(format));
 	}
 	
@@ -192,7 +189,6 @@ public class AlignedPlayerList extends PlayerList {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
 			updateAllNames(p);
 		}
-		playerWidths.remove(p);
 	}
 	
 	@Override

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -11,7 +10,7 @@ import me.neznamy.tab.shared.TAB;
 public class VanishRefresher extends TabFeature {
 
 	private final GlobalPlayerList playerList;
-	private final List<TabPlayer> vanishedPlayers = new ArrayList<>();
+	private final Set<TabPlayer> vanishedPlayers = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	protected VanishRefresher(GlobalPlayerList playerList) {
 		super("Global PlayerList", "Updating vanished players");
@@ -39,10 +38,5 @@ public class VanishRefresher extends TabFeature {
 				}
 			}
 		}
-	}
-	
-	@Override
-	public void onQuit(TabPlayer p) {
-		vanishedPlayers.remove(p);
 	}
 }

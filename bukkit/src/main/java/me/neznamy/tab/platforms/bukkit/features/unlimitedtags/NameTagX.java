@@ -1,10 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,11 +38,11 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	//bukkit event listener
 	private final EventListener eventListener = new EventListener(this);
 	
-	private final List<TabPlayer> playersInDisabledUnlimitedWorlds = new ArrayList<>();
+	private final Set<TabPlayer> playersInDisabledUnlimitedWorlds = Collections.newSetFromMap(new WeakHashMap<>());
 	private final String[] disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
 	private final boolean unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
 	
-	private final List<TabPlayer> playersDisabledWithAPI = new ArrayList<>();
+	private final Set<TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
@@ -105,7 +101,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
-		if (isDisabled(connectedPlayer.getWorld()) && !playersInDisabledUnlimitedWorlds.contains(connectedPlayer))
+		if (isDisabled(connectedPlayer.getWorld()))
 			playersInDisabledUnlimitedWorlds.add(connectedPlayer);
 		super.onJoin(connectedPlayer);
 		getEntityIdMap().put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
@@ -135,9 +131,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all.getArmorStandManager() != null) all.getArmorStandManager().unregisterPlayer(disconnectedPlayer);
 		}
-		getEntityIdMap().remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
-		playersInDisabledUnlimitedWorlds.remove(disconnectedPlayer);
-		playersDisabledWithAPI.remove(disconnectedPlayer);
+		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		if (disconnectedPlayer.getArmorStandManager() != null) { //player was not loaded yet
 			disconnectedPlayer.getArmorStandManager().destroy();
 			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
@@ -273,7 +267,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		return markerFor18x;
 	}
 
-	public List<TabPlayer> getPlayersInDisabledUnlimitedWorlds() {
+	public Set<TabPlayer> getPlayersInDisabledUnlimitedWorlds() {
 		return playersInDisabledUnlimitedWorlds;
 	}
 	

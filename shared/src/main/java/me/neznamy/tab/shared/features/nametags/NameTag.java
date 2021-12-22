@@ -21,10 +21,11 @@ public class NameTag extends TabFeature implements TeamManager {
 	private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
 	private final Sorting sorting = new Sorting(this);
 	private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
-	private final List<TabPlayer> hiddenNameTag = new ArrayList<>();
-	private final Map<TabPlayer, List<TabPlayer>> hiddenNameTagFor = new HashMap<>();
-	protected final List<TabPlayer> teamHandlingPaused = new ArrayList<>();
-	private final Map<TabPlayer, String> forcedTeamName = new HashMap<>();
+
+	private final Set<TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
+	protected final Set<TabPlayer> teamHandlingPaused = Collections.newSetFromMap(new WeakHashMap<>());
+	private final WeakHashMap<TabPlayer, List<TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
+	private final WeakHashMap<TabPlayer, String> forcedTeamName = new WeakHashMap<>();
 
 	private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") ||
 			TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
@@ -104,12 +105,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		super.onQuit(disconnectedPlayer);
 		if (!isDisabledPlayer(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
-		hiddenNameTag.remove(disconnectedPlayer);
-		hiddenNameTagFor.remove(disconnectedPlayer);
-		teamHandlingPaused.remove(disconnectedPlayer);
-		forcedTeamName.remove(disconnectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == disconnectedPlayer) continue;
 			List<TabPlayer> list = hiddenNameTagFor.get(all);

@@ -1,11 +1,6 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabFeature;
@@ -44,7 +39,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	//time when BossBar announce ends, used for placeholder
 	private long announceEndTime;
 
-	private final List<TabPlayer> visiblePlayers = new ArrayList<>();
+	private final Set<TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -177,15 +172,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 			if (bar.isConditionMet(p) && !bar.getPlayers().contains(p)) {
 				bar.addPlayer(p);
 			}
-		}
-	}
-
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		super.onQuit(disconnectedPlayer);
-		visiblePlayers.remove(disconnectedPlayer);
-		for (BossBar line : lineValues) {
-			line.removePlayer(disconnectedPlayer);
 		}
 	}
 
