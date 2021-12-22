@@ -119,7 +119,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 	
 	@Override

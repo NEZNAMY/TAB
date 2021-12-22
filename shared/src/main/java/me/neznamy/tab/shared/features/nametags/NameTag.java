@@ -105,7 +105,13 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (!isDisabledPlayer(disconnectedPlayer)) unregisterTeam(disconnectedPlayer);
+		if (!isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
+			PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(disconnectedPlayer.getTeamName());
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+				if (viewer == disconnectedPlayer) continue; //player who just disconnected
+				viewer.sendCustomPacket(packet, TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+			}
+		}
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == disconnectedPlayer) continue;
 			List<TabPlayer> list = hiddenNameTagFor.get(all);
@@ -241,8 +247,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	public void unregisterTeam(TabPlayer p) {
-		if (hasTeamHandlingPaused(p)) return;
-		if (p.getTeamName() == null) return;
+		if (hasTeamHandlingPaused(p) || p.getTeamName() == null) return;
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
