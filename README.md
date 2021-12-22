@@ -1,6 +1,6 @@
 # About
-TAB aims to be a superior all-in-one plugin for displaying information that outperforms all 
-similar plugins in terms of features, performance and support.  
+TAB aims to be a superior all-in-one minecraft plugin for displaying information that outperforms all 
+similar plugins in terms of features, performance, compatibility and support.  
 More information can be found at [Why TAB?](https://github.com/NEZNAMY/TAB/wiki/Why-TAB%3F) wiki page.
 
 # Distribution
