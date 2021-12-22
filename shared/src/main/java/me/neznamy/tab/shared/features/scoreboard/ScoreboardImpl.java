@@ -117,7 +117,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
+		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(),
+				ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, TabConstants.PacketCategory.SCOREBOARD_TITLE);
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
