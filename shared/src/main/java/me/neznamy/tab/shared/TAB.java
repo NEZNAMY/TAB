@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.api.event.plugin.TabLoadEvent;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -143,7 +144,7 @@ public class TAB extends TabAPI {
 			long time = System.currentTimeMillis();
 			this.errorManager = new ErrorManager(this);
 			cpu = new CpuManager(errorManager);
-			eventBus = new EventBusImpl();
+			if (eventBus == null) eventBus = new EventBusImpl();
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
 			configuration.loadFiles();
