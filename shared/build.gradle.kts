@@ -4,6 +4,10 @@ plugins {
 
 dependencies {
     api(projects.api)
+    api(libs.event) {
+        exclude("com.google.guava", "guava")
+        exclude("org.checkerframework", "checker-qual")
+    }
     compileOnlyApi(libs.luckperms)
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.floodgate)

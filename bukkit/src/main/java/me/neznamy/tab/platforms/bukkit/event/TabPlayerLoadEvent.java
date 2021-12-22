@@ -8,7 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Bukkit event that is called when player is successfully loaded after joining. This also includes plugin reloading.
+ *
+ * @deprecated for removal, use {@link me.neznamy.tab.api.event.player.PlayerLoadEvent}
  */
+@Deprecated
 public class TabPlayerLoadEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
