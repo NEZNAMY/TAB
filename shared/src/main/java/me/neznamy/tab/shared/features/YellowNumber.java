@@ -72,7 +72,7 @@ public class YellowNumber extends TabFeature {
 				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
 				continue;
 			}
-			if (all.isLoaded()) {
+			if (all.isLoaded() && !isDisabledPlayer(all)) {
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
 				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
 			}
@@ -105,10 +105,9 @@ public class YellowNumber extends TabFeature {
 
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
-		if (isDisabledPlayer(refreshed)) return;
 		int value = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!all.isLoaded()) continue;
+			if (!all.isLoaded() || isDisabledPlayer(all)) continue;
 			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), value), this);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
