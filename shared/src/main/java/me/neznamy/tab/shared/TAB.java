@@ -65,7 +65,7 @@ public class TAB extends TabAPI {
 	//cpu manager
 	private CpuManager cpu;
 
-	private EventBusImpl eventBus;
+	private final EventBusImpl eventBus = new EventBusImpl();
 
 	//error manager
 	private ErrorManager errorManager;
@@ -143,7 +143,6 @@ public class TAB extends TabAPI {
 			long time = System.currentTimeMillis();
 			this.errorManager = new ErrorManager(this);
 			cpu = new CpuManager(errorManager);
-			if (eventBus == null) eventBus = new EventBusImpl();
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
 			configuration.loadFiles();
