@@ -24,7 +24,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	//list of registered features
 	private final Map<String, TabFeature> features = new LinkedHashMap<>();
 	
-	private TabFeature[] values;
+	private TabFeature[] values = new TabFeature[0];
 
 	@Override
 	public void registerFeature(String featureName, TabFeature featureHandler) {
