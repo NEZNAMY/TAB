@@ -9,6 +9,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
@@ -20,6 +22,7 @@ public class Layout extends TabFeature {
 	private final List<Integer> emptySlots;
 	private final List<ParentGroup> groups;
 	private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
+	private final boolean injection = TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION);
 
 	public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
 		super(manager.getFeatureName(), "Updating player groups");
@@ -101,5 +104,14 @@ public class Layout extends TabFeature {
 	
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public void onServerChange(TabPlayer player, String from, String to) {
+		if (injection) return;
+		//velocity clearing TabList on server switch
+		if (viewers.remove(player)){
+			sendTo(player);
+		}
 	}
 }
