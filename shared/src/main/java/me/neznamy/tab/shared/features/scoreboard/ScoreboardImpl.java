@@ -209,6 +209,10 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		Collections.reverse(linesReversed);
 		int score = 1;
 		for (Line line : linesReversed) {
+			if (line instanceof CustomLine) {
+				score++;
+				continue;
+			}
 			if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0){
 				p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(), score++), this);
 			}
