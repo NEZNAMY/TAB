@@ -183,12 +183,12 @@ public class TAB extends TabAPI {
 			cpu.cancelAllTasks();
 			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
-			data.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Exception e) {
-			data.clear();
 			errorManager.criticalError("Failed to disable", e);
 		}
+		data.clear();
+		players = new TabPlayer[0];
 	}
 
 	/**
