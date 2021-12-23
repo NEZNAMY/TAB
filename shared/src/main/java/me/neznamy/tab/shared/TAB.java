@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.neznamy.tab.api.event.plugin.TabLoadEvent;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import org.yaml.snakeyaml.error.YAMLException;
