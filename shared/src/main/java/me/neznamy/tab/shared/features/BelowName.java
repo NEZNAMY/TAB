@@ -129,6 +129,18 @@ public class BelowName extends TabFeature {
 		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 	}
 
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		if (isDisabledPlayer(packetReceiver)) return;
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), textRefresher);
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), textRefresher);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (all.isLoaded() && all.getWorld().equals(packetReceiver.getWorld()) && Objects.equals(all.getServer(), packetReceiver.getServer())) {
+				packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+			}
+		}
+	}
+
 	public class TextRefresher extends TabFeature {
 
 		public TextRefresher(){

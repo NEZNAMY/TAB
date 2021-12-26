@@ -117,4 +117,16 @@ public class YellowNumber extends TabFeature {
 	private String getName(TabPlayer p) {
 		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 	}
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		if (isDisabledPlayer(packetReceiver)) return;
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType), this);
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), this);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (all.isLoaded()) {
+				packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+			}
+		}
+	}
 }
