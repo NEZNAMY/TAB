@@ -67,7 +67,9 @@ public class Converter {
         File oldConfigsFolder = new File(folder, "old_configs");
         File premiumFile = new File(oldConfigsFolder, "premiumconfig.yml");
         ConfigurationFile premiumConfig = premiumFile.exists() ? new YamlConfigurationFile(null, premiumFile) : null;
-        ConfigurationFile bossBar = new YamlConfigurationFile(null, new File(oldConfigsFolder, "bossbar.yml"));
+        File bossBarFile = new File(oldConfigsFolder, "bossbar.yml");
+        if (!bossBarFile.exists()) throw new IllegalStateException("Failed to convert configuration to v3: File bossbar.yml does not exist");
+        ConfigurationFile bossBar = new YamlConfigurationFile(null, bossBarFile);
         ConfigurationFile oldConfig = new YamlConfigurationFile(null, new File(oldConfigsFolder, "config.yml"));
         ConfigurationFile newConfig = new YamlConfigurationFile(null, new File(folder, "config.yml"));
 
