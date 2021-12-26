@@ -95,7 +95,7 @@ public class TAB extends TabAPI {
 		try {
 			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
 			floodgate = true;
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException | IllegalStateException e) {
 			//plugin not installed
 		}
 	}
