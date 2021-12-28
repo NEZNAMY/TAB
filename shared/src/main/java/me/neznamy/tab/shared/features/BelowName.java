@@ -109,7 +109,7 @@ public class BelowName extends TabFeature {
 	}
 
 	public int getValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).updateAndGet(), 0, "belowname number");
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).updateAndGet(), 0);
 	}
 
 	@Override

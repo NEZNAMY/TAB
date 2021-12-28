@@ -100,7 +100,7 @@ public class YellowNumber extends TabFeature {
 	}
 
 	public int getValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0, "yellow number");
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
 	}
 
 	@Override

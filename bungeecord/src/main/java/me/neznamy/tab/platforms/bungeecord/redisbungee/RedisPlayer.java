@@ -140,12 +140,12 @@ public class RedisPlayer {
 
 	public PacketPlayOutScoreboardScore getBelowNameUpdatePacket() {
 		if (belowName == null) return null;
-		return new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, name, TAB.getInstance().getErrorManager().parseInteger(belowName, 0, "belowname number"));
+		return new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, name, TAB.getInstance().getErrorManager().parseInteger(belowName, 0));
 	}
 
 	public PacketPlayOutScoreboardScore getYellowNumberUpdatePacket() {
 		if (yellowNumber == null) return null;
-		return new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, name, TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0, "yellow number"));
+		return new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, name, TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0));
 	}
 
 	public String getServer() {
