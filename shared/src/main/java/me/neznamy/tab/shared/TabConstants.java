@@ -172,6 +172,7 @@ public class TabConstants {
 		public static final String PING_SPOOF = "PingSpoof";
 		public static final String SORTING = "sorting";
 		public static final String LAYOUT = "layout";
+		public static final String LAYOUT_VANISH = "layout-vanish";
 		public static final String NICK_COMPATIBILITY = "nick";
 		public static final String PIPELINE_INJECTION = "injection";
 		public static final String BOSS_BAR = "BossBar";
@@ -195,7 +196,7 @@ public class TabConstants {
 		public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
 		public static final String GLOBAL_PLAYER_LIST_VANISH = "GlobalPlayerList-Vanish";
 
-		private Feature(){
+        private Feature(){
 		}
 
 		public static String scoreboardLine(String line) {

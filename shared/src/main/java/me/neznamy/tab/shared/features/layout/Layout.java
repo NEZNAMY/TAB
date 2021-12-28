@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -69,7 +70,7 @@ public class Layout extends TabFeature {
 	}
 
 	public void tick() {
-		List<TabPlayer> players = new ArrayList<>(manager.getSortedPlayers().keySet());
+		List<TabPlayer> players = manager.getSortedPlayers().keySet().stream().filter(player -> !player.isVanished()).collect(Collectors.toList());
 		for (ParentGroup group : groups) {
 			group.tick(players);
 		}

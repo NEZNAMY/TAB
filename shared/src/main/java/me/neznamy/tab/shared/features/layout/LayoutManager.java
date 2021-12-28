@@ -34,6 +34,7 @@ public class LayoutManager extends TabFeature {
 			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}
 		loadLayouts();
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_VANISH, new VanishListener(this));
 		TAB.getInstance().debug("Loaded Layout feature");
 	}
 
@@ -183,6 +184,10 @@ public class LayoutManager extends TabFeature {
 
 	public Map<TabPlayer, Layout> getPlayerViews() {
 		return playerViews;
+	}
+
+	public Map<String, Layout> getLayouts() {
+		return layouts;
 	}
 
 	public enum Direction {
