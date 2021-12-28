@@ -59,7 +59,7 @@ public class LayoutManager extends TabFeature {
 			for (int slot=1; slot<=80; slot++) {
 				emptySlots.add(slot);
 			}
-			for (String fixedSlot : (List<String>)map.get("fixed-slots")) {
+			for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
 				String[] array = fixedSlot.split("\\|");
 				int slot = Integer.parseInt(array[0]);
 				String text = array[1];
