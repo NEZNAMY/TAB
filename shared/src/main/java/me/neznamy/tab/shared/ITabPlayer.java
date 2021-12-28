@@ -136,7 +136,7 @@ public abstract class ITabPlayer implements TabPlayer {
 			}
 		}
 		//avoiding console spam from geyser
-		if (packet instanceof PacketPlayOutScoreboardScore) {
+/*		if (packet instanceof PacketPlayOutScoreboardScore) {
 			String objective = ((PacketPlayOutScoreboardScore) packet).getObjectiveName();
 			String player = ((PacketPlayOutScoreboardScore) packet).getPlayer();
 			if (!registeredObjectives.contains(objective)) {
@@ -144,7 +144,7 @@ public abstract class ITabPlayer implements TabPlayer {
 						objective + "' to player " + getName());
 				return;
 			}
-		}
+		}*/
 		try {
 			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
 		} catch (Exception e) {
