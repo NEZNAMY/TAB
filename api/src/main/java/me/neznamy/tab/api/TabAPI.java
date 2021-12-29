@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.event.EventBus;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.task.ThreadManager;
@@ -77,6 +78,13 @@ public abstract class TabAPI {
 	public abstract FeatureManager getFeatureManager();
 	
 	public abstract TablistFormatManager getTablistFormatManager();
+
+	/**
+	 * Gets the event bus for registering listeners for TAB events.
+	 *
+	 * @return the event bus
+	 */
+	public abstract EventBus getEventBus();
 
 	/**
 	 * Returns server version. On proxy installation returns PROXY.

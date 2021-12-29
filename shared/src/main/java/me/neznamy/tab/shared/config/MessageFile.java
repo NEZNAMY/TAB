@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -12,7 +14,7 @@ import me.neznamy.tab.shared.TAB;
 public class MessageFile {
 
 	private final ConfigurationFile file;
-	
+
 	public MessageFile() throws YAMLException, IOException {
 		file = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getPlatform().getDataFolder(), "messages.yml"));
 	}
@@ -148,5 +150,30 @@ public class MessageFile {
 	
 	public String getBossBarOff() {
 		return file.getString("bossbar-toggle-off", "&7Bossbar is no longer visible. Magic!");
+	}
+
+	public String getScoreboardShowUsage() {
+		return file.getString("scoreboard-show-usage", "Usage: /tab scoreboard show <scoreboard> [player]");
+	}
+
+	public List<String> getHelpMenu() {
+		return file.getStringList("help-menu", Arrays.asList("&m                                                                                "
+				," &8>> &3&l/tab reload"
+				,"    &7Reloads plugin and config"
+				," &8>> &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>"
+				,"    &7Do &8/tab group/player &7to show properties"
+				," &8>> &3&l/tab ntpreview"
+				,"    &7Shows your nametag for yourself, for testing purposes"
+				," &8>> &3&l/tab announce bar &3<name> &9<seconds>"
+				,"    &7Temporarily displays bossbar to all players"
+				," &8>> &3&l/tab parse <player> <placeholder> "
+				,"    &7Test if a placeholder works"
+				," &8>> &3&l/tab debug [player]"
+				,"    &7displays debug information about player"
+				," &8>> &3&l/tab cpu"
+				,"    &7shows CPU usage of the plugin"
+				," &8>> &3&l/tab group/player <name> remove"
+				,"    &7Clears all data about player/group"
+				,"&m                                                                                "));
 	}
 }

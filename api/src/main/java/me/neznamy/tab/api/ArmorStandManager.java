@@ -109,8 +109,7 @@ public class ArmorStandManager {
 	 */
 	public void unregisterPlayer(TabPlayer viewer) {
 		synchronized (nearbyPlayers) {
-			nearbyPlayers.remove(viewer);
-			nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+			if (nearbyPlayers.remove(viewer)) nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
 		}
 	}
 

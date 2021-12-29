@@ -56,12 +56,11 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null) return;
+		if (p == null || !p.isLoaded()) return;
 		long time = System.nanoTime();
 		String to = e.getPlayer().getWorld().getName();
 		if (feature.isDisabled(to)) {
-			if (!feature.getPlayersInDisabledUnlimitedWorlds().contains(p))
-				feature.getPlayersInDisabledUnlimitedWorlds().add(p);
+			feature.getPlayersInDisabledUnlimitedWorlds().add(p);
 		} else {
 			feature.getPlayersInDisabledUnlimitedWorlds().remove(p);
 		}

@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
 import io.netty.channel.Channel;
+import me.libraryaddict.disguise.DisguiseAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
@@ -214,8 +215,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	public boolean isDisguised() {
 		try {
 			if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsDisguisesEnabled()) return false;
-//			return me.libraryaddict.disguise.DisguiseAPI.isDisguised(getPlayer());
-			return false;
+			return DisguiseAPI.isDisguised(getPlayer());
 		} catch (NoClassDefFoundError | ExceptionInInitializerError e) {
 			//java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
 			TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);

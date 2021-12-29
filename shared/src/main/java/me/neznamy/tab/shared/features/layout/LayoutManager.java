@@ -24,7 +24,7 @@ public class LayoutManager extends TabFeature {
 	private final SkinManager skinManager = new SkinManager(defaultSkin);
 	
 	private final Map<String, Layout> layouts = new LinkedHashMap<>();
-	private final Map<TabPlayer, Layout> playerViews = new HashMap<>();
+	private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
 	private final Map<Integer, UUID> uuids = new HashMap<>();
 	private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(TabPlayer::getTeamName)));
 
@@ -99,7 +99,6 @@ public class LayoutManager extends TabFeature {
 
 	@Override
 	public void onQuit(TabPlayer p) {
-		playerViews.remove(p);
 		sortedPlayers.remove(p);
 		layouts.values().forEach(Layout::tick);
 	}

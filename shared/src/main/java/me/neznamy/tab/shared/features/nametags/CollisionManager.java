@@ -1,8 +1,7 @@
 package me.neznamy.tab.shared.features.nametags;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.WeakHashMap;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -12,8 +11,8 @@ public class CollisionManager extends TabFeature {
 
 	private final NameTag nameTags;
 	private final boolean collisionRule;
-	private final Map<TabPlayer, Boolean> collision = new HashMap<>();
-	private final Map<TabPlayer, Boolean> forcedCollision = new HashMap<>();
+	private final WeakHashMap<TabPlayer, Boolean> collision = new WeakHashMap<>();
+	private final WeakHashMap<TabPlayer, Boolean> forcedCollision = new WeakHashMap<>();
 
 	public CollisionManager(NameTag nameTags, boolean collisionRule) {
 		super(nameTags.getFeatureName(), "Updating collision");
@@ -46,12 +45,6 @@ public class CollisionManager extends TabFeature {
 	@Override
 	public void onJoin(TabPlayer connectedPlayer) {
 		collision.put(connectedPlayer, collisionRule);
-	}
-	
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		collision.remove(disconnectedPlayer);
-		forcedCollision.remove(disconnectedPlayer);
 	}
 
 	@Override

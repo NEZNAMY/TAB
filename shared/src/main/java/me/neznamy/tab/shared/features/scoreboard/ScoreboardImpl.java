@@ -1,19 +1,18 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.PacketAPI;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
 import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
@@ -42,7 +41,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	private final List<Line> lines = new ArrayList<>();
 
 	//players currently seeing this scoreboard
-	private final List<TabPlayer> players = new ArrayList<>();
+	private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 
 	/**
 	 * Constructs new instance with given parameters and registers lines to feature manager
@@ -118,7 +117,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
 		p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
-		PacketAPI.registerScoreboardObjective(p, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(), ScoreboardManagerImpl.DISPLAY_SLOT, EnumScoreboardHealthDisplay.INTEGER, "Scoreboard - Title");
+		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(),
+				EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
+		p.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(ScoreboardManagerImpl.DISPLAY_SLOT, ScoreboardManagerImpl.OBJECTIVE_NAME), TabConstants.PacketCategory.SCOREBOARD_TITLE);
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
@@ -138,8 +139,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 	public void removePlayer(TabPlayer p) {
 		if (!players.contains(p)) return; //not registered
 		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), this);
-		for (Line s : lines) {
-			((ScoreboardLine)s).unregister(p);
+		for (Line line : lines) {
+			p.sendCustomPacket(new PacketPlayOutScoreboardTeam(((ScoreboardLine)line).getTeamName()), TabConstants.PacketCategory.SCOREBOARD_LINES);
 		}
 		players.remove(p);
 		manager.getActiveScoreboards().remove(p);
@@ -157,7 +158,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		return lines;
 	}
 
-	public List<TabPlayer> getPlayers() {
+	public Set<TabPlayer> getPlayers() {
 		return players;
 	}
 
@@ -208,6 +209,10 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		Collections.reverse(linesReversed);
 		int score = 1;
 		for (Line line : linesReversed) {
+			if (line instanceof CustomLine) {
+				score++;
+				continue;
+			}
 			if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0){
 				p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(), score++), this);
 			}

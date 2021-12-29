@@ -20,6 +20,7 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onQuit(PlayerDisconnectEvent e){
+		TAB.getInstance().debug("PlayerDisconnectEvent " + e.getPlayer().getName());
 		if (TAB.getInstance().isDisabled()) return;
 		TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()));
 	}
@@ -31,10 +32,13 @@ public class BungeeEventListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW)
 	public void onSwitch(ServerSwitchEvent e){
+		TAB.getInstance().debug("ServerSwitchEvent " + e.getPlayer().getName());
 		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
+			TAB.getInstance().debug("player " + e.getPlayer().getName() + " is not loaded, probably joined - loading");
 			TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 		} else {
+			TAB.getInstance().debug("player " + e.getPlayer().getName() + " is loaded already, server switch");
 			TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
 		}
 	}

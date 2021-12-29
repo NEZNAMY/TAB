@@ -13,14 +13,14 @@ import me.neznamy.tab.shared.TAB;
 
 public class VehicleRefresher extends TabFeature {
 
-	//list of players currently in a vehicle
-	private final Map<TabPlayer, Entity> playersInVehicle = new ConcurrentHashMap<>();
+	//map of players currently in a vehicle
+	private final WeakHashMap<TabPlayer, Entity> playersInVehicle = new WeakHashMap<>();
 	
 	//map of vehicles carrying players
 	private final Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
 	
-	//list of players currently on boats
-	private final List<TabPlayer> playersOnBoats = new ArrayList<>();
+	//set of players currently on boats
+	private final Set<TabPlayer> playersOnBoats = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	private final NameTagX feature;
 		
@@ -64,8 +64,6 @@ public class VehicleRefresher extends TabFeature {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
-		playersInVehicle.remove(disconnectedPlayer);
-		playersOnBoats.remove(disconnectedPlayer);
 	}
 	
 	public Map<Integer, List<Entity>> getVehicles() {

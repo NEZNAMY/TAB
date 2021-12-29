@@ -42,7 +42,7 @@ public class BossBarLine implements BossBar {
 	private final boolean announcementOnly;
 	
 	//set of players seeing this BossBar
-	private final List<TabPlayer> players = new ArrayList<>();
+	private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	//refreshers
 	private final TextRefresher textRefresher;
@@ -248,7 +248,7 @@ public class BossBarLine implements BossBar {
 
 	@Override
 	public List<TabPlayer> getPlayers() {
-		return players;
+		return new ArrayList<>(players);
 	}
 	
 	public boolean isAnnouncementOnly() {

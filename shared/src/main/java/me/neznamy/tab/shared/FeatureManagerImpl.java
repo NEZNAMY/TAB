@@ -111,6 +111,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		if (disconnectedPlayer == null) return;
+		long millis = System.currentTimeMillis();
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onQuit")) continue;
 			long time = System.nanoTime();
@@ -118,14 +119,11 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
 		}
 		TAB.getInstance().removePlayer(disconnectedPlayer);
-		PlayerPlaceholder online = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%online%");
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (all.isLoaded()) online.updateValue(all, online.request(all));
-		}
 		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
 			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
 			users.unload(disconnectedPlayer);
 		}
+		TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 	}
 
 	/**
@@ -148,10 +146,6 @@ public class FeatureManagerImpl implements FeatureManager {
 		}
 		((ITabPlayer)connectedPlayer).markAsLoaded();
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
-		PlayerPlaceholder online = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%online%");
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (all.isLoaded()) online.updateValue(all, online.request(all));
-		}
 		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
 			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
 			users.load(connectedPlayer);

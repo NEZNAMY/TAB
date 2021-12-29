@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.shared.event.EventBusImpl;
+import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.HeaderFooterManager;
@@ -62,6 +64,8 @@ public class TAB extends TabAPI {
 
 	//cpu manager
 	private CpuManager cpu;
+
+	private final EventBusImpl eventBus = new EventBusImpl();
 
 	//error manager
 	private ErrorManager errorManager;
@@ -153,6 +157,7 @@ public class TAB extends TabAPI {
 			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded();
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
+			eventBus.fire(TabLoadEventImpl.getInstance());
 			platform.callLoadEvent();
 			disabled = false;
 			return configuration.getMessages().getReloadSuccess();
@@ -178,12 +183,12 @@ public class TAB extends TabAPI {
 			cpu.cancelAllTasks();
 			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
-			data.clear();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Exception e) {
-			data.clear();
 			errorManager.criticalError("Failed to disable", e);
 		}
+		data.clear();
+		players = new TabPlayer[0];
 	}
 
 	/**
@@ -250,6 +255,11 @@ public class TAB extends TabAPI {
 
 	public CpuManager getCPUManager() {
 		return cpu;
+	}
+
+	@Override
+	public EventBusImpl getEventBus() {
+		return eventBus;
 	}
 
 	public ErrorManager getErrorManager() {

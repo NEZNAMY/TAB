@@ -1,12 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabFeature;
@@ -50,15 +44,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	//active scoreboard announcement
 	private Scoreboard announcement;
 
-	private final List<TabPlayer> joinDelayed = new ArrayList<>();
-
-	private final Map<TabPlayer, ScoreboardImpl> forcedScoreboard = new HashMap<>();
-
-	private final Map<TabPlayer, ScoreboardImpl> activeScoreboard = new HashMap<>();
-
-	private final List<TabPlayer> visiblePlayers = new ArrayList<>();
-
-	private final Map<TabPlayer, String> otherPluginScoreboard = new HashMap<>();
+	private final Set<TabPlayer> joinDelayed = Collections.newSetFromMap(new WeakHashMap<>());
+	private final WeakHashMap<TabPlayer, ScoreboardImpl> forcedScoreboard = new WeakHashMap<>();
+	private final WeakHashMap<TabPlayer, ScoreboardImpl> activeScoreboard = new WeakHashMap<>();
+	private final Set<TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
+	private final WeakHashMap<TabPlayer, String> otherPluginScoreboard = new WeakHashMap<>();
 
 	/**
 	 * Constructs new instance and loads configuration
@@ -158,28 +148,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		}
 	}
 
-	@Override
-	public void onQuit(TabPlayer p) {
-		unregisterScoreboard(p, false);
-		removeDisabledPlayer(p);
-		forcedScoreboard.remove(p);
-		activeScoreboard.remove(p);
-		visiblePlayers.remove(p);
-		otherPluginScoreboard.remove(p);
-	}
-
 	/**
 	 * Removes this player from registered users in scoreboard and sends unregister packets if set
 	 * @param p - player to unregister scoreboard to
-	 * @param sendUnregisterPacket - if unregister packets should be sent or not
 	 */
-	public void unregisterScoreboard(TabPlayer p, boolean sendUnregisterPacket) {
+	public void unregisterScoreboard(TabPlayer p) {
 		if (activeScoreboard.containsKey(p)) {
-			if (sendUnregisterPacket) {
-				activeScoreboard.get(p).removePlayer(p);
-			} else {
-				activeScoreboard.get(p).getPlayers().remove(p);
-			}
+			activeScoreboard.get(p).removePlayer(p);
 			activeScoreboard.remove(p);
 		}
 	}
@@ -190,7 +165,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			addDisabledPlayer(p);
 			if (!disabledBefore) {
-				unregisterScoreboard(p, true);
+				unregisterScoreboard(p);
 			}
 		} else {
 			removeDisabledPlayer(p);
@@ -325,7 +300,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			}
 		} else {
 			visiblePlayers.remove(player);
-			unregisterScoreboard(player, true);
+			unregisterScoreboard(player);
 			if (sendToggleMessage) {
 				player.sendMessage(scoreboardOff, true);
 			}

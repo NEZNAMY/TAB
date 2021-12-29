@@ -152,10 +152,6 @@ public class GlobalPlayerList extends TabFeature {
 		}
 	}
 
-	public boolean isVanishedAsSpectators() {
-		return vanishedAsSpectators;
-	}
-
 	public List<String> getSpyServers() {
 		return spyServers;
 	}

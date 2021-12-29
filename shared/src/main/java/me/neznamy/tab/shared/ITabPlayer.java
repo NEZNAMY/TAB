@@ -2,9 +2,6 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 
-import me.neznamy.tab.api.protocol.*;
-import org.geysermc.floodgate.api.FloodgateApi;
-
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.Property;
@@ -12,8 +9,11 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 /**
  * The core class for player
@@ -105,7 +105,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void sendCustomPacket(TabPacket packet) {
+	public synchronized void sendCustomPacket(TabPacket packet) {
 		if (packet == null) return;
 		//avoiding BungeeCord bug kicking all players
 		if (packet instanceof PacketPlayOutScoreboardTeam) {
@@ -292,6 +292,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	
 	public void markAsLoaded() {
 		onJoinFinished = true;
+		TAB.getInstance().getEventBus().fire(new PlayerLoadEventImpl(this));
 		TAB.getInstance().getPlatform().callLoadEvent(this);
 	}
 

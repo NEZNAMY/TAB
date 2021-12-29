@@ -1,9 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -12,6 +9,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
@@ -22,8 +21,8 @@ public class Layout extends TabFeature {
 	private final Map<Integer, FixedSlot> fixedSlots;
 	private final List<Integer> emptySlots;
 	private final List<ParentGroup> groups;
-	private final List<TabPlayer> viewers = new ArrayList<>();
-	private TabPlayer[] viewerArray = new TabPlayer[0];
+	private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
+	private final boolean injection = TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION);
 
 	public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
 		super(manager.getFeatureName(), "Updating player groups");
@@ -38,10 +37,12 @@ public class Layout extends TabFeature {
 	public void sendTo(TabPlayer p) {
 		if (viewers.contains(p)) return;
 		viewers.add(p);
-		viewerArray = viewers.toArray(new TabPlayer[0]);
-		groups.forEach(g -> g.sendTo(p));
-		fixedSlots.values().forEach(s -> s.sendTo(p));
 		List<PlayerInfoData> list = new ArrayList<>();
+		groups.forEach(g -> g.sendTo(p));
+		for (FixedSlot slot : fixedSlots.values()) {
+			p.setProperty(slot, slot.getPropertyName(), slot.getText());
+			list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).get())));
+		}
 		for (int slot : emptySlots) {
 			list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
@@ -52,7 +53,6 @@ public class Layout extends TabFeature {
 	public void removeFrom(TabPlayer p) {
 		if (!viewers.contains(p)) return;
 		viewers.remove(p);
-		viewerArray = viewers.toArray(new TabPlayer[0]);
 		List<PlayerInfoData> list = new ArrayList<>();
 		for (UUID id : manager.getUuids().values()) {
 			list.add(new PlayerInfoData(id));
@@ -80,16 +80,9 @@ public class Layout extends TabFeature {
 	public void refresh(TabPlayer p, boolean force) {
 		tick();
 	}
-	
-	@Override
-	public void onQuit(TabPlayer p) {
-		if (viewers.remove(p)) {
-			viewerArray = viewers.toArray(new TabPlayer[0]);
-		}
-	}
 
-	public TabPlayer[] getViewers() {
-		return viewerArray;
+	public Set<TabPlayer> getViewers() {
+		return viewers;
 	}
 	
 	public boolean containsViewer(TabPlayer viewer) {
@@ -111,5 +104,14 @@ public class Layout extends TabFeature {
 	
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public void onServerChange(TabPlayer player, String from, String to) {
+		if (injection) return;
+		//velocity clearing TabList on server switch
+		if (viewers.remove(player)){
+			sendTo(player);
+		}
 	}
 }

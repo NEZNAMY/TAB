@@ -5,10 +5,10 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         maven("https://jitpack.io")
-        maven("https://repo.pl3x.net/")
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         maven("https://repo.viaversion.com/")
         maven("https://repo.aikar.co/content/groups/aikar/")
+        maven("https://repo.md-5.net/content/groups/public/")
         maven("https://ci.lucko.me/plugin/repository/everything/")
         maven("https://repo.essentialsx.net/releases/")
         maven("https://repo.codemc.org/repository/maven-public")
@@ -17,6 +17,7 @@ dependencyResolutionManagement {
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://nexus.velocitypowered.com/repository/maven-public/")
         maven("https://repo.opencollab.dev/maven-snapshots/")
+        maven("https://papermc.io/repo/repository/maven-public/")
         mavenLocal()
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
