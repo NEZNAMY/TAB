@@ -141,6 +141,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			join(target);
 			break;
 		case "server":
+			if (global == null) return;
 			target = redisPlayers.get(id.toString());
 			if (target == null) break;
 			String server = (String) message.get("server");
@@ -207,6 +208,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all.getVersion().getMinorVersion() < 8) continue;
 				all.sendCustomPacket(target.getUnregisterTeamPacket(), this);
+				if (global == null) continue;
 				if (shouldSee(all, target.getServer(), target.isVanished()) && !all.getServer().equals(target.getServer())) {
 					all.sendCustomPacket(target.getRemovePacket(), this);
 				}
@@ -223,7 +225,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			all.sendCustomPacket(target.getRegisterTeamPacket(), this);
 			all.sendCustomPacket(target.getBelowNameUpdatePacket(), this);
 			all.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
-			if (all.getVersion().getMinorVersion() < 8) continue;
+			if (all.getVersion().getMinorVersion() < 8 || global == null) continue;
 			if (shouldSee(all, target.getServer(), target.isVanished())) {
 				if (!all.getServer().equals(target.getServer())) {
 					all.sendCustomPacket(target.getAddPacket(), this);
@@ -240,12 +242,8 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	
 	private boolean shouldSee(TabPlayer viewer, String viewerServer, String server, boolean targetVanished) {
 		if (targetVanished && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
-		if (global != null) {
-			if (global.getSpyServers().contains(viewerServer)) return true;
-			return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
-		} else {
-			return viewerServer.equals(server);
-		}
+		if (global.getSpyServers().contains(viewerServer)) return true;
+		return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
 	}
 
 	@Override
@@ -257,6 +255,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			p.sendCustomPacket(redis.getRegisterTeamPacket(), this);
 			p.sendCustomPacket(redis.getBelowNameUpdatePacket(), this);
 			p.sendCustomPacket(redis.getYellowNumberUpdatePacket(), this);
+			if (global == null) continue;
 			if (shouldSee(p, redis.getServer(), redis.isVanished())) {
 				if (!p.getServer().equals(redis.getServer())) {
 					p.sendCustomPacket(redis.getAddPacket(), this);
@@ -269,6 +268,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 
 	@Override
 	public void onServerChange(TabPlayer p, String from, String to) {
+		if (global == null) return;
 		JSONObject json = new JSONObject();
 		json.put("proxy", proxy.toString());
 		json.put("action", "server");
