@@ -30,6 +30,9 @@ public enum EnumChatFormat {
 	ITALIC('o'),
 	RESET('r');
 
+	/** Creating a constant to avoid memory allocations on each request */
+	private static final EnumChatFormat[] VALUES = values();
+
 	/** The symbol minecraft uses to colorize text */
 	public static final char COLOR_CHAR = 0x00a7;
 
@@ -116,7 +119,7 @@ public enum EnumChatFormat {
 	 * @return	instance from the character or null if character is not valid
 	 */
 	public static EnumChatFormat getByChar(char c) {
-		for (EnumChatFormat format : values()) {
+		for (EnumChatFormat format : VALUES) {
 			if (format.character == c) return format;
 		}
 		return null;
@@ -135,7 +138,7 @@ public enum EnumChatFormat {
 		String last = getLastColors(legacyText);
 		if (last.length() > 0) {
 			char c = last.toCharArray()[1];
-			for (EnumChatFormat e : values()) {
+			for (EnumChatFormat e : VALUES) {
 				if (e.character == c) return e;
 			}
 		}
@@ -177,7 +180,7 @@ public enum EnumChatFormat {
 	 * @return	enum value or null if no such combination exists
 	 */
 	public static EnumChatFormat fromRGBExact(int red, int green, int blue){
-		for (EnumChatFormat format : values()) {
+		for (EnumChatFormat format : VALUES) {
 			if (format.red == red && format.green == green && format.blue == blue) return format;
 		}
 		return null;
