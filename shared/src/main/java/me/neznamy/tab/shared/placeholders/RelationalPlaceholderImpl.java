@@ -1,8 +1,7 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import me.neznamy.tab.api.TabFeature;
@@ -18,8 +17,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	
 	private final BiFunction<TabPlayer, TabPlayer, Object> function;
 	
-	//last known values with key formatted as "viewer-target" to avoid extra dimension
-	private final Map<String, String> lastValues = new HashMap<>();
+	//last known values with first map player viewer and second target
+	private final WeakHashMap<TabPlayer, WeakHashMap<TabPlayer, String>> lastValues = new WeakHashMap<>();
 
 	/**
 	 * Constructs new instance with given parameters
@@ -39,10 +38,9 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	 * @return true if value changed, false if not
 	 */
 	public synchronized boolean update(TabPlayer viewer, TabPlayer target) {
-		String mapKey = key(viewer, target);
 		String newValue = getReplacements().findReplacement(String.valueOf(request(viewer, target)));
-		if (!getLastValues().containsKey(mapKey) || !getLastValues().get(mapKey).equals(newValue)) {
-			getLastValues().put(mapKey, newValue);
+		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
+			lastValues.get(viewer).put(target, newValue);
 			return true;
 		}
 		return false;
@@ -55,9 +53,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	 * @return last known value
 	 */
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
-		if (!getLastValues().containsKey(key(viewer, target))) update(viewer, target);
-		String value = getLastValues().get(key(viewer, target));
-		return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(value)), target);
+		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
+		return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.get(viewer).get(target))), target);
 	}
 	
 	@Override
@@ -78,19 +75,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 		}
 	}
 
-	public Map<String, String> getLastValues() {
-		return lastValues;
-	}
-	
-	private String key(TabPlayer viewer, TabPlayer target) {
-		return viewer.getName() + "-" + target.getName();
-	}
-
 	@Override
 	public void updateValue(TabPlayer viewer, TabPlayer target, Object value) {
 		String s = getReplacements().findReplacement(String.valueOf(value));
-		if (lastValues.containsKey(key(viewer, target)) && lastValues.get(key(viewer, target)).equals(s)) return;
-		lastValues.put(key(viewer, target), s);
+		if (lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) && lastValues.get(viewer).get(target).equals(s)) return;
+		lastValues.get(viewer).put(target, s);
 		if (!viewer.isLoaded() || !target.isLoaded()) return;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
 		if (usage == null) return;

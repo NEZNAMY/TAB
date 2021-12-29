@@ -36,6 +36,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
 		manager.registerServerPlaceholder("%%", -1, () -> "%").enableTriggerMode();
+		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
 		manager.registerPlayerPlaceholder("%world%", -1, TabPlayer::getWorld).enableTriggerMode();
 		manager.registerPlayerPlaceholder("%worldonline%", -1, p -> {
 				int count = 0;

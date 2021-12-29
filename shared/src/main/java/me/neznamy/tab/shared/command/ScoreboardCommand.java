@@ -72,6 +72,10 @@ public class ScoreboardCommand extends SubCommand {
 	}
 	
 	private void show(TabPlayer sender, String[] args) {
+		if (args.length < 2) {
+			sendMessage(sender, getMessages().getScoreboardShowUsage());
+			return;
+		}
 		ScoreboardManagerImpl scoreboard = getScoreboardManager();
 		Scoreboard sb = scoreboard.getRegisteredScoreboards().get(args[1]);
 		if (sb == null) {

@@ -1,10 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabFeature;
@@ -23,10 +19,10 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	private final Function<TabPlayer, Object> function;
 
 	//last known values
-	private final Map<String, String> lastValues = new HashMap<>();
+	private final WeakHashMap<TabPlayer, String> lastValues = new WeakHashMap<>();
 
 	//list of players with force update
-	private final List<String> forceUpdate = new ArrayList<>();
+	private final Set<TabPlayer> forceUpdate = Collections.newSetFromMap(new WeakHashMap<>());
 
 	/**
 	 * Constructs new instance with given parameters
@@ -49,15 +45,15 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 		String newValue = obj == null ? identifier : setPlaceholders(obj, p);
 
 		//make invalid placeholders return identifier instead of nothing
-		if (identifier.equals(newValue) && !lastValues.containsKey(p.getName())) {
-			lastValues.put(p.getName(), identifier);
+		if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
+			lastValues.put(p, identifier);
 		}
-		if (!lastValues.containsKey(p.getName()) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p.getName()).equals(newValue))) {
-			lastValues.put(p.getName(), ERROR_VALUE.equals(newValue) ? identifier : newValue);
+		if (!lastValues.containsKey(p) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p).equals(newValue))) {
+			lastValues.put(p, ERROR_VALUE.equals(newValue) ? identifier : newValue);
 			return true;
 		}
-		if (forceUpdate.contains(p.getName())) {
-			forceUpdate.remove(p.getName());
+		if (forceUpdate.contains(p)) {
+			forceUpdate.remove(p);
 			return true;
 		}
 		return false;
@@ -66,10 +62,10 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	@Override
 	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
-		if (!lastValues.containsKey(p.getName())) {
+		if (!lastValues.containsKey(p)) {
 			update(p);
 		}
-		return lastValues.get(p.getName());
+		return lastValues.get(p);
 	}
 
 	/**
@@ -87,19 +83,19 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 		}
 	}
 
-	public Map<String, String> getLastValues() {
+	public Map<TabPlayer, String> getLastValues() {
 		return lastValues;
 	}
 
-	public List<String> getForceUpdate() {
+	public Set<TabPlayer> getForceUpdate() {
 		return forceUpdate;
 	}
 
 	@Override
 	public void updateValue(TabPlayer player, Object value) {
 		String s = getReplacements().findReplacement(String.valueOf(value));
-		if (lastValues.containsKey(player.getName()) && lastValues.get(player.getName()).equals(s)) return;
-		lastValues.put(player.getName(), s);
+		if (lastValues.containsKey(player) && lastValues.get(player).equals(s)) return;
+		lastValues.put(player, s);
 		if (!player.isLoaded()) return;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
 		if (usage == null) return;

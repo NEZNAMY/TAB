@@ -182,11 +182,11 @@ public class BukkitPlatform implements Platform {
 							long time = System.nanoTime();
 							String syncedPlaceholder = identifier.substring(6, identifier.length()-1);
 							String value = placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), "%" + syncedPlaceholder + "%") : identifier;
-							getLastValues().put(p.getName(), value);
-							if (!getForceUpdate().contains(p.getName())) getForceUpdate().add(p.getName());
+							getLastValues().put(p, value);
+							getForceUpdate().add(p);
 							TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
 						});
-						String value = getLastValues().get(p.getName());
+						String value = getLastValues().get(p);
 						return value == null ? identifier : value;
 					}
 				});

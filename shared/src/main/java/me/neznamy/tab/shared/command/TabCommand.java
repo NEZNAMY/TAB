@@ -82,26 +82,10 @@ public class TabCommand extends SubCommand {
 			} else {
 				tab.getPlatform().sendConsoleMessage("&3TAB v" + TAB.PLUGIN_VERSION, true);
 			}
-			String command = !tab.getPlatform().isProxy() ? "/tab" : "/btab";
-			String prefix = " &8>> &3&l";
-			sendMessage(sender, "&m                                                                                ");
-			sendMessage(sender, prefix + command + " reload");
-			sendMessage(sender, "      - &7Reloads plugin and config");
-			sendMessage(sender, prefix + command + " &9group&3/&9player &3<name> &9<property> &3<value...>");
-			sendMessage(sender, "      - &7Do &8/tab group/player &7to show properties");
-			sendMessage(sender, prefix + command + " ntpreview");
-			sendMessage(sender, "      - &7Shows your nametag for yourself, for testing purposes");
-			sendMessage(sender, prefix + command + " announce bar &3<name> &9<seconds>");
-			sendMessage(sender, "      - &7Temporarily displays bossbar to all players");
-			sendMessage(sender, prefix + command + " parse <player> <placeholder> ");
-			sendMessage(sender, "      - &7Test if a placeholder works");
-			sendMessage(sender, prefix + command + " debug [player]");
-			sendMessage(sender, "      - &7displays debug information about player");
-			sendMessage(sender, prefix + command + " cpu");
-			sendMessage(sender, "      - &7shows CPU usage of the plugin");
-			sendMessage(sender, prefix + command + " group/player <name> remove");
-			sendMessage(sender, "      - &7Clears all data about player/group");
-			sendMessage(sender, "&m                                                                                ");
+			for (String message : getMessages().getHelpMenu()) {
+				if (tab.getPlatform().isProxy()) message = message.replace("/tab", "/btab");
+				sendMessage(sender, message);
+			}
 		}
 	}
 	

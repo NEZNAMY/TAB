@@ -17,7 +17,6 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
     override fun registerPlaceholders(manager: PlaceholderManager) {
         // Built-in stuff
         manager.registerPlayerPlaceholder("%displayname%", 500) { (it.player as Player).displayName }
-        manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished)
         manager.registerPlayerPlaceholder("%health%", 100) { ceil((it.player as Player).health) }
 
         // TPS
