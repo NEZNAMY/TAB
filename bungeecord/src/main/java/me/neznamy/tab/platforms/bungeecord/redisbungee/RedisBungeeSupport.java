@@ -206,12 +206,9 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			target = redisPlayers.get(id.toString());
 			if (target == null) break; //player left current proxy and was unloaded from memory, therefore null check didn't pass
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				if (all.getVersion().getMinorVersion() < 8) continue;
 				all.sendCustomPacket(target.getUnregisterTeamPacket(), this);
-				if (global == null) continue;
-				if (shouldSee(all, target.getServer(), target.isVanished()) && !all.getServer().equals(target.getServer())) {
-					all.sendCustomPacket(target.getRemovePacket(), this);
-				}
+				if (all.getVersion().getMinorVersion() < 8) continue;
+				all.sendCustomPacket(target.getRemovePacket(), this);
 			}
 			redisPlayers.remove(id.toString());
 			break;
