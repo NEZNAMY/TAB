@@ -154,7 +154,7 @@ public class TAB extends TabAPI {
 			platform.loadFeatures();
 			command = new TabCommand(this);
 			featureManager.load();
-			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded();
+			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded(false);
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			eventBus.fire(TabLoadEventImpl.getInstance());

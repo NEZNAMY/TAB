@@ -290,9 +290,9 @@ public abstract class ITabPlayer implements TabPlayer {
 		teamName = name;
 	}
 	
-	public void markAsLoaded() {
+	public void markAsLoaded(boolean join) {
 		onJoinFinished = true;
-		TAB.getInstance().getEventBus().fire(new PlayerLoadEventImpl(this));
+		TAB.getInstance().getEventBus().fire(new PlayerLoadEventImpl(this, join));
 		TAB.getInstance().getPlatform().callLoadEvent(this);
 	}
 

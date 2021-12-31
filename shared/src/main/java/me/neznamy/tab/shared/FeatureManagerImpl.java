@@ -144,7 +144,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			f.onJoin(connectedPlayer);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
 		}
-		((ITabPlayer)connectedPlayer).markAsLoaded();
+		((ITabPlayer)connectedPlayer).markAsLoaded(true);
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
 			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
