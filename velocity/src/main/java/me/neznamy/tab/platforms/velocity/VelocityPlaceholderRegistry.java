@@ -31,7 +31,7 @@ public class VelocityPlaceholderRegistry extends ProxyPlaceholderRegistry {
 			manager.registerServerPlaceholder("%online_" + rServer.getServerInfo().getName() + "%", 1000, () -> {
 				int count = 0;
 				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-					if (p.getServer() != null && p.getServer().equals(rServer.getServerInfo().getName()) && p.isVanished()) count++;
+					if (p.getServer() != null && p.getServer().equals(rServer.getServerInfo().getName()) && !p.isVanished()) count++;
 				}
 				return count;
 			});
