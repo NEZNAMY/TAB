@@ -49,6 +49,7 @@ public class TAB extends TabAPI {
 
 	//player data
 	private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
+	private final Map<UUID, TabPlayer> playersByTablistId = new ConcurrentHashMap<>();
 	
 	//player array to reduce memory allocation when iterating
 	private TabPlayer[] players = new TabPlayer[0];
@@ -106,15 +107,12 @@ public class TAB extends TabAPI {
 	}
 
 	/**
-	 * Returns player by TabList UUID. This is required due to Velocity as player uuid and TabList uuid do ont match there
+	 * Returns player by TabList UUID. This is required due to Velocity as player uuid and TabList uuid do not match there
 	 * @param tabListId - TabList id of player
 	 * @return the player or null if not found
 	 */
 	public TabPlayer getPlayerByTablistUUID(UUID tabListId) {
-		for (TabPlayer p : data.values()) {
-			if (p.getTablistUUID().equals(tabListId)) return p;
-		}
-		return null;
+		return playersByTablistId.get(tabListId);
 	}
 
 	/**
@@ -228,11 +226,13 @@ public class TAB extends TabAPI {
 
 	public void addPlayer(TabPlayer player) {
 		data.put(player.getUniqueId(), player);
+		playersByTablistId.put(player.getTablistUUID(), player);
 		players = data.values().toArray(new TabPlayer[0]);
 	}
 
 	public void removePlayer(TabPlayer player) {
 		data.remove(player.getUniqueId());
+		playersByTablistId.remove(player.getTablistUUID());
 		players = data.values().toArray(new TabPlayer[0]);
 	}
 
