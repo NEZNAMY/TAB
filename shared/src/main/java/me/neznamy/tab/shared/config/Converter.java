@@ -305,19 +305,17 @@ public class Converter {
         Map<String,Object> placeholders = oldConfig.getConfigurationSection("placeholders");
         if (premiumConfig != null) {
             newConfig.set("placeholder-output-replacements", premiumConfig.getConfigurationSection("placeholder-output-replacements"));
-            if (!TAB.getInstance().getPlatform().isProxy()) {
-                newConfig.set("placeholder-output-replacements.%afk%.true", placeholders.remove("afk-yes"));
-                newConfig.set("placeholder-output-replacements.%afk%.false", placeholders.remove("afk-no"));
-            }
             newConfig.set("conditions", premiumConfig.getConfigurationSection("conditions"));
         } else {
             newConfig.set("placeholder-output-replacements.%essentials_vanished%.yes", "&7| Vanished");
             newConfig.set("placeholder-output-replacements.%essentials_vanished%.no", "");
-            placeholders.remove("afk-yes");
-            placeholders.remove("afk-no");
             newConfig.set("conditions.nick.conditions", Collections.singletonList("%player%=%essentials_nickname%"));
             newConfig.set("conditions.nick.yes", "%player%");
             newConfig.set("conditions.nick.no", "~%essentials_nickname%");
+        }
+        if (!TAB.getInstance().getPlatform().isProxy()) {
+            newConfig.set("placeholder-output-replacements.%afk%.true", placeholders.remove("afk-yes"));
+            newConfig.set("placeholder-output-replacements.%afk%.false", placeholders.remove("afk-no"));
         }
 
         newConfig.set("placeholders", placeholders);
