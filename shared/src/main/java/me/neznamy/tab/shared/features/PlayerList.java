@@ -24,8 +24,7 @@ import me.neznamy.tab.shared.features.layout.PlayerSlot;
  */
 public class PlayerList extends TabFeature implements TablistFormatManager {
 
-	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) &&
-			TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION);
+	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 	private boolean disabling = false;
 
 	public PlayerList() {
@@ -111,7 +110,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		} else {
 			if (refreshed.getProperty(TabConstants.Property.TABPREFIX) == null) {
 				//this makes absolutely no sense, and I am not able to reproduce it myself
-				TAB.getInstance().getErrorManager().printError("Tablist formatting data not present for " + refreshed.getName() + " when refreshing, loading again.");
+				TAB.getInstance().getErrorManager().printError("Tablist formatting data not present for " + refreshed.getName() + " when refreshing, loading again.", new Exception());
 				updateProperties(refreshed);
 				return;
 			}
@@ -155,7 +154,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTabList) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+		if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION))
+			TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
 	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
