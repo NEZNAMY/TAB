@@ -78,16 +78,21 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		}
 		if (disabledNow) {
 			if (!disabledBefore) {
-				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-					if (viewer.getVersion().getMinorVersion() < 8) continue;
-					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p, viewer))), this);
-				}
-				RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-				if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
+				updatePlayer(p, false);
 			}
-		} else {
-			refresh(p, true);
+		} else if (updateProperties(p)) {
+			updatePlayer(p, true);
 		}
+	}
+
+	private void updatePlayer(TabPlayer p, boolean format) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			if (viewer.getVersion().getMinorVersion() < 8) continue;
+			viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer, true) : null)), this);
+		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+		if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
@@ -120,19 +125,15 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				if (viewer.getVersion().getMinorVersion() < 8) continue;
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), getTabFormat(refreshed, viewer, true))), this);
-			}
-			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-			if (redis != null) redis.updateTabFormat(refreshed, refreshed.getProperty(TabConstants.Property.TABPREFIX).get() + refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + refreshed.getProperty(TabConstants.Property.TABSUFFIX).get());
+			updatePlayer(refreshed, true);
 		}
 	}
 	
-	protected void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
-		p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName());
-		p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX);
+	protected boolean updateProperties(TabPlayer p) {
+		boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName())) changed = true;
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX)) changed = true;
+		return changed;
 	}
 
 	@Override

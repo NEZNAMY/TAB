@@ -225,16 +225,18 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	 * @param p - player to update
 	 */
 	@Override
-	public void updateProperties(TabPlayer p) {
-		super.updateProperties(p);
-		p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTAGNAME, p.getName());
-		p.setProperty(this, TabConstants.Property.NAMETAG, p.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() + p.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + p.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
+	public boolean updateProperties(TabPlayer p) {
+		boolean changed = super.updateProperties(p);
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTAGNAME, p.getName())) changed = true;
+		if (p.setProperty(this, TabConstants.Property.NAMETAG, p.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() +
+				p.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + p.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue())) changed = true;
 		for (String property : dynamicLines) {
-			if (!property.equals(TabConstants.Property.NAMETAG)) p.loadPropertyFromConfig(this, property);
+			if (!property.equals(TabConstants.Property.NAMETAG) && p.loadPropertyFromConfig(this, property)) changed = true;
 		}
 		for (String property : staticLines.keySet()) {
-			if (!property.equals(TabConstants.Property.NAMETAG)) p.loadPropertyFromConfig(this, property);
+			if (!property.equals(TabConstants.Property.NAMETAG) && p.loadPropertyFromConfig(this, property)) changed = true;
 		}
+		return changed;
 	}
 
 	@Override

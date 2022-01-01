@@ -215,12 +215,12 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void loadPropertyFromConfig(TabFeature feature, String property) {
-		loadPropertyFromConfig(feature, property, "");
+	public boolean loadPropertyFromConfig(TabFeature feature, String property) {
+		return loadPropertyFromConfig(feature, property, "");
 	}
 
 	@Override
-	public void loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet) {
+	public boolean loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet) {
 		String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
 		if (value.length == 0) {
 			value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
@@ -229,10 +229,9 @@ public abstract class ITabPlayer implements TabPlayer {
 			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);
 		}
 		if (value.length > 0) {
-			setProperty(feature, property, value[0], value[1]);
-			return;
+			return setProperty(feature, property, value[0], value[1]);
 		}
-		setProperty(feature, property, ifNotSet, "None");
+		return setProperty(feature, property, ifNotSet, "None");
 	}
 
 	@Override

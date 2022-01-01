@@ -120,6 +120,11 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
+	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
@@ -129,12 +134,12 @@ public class NameTag extends TabFeature implements TeamManager {
 		} else {
 			removeDisabledPlayer(p);
 		}
-		updateProperties(p);
+		boolean changed = updateProperties(p);
 		if (disabledNow && !disabledBefore) {
 			unregisterTeam(p);
 		} else if (!disabledNow && disabledBefore) {
 			registerTeam(p);
-		} else {
+		} else if (changed) {
 			updateTeam(p);
 		}
 	}
@@ -290,9 +295,10 @@ public class NameTag extends TabFeature implements TeamManager {
 		return b ? "always" : "never";
 	}
 	
-	protected void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(this, TabConstants.Property.TAGPREFIX);
-		p.loadPropertyFromConfig(this, TabConstants.Property.TAGSUFFIX);
+	protected boolean updateProperties(TabPlayer p) {
+		boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TAGPREFIX);
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.TAGSUFFIX)) changed = true;
+		return changed;
 	}
 
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {

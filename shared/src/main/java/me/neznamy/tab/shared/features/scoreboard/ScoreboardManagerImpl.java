@@ -160,6 +160,11 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 	}
 
 	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
+	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		boolean disabledBefore = isDisabledPlayer(p);
 		if (isDisabled(p.getServer(), p.getWorld())) {
