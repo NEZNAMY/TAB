@@ -1,13 +1,7 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -15,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -26,6 +21,7 @@ import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.api.task.RepeatingTask;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
@@ -251,7 +247,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public TabPlaceholder getPlaceholder(String identifier) {
 		TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
 		if (p == null) {
-			TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+			TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
+			TAB.getInstance().getEventBus().fire(event);
+			if (event.getPlaceholder() != null) {
+				registerPlaceholder(event.getPlaceholder());
+			} else {
+				TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+			}
 			addUsedPlaceholder(identifier, this); //likely used via tab expansion
 			return getPlaceholder(identifier);
 		}
@@ -284,7 +286,12 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	public String findReplacement(String placeholder, String output) {
 		return getPlaceholder(placeholder).getReplacements().findReplacement(output);
 	}
-	
+
+	@Override
+	public List<String> getUsedPlaceholders() {
+		return Arrays.stream(usedPlaceholders).map(Placeholder::getIdentifier).collect(Collectors.toList());
+	}
+
 	public Map<String, Set<TabFeature>> getPlaceholderUsage(){
 		return placeholderUsage;
 	}

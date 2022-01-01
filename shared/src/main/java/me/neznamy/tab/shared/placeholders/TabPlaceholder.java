@@ -92,7 +92,6 @@ public abstract class TabPlaceholder implements Placeholder {
 	@Override
 	public void enableTriggerMode() {
 		triggerMode = true;
-		TAB.getInstance().getPlaceholderManager().recalculateUsedPlaceholders();
 	}
 	
 	@Override
@@ -100,7 +99,6 @@ public abstract class TabPlaceholder implements Placeholder {
 		triggerMode = true;
 		this.onActivation = onActivation;
 		this.onDisable = onDisable;
-		TAB.getInstance().getPlaceholderManager().recalculateUsedPlaceholders();
 		if (active && onActivation != null) onActivation.run();
 	}
 	
