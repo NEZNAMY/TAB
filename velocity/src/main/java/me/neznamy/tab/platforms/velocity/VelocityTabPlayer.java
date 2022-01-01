@@ -89,16 +89,15 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 
 	private void handle(PacketPlayOutChat packet) {
-		Component message = Main.stringToComponent(packet.getMessage().toString(getVersion()));
 		if (packet.getType() == ChatMessageType.GAME_INFO) {
-			getPlayer().sendActionBar(message);
+			getPlayer().sendActionBar(Main.convertComponent(packet.getMessage(), getVersion()));
 		} else {
-			getPlayer().sendMessage(Identity.nil(), message, MessageType.valueOf(packet.getType().name()));
+			getPlayer().sendMessage(Identity.nil(), Main.convertComponent(packet.getMessage(), getVersion()), MessageType.valueOf(packet.getType().name()));
 		}
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-		getPlayer().getTabList().setHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
+		getPlayer().getTabList().setHeaderAndFooter(Main.convertComponent(packet.getHeader(), getVersion()), Main.convertComponent(packet.getFooter(), getVersion()));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -109,7 +108,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 				if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
 				getPlayer().getTabList().addEntry(TabListEntry.builder()
 						.tabList(getPlayer().getTabList())
-						.displayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())))
+						.displayName(Main.convertComponent(data.getDisplayName(), getVersion()))
 						.gameMode(data.getGameMode().ordinal()-1)
 						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
 						.latency(data.getLatency())
@@ -119,7 +118,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 				getPlayer().getTabList().removeEntry(data.getUniqueId());
 				break;
 			case UPDATE_DISPLAY_NAME:
-				getEntry(data.getUniqueId()).setDisplayName(data.getDisplayName() == null ? null : Main.stringToComponent(data.getDisplayName().toString(getVersion())));
+				getEntry(data.getUniqueId()).setDisplayName(Main.convertComponent(data.getDisplayName(), getVersion()));
 				break;
 			case UPDATE_LATENCY:
 				getEntry(data.getUniqueId()).setLatency(data.getLatency());
@@ -138,7 +137,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		switch (packet.getOperation()) {
 		case ADD:
 			if (bossBars.containsKey(packet.getId())) return;
-			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
+			bar = BossBar.bossBar(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
 					packet.getPct(), 
 					Color.valueOf(packet.getColor().toString()), 
 					Overlay.valueOf(packet.getOverlay().toString()));
@@ -156,7 +155,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			bossBars.get(packet.getId()).progress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossBars.get(packet.getId()).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())));
+			bossBars.get(packet.getId()).name(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
 			break;
 		case UPDATE_STYLE:
 			bar = bossBars.get(packet.getId());
