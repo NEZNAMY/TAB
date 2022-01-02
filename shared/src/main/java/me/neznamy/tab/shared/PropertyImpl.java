@@ -73,7 +73,7 @@ public class PropertyImpl implements Property {
 		for (String placeholder : placeholders0) {
 			rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
 		}
-		if (rawFormattedValue0.contains("%")) {
+		if (placeholders0.size() > 0 && rawFormattedValue0.contains("%")) {
 			int index = rawFormattedValue0.lastIndexOf('%');
 			if (rawFormattedValue0.length() == index+1 || rawFormattedValue0.charAt(index+1) != 's') {
 				StringBuilder sb = new StringBuilder(rawFormattedValue0);
