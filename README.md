@@ -38,9 +38,10 @@ A detailed explanation of all the plugin's functions can be found on the
 
 # Issues
 The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** available for **bug reports**
-or other issues which are not directly a bug (performance issues, etc.).
-Support is provided on discord and feature requests are not accepted anymore, due to lack of 
-possible new features. No, we will not be adding chat function. 
+or other issues which are not directly a bug (performance issues, errors, etc.).
+Support is provided on discord and feature requests are currently not accepted due to high demand and
+being busy with bug reports, which take priority over new features anymore. 
+We are not looking to add any new major features. No, we will not be adding chat function. 
 We would rather spend time improving existing features instead.  
   
 When opening a bug report, make sure you provide all necessary information to reproduce the bug,
