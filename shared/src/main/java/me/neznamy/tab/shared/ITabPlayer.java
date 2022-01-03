@@ -48,7 +48,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		this.name = name;
 		this.server = server;
 		this.world = world;
-		bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
+		bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
 		setGroup(TAB.getInstance().getGroupManager().detectPermissionGroup(this), false);
 	}
 
