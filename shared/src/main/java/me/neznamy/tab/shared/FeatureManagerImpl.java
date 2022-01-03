@@ -119,10 +119,6 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
 		}
 		TAB.getInstance().removePlayer(disconnectedPlayer);
-		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
-			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
-			users.unload(disconnectedPlayer);
-		}
 		TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 	}
 
