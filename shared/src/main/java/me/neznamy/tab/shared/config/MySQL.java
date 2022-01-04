@@ -56,18 +56,13 @@ public class MySQL {
 	}
 
 	public void execute(String query, Object... vars) throws SQLException {
-		if (isConnected()) {
-			openConnection();
-		}
 		try (PreparedStatement ps = prepareStatement(query, vars)){
 			ps.execute();
 		}
 	}
 
 	private PreparedStatement prepareStatement(String query, Object... vars) throws SQLException {
-		if (isConnected()) {
-			openConnection();
-		}
+		if (!isConnected()) openConnection();
 		PreparedStatement ps = con.prepareStatement(query);
 		int i = 0;
 		if (query.contains("?") && vars.length != 0) {
@@ -80,9 +75,6 @@ public class MySQL {
 	}
 
 	public CachedRowSet getCRS(String query, Object... vars) throws SQLException {
-		if (isConnected()) {
-			openConnection();
-		}
 		PreparedStatement ps = prepareStatement(query, vars);
 		ResultSet rs = ps.executeQuery();
 		CachedRowSet crs;
