@@ -33,7 +33,7 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
-		if (!event.getTag().equalsIgnoreCase(channelName)) return;
+		if (!event.getTag().equals(channelName)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
 			event.setCancelled(true);
 			TAB.getInstance().getCPUManager().runTask("processing PluginMessageEvent", () -> {
