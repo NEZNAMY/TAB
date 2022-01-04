@@ -66,7 +66,7 @@ public class TAB extends TabAPI {
 	//cpu manager
 	private CpuManager cpu;
 
-	private final EventBusImpl eventBus = new EventBusImpl();
+	private EventBusImpl eventBus;
 
 	//error manager
 	private ErrorManager errorManager;
@@ -98,6 +98,11 @@ public class TAB extends TabAPI {
 			floodgate = true;
 		} catch (ClassNotFoundException | IllegalStateException e) {
 			//plugin not installed
+		}
+		try {
+			eventBus = new EventBusImpl();
+		} catch (NoSuchMethodError e) {
+			//1.7.10 or lower
 		}
 	}
 
@@ -155,7 +160,7 @@ public class TAB extends TabAPI {
 			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded(false);
 			errorManager.printConsoleWarnCount();
 			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
-			eventBus.fire(TabLoadEventImpl.getInstance());
+			if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
 			platform.callLoadEvent();
 			disabled = false;
 			return configuration.getMessages().getReloadSuccess();

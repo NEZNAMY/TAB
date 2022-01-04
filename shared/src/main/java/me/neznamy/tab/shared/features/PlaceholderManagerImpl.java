@@ -248,7 +248,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
 		if (p == null) {
 			TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
-			TAB.getInstance().getEventBus().fire(event);
+			if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(event);
 			if (event.getPlaceholder() != null) {
 				registerPlaceholder(event.getPlaceholder());
 			} else {
