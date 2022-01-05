@@ -64,6 +64,9 @@ public abstract class PluginMessageHandler {
 			if ("world".equals(attribute)) {
 				TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), value);
 			}
+			if ("vanished".equals(attribute)) {
+				((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder("%vanished%")).updateValue(player, value);
+			}
 		}
 		if ("Group".equals(subChannel)) {
 			String group = in.readUTF();
