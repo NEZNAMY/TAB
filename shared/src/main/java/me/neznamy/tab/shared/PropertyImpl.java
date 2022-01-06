@@ -69,7 +69,7 @@ public class PropertyImpl implements Property {
 				relPlaceholders0.add(identifier);
 			}
 		}
-		String rawFormattedValue0 = RGBUtils.getInstance().applyFormats(value, true);
+		String rawFormattedValue0 = value;
 		for (String placeholder : placeholders0) {
 			rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
 		}
@@ -81,9 +81,10 @@ public class PropertyImpl implements Property {
 				rawFormattedValue0 = sb.toString();
 			}
 		}
+		rawFormattedValue0 = RGBUtils.getInstance().applyFormats(rawFormattedValue0, true);
+		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
 		placeholders = placeholders0.toArray(new String[0]);
 		relPlaceholders = relPlaceholders0.toArray(new String[0]);
-		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
 		rawFormattedValue = applyRemoveStrings(rawFormattedValue0); //this should never be needed
 		if (listener != null) {
 			listener.addUsedPlaceholders(placeholders0);
