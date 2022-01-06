@@ -70,9 +70,14 @@ public class Layout extends TabFeature {
 	}
 
 	public void tick() {
-		List<TabPlayer> players = manager.getSortedPlayers().keySet().stream().filter(player -> !player.isVanished()).collect(Collectors.toList());
-		for (ParentGroup group : groups) {
-			group.tick(players);
+		try {
+			List<TabPlayer> players = manager.getSortedPlayers().keySet().stream().filter(player -> !player.isVanished()).collect(Collectors.toList());
+			for (ParentGroup group : groups) {
+				group.tick(players);
+			}
+		} catch (ConcurrentModificationException ex) {
+			//unlucky, someone joined/left during ticking
+			tick();
 		}
 	}
 
