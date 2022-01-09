@@ -65,6 +65,7 @@ public class Converter {
         ConfigurationFile groups = new YamlConfigurationFile(null, new File(folder, "groups.yml"));
         ConfigurationFile users = new YamlConfigurationFile(null, new File(folder, "users.yml"));
         File oldConfigsFolder = new File(folder, "old_configs");
+        Files.copy(new File(oldConfigsFolder, "animations.yml").toPath(), new File(folder, "animations.yml").toPath());
         File premiumFile = new File(oldConfigsFolder, "premiumconfig.yml");
         ConfigurationFile premiumConfig = premiumFile.exists() ? new YamlConfigurationFile(null, premiumFile) : null;
         File bossBarFile = new File(oldConfigsFolder, "bossbar.yml");
@@ -231,24 +232,23 @@ public class Converter {
         Map<String, String> perWorldScoreboards = premiumConfig.getConfigurationSection("scoreboard.per-world");
         newConfig.set("scoreboard.default-scoreboard", null);
         newConfig.set("scoreboard.per-world", null);
-        if (perWorldScoreboards != null)
-            for (Map.Entry<String, String> entry : perWorldScoreboards.entrySet()) {
-                String world = entry.getKey();
-                String sb = entry.getValue();
-                if (!scoreboards.containsKey(sb)) return;
-                Map<String, Object> scoreboard = scoreboards.get(sb);
-                if (scoreboard.containsKey("display-condition")) {
-                    scoreboard.put("display-condition", scoreboards.get(sb).get("display-condition") + ";%" + separator + "%=" + world);
-                } else {
-                    scoreboard.put("display-condition", "%" + separator + "%=" + world);
-                    //move to the top, so it's actually displayed with new priority system
-                    scoreboards.remove(sb);
-                    Map<String, Map<String,Object>> reordered = new HashMap<>();
-                    reordered.put(sb, scoreboard);
-                    reordered.putAll(scoreboards);
-                    scoreboards = reordered;
-                }
+        for (Map.Entry<String, String> entry : perWorldScoreboards.entrySet()) {
+            String world = entry.getKey();
+            String sb = entry.getValue();
+            if (!scoreboards.containsKey(sb)) continue;
+            Map<String, Object> scoreboard = scoreboards.get(sb);
+            if (scoreboard.containsKey("display-condition")) {
+                scoreboard.put("display-condition", scoreboards.get(sb).get("display-condition") + ";%" + separator + "%=" + world);
+            } else {
+                scoreboard.put("display-condition", "%" + separator + "%=" + world);
+                //move to the top, so it's actually displayed with new priority system
+                scoreboards.remove(sb);
+                Map<String, Map<String, Object>> reordered = new HashMap<>();
+                reordered.put(sb, scoreboard);
+                reordered.putAll(scoreboards);
+                scoreboards = reordered;
             }
+        }
         newConfig.set("scoreboard.scoreboards", scoreboards);
     }
 
