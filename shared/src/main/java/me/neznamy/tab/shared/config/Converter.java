@@ -50,7 +50,7 @@ public class Converter {
      *          if an I/O operation with the files fails
      */
     public void convertToV3(ConfigurationFile currentConfig) throws IOException {
-        if (currentConfig.hasConfigOption("mysql") && !new File(TAB.getInstance().getPlatform().getDataFolder(), "bossbar.yml").exists()) return;
+        if (currentConfig.hasConfigOption("mysql")) return;
         TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
         TAB.getInstance().sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
         TAB.getInstance().sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
