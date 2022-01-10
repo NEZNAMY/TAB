@@ -90,7 +90,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
 			Object item = item_class.getConstructor(UUID.class).newInstance(data.getUniqueId());
 			if (data.getDisplayName() != null) {
 				if (clientVersion.getMinorVersion() >= 8) {
-					item_setDisplayName.invoke(item, Main.stringToComponent(data.getDisplayName().toString(clientVersion)));
+					item_setDisplayName.invoke(item, Main.convertComponent(data.getDisplayName(), clientVersion));
 				} else {
 					item_setDisplayName.invoke(item, LegacyComponentSerializer.legacySection().deserialize(data.getDisplayName().toLegacyText()));
 				}
