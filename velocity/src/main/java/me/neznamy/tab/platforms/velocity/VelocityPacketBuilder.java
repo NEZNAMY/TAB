@@ -20,6 +20,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -70,6 +71,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
 			item_setDisplayName = item_class.getMethod("setDisplayName", Component.class);
 		} catch (ReflectiveOperationException e) {
 			// Should never happen until velocity updates their packet system
+			TAB.getInstance().getErrorManager().criticalError("Failed to initialize methods for packet building", e);
 		}
 	}
 
