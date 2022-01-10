@@ -14,6 +14,7 @@ public class TabConstants {
 		public static final String PLAYER_SNEAK = "Player Sneak";
 		public static final String PLAYER_RESPAWN = "Player Respawn";
 		public static final String PLUGIN_MESSAGE = "PluginMessageEvent";
+		public static final String REDIS_BUNGEE_MESSAGE = "PubSubMessageEvent";
 		public static final String LUCKPERMS_RECALCULATE_EVENT = "UserDataRecalculateEvent";
 
 		public static final String ANTI_OVERRIDE = "Anti override";
@@ -172,6 +173,7 @@ public class TabConstants {
 		public static final String PING_SPOOF = "PingSpoof";
 		public static final String SORTING = "sorting";
 		public static final String LAYOUT = "layout";
+		public static final String LAYOUT_VANISH = "layout-vanish";
 		public static final String NICK_COMPATIBILITY = "nick";
 		public static final String PIPELINE_INJECTION = "injection";
 		public static final String BOSS_BAR = "BossBar";
@@ -195,7 +197,7 @@ public class TabConstants {
 		public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
 		public static final String GLOBAL_PLAYER_LIST_VANISH = "GlobalPlayerList-Vanish";
 
-		private Feature(){
+        private Feature(){
 		}
 
 		public static String scoreboardLine(String line) {

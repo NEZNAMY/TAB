@@ -172,15 +172,12 @@ public class ErrorManager {
 	 * Parses integer in given string, returns second argument if string is not valid
 	 * @param string - string to parse
 	 * @param defaultValue - value to return if string is not valid
-	 * @param place - used in error message
 	 * @return parsed integer
 	 */
-	public int parseInteger(String string, int defaultValue, String place) {
-		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
+	public int parseInteger(String string, int defaultValue) {
 		try {
 			return (int) Math.round(Double.parseDouble(string));
 		} catch (NumberFormatException e) {
-			oneTimeConsoleError(formatNumberError(place, string));
 			return defaultValue;
 		}
 	}
@@ -190,14 +187,12 @@ public class ErrorManager {
 	 * Parses float in given string, returns second argument if string is not valid
 	 * @param string - string to parse
 	 * @param defaultValue - value to return if string is not valid
-	 * @param place - used in error message
 	 * @return parsed float
 	 */
-	public float parseFloat(String string, float defaultValue, String place) {
+	public float parseFloat(String string, float defaultValue) {
 		try {
 			return Float.parseFloat(string);
 		} catch (NumberFormatException e) {
-			oneTimeConsoleError(formatNumberError(place, string));
 			return defaultValue;
 		}
 	}
@@ -206,35 +201,26 @@ public class ErrorManager {
 	 * Parses double in given string, returns second argument if string is not valid
 	 * @param string - string to parse
 	 * @param defaultValue - value to return if string is not valid
-	 * @param place - used in error message
 	 * @return parsed double
 	 */
-	public double parseDouble(String string, double defaultValue, String place) {
-		if (string == null || string.length() == 0) return 0; //preventing error message on bungee with papi placeholders due to them not being initialized yet
+	public double parseDouble(String string, double defaultValue) {
 		try {
 			return Double.parseDouble(string);
 		} catch (NumberFormatException e) {
-			oneTimeConsoleError(formatNumberError(place, string));
 			return defaultValue;
 		}
-	}
-
-	private String formatNumberError(String place, String value) {
-		return String.format("%s only accepts numeric values! (Attempted to use \"%s\")", place, value);
 	}
 
 	/**
 	 * Parses bar color in given string, returns second argument if string is not valid
 	 * @param string - string to parse
 	 * @param defaultValue - value to return if string is not valid
-	 * @param place - used in error message
 	 * @return parsed bar color
 	 */
-	public BarColor parseColor(String string, BarColor defaultValue, String place) {
+	public BarColor parseColor(String string, BarColor defaultValue) {
 		try {
 			return BarColor.valueOf(string);
 		} catch (IllegalArgumentException e) {
-			oneTimeConsoleError(String.format("%s only accepts one of the defined colors! (Attempted to use \"%s\")", place, string));
 			return defaultValue;
 		}
 	}
@@ -243,14 +229,12 @@ public class ErrorManager {
 	 * Parses bar style in given string, returns second argument if string is not valid
 	 * @param string - string to parse
 	 * @param defaultValue - value to return if string is not valid
-	 * @param place - used in error message
 	 * @return parsed bar style
 	 */
-	public BarStyle parseStyle(String string, BarStyle defaultValue, String place) {
+	public BarStyle parseStyle(String string, BarStyle defaultValue) {
 		try {
 			return BarStyle.valueOf(string);
 		} catch (IllegalArgumentException e) {
-			oneTimeConsoleError(String.format("%s only accepts one of the defined styles! (Attempted to use \"%s\")", place, string));
 			return defaultValue;
 		}
 	}

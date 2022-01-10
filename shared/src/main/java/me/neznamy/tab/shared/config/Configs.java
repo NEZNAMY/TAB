@@ -100,9 +100,10 @@ public class Configs {
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
 		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
+		} else {
+			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
+			armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		}
-		unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
-		armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
 		if (config.getBoolean("mysql.enabled", false)) {

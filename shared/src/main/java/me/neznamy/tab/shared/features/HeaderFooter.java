@@ -51,6 +51,11 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 	}
 
 	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
+	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
@@ -64,15 +69,11 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 		if (disabledNow) {
 			if (!disabledBefore) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), this);
 		} else {
-			if (disabledBefore) {
-				refresh(p, true);
-				return;
-			}
 			boolean refresh = p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
 			if (p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER))) {
 				refresh = true;
 			}
-			if (refresh) {
+			if (refresh || disabledBefore) {
 				p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get()), this);
 			}
 		}

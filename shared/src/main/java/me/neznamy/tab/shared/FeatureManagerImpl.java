@@ -24,7 +24,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	//list of registered features
 	private final Map<String, TabFeature> features = new LinkedHashMap<>();
 	
-	private TabFeature[] values;
+	private TabFeature[] values = new TabFeature[0];
 
 	@Override
 	public void registerFeature(String featureName, TabFeature featureHandler) {
@@ -119,10 +119,6 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_QUIT, System.nanoTime()-time);
 		}
 		TAB.getInstance().removePlayer(disconnectedPlayer);
-		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
-			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
-			users.unload(disconnectedPlayer);
-		}
 		TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 	}
 
@@ -144,7 +140,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			f.onJoin(connectedPlayer);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
 		}
-		((ITabPlayer)connectedPlayer).markAsLoaded();
+		((ITabPlayer)connectedPlayer).markAsLoaded(true);
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
 		if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
 			MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();

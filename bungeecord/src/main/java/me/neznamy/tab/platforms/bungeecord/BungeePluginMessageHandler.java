@@ -33,14 +33,16 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 	 */
 	@EventHandler
 	public void on(PluginMessageEvent event){
-		if (!event.getTag().equalsIgnoreCase(channelName)) return;
+		if (!event.getTag().equals(channelName)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
-			long time = System.nanoTime();
-			BungeeTabPlayer receiver = (BungeeTabPlayer) TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
-			if (receiver == null) return;
-			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setCancelled(true);
-			TAB.getInstance().getCPUManager().addTime("Plugin message handling", TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().runTask("processing PluginMessageEvent", () -> {
+				BungeeTabPlayer receiver = (BungeeTabPlayer) TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
+				if (receiver == null) return;
+				long time = System.nanoTime();
+				onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
+				TAB.getInstance().getCPUManager().addTime("Plugin message handling", TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, System.nanoTime()-time);
+			});
 		}
 	}
 

@@ -190,7 +190,12 @@ public class AlignedPlayerList extends PlayerList {
 			updateAllNames(p);
 		}
 	}
-	
+
+	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
 	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		super.onWorldChange(p, from, to);

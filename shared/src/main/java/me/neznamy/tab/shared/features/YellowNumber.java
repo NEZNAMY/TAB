@@ -80,6 +80,11 @@ public class YellowNumber extends TabFeature {
 	}
 
 	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
+	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
@@ -100,7 +105,7 @@ public class YellowNumber extends TabFeature {
 	}
 
 	public int getValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0, "yellow number");
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
 	}
 
 	@Override
@@ -116,5 +121,17 @@ public class YellowNumber extends TabFeature {
 
 	private String getName(TabPlayer p) {
 		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
+	}
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		if (isDisabledPlayer(packetReceiver)) return;
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType), this);
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), this);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (all.isLoaded()) {
+				packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+			}
+		}
 	}
 }

@@ -122,7 +122,7 @@ public abstract class TabFeature {
 	 * @param to - server player changed to
 	 */
 	public void onServerChange(TabPlayer changed, String from, String to) {
-		onWorldChange(changed, null, null);
+		//empty by default
 	}
 	
 	/**

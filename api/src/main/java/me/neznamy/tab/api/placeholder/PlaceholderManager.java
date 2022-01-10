@@ -41,4 +41,6 @@ public interface PlaceholderManager {
 	void addUsedPlaceholder(String identifier, TabFeature feature);
 	
 	String findReplacement(String placeholder, String output);
+
+	List<String> getUsedPlaceholders();
 }

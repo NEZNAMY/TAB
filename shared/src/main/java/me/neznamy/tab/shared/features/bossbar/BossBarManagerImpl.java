@@ -129,6 +129,11 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	}
 
 	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
+	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		if (isDisabled(p.getServer(), p.getWorld())) {
 			addDisabledPlayer(p);

@@ -136,12 +136,13 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
         }
     }
 
-    override fun updateProperties(player: TabPlayer) {
+    override fun updateProperties(player: TabPlayer): Boolean {
         super.updateProperties(player)
         player.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTAGNAME, player.name)
         rebuildNametagLine(player)
         dynamicLines.forEach { if (it != TabConstants.Property.NAMETAG) player.loadPropertyFromConfig(this, it) }
         staticLines.keys.forEach { if (it != TabConstants.Property.NAMETAG) player.loadPropertyFromConfig(this, it) }
+        return true
     }
 
     override fun getFeatureName(): String = "Unlimited Nametags"

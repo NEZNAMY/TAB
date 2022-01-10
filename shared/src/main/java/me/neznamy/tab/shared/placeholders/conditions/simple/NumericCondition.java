@@ -31,13 +31,13 @@ public abstract class NumericCondition extends SimpleCondition {
 		if (leftSideStatic) return leftSideValue;
 		String value = parseLeftSide(p);
 		if (value.contains(",")) value = value.replace(",", "");
-		return TAB.getInstance().getErrorManager().parseDouble(value, 0, "left side of numeric condition");
+		return TAB.getInstance().getErrorManager().parseDouble(value, 0);
 	}
 	
 	public double getRightSide(TabPlayer p) {
 		if (rightSideStatic) return rightSideValue;
 		String value = parseRightSide(p);
 		if (value.contains(",")) value = value.replace(",", "");
-		return TAB.getInstance().getErrorManager().parseDouble(value, 0, "right side of numeric condition");
+		return TAB.getInstance().getErrorManager().parseDouble(value, 0);
 	}
 }

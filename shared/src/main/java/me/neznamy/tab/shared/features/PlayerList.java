@@ -24,8 +24,7 @@ import me.neznamy.tab.shared.features.layout.PlayerSlot;
  */
 public class PlayerList extends TabFeature implements TablistFormatManager {
 
-	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true) &&
-			TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION);
+	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 	private boolean disabling = false;
 
 	public PlayerList() {
@@ -61,6 +60,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 	@Override
 	public void onServerChange(TabPlayer p, String from, String to) {
 		onWorldChange(p, null, null);
+		if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p, false))), this);
 		}
@@ -78,16 +78,21 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		}
 		if (disabledNow) {
 			if (!disabledBefore) {
-				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-					if (viewer.getVersion().getMinorVersion() < 8) continue;
-					viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(p, viewer))), this);
-				}
-				RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-				if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
+				updatePlayer(p, false);
 			}
-		} else {
-			refresh(p, true);
+		} else if (updateProperties(p)) {
+			updatePlayer(p, true);
 		}
+	}
+
+	private void updatePlayer(TabPlayer p, boolean format) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			if (viewer.getVersion().getMinorVersion() < 8) continue;
+			viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer, true) : null)), this);
+		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+		if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
 	}
 
 	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
@@ -110,7 +115,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		} else {
 			if (refreshed.getProperty(TabConstants.Property.TABPREFIX) == null) {
 				//this makes absolutely no sense, and I am not able to reproduce it myself
-				TAB.getInstance().getErrorManager().printError("Tablist formatting data not present for " + refreshed.getName() + " when refreshing, loading again.");
+				TAB.getInstance().getErrorManager().printError("Tablist formatting data not present for " + refreshed.getName() + " when refreshing, loading again.", new Exception());
 				updateProperties(refreshed);
 				return;
 			}
@@ -120,19 +125,15 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			refresh = prefix || name || suffix;
 		}
 		if (refresh) {
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				if (viewer.getVersion().getMinorVersion() < 8) continue;
-				viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(refreshed, viewer), getTabFormat(refreshed, viewer, true))), this);
-			}
-			RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-			if (redis != null) redis.updateTabFormat(refreshed, refreshed.getProperty(TabConstants.Property.TABPREFIX).get() + refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + refreshed.getProperty(TabConstants.Property.TABSUFFIX).get());
+			updatePlayer(refreshed, true);
 		}
 	}
 	
-	protected void updateProperties(TabPlayer p) {
-		p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
-		p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName());
-		p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX);
+	protected boolean updateProperties(TabPlayer p) {
+		boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName())) changed = true;
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX)) changed = true;
+		return changed;
 	}
 
 	@Override
@@ -154,7 +155,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTabList) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+		if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION))
+			TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
 	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {

@@ -1,8 +1,11 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 
@@ -38,6 +41,9 @@ public class Main {
 	
 	//metrics factory I guess
 	private final Metrics.Factory metricsFactory;
+
+	private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
+	private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
 	@Inject
 	public Main(ProxyServer server, Metrics.Factory metricsFactory) {
@@ -93,9 +99,17 @@ public class Main {
 		if (TAB.getInstance() != null) TAB.getInstance().unload();
 	}
 	
-	public static Component stringToComponent(String string) {
-		if (string == null) return null;
-		return GsonComponentSerializer.gson().deserialize(string);
+	public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
+		if (component == null) return null;
+		return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
+	}
+
+	private static Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
+		if (map.containsKey(component)) return map.get(component);
+		Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
+		if (map.size() > 10000) map.clear();
+		map.put(component, obj);
+		return obj;
 	}
 
 	public ProxyServer getServer() {

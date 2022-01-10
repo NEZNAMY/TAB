@@ -107,7 +107,7 @@ public class BossBarLine implements BossBar {
 	 * @return parsed color
 	 */
 	public BarColor parseColor(String color) {
-		return TAB.getInstance().getErrorManager().parseColor(color, BarColor.PURPLE, "BossBar color");
+		return TAB.getInstance().getErrorManager().parseColor(color, BarColor.PURPLE);
 	}
 	
 	/**
@@ -117,9 +117,9 @@ public class BossBarLine implements BossBar {
 	 * @return parsed style
 	 */
 	public BarStyle parseStyle(String style) {
-		return TAB.getInstance().getErrorManager().parseStyle(style, BarStyle.PROGRESS, "BossBar style");
+		return TAB.getInstance().getErrorManager().parseStyle(style, BarStyle.PROGRESS);
 	}
-	
+
 	/**
 	 * Parses string into progress and returns it. If parsing failed, 100 is returned instead and
 	 * error message is printed into error log
@@ -127,7 +127,7 @@ public class BossBarLine implements BossBar {
 	 * @return parsed progress
 	 */
 	public float parseProgress(String progress) {
-		return TAB.getInstance().getErrorManager().parseFloat(progress, 100, "BossBar progress");
+		return TAB.getInstance().getErrorManager().parseFloat(progress, 100);
 	}
 
 	@Override

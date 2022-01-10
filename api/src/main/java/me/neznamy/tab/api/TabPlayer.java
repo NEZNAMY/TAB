@@ -184,16 +184,18 @@ public interface TabPlayer {
 	/**
 	 * Loads property from config using standard property loading algorithm
 	 * @param property - property name to load
+	 * @return true if value did not exist or changed, false otherwise
 	 */
-	void loadPropertyFromConfig(TabFeature feature, String property);
+	boolean loadPropertyFromConfig(TabFeature feature, String property);
 
 	/**
 	 * Loads property from config using standard property loading algorithm. If the property is
 	 * not set in config, sets it to ifNotSet value
 	 * @param property - property name to load
 	 * @param ifNotSet - value to use if property is not defined in config
+	 * @return true if value did not exist or changed, false otherwise
 	 */
-	void loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet);
+	boolean loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet);
 
 	/**
 	 * Returns name of player's scoreboard team or null if NameTag feature is disabled

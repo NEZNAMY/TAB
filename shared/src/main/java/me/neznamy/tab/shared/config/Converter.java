@@ -65,9 +65,12 @@ public class Converter {
         ConfigurationFile groups = new YamlConfigurationFile(null, new File(folder, "groups.yml"));
         ConfigurationFile users = new YamlConfigurationFile(null, new File(folder, "users.yml"));
         File oldConfigsFolder = new File(folder, "old_configs");
+        Files.copy(new File(oldConfigsFolder, "animations.yml").toPath(), new File(folder, "animations.yml").toPath());
         File premiumFile = new File(oldConfigsFolder, "premiumconfig.yml");
         ConfigurationFile premiumConfig = premiumFile.exists() ? new YamlConfigurationFile(null, premiumFile) : null;
-        ConfigurationFile bossBar = new YamlConfigurationFile(null, new File(oldConfigsFolder, "bossbar.yml"));
+        File bossBarFile = new File(oldConfigsFolder, "bossbar.yml");
+        if (!bossBarFile.exists()) throw new IllegalStateException("Failed to convert configuration to v3: File bossbar.yml does not exist");
+        ConfigurationFile bossBar = new YamlConfigurationFile(null, bossBarFile);
         ConfigurationFile oldConfig = new YamlConfigurationFile(null, new File(oldConfigsFolder, "config.yml"));
         ConfigurationFile newConfig = new YamlConfigurationFile(null, new File(folder, "config.yml"));
 
@@ -229,24 +232,23 @@ public class Converter {
         Map<String, String> perWorldScoreboards = premiumConfig.getConfigurationSection("scoreboard.per-world");
         newConfig.set("scoreboard.default-scoreboard", null);
         newConfig.set("scoreboard.per-world", null);
-        if (perWorldScoreboards != null)
-            for (Map.Entry<String, String> entry : perWorldScoreboards.entrySet()) {
-                String world = entry.getKey();
-                String sb = entry.getValue();
-                if (!scoreboards.containsKey(sb)) return;
-                Map<String, Object> scoreboard = scoreboards.get(sb);
-                if (scoreboard.containsKey("display-condition")) {
-                    scoreboard.put("display-condition", scoreboards.get(sb).get("display-condition") + ";%" + separator + "%=" + world);
-                } else {
-                    scoreboard.put("display-condition", "%" + separator + "%=" + world);
-                    //move to the top, so it's actually displayed with new priority system
-                    scoreboards.remove(sb);
-                    Map<String, Map<String,Object>> reordered = new HashMap<>();
-                    reordered.put(sb, scoreboard);
-                    reordered.putAll(scoreboards);
-                    scoreboards = reordered;
-                }
+        for (Map.Entry<String, String> entry : perWorldScoreboards.entrySet()) {
+            String world = entry.getKey();
+            String sb = entry.getValue();
+            if (!scoreboards.containsKey(sb)) continue;
+            Map<String, Object> scoreboard = scoreboards.get(sb);
+            if (scoreboard.containsKey("display-condition")) {
+                scoreboard.put("display-condition", scoreboards.get(sb).get("display-condition") + ";%" + separator + "%=" + world);
+            } else {
+                scoreboard.put("display-condition", "%" + separator + "%=" + world);
+                //move to the top, so it's actually displayed with new priority system
+                scoreboards.remove(sb);
+                Map<String, Map<String, Object>> reordered = new HashMap<>();
+                reordered.put(sb, scoreboard);
+                reordered.putAll(scoreboards);
+                scoreboards = reordered;
             }
+        }
         newConfig.set("scoreboard.scoreboards", scoreboards);
     }
 
@@ -303,19 +305,17 @@ public class Converter {
         Map<String,Object> placeholders = oldConfig.getConfigurationSection("placeholders");
         if (premiumConfig != null) {
             newConfig.set("placeholder-output-replacements", premiumConfig.getConfigurationSection("placeholder-output-replacements"));
-            if (!TAB.getInstance().getPlatform().isProxy()) {
-                newConfig.set("placeholder-output-replacements.%afk%.true", placeholders.remove("afk-yes"));
-                newConfig.set("placeholder-output-replacements.%afk%.false", placeholders.remove("afk-no"));
-            }
             newConfig.set("conditions", premiumConfig.getConfigurationSection("conditions"));
         } else {
             newConfig.set("placeholder-output-replacements.%essentials_vanished%.yes", "&7| Vanished");
             newConfig.set("placeholder-output-replacements.%essentials_vanished%.no", "");
-            placeholders.remove("afk-yes");
-            placeholders.remove("afk-no");
             newConfig.set("conditions.nick.conditions", Collections.singletonList("%player%=%essentials_nickname%"));
             newConfig.set("conditions.nick.yes", "%player%");
             newConfig.set("conditions.nick.no", "~%essentials_nickname%");
+        }
+        if (!TAB.getInstance().getPlatform().isProxy()) {
+            newConfig.set("placeholder-output-replacements.%afk%.true", placeholders.remove("afk-yes"));
+            newConfig.set("placeholder-output-replacements.%afk%.false", placeholders.remove("afk-no"));
         }
 
         newConfig.set("placeholders", placeholders);
