@@ -460,8 +460,8 @@ public final class NMSStorage {
 		PacketPlayOutScoreboardTeam_NAME = getFields(PacketPlayOutScoreboardTeam, String.class).get(0);
 		PacketPlayOutScoreboardTeam_PLAYERS = getFields(PacketPlayOutScoreboardTeam, Collection.class).get(0);
 		ScoreboardTeam_getPlayerNameSet = getMethods(ScoreboardTeam, Collection.class).get(0);
-		ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class);
-		ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class);
+		ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a", "func_96660_a"}, boolean.class);
+		ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b", "func_98300_b"}, boolean.class);
 		if (minorVersion >= 8) {
 			Class<?> EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
 			EnumNameTagVisibility_values = getEnumValues(EnumNameTagVisibility);
@@ -549,7 +549,21 @@ public final class NMSStorage {
 				//not the first method in array
 			}
 		}
-		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " + Arrays.toString(parameterTypes) + " in class " + clazz.getName());
+		List<String> list = new ArrayList<>();
+		for (Method m : clazz.getMethods()) {
+			if (m.getParameterCount() != parameterTypes.length) continue;
+			Class<?>[] types = m.getParameterTypes();
+			boolean valid = true;
+			for (int i=0; i<types.length; i++) {
+				if (types[i] != parameterTypes[i]) {
+					valid = false;
+					break;
+				}
+			}
+			if (valid) list.add(m.getName());
+		}
+		throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " +
+				Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
 	}
 	
 	private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {

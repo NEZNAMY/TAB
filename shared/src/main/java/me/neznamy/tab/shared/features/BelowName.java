@@ -80,6 +80,11 @@ public class BelowName extends TabFeature {
 	}
 
 	@Override
+	public void onServerChange(TabPlayer p, String from, String to) {
+		onWorldChange(p, null, null);
+	}
+
+	@Override
 	public void onWorldChange(TabPlayer p, String from, String to) {
 		boolean disabledBefore = isDisabledPlayer(p);
 		boolean disabledNow = false;
@@ -109,7 +114,7 @@ public class BelowName extends TabFeature {
 	}
 
 	public int getValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).updateAndGet(), 0, "belowname number");
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).updateAndGet(), 0);
 	}
 
 	@Override
@@ -127,6 +132,18 @@ public class BelowName extends TabFeature {
 	
 	private String getName(TabPlayer p) {
 		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
+	}
+
+	@Override
+	public void onLoginPacket(TabPlayer packetReceiver) {
+		if (isDisabledPlayer(packetReceiver)) return;
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), textRefresher);
+		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), textRefresher);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+			if (all.isLoaded() && all.getWorld().equals(packetReceiver.getWorld()) && Objects.equals(all.getServer(), packetReceiver.getServer())) {
+				packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+			}
+		}
 	}
 
 	public class TextRefresher extends TabFeature {

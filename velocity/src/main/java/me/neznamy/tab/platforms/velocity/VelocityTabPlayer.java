@@ -87,16 +87,15 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 
 	private void handle(PacketPlayOutChat packet) {
-		Component message = Main.stringToComponent(packet.getMessage().toString(getVersion()));
 		if (packet.getType() == ChatMessageType.GAME_INFO) {
-			getPlayer().sendActionBar(message);
+			getPlayer().sendActionBar(Main.convertComponent(packet.getMessage(), getVersion()));
 		} else {
-			getPlayer().sendMessage(Identity.nil(), message, MessageType.valueOf(packet.getType().name()));
+			getPlayer().sendMessage(Identity.nil(), Main.convertComponent(packet.getMessage(), getVersion()), MessageType.valueOf(packet.getType().name()));
 		}
 	}
 	
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-		getPlayer().sendPlayerListHeaderAndFooter(Main.stringToComponent(packet.getHeader().toString(getVersion())), Main.stringToComponent(packet.getFooter().toString(getVersion())));
+		getPlayer().getTabList().setHeaderAndFooter(Main.convertComponent(packet.getHeader(), getVersion()), Main.convertComponent(packet.getFooter(), getVersion()));
 	}
 	
 	private void handle(PacketPlayOutBoss packet) {
@@ -104,7 +103,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		switch (packet.getOperation()) {
 		case ADD:
 			if (bossBars.containsKey(packet.getId())) return;
-			bar = BossBar.bossBar(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())), 
+			bar = BossBar.bossBar(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
 					packet.getPct(), 
 					Color.valueOf(packet.getColor().toString()), 
 					Overlay.valueOf(packet.getOverlay().toString()));
@@ -122,7 +121,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			bossBars.get(packet.getId()).progress(packet.getPct());
 			break;
 		case UPDATE_NAME:
-			bossBars.get(packet.getId()).name(Main.stringToComponent(IChatBaseComponent.optimizedComponent(packet.getName()).toString(getVersion())));
+			bossBars.get(packet.getId()).name(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
 			break;
 		case UPDATE_STYLE:
 			bar = bossBars.get(packet.getId());
@@ -151,22 +150,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			}
 		}
 	}
-	
-	private TabListEntry getEntry(UUID id) {
-		for (TabListEntry entry : getPlayer().getTabList().getEntries()) {
-			if (entry.getProfile().getId().equals(id)) return entry;
-		}
-		//return dummy entry to not cause NPE
-		//possibly add logging into the future to see when this happens
-		return TabListEntry.builder()
-				.tabList(getPlayer().getTabList())
-				.displayName(Component.text(""))
-				.gameMode(0)
-				.profile(new GameProfile(UUID.randomUUID(), "empty", new ArrayList<>()))
-				.latency(0)
-				.build();
-	}
-	
+
 	@Override
 	public Object getSkin() {
 		return getPlayer().getGameProfile().getProperties();

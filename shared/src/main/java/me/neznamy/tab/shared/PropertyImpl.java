@@ -42,9 +42,6 @@ public class PropertyImpl implements Property {
 	
 	//used relational placeholders in current raw value
 	private String[] relPlaceholders;
-	
-	private final StringBuilder formatBuffer = new StringBuilder();
-	private final Formatter formatter = new Formatter(formatBuffer);
 
 	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
 		this(listener, owner, rawValue, null);
@@ -72,11 +69,11 @@ public class PropertyImpl implements Property {
 				relPlaceholders0.add(identifier);
 			}
 		}
-		String rawFormattedValue0 = RGBUtils.getInstance().applyFormats(value, true);
+		String rawFormattedValue0 = value;
 		for (String placeholder : placeholders0) {
 			rawFormattedValue0 = rawFormattedValue0.replace(placeholder, "%s");
 		}
-		if (rawFormattedValue0.contains("%")) {
+		if (placeholders0.size() > 0 && rawFormattedValue0.contains("%")) {
 			int index = rawFormattedValue0.lastIndexOf('%');
 			if (rawFormattedValue0.length() == index+1 || rawFormattedValue0.charAt(index+1) != 's') {
 				StringBuilder sb = new StringBuilder(rawFormattedValue0);
@@ -84,9 +81,10 @@ public class PropertyImpl implements Property {
 				rawFormattedValue0 = sb.toString();
 			}
 		}
+		rawFormattedValue0 = RGBUtils.getInstance().applyFormats(rawFormattedValue0, true);
+		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
 		placeholders = placeholders0.toArray(new String[0]);
 		relPlaceholders = relPlaceholders0.toArray(new String[0]);
-		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
 		rawFormattedValue = applyRemoveStrings(rawFormattedValue0); //this should never be needed
 		if (listener != null) {
 			listener.addUsedPlaceholders(placeholders0);
@@ -164,8 +162,7 @@ public class PropertyImpl implements Property {
 				for (int i=0; i<placeholders.length; i++) {
 					values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
 				}
-				string = formatter.format(rawFormattedValue, (Object[]) values).toString();
-				formatBuffer.setLength(0);
+				string = new Formatter().format(rawFormattedValue, (Object[]) values).toString();
 			}
 			string = applyRemoveStrings(EnumChatFormat.color(string));
 		} else {

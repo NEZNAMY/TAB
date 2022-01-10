@@ -34,6 +34,7 @@ public class LayoutManager extends TabFeature {
 			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}
 		loadLayouts();
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_VANISH, new VanishListener(this));
 		TAB.getInstance().debug("Loaded Layout feature");
 	}
 
@@ -59,7 +60,7 @@ public class LayoutManager extends TabFeature {
 			for (int slot=1; slot<=80; slot++) {
 				emptySlots.add(slot);
 			}
-			for (String fixedSlot : (List<String>)map.get("fixed-slots")) {
+			for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
 				String[] array = fixedSlot.split("\\|");
 				int slot = Integer.parseInt(array[0]);
 				String text = array[1];
@@ -183,6 +184,10 @@ public class LayoutManager extends TabFeature {
 
 	public Map<TabPlayer, Layout> getPlayerViews() {
 		return playerViews;
+	}
+
+	public Map<String, Layout> getLayouts() {
+		return layouts;
 	}
 
 	public enum Direction {

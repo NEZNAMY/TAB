@@ -95,7 +95,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
-		NumberFormat roundDown = NumberFormat.getInstance();
+		NumberFormat roundDown = NumberFormat.getNumberInstance(Locale.ENGLISH);
 		roundDown.setRoundingMode(RoundingMode.DOWN);
 		roundDown.setMaximumFractionDigits(2);
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());

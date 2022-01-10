@@ -178,6 +178,14 @@ public class ChatModifier {
 		if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("change_page click action is not supported on <1.8");
 		clickEvent = new ChatClickable(EnumClickAction.CHANGE_PAGE, String.valueOf(newPage));
 	}
+
+	/**
+	 * Sets click action to COPY_TO_CLIPBOARD and text to provided value
+	 * @param text - text to copy to clipboard on click
+	 */
+	public void onClickCopyToClipBoard(String text) {
+		clickEvent = new ChatClickable(EnumClickAction.COPY_TO_CLIPBOARD, text);
+	}
 	
 	public void onClick(EnumClickAction action, String value) {
 		clickEvent = new ChatClickable(action, value);

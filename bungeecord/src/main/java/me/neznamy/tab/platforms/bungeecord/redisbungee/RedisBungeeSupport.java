@@ -102,120 +102,124 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	@EventHandler
 	public void onMessage(PubSubMessageEvent e) {
 		if (!e.getChannel().equals(CHANNEL_NAME)) return;
-		JSONObject message;
-		try {
-			message = (JSONObject) new JSONParser().parse(e.getMessage());
-		} catch (ParseException ex) {
-			TAB.getInstance().getErrorManager().printError("Failed to parse json message \"" + e.getMessage() + "\"", ex);
-			return;
-		}
-		if (message.get("proxy").equals(proxy.toString())) return; //message coming from current proxy
-		String action = (String) message.get("action");
-		UUID id = UUID.fromString((String) message.getOrDefault("UUID", proxy.toString()));
-		RedisPlayer target;
-		switch(action) {
-		case "loadrequest":
-			JSONObject json = new JSONObject();
-			json.put("proxy", proxy.toString());
-			json.put("action", "load");
-			List<JSONObject> players = new ArrayList<>();
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				players.add(RedisPlayer.toJson(this, all));
+		TAB.getInstance().getCPUManager().runMeasuredTask("processing PubSubMessageEvent", this, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
+			JSONObject message;
+			try {
+				message = (JSONObject) new JSONParser().parse(e.getMessage());
+			} catch (ParseException ex) {
+				TAB.getInstance().getErrorManager().printError("Failed to parse json message \"" + e.getMessage() + "\"", ex);
+				return;
 			}
-			json.put("players", players);
-			RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-			break;
-		case "load":
-			List<JSONObject> players1 = (List<JSONObject>) message.get("players");
-			for (JSONObject obj : players1) {
-				RedisPlayer p = RedisPlayer.fromJson(this, obj);
-				if (!redisPlayers.containsKey(p.getUniqueId().toString())) {
-					redisPlayers.put(p.getUniqueId().toString(), p);
-					join(p);
-				}
+			if (message.get("proxy").equals(proxy.toString())) return; //message coming from current proxy
+			String action = (String) message.get("action");
+			UUID id = UUID.fromString((String) message.getOrDefault("UUID", proxy.toString()));
+			RedisPlayer target;
+			switch(action) {
+				case "loadrequest":
+					JSONObject json = new JSONObject();
+					json.put("proxy", proxy.toString());
+					json.put("action", "load");
+					List<JSONObject> players = new ArrayList<>();
+					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+						players.add(RedisPlayer.toJson(this, all));
+					}
+					json.put("players", players);
+					RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
+					break;
+				case "load":
+					List<JSONObject> players1 = (List<JSONObject>) message.get("players");
+					for (JSONObject obj : players1) {
+						RedisPlayer p = RedisPlayer.fromJson(this, obj);
+						if (!redisPlayers.containsKey(p.getUniqueId().toString())) {
+							redisPlayers.put(p.getUniqueId().toString(), p);
+							join(p);
+						}
+					}
+					break;
+				case "join":
+					target = RedisPlayer.fromJson(this, message);
+					redisPlayers.put(id.toString(), target);
+					join(target);
+					break;
+				case "server":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break;
+					String server = (String) message.get("server");
+					if (global == null) {
+						target.setServer(server);
+						return;
+					}
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+						if (viewer.getVersion().getMinorVersion() < 8) continue;
+						boolean before = shouldSee(viewer, target.getServer(), target.isVanished());
+						boolean after = shouldSee(viewer, server, target.isVanished());
+						if (!before && after) {
+							viewer.sendCustomPacket(target.getAddPacket(), this);
+						}
+						if (before && !after) {
+							viewer.sendCustomPacket(target.getRemovePacket(), this);
+						}
+					}
+					target.setServer(server);
+					break;
+				case "tabformat":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break;
+					target.setTabFormat((String) message.get("tabformat"));
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+						if (viewer.getVersion().getMinorVersion() >= 8) viewer.sendCustomPacket(target.getUpdatePacket(), this);
+					}
+					break;
+				case "nametag":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break;
+					target.setTagPrefix((String) message.get(TabConstants.Property.TAGPREFIX));
+					target.setTagSuffix((String) message.get(TabConstants.Property.TAGSUFFIX));
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+						viewer.sendCustomPacket(target.getUpdateTeamPacket(), this);
+					}
+					break;
+				case "belowname":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break;
+					target.setBelowName((String) message.get("belowname"));
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+						viewer.sendCustomPacket(target.getBelowNameUpdatePacket(), this);
+					}
+					break;
+				case "yellow-number":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break;
+					target.setYellowNumber((String) message.get("yellow-number"));
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+						viewer.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
+					}
+					break;
+				case "team":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break;
+					PacketPlayOutScoreboardTeam unregister = target.getUnregisterTeamPacket();
+					target.setTeamName((String) message.get("to"));
+					PacketPlayOutScoreboardTeam register = target.getRegisterTeamPacket();
+					for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+						viewer.sendCustomPacket(unregister, this);
+						viewer.sendCustomPacket(register, this);
+					}
+					break;
+				case "quit":
+					target = redisPlayers.get(id.toString());
+					if (target == null) break; //player left current proxy and was unloaded from memory, therefore null check didn't pass
+					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+						all.sendCustomPacket(target.getUnregisterTeamPacket(), this);
+						if (all.getVersion().getMinorVersion() < 8) continue;
+						all.sendCustomPacket(target.getRemovePacket(), this);
+					}
+					redisPlayers.remove(id.toString());
+					break;
+				default:
+					break;
 			}
-			break;
-		case "join":
-			target = RedisPlayer.fromJson(this, message);
-			redisPlayers.put(id.toString(), target);
-			join(target);
-			break;
-		case "server":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break;
-			String server = (String) message.get("server");
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				if (viewer.getVersion().getMinorVersion() < 8) continue;
-				boolean before = shouldSee(viewer, target.getServer(), target.isVanished());
-				boolean after = shouldSee(viewer, server, target.isVanished());
-				if (!before && after) {
-					viewer.sendCustomPacket(target.getAddPacket(), this);
-				}
-				if (before && !after) {
-					viewer.sendCustomPacket(target.getRemovePacket(), this);
-				}
-			}
-			target.setServer(server);
-			break;
-		case "tabformat":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break;
-			target.setTabFormat((String) message.get("tabformat"));
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				if (viewer.getVersion().getMinorVersion() >= 8) viewer.sendCustomPacket(target.getUpdatePacket(), this);
-			}
-			break;
-		case "nametag":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break;
-			target.setTagPrefix((String) message.get(TabConstants.Property.TAGPREFIX));
-			target.setTagSuffix((String) message.get(TabConstants.Property.TAGSUFFIX));
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				viewer.sendCustomPacket(target.getUpdateTeamPacket(), this);
-			}
-			break;
-		case "belowname":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break;
-			target.setBelowName((String) message.get("belowname"));
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				viewer.sendCustomPacket(target.getBelowNameUpdatePacket(), this);
-			}
-			break;
-		case "yellow-number":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break;
-			target.setYellowNumber((String) message.get("yellow-number"));
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				viewer.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
-			}
-			break;
-		case "team":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break;
-			PacketPlayOutScoreboardTeam unregister = target.getUnregisterTeamPacket();
-			target.setTeamName((String) message.get("to"));
-			PacketPlayOutScoreboardTeam register = target.getRegisterTeamPacket();
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				viewer.sendCustomPacket(unregister, this);
-				viewer.sendCustomPacket(register, this);
-			}
-			break;
-		case "quit":
-			target = redisPlayers.get(id.toString());
-			if (target == null) break; //player left current proxy and was unloaded from memory, therefore null check didn't pass
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				if (all.getVersion().getMinorVersion() < 8) continue;
-				all.sendCustomPacket(target.getUnregisterTeamPacket(), this);
-				if (shouldSee(all, target.getServer(), target.isVanished()) && !all.getServer().equals(target.getServer())) {
-					all.sendCustomPacket(target.getRemovePacket(), this);
-				}
-			}
-			redisPlayers.remove(id.toString());
-			break;
-		default:
-			break;
-		}
+		});
 	}
 	
 	private void join(RedisPlayer target) {
@@ -224,6 +228,10 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			all.sendCustomPacket(target.getBelowNameUpdatePacket(), this);
 			all.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
 			if (all.getVersion().getMinorVersion() < 8) continue;
+			if (global == null) {
+				if (all.getServer().equals(target.getServer())) all.sendCustomPacket(target.getUpdatePacket(), this);
+				continue;
+			}
 			if (shouldSee(all, target.getServer(), target.isVanished())) {
 				if (!all.getServer().equals(target.getServer())) {
 					all.sendCustomPacket(target.getAddPacket(), this);
@@ -240,12 +248,8 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	
 	private boolean shouldSee(TabPlayer viewer, String viewerServer, String server, boolean targetVanished) {
 		if (targetVanished && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
-		if (global != null) {
-			if (global.getSpyServers().contains(viewerServer)) return true;
-			return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
-		} else {
-			return viewerServer.equals(server);
-		}
+		if (global.getSpyServers().contains(viewerServer)) return true;
+		return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
 	}
 
 	@Override
@@ -257,6 +261,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			p.sendCustomPacket(redis.getRegisterTeamPacket(), this);
 			p.sendCustomPacket(redis.getBelowNameUpdatePacket(), this);
 			p.sendCustomPacket(redis.getYellowNumberUpdatePacket(), this);
+			if (global == null) continue;
 			if (shouldSee(p, redis.getServer(), redis.isVanished())) {
 				if (!p.getServer().equals(redis.getServer())) {
 					p.sendCustomPacket(redis.getAddPacket(), this);
@@ -275,7 +280,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		json.put("UUID", p.getTablistUUID().toString());
 		json.put("server", to);
 		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-		if (p.getVersion().getMinorVersion() < 8) return;
+		if (p.getVersion().getMinorVersion() < 8 || global == null) return;
 		for (RedisPlayer redis : redisPlayers.values()) {
 			boolean before = shouldSee(p, from, redis.getServer(), redis.isVanished());
 			boolean after = shouldSee(p, to, redis.getServer(), redis.isVanished());
@@ -350,7 +355,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	
 	@Override
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
+		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER && global != null) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
 				RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
 				if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {

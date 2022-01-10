@@ -35,8 +35,7 @@ public abstract class ProxyPlatform implements Platform {
 				@Override
 				public String request(TabPlayer p) {
 					plm.requestPlaceholder(p, identifier);
-					String value = getLastValues().get(p.getName());
-					return value == null ? identifier : value;
+					return null;
 				}
 			};
 		}
