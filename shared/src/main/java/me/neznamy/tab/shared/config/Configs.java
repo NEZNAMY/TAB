@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.config;
 
 import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
@@ -13,7 +12,6 @@ import org.yaml.snakeyaml.error.YAMLException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -97,7 +95,7 @@ public class Configs {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		} else {
 			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
-			armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
+			armorStandsAlwaysVisible = (boolean) getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
 		}
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
