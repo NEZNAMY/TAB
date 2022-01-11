@@ -82,10 +82,9 @@ public class PropertyImpl implements Property {
 			}
 		}
 		rawFormattedValue0 = RGBUtils.getInstance().applyFormats(rawFormattedValue0, true);
-		rawFormattedValue0 = EnumChatFormat.color(rawFormattedValue0);
+		rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
 		placeholders = placeholders0.toArray(new String[0]);
 		relPlaceholders = relPlaceholders0.toArray(new String[0]);
-		rawFormattedValue = applyRemoveStrings(rawFormattedValue0); //this should never be needed
 		if (listener != null) {
 			listener.addUsedPlaceholders(placeholders0);
 		}
@@ -164,7 +163,7 @@ public class PropertyImpl implements Property {
 				}
 				string = new Formatter().format(rawFormattedValue, (Object[]) values).toString();
 			}
-			string = applyRemoveStrings(EnumChatFormat.color(string));
+			string = EnumChatFormat.color(string);
 		} else {
 			string = rawFormattedValue;
 		}
@@ -176,19 +175,7 @@ public class PropertyImpl implements Property {
 		TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
 		return false;
 	}
-	
-	private String applyRemoveStrings(String text) {
-		if (TAB.getInstance().getConfiguration().getRemoveStrings().length == 0) return text;
-		String reformatted = text;
-		for (String removed : TAB.getInstance().getConfiguration().getRemoveStrings()) {
-			if (removed.startsWith("CONTAINS:") && reformatted.contains(removed.substring(9))) return "";
-			if (removed.startsWith("STARTS:") && reformatted.startsWith(removed.substring(7))) return "";
-			if (removed.startsWith("ENDS:") && reformatted.endsWith(removed.substring(5))) return "";
-			if (reformatted.contains(removed)) reformatted = reformatted.replace(removed, "");
-		}
-		return reformatted;
-	}
-	
+
 	@Override
 	public String get() {
 		return lastReplacedValue;

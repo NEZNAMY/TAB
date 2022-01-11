@@ -375,4 +375,10 @@ public class Converter {
         String oldSeparator = oldConfig.hasConfigOption("multi-world-separator") ? oldConfig.getString("multi-world-separator") : "-";
         return group.replace(oldSeparator, ";");
     }
+
+    public void removeOldOptions(ConfigurationFile config) {
+        if (config.hasConfigOption("placeholders.remove-strings")) {
+            config.set("placeholders.remove-strings", null);
+        }
+    }
 }

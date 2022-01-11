@@ -161,9 +161,6 @@ placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
-  remove-strings:
-    - "[]"
-    - "< >"
 
 placeholder-output-replacements:
   "%essentials_vanished%":

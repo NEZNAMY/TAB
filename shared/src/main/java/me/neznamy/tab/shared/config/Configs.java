@@ -28,7 +28,6 @@ public class Configs {
 	//config.yml file
 	private ConfigurationFile config;
 
-	private String[] removeStrings;
 	private boolean bukkitPermissions;
 
 	//hidden config options
@@ -92,11 +91,7 @@ public class Configs {
 	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		converter.convertToV3(config);
-		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
-		removeStrings = new String[list.size()];
-		for (int i=0; i<list.size(); i++) {
-			removeStrings[i] = EnumChatFormat.color(list.get(i));
-		}
+		converter.removeOldOptions(config);
 		tab.setDebugMode(getConfig().getBoolean("debug", false));
 		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
@@ -131,10 +126,6 @@ public class Configs {
 		if (getConfig() == null) return defaultValue;
 		Object value = getConfig().getObject(path);
 		return value == null ? defaultValue : value;
-	}
-
-	public String[] getRemoveStrings() {
-		return removeStrings;
 	}
 
 	public boolean isUnregisterBeforeRegister() {
