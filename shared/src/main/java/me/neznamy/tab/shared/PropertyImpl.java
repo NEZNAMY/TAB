@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 
 import me.neznamy.tab.api.Property;
@@ -53,7 +52,6 @@ public class PropertyImpl implements Property {
 		this.source = source;
 		this.rawValue = (rawValue == null ? "" : rawValue);
 		analyze(this.rawValue);
-		update();
 	}
 
 	/**
@@ -88,6 +86,8 @@ public class PropertyImpl implements Property {
 		if (listener != null) {
 			listener.addUsedPlaceholders(placeholders0);
 		}
+		lastReplacedValue = rawFormattedValue;
+		update();
 	}
 
 	@Override
@@ -99,7 +99,6 @@ public class PropertyImpl implements Property {
 			this.temporaryValue = null;
 			analyze(rawValue);
 		}
-		update();
 	}
 	
 	@Override
@@ -108,7 +107,6 @@ public class PropertyImpl implements Property {
 		rawValue = newValue;
 		if (temporaryValue == null) {
 			analyze(rawValue);
-			update();
 		}
 	}
 	
@@ -151,23 +149,20 @@ public class PropertyImpl implements Property {
 	
 	@Override
 	public boolean update() {
+		if (placeholders.length == 0) return false;
 		long time = System.nanoTime();
 		String string;
-		if (placeholders.length > 0) {
-			if ("%s".equals(rawFormattedValue)) {
-				string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
-			} else {
-				String[] values = new String[placeholders.length];
-				for (int i=0; i<placeholders.length; i++) {
-					values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
-				}
-				string = new Formatter().format(rawFormattedValue, (Object[]) values).toString();
-			}
-			string = EnumChatFormat.color(string);
+		if ("%s".equals(rawFormattedValue)) {
+			string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
 		} else {
-			string = rawFormattedValue;
+			Object[] values = new String[placeholders.length];
+			for (int i=0; i<placeholders.length; i++) {
+				values[i] = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[i]).set(placeholders[i], owner);
+			}
+			string = String.format(rawFormattedValue, values);
 		}
-		if (lastReplacedValue == null || !lastReplacedValue.equals(string)) {
+		string = EnumChatFormat.color(string);
+		if (!lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;
 			TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
 			return true;
