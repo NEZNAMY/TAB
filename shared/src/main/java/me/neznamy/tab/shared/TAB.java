@@ -166,15 +166,11 @@ public class TAB extends TabAPI {
 			return configuration.getMessages().getReloadSuccess();
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
-			disabled = true;
-			data.clear();
-			players = new TabPlayer[0];
+			kill();
 			return configuration.getReloadFailedMessage().replace("%file%", "-"); //recode soon
 		} catch (Exception e) {
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
-			disabled = true;
-			data.clear();
-			players = new TabPlayer[0];
+			kill();
 			return "&cFailed to enable due to an internal plugin error. Check console for more info.";
 		}
 	}
@@ -184,18 +180,22 @@ public class TAB extends TabAPI {
 	 */
 	public void unload() {
 		if (disabled) return;
-		disabled = true;
 		try {
 			long time = System.currentTimeMillis();
-			cpu.cancelAllTasks();
 			if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
 			featureManager.unload();
 			platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
 		} catch (Exception e) {
 			errorManager.criticalError("Failed to disable", e);
 		}
+		kill();
+	}
+
+	private void kill() {
+		disabled = true;
 		data.clear();
 		players = new TabPlayer[0];
+		cpu.cancelAllTasks();
 	}
 
 	/**
