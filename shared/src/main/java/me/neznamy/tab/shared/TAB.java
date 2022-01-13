@@ -167,10 +167,14 @@ public class TAB extends TabAPI {
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
 			disabled = true;
+			data.clear();
+			players = new TabPlayer[0];
 			return configuration.getReloadFailedMessage().replace("%file%", "-"); //recode soon
 		} catch (Exception e) {
 			errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
 			disabled = true;
+			data.clear();
+			players = new TabPlayer[0];
 			return "&cFailed to enable due to an internal plugin error. Check console for more info.";
 		}
 	}
