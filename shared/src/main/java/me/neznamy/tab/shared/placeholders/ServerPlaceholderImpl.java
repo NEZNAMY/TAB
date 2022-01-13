@@ -27,6 +27,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 		super(identifier, refresh);
 		if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
 		this.supplier = supplier;
+		this.lastValue = identifier;
 	}
 	
 	/**
