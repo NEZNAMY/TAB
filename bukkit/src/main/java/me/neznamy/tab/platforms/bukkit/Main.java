@@ -150,7 +150,7 @@ public class Main extends JavaPlugin {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return -1;
-		} catch (Exception | NoClassDefFoundError e) {
+		} catch (Exception | LinkageError e) {
 			TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s", player.getName(), Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion()), e);
 			return TAB.getInstance().getServerVersion().getNetworkId();
 		}

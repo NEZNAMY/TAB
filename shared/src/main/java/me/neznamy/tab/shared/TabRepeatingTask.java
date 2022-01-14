@@ -43,7 +43,7 @@ public class TabRepeatingTask implements RepeatingTask {
 				} catch (InterruptedException pluginDisabled) {
 					Thread.currentThread().interrupt();
 					break;
-				} catch (Exception | NoClassDefFoundError e) {
+				} catch (Exception | LinkageError e) {
 					TAB.getInstance().getErrorManager().printError("An error occurred when " + errorDescription, e);
 				} 
 			} 

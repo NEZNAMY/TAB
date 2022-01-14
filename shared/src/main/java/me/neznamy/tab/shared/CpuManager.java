@@ -149,7 +149,7 @@ public class CpuManager implements ThreadManager {
 		return (Future<Void>) exe.submit(() -> {
 			try {
 				task.run();
-			} catch (Exception | NoClassDefFoundError | NoSuchMethodError e) {
+			} catch (Exception | LinkageError e) {
 				errorManager.printError("An error occurred when " + errorDescription, e);
 			}
 		});
