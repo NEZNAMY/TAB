@@ -64,7 +64,7 @@ public enum ProtocolVersion {
 	private final int networkId;
 	
 	//minor version, such as 16
-	private final int minorVersion;
+	private int minorVersion;
 	
 	//friendly name displayed in %player-version% placeholder
 	private final String friendlyName;
@@ -111,6 +111,17 @@ public enum ProtocolVersion {
 	 */
 	public int getMinorVersion() {
 		return minorVersion;
+	}
+
+	/**
+	 * Overrides minor version of the version instance. This is used internally to
+	 * set minor version of UNKNOWN value to value from package to fix compatibility
+	 * with server forks that set bukkit version field value to "Unknown".
+	 * @param	minorVersion
+	 * 			minor version to change value to
+	 */
+	public void setMinorVersion(int minorVersion) {
+		this.minorVersion = minorVersion;
 	}
 
 	/**

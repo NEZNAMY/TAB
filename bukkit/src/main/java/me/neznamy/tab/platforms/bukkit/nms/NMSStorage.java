@@ -38,7 +38,7 @@ public final class NMSStorage {
 	
 	//another field due to fabric which uses 1.16 package on 1.17 server
 	private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
-	
+
 	//base
 	private final Class<?> Packet = getNMSClass("net.minecraft.network.protocol.Packet", "Packet");
 	public final Class<?> EnumChatFormat = getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat");
@@ -227,6 +227,7 @@ public final class NMSStorage {
 	 * 			If any class, field or method fails to load
 	 */
 	public NMSStorage() throws ReflectiveOperationException {
+		ProtocolVersion.UNKNOWN.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
 		Class<?> NetworkManager = getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager");
 		if (minorVersion >= 7) {
 			NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
