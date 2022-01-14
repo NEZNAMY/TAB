@@ -10,6 +10,7 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 
 /**
  * Handler for "/tab announce bar" subcommand
@@ -52,7 +53,12 @@ public class SendBarCommand extends SubCommand {
 			sendMessage(sender, getMessages().getBossBarNotFound(barName));
 			return;
 		}
+		if (!((BossBarLine)bar).isAnnouncementOnly()) {
+			sendMessage(sender, getMessages().getBossBarNotMarkedAsAnnouncement());
+			return;
+		}
 		feature.sendBossBarTemporarily(target, bar.getName(), duration);
+		sendMessage(sender, getMessages().getBossBarSendSuccess(target.getName(), bar.getName(), duration));
 	}
 
 	@Override

@@ -153,6 +153,21 @@ public class MessageFile extends YamlConfigurationFile {
 		return getString("scoreboard-show-usage", "Usage: /tab scoreboard show <scoreboard> [player]");
 	}
 
+	public String getBossBarNotMarkedAsAnnouncement() {
+		return getString("bossbar-not-marked-as-announcement", "&cThis bossbar is not marked as an announcement bar and is therefore " +
+				"already displayed permanently (if display condition is met)");
+	}
+	
+	public String getBossBarAnnouncementSuccess(String bar, int length) {
+		return getString("bossbar-announcement-success", "&aAnnouncing bossbar &6%bossbar% &afor %length% seconds.")
+				.replace("%bossbar%", bar).replace("%length%", String.valueOf(length));
+	}
+
+	public String getBossBarSendSuccess(String player, String bar, int length) {
+		return getString("bossbar-send-success", "&aSending bossbar &6%bossbar% &ato player &6%player% &afor %length% seconds.")
+				.replace("%player%", player).replace("%bossbar%", bar).replace("%length%", String.valueOf(length));
+	}
+
 	public List<String> getHelpMenu() {
 		return getStringList("help-menu", Arrays.asList("&m                                                                                "
 				," &8>> &3&l/tab reload"
