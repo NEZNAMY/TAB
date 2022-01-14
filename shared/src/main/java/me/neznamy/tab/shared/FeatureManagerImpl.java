@@ -139,6 +139,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			long time = System.nanoTime();
 			f.onJoin(connectedPlayer);
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+			TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed player join in " + (System.nanoTime()-time)/1000000 + "ms");
 		}
 		((ITabPlayer)connectedPlayer).markAsLoaded(true);
 		TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
