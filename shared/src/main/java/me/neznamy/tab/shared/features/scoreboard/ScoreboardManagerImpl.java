@@ -370,6 +370,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
+		otherPluginScoreboard.remove(packetReceiver);
 		ScoreboardImpl scoreboard = activeScoreboard.get(packetReceiver);
 		if (scoreboard != null) {
 			scoreboard.removePlayer(packetReceiver);
