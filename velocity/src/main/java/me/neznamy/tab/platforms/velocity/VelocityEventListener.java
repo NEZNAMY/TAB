@@ -36,7 +36,7 @@ public class VelocityEventListener {
 		if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
 			TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
 		} else {
-			TAB.getInstance().getCPUManager().runTaskLater(100, "processing server switch", () -> 
+			TAB.getInstance().getCPUManager().runTaskLater(200, "processing server switch", () ->
 				TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null")
 			);
 		}
