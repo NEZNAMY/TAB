@@ -65,9 +65,10 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValues.containsKey(p)) {
+			lastValues.put(p, getReplacements().findReplacement(identifier));
 			update(p);
 		}
-		return lastValues.getOrDefault(p, identifier);
+		return lastValues.get(p);
 	}
 
 	/**

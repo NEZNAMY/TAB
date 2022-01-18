@@ -204,21 +204,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	}
 
 	@Override
-	public void onJoin(TabPlayer connectedPlayer) {
-		for (Placeholder pl : usedPlaceholders) {
-			if (pl instanceof RelationalPlaceholderImpl) {
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					((RelationalPlaceholderImpl)pl).update(connectedPlayer, all);
-					((RelationalPlaceholderImpl)pl).update(all, connectedPlayer);
-				}
-			}
-			if (pl instanceof PlayerPlaceholderImpl) {
-				((PlayerPlaceholderImpl)pl).update(connectedPlayer);
-			}
-		}
-	}
-
-	@Override
 	public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
 		return (ServerPlaceholder) registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
 	}
