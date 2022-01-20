@@ -101,11 +101,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || !hasBossBarVisible(p) || isDisabledPlayer(p)) return;
+		if (!hasBossBarVisible(p) || isDisabledPlayer(p)) return;
 		for (BossBar line : lineValues) {
-			if (line.getPlayers().contains(p) && !((BossBarLine) line).isConditionMet(p)) {
-				line.removePlayer(p);
-			}
+			line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
 		}
 		showBossBars(p, defaultBars);
 	}
