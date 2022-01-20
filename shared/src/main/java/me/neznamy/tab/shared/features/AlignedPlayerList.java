@@ -219,18 +219,20 @@ public class AlignedPlayerList extends PlayerList {
 
 	// returns true if max changed, false if not
 	private boolean recalculateMaxWidth(TabPlayer ignoredPlayer) {
-		int oldMaxWidth = maxWidth;
-		maxWidth = 0;
-		maxPlayer = null;
+		int newMaxWidth = 0;
+		TabPlayer newMaxPlayer = null;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == ignoredPlayer) continue;
 			int localWidth = playerWidths.get(all);
-			if (localWidth > maxWidth) {
-				maxWidth = localWidth;
-				maxPlayer = all;
+			if (localWidth > newMaxWidth) {
+				newMaxWidth = localWidth;
+				newMaxPlayer = all;
 			}
 		}
-		return oldMaxWidth != maxWidth;
+		boolean changed = newMaxWidth != maxWidth;
+		maxPlayer = newMaxPlayer;
+		maxWidth = newMaxWidth;
+		return changed;
 	}
 	
 	@Override
