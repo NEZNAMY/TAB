@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -27,6 +28,17 @@ public class VehicleRefresher extends TabFeature {
 	public VehicleRefresher(NameTagX feature) {
 		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "processing player movement",
+				this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
+					for (TabPlayer inVehicle : playersInVehicle.keySet()) {
+						feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
+					}
+					for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+						if (p.isPreviewingNametag()) {
+							p.getArmorStandManager().teleport(p);
+						}
+					}
+		});
 		addUsedPlaceholders(Collections.singletonList("%vehicle%"));
 		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle());
 	}
@@ -109,9 +121,5 @@ public class VehicleRefresher extends TabFeature {
 			}
 			processPassengers(passenger);
 		}
-	}
-
-	public Map<TabPlayer, Entity> getPlayersInVehicle() {
-		return playersInVehicle;
 	}
 }

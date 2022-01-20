@@ -55,7 +55,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, new PacketListener(this));
 		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_LOCATION_REFRESHER, new LocationRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
