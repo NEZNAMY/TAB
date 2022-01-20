@@ -1,10 +1,8 @@
 package me.neznamy.tab.shared.features.sorting;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -107,7 +105,7 @@ public class Sorting extends TabFeature {
 	public synchronized String getTeamName(TabPlayer p) {
 		((ITabPlayer) p).setTeamNameNote("");
 		StringBuilder sb = new StringBuilder();
-		for (SortingType type : getSorting()) {
+		for (SortingType type : usedSortingTypes) {
 			sb.append(type.getChars((ITabPlayer) p));
 		}
 		if (sb.length() > 15) {
@@ -141,14 +139,6 @@ public class Sorting extends TabFeature {
 	 * @return user-friendly representation of sorting types
 	 */
 	public String typesToString() {
-		String[] elements = new String[usedSortingTypes.length];
-		for (int i=0; i<usedSortingTypes.length; i++) {
-			elements[i] = usedSortingTypes[i].toString();
-		}
-		return String.join(" then ", elements);
-	}
-
-	public SortingType[] getSorting() {
-		return usedSortingTypes;
+		return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" then "));
 	}
 }
