@@ -147,7 +147,7 @@ public class AlignedPlayerList extends PlayerList {
 				addDisabledPlayer(all);
 				updateProperties(all);
 				playerWidths.put(all, getPlayerNameWidth(all));
-				return;
+				continue;
 			}
 			refresh(all, true);
 		}
