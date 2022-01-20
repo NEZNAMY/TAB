@@ -143,15 +143,16 @@ public class AlignedPlayerList extends PlayerList {
 	@Override
 	public void load(){
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			updateProperties(all);
+			playerWidths.put(all, getPlayerNameWidth(all));
 			if (isDisabled(all.getServer(), all.getWorld())) {
 				addDisabledPlayer(all);
-				updateProperties(all);
-				playerWidths.put(all, getPlayerNameWidth(all));
-				continue;
 			}
-			refresh(all, true);
 		}
 		recalculateMaxWidth(null);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			refresh(all, true);
+		}
 	}
 	
 	@Override
