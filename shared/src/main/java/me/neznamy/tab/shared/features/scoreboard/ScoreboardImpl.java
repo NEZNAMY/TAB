@@ -14,10 +14,7 @@ import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
-import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
-import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
-import me.neznamy.tab.shared.features.scoreboard.lines.StaticLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -93,6 +90,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		if (text.startsWith("Custom|")) {
 			String[] elements = text.split("\\|");
 			return new CustomLine(this, lineNumber, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
+		}
+		if (text.startsWith("Long|")) {
+			return new LongLine(this, lineNumber, text.substring(5));
 		}
 		if (text.contains("%") || (manager.isUsingNumbers() && text.length() <= 26)) {
 			return new StableDynamicLine(this, lineNumber, text);

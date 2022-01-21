@@ -45,28 +45,6 @@ public class StaticLine extends ScoreboardLine {
 		name17 = v17[1];
 		suffix17 = v17[2];
 	}
-	
-	private String[] splitText(String playerNameStart, String text, int maxNameLength) {
-		String prefixValue;
-		String nameValue;
-		String suffixValue;
-		if (text.length() <= (maxNameLength - playerNameStart.length())) {
-			prefixValue = "";
-			nameValue = playerNameStart + text;
-			suffixValue = "";
-		} else {
-			String[] prefixOther = split(text, 16);
-			prefixValue = prefixOther[0];
-			String other = prefixOther[1];
-			if (playerNameStart.length() > 0) {
-				other = playerNameStart + EnumChatFormat.getLastColors(prefixValue) + other;
-			}
-			String[] nameSuffix = split(other, maxNameLength);
-			nameValue = nameSuffix[0];
-			suffixValue = nameSuffix[1];
-		}
-		return new String[]{prefixValue, nameValue, suffixValue};
-	}
 
 	protected String getPlayerName(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() >= 13) {
