@@ -199,7 +199,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 
 					@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 					public void onRespawn(PlayerRespawnEvent e) {
-						health.updateValue(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getPlayer().getMaxHealth());
+						health.updateValue(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), (int) e.getPlayer().getMaxHealth());
 					}
 				};
 				Bukkit.getPluginManager().registerEvents(healthListener, plugin);
