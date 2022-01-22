@@ -62,7 +62,10 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		onWorldChange(p, null, null);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p, false))), this);
+			if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p, false))), this);
+			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all, false))), this);
 		}
 	}
 	
