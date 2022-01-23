@@ -161,9 +161,7 @@ public class LayoutManager extends TabFeature {
 		sortedPlayers.remove(p);
 		((ITabPlayer) p).setTeamName(teamName);
 		sortedPlayers.put(p, teamName);
-		synchronized (sortedPlayers) {
-			layouts.values().forEach(Layout::tick);
-		}
+		layouts.values().forEach(Layout::tick);
 	}
 
 	public boolean isRemainingPlayersTextEnabled() {

@@ -34,7 +34,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSneak(PlayerToggleSneakEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || !p.isLoaded() || feature.isPlayerDisabled(p)) return;
+		if (p == null || feature.isPlayerDisabled(p)) return;
 		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerToggleSneakEvent", feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> {
 			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
 		});

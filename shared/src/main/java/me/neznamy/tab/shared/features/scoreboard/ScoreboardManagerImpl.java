@@ -99,7 +99,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
+		if (forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) ||
 				announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) return;
 		sendHighestScoreboard(p);
 	}

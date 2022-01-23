@@ -82,7 +82,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing NameTag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || isPlayerDisabled(p)) continue;
+				if (isPlayerDisabled(p)) continue;
 				p.getArmorStandManager().updateVisibility(false);
 			}
 		});

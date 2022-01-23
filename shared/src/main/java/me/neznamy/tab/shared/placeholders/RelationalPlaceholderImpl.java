@@ -37,7 +37,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	 * @param target - target who is the text displayed on
 	 * @return true if value changed, false if not
 	 */
-	public synchronized boolean update(TabPlayer viewer, TabPlayer target) {
+	public boolean update(TabPlayer viewer, TabPlayer target) {
 		String newValue = getReplacements().findReplacement(String.valueOf(request(viewer, target)));
 		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
 			lastValues.get(viewer).put(target, newValue);
@@ -80,7 +80,6 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 		String s = getReplacements().findReplacement(String.valueOf(value));
 		if (lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) && lastValues.get(viewer).get(target).equals(s)) return;
 		lastValues.get(viewer).put(target, s);
-		if (!viewer.isLoaded() || !target.isLoaded()) return;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
 		if (usage == null) return;
 		for (TabFeature f : usage) {

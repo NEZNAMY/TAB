@@ -75,28 +75,18 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			}
 		}
 		long startRefreshTime = System.nanoTime();
-		main:
 		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
-				if (!entry.getKey().isLoaded()) {
-					TAB.getInstance().getErrorManager().printError("Attempted to refresh player " + entry.getKey().getName() + " who is not loaded yet!");
-					continue main;
-				}
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), true);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
 			}
 		}
-		main:
 		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
 			for (TabFeature r : entry.getValue()) {
-				if (!entry.getKey().isLoaded()) {
-					TAB.getInstance().getErrorManager().printError("Attempted to refresh player " + entry.getKey().getName() + " who is not loaded yet!");
-					continue main;
-				}
 				long startTime = System.nanoTime();
 				r.refresh(entry.getKey(), false);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime()-startTime);
+				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
 			}
 		}
 		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
@@ -107,9 +97,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
-			if (!p1.isLoaded()) continue;
 			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
-				if (!p2.isLoaded()) continue;
 				if (placeholder.update(p1, p2)) {
 					forceUpdate.computeIfAbsent(p2, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 					somethingChanged = true;
@@ -128,7 +116,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		boolean somethingChanged = false;
 		long startTime = System.nanoTime();
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (all.isLoaded() && placeholder.update(all)) {
+			if (placeholder.update(all)) {
 				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 				somethingChanged = true;
 			}
@@ -143,7 +131,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		if (placeholder.update()) {
 			somethingChanged = true;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				if (!all.isLoaded()) continue;
 				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 			}
 		}
@@ -168,7 +155,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			((TabPlaceholder) placeholder).markAsUsed();
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (!p.isLoaded()) continue;
-				new HashSet<>(placeholderUsage.get(placeholder.getIdentifier())).forEach(f -> f.refresh(p, true)); //trying to avoid rare concurrent modification
+				placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
 			}
 		}
 		return placeholder;

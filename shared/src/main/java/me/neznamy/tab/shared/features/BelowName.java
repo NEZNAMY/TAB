@@ -71,7 +71,6 @@ public class BelowName extends TabFeature {
 		connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), textRefresher);
 		int number = getValue(connectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-			if (!all.isLoaded()) continue; //objective not registered yet or player == connectedPlayer
 			if (all.getWorld().equals(connectedPlayer.getWorld()) && Objects.equals(all.getServer(), connectedPlayer.getServer())) {
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), number), this);
 				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
@@ -103,7 +102,6 @@ public class BelowName extends TabFeature {
 		}
 		int number = getValue(p);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-			if (!all.isLoaded()) continue; //objective not registered yet
 			if (all.getWorld().equals(p.getWorld()) && Objects.equals(all.getServer(), p.getServer())) {
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(p), number), this);
 				p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
@@ -122,7 +120,6 @@ public class BelowName extends TabFeature {
 		if (isDisabledPlayer(refreshed)) return;
 		int number = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!all.isLoaded()) continue; //objective not registered yet
 			if (all.getWorld().equals(refreshed.getWorld()) && Objects.equals(all.getServer(), refreshed.getServer()))
 				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), number), this);
 		}

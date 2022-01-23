@@ -55,7 +55,7 @@ public class Sorting extends TabFeature {
 	
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || (nameTags != null && (nameTags.getForcedTeamName(p) != null || nameTags.hasTeamHandlingPaused(p)))) return;
+		if (nameTags != null && (nameTags.getForcedTeamName(p) != null || nameTags.hasTeamHandlingPaused(p))) return;
 		String newName = getTeamName(p);
 		if (!p.getTeamName().equals(newName)) {
 			if (nameTags != null) nameTags.unregisterTeam(p);
@@ -102,7 +102,7 @@ public class Sorting extends TabFeature {
 	 * @param p - player to build team name for
 	 * @return unique up to 16 character long sequence that sorts the player
 	 */
-	public synchronized String getTeamName(TabPlayer p) {
+	public String getTeamName(TabPlayer p) {
 		((ITabPlayer) p).setTeamNameNote("");
 		StringBuilder sb = new StringBuilder();
 		for (SortingType type : usedSortingTypes) {

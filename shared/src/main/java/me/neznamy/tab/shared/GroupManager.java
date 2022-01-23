@@ -54,17 +54,18 @@ public class GroupManager extends TabFeature {
 		luckPermsSub2 = LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class, this::updateGroup);
 	}
 
-	//synchronized because LP spams the event
-	private synchronized void updatePlayer(UserDataRecalculateEvent event) {
-		long time = System.nanoTime();
-		TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-		if (p == null) return; //server still starting up and users connecting already (LP loading them)
-		refresh(p, false);
-		TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
-		groupPlaceholder.updateValue(p, p.getGroup());
+	private void updatePlayer(UserDataRecalculateEvent event) {
+		TAB.getInstance().getCPUManager().runTask("Processing UserDataRecalculateEvent", () -> {
+			long time = System.nanoTime();
+			TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
+			if (p == null) return; //server still starting up and users connecting already (LP loading them)
+			refresh(p, false);
+			TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
+			groupPlaceholder.updateValue(p, p.getGroup());
+		});
 	}
 
-	private synchronized void updateGroup(GroupDataRecalculateEvent event) {
+	private void updateGroup(GroupDataRecalculateEvent event) {
 		TAB.getInstance().getCPUManager().runTaskLater(50, "Processing GroupDataRecalculateEvent", () -> {
 			long time = System.nanoTime();
 			for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {

@@ -95,7 +95,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	}
 
 	@Override
-	public synchronized void updateValue(TabPlayer player, Object value) {
+	public void updateValue(TabPlayer player, Object value) {
 		String s = getReplacements().findReplacement(String.valueOf(value));
 		if (lastValues.containsKey(player) && lastValues.get(player).equals(s)) return;
 		lastValues.put(player, s);

@@ -91,7 +91,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		updateProperties(connectedPlayer);
 		hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
+			if (all == connectedPlayer) continue; //avoiding double registration
 			if (!isDisabledPlayer(all)) {
 				registerTeam(all, connectedPlayer);
 			}
