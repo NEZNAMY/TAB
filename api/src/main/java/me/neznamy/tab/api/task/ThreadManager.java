@@ -14,6 +14,15 @@ public interface ThreadManager {
 	 * @param task - the task
 	 */
 	Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task);
+
+	/**
+	 * Starts a task in new thread and measures how long it took to process
+	 * @param errorDescription - description to use if this task throws an error
+	 * @param feature - feature to add cpu usage to
+	 * @param type - usage type to add cpu usage to
+	 * @param task - the task
+	 */
+	Future<Void> runMeasuredTask(String errorDescription, String feature, String type, Runnable task);
 	
 	/**
 	 * Runs task in a new thread

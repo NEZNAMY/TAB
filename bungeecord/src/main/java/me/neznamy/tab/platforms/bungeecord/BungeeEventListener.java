@@ -18,10 +18,11 @@ public class BungeeEventListener implements Listener {
 	 * Disconnect event listener to forward the event to all features
 	 * @param e - disconnect event
 	 */
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler
 	public void onQuit(PlayerDisconnectEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerDisconnectEvent", () -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runTask("processing PlayerDisconnectEvent", () ->
+				TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 
 	/**
@@ -29,7 +30,7 @@ public class BungeeEventListener implements Listener {
 	 * @param	e
 	 * 			switch event
 	 */
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler
 	public void onSwitch(ServerSwitchEvent e){
 		if (TAB.getInstance().isDisabled()) return;
 		TAB.getInstance().getCPUManager().runTask("processing ServerSwitchEvent", () -> {

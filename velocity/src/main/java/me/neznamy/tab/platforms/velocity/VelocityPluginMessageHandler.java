@@ -42,12 +42,13 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 	public void on(PluginMessageEvent event){
 		if (!event.getIdentifier().getId().equalsIgnoreCase(channelName)) return;
 		if (event.getTarget() instanceof Player) {
-			long time = System.nanoTime();
-			VelocityTabPlayer receiver = (VelocityTabPlayer) TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
-			if (receiver == null) return;
-			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setResult(ForwardResult.handled());
-			TAB.getInstance().getCPUManager().addTime("Plugin message handling", TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().runMeasuredTask("processing PluginMessageEvent", "Plugin message handling",
+					TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
+				VelocityTabPlayer receiver = (VelocityTabPlayer) TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
+				if (receiver == null) return;
+				onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
+			});
 		}
 	}
 
