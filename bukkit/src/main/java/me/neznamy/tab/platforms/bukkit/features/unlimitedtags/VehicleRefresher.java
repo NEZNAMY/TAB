@@ -31,7 +31,8 @@ public class VehicleRefresher extends TabFeature {
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "processing player movement",
 				this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
 					for (TabPlayer inVehicle : playersInVehicle.keySet()) {
-						feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
+						inVehicle.getArmorStandManager().teleport();
+//						feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
 					}
 					for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 						if (p.isPreviewingNametag()) {
@@ -40,9 +41,23 @@ public class VehicleRefresher extends TabFeature {
 					}
 		});
 		addUsedPlaceholders(Collections.singletonList("%vehicle%"));
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle());
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
 	}
-	
+
+	@Override
+	public void load() {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			Entity vehicle = ((Player)p.getPlayer()).getVehicle();
+			if (vehicle != null) {
+				vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+				playersInVehicle.put(p, vehicle);
+				if (feature.isDisableOnBoats() && vehicle.getType() == EntityType.BOAT) {
+					playersOnBoats.add(p);
+				}
+			}
+		}
+	}
+
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		if (feature.isPlayerDisabled(p)) return;
