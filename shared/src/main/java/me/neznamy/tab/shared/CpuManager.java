@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -43,7 +42,11 @@ public class CpuManager implements ThreadManager {
 	private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
 	//thread pool
-	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
+	private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
+
+	private final Map<Runnable, String> taskQueue = new HashMap<>();
+	private boolean enabled = false;
+	private final List<TabRepeatingTask> repeatingTasks = new ArrayList<>();
 
 	//error manager
 	private final ErrorManager errorManager;
@@ -77,21 +80,25 @@ public class CpuManager implements ThreadManager {
 	}
 
 	/**
-	 * Returns amount of active and total threads
-	 * @return active and total threads from this thread pool
-	 */
-	public String getThreadCount() {
-		return exe.getActiveCount() + "/" + exe.getPoolSize();
-	}
-
-	/**
 	 * Cancels all tasks, new instance is set to avoid errors when starting tasks on shutdown (such as packet readers)
 	 */
 	public void cancelAllTasks() {
 		//preventing errors when tasks are inserted while shutting down
-		ExecutorService old = exe;
-		exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		ExecutorService old = thread;
+		thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 		old.shutdownNow();
+		repeatingTasks.forEach(TabRepeatingTask::interrupt);
+	}
+
+	public void cancelTask(TabRepeatingTask task) {
+		repeatingTasks.remove(task);
+		task.interrupt();
+	}
+
+	public void enable() {
+		enabled = true;
+		taskQueue.forEach((r, e) -> submit(e, r));
+		taskQueue.clear();
 	}
 
 	@Override
@@ -110,7 +117,9 @@ public class CpuManager implements ThreadManager {
 
 	@Override
 	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return new TabRepeatingTask(exe, task, errorDescription, feature, type, intervalMilliseconds);
+		TabRepeatingTask rt = new TabRepeatingTask(task, errorDescription, feature, type, intervalMilliseconds);
+		repeatingTasks.add(rt);
+		return rt;
 	}
 
 	@Override
@@ -146,7 +155,11 @@ public class CpuManager implements ThreadManager {
 	
 	@SuppressWarnings("unchecked")
 	private Future<Void> submit(String errorDescription, Runnable task) {
-		return (Future<Void>) exe.submit(() -> {
+		if (!enabled) {
+			taskQueue.put(task, errorDescription);
+			return null;
+		}
+		return (Future<Void>) thread.submit(() -> {
 			try {
 				task.run();
 			} catch (Exception | LinkageError e) {

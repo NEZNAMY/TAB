@@ -163,6 +163,7 @@ public class TAB extends TabAPI {
 			if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
 			platform.callLoadEvent();
 			disabled = false;
+			cpu.enable();
 			return configuration.getMessages().getReloadSuccess();
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");

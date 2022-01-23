@@ -67,7 +67,6 @@ public class CpuCommand extends SubCommand {
 			sendToConsole(features);
 		}
 		sendMessage(sender, SEPARATOR);
-		sendMessage(sender, String.format("&8&l%s &7Threads created by the plugin (active/total): &7%s", LINE_CHAR, tab.getCPUManager().getThreadCount()));
 		if (sender != null) {
 			sendPacketCountToPlayer(sender);
 		} else {
