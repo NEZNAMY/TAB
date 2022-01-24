@@ -24,7 +24,7 @@ public class TabRepeatingTask implements RepeatingTask {
 
 	private void createTask() {
 		thread = new Thread(() -> {
-			long nextLoop = System.currentTimeMillis() - interval;
+			long nextLoop = System.currentTimeMillis();
 			while (true) {
 				try {
 					nextLoop += interval;
