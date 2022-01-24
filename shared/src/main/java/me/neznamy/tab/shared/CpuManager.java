@@ -134,28 +134,28 @@ public class CpuManager implements ThreadManager {
 	
 	@Override
 	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
-		return submit(errorDescription, () -> {
+		new Thread(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
-				long time = System.nanoTime();
-				task.run();
-				addTime(feature, type, System.nanoTime()-time);
+				runMeasuredTask(errorDescription, feature, type, task);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}
-		});
+		}).start();
+		return null;
 	}
 	
 	@Override
 	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
-		return submit(errorDescription, () -> {
+		new Thread(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
-				task.run();
+				submit(errorDescription, task);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}
-		});
+		}).start();
+		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
