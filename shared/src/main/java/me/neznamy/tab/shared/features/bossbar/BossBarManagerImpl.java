@@ -249,39 +249,31 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (!hasBossBarVisible(player)) return;
 		BossBar line = lines.get(bossBar);
 		if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-		new Thread(() -> {
-			try {
-				line.addPlayer(player);
-				Thread.sleep(duration*1000L);
-				line.removePlayer(player);
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
-			}
-		}).start();
+		TAB.getInstance().getCPUManager().runTask("Sending temporary BossBar", () -> line.addPlayer(player));
+		TAB.getInstance().getCPUManager().runTaskLater(duration*1000, "Removing temporary BossBar",
+				this, "Removing temporary BossBar", () -> line.removePlayer(player));
 	}
 
 	@Override
 	public void announceBossBar(String bossBar, int duration) {
 		BossBar line = lines.get(bossBar);
 		if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-		new Thread(() -> {
-			try {
-				announcements.add(line);
-				announceEndTime = System.currentTimeMillis() + duration* 1000L;
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					if (!hasBossBarVisible(all)) continue;
-					if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
-				}
-				Thread.sleep(duration*1000L);
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					if (!hasBossBarVisible(all)) continue;
-					line.removePlayer(all);
-				}
-				announcements.remove(line);
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
+		TAB.getInstance().getCPUManager().runTask("Announcing BossBar", () -> {
+			announcements.add(line);
+			announceEndTime = System.currentTimeMillis() + duration* 1000L;
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (!hasBossBarVisible(all)) continue;
+				if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
 			}
-		}).start();
+		});
+		TAB.getInstance().getCPUManager().runTaskLater(duration*1000, "Removing announced BossBar",
+				this, "Removing announced BossBar", () -> {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (!hasBossBarVisible(all)) continue;
+				line.removePlayer(all);
+			}
+			announcements.remove(line);
+		});
 	}
 
 	@Override
