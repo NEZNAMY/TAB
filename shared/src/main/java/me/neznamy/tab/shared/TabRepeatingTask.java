@@ -51,7 +51,7 @@ public class TabRepeatingTask implements RepeatingTask {
 	@Override
 	public void setInterval(int interval) {
 		if (interval < 0) throw new IllegalArgumentException("Interval cannot be negative");
-		cancel();
+		interrupt();
 		this.interval = interval;
 		createTask();
 	}
