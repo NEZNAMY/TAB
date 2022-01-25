@@ -21,29 +21,18 @@ public class ErrorManager {
 	//date format used in error messages
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
-	//one time messages already sent into console, so they are not sent again
-	private final List<String> oneTimeMessages = new ArrayList<>();
-
-	//amount of logged startup warns
-	private int startupWarns = 0;
-
 	//error logs
 	private final File errorLog;
 	private final File antiOverrideLog;
 	private final File placeholderErrorLog;
 
-	//plugin instance
-	private final TAB tab;
-
 	/**
 	 * Constructs new instance
-	 * @param tab - tab instance
 	 */
-	public ErrorManager(TAB tab) {
-		this.tab = tab;
-		errorLog = new File(tab.getPlatform().getDataFolder(), "errors.log");
-		antiOverrideLog = new File(tab.getPlatform().getDataFolder(), "anti-override.log");
-		placeholderErrorLog = new File(tab.getPlatform().getDataFolder(), "placeholder-errors.log");
+	public ErrorManager() {
+		errorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "errors.log");
+		antiOverrideLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "anti-override.log");
+		placeholderErrorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "placeholder-errors.log");
 		if (getErrorLog().exists() && getErrorLog().length() > 10) {
 			startupWarn("File &e" + getErrorLog().getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
 		}
@@ -99,16 +88,16 @@ public class ErrorManager {
 				}
 			}
 		} catch (IOException ex) {
-			tab.getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
-			tab.getPlatform().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
+			TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
+			TAB.getInstance().getPlatform().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
 			for (StackTraceElement e : ex.getStackTrace()) {
-				tab.getPlatform().sendConsoleMessage("\t" + e.toString(), true);
+				TAB.getInstance().getPlatform().sendConsoleMessage("\t" + e.toString(), true);
 			}
-			tab.getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
+			TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
 			if (error != null) {
-				tab.getPlatform().sendConsoleMessage(error.getClass().getName() + ": " + error.getMessage(), true);
+				TAB.getInstance().getPlatform().sendConsoleMessage(error.getClass().getName() + ": " + error.getMessage(), true);
 				for (StackTraceElement e : error.getStackTrace()) {
-					tab.getPlatform().sendConsoleMessage("\t" + e.toString(), true);
+					TAB.getInstance().getPlatform().sendConsoleMessage("\t" + e.toString(), true);
 				}
 			}
 		}
@@ -129,7 +118,7 @@ public class ErrorManager {
 		try {
 			return file.createNewFile();
 		} catch (IOException e) {
-			tab.getPlatform().sendConsoleMessage("&c[TAB] Failed to create file " + file.getPath() + ": " + e.getMessage(), true);
+			TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] Failed to create file " + file.getPath() + ": " + e.getMessage(), true);
 			return false;
 		}
 	}
@@ -142,30 +131,12 @@ public class ErrorManager {
 	 * @throws IOException - if IO writer operation fails
 	 */
 	private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
-		buf.write(getCurrentTime() + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
-		if (tab.isDebugMode() || forceConsole) tab.getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
+		buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
+		if (TAB.getInstance().isDebugMode() || forceConsole) TAB.getInstance().getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
 	}
 
 	public void criticalError(String message, Throwable t) {
 		printError(message, t, true);
-	}
-
-	/**
-	 * Sends message into console once
-	 * @param message - message to send
-	 */
-	public void oneTimeConsoleError(String message) {
-		if (oneTimeMessages.contains(message)) return;
-		oneTimeMessages.add(message);
-		printError(message, null, true);
-	}
-
-	/**
-	 * Returns current formatted time
-	 * @return current formatted time
-	 */
-	private String getCurrentTime() {
-		return dateFormat.format(new Date());
 	}
 
 	/**
@@ -278,10 +249,7 @@ public class ErrorManager {
 	}
 
 	public void startupWarn(String message) {
-		if (oneTimeMessages.contains(message)) return;
-		oneTimeMessages.add(message);
-		tab.getPlatform().sendConsoleMessage("&c[TAB] " + message, true);
-		startupWarns++;
+		TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] " + message, true);
 	}
 
 	/**
@@ -292,19 +260,6 @@ public class ErrorManager {
 	 */
 	public void missingAttribute(String objectType, Object objectName, String attribute) {
 		startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
-	}
-
-	/**
-	 * Prints amount of startup warns into console if more than 0
-	 */
-	public void printConsoleWarnCount() {
-		if (startupWarns > 0) {
-			if (startupWarns == 1) {
-				tab.getPlatform().sendConsoleMessage("&e[TAB] There was 1 startup warning.", true);
-			} else {
-				tab.getPlatform().sendConsoleMessage("&e[TAB] There were " + startupWarns + " startup warnings.", true);
-			}
-		}
 	}
 
 	public File getAntiOverrideLog() {

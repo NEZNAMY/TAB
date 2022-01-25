@@ -144,7 +144,7 @@ public class TAB extends TabAPI {
 	public String load() {
 		try {
 			long time = System.currentTimeMillis();
-			this.errorManager = new ErrorManager(this);
+			this.errorManager = new ErrorManager();
 			cpu = new CpuManager(errorManager);
 			featureManager = new FeatureManagerImpl();
 			configuration = new Configs(this);
@@ -158,12 +158,11 @@ public class TAB extends TabAPI {
 			command = new TabCommand(this);
 			featureManager.load();
 			for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded(false);
-			errorManager.printConsoleWarnCount();
 			cpu.enable();
-			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
 			platform.callLoadEvent();
 			disabled = false;
+			print('a', "Enabled in " + (System.currentTimeMillis()-time) + "ms");
 			return configuration.getMessages().getReloadSuccess();
 		} catch (YAMLException e) {
 			print('c', "Did not enable due to a broken configuration file.");
