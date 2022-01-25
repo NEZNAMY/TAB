@@ -239,7 +239,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 */
 	public Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
 		try {
-			return nms.newPacketPlayOutEntityDestroy.newInstance(packet.getEntities());
+			return nms.newPacketPlayOutEntityDestroy.newInstance(new Object[]{packet.getEntities()});
 		} catch (IllegalArgumentException e) {
 			//1.17.0
 			return nms.newPacketPlayOutEntityDestroy.newInstance(packet.getEntities()[0]);

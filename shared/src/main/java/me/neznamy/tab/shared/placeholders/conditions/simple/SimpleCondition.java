@@ -1,22 +1,18 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * An abstract class representing a simple condition
  */
 public abstract class SimpleCondition {
-	
-	//all known condition types
-	private static final Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
-	
+
 	//left side of condition
 	private String leftSide;
 	
@@ -28,17 +24,6 @@ public abstract class SimpleCondition {
 	
 	//placeholders used in right side of condition
 	private String[] rightSidePlaceholders;
-	
-	static {
-		conditionTypes.put("permission:", PermissionCondition::new);
-		conditionTypes.put("<-", ContainsCondition::new);
-		conditionTypes.put(">=", MoreThanOrEqualsCondition::new);
-		conditionTypes.put(">", MoreThanCondition::new);
-		conditionTypes.put("<=", LessThanOrEqualsCondition::new);
-		conditionTypes.put("<", LessThanCondition::new);
-		conditionTypes.put("!=", NotEqualsCondition::new);
-		conditionTypes.put("=", EqualsCondition::new);
-	}
 
 	/**
 	 * Sets raw values and finds used placeholders
@@ -98,7 +83,7 @@ public abstract class SimpleCondition {
 	 * @return compiled condition
 	 */
 	public static SimpleCondition compile(String line) {
-		for (Entry<String, Function<String, SimpleCondition>> entry : conditionTypes.entrySet()) {
+		for (Entry<String, Function<String, SimpleCondition>> entry : Condition.getConditionTypes().entrySet()) {
 			if (line.contains(entry.getKey())) {
 				return entry.getValue().apply(line);
 			}

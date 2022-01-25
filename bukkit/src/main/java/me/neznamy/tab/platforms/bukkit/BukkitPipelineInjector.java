@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
+import org.jetbrains.annotations.NotNull;
 
 public class BukkitPipelineInjector extends PipelineInjector {
 
@@ -44,7 +45,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		}
 
 		@Override
-		public void channelRead(ChannelHandlerContext context, Object packet) {
+		public void channelRead(@NotNull ChannelHandlerContext context, @NotNull Object packet) {
 			try {
 				if (TAB.getInstance().getFeatureManager().onPacketReceive(player, packet)) return;
 				super.channelRead(context, packet);

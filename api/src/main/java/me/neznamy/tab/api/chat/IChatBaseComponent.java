@@ -90,13 +90,11 @@ public class IChatBaseComponent {
 	/**
 	 * Appends provided component as extra component
 	 * @param	child
-	 * 			component to append
-	 * @return	self
+	 *			component to append
 	 */
-	public IChatBaseComponent addExtra(IChatBaseComponent child) {
+	public void addExtra(IChatBaseComponent child) {
 		if (extra == null) extra = new ArrayList<>();
 		extra.add(child);
-		return this;
 	}
 
 	/**
@@ -131,11 +129,9 @@ public class IChatBaseComponent {
 	 * Changes text of this component
 	 * @param	text
 	 * 			text to show
-	 * @return	self
 	 */
-	public IChatBaseComponent setText(String text) {
+	public void setText(String text) {
 		this.text = text;
-		return this;
 	}
 
 	/**

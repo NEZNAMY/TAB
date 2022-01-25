@@ -7,11 +7,9 @@ import java.util.List;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.viaversion.viaversion.api.Via;
@@ -46,15 +44,17 @@ public class Main extends JavaPlugin {
 			Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
 		}
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(this), this);
-		TABCommand command = new TABCommand();
-		Bukkit.getPluginCommand("tab").setExecutor(command);
-		Bukkit.getPluginCommand("tab").setTabCompleter(command);
 		TAB.getInstance().load();
 		Metrics metrics = new Metrics(this, 5304);
 		metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
 		metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
 		metrics.addCustomChart(new SimplePie("server_version", () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
+		PluginCommand cmd = Bukkit.getPluginCommand("tab");
+		if (cmd == null) return;
+		TABCommand command = new TABCommand();
+		cmd.setExecutor(command);
+		cmd.setTabCompleter(command);
 	}
 
 	@Override
@@ -151,7 +151,8 @@ public class Main extends JavaPlugin {
 			Thread.currentThread().interrupt();
 			return -1;
 		} catch (Exception | LinkageError e) {
-			TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s", player.getName(), Bukkit.getPluginManager().getPlugin("ViaVersion").getDescription().getVersion()), e);
+			Plugin via = Bukkit.getPluginManager().getPlugin("ViaVersion");
+			TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s", player.getName(), via == null ? "" : via.getDescription().getVersion()), e);
 			return TAB.getInstance().getServerVersion().getNetworkId();
 		}
 	}

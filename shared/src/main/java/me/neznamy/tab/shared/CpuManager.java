@@ -128,12 +128,12 @@ public class CpuManager implements ThreadManager {
 	}
 
 	@Override
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
+	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+		runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
 	}
 	
 	@Override
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
 		new Thread(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
@@ -142,11 +142,10 @@ public class CpuManager implements ThreadManager {
 				Thread.currentThread().interrupt();
 			}
 		}).start();
-		return null;
 	}
 	
 	@Override
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
+	public void runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
 		new Thread(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
@@ -155,7 +154,6 @@ public class CpuManager implements ThreadManager {
 				Thread.currentThread().interrupt();
 			}
 		}).start();
-		return null;
 	}
 	
 	@SuppressWarnings("unchecked")

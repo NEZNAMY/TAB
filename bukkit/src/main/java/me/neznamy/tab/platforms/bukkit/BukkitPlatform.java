@@ -37,6 +37,7 @@ import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
  * Bukkit's implementation of Platform interface
@@ -68,7 +69,9 @@ public class BukkitPlatform implements Platform {
 		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
 			return new UltraPermissions(getPluginVersion("UltraPermissions"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-			return new Vault(Bukkit.getServicesManager().getRegistration(Permission.class).getProvider(), getPluginVersion("Vault"));
+			RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
+			if (provider == null) return new None();
+			return new Vault(provider.getProvider(), getPluginVersion("Vault"));
 		} else {
 			return new None();
 		}
@@ -118,7 +121,8 @@ public class BukkitPlatform implements Platform {
 	}
 	
 	private String getPluginVersion(String plugin) {
-		return Bukkit.getPluginManager().getPlugin(plugin).getDescription().getVersion();
+		Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
+		return pl == null ? "" : pl.getDescription().getVersion();
 	}
 
 	/**

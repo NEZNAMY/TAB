@@ -49,7 +49,7 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
+	void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task);
 	
 	/**
 	 * Runs task with a delay and measures how long it took to process
@@ -59,7 +59,7 @@ public interface ThreadManager {
 	 * @param type - usage type to add cpu usage to
 	 * @param task - the task
 	 */
-	Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task);
-	
-	Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task);
+	void runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task);
+
+	void runTaskLater(int delayMilliseconds, String errorDescription, Runnable task);
 }

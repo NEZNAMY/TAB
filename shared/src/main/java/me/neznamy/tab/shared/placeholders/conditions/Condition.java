@@ -1,9 +1,7 @@
 package me.neznamy.tab.shared.placeholders.conditions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
@@ -11,7 +9,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.conditions.simple.SimpleCondition;
+import me.neznamy.tab.shared.placeholders.conditions.simple.*;
 
 /**
  * The main condition class
@@ -20,6 +18,9 @@ public class Condition {
 	
 	//map of all defined conditions in config
 	private static Map<String, Condition> conditions = new HashMap<>();
+
+	//all known condition types
+	private static final Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
 	
 	//condition type
 	private final ConditionType type;
@@ -38,6 +39,17 @@ public class Condition {
 	
 	private int refresh = 10000;
 
+	static {
+		conditionTypes.put("permission:", PermissionCondition::new);
+		conditionTypes.put("<-", ContainsCondition::new);
+		conditionTypes.put(">=", MoreThanOrEqualsCondition::new);
+		conditionTypes.put(">", MoreThanCondition::new);
+		conditionTypes.put("<=", LessThanOrEqualsCondition::new);
+		conditionTypes.put("<", LessThanCondition::new);
+		conditionTypes.put("!=", NotEqualsCondition::new);
+		conditionTypes.put("=", EqualsCondition::new);
+	}
+	
 	/**
 	 * Constructs new instance with given parameters
 	 * @param name - name of condition
@@ -172,6 +184,10 @@ public class Condition {
 
 	public static void setConditions(Map<String, Condition> conditions) {
 		Condition.conditions = conditions;
+	}
+	
+	public static Map<String, Function<String, SimpleCondition>> getConditionTypes() {
+		return conditionTypes;
 	}
 
 	public String getYes() {
