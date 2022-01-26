@@ -3,17 +3,22 @@ package me.neznamy.tab.shared;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.task.RepeatingTask;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 public class TabRepeatingTask implements RepeatingTask {
 	
-	private Thread thread;
+	private final ExecutorService exe;
 	private Runnable runnable;
 	private final String errorDescription;
 	private final TabFeature feature;
 	private final String type;
 	private int interval;
+	private Future<?> task;
 
-	public TabRepeatingTask(Runnable runnable, String errorDescription, TabFeature feature, String type, int interval) {
+	public TabRepeatingTask(ExecutorService exe, Runnable runnable, String errorDescription, TabFeature feature, String type, int interval) {
 		if (interval < 0) throw new IllegalArgumentException("Interval cannot be negative");
+		this.exe = exe;
 		this.runnable = runnable;
 		this.errorDescription = errorDescription;
 		this.feature = feature;
@@ -23,7 +28,7 @@ public class TabRepeatingTask implements RepeatingTask {
 	}
 
 	private void createTask() {
-		thread = new Thread(() -> {
+		task = exe.submit(() -> {
 			long nextLoop = System.currentTimeMillis();
 			while (true) {
 				try {
@@ -40,7 +45,6 @@ public class TabRepeatingTask implements RepeatingTask {
 				} 
 			} 
 		});
-		thread.start();
 	}
 
 	@Override
@@ -51,18 +55,14 @@ public class TabRepeatingTask implements RepeatingTask {
 	@Override
 	public void setInterval(int interval) {
 		if (interval < 0) throw new IllegalArgumentException("Interval cannot be negative");
-		interrupt();
+		cancel();
 		this.interval = interval;
 		createTask();
 	}
 
 	@Override
 	public void cancel() {
-		TAB.getInstance().getCPUManager().cancelTask(this);
-	}
-
-	public void interrupt() {
-		thread.interrupt();
+		task.cancel(true);
 	}
 
 	@Override

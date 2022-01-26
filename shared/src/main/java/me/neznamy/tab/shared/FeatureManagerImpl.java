@@ -157,10 +157,7 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void onWorldChange(UUID playerUUID, String to) {
 		TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
-		if (changed == null) {
-			TAB.getInstance().getCPUManager().runTaskLater(100, "processing delayed world/server switch", "Other", "Player world switch", () -> onWorldChange(playerUUID, to));
-			return;
-		}
+		if (changed == null) return;
 		String from = changed.getWorld();
 		((ITabPlayer)changed).setWorld(to);
 		for (TabFeature f : values) {

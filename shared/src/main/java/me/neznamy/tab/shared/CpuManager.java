@@ -41,12 +41,12 @@ public class CpuManager implements ThreadManager {
 	//packets sent in the previous 10 seconds
 	private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
-	//thread pool
+	//thread pools
 	private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
+	private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
 	private final Map<Runnable, String> taskQueue = new HashMap<>();
 	private boolean enabled = false;
-	private final List<TabRepeatingTask> repeatingTasks = new ArrayList<>();
 
 	//error manager
 	private final ErrorManager errorManager;
@@ -87,12 +87,7 @@ public class CpuManager implements ThreadManager {
 		ExecutorService old = thread;
 		thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 		old.shutdownNow();
-		repeatingTasks.forEach(TabRepeatingTask::interrupt);
-	}
-
-	public void cancelTask(TabRepeatingTask task) {
-		repeatingTasks.remove(task);
-		task.interrupt();
+		threadPool.shutdownNow();
 	}
 
 	public void enable() {
@@ -122,38 +117,31 @@ public class CpuManager implements ThreadManager {
 
 	@Override
 	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		TabRepeatingTask rt = new TabRepeatingTask(task, errorDescription, feature, type, intervalMilliseconds);
-		repeatingTasks.add(rt);
-		return rt;
+		return new TabRepeatingTask(threadPool, task, errorDescription, feature, type, intervalMilliseconds);
 	}
 
 	@Override
-	public void runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
-	}
-	
-	@Override
-	public void runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
-		new Thread(() -> {
+	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+		return threadPool.submit(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
 				runMeasuredTask(errorDescription, feature, type, task);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}
-		}).start();
+		});
 	}
-	
+
 	@Override
-	public void runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
-		new Thread(() -> {
+	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
+		return threadPool.submit(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
 				submit(errorDescription, task);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}
-		}).start();
+		});
 	}
 	
 	@SuppressWarnings("unchecked")
