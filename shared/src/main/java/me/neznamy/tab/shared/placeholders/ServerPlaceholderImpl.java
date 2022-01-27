@@ -50,6 +50,11 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 	}
 
 	@Override
+	public void updateFromNested(TabPlayer player) {
+		updateValue(request(), true);
+	}
+
+	@Override
 	public String getLastValue(TabPlayer p) {
 		return lastValue;
 	}
@@ -70,8 +75,12 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
 	@Override
 	public void updateValue(Object value) {
+		updateValue(value, false);
+	}
+
+	private void updateValue(Object value, boolean force) {
 		String s = getReplacements().findReplacement(String.valueOf(value));
-		if (s.equals(lastValue)) return;
+		if (s.equals(lastValue) && !force) return;
 		lastValue = s;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
 		if (usage == null) return;
@@ -82,5 +91,6 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 				TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
 			}
 		}
+		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(null));
 	}
 }

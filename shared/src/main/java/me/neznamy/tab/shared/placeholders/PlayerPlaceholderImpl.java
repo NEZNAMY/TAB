@@ -62,6 +62,11 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	}
 
 	@Override
+	public void updateFromNested(TabPlayer player) {
+		updateValue(player, request(player), true);
+	}
+
+	@Override
 	public String getLastValue(TabPlayer p) {
 		if (p == null) return identifier;
 		if (!lastValues.containsKey(p)) {
@@ -96,8 +101,12 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
 	@Override
 	public void updateValue(TabPlayer player, Object value) {
+		updateValue(player, value, false);
+	}
+
+	private void updateValue(TabPlayer player, Object value, boolean force) {
 		String s = getReplacements().findReplacement(String.valueOf(value));
-		if (lastValues.containsKey(player) && lastValues.get(player).equals(s)) return;
+		if (lastValues.containsKey(player) && lastValues.get(player).equals(s) && !force) return;
 		lastValues.put(player, s);
 		if (!player.isLoaded()) return;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
@@ -107,5 +116,6 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 			f.refresh(player, false);
 			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
 		}
+		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(player));
 	}
 }

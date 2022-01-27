@@ -5,6 +5,9 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Representation of any placeholder
  */
@@ -24,6 +27,8 @@ public abstract class TabPlaceholder implements Placeholder {
 	private boolean triggerMode;
 	private Runnable onActivation;
 	private Runnable onDisable;
+
+	protected final List<String> parents = new ArrayList<>();
 	
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements
@@ -36,6 +41,9 @@ public abstract class TabPlaceholder implements Placeholder {
 		this.identifier = identifier;
 		this.refresh = refresh;
 		replacements = new PlaceholderReplacementPattern(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier));
+		for (String nested : getNestedPlaceholders("")) {
+			TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
+		}
 	}
 
 	@Override
@@ -118,10 +126,16 @@ public abstract class TabPlaceholder implements Placeholder {
 		if (onDisable != null && active) onDisable.run();
 	}
 
+	public abstract void updateFromNested(TabPlayer player);
+
 	/**
 	 * Returns last known value for defined player
 	 * @param p - player to check value for
 	 * @return last known value
 	 */
 	public abstract String getLastValue(TabPlayer p);
+
+	public void addParent(String parent) {
+		if (!parents.contains(parent)) parents.add(parent);
+	}
 }
