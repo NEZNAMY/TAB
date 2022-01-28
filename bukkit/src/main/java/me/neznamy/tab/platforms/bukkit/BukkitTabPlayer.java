@@ -1,10 +1,9 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import com.mojang.authlib.properties.Property;
+import me.neznamy.tab.api.protocol.Skin;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -225,10 +224,14 @@ public class BukkitTabPlayer extends ITabPlayer {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object getSkin() {
+	public Skin getSkin() {
 		try {
-			return ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties();
+			Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get("textures");
+			if (col.isEmpty()) return null; //offline mode
+			Property property = col.iterator().next();
+			return new Skin(property.getValue(), property.getSignature());
 		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
 			return null;

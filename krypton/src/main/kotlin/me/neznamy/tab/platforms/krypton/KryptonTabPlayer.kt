@@ -6,6 +6,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
 import me.neznamy.tab.api.protocol.PacketPlayOutChat
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter
+import me.neznamy.tab.api.protocol.Skin
 import me.neznamy.tab.shared.ITabPlayer
 import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.audience.MessageType
@@ -16,7 +17,6 @@ import net.kyori.adventure.bossbar.BossBar.Overlay
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.player.Player
-import org.kryptonmc.api.registry.Registries
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.packet.Packet
 import java.util.UUID
@@ -63,7 +63,11 @@ class KryptonTabPlayer(
 
     override fun isDisguised(): Boolean = false
 
-    override fun getSkin(): Any = delegate.profile.properties
+    override fun getSkin(): Skin {
+        val textures = delegate.profile.properties.firstOrNull { it.name == "textures" }
+            ?: throw IllegalStateException("User does not have any skin data!")
+        return Skin(textures.value, textures.signature)
+    }
 
     override fun getPlayer(): Player = delegate
 

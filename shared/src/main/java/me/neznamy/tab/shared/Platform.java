@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import java.io.File;
-import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketBuilder;
@@ -71,13 +70,6 @@ public interface Platform {
 	 * @return platform-specific packet builder
 	 */
 	PacketBuilder getPacketBuilder();
-	
-	/**
-	 * Converts value-signature array into platform-specific skin object
-	 * @param properties - value and signature
-	 * @return platform-specific skin object
-	 */
-	Object getSkin(List<String> properties);
 	
 	boolean isProxy();
 	

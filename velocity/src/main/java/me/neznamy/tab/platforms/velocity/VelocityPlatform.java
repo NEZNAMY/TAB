@@ -1,14 +1,11 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.util.GameProfile.Property;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -104,11 +101,6 @@ public class VelocityPlatform extends ProxyPlatform {
 		this.packetBuilder = builder;
 	}
 
-	@Override
-	public Object getSkin(List<String> properties) {
-		return Collections.singletonList(new Property("textures", properties.get(0), properties.get(1)));
-	}
-	
 	@Override
 	public boolean isProxy() {
 		return true;

@@ -1,11 +1,7 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
@@ -15,12 +11,9 @@ import com.velocitypowered.api.util.GameProfile.Property;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.audience.MessageType;
@@ -99,8 +92,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
 		getPlayer().getTabList().setHeaderAndFooter(Main.convertComponent(packet.getHeader(), getVersion()), Main.convertComponent(packet.getFooter(), getVersion()));
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private void handle(PacketPlayOutPlayerInfo packet) {
 		for (PlayerInfoData data : packet.getEntries()) {
 			switch (packet.getAction()) {
@@ -110,7 +102,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 						.tabList(getPlayer().getTabList())
 						.displayName(Main.convertComponent(data.getDisplayName(), getVersion()))
 						.gameMode(data.getGameMode().ordinal()-1)
-						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() : (List<Property>) data.getSkin()))
+						.profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() :
+								Collections.singletonList(new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()))))
 						.latency(data.getLatency())
 						.build());
 				break;
@@ -201,8 +194,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 	
 	@Override
-	public Object getSkin() {
-		return getPlayer().getGameProfile().getProperties();
+	public Skin getSkin() {
+		if (getPlayer().getGameProfile().getProperties().size() == 0) return null; //offline mode
+		return new Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
 	}
 	
 	@Override

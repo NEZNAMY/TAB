@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import java.io.File;
-import java.util.List;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.api.TabPlayer;
@@ -107,15 +106,6 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public PacketBuilder getPacketBuilder() {
 		return packetBuilder;
-	}
-	
-	@Override
-	public Object getSkin(List<String> properties) {
-		String[][] array = new String[1][3];
-		array[0][0] = "textures";
-		array[0][1] = properties.get(0);
-		array[0][2] = properties.get(1);
-		return array;
 	}
 
 	@Override

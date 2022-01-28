@@ -6,15 +6,7 @@ import java.util.List;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -68,7 +60,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 			if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);
 			item.setPing(data.getLatency());
 			if (data.getSkin() != null) {
-				item.setProperties((String[][]) data.getSkin());
+				item.setProperties(new String[][]{{"textures", data.getSkin().getValue(), data.getSkin().getSignature()}});
 			} else {
 				item.setProperties(new String[0][0]);
 			}
@@ -117,7 +109,8 @@ public class BungeePacketBuilder extends PacketBuilder {
 		PlayerListItem item = (PlayerListItem) bungeePacket;
 		List<PlayerInfoData> listData = new ArrayList<>();
 		for (Item i : item.getItems()) {
-			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), i.getProperties(), i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
+			Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0][1], i.getProperties()[0][2]);
+			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
 	}

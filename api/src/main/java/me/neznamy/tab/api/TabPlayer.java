@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.protocol.TabPacket;
 
 /**
@@ -160,10 +161,10 @@ public interface TabPlayer {
 	int getPing();
 
 	/**
-	 * Returns player's platform-specific skin data
+	 * Returns player's skin data
 	 * @return player's skin
 	 */
-	Object getSkin();
+	Skin getSkin();
 
 	/**
 	 * Returns true once the player is successfully loaded (onJoin method ran through all methods)

@@ -87,8 +87,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		/** Player UUID */
 		private UUID uniqueId;
 
-		/** platform-specific skin object */
-		private Object skin;
+		/** Player's skin, null for empty skin */
+		private Skin skin;
 
 		/**
 		 * Constructs new instance with given parameters. Suitable for 
@@ -107,7 +107,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * @param	displayName
 		 * 			Player's display name
 		 */
-		public PlayerInfoData(String name, UUID uniqueId, Object skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
+		public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
 			this.name = name;
 			this.uniqueId = uniqueId;
 			this.skin = skin;
@@ -264,7 +264,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * Returns {@link #skin}
 		 * @return	skin
 		 */
-		public Object getSkin() {
+		public Skin getSkin() {
 			return skin;
 		}
 
@@ -273,7 +273,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * @param	skin
 		 * 			Skin to use
 		 */
-		public void setSkin(Object skin) {
+		public void setSkin(Skin skin) {
 			this.skin = skin;
 		}
 	}

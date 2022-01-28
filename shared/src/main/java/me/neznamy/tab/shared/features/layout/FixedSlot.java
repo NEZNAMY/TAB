@@ -8,6 +8,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.shared.TabConstants;
 
 public class FixedSlot extends TabFeature {
@@ -16,7 +17,7 @@ public class FixedSlot extends TabFeature {
 	private final UUID id;
 	private final String text;
 	private final String propertyName;
-	private final Object skin;
+	private final Skin skin;
 	private final int ping;
 
 	public FixedSlot(Layout layout, int slot, String text, String skin, int ping) {
@@ -41,7 +42,7 @@ public class FixedSlot extends TabFeature {
 		return propertyName;
 	}
 
-	public Object getSkin() {
+	public Skin getSkin() {
 		return skin;
 	}
 

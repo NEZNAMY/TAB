@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -74,17 +75,10 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	}
 	
 	@Override
-	public Object getSkin() {
+	public Skin getSkin() {
 		LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
-		if (loginResult == null || loginResult.getProperties() == null) return new String[0][0];
-		String[][] s = new String[loginResult.getProperties().length][3];
-		for (int i = 0;i<loginResult.getProperties().length;i++){
-			LoginResult.Property pr = loginResult.getProperties()[i];
-			s[i][0] = pr.getName();
-			s[i][1] = pr.getValue();
-			s[i][2] = pr.getSignature();
-		}
-		return s;
+		if (loginResult == null || loginResult.getProperties() == null || loginResult.getProperties().length == 0) return null;
+		return new Skin(loginResult.getProperties()[0].getValue(), loginResult.getProperties()[0].getSignature());
 	}
 	
 	@Override

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.Bukkit;
@@ -10,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.earth2me.essentials.Essentials;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
@@ -249,14 +246,6 @@ public class BukkitPlatform implements Platform {
 		return packetBuilder;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object getSkin(List<String> properties) {
-		PropertyMap map = new PropertyMap();
-		map.put("textures", new Property("textures", properties.get(0), properties.get(1)));
-		return map;
-	}
-	
 	@Override
 	public boolean isProxy() {
 		return false;
