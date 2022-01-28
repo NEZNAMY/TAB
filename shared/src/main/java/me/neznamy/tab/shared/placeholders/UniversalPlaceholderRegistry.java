@@ -2,11 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -38,21 +34,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerServerPlaceholder("%%", -1, () -> "%").enableTriggerMode();
 		manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
 		manager.registerPlayerPlaceholder("%world%", -1, TabPlayer::getWorld).enableTriggerMode();
-		manager.registerPlayerPlaceholder("%worldonline%", -1, p -> {
-				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-					if (String.valueOf(p.getWorld()).equals(all.getWorld())) count++;
-				}
-				return count;
-		}).enableTriggerMode();
+		manager.registerPlayerPlaceholder("%worldonline%", 1000, p -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> p.getWorld().equals(all.getWorld()) && !all.isVanished()).count());
 		manager.registerPlayerPlaceholder("%server%", -1, TabPlayer::getServer).enableTriggerMode();
-		manager.registerPlayerPlaceholder("%serveronline%", -1, p -> {
-				int count = 0;
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-					if (String.valueOf(p.getServer()).equals(all.getServer())) count++;
-				}
-				return count;
-		}).enableTriggerMode();
+		manager.registerPlayerPlaceholder("%serveronline%", 1000, p -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> p.getServer().equals(all.getServer()) && !all.isVanished()).count());
 		manager.registerPlayerPlaceholder("%player%", -1, TabPlayer::getName).enableTriggerMode();
 		double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
 		SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");

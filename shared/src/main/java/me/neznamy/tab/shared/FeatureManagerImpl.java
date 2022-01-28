@@ -167,8 +167,6 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 		}
 		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%world%")).updateValue(changed, to);
-		PlayerPlaceholder worldOnline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%worldonline%");
-		worldOnline.updateValue(changed, worldOnline.request(changed));
 	}
 
 	/**
@@ -188,8 +186,6 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
 		}
 		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
-		PlayerPlaceholder serverOnline = (PlayerPlaceholder) TAB.getInstance().getPlaceholderManager().getPlaceholder("%serveronline%");
-		serverOnline.updateValue(changed, serverOnline.request(changed));
 	}
 
 	/**
