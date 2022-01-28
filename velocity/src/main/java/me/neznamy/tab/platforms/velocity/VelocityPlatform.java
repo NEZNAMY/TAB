@@ -10,8 +10,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.platforms.velocity.event.TabLoadEvent;
-import me.neznamy.tab.platforms.velocity.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.permission.LuckPerms;
@@ -78,14 +76,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	}
 
 	@Override
-	public void callLoadEvent() {
-		server.getEventManager().fireAndForget(new TabLoadEvent());
-	}
+	public void callLoadEvent() {}
 	
 	@Override
-	public void callLoadEvent(TabPlayer player) {
-		server.getEventManager().fireAndForget(new TabPlayerLoadEvent(player));
-	}
+	public void callLoadEvent(TabPlayer player) {}
 
 	@Override
 	public int getMaxPlayers() {
