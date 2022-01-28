@@ -9,6 +9,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -51,6 +52,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerServerPlaceholder("%memory-max%", -1, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576))).enableTriggerMode();
 		manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
 		manager.registerServerPlaceholder("%memory-max-gb%", -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024)).enableTriggerMode();
+		manager.registerServerPlaceholder("%online%", 1000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count());
+		manager.registerServerPlaceholder("%staffonline%", 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
+		manager.registerServerPlaceholder("%nonstaffonline%", 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
 		PermissionPlugin plugin = TAB.getInstance().getGroupManager().getPlugin();
 		if (plugin instanceof LuckPerms) {
 			PlayerPlaceholder prefix = manager.registerPlayerPlaceholder("%luckperms-prefix%", -1, ((LuckPerms)plugin)::getPrefix);
@@ -92,7 +96,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	 */
 	private void registerAnimationPlaceholders(PlaceholderManager manager) {
 		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
-			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"), TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
+			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
+					TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
 			((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholderImpl("%animation:" + a.getName() + "%", a.getRefresh(), p -> a.getMessage()) {
 
 				@Override

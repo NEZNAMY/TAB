@@ -97,7 +97,7 @@ public class BukkitPlatform implements Platform {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection())
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BukkitPipelineInjector());
-		new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
+		new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		loadNameTagFeature(tab);
 		tab.loadUniversalFeatures();
