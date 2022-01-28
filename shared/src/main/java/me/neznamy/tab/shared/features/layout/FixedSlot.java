@@ -17,14 +17,16 @@ public class FixedSlot extends TabFeature {
 	private final String text;
 	private final String propertyName;
 	private final Object skin;
+	private final int ping;
 
-	public FixedSlot(Layout layout, int slot, String text, String skin) {
+	public FixedSlot(Layout layout, int slot, String text, String skin, int ping) {
 		super(layout.getFeatureName(), "Updating fixed slots");
 		this.layout = layout;
 		this.id = layout.getManager().getUUID(slot);
 		this.text = text;
 		propertyName = "Layout-" + layout.getName() + "SLOT-" + slot;
-		this.skin = layout.getManager().getSkinManager().getSkin(skin);
+		this.skin = layout.getManager().getSkinManager().getSkin(skin.length() == 0 ? layout.getManager().getDefaultSkin() : skin);
+		this.ping = ping;
 	}
 
 	public String getText() {
@@ -41,6 +43,10 @@ public class FixedSlot extends TabFeature {
 
 	public Object getSkin() {
 		return skin;
+	}
+
+	public int getPing() {
+		return ping;
 	}
 
 	@Override

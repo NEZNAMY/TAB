@@ -21,6 +21,7 @@ public class LayoutManager extends TabFeature {
 	private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
 	private final boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
 	private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more"));
+	private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
 	private final SkinManager skinManager = new SkinManager(defaultSkin);
 	
 	private final Map<String, Layout> layouts = new LinkedHashMap<>();
@@ -64,8 +65,9 @@ public class LayoutManager extends TabFeature {
 				String[] array = fixedSlot.split("\\|");
 				int slot = Integer.parseInt(array[0]);
 				String text = array[1];
-				String skin = array.length > 2 ? array[2] : defaultSkin;
-				FixedSlot f = new FixedSlot(l, slot, text, skin);
+				String skin = array.length > 2 ? array[2] : "";
+				int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], emptySlotPing) : emptySlotPing;
+				FixedSlot f = new FixedSlot(l, slot, text, skin, ping);
 				fixedSlots.put(slot, f);
 				emptySlots.remove((Integer)slot);
 				if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
@@ -186,6 +188,14 @@ public class LayoutManager extends TabFeature {
 
 	public Map<String, Layout> getLayouts() {
 		return layouts;
+	}
+
+	public int getEmptySlotPing() {
+		return emptySlotPing;
+	}
+
+	public String getDefaultSkin() {
+		return defaultSkin;
 	}
 
 	public enum Direction {
