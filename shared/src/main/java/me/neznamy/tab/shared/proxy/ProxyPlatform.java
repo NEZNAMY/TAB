@@ -10,12 +10,14 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
-import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ProxyPlatform implements Platform {
 
 	protected final PluginMessageHandler plm;
+	private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 	
 	protected ProxyPlatform(PluginMessageHandler plm) {
 		this.plm = plm;
@@ -24,21 +26,18 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
-		Placeholder p;
+		Placeholder placeholder;
 		if (identifier.startsWith("%rel_")) {
-			p = new RelationalPlaceholderImpl(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> ""); //bridge does not support relational placeholders yet
+			placeholder = pl.registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> null);
 		} else {
 			int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
-			p = new PlayerPlaceholderImpl(identifier, refresh, null) {
-
-				@Override
-				public String request(TabPlayer p) {
-					plm.requestPlaceholder(p, identifier);
-					return null;
-				}
-			};
+			placeholder = pl.registerPlayerPlaceholder(identifier, refresh, player -> null);
 		}
-		pl.registerPlaceholder(p);
+		placeholder.enableTriggerMode();
+		bridgePlaceholders.put(placeholder.getIdentifier(), placeholder.getRefresh());
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			plm.sendMessage(all, "Placeholder", placeholder.getIdentifier(), placeholder.getRefresh());
+		}
 	}
 	
 	@Override
@@ -60,5 +59,9 @@ public abstract class ProxyPlatform implements Platform {
 
 	public PluginMessageHandler getPluginMessageHandler() {
 		return plm;
+	}
+
+	public Map<String, Integer> getBridgePlaceholders() {
+		return bridgePlaceholders;
 	}
 }

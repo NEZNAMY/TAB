@@ -45,7 +45,9 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	 * @return	true if value changed, false if not
 	 */
 	public boolean update(TabPlayer viewer, TabPlayer target) {
-		String newValue = getReplacements().findReplacement(String.valueOf(request(viewer, target)));
+		Object output = request(viewer, target);
+		if (output == null) return false; //bridge placeholders, they are updated using updateValue method
+		String newValue = getReplacements().findReplacement(String.valueOf(output));
 		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
 			lastValues.get(viewer).put(target, newValue);
 			return true;

@@ -1,34 +1,21 @@
 package me.neznamy.tab.shared.permission;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 
 /**
  * Class to take groups from Vault on bukkit side if no permission plugin on BungeeCord is found
  */
 public class VaultBridge extends PermissionPlugin {
-
-	/** Plugin message handler to request groups through */
-	private final PluginMessageHandler plm;
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param	plm
-	 * 			plugin message handler to request groups through
 	 */
-	public VaultBridge(PluginMessageHandler plm) {
+	public VaultBridge() {
 		super(null);
-		this.plm = plm;
 	}
 	
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF("Group");
-		plm.sendPluginMessage(p, out.toByteArray());
 		return p.getGroup();
 	}
 

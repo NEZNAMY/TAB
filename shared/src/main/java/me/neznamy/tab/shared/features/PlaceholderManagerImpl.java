@@ -60,7 +60,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
 		boolean somethingChanged = false;
 		for (Placeholder placeholder : usedPlaceholders) {
-			if (placeholder.getRefresh() == -1 || loopTime % placeholder.getRefresh() != 0) continue;
+			if (placeholder.getRefresh() == -1 || placeholder.isTriggerMode() || loopTime % placeholder.getRefresh() != 0) continue;
 			if (placeholder instanceof RelationalPlaceholderImpl && updateRelationalPlaceholder((RelationalPlaceholderImpl) placeholder, forceUpdate)) somethingChanged = true;
 			if (placeholder instanceof PlayerPlaceholderImpl && updatePlayerPlaceholder((PlayerPlaceholderImpl) placeholder, update)) somethingChanged = true;
 			if (placeholder instanceof ServerPlaceholderImpl && updateServerPlaceholder((ServerPlaceholderImpl) placeholder, update)) somethingChanged = true;

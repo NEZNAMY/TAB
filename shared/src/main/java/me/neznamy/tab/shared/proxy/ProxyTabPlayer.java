@@ -1,67 +1,80 @@
 package me.neznamy.tab.shared.proxy;
 
+import com.google.common.collect.Lists;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
+import me.neznamy.tab.shared.permission.VaultBridge;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
-
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
-	private Map<String, String> attributes = new HashMap<>();
-	private final Map<String, Long> cooldowns = new HashMap<>();
+	private boolean vanished;
+	private boolean disguised;
+	private boolean invisible;
+	private final Map<String, Boolean> permissions = new HashMap<>();
 	
 	protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
 		super(player, uniqueId, name, server, "N/A", protocolVersion);
-		getPluginMessageHandler().requestAttribute(this, "world");
+		List<Object> args = Lists.newArrayList("PlayerJoin", TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge,
+				TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX));
+		ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
+		Map<String, Integer> placeholders = platform.getBridgePlaceholders();
+		args.add(placeholders.size());
+		for (Map.Entry<String, Integer> entry : placeholders.entrySet()) {
+			args.add(entry.getKey());
+			args.add(entry.getValue());
+		}
+		getPluginMessageHandler().sendMessage(this, args.toArray());
 	}
 	
 	@Override
 	public boolean isVanished() {
-		return Boolean.parseBoolean(getAttribute("vanished", false));
+		return vanished;
+	}
+
+	public void setVanished(boolean vanished) {
+		this.vanished = vanished;
 	}
 	
 	@Override
 	public boolean isDisguised() {
-		return Boolean.parseBoolean(getAttribute("disguised", false));
+		return disguised;
+	}
+
+	public void setDisguised(boolean disguised) {
+		this.disguised = disguised;
 	}
 	
 	@Override
 	public boolean hasInvisibilityPotion() {
-		return Boolean.parseBoolean(getAttribute("invisible", false));
+		return invisible;
 	}
 
-	public String getAttribute(String name, Object def) {
-		if (!cooldowns.containsKey(name) || System.currentTimeMillis() - cooldowns.get(name) > 1000){
-			cooldowns.put(name, System.currentTimeMillis());
-			getPluginMessageHandler().requestAttribute(this, name);
-		}
-		return getAttributes().getOrDefault(name, def.toString());
+	public void setInvisible(boolean invisible) {
+		this.invisible = invisible;
 	}
-	
+
 	@Override
 	public boolean hasPermission(String permission) {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			String merge = "hasPermission:" + permission;
-			getPluginMessageHandler().requestAttribute(this, merge);
-			return Boolean.parseBoolean(getAttributes().getOrDefault(merge, "false"));
+			getPluginMessageHandler().sendMessage(this, "Permission", permission);
+			return permissions.getOrDefault(permission, false);
 		}
 		return hasPermission0(permission);
 	}
-	
-	public void setAttribute(String attribute, String value) {
-		getAttributes().put(attribute, value);
-	}
-	
-	public PluginMessageHandler getPluginMessageHandler() {
-		return ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler();
+
+	public void setHasPermission(String permission, boolean value) {
+		permissions.put(permission, value);
 	}
 
-	private Map<String, String> getAttributes() {
-		if (attributes == null) attributes = new HashMap<>(); //called by superclass before initialized in constructor
-		return attributes;
+	public PluginMessageHandler getPluginMessageHandler() {
+		return ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler();
 	}
 	
 	public abstract boolean hasPermission0(String permission);

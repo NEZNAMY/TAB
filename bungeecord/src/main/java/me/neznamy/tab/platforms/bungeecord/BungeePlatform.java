@@ -44,13 +44,13 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public PermissionPlugin detectPermissionPlugin() {
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge(plm);
+			return new VaultBridge();
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
 			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else {
-			return new VaultBridge(plm);
+			return new VaultBridge();
 		}
 	}
 

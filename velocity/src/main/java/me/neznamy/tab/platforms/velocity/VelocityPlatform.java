@@ -42,11 +42,11 @@ public class VelocityPlatform extends ProxyPlatform {
 	public PermissionPlugin detectPermissionPlugin() {
 		Optional<PluginContainer> luckperms = server.getPluginManager().getPlugin("luckperms");
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge(plm);
+			return new VaultBridge();
 		} else if (luckperms.isPresent()) {
 			return new LuckPerms(luckperms.get().getDescription().getVersion().orElse("null"));
 		} else {
-			return new VaultBridge(plm);
+			return new VaultBridge();
 		}
 	}
 	
