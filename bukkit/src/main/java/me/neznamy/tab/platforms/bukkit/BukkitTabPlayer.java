@@ -22,7 +22,6 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
 import io.netty.channel.Channel;
 import me.libraryaddict.disguise.DisguiseAPI;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
@@ -30,26 +29,31 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * TabPlayer for Bukkit
+ * TabPlayer implementation for Bukkit platform
  */
 public class BukkitTabPlayer extends ITabPlayer {
 
-	//nms handle
+	/** Player's NMS handle (EntityPlayer), preloading for speed */
 	private Object handle;
 
-	//nms player connection
+	/** Player's connection for sending packets, preloading for speed */
 	private Object playerConnection;
 	
-	//player's visible boss bars
+	/** Bukkit BossBars the player can currently see */
 	private final Map<UUID, BossBar> bossBars = new HashMap<>();
+
+	/** ViaVersion BossBars this 1.9+ player can see on 1.8 server */
 	private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossBars = new HashMap<>();
 
 	/**
-	 * Constructs new instance with given parameter
-	 * @param p - bukkit player
+	 * Constructs new instance with given bukkit player and protocol version
+	 * @param	p
+	 * 			bukkit player
+	 * @param	protocolVersion
+	 * 			Player's protocol network id
 	 */
 	public BukkitTabPlayer(Player p, int protocolVersion){
-		super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName());
+		super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName(), protocolVersion);
 		try {
 			handle = NMSStorage.getInstance().getHandle.invoke(player);
 			playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -58,7 +62,6 @@ public class BukkitTabPlayer extends ITabPlayer {
 		} catch (ReflectiveOperationException e) {
 			TAB.getInstance().getErrorManager().printError("Failed to get playerConnection or channel of " + p.getName(), e);
 		}
-		version = ProtocolVersion.fromNetworkId(protocolVersion);
 	}
 
 	@Override
@@ -99,7 +102,14 @@ public class BukkitTabPlayer extends ITabPlayer {
 		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
-	
+
+	/**
+	 * Handles PacketPlayOutBoss packet send request using Bukkit API,
+	 * since the API offers everything we need and makes us not need to
+	 * deal with NMS code at all.
+	 * @param	packet
+	 * 			packet request to handle using Bukkit API
+	 */
 	private void handle(PacketPlayOutBoss packet) {
 		BossBar bar = bossBars.get(packet.getId());
 		if (packet.getOperation() == PacketPlayOutBoss.Action.ADD) {
@@ -141,7 +151,13 @@ public class BukkitTabPlayer extends ITabPlayer {
 			break;
 		}
 	}
-	
+
+	/**
+	 * Handles PacketPlayOutBoss packet request for 1.9+ clients on
+	 * 1.8 servers using ViaVersion API instead of using Wither.
+	 * @param	packet
+	 * 			packet request to handle using ViaVersion API
+	 */
 	private void handleVia(PacketPlayOutBoss packet) {
 		com.viaversion.viaversion.api.legacy.bossbar.BossBar bar;
 		switch (packet.getOperation()) {
@@ -181,29 +197,33 @@ public class BukkitTabPlayer extends ITabPlayer {
 			break;
 		}
 	}
-	
+
+	/**
+	 * Sets BossBar flag to requested target value.
+	 * @param	bar
+	 * 			BossBar to set flag of
+	 * @param	targetValue
+	 * 			Target value of the flag
+	 * @param	flag
+	 * 			Flag to set value of
+	 */
 	private void processFlag(BossBar bar, boolean targetValue, BarFlag flag) {
-		if (targetValue) {
-			if (!bar.hasFlag(flag)) {
-				bar.addFlag(flag);
-			}
-		} else {
-			if (bar.hasFlag(flag)) {
-				bar.removeFlag(flag);
-			}
-		}
+		if (targetValue && !bar.hasFlag(flag)) bar.addFlag(flag);
+		if (!targetValue && bar.hasFlag(flag)) bar.removeFlag(flag);
 	}
-	
+
+	/**
+	 * Sets BossBar flag to requested target value.
+	 * @param	bar
+	 * 			BossBar to set flag of
+	 * @param	targetValue
+	 * 			Target value of the flag
+	 * @param	flag
+	 * 			Flag to set value of
+	 */
 	private void processFlagVia(com.viaversion.viaversion.api.legacy.bossbar.BossBar bar, boolean targetValue, BossFlag flag) {
-		if (targetValue) {
-			if (!bar.hasFlag(flag)) {
-				bar.addFlag(flag);
-			}
-		} else {
-			if (bar.hasFlag(flag)) {
-				bar.removeFlag(flag);
-			}
-		}
+		if (targetValue && !bar.hasFlag(flag)) bar.addFlag(flag);
+		if (!targetValue && bar.hasFlag(flag)) bar.removeFlag(flag);
 	}
 
 	@Override

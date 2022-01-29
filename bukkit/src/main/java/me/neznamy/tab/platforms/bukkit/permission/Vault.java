@@ -10,13 +10,10 @@ import net.milkbowl.vault.permission.Permission;
 /**
  * Vault permission hook
  */
-public class Vault implements PermissionPlugin {
+public class Vault extends PermissionPlugin {
 
-	//permission plugin
+	/** Permission plugin */
 	private final Permission permission;
-	
-	//vault version
-	private final String vaultVersion;
 
 	/**
 	 * Constructs new instance with given parameters
@@ -24,13 +21,13 @@ public class Vault implements PermissionPlugin {
 	 * @param vaultVersion vault version
 	 */
 	public Vault(Permission permission, String vaultVersion) {
+		super(vaultVersion);
 		this.permission = permission;
-		this.vaultVersion = vaultVersion;
 	}
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		if (getName().equals("SuperPerms")) return GroupManager.DEFAULT_GROUP;
+		if (getName().equals("SuperPerms")) return GroupManager.DEFAULT_GROUP; //Vault's dummy implementation throws exception on every request
 		return permission.getPrimaryGroup((Player) p.getPlayer());
 	}
 
@@ -41,6 +38,6 @@ public class Vault implements PermissionPlugin {
 
 	@Override
 	public String getVersion() {
-		return "Vault " + vaultVersion;
+		return "Vault " + super.getVersion();
 	}
 }

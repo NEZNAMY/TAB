@@ -207,8 +207,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
 	@Override
 	public List<String> detectPlaceholders(String text){
+		if (text == null || !text.contains("%")) return Collections.emptyList();
 		List<String> placeholders = new ArrayList<>();
-		if (text == null || !text.contains("%")) return placeholders;
 		Matcher m = placeholderPattern.matcher(text);
 		while (m.find()) {
 			placeholders.add(m.group());

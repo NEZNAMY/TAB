@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.GroupManager;
-import me.neznamy.tab.shared.placeholders.PrefixSuffixProvider;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
@@ -13,24 +12,22 @@ import net.luckperms.api.query.QueryOptions;
 /**
  * LuckPerms hook
  */
-public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
+public class LuckPerms extends PermissionPlugin {
 
 	private static final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
-	//LuckPerms version
-	private final String version;
 
 	/**
 	 * Constructs new instance with given parameter
 	 * @param version - LuckPerms version
 	 */
 	public LuckPerms(String version) {
-		this.version = version;
+		super(version);
 	}
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
 		try {
-			if (version.startsWith("4")) return UPDATE_MESSAGE;
+			if (getVersion().startsWith("4")) return UPDATE_MESSAGE;
 			net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
 			User user = api.getUserManager().getUser(p.getUniqueId());
 			if (user == null) return GroupManager.DEFAULT_GROUP; //pretend like nothing is wrong
@@ -40,19 +37,17 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 		}
 	}
 
-	@Override
 	public String getPrefix(TabPlayer p) {
 		return getValue(p, true);
 	}
 
-	@Override
 	public String getSuffix(TabPlayer p) {
 		return getValue(p, false);
 	}
 	
 	private String getValue(TabPlayer p, boolean prefix) {
 		try {
-			if (version.startsWith("4")) return UPDATE_MESSAGE;
+			if (getVersion().startsWith("4")) return UPDATE_MESSAGE;
 			net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
 			User user = api.getUserManager().getUser(p.getUniqueId());
 			if (user == null) return "";
@@ -70,10 +65,5 @@ public class LuckPerms implements PermissionPlugin, PrefixSuffixProvider {
 			//pretend like nothing is wrong
 			return "";
 		}
-	}
-
-	@Override
-	public String getVersion() {
-		return version;
 	}
 }

@@ -2,8 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.Map;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -81,8 +80,8 @@ public class DebugCommand extends SubCommand {
 			boolean disabledNametags = ((TabFeature) tab.getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
 			showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
 			showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
-			for (Object line : getExtraLines()) {
-				showProperty(sender, analyzed, line.toString(), disabledNametags);
+			for (String line : getExtraLines()) {
+				showProperty(sender, analyzed, line, disabledNametags);
 			}
 		} else {
 			sendMessage(sender, "&atagprefix: &cDisabled");
@@ -162,11 +161,11 @@ public class DebugCommand extends SubCommand {
 	 * Returns list of extra properties if unlimited nametag mode is enabled
 	 * @return list of extra properties
 	 */
-	@SuppressWarnings("unchecked")
-	public List<Object> getExtraLines(){
+	public List<String> getExtraLines(){
 		if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) return new ArrayList<>();
-		List<Object> lines = Lists.newArrayList((List<Object>) TAB.getInstance().getConfiguration().getConfig().getObject("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
-		lines.addAll(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines").keySet());
+		List<String> lines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
+		Map<String, Number> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
+		lines.addAll(staticLines.keySet());
 		lines.remove(TabConstants.Property.NAMETAG);
 		lines.add(TabConstants.Property.CUSTOMTAGNAME);
 		return lines;

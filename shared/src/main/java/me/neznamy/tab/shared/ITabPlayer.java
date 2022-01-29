@@ -42,13 +42,14 @@ public abstract class ITabPlayer implements TabPlayer {
 	private final List<String> registeredTeams = new ArrayList<>();
 	private final List<String> registeredObjectives = new ArrayList<>();
 
-	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world) {
+	protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion) {
 		this.player = player;
 		this.uniqueId = uniqueId;
 		this.name = name;
 		this.server = server;
 		this.world = world;
-		bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
+		this.version = ProtocolVersion.fromNetworkId(protocolVersion);
+		this.bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
 		setGroup(TAB.getInstance().getGroupManager().detectPermissionGroup(this), false);
 	}
 

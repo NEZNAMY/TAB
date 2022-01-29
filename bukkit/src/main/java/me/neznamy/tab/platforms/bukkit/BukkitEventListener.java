@@ -15,10 +15,10 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitEventListener implements Listener {
 
-	private final Main main;
+	private final BukkitPlatform platform;
 	
-	public BukkitEventListener(Main main) {
-		this.main = main;
+	public BukkitEventListener(BukkitPlatform platform) {
+		this.platform = platform;
 	}
 	
 	/**
@@ -38,7 +38,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), main.getProtocolVersion(e.getPlayer()))));
+		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer()))));
 	}
 
 	/**

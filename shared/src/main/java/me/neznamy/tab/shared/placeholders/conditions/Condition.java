@@ -23,7 +23,7 @@ public class Condition {
 	private static final Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
 	
 	//condition type
-	private final ConditionType type;
+	private final boolean type;
 	
 	//name of this condition
 	private final String name;
@@ -57,7 +57,7 @@ public class Condition {
 	 * @param yes - value to return if condition is met
 	 * @param no - value to return if condition is not met
 	 */
-	protected Condition(ConditionType type, String name, List<String> conditions, String yes, String no) {
+	protected Condition(boolean type, String name, List<String> conditions, String yes, String no) {
 		this.type = type;
 		this.name = name;
 		this.yes = yes;
@@ -128,7 +128,7 @@ public class Condition {
 	 * @return true if met, false if not
 	 */
 	public boolean isMet(TabPlayer p) {
-		if (type == ConditionType.AND) {
+		if (type) {
 			for (SimpleCondition condition : subConditions) {
 				if (!condition.isMet(p)) return false;
 			}
@@ -151,14 +151,7 @@ public class Condition {
 	 * @return compiled condition
 	 */
 	public static Condition compile(String name, List<String> conditions, String conditionType, String yes, String no) {
-		ConditionType type;
-		try {
-			type = ConditionType.valueOf(conditionType);
-		} catch (IllegalArgumentException e) {
-			type = ConditionType.AND;
-			if (conditions.size() > 1) TAB.getInstance().getErrorManager().startupWarn("Invalid condition type: " + conditionType);
-		}
-		return new Condition(type, name, conditions, yes, no);
+		return new Condition("AND".equals(conditionType), name, conditions, yes, no);
 	}
 	
 	/**

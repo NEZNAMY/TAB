@@ -42,9 +42,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new ScoreboardCommand());
 		registerSubCommand(new WidthCommand());
 		List<String> properties = Lists.newArrayList(TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
-		for (Object line : ((DebugCommand)getSubcommands().get("debug")).getExtraLines()) {
-			properties.add(line.toString());
-		}
+		properties.addAll(((DebugCommand) getSubcommands().get("debug")).getExtraLines());
 		SubCommand.setAllProperties(properties.toArray(new String[0]));
 	}
 

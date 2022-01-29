@@ -1,9 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord.redisbungee;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
@@ -52,37 +49,16 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	}
 	
 	private void overridePlaceholders() {
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%online%", 2000, p -> {
-			int count = 0;
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) count++;
-			}
-			for (RedisPlayer all : redisPlayers.values()){
-				if (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) count++;
-			}
-			return count;
-		});
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%staffonline%", 2000, p -> {
-			int count = 0;
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
-				if (all.hasPermission(TabConstants.Permission.STAFF) && (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED))) count++;
-			}
-			for (RedisPlayer all : redisPlayers.values()){
-				if (all.isStaff() && (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED))) count++;
-			}
-			return count;
-		});
+		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%online%", 1000, () ->
+			Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
+			redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
+		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%staffonline%", 1000, () ->
+			Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
+			redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
 		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%online_" + server.getKey() + "%", 1000, () -> {
-				int count = 0;
-				for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-					if (p.getServer().equals(server.getValue().getName()) && !p.isVanished()) count++;
-				}
-				for (RedisPlayer p : redisPlayers.values()){
-					if (p.getServer().equals(server.getValue().getName()) && !p.isVanished()) count++;
-				}
-				return count;
-			});
+			TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%online_" + server.getKey() + "%", 1000, () ->
+				Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> all.getServer().equals(server.getValue().getName()) && !all.isVanished()).count() +
+				redisPlayers.values().stream().filter(all -> all.getServer().equals(server.getValue().getName()) && !all.isVanished()).count());
 		}
 	}
 	

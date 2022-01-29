@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 public class TabRepeatingTask implements RepeatingTask {
 	
 	private final ExecutorService exe;
-	private Runnable runnable;
+	private final Runnable runnable;
 	private final String errorDescription;
 	private final TabFeature feature;
 	private final String type;
@@ -63,10 +63,5 @@ public class TabRepeatingTask implements RepeatingTask {
 	@Override
 	public void cancel() {
 		task.cancel(true);
-	}
-
-	@Override
-	public void setRunnable(Runnable runnable) {
-		this.runnable = runnable;
 	}
 }

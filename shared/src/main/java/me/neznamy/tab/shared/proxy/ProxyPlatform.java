@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
-import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 
 public abstract class ProxyPlatform implements Platform {
 
@@ -45,7 +44,6 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true))
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
 		tab.loadUniversalFeatures();

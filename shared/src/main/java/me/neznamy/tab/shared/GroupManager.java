@@ -100,7 +100,7 @@ public class GroupManager extends TabFeature {
 	}
 
 	private String getByPermission(TabPlayer p) {
-		for (Object group : primaryGroupFindingList) {
+		for (String group : primaryGroupFindingList) {
 			if (p.hasPermission(TabConstants.Permission.GROUP_PREFIX + group)) {
 				return String.valueOf(group);
 			}

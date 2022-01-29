@@ -12,26 +12,38 @@ import me.neznamy.tab.shared.TAB;
  */
 public class Animation {
 	
-	//name of the animations
+	/** Animation's name defined in configuration */
 	private final String name;
 	
-	//all defined messages
+	/** All defined frames of the animation */
 	private final String[] messages;
 	
-	//change interval
+	/** Configured change interval for animation to jump to the next frame */
 	private final int interval;
-	
+
+	/**
+	 * Refresh interval of placeholder created from this information.
+	 * It may be lower than change interval due to nested placeholders,
+	 * which may need to refresh faster for any reason,
+	 * such as this being a slow animation with a fast nested animation.
+	 * */
 	private final int refresh;
 	
-	//all nested placeholders used in animation frames
+	/** All nested placeholders used in all frames, preloading for
+	 * better performance since they can be detected immediately and
+	 * don't change at runtime.
+	 * */
 	private final String[] nestedPlaceholders;
 	
 	/**
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when
 	 * refresh is not divisible by 50
-	 * @param name - animations name
-	 * @param list - list of animation frames
-	 * @param interval - refresh interval to next frame
+	 * @param	name
+	 * 			animation's name
+	 * @param	list
+	 * 			list of animation frames
+	 * @param	interval
+	 * 			change interval to next frame
 	 */
 	public Animation(String name, List<String> list, int interval){
 		this.name = name;
@@ -64,8 +76,8 @@ public class Animation {
 	}
 
 	/**
-	 * Current message depending on current system time
-	 * @return current message
+	 * Returns current up-to-date message depending on current system time
+	 * @return	current message
 	 */
 	public String getMessage(){
 		return messages[(((TAB.getInstance().getPlaceholderManager().getLoopTime().get())%(messages.length*interval))/interval)];
@@ -73,23 +85,24 @@ public class Animation {
 	
 	/**
 	 * Returns animation's name
-	 * @return animation's name
+	 * @return	animation's name
 	 */
 	public String getName(){
 		return name;
 	}
 	
 	/**
-	 * Returns refresh interval how often should animation refresh including nested placeholders
-	 * @return refresh interval
+	 * Returns refresh interval how often should the placeholder created
+	 * from this animation refresh including nested placeholders
+	 * @return	refresh interval
 	 */
 	public int getRefresh() {
 		return refresh;
 	}
 
 	/**
-	 * Returns array of all placeholders used in all frames
-	 * @return array of all placeholders used in all frames
+	 * Returns array of all nested placeholders used in all frames
+	 * @return	all nested placeholders in all frames
 	 */
 	public String[] getNestedPlaceholders() {
 		return nestedPlaceholders;

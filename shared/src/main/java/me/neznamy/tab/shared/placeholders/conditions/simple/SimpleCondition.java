@@ -63,11 +63,11 @@ public abstract class SimpleCondition {
 	 * @return replaced string
 	 */
 	public String parseSide(TabPlayer p, String value, String[] placeholders) {
-		Object result = value;
+		String result = value;
 		for (String identifier : placeholders) {
-			result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result.toString(), p);
+			result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result, p);
 		}
-		return result == null ? "null" : EnumChatFormat.color(result.toString());
+		return result == null ? "null" : EnumChatFormat.color(result);
 	}
 	
 	/**

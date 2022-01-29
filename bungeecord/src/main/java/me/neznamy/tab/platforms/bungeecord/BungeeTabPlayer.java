@@ -46,7 +46,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * @param p - BungeeCord player
 	 */
 	public BungeeTabPlayer(ProxiedPlayer p) {
-		super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-");
+		super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
 		try {
 			channel = ((ChannelWrapper) wrapperField.get(getPlayer().getPendingConnection())).getHandle();
 		} catch (IllegalAccessException e) {

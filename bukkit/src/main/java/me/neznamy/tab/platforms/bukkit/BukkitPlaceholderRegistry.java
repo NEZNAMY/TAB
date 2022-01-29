@@ -2,8 +2,6 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -16,16 +14,16 @@ import com.earth2me.essentials.Essentials;
 
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.placeholders.PlaceholderRegistry;
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import net.milkbowl.vault.chat.Chat;
 
 /**
- * Bukkit registry to register bukkit-only placeholders
+ * Bukkit registry to register bukkit-only and universal placeholders
  */
-public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
+public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
 
-	//formatter for 2 decimal places
-	public final DecimalFormat decimal2 = ((DecimalFormat)NumberFormat.getNumberInstance(Locale.US));
+	/** Number formatter for 2 decimal places */
+	private final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
 	private Object chat;
 	private final Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
@@ -39,7 +37,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	 * Constructs new instance with given parameter
 	 */
 	public BukkitPlaceholderRegistry() {
-		decimal2.applyPattern("#.##");
+		numberFormat.setMaximumFractionDigits(2);
 		try {
 			if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 				RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
@@ -76,9 +74,9 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
-		NumberFormat roundDown = NumberFormat.getNumberInstance(Locale.ENGLISH);
-		roundDown.setRoundingMode(RoundingMode.DOWN);
-		roundDown.setMaximumFractionDigits(2);
+		super.registerPlaceholders(manager);
+
+
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());
 		if (paperTps) {
 			manager.registerServerPlaceholder("%tps%", 1000, () -> formatTPS(Bukkit.getTPS()[0]));
@@ -94,7 +92,7 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 			manager.registerServerPlaceholder("%tps%", -1, () -> "-1").enableTriggerMode();
 		}
 		if (paperMspt) {
-			manager.registerServerPlaceholder("%mspt%", 1000, () -> roundDown.format(Bukkit.getAverageTickTime()));
+			manager.registerServerPlaceholder("%mspt%", 1000, () -> numberFormat.format(Bukkit.getAverageTickTime()));
 		}
 		manager.registerPlayerPlaceholder("%afk%", 500, p -> {
 			if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
@@ -123,6 +121,6 @@ public class BukkitPlaceholderRegistry implements PlaceholderRegistry {
 	}
 
 	private String formatTPS(double tps) {
-		return decimal2.format(Math.min(20, tps));
+		return numberFormat.format(Math.min(20, tps));
 	}
 }

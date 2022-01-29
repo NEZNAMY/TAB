@@ -37,6 +37,7 @@ public class TabConstants {
 		public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
 		public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
 		public static final String PROCESSING_PLAYER_MOVEMENT = "Processing player movement";
+		public static final String TELEPORTING_WITHER = "Teleporting wither";
 
 		private CpuUsageCategory() {}
 	}

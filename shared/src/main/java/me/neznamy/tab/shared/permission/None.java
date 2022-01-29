@@ -4,9 +4,13 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.GroupManager;
 
 /**
- * An instance of PermissionPlugin to be used when none is found
+ * An instance of PermissionPlugin to be used when nothing is found
  */
-public class None implements PermissionPlugin {
+public class None extends PermissionPlugin {
+
+	public None() {
+		super(null);
+	}
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
@@ -16,10 +20,5 @@ public class None implements PermissionPlugin {
 	@Override
 	public String getName() {
 		return "Unknown/None";
-	}
-
-	@Override
-	public String getVersion() {
-		return "-";
 	}
 }

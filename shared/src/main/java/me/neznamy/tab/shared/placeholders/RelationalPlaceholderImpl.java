@@ -11,19 +11,24 @@ import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.TAB;
 
 /**
- * A relational placeholder (output different for every pair of players)
+ * Implementation of RelationalPlaceholder interface
  */
 public class RelationalPlaceholderImpl extends TabPlaceholder implements RelationalPlaceholder {
-	
+
+	/** Placeholder function returning fresh output on request */
 	private final BiFunction<TabPlayer, TabPlayer, Object> function;
-	
-	//last known values with first map player viewer and second target
+
+	/** Last known values for each online player duo after applying replacements and nested placeholders */
 	private final WeakHashMap<TabPlayer, WeakHashMap<TabPlayer, String>> lastValues = new WeakHashMap<>();
 
 	/**
 	 * Constructs new instance with given parameters
-	 * @param identifier - placeholder identifier
-	 * @param refresh - refresh interval
+	 * @param	identifier
+	 * 			placeholder identifier, must start with {@code %rel_} and end with {@code %}
+	 * @param	refresh
+	 *			refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
+	 * @param	function
+	 *			refresh function which returns new up-to-date output on request
 	 */
 	public RelationalPlaceholderImpl(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
 		super(identifier, refresh);
@@ -33,9 +38,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	
 	/**
 	 * Updates value for given players and returns true if value changed, false if not
-	 * @param viewer - text viewer
-	 * @param target - target who is the text displayed on
-	 * @return true if value changed, false if not
+	 * @param	viewer
+	 * 			viewer of the placeholder
+	 * @param	target
+	 * 			target who is the text displayed on
+	 * @return	true if value changed, false if not
 	 */
 	public boolean update(TabPlayer viewer, TabPlayer target) {
 		String newValue = getReplacements().findReplacement(String.valueOf(request(viewer, target)));
@@ -48,9 +55,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	
 	/**
 	 * Returns last known value for given players
-	 * @param viewer - text viewer
-	 * @param target - target who is the text displayed on
-	 * @return last known value
+	 * @param	viewer
+	 * 			viewer of the placeholder
+	 * @param	target
+	 * 			target who is the text displayed on
+	 * @return	last known value for entered player duo
 	 */
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
@@ -69,10 +78,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 		return identifier;
 	}
 
-	/**
-	 * Abstract method to be overridden by specific placeholders, returns new value of the placeholder
-	 * @return new value
-	 */
+	@Override
 	public Object request(TabPlayer viewer, TabPlayer target) {
 		try {
 			return function.apply(viewer, target);
@@ -87,6 +93,19 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 		updateValue(viewer, target, value, false);
 	}
 
+	/**
+	 * Internal method with an additional parameter {@code force}, which, if set to true,
+	 * features using the placeholder will refresh despite placeholder seemingly not
+	 * changing output, which is caused by nested placeholder changing value.
+	 * @param	viewer
+	 * 			viewer of the placeholder
+	 * @param	target
+	 * 			target who is the text displayed on
+	 * @param	value
+	 * 			new placeholder output
+	 * @param	force
+	 * 			whether refreshing should be forced or not
+	 */
 	private void updateValue(TabPlayer viewer, TabPlayer target, Object value, boolean force) {
 		String s = getReplacements().findReplacement(String.valueOf(value));
 		if (lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) && lastValues.get(viewer).get(target).equals(s) && !force) return;

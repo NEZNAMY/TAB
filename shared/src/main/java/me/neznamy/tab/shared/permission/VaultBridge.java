@@ -9,16 +9,18 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 /**
  * Class to take groups from Vault on bukkit side if no permission plugin on BungeeCord is found
  */
-public class VaultBridge implements PermissionPlugin {
+public class VaultBridge extends PermissionPlugin {
 
-	//plugin message handler to request groups through
+	/** Plugin message handler to request groups through */
 	private final PluginMessageHandler plm;
 	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param plm - plugin message handler to request groups through
+	 * @param	plm
+	 * 			plugin message handler to request groups through
 	 */
 	public VaultBridge(PluginMessageHandler plm) {
+		super(null);
 		this.plm = plm;
 	}
 	
@@ -33,10 +35,5 @@ public class VaultBridge implements PermissionPlugin {
 	@Override
 	public String getName() {
 		return "Vault through BukkitBridge";
-	}
-
-	@Override
-	public String getVersion() {
-		return "-";
 	}
 }

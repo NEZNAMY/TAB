@@ -20,12 +20,14 @@ import net.luckperms.api.event.user.UserDataRecalculateEvent;
 
 /**
  * An implementation of PlaceholderRegistry for universal placeholders
+ * which work on all platforms.
  */
 public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
-	//decimal formatter for 2 decimal numbers
+	/** Decimal formatter for 2 decimal places */
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");
-	
+
+	/** LuckPerms event listeners as objects to avoid error on modded servers */
 	private Object luckPermsPrefixSub;
 	private Object luckPermsSuffixSub;
 
@@ -72,47 +74,18 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 					suffix.updateValue(p, suffix.request(p));
 				}), () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close());
 		}
-		registerAnimationPlaceholders(manager);
-		registerConditionPlaceholders(manager);
-	}
-	
-	/**
-	 * Evaluates inserted date format, returns default one and console error message if not valid
-	 * @param value - date format to evaluate
-	 * @param defaultValue - value to use if not valid
-	 * @return evaluated date format
-	 */
-	private SimpleDateFormat createDateFormat(String value, String defaultValue) {
-		try {
-			return new SimpleDateFormat(value, Locale.ENGLISH);
-		} catch (IllegalArgumentException e) {
-			TAB.getInstance().getErrorManager().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
-			return new SimpleDateFormat(defaultValue);
-		}
-	}
-
-	/**
-	 * Registers animations
-	 */
-	private void registerAnimationPlaceholders(PlaceholderManager manager) {
 		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
 			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
 					TAB.getInstance().getConfiguration().getAnimationFile().getInt(s + ".change-interval", 0));
+			List<String> nested = Arrays.asList(a.getNestedPlaceholders());
 			((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholderImpl("%animation:" + a.getName() + "%", a.getRefresh(), p -> a.getMessage()) {
 
 				@Override
-				public String[] getNestedPlaceholders(String output) {
-					return a.getNestedPlaceholders();
+				public List<String> getNestedPlaceholders(String output) {
+					return nested;
 				}
 			});
 		}
-	}
-
-	/**
-	 * Registers conditions
-	 */
-	@SuppressWarnings("unchecked")
-	private void registerConditionPlaceholders(PlaceholderManager manager) {
 		Condition.setConditions(new HashMap<>());
 		Map<String, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
 		for (Entry<String, Map<Object, Object>> condition : conditions.entrySet()) {
@@ -124,6 +97,24 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			Condition.getConditions().put(condition.getKey(), c);
 			String identifier = "%condition:" + c.getName() + "%";
 			manager.registerPlayerPlaceholder(identifier, c.getRefresh(), c::getText);
+		}
+	}
+	
+	/**
+	 * Evaluates inserted date format. If it's not valid, a message is printed into console
+	 * and format with {@code defaultValue} is returned.
+	 * @param	value
+	 * 			date format to evaluate
+	 * @param	defaultValue
+	 * 			value to use if entered format is not valid
+	 * @return	evaluated date format
+	 */
+	private SimpleDateFormat createDateFormat(String value, String defaultValue) {
+		try {
+			return new SimpleDateFormat(value, Locale.ENGLISH);
+		} catch (IllegalArgumentException e) {
+			TAB.getInstance().getErrorManager().startupWarn("Format \"" + value + "\" is not a valid date/time format. Did you try to use color codes?");
+			return new SimpleDateFormat(defaultValue);
 		}
 	}
 }

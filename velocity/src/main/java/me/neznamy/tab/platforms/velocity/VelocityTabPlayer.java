@@ -9,7 +9,6 @@ import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
@@ -40,10 +39,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	 * @param p - velocity player
 	 */
 	public VelocityTabPlayer(Player p) {
-		super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-");
+		super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
+				p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol());
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tabListId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
-		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
 		try {
 			Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
 			channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);

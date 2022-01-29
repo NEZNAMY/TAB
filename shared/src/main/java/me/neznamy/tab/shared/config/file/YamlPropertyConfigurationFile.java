@@ -20,14 +20,12 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	private static final String DEFAULT_GROUP = "_DEFAULT_";
 	
 	private final String category;
-	private final List<Object> worldGroups = new ArrayList<>();
-	private final List<Object> serverGroups = new ArrayList<>();
+	private final List<Object> worldGroups = new ArrayList<>(getConfigurationSection(PER_WORLD).keySet());
+	private final List<Object> serverGroups = new ArrayList<>(getConfigurationSection(PER_SERVER).keySet());
 	
 	public YamlPropertyConfigurationFile(InputStream source, File destination) throws IllegalStateException, YAMLException, IOException {
 		super(source, destination);
 		category = destination.getName().contains("groups") ? "group" : "user";
-		serverGroups.addAll(getConfigurationSection(PER_SERVER).keySet());
-		worldGroups.addAll(getConfigurationSection(PER_WORLD).keySet());
 	}
 
 	@Override

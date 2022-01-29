@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.krypton
 
-import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
@@ -24,14 +23,13 @@ import java.util.UUID
 class KryptonTabPlayer(
     delegate: Player,
     protocolVersion: Int
-) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name) {
+) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion) {
 
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
 
     init {
         channel = this.delegate.session.channel
-        version = ProtocolVersion.fromNetworkId(protocolVersion)
     }
 
     override fun hasPermission(permission: String): Boolean = delegate.hasPermission(permission)
