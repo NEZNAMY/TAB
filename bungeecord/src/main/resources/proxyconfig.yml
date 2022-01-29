@@ -157,6 +157,9 @@ ping-spoof:
   enabled: false
   value: 0
 
+fix-pet-names:
+  enabled: false
+
 placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
