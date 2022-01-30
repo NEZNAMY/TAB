@@ -24,5 +24,12 @@ public abstract class ProxyPlaceholderRegistry implements PlaceholderRegistry {
 			}
 			return count;
 		});
+		manager.registerPlayerPlaceholder("%nonstaffonline%", 2000, p -> {
+			int count = 0;
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
+				if (!all.hasPermission(TabConstants.Permission.STAFF) && (!all.isVanished() || p.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED))) count++;
+			}
+			return count;
+		});
 	}
 }
