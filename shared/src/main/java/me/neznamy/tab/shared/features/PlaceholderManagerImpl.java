@@ -47,7 +47,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private Placeholder[] usedPlaceholders = new Placeholder[0];
 	
 	private final AtomicInteger atomic = new AtomicInteger();
-	private final RepeatingTask refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, "refreshing placeholders", this, "Refreshing placeholders", this::refresh);
+	private final RepeatingTask refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, this, "Refreshing placeholders", this::refresh);
 
 	public PlaceholderManagerImpl(){
 		super("Refreshing placeholders", "Updating placeholders");

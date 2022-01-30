@@ -55,7 +55,7 @@ public class GroupManager extends TabFeature {
 	}
 
 	private void updatePlayer(UserDataRecalculateEvent event) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("Processing UserDataRecalculateEvent", this, "Processing UserDataRecalculateEvent", () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask(this, "Processing UserDataRecalculateEvent", () -> {
 			long time = System.nanoTime();
 			TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 			if (p == null) return; //server still starting up and users connecting already (LP loading them)
@@ -66,7 +66,7 @@ public class GroupManager extends TabFeature {
 	}
 
 	private void updateGroup(GroupDataRecalculateEvent event) {
-		TAB.getInstance().getCPUManager().runTaskLater(50, "Processing GroupDataRecalculateEvent", this, "Processing GroupDataRecalculateEvent", () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(50, this, "Processing GroupDataRecalculateEvent", () -> {
 			long time = System.nanoTime();
 			for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
 				refresh(player, false);

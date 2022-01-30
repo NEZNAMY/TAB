@@ -28,7 +28,7 @@ public class VehicleRefresher extends TabFeature {
 	public VehicleRefresher(NameTagX feature) {
 		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50, "processing player movement",
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
 				this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
 					for (TabPlayer inVehicle : playersInVehicle.keySet()) {
 						inVehicle.getArmorStandManager().teleport();

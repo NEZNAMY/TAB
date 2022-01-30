@@ -49,7 +49,7 @@ public class NickCompatibility extends TabFeature {
 	}
 	
 	private void processNameChange(TabPlayer player, String name) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing nickname change", this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
 			
 			if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
 				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

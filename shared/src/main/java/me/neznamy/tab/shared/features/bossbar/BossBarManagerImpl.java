@@ -249,8 +249,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (!hasBossBarVisible(player)) return;
 		BossBar line = lines.get(bossBar);
 		if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-		TAB.getInstance().getCPUManager().runTask("Sending temporary BossBar", () -> line.addPlayer(player));
-		TAB.getInstance().getCPUManager().runTaskLater(duration*1000, "Removing temporary BossBar",
+		TAB.getInstance().getCPUManager().runTask(() -> line.addPlayer(player));
+		TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
 				this, "Removing temporary BossBar", () -> line.removePlayer(player));
 	}
 
@@ -258,7 +258,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	public void announceBossBar(String bossBar, int duration) {
 		BossBar line = lines.get(bossBar);
 		if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
-		TAB.getInstance().getCPUManager().runTask("Announcing BossBar", () -> {
+		TAB.getInstance().getCPUManager().runTask(() -> {
 			announcements.add(line);
 			announceEndTime = System.currentTimeMillis() + duration* 1000L;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -266,7 +266,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
 			}
 		});
-		TAB.getInstance().getCPUManager().runTaskLater(duration*1000, "Removing announced BossBar",
+		TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
 				this, "Removing announced BossBar", () -> {
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (!hasBossBarVisible(all)) continue;

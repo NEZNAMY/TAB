@@ -10,17 +10,15 @@ public class TabRepeatingTask implements RepeatingTask {
 	
 	private final ExecutorService exe;
 	private final Runnable runnable;
-	private final String errorDescription;
 	private final TabFeature feature;
 	private final String type;
 	private int interval;
 	private Future<?> task;
 
-	public TabRepeatingTask(ExecutorService exe, Runnable runnable, String errorDescription, TabFeature feature, String type, int interval) {
+	public TabRepeatingTask(ExecutorService exe, Runnable runnable, TabFeature feature, String type, int interval) {
 		if (interval < 0) throw new IllegalArgumentException("Interval cannot be negative");
 		this.exe = exe;
 		this.runnable = runnable;
-		this.errorDescription = errorDescription;
 		this.feature = feature;
 		this.type = type;
 		this.interval = interval;
@@ -36,13 +34,11 @@ public class TabRepeatingTask implements RepeatingTask {
 					long sleep = nextLoop - System.currentTimeMillis();
 					if (sleep > interval) sleep = interval; //servers who travel back in time
 					if (sleep > 0) Thread.sleep(sleep);
-					TAB.getInstance().getCPUManager().runMeasuredTask(errorDescription, feature, type, runnable);
+					TAB.getInstance().getCPUManager().runMeasuredTask(feature, type, runnable);
 				} catch (InterruptedException pluginDisabled) {
 					Thread.currentThread().interrupt();
 					break;
-				} catch (Exception | LinkageError e) {
-					TAB.getInstance().getErrorManager().printError("An error occurred when " + errorDescription, e);
-				} 
+				}
 			} 
 		});
 	}

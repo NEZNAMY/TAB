@@ -32,7 +32,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//when MC is on fullscreen, BossBar disappears after 1 second of not being seen
 		//when in a small window, it's about 100ms
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100, "teleporting wither",
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100,
 				this, TabConstants.CpuUsageCategory.TELEPORTING_WITHER, this::teleport);
 	}
 	
@@ -65,7 +65,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this,
-				TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+				() -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 }

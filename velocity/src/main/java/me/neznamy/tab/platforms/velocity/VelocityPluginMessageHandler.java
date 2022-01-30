@@ -43,7 +43,7 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 		if (!event.getIdentifier().getId().equalsIgnoreCase(channelName)) return;
 		if (event.getTarget() instanceof Player) {
 			event.setResult(ForwardResult.handled());
-			TAB.getInstance().getCPUManager().runMeasuredTask("processing PluginMessageEvent", "Plugin message handling",
+			TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
 					TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
 				VelocityTabPlayer receiver = (VelocityTabPlayer) TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
 				if (receiver == null) return;

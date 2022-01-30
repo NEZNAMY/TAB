@@ -84,7 +84,7 @@ public class GlobalPlayerList extends TabFeature {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		//delay due to waterfall bug calling server switch when players leave
-		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
 
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

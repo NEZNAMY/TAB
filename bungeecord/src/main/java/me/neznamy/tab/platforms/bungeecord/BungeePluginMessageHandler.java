@@ -36,7 +36,7 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 		if (!event.getTag().equals(channelName)) return;
 		if (event.getReceiver() instanceof ProxiedPlayer) {
 			event.setCancelled(true);
-			TAB.getInstance().getCPUManager().runMeasuredTask("processing PluginMessageEvent", "Plugin message handling",
+			TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
 					TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
 				BungeeTabPlayer receiver = (BungeeTabPlayer) TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId());
 				if (receiver == null) return;

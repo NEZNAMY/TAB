@@ -79,7 +79,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing NameTag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 				if (isPlayerDisabled(p)) continue;
@@ -133,7 +133,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		if (disconnectedPlayer.getArmorStandManager() != null) { //player was not loaded yet
 			disconnectedPlayer.getArmorStandManager().destroy();
-			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+			TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 		}
 	}
 

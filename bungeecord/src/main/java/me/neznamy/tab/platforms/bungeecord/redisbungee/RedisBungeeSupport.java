@@ -78,7 +78,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	@EventHandler
 	public void onMessage(PubSubMessageEvent e) {
 		if (!e.getChannel().equals(CHANNEL_NAME)) return;
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PubSubMessageEvent", this, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
 			JSONObject message;
 			try {
 				message = (JSONObject) new JSONParser().parse(e.getMessage());

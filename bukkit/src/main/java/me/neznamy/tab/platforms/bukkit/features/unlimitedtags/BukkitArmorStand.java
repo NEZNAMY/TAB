@@ -331,7 +331,7 @@ public class BukkitArmorStand implements ArmorStand {
 		Runnable spawn = () -> spawn(viewer);
 		if (viewer.getVersion().getMinorVersion() == 8) {
 			//1.8.0 client sided bug
-			TAB.getInstance().getCPUManager().runTaskLater(50, "compensating for 1.8.0 bugs", manager, TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
+			TAB.getInstance().getCPUManager().runTaskLater(50, manager, TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
 		} else {
 			spawn.run();
 		}

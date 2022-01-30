@@ -43,7 +43,7 @@ public class CpuManager implements ThreadManager {
 	private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 	private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
-	private final Map<Runnable, String> taskQueue = new HashMap<>();
+	private final List<Runnable> taskQueue = new ArrayList<>();
 	private boolean enabled = false;
 
 	//error manager
@@ -88,18 +88,18 @@ public class CpuManager implements ThreadManager {
 
 	public void enable() {
 		enabled = true;
-		taskQueue.forEach((r, e) -> submit(e, r));
+		taskQueue.forEach(this::submit);
 		taskQueue.clear();
 	}
 
 	@Override
-	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
-		return runMeasuredTask(errorDescription, feature.getFeatureName(), type, task);
+	public Future<Void> runMeasuredTask(TabFeature feature, String type, Runnable task) {
+		return runMeasuredTask(feature.getFeatureName(), type, task);
 	}
 
 	@Override
-	public Future<Void> runMeasuredTask(String errorDescription, String feature, String type, Runnable task) {
-		return submit(errorDescription, () -> {
+	public Future<Void> runMeasuredTask(String feature, String type, Runnable task) {
+		return submit(() -> {
 			long time = System.nanoTime();
 			task.run();
 			addTime(feature, type, System.nanoTime()-time);
@@ -107,21 +107,21 @@ public class CpuManager implements ThreadManager {
 	}
 
 	@Override
-	public Future<Void> runTask(String errorDescription, Runnable task) {
-		return submit(errorDescription, task);
+	public Future<Void> runTask(Runnable task) {
+		return submit(task);
 	}
 
 	@Override
-	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return new TabRepeatingTask(threadPool, task, errorDescription, feature, type, intervalMilliseconds);
+	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
+		return new TabRepeatingTask(threadPool, task, feature, type, intervalMilliseconds);
 	}
 
 	@Override
-	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
+	public Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
 		return threadPool.submit(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
-				runMeasuredTask(errorDescription, feature, type, task);
+				runMeasuredTask(feature, type, task);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}
@@ -129,11 +129,11 @@ public class CpuManager implements ThreadManager {
 	}
 
 	@Override
-	public Future<?> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
+	public Future<?> runTaskLater(int delayMilliseconds, Runnable task) {
 		return threadPool.submit(() -> {
 			try {
 				Thread.sleep(delayMilliseconds);
-				submit(errorDescription, task);
+				submit(task);
 			} catch (InterruptedException pluginDisabled) {
 				Thread.currentThread().interrupt();
 			}
@@ -141,16 +141,16 @@ public class CpuManager implements ThreadManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Future<Void> submit(String errorDescription, Runnable task) {
+	private Future<Void> submit(Runnable task) {
 		if (!enabled) {
-			taskQueue.put(task, errorDescription);
+			taskQueue.add(task);
 			return null;
 		}
 		return (Future<Void>) thread.submit(() -> {
 			try {
 				task.run();
 			} catch (Exception | LinkageError e) {
-				errorManager.printError("An error occurred when " + errorDescription, e);
+				errorManager.printError("An error was thrown when executing task", e);
 			}
 		});
 	}

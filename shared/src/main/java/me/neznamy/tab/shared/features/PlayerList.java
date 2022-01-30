@@ -153,7 +153,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
 		if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION))
-			TAB.getInstance().getCPUManager().runTaskLater(300, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+			TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
 	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {

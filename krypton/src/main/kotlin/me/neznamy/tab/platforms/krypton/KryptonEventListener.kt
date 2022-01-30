@@ -13,7 +13,7 @@ class KryptonEventListener(private val plugin: Main) {
     @Listener(ListenerPriority.NONE)
     fun onJoin(event: JoinEvent) {
         if (TAB.getInstance().isDisabled) return
-        TAB.getInstance().cpuManager.runTask("processing JoinEvent") {
+        TAB.getInstance().cpuManager.runTask() {
             TAB.getInstance().featureManager.onJoin(KryptonTabPlayer(event.player, plugin.protocolVersion(event.player)))
         }
     }
@@ -21,7 +21,7 @@ class KryptonEventListener(private val plugin: Main) {
     @Listener(ListenerPriority.NONE)
     fun onQuit(event: QuitEvent) {
         if (TAB.getInstance().isDisabled) return
-        TAB.getInstance().cpuManager.runTask("processing QuitEvent") {
+        TAB.getInstance().cpuManager.runTask() {
             TAB.getInstance().featureManager.onQuit(TAB.getInstance().getPlayer(event.player.uuid))
         }
     }

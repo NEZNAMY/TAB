@@ -20,7 +20,7 @@ public class BungeeEventListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerDisconnectEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerDisconnectEvent", () ->
+		TAB.getInstance().getCPUManager().runTask(() ->
 				TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 
@@ -32,7 +32,7 @@ public class BungeeEventListener implements Listener {
 	@EventHandler
 	public void onSwitch(ServerSwitchEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing ServerSwitchEvent", () -> {
+		TAB.getInstance().getCPUManager().runTask(() -> {
 			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
 				TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 			} else {
