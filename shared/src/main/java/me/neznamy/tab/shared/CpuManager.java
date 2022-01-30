@@ -26,7 +26,6 @@ public class CpuManager implements ThreadManager {
 	//nanoseconds worked in the current 10 seconds
 	private Map<String, Map<String, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
-	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
 	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
 	
 	//packets sent in the current 10 seconds
@@ -35,7 +34,6 @@ public class CpuManager implements ThreadManager {
 	//nanoseconds worked in the previous 10 seconds
 	private Map<String, Map<String, AtomicLong>> featureUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
-	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<>();
 	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
 	
 	//packets sent in the previous 10 seconds
@@ -65,13 +63,11 @@ public class CpuManager implements ThreadManager {
 			//dummy placeholder to trigger refresh periodically from placeholder refreshing thread to not need a new thread just for this
 			featureUsagePrevious = featureUsageCurrent;
 			placeholderUsagePrevious = placeholderUsageCurrent;
-			bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
 			methodUsagePrevious = methodUsageCurrent;
 			packetsPrevious = packetsCurrent;
 
 			featureUsageCurrent = new ConcurrentHashMap<>();
 			placeholderUsageCurrent = new ConcurrentHashMap<>();
-			bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
 			methodUsageCurrent = new ConcurrentHashMap<>();
 			packetsCurrent = new ConcurrentHashMap<>();
 			return "";
@@ -165,15 +161,6 @@ public class CpuManager implements ThreadManager {
 	 */
 	public Map<String, Float> getPlaceholderUsage(){
 		return getUsage(placeholderUsagePrevious);
-	}
-
-	/**
-	 * Returns cpu usage map of placeholders on bukkit side from previous 10 seconds. This is only used
-	 * when TAB is on BungeeCord with PAPI placeholder support
-	 * @return cpu usage map of placeholders
-	 */
-	public Map<String, Float> getBridgeUsage(){
-		return getUsage(bridgePlaceholderUsagePrevious);
 	}
 	
 	/**
@@ -336,15 +323,6 @@ public class CpuManager implements ThreadManager {
 		addTime(placeholderUsageCurrent, placeholder, nanoseconds);
 	}
 
-	/**
-	 * Adds placeholder time to defined placeholder
-	 * @param placeholder - placeholder to add time to
-	 * @param nanoseconds - time to add
-	 */
-	public void addBridgePlaceholderTime(String placeholder, long nanoseconds) {
-		addTime(bridgePlaceholderUsageCurrent, placeholder, nanoseconds);
-	}
-	
 	/**
 	 * Adds method time to defined method
 	 * @param method - method to add time to
