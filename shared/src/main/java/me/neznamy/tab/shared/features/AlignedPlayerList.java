@@ -77,7 +77,6 @@ public class AlignedPlayerList extends PlayerList {
 		} catch (IllegalArgumentException e) {
 			//will investigate later
 			newFormat.append(buildSpaces(12));
-			TAB.getInstance().getErrorManager().printError("Could not build space consisting of " + length + " pixels", e);
 		}
 		return newFormat.append(EnumChatFormat.getLastColors(prefixAndName)).append(suffix).toString();
 	}
