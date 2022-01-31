@@ -135,16 +135,6 @@ public abstract class ITabPlayer implements TabPlayer {
 				registeredObjectives.remove(objective);
 			}
 		}
-		//avoiding console spam from geyser
-		if (packet instanceof PacketPlayOutScoreboardScore) {
-			String objective = ((PacketPlayOutScoreboardScore) packet).getObjectiveName();
-			String player = ((PacketPlayOutScoreboardScore) packet).getPlayer();
-			if (!registeredObjectives.contains(objective)) {
-				TAB.getInstance().getErrorManager().printError("Tried to update score (" + player + ") without the existence of its requested objective '" +
-						objective + "' to player " + getName());
-				return;
-			}
-		}
 		try {
 			sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
 		} catch (Exception e) {
