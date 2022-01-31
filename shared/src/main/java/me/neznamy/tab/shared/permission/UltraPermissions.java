@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * UltraPermissions hook
@@ -15,6 +15,7 @@ public class UltraPermissions extends PermissionPlugin {
 
 	/**
 	 * Constructs new instance with given version
+	 *
 	 * @param	version
 	 * 			UltraPermissions version
 	 */
@@ -25,7 +26,7 @@ public class UltraPermissions extends PermissionPlugin {
 	@Override
 	public String getPrimaryGroup(TabPlayer p) throws ReflectiveOperationException {
 		String[] groups = getAllGroups(p);
-		if (groups.length == 0) return GroupManager.DEFAULT_GROUP;
+		if (groups.length == 0) return TabConstants.DEFAULT_GROUP;
 		return groups[0];
 	}
 
@@ -39,13 +40,13 @@ public class UltraPermissions extends PermissionPlugin {
 		}
 		if (api == null) {
 			TAB.getInstance().getErrorManager().printError("UltraPermissions v" + getVersion() + " returned null API");
-			return new String[]{GroupManager.DEFAULT_GROUP};
+			return new String[]{TabConstants.DEFAULT_GROUP};
 		}
 		Object users = api.getClass().getMethod("getUsers").invoke(api);
 		Optional<Object> optUser = (Optional<Object>) users.getClass().getMethod("name", String.class).invoke(users, p.getName());
 		if (!optUser.isPresent()) {
 			TAB.getInstance().getErrorManager().printError("UltraPermissions v" + getVersion() + " returned null user for " + p.getName() + " (" + p.getUniqueId() + ")");
-			return new String[]{GroupManager.DEFAULT_GROUP};
+			return new String[]{TabConstants.DEFAULT_GROUP};
 		}
 		List<String> groups = new ArrayList<>();
 		Object user = optUser.get();

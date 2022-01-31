@@ -54,6 +54,8 @@ public class Configs {
 	
 	private MySQL mysql;
 
+	private boolean debugMode;
+
 	/**
 	 * Constructs new instance with given parameter
 	 * @param tab - tab instance
@@ -90,7 +92,7 @@ public class Configs {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		converter.convertToV3(config);
 		converter.removeOldOptions(config);
-		tab.setDebugMode(getConfig().getBoolean("debug", false));
+		debugMode = getConfig().getBoolean("debug", false);
 		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		} else {
@@ -204,5 +206,9 @@ public class Configs {
 			}
 		}
 		return element;
+	}
+
+	public boolean isDebugMode() {
+		return debugMode;
 	}
 }

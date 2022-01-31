@@ -13,22 +13,45 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 
 /**
- * Feature handler for TabList objective feature
+ * Feature handler for scoreboard objective with
+ * PLAYER_LIST display slot (in tablist).
  */
 public class YellowNumber extends TabFeature {
 
+	/** Objective name used by this feature */
 	public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
+
+	/** Correct display slot of this feature */
 	public static final int DISPLAY_SLOT = 0;
+
+	/** Scoreboard title which is unused in java */
 	private static final String TITLE = "PlayerListObjectiveTitle";
 
+	/** Numeric value to display */
 	private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
-	private final EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) || 
+
+	/** Display type, either INTEGER or HEARTS */
+	private final EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) ||
 			"%player_health_rounded%".equals(rawValue) ? EnumScoreboardHealthDisplay.HEARTS : EnumScoreboardHealthDisplay.INTEGER;
 
+	/**
+	 * Constructs new instance and sends debug message that feature loaded.
+	 */
 	public YellowNumber() {
 		super("Yellow number", "Updating value", TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-worlds"));
 		TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), displayType));
+	}
+
+	/**
+	 * Returns current value for specified player
+	 *
+	 * @param	p
+	 * 			Player to get value of
+	 * @return	Current value of player
+	 */
+	public int getValue(TabPlayer p) {
+		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
 	}
 
 	@Override
@@ -43,8 +66,9 @@ public class YellowNumber extends TabFeature {
 			loaded.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), this);
 		}
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()){
+			if (isDisabledPlayer(viewer)) continue;
 			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()){
-				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(target), getValue(target)), this);
+				viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getNickname(), getValue(target)), this);
 			}
 		}
 	}
@@ -69,12 +93,12 @@ public class YellowNumber extends TabFeature {
 		int value = getValue(connectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 			if (all == connectedPlayer) {
-				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
+				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getNickname(), value), this);
 				continue;
 			}
 			if (!isDisabledPlayer(all)) {
-				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(connectedPlayer), value), this);
-				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+				all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, connectedPlayer.getNickname(), value), this);
+				connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getNickname(), getValue(all)), this);
 			}
 		}
 	}
@@ -104,23 +128,15 @@ public class YellowNumber extends TabFeature {
 		}
 	}
 
-	public int getValue(TabPlayer p) {
-		return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
-	}
-
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
 		int value = getValue(refreshed);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (isDisabledPlayer(all)) continue;
-			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(refreshed), value), this);
+			all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getNickname(), value), this);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 		if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
-	}
-
-	private String getName(TabPlayer p) {
-		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 	}
 
 	@Override
@@ -130,7 +146,7 @@ public class YellowNumber extends TabFeature {
 		packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), this);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
 			if (all.isLoaded()) {
-				packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, getName(all), getValue(all)), this);
+				packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, all.getNickname(), getValue(all)), this);
 			}
 		}
 	}

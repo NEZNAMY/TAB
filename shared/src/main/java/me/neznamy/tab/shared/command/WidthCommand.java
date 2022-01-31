@@ -123,7 +123,7 @@ public class WidthCommand extends SubCommand {
 				TAB.getInstance().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides").put(character, width);
 				TAB.getInstance().getConfig().save();
 				sendMessage(sender, "&2[TAB] Successfully set width of &6" + (char) character + " &2(&6" + character + "&2) to &6" + width + "&2 pixels.");
-				if (TAB.getInstance().isDebugMode()) {
+				if (TAB.getInstance().getConfiguration().isDebugMode()) {
 					execute(sender, new String[]{String.valueOf(character + 1)});
 				}
 			} else {

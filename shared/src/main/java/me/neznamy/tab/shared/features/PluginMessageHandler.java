@@ -14,17 +14,17 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
- * Universal interface for both proxies to manage plugin messages
+ * Universal interface for proxy to manage plugin messages
  */
 public abstract class PluginMessageHandler {
 
-	//name of plugin messaging channel
-	protected final String channelName = "tab:bridge-1";
-
 	/**
 	 * Handles incoming plugin message with tab's channel name
-	 * @param player - plugin message receiver
-	 * @param in - incoming message
+	 *
+	 * @param	player
+	 * 			plugin message receiver
+	 * @param	in
+	 * 			incoming message
 	 */
 	public void onPluginMessage(ProxyTabPlayer player, ByteArrayDataInput in) {
 		if (TAB.getInstance().isDisabled()) return; //reload in progress
@@ -51,7 +51,7 @@ public abstract class PluginMessageHandler {
 			TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
 		}
 		if ("Group".equals(subChannel)) {
-			player.setGroup(in.readUTF(), true);
+			player.setGroup(in.readUTF());
 		}
 		if ("Permission".equals(subChannel)) {
 			player.setHasPermission(in.readUTF(), in.readBoolean());
@@ -61,7 +61,7 @@ public abstract class PluginMessageHandler {
 			player.setDisguised(in.readBoolean());
 			player.setInvisible(in.readBoolean());
 			TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
-			if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge) player.setGroup(in.readUTF(), true);
+			if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge) player.setGroup(in.readUTF());
 			int placeholderCount = in.readInt();
 			for (int i=0; i<placeholderCount; i++) {
 				String identifier = in.readUTF();
@@ -78,6 +78,14 @@ public abstract class PluginMessageHandler {
 		}
 	}
 
+	/**
+	 * Sends plugin message to specified player
+	 *
+	 * @param	player
+	 * 			Player to send plugin message to
+	 * @param	args
+	 * 			Messages to encode
+	 */
 	public void sendMessage(TabPlayer player, Object... args) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		for (Object arg : args) {
@@ -86,6 +94,15 @@ public abstract class PluginMessageHandler {
 		sendPluginMessage(player, out.toByteArray());
 	}
 
+	/**
+	 * Writes object to data input by calling proper write method
+	 * based on data type of the object.
+	 *
+	 * @param	out
+	 * 			Data output to write to
+	 * @param	value
+	 * 			Value to write
+	 */
 	private void writeObject(ByteArrayDataOutput out, Object value) {
 		if (value == null) return;
 		if (value instanceof String) {
@@ -98,9 +115,12 @@ public abstract class PluginMessageHandler {
 	}
 
 	/**
-	 * Sends plugin message
-	 * @param player - player to go through
-	 * @param message - message
+	 * Sends plugin message to specified player
+	 *
+	 * @param	player
+	 * 			Player to go through
+	 * @param	message
+	 * 			Encoded message
 	 */
 	public abstract void sendPluginMessage(TabPlayer player, byte[] message);
 }

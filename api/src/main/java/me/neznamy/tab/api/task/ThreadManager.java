@@ -36,6 +36,8 @@ public interface ThreadManager {
 	 * @param task - the task
 	 */
 	RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task);
+
+	RepeatingTask startRepeatingTask(int intervalMilliseconds, Runnable task);
 	
 	/**
 	 * Runs task with a delay and measures how long it took to process

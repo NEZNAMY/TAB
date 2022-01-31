@@ -7,7 +7,7 @@ import java.util.Map;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.shared.PropertyImpl;
+import me.neznamy.tab.shared.DynamicText;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
@@ -52,10 +52,7 @@ public class DebugCommand extends SubCommand {
 		sendMessage(sender, "&3[TAB] &a&lShowing debug information");
 		sendMessage(sender, separator);
 		sendMessage(sender, "&6Server version: &b" + tab.getPlatform().getServerVersion());
-		sendMessage(sender, "&6Plugin version: &b" + TAB.PLUGIN_VERSION);
-		if (tab.getErrorManager().getErrorLog().exists()) {
-			sendMessage(sender, "&6" + tab.getErrorManager().getErrorLog().getPath() + " size: &c" + tab.getErrorManager().getErrorLog().length()/1024 + "KB");
-		}
+		sendMessage(sender, "&6Plugin version: &b" + TabConstants.PLUGIN_VERSION);
 		sendMessage(sender, "&6Permission plugin: &b" + TAB.getInstance().getGroupManager().getPlugin().getName());
 		sendMessage(sender, "&6Permission group choice logic: &b" + getGroupChoiceLogic());
 		sendMessage(sender, "&6Sorting system: &b" + getSortingType());
@@ -182,7 +179,7 @@ public class DebugCommand extends SubCommand {
 		if (disabled) {
 			sendMessage(sender, "&a" + property + ": &cDisabled in player's world/server");
 		} else {
-			PropertyImpl pr = (PropertyImpl) analyzed.getProperty(property);
+			DynamicText pr = (DynamicText) analyzed.getProperty(property);
 			String rawValue = EnumChatFormat.decolor(pr.getCurrentRawValue());
 			String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(%s) &7(Source: %s)")), property, rawValue, rawValue.length(), pr.getSource());
 			sendRawMessage(sender, value);

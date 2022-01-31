@@ -15,5 +15,5 @@ dependencies {
 
 blossom {
     replaceToken("@plugin_version@", project.version)
-    replaceTokenIn("src/main/java/me/neznamy/tab/shared/TAB.java")
+    replaceTokenIn("src/main/java/me/neznamy/tab/shared/TabConstants.java")
 }

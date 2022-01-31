@@ -21,6 +21,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
 	/**
 	 * Constructs new instance with given parameters
+	 *
 	 * @param	identifier
 	 * 			placeholder's identifier, must start and end with %
 	 * @param	refresh
@@ -37,6 +38,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 	
 	/**
 	 * Updates placeholder, saves it and returns true if value changed, false if not
+	 *
 	 * @return	true if value changed, false if not
 	 */
 	public boolean update() {
@@ -52,6 +54,32 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Internal method with an additional parameter {@code force}, which, if set to true,
+	 * features using the placeholder will refresh despite placeholder seemingly not
+	 * changing output, which is caused by nested placeholder changing value.
+	 *
+	 * @param	value
+	 * 			new placeholder output
+	 * @param	force
+	 * 			whether refreshing should be forced or not
+	 */
+	private void updateValue(Object value, boolean force) {
+		String s = getReplacements().findReplacement(String.valueOf(value));
+		if (s.equals(lastValue) && !force) return;
+		lastValue = s;
+		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
+		if (usage == null) return;
+		for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+			for (TabFeature f : usage) {
+				long time = System.nanoTime();
+				f.refresh(player, false);
+				TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+			}
+		}
+		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(null));
 	}
 
 	@Override
@@ -77,30 +105,5 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 	@Override
 	public void updateValue(Object value) {
 		updateValue(value, false);
-	}
-
-	/**
-	 * Internal method with an additional parameter {@code force}, which, if set to true,
-	 * features using the placeholder will refresh despite placeholder seemingly not
-	 * changing output, which is caused by nested placeholder changing value.
-	 * @param	value
-	 * 			new placeholder output
-	 * @param	force
-	 * 			whether refreshing should be forced or not
-	 */
-	private void updateValue(Object value, boolean force) {
-		String s = getReplacements().findReplacement(String.valueOf(value));
-		if (s.equals(lastValue) && !force) return;
-		lastValue = s;
-		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
-		if (usage == null) return;
-		for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-			for (TabFeature f : usage) {
-				long time = System.nanoTime();
-				f.refresh(player, false);
-				TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
-			}
-		}
-		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(null));
 	}
 }

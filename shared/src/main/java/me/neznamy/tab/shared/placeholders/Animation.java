@@ -26,18 +26,19 @@ public class Animation {
 	 * It may be lower than change interval due to nested placeholders,
 	 * which may need to refresh faster for any reason,
 	 * such as this being a slow animation with a fast nested animation.
-	 * */
+	 */
 	private final int refresh;
 	
 	/** All nested placeholders used in all frames, preloading for
 	 * better performance since they can be detected immediately and
 	 * don't change at runtime.
-	 * */
+	 */
 	private final String[] nestedPlaceholders;
 	
 	/**
 	 * Constructs new instance with given arguments which are fixed if necessary, such as when
 	 * refresh is not divisible by 50
+	 *
 	 * @param	name
 	 * 			animation's name
 	 * @param	list
@@ -77,6 +78,7 @@ public class Animation {
 
 	/**
 	 * Returns current up-to-date message depending on current system time
+	 *
 	 * @return	current message
 	 */
 	public String getMessage(){
@@ -85,6 +87,7 @@ public class Animation {
 	
 	/**
 	 * Returns animation's name
+	 *
 	 * @return	animation's name
 	 */
 	public String getName(){
@@ -94,6 +97,7 @@ public class Animation {
 	/**
 	 * Returns refresh interval how often should the placeholder created
 	 * from this animation refresh including nested placeholders
+	 *
 	 * @return	refresh interval
 	 */
 	public int getRefresh() {
@@ -102,6 +106,7 @@ public class Animation {
 
 	/**
 	 * Returns array of all nested placeholders used in all frames
+	 *
 	 * @return	all nested placeholders in all frames
 	 */
 	public String[] getNestedPlaceholders() {

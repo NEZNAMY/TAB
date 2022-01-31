@@ -5,6 +5,7 @@ import com.viaversion.viaversion.api.Via
 import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.TabConstants
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.kryptonmc.api.Server
@@ -26,7 +27,7 @@ import java.nio.file.Path
 @Plugin(
     "tab",
     "TAB",
-    TAB.PLUGIN_VERSION,
+    TabConstants.PLUGIN_VERSION,
     "An all-in-one solution that works",
     ["NEZNAMY", "BomBardyGamer"],
     [Dependency("luckperms", true), Dependency("viaversion", true)]

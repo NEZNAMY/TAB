@@ -261,4 +261,6 @@ public interface TabPlayer {
 	boolean hasTemporaryGroup();
 
 	void resetTemporaryGroup();
+
+	String getNickname();
 }

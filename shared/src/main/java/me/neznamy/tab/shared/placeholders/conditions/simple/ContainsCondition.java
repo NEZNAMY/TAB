@@ -3,13 +3,15 @@ package me.neznamy.tab.shared.placeholders.conditions.simple;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * Condition for "contains" type using "<-"
+ * Condition for "contains" type using "&lt;-"
  */
 public class ContainsCondition extends SimpleCondition {
 
 	/**
 	 * Constructs new instance with given condition line
-	 * @param line - condition line
+	 *
+	 * @param	line
+	 * 			configured condition line
 	 */
 	public ContainsCondition(String line) {
 		String[] arr = line.split("<-");

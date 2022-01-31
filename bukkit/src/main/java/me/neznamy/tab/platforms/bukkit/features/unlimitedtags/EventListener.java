@@ -28,7 +28,7 @@ public class EventListener implements Listener {
 	}
 	
 	/**
-	 * Sneak event listener to de-spawn & spawn armor stands to skip animation
+	 * Sneak event listener to de-spawn and spawn armor stands to skip animation
 	 * @param e - sneak event
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

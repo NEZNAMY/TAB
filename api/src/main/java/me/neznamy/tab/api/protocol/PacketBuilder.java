@@ -155,7 +155,7 @@ public abstract class PacketBuilder {
 	/**
 	 * Cuts given string to specified character length (or length-1 if last character is a color character)
 	 * and translates RGB to legacy colors. If string is not that long, the original string is returned.
-	 * RGB codes are converted into legacy, since cutting is only needed for <1.13.
+	 * RGB codes are converted into legacy, since cutting is only needed for &lt;1.13.
 	 * If {@code string} is {@code null}, empty string is returned.
 	 * @param	string
 	 * 			String to cut
@@ -182,7 +182,7 @@ public abstract class PacketBuilder {
 	 * If {@code clientVersion} is >= 1.13, creates a component from given text and returns
 	 * it as a serialized component, which BungeeCord uses.
 	 * <p>
-	 * If {@code clientVersion} is < 1.12, the text is cut to {@code length} characters if
+	 * If {@code clientVersion} is &lt; 1.12, the text is cut to {@code length} characters if
 	 * needed and returned.
 	 * 
 	 * @param	text

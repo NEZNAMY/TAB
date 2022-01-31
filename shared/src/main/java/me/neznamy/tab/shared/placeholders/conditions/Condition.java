@@ -12,52 +12,63 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.*;
 
 /**
- * The main condition class
+ * The main condition class. It allows users to configure different
+ * condition types that must be met in order to display specified
+ * text or make a condition requirement for a visual to be displayed.
  */
 public class Condition {
 	
-	//map of all defined conditions in config
-	private static Map<String, Condition> conditions = new HashMap<>();
+	/** All conditions defined in configuration including anonymous conditions */
+	private static Map<String, Condition> registeredConditions = new HashMap<>();
 
-	//all known condition types
-	private static final Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
-	
-	//condition type
+	/** All supported sub-condition types */
+	private static final Map<String, Function<String, SimpleCondition>> conditionTypes =
+			new LinkedHashMap<String, Function<String, SimpleCondition>>(){{
+		put("permission:", PermissionCondition::new);
+		put("<-", ContainsCondition::new);
+		put(">=", MoreThanOrEqualsCondition::new);
+		put(">", MoreThanCondition::new);
+		put("<=", LessThanOrEqualsCondition::new);
+		put("<", LessThanCondition::new);
+		put("!=", NotEqualsCondition::new);
+		put("=", EqualsCondition::new);
+	}};
+
+	/** Name of this condition defined in configuration */
+	private final String name;
+
+	/** All defined sub-conditions inside this conditions */
+	protected SimpleCondition[] subConditions;
+
+	/** Condition type, {@code true} for AND type and {@code false} for OR type */
 	private final boolean type;
 	
-	//name of this condition
-	private final String name;
-	
-	//list of sub-conditions
-	protected SimpleCondition[] subConditions;
-	
-	//value to return if condition is met
+	/** Text to display if condition passed */
 	private final String yes;
 	
-	//value to return if condition is not met
+	/** Text to display if condition failed */
 	private final String no;
-	
+
+	/**
+	 * Refresh interval of placeholder created from this condition.
+	 * It is calculated based on nested placeholders used in sub-conditions.
+	 */
 	private int refresh = 10000;
 
-	static {
-		conditionTypes.put("permission:", PermissionCondition::new);
-		conditionTypes.put("<-", ContainsCondition::new);
-		conditionTypes.put(">=", MoreThanOrEqualsCondition::new);
-		conditionTypes.put(">", MoreThanCondition::new);
-		conditionTypes.put("<=", LessThanOrEqualsCondition::new);
-		conditionTypes.put("<", LessThanCondition::new);
-		conditionTypes.put("!=", NotEqualsCondition::new);
-		conditionTypes.put("=", EqualsCondition::new);
-	}
-	
 	/**
-	 * Constructs new instance with given parameters
-	 * @param name - name of condition
-	 * @param conditions - list of condition lines
-	 * @param yes - value to return if condition is met
-	 * @param no - value to return if condition is not met
+	 * Constructs new instance with given parameters and registers
+	 * this condition to list as well as the placeholder.
+	 *
+	 * @param	name
+	 * 			name of condition
+	 * @param	conditions
+	 * 			list of condition lines
+	 * @param	yes
+	 * 			value to return if condition is met
+	 * @param	no
+	 * 			value to return if condition is not met
 	 */
-	protected Condition(boolean type, String name, List<String> conditions, String yes, String no) {
+	public Condition(boolean type, String name, List<String> conditions, String yes, String no) {
 		this.type = type;
 		this.name = name;
 		this.yes = yes;
@@ -99,15 +110,22 @@ public class Condition {
 			}
 		}
 		pm.addUsedPlaceholders(placeholdersInConditions);
+		registeredConditions.put(name, this);
 	}
-	
+
+	/**
+	 * Returns refresh interval of placeholder made from this condition
+	 *
+	 * @return	refresh interval of placeholder made from this condition
+	 */
 	public int getRefresh() {
 		return refresh;
 	}
 	
 	/**
 	 * Returns name of this condition
-	 * @return name of this condition
+	 *
+	 * @return	name of this condition
 	 */
 	public String getName() {
 		return name;
@@ -115,17 +133,21 @@ public class Condition {
 
 	/**
 	 * Returns text for player based on if condition is met or not
-	 * @param p - player to check condition for
-	 * @return yes or no value depending on if condition is met or not
+	 *
+	 * @param	p
+	 * 			player to check condition for
+	 * @return	yes or no value depending on if condition passed or not
 	 */
 	public String getText(TabPlayer p) {
-		return isMet(p) ? getYes() : getNo();
+		return isMet(p) ? yes : no;
 	}
 
 	/**
-	 * Returns true if condition is met for player, false if not
-	 * @param p - player to check
-	 * @return true if met, false if not
+	 * Returns {@code true} if condition is met for player, {@code false} if not
+	 *
+	 * @param	p
+	 * 			player to check conditions for
+	 * @return	{@code true} if met, {@code false} if not
 	 */
 	public boolean isMet(TabPlayer p) {
 		if (type) {
@@ -142,52 +164,37 @@ public class Condition {
 	}
 
 	/**
-	 * Compiles condition from given parameters
-	 * @param name - name of condition
-	 * @param conditions - list of condition lines
-	 * @param conditionType - type of condition AND/OR
-	 * @param yes - value to return if condition is met
-	 * @param no - value to return if condition is not met
-	 * @return compiled condition
-	 */
-	public static Condition compile(String name, List<String> conditions, String conditionType, String yes, String no) {
-		return new Condition("AND".equals(conditionType), name, conditions, yes, no);
-	}
-	
-	/**
-	 * Returns condition from given string. If the string is name of a condition, that condition is returned.
-	 * If it's a condition pattern, it is compiled and returned. If the string is null, null is returned
-	 * @param string - condition name or pattern
-	 * @return condition from string
+	 * Returns condition from given string. If the string is name of a condition,
+	 * that condition is returned. If it's a condition pattern, it is compiled and
+	 * returned. If the string is null, null is returned.
+	 *
+	 * @param	string
+	 * 			condition name or pattern
+	 * @return	condition from string
 	 */
 	public static Condition getCondition(String string) {
 		if (string == null) return null;
-		if (getConditions().containsKey(string)) {
-			return getConditions().get(string);
+		if (registeredConditions.containsKey(string)) {
+			return registeredConditions.get(string);
 		} else {
-			Condition c = Condition.compile("AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "AND", "true", "false");
+			Condition c = new Condition(true, "AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "true", "false");
 			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%condition:" + c.getName() + "%", c.getRefresh(), c::getText);
 			return c;
 		}
 	}
 
-	public static Map<String, Condition> getConditions() {
-		return conditions;
+	/**
+	 * Clears registered condition map on plugin reload
+	 */
+	public static void clearConditions() {
+		registeredConditions = new HashMap<>();
 	}
 
-	public static void setConditions(Map<String, Condition> conditions) {
-		Condition.conditions = conditions;
-	}
-	
+	/**
+	 * Returns map of all registered condition types
+	 * @return	all registered condition types
+	 */
 	public static Map<String, Function<String, SimpleCondition>> getConditionTypes() {
 		return conditionTypes;
-	}
-
-	public String getYes() {
-		return yes;
-	}
-
-	public String getNo() {
-		return no;
 	}
 }

@@ -46,7 +46,7 @@ public class LongLine extends ScoreboardLine {
 		p.setProperty(this, textProperty, text);
 		String value = p.getProperty(textProperty).get();
 		if (p.getVersion().getMinorVersion() >= 13) {
-			addLine(p, playerName, p.getProperty(textProperty).get(), "");
+			addLine(p, playerName, value, "");
 			p.setProperty(this, nameProperty, playerName);
 		} else {
 			String[] values = splitText(playerName, value, p.getVersion().getMinorVersion() >= 8 ? 40 : 16);

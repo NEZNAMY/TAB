@@ -27,9 +27,9 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	/** Decimal formatter for 2 decimal places */
 	private final DecimalFormat decimal2 = new DecimalFormat("#.##");
 
-	/** LuckPerms event listeners as objects to avoid error on modded servers */
-	private Object luckPermsPrefixSub;
-	private Object luckPermsSuffixSub;
+	/** LuckPerms event listeners */
+	private EventSubscription<UserDataRecalculateEvent> luckPermsPrefixSub;
+	private EventSubscription<UserDataRecalculateEvent> luckPermsSuffixSub;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -65,14 +65,14 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 					TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
 					prefix.updateValue(p, prefix.request(p));
-				}), () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsPrefixSub).close());
+				}), () -> luckPermsPrefixSub.close());
 			PlayerPlaceholder suffix = manager.registerPlayerPlaceholder("%luckperms-suffix%", -1, ((LuckPerms)plugin)::getSuffix);
 			suffix.enableTriggerMode(() ->
 				luckPermsSuffixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
 					TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
 					if (p == null) return; //server still starting up and users connecting already (LP loading them)
 					suffix.updateValue(p, suffix.request(p));
-				}), () -> ((EventSubscription<UserDataRecalculateEvent>)luckPermsSuffixSub).close());
+				}), () -> luckPermsSuffixSub.close());
 		}
 		for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
 			Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),
@@ -86,15 +86,14 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 				}
 			});
 		}
-		Condition.setConditions(new HashMap<>());
+		Condition.clearConditions();
 		Map<String, Map<Object, Object>> conditions = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("conditions");
 		for (Entry<String, Map<Object, Object>> condition : conditions.entrySet()) {
 			List<String> list = (List<String>) condition.getValue().get("conditions");
 			String type = String.valueOf(condition.getValue().get("type"));
 			String yes = condition.getValue().getOrDefault(true, true).toString();
 			String no = condition.getValue().getOrDefault(false, false).toString();
-			Condition c = Condition.compile(condition.getKey(), list, type, yes, no);
-			Condition.getConditions().put(condition.getKey(), c);
+			Condition c = new Condition("AND".equals(type), condition.getKey(), list, yes, no);
 			String identifier = "%condition:" + c.getName() + "%";
 			manager.registerPlayerPlaceholder(identifier, c.getRefresh(), c::getText);
 		}
@@ -103,6 +102,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 	/**
 	 * Evaluates inserted date format. If it's not valid, a message is printed into console
 	 * and format with {@code defaultValue} is returned.
+	 *
 	 * @param	value
 	 * 			date format to evaluate
 	 * @param	defaultValue

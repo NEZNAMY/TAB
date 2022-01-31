@@ -11,7 +11,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import org.jetbrains.annotations.NotNull;
 
@@ -116,13 +115,9 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		
 		private TabPlayer getPlayer(String name) {
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (getName(p).equals(name)) return p;
+				if (p.getNickname().equals(name)) return p;
 			}
 			return null;
-		}
-
-		private String getName(TabPlayer p) {
-			return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 		}
 	}
 }

@@ -5,68 +5,78 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import me.neznamy.tab.api.bossbar.BarColor;
-import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 
 /**
- * An error assistant to print internal errors into error file and warn user about misconfiguration
+ * An error assistant to print internal errors into error file
+ * and warn user about misconfiguration
  */
 public class ErrorManager {
 
-	//date format used in error messages
+	/** Date format used in error messages */
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
-	//error logs
-	private final File errorLog;
-	private final File antiOverrideLog;
-	private final File placeholderErrorLog;
+	/** errors.log file for internal plugin errors */
+	private final File errorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "errors.log");
+
+	/** anti-override.log file when some plugin or server itself attempts to override the plugin */
+	private final File antiOverrideLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "anti-override.log");
+
+	/** placeholder-errors.log file for errors thrown by placeholders */
+	private final File placeholderErrorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "placeholder-errors.log");
 
 	/**
-	 * Constructs new instance
-	 */
-	public ErrorManager() {
-		errorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "errors.log");
-		antiOverrideLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "anti-override.log");
-		placeholderErrorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "placeholder-errors.log");
-		if (getErrorLog().exists() && getErrorLog().length() > 10) {
-			startupWarn("File &e" + getErrorLog().getPath() + "&c exists and is not empty. Take a look at the error messages and try to resolve them. After you do, delete the file.");
-		}
-	}
-
-	/**
-	 * Prints an error message into errors.txt file
-	 * @param message - message to print
+	 * Prints error message into errors.log file
+	 *
+	 * @param	message
+	 * 			message to print
 	 */
 	public void printError(String message) {
 		printError(message, null, false);
 	}
 
-
+	/**
+	 * Prints error message and stack trace into errors.log file
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	t
+	 * 			thrown error
+	 */
 	public void printError(String message, Throwable t) {
 		printError(message, t, false);
 	}
 
 	/**
-	 * Prints an error message and stack trace into errors.txt file
-	 * @param message - message to print
-	 * @param t - the throwable
-	 * @param intoConsoleToo - if the message should be printed into console as well
+	 * Prints error message and stack trace into errors.log file
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	t
+		 * 		thrown error
+	 * @param	intoConsoleToo
+	 * 			if the message should be printed into console as well or not
 	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo) {
-		printError(message, t, intoConsoleToo, getErrorLog());
+		printError(message, t, intoConsoleToo, errorLog);
 	}
 
 	/**
-	 * Prints an error message and stack trace into errors.txt file
-	 * @param message - message to print
-	 * @param t - the throwable
-	 * @param intoConsoleToo - if the message should be printed into console as well
-	 * @param file - file to log error to
+	 * Prints error message and stack trace into errors.log file
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	t
+	 * 			thrown error
+	 * @param	intoConsoleToo
+	 * 			if the message should be printed into console as well or not
+	 * @param	file
+	 * 			file to print error to
 	 */
 	public void printError(String message, Throwable t, boolean intoConsoleToo, File file) {
 		Throwable error = t;
@@ -74,11 +84,11 @@ public class ErrorManager {
 			error = error.getCause();
 		}
 		try {
-			if (!createFile(file)) return;
+			if (!file.exists()) Files.createFile(file.toPath());
 			if (file.length() > 1000000) return; //not going over 1 MB
 			try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))){
 				if (message != null) {
-					write(buf, "&c[TAB v" + TAB.PLUGIN_VERSION + "] ", EnumChatFormat.decolor(message), intoConsoleToo);
+					write(buf, "&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ", EnumChatFormat.decolor(message), intoConsoleToo);
 				}
 				if (error != null) {
 					write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
@@ -102,48 +112,57 @@ public class ErrorManager {
 			}
 		}
 	}
-	
+
+	/**
+	 * Prints error message thrown by placeholder and stack trace into placeholder-errors.log file
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	t
+	 * 			thrown error
+	 */
 	public void placeholderError(String message, Throwable t) {
 		printError(message, t, false, placeholderErrorLog);
 	}
 
 	/**
-	 * Creates the file if it does not exist. Returns true if file already existed or creation was successful
-	 * or false if file does not exist and creation failed due to an exception which is then printed into console
-	 * @param file - file to create
-	 * @return true if file already exists / was successfully created, false if creation failed due to an IOException
-	 */
-	private boolean createFile(File file) {
-		if (file.exists()) return true;
-		try {
-			return file.createNewFile();
-		} catch (IOException e) {
-			TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] Failed to create file " + file.getPath() + ": " + e.getMessage(), true);
-			return false;
-		}
-	}
-
-	/**
 	 * Writes message into buffer and console if set
-	 * @param buf - buffered write to write message to
-	 * @param message - message to write
-	 * @param forceConsole - send into console even without debug mode
-	 * @throws IOException - if IO writer operation fails
+	 *
+	 * @param	buf
+	 * 			writer to write message to
+	 * @param	message
+	 * 			message to write
+	 * @param	forceConsole
+	 * 			whether to send into console even without debug mode
+	 * @throws	IOException
+	 * 			if I/O writer operation fails
 	 */
 	private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
 		buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
-		if (TAB.getInstance().isDebugMode() || forceConsole) TAB.getInstance().getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
+		if (TAB.getInstance().getConfiguration().isDebugMode() || forceConsole) TAB.getInstance().getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
 	}
 
+	/**
+	 * Prints error message and stack trace into errors.log file as well as the console
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	t
+	 * 			thrown error
+	 */
 	public void criticalError(String message, Throwable t) {
 		printError(message, t, true);
 	}
 
 	/**
-	 * Parses integer in given string, returns second argument if string is not valid
-	 * @param string - string to parse
-	 * @param defaultValue - value to return if string is not valid
-	 * @return parsed integer
+	 * Parses integer in given string and returns it.
+	 * Returns second argument if string is not valid.
+	 *
+	 * @param	string
+	 * 			string to parse
+	 * @param	defaultValue
+	 * 			value to return if string is not valid
+	 * @return	parsed integer or {@code defaultValue} if input is invalid
 	 */
 	public int parseInteger(String string, int defaultValue) {
 		try {
@@ -153,12 +172,15 @@ public class ErrorManager {
 		}
 	}
 
-
 	/**
-	 * Parses float in given string, returns second argument if string is not valid
-	 * @param string - string to parse
-	 * @param defaultValue - value to return if string is not valid
-	 * @return parsed float
+	 * Parses float in given string and returns it.
+	 * Returns second argument if string is not valid.
+	 *
+	 * @param	string
+	 * 			string to parse
+	 * @param	defaultValue
+	 * 			value to return if string is not valid
+	 * @return	parsed float or {@code defaultValue} if input is invalid
 	 */
 	public float parseFloat(String string, float defaultValue) {
 		try {
@@ -169,10 +191,14 @@ public class ErrorManager {
 	}
 
 	/**
-	 * Parses double in given string, returns second argument if string is not valid
-	 * @param string - string to parse
-	 * @param defaultValue - value to return if string is not valid
-	 * @return parsed double
+	 * Parses double in given string and returns it.
+	 * Returns second argument if string is not valid.
+	 *
+	 * @param	string
+	 * 			string to parse
+	 * @param	defaultValue
+	 * 			value to return if string is not valid
+	 * @return	parsed float or {@code defaultValue} if input is invalid
 	 */
 	public double parseDouble(String string, double defaultValue) {
 		try {
@@ -183,38 +209,13 @@ public class ErrorManager {
 	}
 
 	/**
-	 * Parses bar color in given string, returns second argument if string is not valid
-	 * @param string - string to parse
-	 * @param defaultValue - value to return if string is not valid
-	 * @return parsed bar color
-	 */
-	public BarColor parseColor(String string, BarColor defaultValue) {
-		try {
-			return BarColor.valueOf(string);
-		} catch (IllegalArgumentException e) {
-			return defaultValue;
-		}
-	}
-
-	/**
-	 * Parses bar style in given string, returns second argument if string is not valid
-	 * @param string - string to parse
-	 * @param defaultValue - value to return if string is not valid
-	 * @return parsed bar style
-	 */
-	public BarStyle parseStyle(String string, BarStyle defaultValue) {
-		try {
-			return BarStyle.valueOf(string);
-		} catch (IllegalArgumentException e) {
-			return defaultValue;
-		}
-	}
-
-	/**
 	 * Makes interval divisible by 50 and sends error message if it was not already or was 0 or less
-	 * @param name - name of animation used in error message
-	 * @param interval - configured interval
-	 * @return fixed interval
+	 *
+	 * @param	name
+	 * 			name of animation used in error message
+	 * @param	interval
+	 * 			configured change interval
+	 * @return	fixed change interval
 	 */
 	public int fixAnimationInterval(String name, int interval) {
 		if (interval == 0) {
@@ -236,9 +237,12 @@ public class ErrorManager {
 
 	/**
 	 * Returns the list if not null, empty list and error message if null
-	 * @param name - name of animation used in error message
-	 * @param list - list of animation frames
-	 * @return the list if not null, empty list otherwise
+	 *
+	 * @param	name
+	 * 			name of animation used in error message
+	 * @param	list
+	 * 			list of configured animation frames
+	 * @return	the list if it's valid, singleton list with {@code "<Invalid Animation>"} otherwise
 	 */
 	public List<String> fixAnimationFrames(String name, List<String> list) {
 		if (list == null) {
@@ -248,25 +252,35 @@ public class ErrorManager {
 		return list;
 	}
 
+	/**
+	 * Sends a startup warn message into console
+	 *
+	 * @param	message
+	 * 			message to print into console
+	 */
 	public void startupWarn(String message) {
 		TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] " + message, true);
 	}
 
 	/**
 	 * Sends a startup warn about missing object parameter
-	 * @param objectType - object type missing parameter
-	 * @param objectName - name of object
-	 * @param attribute - missing parameter
+	 *
+	 * @param	objectType
+	 * 			object type missing parameter
+	 * @param	objectName
+	 * 			name of object
+	 * @param	attribute
+	 * 			missing parameter
 	 */
 	public void missingAttribute(String objectType, Object objectName, String attribute) {
 		startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
 	}
 
+	/**
+	 * Returns anti-override.log file
+	 * @return	anti-override.log file
+	 */
 	public File getAntiOverrideLog() {
 		return antiOverrideLog;
-	}
-
-	public File getErrorLog() {
-		return errorLog;
 	}
 }

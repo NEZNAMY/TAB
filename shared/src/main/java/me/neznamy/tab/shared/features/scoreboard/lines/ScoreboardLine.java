@@ -142,11 +142,11 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 * Splits entered text into 3 parts - prefix, name and suffix respecting all limits.
 	 * Returns the values as an array of 3 elements.
 	 * @param	playerNameStart
-	 * 			forced start of name field (used to secure unique names & line order)
+	 * 			forced start of name field (used to secure unique names and line order)
 	 * @param	text
 	 * 			text to display
 	 * @param	maxNameLength
-	 * 			maximum length of name field, used values are 16 characters for <1.8 and 40 for 1.8+
+	 * 			maximum length of name field, used values are 16 characters for &lt;1.8 and 40 for 1.8+
 	 * @return	Split text as an array of 3 elements
 	 */
 	protected String[] splitText(String playerNameStart, String text, int maxNameLength) {

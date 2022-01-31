@@ -1,7 +1,7 @@
 package me.neznamy.tab.api.chat.rgb.format;
 
 /**
- * Formatter for &#RRGGBB
+ * Formatter for &amp;#RRGGBB
  */
 public class UnnamedFormat1 implements RGBFormatter {
 

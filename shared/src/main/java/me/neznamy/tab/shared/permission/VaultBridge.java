@@ -3,12 +3,13 @@ package me.neznamy.tab.shared.permission;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * Class to take groups from Vault on bukkit side if no permission plugin on BungeeCord is found
+ * Class to take groups from Vault on bukkit side
+ * if no permission plugin on BungeeCord is found.
  */
 public class VaultBridge extends PermissionPlugin {
 	
 	/**
-	 * Constructs new instance with given parameter
+	 * Constructs new instance
 	 */
 	public VaultBridge() {
 		super(null);

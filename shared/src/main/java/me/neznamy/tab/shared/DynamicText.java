@@ -11,42 +11,65 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 
 /**
- * A string with placeholders
+ * A dynamic text with placeholder support. If any placeholder
+ * used in this text changes value, feature defining this text
+ * will receive refresh call letting it know and allowing to get new value.
  */
-public class PropertyImpl implements Property {
+public class DynamicText implements Property {
 
-	//feature using this property to track used placeholders and receive refresh()
+	/**
+	 * Feature defining this text, which will receive refresh function
+	 * if any of placeholders used in it change value.
+	 */
 	private final TabFeature listener;
 	
-	//owner of the property
+	/** Player this text belongs to */
 	private final TabPlayer owner;
 	
-	//raw value
+	/** Raw value as defined in configuration */
 	private String rawValue;
-	
-	//raw value using %s ready for string formatter
-	private String rawFormattedValue;
-	
-	//value assigned via API
+
+	/** Raw value assigned via API, null if not set */
 	private String temporaryValue;
-	
-	//last known output after placeholder replacement
+
+	/**
+	 * Raw value using %s for each placeholder ready to be inserted
+	 * into String formatter, which results in about 5x lower
+	 * memory allocations as well as better performance.
+	 */
+	private String rawFormattedValue;
+
+	/** Last known value after parsing non-relational placeholders */
 	private String lastReplacedValue;
 	
-	//source of property's raw value
+	/** Source defining value of the text, displayed in debug command */
 	private String source;
 
-	//used placeholders in current raw value
+	/**
+	 * All placeholders used in the text in the same order they are used,
+	 * it may contain duplicates if placeholder is used more than once.
+	 * Contains relational placeholders as well, which will get formatted
+	 * to their identifier.
+	 */
 	private String[] placeholders;
 	
-	//used relational placeholders in current raw value
+	/** Relational placeholders in the text in the same order they are used */
 	private String[] relPlaceholders;
 
-	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue) {
-		this(listener, owner, rawValue, null);
-	}
-	
-	public PropertyImpl(TabFeature listener, TabPlayer owner, String rawValue, String source) {
+	/**
+	 * Constructs new instance with given parameters and prepares
+	 * the formatter for use by detecting placeholders and reformatting the text.
+	 *
+	 * @param	listener
+	 * 			Feature which should receive refresh method if placeholder changes value
+	 * @param	owner
+	 * 			Player this text belongs to
+	 * @param	rawValue
+	 * 			Raw value using raw placeholder identifiers
+	 * @param	source
+	 * 			Source of the text used in debug command
+	 */
+	public DynamicText(TabFeature listener, TabPlayer owner, String rawValue, String source) {
 		this.listener = listener;
 		this.owner = owner;
 		this.source = source;
@@ -55,8 +78,11 @@ public class PropertyImpl implements Property {
 	}
 
 	/**
-	 * Finds all placeholders used in the value
-	 * @param value - raw value to be checked
+	 * Finds all placeholders used in the value and prepares it for
+	 * String formatter using %s for each placeholder.
+	 *
+	 * @param	value
+	 * 			raw value to analyze
 	 */
 	private void analyze(String value) {
 		List<String> placeholders0 = new ArrayList<>();
@@ -90,6 +116,33 @@ public class PropertyImpl implements Property {
 		update();
 	}
 
+	/**
+	 * Changes raw value to new provided value and performs all
+	 * operations related to it. Changes source as well.
+	 *
+	 * @param	newValue
+	 * 			new raw value to use
+	 * @param	newSource
+	 * 			new source of the text
+	 */
+	public void changeRawValue(String newValue, String newSource) {
+		if (rawValue.equals(newValue)) return;
+		rawValue = newValue;
+		source = newSource;
+		if (temporaryValue == null) {
+			analyze(rawValue);
+		}
+	}
+
+	/**
+	 * Returns source of the raw value or {@code "API"} if it comes from an API call
+	 *
+	 * @return	source of the value
+	 */
+	public String getSource() {
+		return temporaryValue == null ? source : "API";
+	}
+
 	@Override
 	public void setTemporaryValue(String temporaryValue) {
 		if (temporaryValue != null) {
@@ -97,15 +150,6 @@ public class PropertyImpl implements Property {
 			analyze(this.temporaryValue);
 		} else {
 			this.temporaryValue = null;
-			analyze(rawValue);
-		}
-	}
-	
-	@Override
-	public void changeRawValue(String newValue) {
-		if (rawValue.equals(newValue)) return;
-		rawValue = newValue;
-		if (temporaryValue == null) {
 			analyze(rawValue);
 		}
 	}
@@ -123,22 +167,6 @@ public class PropertyImpl implements Property {
 	@Override
 	public String getOriginalRawValue() {
 		return rawValue;
-	}
-	
-	/**
-	 * Returns source of this raw value or "API" if source is an API call
-	 * @return source of the value
-	 */
-	public String getSource() {
-		return temporaryValue == null ? source : "API";
-	}
-	
-	/**
-	 * Changes source value to new one
-	 * @param source - new source
-	 */
-	public void setSource(String source) {
-		this.source = source;
 	}
 	
 	@Override

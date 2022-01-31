@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 
 /**
- * An additional class with additional code for <1.9 servers due to an entity being required
+ * An additional class with additional code for &lt;1.9 servers due to an entity being required
  */
 public class WitherBossBar extends BossBarManagerImpl implements Listener {
 

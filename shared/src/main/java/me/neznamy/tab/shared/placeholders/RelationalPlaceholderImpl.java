@@ -23,6 +23,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 
 	/**
 	 * Constructs new instance with given parameters
+	 *
 	 * @param	identifier
 	 * 			placeholder identifier, must start with {@code %rel_} and end with {@code %}
 	 * @param	refresh
@@ -38,6 +39,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	
 	/**
 	 * Updates value for given players and returns true if value changed, false if not
+	 *
 	 * @param	viewer
 	 * 			viewer of the placeholder
 	 * @param	target
@@ -57,6 +59,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	
 	/**
 	 * Returns last known value for given players
+	 *
 	 * @param	viewer
 	 * 			viewer of the placeholder
 	 * @param	target
@@ -66,6 +69,36 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	public String getLastValue(TabPlayer viewer, TabPlayer target) {
 		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
 		return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.get(viewer).get(target))), target);
+	}
+
+	/**
+	 * Internal method with an additional parameter {@code force}, which, if set to true,
+	 * features using the placeholder will refresh despite placeholder seemingly not
+	 * changing output, which is caused by nested placeholder changing value.
+	 *
+	 * @param	viewer
+	 * 			viewer of the placeholder
+	 * @param	target
+	 * 			target who is the text displayed on
+	 * @param	value
+	 * 			new placeholder output
+	 * @param	force
+	 * 			whether refreshing should be forced or not
+	 */
+	private void updateValue(TabPlayer viewer, TabPlayer target, Object value, boolean force) {
+		String s = getReplacements().findReplacement(String.valueOf(value));
+		if (lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) && lastValues.get(viewer).get(target).equals(s) && !force) return;
+		lastValues.get(viewer).put(target, s);
+		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
+		if (usage == null) return;
+		for (TabFeature f : usage) {
+			long time = System.nanoTime();
+			f.refresh(viewer, true);
+			f.refresh(target, true);
+			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
+		}
+		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(viewer));
+		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(target));
 	}
 
 	@Override
@@ -93,34 +126,5 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 	@Override
 	public void updateValue(TabPlayer viewer, TabPlayer target, Object value) {
 		updateValue(viewer, target, value, false);
-	}
-
-	/**
-	 * Internal method with an additional parameter {@code force}, which, if set to true,
-	 * features using the placeholder will refresh despite placeholder seemingly not
-	 * changing output, which is caused by nested placeholder changing value.
-	 * @param	viewer
-	 * 			viewer of the placeholder
-	 * @param	target
-	 * 			target who is the text displayed on
-	 * @param	value
-	 * 			new placeholder output
-	 * @param	force
-	 * 			whether refreshing should be forced or not
-	 */
-	private void updateValue(TabPlayer viewer, TabPlayer target, Object value, boolean force) {
-		String s = getReplacements().findReplacement(String.valueOf(value));
-		if (lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) && lastValues.get(viewer).get(target).equals(s) && !force) return;
-		lastValues.get(viewer).put(target, s);
-		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
-		if (usage == null) return;
-		for (TabFeature f : usage) {
-			long time = System.nanoTime();
-			f.refresh(viewer, true);
-			f.refresh(target, true);
-			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
-		}
-		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(viewer));
-		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(target));
 	}
 }

@@ -29,32 +29,33 @@ public abstract class TabPlaceholder implements Placeholder {
 	 * Boolean tracking whether this placeholder is in trigger mode or not.
 	 * When a placeholder is in trigger mode, it is not refreshed periodically,
 	 * only when updateValue method is called.
-	 * */
+	 */
 	private boolean triggerMode;
 
 	/**
 	 * Runnable to run when this placeholder becomes used and this is a trigger placeholder.
 	 * This is typically registering an event listener so placeholders don't listen to
 	 * events if they are not used at all. May be null if nothing should run.
-	 * */
+	 */
 	private Runnable onActivation;
 
 	/**
 	 * Runnable to run when this is a trigger placeholder and the plugin shuts down,
 	 * which may just be a /tab reload. This is typically unregistering and event
 	 * listener to avoid resource leak on reload. May be null if nothing should run.
-	 * */
+	 */
 	private Runnable onDisable;
 
 	/**
 	 * List of placeholders using this placeholder as a nested placeholder,
 	 * mutual tracking allows faster parent placeholder changes when a nested
 	 * placeholder changed value.
-	 * */
+	 */
 	protected final List<String> parents = new ArrayList<>();
 	
 	/**
 	 * Constructs new instance with given parameters and loads placeholder output replacements
+	 *
 	 * @param	identifier
 	 * 			placeholder's identifier, must start and end with %
 	 * @param	refresh
@@ -71,20 +72,11 @@ public abstract class TabPlaceholder implements Placeholder {
 		}
 	}
 
-	@Override
-	public String getIdentifier() {
-		return identifier;
-	}
-	
-	@Override
-	public int getRefresh() {
-		return refresh;
-	}
-
 	/**
 	 * Replaces this placeholder in given string and returns output. If the entered string
 	 * is equal to the placeholder identifier or does not contain the identifier at all,
 	 * value is returned directly without calling {@code String#replace} for better performance.
+	 *
 	 * @param	string
 	 * 			string to replace this placeholder in
 	 * @param	player
@@ -98,6 +90,7 @@ public abstract class TabPlaceholder implements Placeholder {
 	/**
 	 * Returns all nested placeholders in provided output. If no placeholders are detected,
 	 * returns empty list.
+	 *
 	 * @param	output
 	 * 			output to check
 	 * @return	List of nested placeholders in provided output
@@ -110,6 +103,7 @@ public abstract class TabPlaceholder implements Placeholder {
 	 * An alternative for {@code String#replace} function with better performance.
 	 * If the input string does not contain string to replace, it is returned immediately.
 	 * If the input string is equal to text to replace, output is returned directly.
+	 *
 	 * @param	string
 	 * 			String to replace text in
 	 * @param	original
@@ -126,6 +120,7 @@ public abstract class TabPlaceholder implements Placeholder {
 
 	/**
 	 * Applies all nested placeholders in output
+	 *
 	 * @param	text
 	 * 			replaced placeholder
 	 * @param	p
@@ -144,23 +139,11 @@ public abstract class TabPlaceholder implements Placeholder {
 
 	/**
 	 * Returns placeholder output replacement pattern
+	 *
 	 * @return	placeholder output replacement pattern
 	 */
 	public PlaceholderReplacementPattern getReplacements() {
 		return replacements;
-	}
-	
-	@Override
-	public void enableTriggerMode() {
-		triggerMode = true;
-	}
-	
-	@Override
-	public void enableTriggerMode(Runnable onActivation, Runnable onDisable) {
-		triggerMode = true;
-		this.onActivation = onActivation;
-		this.onDisable = onDisable;
-		if (active && onActivation != null) onActivation.run();
 	}
 
 	/**
@@ -173,18 +156,20 @@ public abstract class TabPlaceholder implements Placeholder {
 		if (onActivation != null) onActivation.run();
 	}
 
-	@Override
-	public boolean isTriggerMode() {
-		return triggerMode;
-	}
-	
-	@Override
-	public void unload() {
-		if (onDisable != null && active) onDisable.run();
+	/**
+	 * Internal method used to mark placeholders as parents who use this placeholder
+	 * inside their outputs for faster updates.
+	 *
+	 * @param	parent
+	 * 			parent placeholder using this placeholder in output
+	 */
+	private void addParent(String parent) {
+		if (!parents.contains(parent)) parents.add(parent);
 	}
 
 	/**
 	 * Updates the placeholder with force mark for requested player
+	 *
 	 * @param	player
 	 * 			player to update placeholder for
 	 */
@@ -192,19 +177,43 @@ public abstract class TabPlaceholder implements Placeholder {
 
 	/**
 	 * Returns last known value of defined player
+	 *
 	 * @param	player
 	 * 			player to get value of
 	 * @return	last known value for specified player
 	 */
 	public abstract String getLastValue(TabPlayer player);
 
-	/**
-	 * Internal method used to mark placeholders as parents who use this placeholder
-	 * inside their outputs for faster updates.
-	 * @param	parent
-	 * 			parent placeholder using this placeholder in output
-	 */
-	private void addParent(String parent) {
-		if (!parents.contains(parent)) parents.add(parent);
+	@Override
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	@Override
+	public int getRefresh() {
+		return refresh;
+	}
+
+	@Override
+	public boolean isTriggerMode() {
+		return triggerMode;
+	}
+
+	@Override
+	public void unload() {
+		if (onDisable != null && active) onDisable.run();
+	}
+
+	@Override
+	public void enableTriggerMode() {
+		triggerMode = true;
+	}
+
+	@Override
+	public void enableTriggerMode(Runnable onActivation, Runnable onDisable) {
+		triggerMode = true;
+		this.onActivation = onActivation;
+		this.onDisable = onDisable;
+		if (active && onActivation != null) onActivation.run();
 	}
 }

@@ -19,11 +19,12 @@ public class PlaceholderReplacementPattern {
 	 * Map of number intervals where key is a 2-dimensional array
 	 * with first value being minimum and second value maximum and value
 	 * being output to replace to.
-	 * */
+	 */
 	private final Map<float[], String> numberIntervals = new HashMap<>();
 
 	/**
 	 * Constructs new instance from given replacement map from config
+	 *
 	 * @param	map
 	 * 			replacement map from config
 	 */
@@ -51,6 +52,7 @@ public class PlaceholderReplacementPattern {
 	/**
 	 * Finds replacement using provided output as well as applying
 	 * %value% placeholder for original output inside replacements.
+	 *
 	 * @param	output
 	 * 			placeholder's output
 	 * @return	replacement or {@code output} if no pattern is matching
@@ -67,6 +69,7 @@ public class PlaceholderReplacementPattern {
 	/**
 	 * Internal method that returns value based on provided
 	 * placeholder output and configured replacements.
+	 *
 	 * @param	output
 	 * 			placeholder's output
 	 * @return	replacement or {@code output} if no pattern is matching

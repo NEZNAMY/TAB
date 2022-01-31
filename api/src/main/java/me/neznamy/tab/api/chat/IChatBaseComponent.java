@@ -221,7 +221,7 @@ public class IChatBaseComponent {
 
 	/**
 	 * Serializes this component with colors based on client version.
-	 * If client version is <1.16, HEX colors will be converted to legacy colors.
+	 * If client version is &lt;1.16, HEX colors will be converted to legacy colors.
 	 * @param	clientVersion
 	 * 			client version to adapt component for
 	 * @return	serialized string
@@ -232,7 +232,7 @@ public class IChatBaseComponent {
 
 	/**
 	 * Serializes this component with colors based on client version.
-	 * If client version is <1.16, HEX colors will be converted to legacy colors.
+	 * If client version is &lt;1.16, HEX colors will be converted to legacy colors.
 	 * @param	clientVersion
 	 * 			client version to adapt component for
 	 * @param	sendTranslatableIfEmpty

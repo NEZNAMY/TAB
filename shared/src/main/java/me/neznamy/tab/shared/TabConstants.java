@@ -1,9 +1,24 @@
 package me.neznamy.tab.shared;
 
+/**
+ * A class containing various constants used everywhere in the plugin
+ * to allow easier overview and modification to prevent inconsistencies.
+ */
 public class TabConstants {
 
+	public static final String PLUGIN_VERSION = "@plugin_version@";
+	public static final String DEFAULT_GROUP = "NONE";
+	public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-1";
+
+	/**
+	 * Private constructor to prevent the class from being instantiated
+	 */
 	private TabConstants() {}
 
+	/**
+	 * Feature sub-category explaining why / when a certain feature
+	 * needed CPU time to process tasks.
+	 */
 	public static class CpuUsageCategory {
 
 		public static final String PLAYER_JOIN = "Player Join";
@@ -15,7 +30,8 @@ public class TabConstants {
 		public static final String PLAYER_RESPAWN = "Player Respawn";
 		public static final String PLUGIN_MESSAGE = "PluginMessageEvent";
 		public static final String REDIS_BUNGEE_MESSAGE = "PubSubMessageEvent";
-		public static final String LUCKPERMS_RECALCULATE_EVENT = "UserDataRecalculateEvent";
+		public static final String LUCKPERMS_USER_RECALCULATE_EVENT = "UserDataRecalculateEvent";
+		public static final String LUCKPERMS_GROUP_RECALCULATE_EVENT = "GroupDataRecalculateEvent";
 
 		public static final String ANTI_OVERRIDE = "Anti override";
 
@@ -39,9 +55,16 @@ public class TabConstants {
 		public static final String PROCESSING_PLAYER_MOVEMENT = "Processing player movement";
 		public static final String TELEPORTING_WITHER = "Teleporting wither";
 
+		/**
+		 * Private constructor to prevent the class from being instantiated
+		 */
 		private CpuUsageCategory() {}
 	}
 
+	/**
+	 * Information why a specific feature sent a packet
+	 * and what the packet sent is supposed to do.
+	 */
 	public static class PacketCategory {
 
 		public static final String BOSSBAR_COLOR_STYLE = "BossBar (Color and style)";
@@ -69,9 +92,15 @@ public class TabConstants {
 		public static final String UNLIMITED_NAMETAGS_SNEAK = "Unlimited NameTags (Sneaking)";
 		public static final String UNLIMITED_NAMETAGS_METADATA = "Unlimited NameTags (Metadata)";
 
+		/**
+		 * Private constructor to prevent the class from being instantiated
+		 */
 		private PacketCategory() {}
 	}
 
+	/**
+	 * Permission nodes used by the plugin
+	 */
 	public static class Permission {
 
 		public static final String COMMAND_ALL = "tab.admin";
@@ -103,8 +132,17 @@ public class TabConstants {
 		public static final String TEST_PERMISSION = "tab.testpermission";
 
 		public static final String GROUP_PREFIX = "tab.group.";
+
+		/**
+		 * Private constructor to prevent the class from being instantiated
+		 */
+		private Permission(){}
 	}
 
+	/**
+	 * Internal property names used to store text
+	 * under a specific key
+	 */
 	public static class Property {
 
 		public static final String HEADER = "header";
@@ -129,8 +167,10 @@ public class TabConstants {
 
 		public static final String YELLOW_NUMBER = "yellow-number";
 
-		private Property() {
-		}
+		/**
+		 * Private constructor to prevent the class from being instantiated
+		 */
+		private Property() {}
 
 		public static String bossbarTitle(String name) {
 			return "bossbar-title-" + name;
@@ -161,6 +201,10 @@ public class TabConstants {
 		}
 	}
 
+	/**
+	 * Feature names used to register features under in the
+	 * feature manager which they can be retrieved by.
+	 */
 	public static class Feature {
 
 		//universal features
@@ -184,10 +228,10 @@ public class TabConstants {
 		public static final String NAME_TAGS_VISIBILITY = "NameTagVisibility";
 		public static final String GROUP_MANAGER = "GroupManager";
 		public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
+		public static final String PET_FIX = "PetFix";
 
 		//Bukkit only
 		public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
-		public static final String PET_FIX = "PetFix";
 		public static final String UNLIMITED_NAME_TAGS = "NameTagX";
 		public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
 		public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";
@@ -199,8 +243,14 @@ public class TabConstants {
 		public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
 		public static final String GLOBAL_PLAYER_LIST_VANISH = "GlobalPlayerList-Vanish";
 
-        private Feature(){
-		}
+		//additional info displayed in cpu command
+		public static final String PACKET_SERIALIZING = "Packet serializing";
+		public static final String PACKET_DESERIALIZING = "Packet deserializing";
+
+		/**
+		 * Private constructor to prevent the class from being instantiated
+		 */
+        private Feature(){}
 
 		public static String scoreboardLine(String line) {
 			return "scoreboard-" + line;

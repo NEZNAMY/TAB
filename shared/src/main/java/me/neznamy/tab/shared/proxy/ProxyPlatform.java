@@ -15,15 +15,46 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Abstract class containing common variables and methods
+ * shared between proxies.
+ */
 public abstract class ProxyPlatform implements Platform {
 
+	/** Plugin message handler for sending and receiving plugin messages */
 	protected final PluginMessageHandler plm;
+
+	/** Placeholders which are refreshed on backend server */
 	private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
-	
+
+	/**
+	 * Constructs new instance with given parameter
+	 *
+	 * @param	plm
+	 * 			Plugin message handler
+	 */
 	protected ProxyPlatform(PluginMessageHandler plm) {
 		this.plm = plm;
 	}
-	
+
+	/**
+	 * Returns plugin message handler
+	 *
+	 * @return	plugin message handler
+	 */
+	public PluginMessageHandler getPluginMessageHandler() {
+		return plm;
+	}
+
+	/**
+	 * Returns bridge placeholders, which are refreshed on backend server
+	 *
+	 * @return	bridge placeholders, which are refreshed on backend server
+	 */
+	public Map<String, Integer> getBridgePlaceholders() {
+		return bridgePlaceholders;
+	}
+
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
@@ -58,13 +89,5 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public String getConfigName() {
 		return "proxyconfig.yml";
-	}
-
-	public PluginMessageHandler getPluginMessageHandler() {
-		return plm;
-	}
-
-	public Map<String, Integer> getBridgePlaceholders() {
-		return bridgePlaceholders;
 	}
 }

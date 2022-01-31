@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.permission;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * An instance of PermissionPlugin to be used when nothing is found
@@ -14,7 +14,7 @@ public class None extends PermissionPlugin {
 
 	@Override
 	public String getPrimaryGroup(TabPlayer p) {
-		return GroupManager.DEFAULT_GROUP;
+		return TabConstants.DEFAULT_GROUP;
 	}
 
 	@Override
