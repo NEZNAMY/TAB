@@ -183,7 +183,7 @@ public class Converter {
         newConfig.set("yellow-number-in-tablist.value", oldConfig.getString("yellow-number-in-tablist","%ping%"));
         newConfig.set("yellow-number-in-tablist.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.yellow-number", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getPlatform().isProxy())
-            newConfig.set("yellow-number.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.yellow-number", Collections.singletonList("disabledserver")));
+            newConfig.set("yellow-number-in-tablist.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.yellow-number", Collections.singletonList("disabledserver")));
     }
 
     private void convertBelowName(ConfigurationFile oldConfig, ConfigurationFile newConfig) {
