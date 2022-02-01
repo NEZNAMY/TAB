@@ -12,6 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Feature registration which offers calls to all features
@@ -170,6 +171,7 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
 		}
 		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
+		((ProxyTabPlayer)changed).sendJoinPluginMessage();
 	}
 
 	/**

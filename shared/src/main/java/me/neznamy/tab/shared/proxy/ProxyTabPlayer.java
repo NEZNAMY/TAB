@@ -46,6 +46,14 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	 */
 	protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
 		super(player, uniqueId, name, server, "N/A", protocolVersion);
+		sendJoinPluginMessage();
+	}
+
+	/**
+	 * Sends plugin message to backend server that this player has
+	 * joined, containing all plugin configuration data.
+	 */
+	public void sendJoinPluginMessage() {
 		List<Object> args = Lists.newArrayList("PlayerJoin", TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge,
 				TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX));
 		ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
