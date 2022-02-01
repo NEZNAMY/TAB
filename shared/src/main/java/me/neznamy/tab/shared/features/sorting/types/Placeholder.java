@@ -36,7 +36,7 @@ public class Placeholder extends SortingType {
 			sortingValue = String.valueOf(sortingMap.size()+1);
 			p.setTeamNameNote(p.getTeamNameNote() + "&c (not in list)&r. ");
 		} else {
-			p.setTeamNameNote(p.getTeamNameNote() + "&r (#" + Integer.parseInt(sortingMap.get(output)) + " in list). &r");
+			p.setTeamNameNote(p.getTeamNameNote() + "&r (#" + Integer.parseInt(sortingValue) + " in list). &r");
 		}
 		return sortingValue;
 	}
