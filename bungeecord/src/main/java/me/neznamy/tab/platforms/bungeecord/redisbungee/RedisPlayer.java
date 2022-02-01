@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord.redisbungee;
 import java.util.Collections;
 import java.util.UUID;
 
+import me.neznamy.tab.api.protocol.Skin;
 import org.json.simple.JSONObject;
 
 import me.neznamy.tab.api.TabPlayer;
@@ -32,7 +33,7 @@ public class RedisPlayer {
 	private String tabFormat;
 	private String teamName;
 	private boolean vanished;
-	private String[][] skin;
+	private Skin skin;
 	private String tagPrefix;
 	private String tagSuffix;
 	private boolean nameVisibility;
@@ -54,12 +55,7 @@ public class RedisPlayer {
 		player.vanished = (boolean) json.get("vanished");
 		String skinValue = (String) json.get("skin-value");
 		if (skinValue != null) {
-			player.skin = new String[1][3];
-			player.skin[0][0] = "textures";
-			player.skin[0][1] = skinValue;
-			player.skin[0][2] = (String) json.get("skin-signature");
-		} else {
-			player.skin = new String[0][0];
+			player.skin = new Skin(skinValue, (String) json.get("skin-signature"));
 		}
 		player.tagPrefix = (String) json.get("tagprefix");
 		player.tagSuffix = (String) json.get("tagsuffix");
@@ -100,10 +96,9 @@ public class RedisPlayer {
 		json.put("teamname", p.getTeamName());
 		json.put("vanished", p.isVanished());
 		json.put("staff", p.hasPermission(TabConstants.Permission.STAFF));
-		String[][] skin = (String[][]) p.getSkin();
-		if (skin.length > 0) {
-			json.put("skin-value", skin[0][1]);
-			json.put("skin-signature", skin[0][2]);
+		if (p.getSkin() != null) {
+			json.put("skin-value", p.getSkin().getValue());
+			json.put("skin-signature", p.getSkin().getSignature());
 		}
 		return json;
 	}

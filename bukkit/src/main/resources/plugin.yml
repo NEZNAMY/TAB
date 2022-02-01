@@ -1,4 +1,4 @@
-name: @name@
+name: TAB
 version: @version@
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
@@ -8,3 +8,4 @@ website: "https://github.com/NEZNAMY/TAB"
 description: @description@
 commands:
   tab:
+    description: Plugin's main command

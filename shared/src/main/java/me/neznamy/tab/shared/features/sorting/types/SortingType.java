@@ -54,7 +54,6 @@ public abstract class SortingType {
 				sb.insert(0, "0");
 			}
 			for (String element0 : element.split("\\|")) {
-				sortedGroups.put(EnumChatFormat.color(element0), sb.toString());
 				sortedGroups.put(EnumChatFormat.color(element0.toLowerCase()), sb.toString());
 			}
 			index++;

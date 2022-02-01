@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.util.Collections;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,7 +17,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 
 /**
- * An additional class with additional code for <1.9 servers due to an entity being required
+ * An additional class with additional code for &lt;1.9 servers due to an entity being required
  */
 public class WitherBossBar extends BossBarManagerImpl implements Listener {
 
@@ -34,25 +32,25 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		//when MC is on fullscreen, BossBar disappears after 1 second of not being seen
 		//when in a small window, it's about 100ms
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%location%", 100, p -> ((Player)p.getPlayer()).getLocation());
-		addUsedPlaceholders(Collections.singletonList("%location%"));
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100,
+				this, TabConstants.CpuUsageCategory.TELEPORTING_WITHER, this::teleport);
 	}
 	
 	@Override
 	public void load() {
 		super.load();
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			refresh(p, false);
-		}
+		teleport();
 	}
-	
-	@Override
-	public void refresh(TabPlayer p, boolean force) {
-		for (BossBar line : getRegisteredBossBars().values()) {
+
+	private void teleport() {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (p.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
-			Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
-			if (loc.getY() < 1) loc.setY(1);
-			p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc), TabConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
+			for (BossBar line : getRegisteredBossBars().values()) {
+				if (!line.getPlayers().contains(p)) continue;
+				Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+				if (loc.getY() < 1) loc.setY(1);
+				p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc), TabConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
+			}
 		}
 	}
 	
@@ -67,6 +65,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 	 */
 	@EventHandler
 	public void onRespawn(PlayerRespawnEvent e) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing PlayerRespawnEvent", this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+				() -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 }

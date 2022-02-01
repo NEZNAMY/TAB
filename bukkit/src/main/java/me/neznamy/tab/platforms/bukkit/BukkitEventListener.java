@@ -15,10 +15,10 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitEventListener implements Listener {
 
-	private final Main main;
+	private final BukkitPlatform platform;
 	
-	public BukkitEventListener(Main main) {
-		this.main = main;
+	public BukkitEventListener(BukkitPlatform platform) {
+		this.platform = platform;
 	}
 	
 	/**
@@ -28,7 +28,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerQuitEvent", () -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**
@@ -38,7 +38,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerJoinEvent", () -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), main.getProtocolVersion(e.getPlayer()))));
+		TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer()))));
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class BukkitEventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onWorldChange(PlayerChangedWorldEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerChangedWorldEvent", () -> TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));
+		TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));
 	}
 
 	/**

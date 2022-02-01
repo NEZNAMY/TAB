@@ -41,10 +41,10 @@ public class Layout extends TabFeature {
 		groups.forEach(g -> g.sendTo(p));
 		for (FixedSlot slot : fixedSlots.values()) {
 			p.setProperty(slot, slot.getPropertyName(), slot.getText());
-			list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), 0, EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).get())));
+			list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), slot.getPing(), EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).get())));
 		}
 		for (int slot : emptySlots) {
-			list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), 0, EnumGamemode.CREATIVE, new IChatBaseComponent("")));
+			list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent("")));
 		}
 		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
@@ -70,14 +70,9 @@ public class Layout extends TabFeature {
 	}
 
 	public void tick() {
-		try {
-			List<TabPlayer> players = manager.getSortedPlayers().keySet().stream().filter(player -> !player.isVanished()).collect(Collectors.toList());
-			for (ParentGroup group : groups) {
-				group.tick(players);
-			}
-		} catch (ConcurrentModificationException ex) {
-			//unlucky, someone joined/left during ticking
-			tick();
+		List<TabPlayer> players = manager.getSortedPlayers().keySet().stream().filter(player -> !player.isVanished()).collect(Collectors.toList());
+		for (ParentGroup group : groups) {
+			group.tick(players);
 		}
 	}
 

@@ -10,7 +10,6 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -91,7 +90,7 @@ public class NameTag extends TabFeature implements TeamManager {
 		updateProperties(connectedPlayer);
 		hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (!all.isLoaded() || all == connectedPlayer) continue; //avoiding double registration
+			if (all == connectedPlayer) continue; //avoiding double registration
 			if (!isDisabledPlayer(all)) {
 				registerTeam(all, connectedPlayer);
 			}
@@ -272,7 +271,7 @@ public class NameTag extends TabFeature implements TeamManager {
 			viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
 		}
 		viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
-				translate(collisionManager.getCollision(p)), Collections.singletonList(getName(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+				translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
 	}
 
 	private void updateTeam(TabPlayer p) {
@@ -311,10 +310,6 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	public CollisionManager getCollisionManager() {
 		return collisionManager;
-	}
-	
-	private String getName(TabPlayer p) {
-		return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(p);
 	}
 
 	@Override

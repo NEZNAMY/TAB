@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.protocol.packet.ScoreboardDisplay;
 import com.velocitypowered.proxy.protocol.packet.ScoreboardObjective;
 import com.velocitypowered.proxy.protocol.packet.ScoreboardObjective.HealthDisplay;
@@ -8,15 +9,7 @@ import com.velocitypowered.proxy.protocol.packet.ScoreboardTeam;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
@@ -26,10 +19,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Packet builder for Velocity platform
@@ -102,7 +92,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
 			if (data.getGameMode() != null) item_setGameMode.invoke(item, data.getGameMode().ordinal()-1);
 			item_setLatency.invoke(item, data.getLatency());
 			if (data.getSkin() != null) {
-				item_setProperties.invoke(item, data.getSkin());
+				item_setProperties.invoke(item, Collections.singletonList(new GameProfile.Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())));
 			} else {
 				item_setProperties.invoke(item, Collections.emptyList());
 			}
@@ -148,7 +138,9 @@ public class VelocityPacketBuilder extends PacketBuilder {
 		for (Object i : (List<Object>) listItem_getItems.invoke(packet)) {
 			Component displayNameComponent = (Component) item_getDisplayName.invoke(i);
 			String displayName = displayNameComponent == null ? null : GsonComponentSerializer.gson().serialize(displayNameComponent);
-			listData.add(new PlayerInfoData((String) item_getName.invoke(i), (UUID) item_getUuid.invoke(i), item_getProperties.invoke(i), (int) item_getLatency.invoke(i),
+			List<GameProfile.Property> properties = item_getProperties.invoke(i) == null ? null : (List<GameProfile.Property>) item_getProperties.invoke(i);
+			Skin skin = properties == null || properties.size() == 0 ? null : new Skin(properties.get(0).getValue(), properties.get(0).getSignature());
+			listData.add(new PlayerInfoData((String) item_getName.invoke(i), (UUID) item_getUuid.invoke(i), skin, (int) item_getLatency.invoke(i),
 					EnumGamemode.values()[(int) item_getGameMode.invoke(i)+1], displayName == null ? null : IChatBaseComponent.deserialize(displayName)));
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[(int) listItem_getAction.invoke(packet)], listData);

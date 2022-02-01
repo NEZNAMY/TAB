@@ -28,7 +28,20 @@ public class PlayerCommand extends PropertyCommand {
 		}
 		String player = args[0];
 		String type = args[1].toLowerCase();
-		String value = buildArgument(Arrays.copyOfRange(args, 2, args.length));
+		String value = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+		String world = null;
+		String server = null;
+		if (args[args.length-2].equals("-w")) {
+			world = args[args.length-1];
+			value = value.substring(0, value.length()-world.length()-4);
+		}
+		if (args[args.length-2].equals("-s")) {
+			server = args[args.length-1];
+			value = value.substring(0, value.length()-server.length()-4);
+		}
+		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+			value = value.substring(1, value.length()-1);
+		}
 		if ("remove".equals(type)) {
 			if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
 				TAB.getInstance().getConfiguration().getUsers().remove(player);
@@ -45,7 +58,7 @@ public class PlayerCommand extends PropertyCommand {
 		for (String property : getAllProperties()) {
 			if (type.equals(property)) {
 				if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
-					savePlayer(sender, player, type, value);
+					savePlayer(sender, player, type, value, server, world);
 					if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) {
 						sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
 					}
@@ -65,15 +78,15 @@ public class PlayerCommand extends PropertyCommand {
 	 * @param type - property type
 	 * @param value - new value
 	 */
-	public void savePlayer(TabPlayer sender, String player, String type, String value){
+	public void savePlayer(TabPlayer sender, String player, String type, String value, String server, String world){
 		if (value.length() > 0){
 			sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
 		} else {
 			sendMessage(sender, getMessages().getPlayerValueRemoved(type, player));
 		}
-		String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, null, null);
+		String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player, type, server, world);
 		if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
-		TAB.getInstance().getConfiguration().getUsers().setProperty(player, type, null, null, value.length() == 0 ? null : value);
+		TAB.getInstance().getConfiguration().getUsers().setProperty(player, type, server, world, value.length() == 0 ? null : value);
 		TabPlayer pl = TAB.getInstance().getPlayer(player);
 		if (pl != null) {
 			pl.forceRefresh();

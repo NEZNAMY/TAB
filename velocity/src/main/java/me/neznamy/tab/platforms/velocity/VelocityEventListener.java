@@ -21,7 +21,8 @@ public class VelocityEventListener {
 	@Subscribe
 	public void onQuit(DisconnectEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()));
+		TAB.getInstance().getCPUManager().runTask(() ->
+				TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 	
 	/**
@@ -34,14 +35,14 @@ public class VelocityEventListener {
 		Player p = e.getPlayer();
 		if (TAB.getInstance().isDisabled()) return;
 		if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
-			TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
+			TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p)));
 		} else {
-			TAB.getInstance().getCPUManager().runTaskLater(100, "processing server switch", () -> 
+			TAB.getInstance().getCPUManager().runTaskLater(300, () ->
 				TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null")
 			);
 		}
 	}
-	
+
 	/**
 	 * Listener to commands to forward the event to all features
 	 * @param	e

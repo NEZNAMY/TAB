@@ -87,13 +87,13 @@ public class PacketListener extends TabFeature {
 		if (pl != null) {
 			//player moved
 			if (nameTagX.isPlayerDisabled(pl)) return;
-			TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
 		} else if ((vehicleList = nameTagX.getVehicleManager().getVehicles().get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Entity entity : vehicleList) {
 				TabPlayer passenger = nameTagX.getEntityIdMap().get(entity.getEntityId());
 				if (passenger != null && passenger.getArmorStandManager() != null) {
-					TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityMove", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER, () -> passenger.getArmorStandManager().teleport(receiver));
+					TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER, () -> passenger.getArmorStandManager().teleport(receiver));
 				}
 			}
 		}
@@ -102,7 +102,7 @@ public class PacketListener extends TabFeature {
 	private void onEntitySpawn(TabPlayer receiver, int entityId) {
 		TabPlayer spawnedPlayer = nameTagX.getEntityIdMap().get(entityId);
 		if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
-			TAB.getInstance().getCPUManager().runMeasuredTask("processing NamedEntitySpawn", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
 		}
 	}
 
@@ -121,6 +121,6 @@ public class PacketListener extends TabFeature {
 	private void onEntityDestroy(TabPlayer receiver, int entity) {
 		TabPlayer deSpawnedPlayer = nameTagX.getEntityIdMap().get(entity);
 		if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer))
-			TAB.getInstance().getCPUManager().runMeasuredTask("processing EntityDestroy", nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> deSpawnedPlayer.getArmorStandManager().destroy(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> deSpawnedPlayer.getArmorStandManager().destroy(receiver));
 	}
 }

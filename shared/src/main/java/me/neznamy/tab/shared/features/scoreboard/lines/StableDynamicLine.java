@@ -63,6 +63,7 @@ public class StableDynamicLine extends ScoreboardLine {
 	 */
 	private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
 		Property scoreProperty = p.getProperty(parent.getName() + "-" + teamName);
+		if (scoreProperty == null) return EMPTY_ARRAY; //not actually loaded yet (force refresh called from placeholder manager register method)
 		boolean emptyBefore = scoreProperty.get().length() == 0;
 		if (!scoreProperty.update() && !force) return EMPTY_ARRAY;
 		String replaced = scoreProperty.get();

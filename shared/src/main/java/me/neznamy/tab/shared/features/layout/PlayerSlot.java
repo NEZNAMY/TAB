@@ -44,10 +44,11 @@ public class PlayerSlot {
 	public void sendSlot(TabPlayer p) {
 		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 		PlayerInfoData data;
+		TabPlayer player = this.player; //avoiding NPE from concurrent access
 		if (player != null) {
 			data = new PlayerInfoData("", id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p, false));
 		} else {
-			data = new PlayerInfoData("", id, layout.getManager().getSkinManager().getDefaultSkin(), 0, EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
+			data = new PlayerInfoData("", id, layout.getManager().getSkinManager().getDefaultSkin(), layout.getManager().getEmptySlotPing(), EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
 		}
 		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 	}

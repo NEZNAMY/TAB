@@ -1,20 +1,15 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.util.GameProfile.Property;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.platforms.velocity.event.TabLoadEvent;
-import me.neznamy.tab.platforms.velocity.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -48,11 +43,11 @@ public class VelocityPlatform extends ProxyPlatform {
 	public PermissionPlugin detectPermissionPlugin() {
 		Optional<PluginContainer> luckperms = server.getPluginManager().getPlugin("luckperms");
 		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge(plm);
+			return new VaultBridge();
 		} else if (luckperms.isPresent()) {
 			return new LuckPerms(luckperms.get().getDescription().getVersion().orElse("null"));
 		} else {
-			return new VaultBridge(plm);
+			return new VaultBridge();
 		}
 	}
 	
@@ -84,14 +79,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	}
 
 	@Override
-	public void callLoadEvent() {
-		server.getEventManager().fireAndForget(new TabLoadEvent());
-	}
+	public void callLoadEvent() {}
 	
 	@Override
-	public void callLoadEvent(TabPlayer player) {
-		server.getEventManager().fireAndForget(new TabPlayerLoadEvent(player));
-	}
+	public void callLoadEvent(TabPlayer player) {}
 
 	@Override
 	public int getMaxPlayers() {
@@ -107,11 +98,6 @@ public class VelocityPlatform extends ProxyPlatform {
 		this.packetBuilder = builder;
 	}
 
-	@Override
-	public Object getSkin(List<String> properties) {
-		return Collections.singletonList(new Property("textures", properties.get(0), properties.get(1)));
-	}
-	
 	@Override
 	public boolean isProxy() {
 		return true;

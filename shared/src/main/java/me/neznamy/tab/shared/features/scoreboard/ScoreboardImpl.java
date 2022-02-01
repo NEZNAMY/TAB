@@ -14,10 +14,7 @@ import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.scoreboard.lines.CustomLine;
-import me.neznamy.tab.shared.features.scoreboard.lines.ScoreboardLine;
-import me.neznamy.tab.shared.features.scoreboard.lines.StableDynamicLine;
-import me.neznamy.tab.shared.features.scoreboard.lines.StaticLine;
+import me.neznamy.tab.shared.features.scoreboard.lines.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -94,6 +91,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 			String[] elements = text.split("\\|");
 			return new CustomLine(this, lineNumber, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
 		}
+		if (text.startsWith("Long|")) {
+			return new LongLine(this, lineNumber, text.substring(5));
+		}
 		if (text.contains("%") || (manager.isUsingNumbers() && text.length() <= 26)) {
 			return new StableDynamicLine(this, lineNumber, text);
 		}
@@ -116,6 +116,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
 	public void addPlayer(TabPlayer p) {
 		if (players.contains(p)) return; //already registered
+		players.add(p);
 		p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
 		p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(),
 				EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
@@ -123,7 +124,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		for (Line s : lines) {
 			((ScoreboardLine)s).register(p);
 		}
-		players.add(p);
 		manager.getActiveScoreboards().put(p, this);
 		recalculateScores(p);
 	}

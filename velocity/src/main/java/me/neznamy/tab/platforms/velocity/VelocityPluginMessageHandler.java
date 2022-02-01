@@ -28,7 +28,8 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 	 * @param plugin - instance of main class
 	 */
 	public VelocityPluginMessageHandler(Main plugin) {
-		mc = MinecraftChannelIdentifier.create("tab", "placeholders");
+		String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
+		mc = MinecraftChannelIdentifier.create(name[0], name[1]);
 		plugin.getServer().getChannelRegistrar().register(mc);
 		plugin.getServer().getEventManager().register(plugin, this);
 
@@ -40,14 +41,15 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 	 */
 	@Subscribe
 	public void on(PluginMessageEvent event){
-		if (!event.getIdentifier().getId().equalsIgnoreCase(channelName)) return;
+		if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
 		if (event.getTarget() instanceof Player) {
-			long time = System.nanoTime();
-			VelocityTabPlayer receiver = (VelocityTabPlayer) TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
-			if (receiver == null) return;
-			onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
 			event.setResult(ForwardResult.handled());
-			TAB.getInstance().getCPUManager().addTime("Plugin message handling", TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, System.nanoTime()-time);
+			TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
+					TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
+				VelocityTabPlayer receiver = (VelocityTabPlayer) TAB.getInstance().getPlayer(((Player) event.getTarget()).getUniqueId());
+				if (receiver == null) return;
+				onPluginMessage(receiver, ByteStreams.newDataInput(event.getData()));
+			});
 		}
 	}
 

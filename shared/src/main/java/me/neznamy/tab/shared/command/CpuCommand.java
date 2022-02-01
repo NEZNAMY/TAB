@@ -37,9 +37,6 @@ public class CpuCommand extends SubCommand {
 		Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
 		double placeholdersTotal = placeholders.values().stream().mapToDouble(Float::floatValue).sum();
 
-		Map<String, Float> bridgePlaceholders = tab.getCPUManager().getBridgeUsage();
-		double bridgePlaceholdersTotal = bridgePlaceholders.values().stream().mapToDouble(Float::floatValue).sum();
-
 		Map<String, Map<String, Float>> features = tab.getCPUManager().getFeatureUsage();
 		double featuresTotal = 0;
 		for (Map<String, Float> map : features.values()) {
@@ -56,29 +53,20 @@ public class CpuCommand extends SubCommand {
 		sendMessage(sender, "&8&l" + LINE_CHAR + " &6Some internal separately measured methods:");
 		printMethods(sender);
 		sendMessage(sender, SEPARATOR);
-		if (!tab.getCPUManager().getBridgeUsage().isEmpty()) {
-			sendMessage(sender, "&8&l" + LINE_CHAR + " &6Top 5 placeholders on Bukkit servers:");
-			printPlaceholders(sender, tab.getCPUManager().getBridgeUsage());
-			sendMessage(sender, SEPARATOR);
-		}
 		if (sender != null) {
 			sendToPlayer(sender, features);
 		} else {
 			sendToConsole(features);
 		}
 		sendMessage(sender, SEPARATOR);
-		sendMessage(sender, String.format("&8&l%s &7Threads created by the plugin (active/total): &7%s", LINE_CHAR, tab.getCPUManager().getThreadCount()));
 		if (sender != null) {
 			sendPacketCountToPlayer(sender);
 		} else {
 			sendPacketCountToConsole();
 		}
 		sendMessage(sender, String.format("&8&l%s &6&lPlaceholders Total: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(placeholdersTotal), 10, 5)));
-		if (!tab.getCPUManager().getBridgeUsage().isEmpty()) {
-			sendMessage(sender, String.format("&8&l%s &6&lBukkit bridge placeholders Total: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(bridgePlaceholdersTotal), 10, 5)));
-		}
 		sendMessage(sender, String.format("&8&l%s &6&lPlugin internals: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal-placeholdersTotal), 10, 5)));
-		sendMessage(sender, String.format("&8&l%s &6&lTotal: &e&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal + bridgePlaceholdersTotal), 10, 5)));
+		sendMessage(sender, String.format("&8&l%s &6&lTotal: &e&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal), 10, 5)));
 		sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
 		sendMessage(sender, " ");
 	}

@@ -10,12 +10,13 @@ import java.util.Map.Entry;
 
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.shared.TAB;
 
 public class SkinManager {
 
 	private final List<String> invalidSkins = new ArrayList<>();
-	private Object defaultSkin;
+	private Skin defaultSkin;
 	private final Map<String, SkinSource> sources = new HashMap<>();
 
 	public SkinManager(String defaultSkin) {
@@ -35,7 +36,7 @@ public class SkinManager {
 		}
 	}
 
-	public Object getSkin(String skin) {
+	public Skin getSkin(String skin) {
 		if (invalidSkins.contains(skin)) return defaultSkin;
 		for (Entry<String, SkinSource> entry : sources.entrySet()) {
 			if (skin.startsWith(entry.getKey() + ":")) {
@@ -44,14 +45,14 @@ public class SkinManager {
 					invalidSkins.add(skin);
 					return defaultSkin;
 				}
-				return TAB.getInstance().getPlatform().getSkin(value);
+				return new Skin(value.get(0), value.get(1));
 			}
 		}
 		TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
 		return null;
 	}
 
-	public Object getDefaultSkin() {
+	public Skin getDefaultSkin() {
 		return defaultSkin;
 	}
 }

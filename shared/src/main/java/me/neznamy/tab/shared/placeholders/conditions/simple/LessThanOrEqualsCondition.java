@@ -3,13 +3,15 @@ package me.neznamy.tab.shared.placeholders.conditions.simple;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * "leftSide<=rightSide" condition
+ * "leftSide&lt;=rightSide" condition
  */
 public class LessThanOrEqualsCondition extends NumericCondition {
 
 	/**
 	 * Constructs new instance with given condition line
-	 * @param line - condition line
+	 *
+	 * @param	line
+	 * 			configured condition line
 	 */
 	public LessThanOrEqualsCondition(String line) {
 		String[] arr = line.split("<=");

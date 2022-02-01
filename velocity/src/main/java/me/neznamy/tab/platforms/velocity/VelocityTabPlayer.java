@@ -1,26 +1,14 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.player.TabListEntry;
-import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.api.util.GameProfile.Property;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.audience.MessageType;
@@ -29,7 +17,6 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.text.Component;
 
 /**
  * TabPlayer for Velocity
@@ -47,10 +34,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	 * @param p - velocity player
 	 */
 	public VelocityTabPlayer(Player p) {
-		super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "-");
+		super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
+				p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol());
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tabListId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
-		version = ProtocolVersion.fromNetworkId(getPlayer().getProtocolVersion().getProtocol());
 		try {
 			Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
 			channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
@@ -152,8 +139,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	}
 
 	@Override
-	public Object getSkin() {
-		return getPlayer().getGameProfile().getProperties();
+	public Skin getSkin() {
+		if (getPlayer().getGameProfile().getProperties().size() == 0) return null; //offline mode
+		return new Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
 	}
 	
 	@Override

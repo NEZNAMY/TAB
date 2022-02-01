@@ -20,11 +20,30 @@ import me.neznamy.tab.shared.TabConstants;
 public class SpectatorFix extends TabFeature {
 
 	/**
-	 * Constructs new instance and loads config options
+	 * Constructs new instance and sends debug message that feature loaded.
 	 */
 	public SpectatorFix() {
 		super("Spectator fix", null);
 		TAB.getInstance().debug("Loaded SpectatorFix feature");
+	}
+
+	/**
+	 * Sends GameMode update of all players to either their real GameMode if
+	 * {@code realGameMode} is {@code true} or fake value if it's {@code false}.
+	 *
+	 * @param	realGameMode
+	 * 			Whether real GameMode should be shown or fake one
+	 */
+	private void updateAll(boolean realGameMode) {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			if (p.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
+			List<PlayerInfoData> list = new ArrayList<>();
+			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+				if (p == target) continue;
+				list.add(new PlayerInfoData(target.getUniqueId(), realGameMode ? EnumGamemode.values()[target.getGamemode()+1] : EnumGamemode.CREATIVE));
+			}
+			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), this);
+		}
 	}
 	
 	@Override
@@ -33,7 +52,7 @@ public class SpectatorFix extends TabFeature {
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			if (playerInfoData.getGameMode() == EnumGamemode.SPECTATOR) {
-				TabPlayer changed = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+				TabPlayer changed = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
 				if (changed != receiver) playerInfoData.setGameMode(EnumGamemode.CREATIVE);
 			}
 		}
@@ -59,17 +78,5 @@ public class SpectatorFix extends TabFeature {
 	@Override
 	public void unload() {
 		updateAll(true);
-	}
-	
-	private void updateAll(boolean realGamemode) {
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			if (p.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-			List<PlayerInfoData> list = new ArrayList<>();
-			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-				if (p == target) continue;
-				list.add(new PlayerInfoData(target.getUniqueId(), realGamemode ? EnumGamemode.values()[target.getGamemode()+1] : EnumGamemode.CREATIVE));
-			}
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), this);
-		}
 	}
 }

@@ -3,6 +3,7 @@ direction: COLUMNS
 default-skin: "mineskin:1753261242"
 enable-remaining-players-text: true
 remaining-players-text: "... and %s more"
+empty-slot-ping-value: 1000
 
 layouts:
   staff:

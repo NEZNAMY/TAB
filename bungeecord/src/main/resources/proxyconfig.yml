@@ -1,5 +1,4 @@
-# Detailed explanation of all options available at https://github.com/NEZNAMY/TAB/wiki/config.yml
-
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer
 header-footer:
   enabled: true
   disable-in-worlds:
@@ -31,6 +30,7 @@ header-footer:
         - "This is a shared header for"
         - "server2 and server3"
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting
 tablist-name-formatting:
   enabled: true
   align-tabsuffix-on-the-right: false
@@ -41,11 +41,13 @@ tablist-name-formatting:
   disable-in-servers:
     - disabledserver
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Nametags
 scoreboard-teams:
   enabled: true
   enable-collision: true
   invisible-nametags: false
   anti-override: true
+  # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Sorting-players-in-tablist
   sorting-types:
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
     - "PLACEHOLDER_A_TO_Z:%player%"
@@ -55,6 +57,7 @@ scoreboard-teams:
   disable-in-servers:
     - disabledserver
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Yellow-number
 yellow-number-in-tablist:
   enabled: true
   value: "%ping%"
@@ -63,6 +66,7 @@ yellow-number-in-tablist:
   disable-in-servers:
     - disabledserver
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Global-playerlist
 global-playerlist:
   enabled: false
   display-others-as-spectators: false
@@ -80,6 +84,7 @@ global-playerlist:
       - server1
       - server2
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Belowname
 belowname-objective:
   enabled: false
   number: "%health%"
@@ -89,9 +94,11 @@ belowname-objective:
   disable-in-servers:
     - disabledserver
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Spectator-fix
 prevent-spectator-effect:
   enabled: false
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Bossbar
 bossbar:
   enabled: false
   toggle-command: /bossbar
@@ -108,6 +115,7 @@ bossbar:
       progress: "100" # in %
       text: "&fWebsite: &bwww.domain.com"
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Scoreboard
 scoreboard:
   enabled: false
   toggle-command: /sb
@@ -153,18 +161,20 @@ scoreboard:
         - "* &bWorld&7: &f%world%"
         - "%animation:MyAnimation1%"
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Ping-Spoof
 ping-spoof:
   enabled: false
   value: 0
+
+fix-pet-names:
+  enabled: false
 
 placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
-  remove-strings:
-    - "[]"
-    - "< >"
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements
 placeholder-output-replacements:
   "%essentials_vanished%":
     "yes": "&7| Vanished"
@@ -180,6 +190,7 @@ placeholder-output-replacements:
   "%vault-suffix%":
     "%vault-suffix%" : ""
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Conditional-placeholders
 conditions:
   nick: # use it with %condition:nick%
     conditions:
@@ -199,10 +210,11 @@ placeholderapi-refresh-intervals:
   relational:
     "%rel_factionsuuid_relation_color%": 1000
 
-#if none of the above fits your needs, you can enable this to give groups using tab.group.<group name from the list below> permission
+# assigning groups by permission nodes instead of taking them from permission plugin
 assign-groups-by-permissions: false
 
-#if the option above is true, all groups are taken based on permissions and the one higher in this list is used as primary
+# if the option above is true, all groups are taken based on permissions and the one higher in this list is used as primary
+# Warning! This is not sorting list and has nothing to do with sorting players in tablist!
 primary-group-finding-list:
   - Owner
   - Admin
@@ -212,6 +224,7 @@ primary-group-finding-list:
 
 debug: false
 
+# https://github.com/NEZNAMY/TAB/wiki/MySQL
 mysql:
   enabled: false
   host: 127.0.0.1

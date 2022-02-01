@@ -3,15 +3,7 @@ package me.neznamy.tab.platforms.krypton
 import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.api.chat.IChatBaseComponent
-import me.neznamy.tab.api.protocol.PacketBuilder
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss
-import me.neznamy.tab.api.protocol.PacketPlayOutChat
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam
+import me.neznamy.tab.api.protocol.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.auth.ProfileProperty
@@ -40,10 +32,11 @@ object KryptonPacketBuilder : PacketBuilder() {
         PacketOutPlayerInfo.Action.valueOf(packet.action.name),
         packet.entries.map {
             val displayName = it.displayName?.toString(clientVersion)
+            val skin = if (it.skin != null) listOf(ProfileProperty.of("textures", it.skin!!.value, it.skin!!.signature)) else emptyList()
             PacketOutPlayerInfo.PlayerData(
                 it.uniqueId,
                 it.name ?: "",
-                it.skin as? List<ProfileProperty> ?: emptyList(),
+                skin,
                 GameMode.fromId((it.gameMode?.ordinal ?: 0) - 1) ?: GameMode.SURVIVAL,
                 it.latency,
                 if (displayName != null) GsonComponentSerializer.gson().deserialize(displayName) else Component.empty()
@@ -100,14 +93,15 @@ object KryptonPacketBuilder : PacketBuilder() {
     override fun readPlayerInfo(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutPlayerInfo? {
         if (packet !is PacketOutPlayerInfo) return null
         val action = PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(packet.action.name)
-        val listData = packet.players.map {
-            val serializedListName = if (it.displayName != null) GsonComponentSerializer.gson().serialize(it.displayName!!) else null
+        val listData = packet.players.map { data ->
+            val serializedListName = if (data.displayName != null) GsonComponentSerializer.gson().serialize(data.displayName!!) else null
+            val textures = data.properties.firstOrNull { it.name == "textures" } ?: return null
             PacketPlayOutPlayerInfo.PlayerInfoData(
-                it.name,
-                it.uuid,
-                it.properties,
-                it.latency,
-                PacketPlayOutPlayerInfo.EnumGamemode.values()[it.gameMode.ordinal + 1],
+                data.name,
+                data.uuid,
+                Skin(textures.value, textures.signature),
+                data.latency,
+                PacketPlayOutPlayerInfo.EnumGamemode.values()[data.gameMode.ordinal + 1],
                 if (serializedListName != null) IChatBaseComponent.deserialize(serializedListName) else null
             )
         }

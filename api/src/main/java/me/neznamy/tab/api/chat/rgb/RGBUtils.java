@@ -91,8 +91,9 @@ public class RGBUtils {
 	}
 
 	/**
-	 * Converts TAB's RGB format (#RRGGBB) into bukkit one (&x&r&r&g&g&b&b)
-	 * for modern clients (1.16+), for legacy clients it will use the closest color.
+	 * Converts TAB's RGB format (#RRGGBB) into bukkit one
+	 * (&amp;x&amp;r&amp;r&amp;g&amp;g&amp;b&amp;b) for modern
+	 * clients (1.16+), for legacy clients it will use the closest color.
 	 * @param	text
 	 * 			text to convert
 	 * @param	rgbClient

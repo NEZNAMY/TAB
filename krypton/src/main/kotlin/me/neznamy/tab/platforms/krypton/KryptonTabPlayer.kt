@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.krypton
 
-import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
 import me.neznamy.tab.api.protocol.PacketPlayOutChat
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter
+import me.neznamy.tab.api.protocol.Skin
 import me.neznamy.tab.shared.ITabPlayer
 import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.audience.MessageType
@@ -16,7 +16,6 @@ import net.kyori.adventure.bossbar.BossBar.Overlay
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.player.Player
-import org.kryptonmc.api.registry.Registries
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.packet.Packet
 import java.util.UUID
@@ -24,14 +23,13 @@ import java.util.UUID
 class KryptonTabPlayer(
     delegate: Player,
     protocolVersion: Int
-) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name) {
+) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion) {
 
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
 
     init {
         channel = this.delegate.session.channel
-        version = ProtocolVersion.fromNetworkId(protocolVersion)
     }
 
     override fun hasPermission(permission: String): Boolean = delegate.hasPermission(permission)
@@ -63,7 +61,11 @@ class KryptonTabPlayer(
 
     override fun isDisguised(): Boolean = false
 
-    override fun getSkin(): Any = delegate.profile.properties
+    override fun getSkin(): Skin {
+        val textures = delegate.profile.properties.firstOrNull { it.name == "textures" }
+            ?: throw IllegalStateException("User does not have any skin data!")
+        return Skin(textures.value, textures.signature)
+    }
 
     override fun getPlayer(): Player = delegate
 
