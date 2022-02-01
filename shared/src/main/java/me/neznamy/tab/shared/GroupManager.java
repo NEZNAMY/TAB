@@ -66,6 +66,7 @@ public class GroupManager extends TabFeature {
 	private void updatePlayer(UserDataRecalculateEvent event) {
 		TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.LUCKPERMS_USER_RECALCULATE_EVENT, () -> {
 			TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
+			if (p == null) return; // player not loaded yet
 			refresh(p, false);
 			((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(p, p.getGroup());
 		});
