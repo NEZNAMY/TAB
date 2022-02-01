@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.*;
 
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -25,7 +26,7 @@ public class BossBarLine implements BossBar {
 	private final Condition displayCondition;
 	
 	//uuid
-	private final UUID uuid;
+	private final UUID uuid = UUID.randomUUID();
 	
 	//BossBar style
 	private String style;
@@ -45,9 +46,9 @@ public class BossBarLine implements BossBar {
 	private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	//refreshers
-	private final TextRefresher textRefresher;
-	private final ProgressRefresher progressRefresher;
-	private final ColorAndStyleRefresher colorAndStyleRefresher;
+	private final TabFeature textRefresher;
+	private final TabFeature progressRefresher;
+	private final TabFeature colorAndStyleRefresher;
 	
 	//property names
 	private final String propertyTitle;
@@ -65,29 +66,49 @@ public class BossBarLine implements BossBar {
 	 * @param title - BossBar title
 	 * @param progress - BossBar progress
 	 */
-	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition, String color, String style, String title, String progress, boolean announcementOnly) {
+	public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition,
+					   String color, String style, String title, String progress, boolean announcementOnly) {
 		this.manager = manager;
 		this.name = name;
 		this.displayCondition = Condition.getCondition(displayCondition);
 		if (this.displayCondition != null) {
 			manager.addUsedPlaceholders(Collections.singletonList("%condition:" + this.displayCondition.getName() + "%"));
 		}
-		this.uuid = UUID.randomUUID();
 		this.color = color;
 		this.style = style;
 		this.title = title;
 		this.progress = progress;
 		this.announcementOnly = announcementOnly;
-		textRefresher = new TextRefresher(this);
-		progressRefresher = new ProgressRefresher(this);
-		colorAndStyleRefresher = new ColorAndStyleRefresher(this);
 		propertyTitle = TabConstants.Property.bossbarTitle(name);
 		propertyProgress = TabConstants.Property.bossbarProgress(name);
 		propertyColor = TabConstants.Property.bossbarColor(name);
 		propertyStyle = TabConstants.Property.bossbarStyle(name);
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name), textRefresher);
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name), progressRefresher);
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarColorStyle(name), colorAndStyleRefresher);
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name),
+				textRefresher = new TabFeature(manager.getFeatureName(), "Updating text") {
+			@Override
+			public void refresh(TabPlayer refreshed, boolean force) {
+				if (!players.contains(refreshed)) return;
+				refreshed.sendCustomPacket(new PacketPlayOutBoss(uuid, refreshed.getProperty(propertyTitle).updateAndGet()), TabConstants.PacketCategory.BOSSBAR_TEXT);
+			}
+		});
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name),
+				progressRefresher = new TabFeature(manager.getFeatureName(), "Updating progress") {
+			@Override
+			public void refresh(TabPlayer refreshed, boolean force) {
+				if (!players.contains(refreshed)) return;
+				refreshed.sendCustomPacket(new PacketPlayOutBoss(uuid, parseProgress(refreshed.getProperty(propertyProgress).updateAndGet())/100), TabConstants.PacketCategory.BOSSBAR_PROGRESS);
+			}
+		});
+		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarColorStyle(name),
+				colorAndStyleRefresher = new TabFeature(manager.getFeatureName(), "Updating color and style") {
+			@Override
+			public void refresh(TabPlayer refreshed, boolean force) {
+				if (!players.contains(refreshed)) return;
+				refreshed.sendCustomPacket(new PacketPlayOutBoss(uuid,
+						parseColor(refreshed.getProperty(propertyColor).updateAndGet()),
+						parseStyle(refreshed.getProperty(propertyStyle).updateAndGet())), TabConstants.PacketCategory.BOSSBAR_COLOR_STYLE);
+			}
+		});
 	}
 	
 	/**
