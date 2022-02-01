@@ -151,19 +151,6 @@ public abstract class SubCommand {
 		}
 		return new ArrayList<>();
 	}
-	
-	/**
-	 * Converts string array into a single string with "" and '' support for spaces
-	 * @param args - array of arguments
-	 * @return argument from array
-	 */
-	public String buildArgument(String[] args) {
-		String value = String.join(" ", args);
-		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-			value = value.substring(1, value.length()-1);
-		}
-		return value;
-	}
 
 	public MessageFile getMessages() {
 		return TAB.getInstance().getConfiguration().getMessages();

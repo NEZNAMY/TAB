@@ -20,7 +20,7 @@ public interface ScoreboardManager {
 	 * is internal name of the scoreboard, which it will be registered
 	 * with and further work where scoreboard name is used allowed.
 	 * <p>
-	 * Scoreboard {@code title} is limited to 32 characters on <1.13. If needed,
+	 * Scoreboard {@code title} is limited to 32 characters on &lt;1.13. If needed,
 	 * it will be cut to 32 character for those players (after replacing 
 	 * placeholders). RGB is supported using any of the supported formats.
 	 * Placeholders are supported.
@@ -149,7 +149,7 @@ public interface ScoreboardManager {
 	 * 			Duration in milliseconds
 	 * @throws	IllegalArgumentException
 	 * 			if no scoreboard was found with such name or {@code duration}
-	 * 			is < 0.
+	 * 			is &lt; 0.
 	 */
 	void announceScoreboard(String scoreboard, int duration);
 

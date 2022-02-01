@@ -20,17 +20,107 @@ import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 
 /**
- * Feature handler for TabList prefix/name/suffix
+ * Feature handler for TabList display names
  */
 public class PlayerList extends TabFeature implements TablistFormatManager {
 
+	/** Config option toggling anti-override which prevents other plugins from overriding TAB */
 	protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
+
+	/**
+	 * Flag tracking when the plugin is disabling to properly clear
+	 * display name by setting it to null value and not force the value back
+	 * with the anti-override.
+	 */
 	private boolean disabling = false;
 
+	/**
+	 * Constructs new instance and sends debug message that feature loaded.
+	 */
 	public PlayerList() {
 		super("TabList prefix/suffix", "Updating TabList format", TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-servers"),
 				TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-worlds"));
 		TAB.getInstance().debug(String.format("Loaded PlayerList feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTabList=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), antiOverrideTabList));
+	}
+
+	/**
+	 * Returns UUID of tablist entry representing this player. If layout feature
+	 * is enabled, returns UUID of the layout slot where the player should be.
+	 * When it's not enabled, returns player's TabList UUID, which may not match
+	 * with player's actual UUID due to velocity.
+	 *
+	 * @param	p
+	 * 			Player to get tablist UUID of
+	 * @param	viewer
+	 * 			TabList viewer
+	 * @return	UUID of TabList entry representing requested player
+	 */
+	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
+		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+		if (manager != null) {
+			Layout layout = manager.getPlayerViews().get(viewer);
+			if (layout != null) {
+				PlayerSlot slot = layout.getSlot(p);
+				if (slot != null) {
+					return slot.getUUID();
+				}
+			}
+		}
+		return p.getTablistUUID(); //layout not enabled or player not visible to viewer
+	}
+
+	/**
+	 * Loads all properties from config and returns {@code true} if at least
+	 * one of them either wasn't loaded or changed value, {@code false} otherwise.
+	 *
+	 * @param	p
+	 * 			Player to update properties of
+	 * @return	{@code true} if at least one property changed, {@code false} if not
+	 */
+	protected boolean updateProperties(TabPlayer p) {
+		boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName())) changed = true;
+		if (p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX)) changed = true;
+		return changed;
+	}
+
+	/**
+	 * Updates TabList format of requested player to everyone.
+	 *
+	 * @param	p
+	 * 			Player to update
+	 * @param	format
+	 * 			Whether player's actual format should be used or {@code null} for reset
+	 */
+	private void updatePlayer(TabPlayer p, boolean format) {
+		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+			if (viewer.getVersion().getMinorVersion() < 8) continue;
+			viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer, true) : null)), this);
+		}
+		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+		if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
+	}
+
+	/**
+	 * Returns TabList format of player for viewer
+	 *
+	 * @param	p
+	 * 			Player to get format of
+	 * @param	viewer
+	 * 			Viewer seeing the format
+	 * @param	updateWidths
+	 * 			If this class is AlignedPlayerList and player widths should be updated
+	 * @return	Format of specified player for viewer
+	 */
+	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
+		Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
+		Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
+		Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
+		if (prefix == null || name == null || suffix == null) {
+			return null;
+		}
+		return IChatBaseComponent.optimizedComponent(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
 	}
 
 	@Override
@@ -39,7 +129,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			if (isDisabled(all.getServer(), all.getWorld())) {
 				addDisabledPlayer(all);
 				updateProperties(all);
-				return;
+				continue;
 			}
 			refresh(all, true);
 		}
@@ -62,7 +152,10 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		onWorldChange(p, null, null);
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p, false))), this);
+			if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p, false))), this);
+			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+					new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all, false))), this);
 		}
 	}
 	
@@ -84,26 +177,6 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			updatePlayer(p, true);
 		}
 	}
-
-	private void updatePlayer(TabPlayer p, boolean format) {
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			if (viewer.getVersion().getMinorVersion() < 8) continue;
-			viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-					new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer, true) : null)), this);
-		}
-		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-		if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
-	}
-
-	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
-		Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
-		Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
-		Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
-		if (prefix == null || name == null || suffix == null) {
-			return null;
-		}
-		return IChatBaseComponent.optimizedComponent(prefix.getFormat(viewer) + name.getFormat(viewer) + suffix.getFormat(viewer));
-	}
 	
 	@Override
 	public void refresh(TabPlayer refreshed, boolean force) {
@@ -113,12 +186,6 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			updateProperties(refreshed);
 			refresh = true;
 		} else {
-			if (refreshed.getProperty(TabConstants.Property.TABPREFIX) == null) {
-				//this makes absolutely no sense, and I am not able to reproduce it myself
-				TAB.getInstance().getErrorManager().printError("Tablist formatting data not present for " + refreshed.getName() + " when refreshing, loading again.", new Exception());
-				updateProperties(refreshed);
-				return;
-			}
 			boolean prefix = refreshed.getProperty(TabConstants.Property.TABPREFIX).update();
 			boolean name = refreshed.getProperty(TabConstants.Property.CUSTOMTABNAME).update();
 			boolean suffix = refreshed.getProperty(TabConstants.Property.TABSUFFIX).update();
@@ -127,13 +194,6 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		if (refresh) {
 			updatePlayer(refreshed, true);
 		}
-	}
-	
-	protected boolean updateProperties(TabPlayer p) {
-		boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
-		if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName())) changed = true;
-		if (p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX)) changed = true;
-		return changed;
 	}
 
 	@Override
@@ -156,21 +216,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
 		if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION))
-			TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
-	}
-	
-	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
-		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
-		if (manager != null) {
-			Layout layout = manager.getPlayerViews().get(viewer);
-			if (layout != null) {
-				PlayerSlot slot = layout.getSlot(p);
-				if (slot != null) {
-					return slot.getUUID();
-				}
-			}
-		}
-		return p.getTablistUUID(); //layout not enabled or player not visible to viewer
+			TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 
 	@Override
@@ -178,7 +224,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		if (disabling || !antiOverrideTabList) return;
 		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
-			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
 			if (packetPlayer != null && !isDisabledPlayer(packetPlayer)) {
 				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver, false));
 			}

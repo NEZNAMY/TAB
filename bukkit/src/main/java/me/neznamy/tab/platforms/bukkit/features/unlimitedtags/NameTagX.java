@@ -55,7 +55,6 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
 		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, new PacketListener(this));
 		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_LOCATION_REFRESHER, new LocationRefresher(this));
 		TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedWorlds=%s",
 				markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedWorlds));
 	}
@@ -80,10 +79,10 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 	}
 	
 	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "refreshing NameTag visibility", this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 			
 			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded() || isPlayerDisabled(p)) continue;
+				if (isPlayerDisabled(p)) continue;
 				p.getArmorStandManager().updateVisibility(false);
 			}
 		});
@@ -134,7 +133,7 @@ public class NameTagX extends NameTag implements UnlimitedNametagManager {
 		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 		if (disconnectedPlayer.getArmorStandManager() != null) { //player was not loaded yet
 			disconnectedPlayer.getArmorStandManager().destroy();
-			TAB.getInstance().getCPUManager().runTaskLater(500, "processing onQuit", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
+			TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> disconnectedPlayer.getArmorStandManager().destroy());
 		}
 	}
 

@@ -187,7 +187,7 @@ public enum EnumChatFormat {
 	}
 
 	/**
-	 * Color translation method taken from bukkit, which converts '&' symbol into
+	 * Color translation method taken from bukkit, which converts '&amp;' symbol into
 	 * the actual color character if followed by a valid color character.
 	 * @param	textToTranslate
 	 * 			text to replace color symbol in
@@ -207,7 +207,7 @@ public enum EnumChatFormat {
 	}
 
 	/**
-	 * Turns back the color symbol into '&' symbol in provided text.
+	 * Turns back the color symbol into '&amp;' symbol in provided text.
 	 * @param	text
 	 * 			text to revert colors in
 	 * @return	reverted text

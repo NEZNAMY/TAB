@@ -182,9 +182,6 @@ placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
-  remove-strings:
-    - "[]"
-    - "< >"
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements-(premium-only)
 placeholder-output-replacements:

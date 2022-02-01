@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 
 /**
- * Formatter for &x&R&R&G&G&B&B
+ * Formatter for &amp;x&amp;R&amp;R&amp;G&amp;G&amp;B&amp;B
  */
 public class BukkitFormat implements RGBFormatter {
 

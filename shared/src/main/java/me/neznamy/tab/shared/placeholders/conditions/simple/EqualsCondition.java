@@ -6,10 +6,12 @@ import me.neznamy.tab.api.TabPlayer;
  * "leftSide=rightSide" condition
  */
 public class EqualsCondition extends SimpleCondition {
-	
+
 	/**
 	 * Constructs new instance with given condition line
-	 * @param line - condition line
+	 *
+	 * @param	line
+	 * 			configured condition line
 	 */
 	public EqualsCondition(String line) {
 		String[] arr = line.split("=");

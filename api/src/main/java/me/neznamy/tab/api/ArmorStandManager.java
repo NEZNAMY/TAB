@@ -1,7 +1,6 @@
 package me.neznamy.tab.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,7 @@ public class ArmorStandManager {
 	private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
 	
 	//players in entity tracking range
-	private final List<TabPlayer> nearbyPlayers = Collections.synchronizedList(new ArrayList<>());
+	private final List<TabPlayer> nearbyPlayers = new ArrayList<>();
 	
 	//array to iterate over to avoid concurrent modification and slightly boost performance & memory
 	private ArmorStand[] armorStandArray = new ArmorStand[0];
@@ -27,7 +26,7 @@ public class ArmorStandManager {
 	 * @param name - key name of the armor stand
 	 * @param as - armor stand to add
 	 */
-	public synchronized void addArmorStand(String name, ArmorStand as) {
+	public void addArmorStand(String name, ArmorStand as) {
 		armorStands.put(name, as);
 		armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
 		for (TabPlayer p : nearbyPlayerArray) as.spawn(p);
@@ -57,10 +56,8 @@ public class ArmorStandManager {
 	 * @param viewer - player to spawn armor stands for
 	 */
 	public void spawn(TabPlayer viewer) {
-		synchronized (nearbyPlayers) {
-			nearbyPlayers.add(viewer);
-			nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
-		}
+		nearbyPlayers.add(viewer);
+		nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
 		if (viewer.getVersion().getMinorVersion() < 8) return;
 		for (ArmorStand a : armorStandArray) a.spawn(viewer);
 	}
@@ -108,9 +105,7 @@ public class ArmorStandManager {
 	 * @param viewer - player to remove
 	 */
 	public void unregisterPlayer(TabPlayer viewer) {
-		synchronized (nearbyPlayers) {
-			if (nearbyPlayers.remove(viewer)) nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
-		}
+		if (nearbyPlayers.remove(viewer)) nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
 	}
 
 	/**
@@ -118,10 +113,8 @@ public class ArmorStandManager {
 	 */
 	public void destroy() {
 		for (ArmorStand a : armorStandArray) a.destroy();
-		synchronized (nearbyPlayers) {
-			nearbyPlayers.clear();
-			nearbyPlayerArray = new TabPlayer[0];
-		}
+		nearbyPlayers.clear();
+		nearbyPlayerArray = new TabPlayer[0];
 	}
 
 	/**

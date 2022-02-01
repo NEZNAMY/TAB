@@ -8,13 +8,11 @@ import me.neznamy.tab.api.util.Preconditions;
 public class TextColor {
 
 	/**
-	 * RGB values from 0 to 255.
-	 * They are only initialized if they are actually used to avoid
+	 * RGB values as a single number of 3 8-bit numbers (0-255).
+	 * It is only initialized if colors are actually used to avoid
 	 * unnecessary memory allocations with string operations.
 	 */
-	private short red = -1;
-	private short green = -1;
-	private short blue = -1;
+	private int rgb = -1;
 	
 	/** Closest legacy color to this color object. */
 	private EnumChatFormat legacyColor;
@@ -37,9 +35,7 @@ public class TextColor {
 	 */
 	public TextColor(TextColor color) {
 		Preconditions.checkNotNull(color, "color cannot be null");
-		red = color.red;
-		green = color.green;
-		blue = color.blue;
+		rgb = color.rgb;
 		legacyColor = color.legacyColor;
 		hexCode = color.hexCode;
 		legacyColorForced = color.legacyColorForced;
@@ -83,9 +79,7 @@ public class TextColor {
 	 */
 	public TextColor(EnumChatFormat legacyColor) {
 		Preconditions.checkNotNull(legacyColor, "legacy color cannot be null");
-		this.red = legacyColor.getRed();
-		this.green = legacyColor.getGreen();
-		this.blue = legacyColor.getBlue();
+		this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
 		this.hexCode = legacyColor.getHexCode();
 	}
 	
@@ -101,12 +95,10 @@ public class TextColor {
 	 * 			if {@code red}, {@code green} or {@code blue} is out of range ({@code 0-255})
 	 */
 	public TextColor(int red, int green, int blue) {
-		Preconditions.checkRange(red, 0, 255);
-		Preconditions.checkRange(green, 0, 255);
-		Preconditions.checkRange(blue, 0, 255);
-		this.red = (short) red;
-		this.green = (short) green;
-		this.blue = (short) blue;
+		Preconditions.checkRange(red, 0, 255, "red color");
+		Preconditions.checkRange(green, 0, 255, "green color");
+		Preconditions.checkRange(blue, 0, 255, "blue color");
+		this.rgb = (red << 16) + (green << 8) + blue;
 	}
 	
 	/**
@@ -136,8 +128,8 @@ public class TextColor {
 	 * @return	red value
 	 */
 	public int getRed() {
-		if (red == -1) loadColors();
-		return red;
+		if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
+		return (rgb >> 16) & 0xFF;
 	}
 
 	/**
@@ -145,8 +137,8 @@ public class TextColor {
 	 * @return	green value
 	 */
 	public int getGreen() {
-		if (green == -1) loadColors();
-		return green;
+		if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
+		return (rgb >> 8) & 0xFF;
 	}
 
 	/**
@@ -154,20 +146,10 @@ public class TextColor {
 	 * @return	blue value
 	 */
 	public int getBlue() {
-		if (blue == -1) loadColors();
-		return blue;
+		if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
+		return rgb & 0xFF;
 	}
 
-	/**
-	 * Loads red, green and blue values based on current hex code string
-	 */
-	private void loadColors(){
-		int hexColor = Integer.parseInt(hexCode, 16);
-		red = (short) ((hexColor >> 16) & 0xFF);
-		green = (short) ((hexColor >> 8) & 0xFF);
-		blue = (short) (hexColor & 0xFF);
-	}
-	
 	/**
 	 * Returns the closest legacy color of this color object.
 	 * If the color was defined in constructor, it's returned.
@@ -175,9 +157,7 @@ public class TextColor {
 	 * @return	closest legacy color
 	 */
 	public EnumChatFormat getLegacyColor() {
-		if (legacyColor == null) {
-			legacyColor = loadClosestColor();
-		}
+		if (legacyColor == null) legacyColor = loadClosestColor();
 		return legacyColor;
 	}
 	
@@ -186,9 +166,7 @@ public class TextColor {
 	 * @return	the rgb combination as a 6-digit hex code string
 	 */
 	public String getHexCode() {
-		if (hexCode == null) {
-			hexCode = String.format("%06X", (red << 16) + (green << 8) + blue);
-		}
+		if (hexCode == null) hexCode = String.format("%06X", rgb);
 		return hexCode;
 	}
 	

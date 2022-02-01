@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.protocol.TabPacket;
 
 /**
@@ -49,13 +50,13 @@ public interface TabPlayer {
 
 	/**
 	 * Returns player's current world name (on BungeeCord this requires bridge installed)
-	 * @return name of world where player is currently in, null on BungeeCord if bridge is not installed
+	 * @return name of world where player is currently in, "N/A" on BungeeCord if bridge is not installed
 	 */
 	String getWorld();
 	
 	/**
-	 * Returns player's current server name on BungeeCord (on bukkit this returns null)
-	 * @return name of server where player is currently in, null on bukkit
+	 * Returns player's current server name on BungeeCord (on bukkit this returns "N/A")
+	 * @return name of server where player is currently in, "N/A" on bukkit
 	 */
 	String getServer();
 
@@ -160,10 +161,10 @@ public interface TabPlayer {
 	int getPing();
 
 	/**
-	 * Returns player's platform-specific skin data
+	 * Returns player's skin data
 	 * @return player's skin
 	 */
-	Object getSkin();
+	Skin getSkin();
 
 	/**
 	 * Returns true once the player is successfully loaded (onJoin method ran through all methods)
@@ -260,4 +261,6 @@ public interface TabPlayer {
 	boolean hasTemporaryGroup();
 
 	void resetTemporaryGroup();
+
+	String getNickname();
 }

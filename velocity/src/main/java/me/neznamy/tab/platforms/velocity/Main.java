@@ -33,7 +33,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = TAB.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"}, dependencies = {@Dependency(id = "velocitypacketinjector")})
+@Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"}, dependencies = {@Dependency(id = "velocitypacketinjector")})
 public class Main {
 
 	//instance of proxyserver

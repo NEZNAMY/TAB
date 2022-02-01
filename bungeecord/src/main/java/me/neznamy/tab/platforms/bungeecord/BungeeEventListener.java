@@ -7,7 +7,6 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.event.EventPriority;
 
 /**
  * The core for BungeeCord forwarding events into all enabled features
@@ -18,10 +17,11 @@ public class BungeeEventListener implements Listener {
 	 * Disconnect event listener to forward the event to all features
 	 * @param e - disconnect event
 	 */
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler
 	public void onQuit(PlayerDisconnectEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing PlayerDisconnectEvent", () -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+		TAB.getInstance().getCPUManager().runTask(() ->
+				TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
 	}
 
 	/**
@@ -29,10 +29,10 @@ public class BungeeEventListener implements Listener {
 	 * @param	e
 	 * 			switch event
 	 */
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler
 	public void onSwitch(ServerSwitchEvent e){
 		if (TAB.getInstance().isDisabled()) return;
-		TAB.getInstance().getCPUManager().runTask("processing ServerSwitchEvent", () -> {
+		TAB.getInstance().getCPUManager().runTask(() -> {
 			if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
 				TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
 			} else {

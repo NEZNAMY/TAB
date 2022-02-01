@@ -143,15 +143,16 @@ public class AlignedPlayerList extends PlayerList {
 	@Override
 	public void load(){
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			updateProperties(all);
+			playerWidths.put(all, getPlayerNameWidth(all));
 			if (isDisabled(all.getServer(), all.getWorld())) {
 				addDisabledPlayer(all);
-				updateProperties(all);
-				playerWidths.put(all, getPlayerNameWidth(all));
-				return;
 			}
-			refresh(all, true);
 		}
 		recalculateMaxWidth(null);
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			refresh(all, true);
+		}
 	}
 	
 	@Override
@@ -180,7 +181,8 @@ public class AlignedPlayerList extends PlayerList {
 		};
 		r.run();
 		//add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
-		if (!antiOverrideTabList) TAB.getInstance().getCPUManager().runTaskLater(100, "processing PlayerJoinEvent", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+		if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION))
+			TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
 	}
 	
 	@Override
@@ -189,11 +191,6 @@ public class AlignedPlayerList extends PlayerList {
 		if (maxPlayer == p && recalculateMaxWidth(p)) {
 			updateAllNames(p);
 		}
-	}
-
-	@Override
-	public void onServerChange(TabPlayer p, String from, String to) {
-		onWorldChange(p, null, null);
 	}
 
 	@Override
@@ -218,18 +215,20 @@ public class AlignedPlayerList extends PlayerList {
 
 	// returns true if max changed, false if not
 	private boolean recalculateMaxWidth(TabPlayer ignoredPlayer) {
-		int oldMaxWidth = maxWidth;
-		maxWidth = 0;
-		maxPlayer = null;
+		int newMaxWidth = 0;
+		TabPlayer newMaxPlayer = null;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (all == ignoredPlayer) continue;
 			int localWidth = playerWidths.get(all);
-			if (localWidth > maxWidth) {
-				maxWidth = localWidth;
-				maxPlayer = all;
+			if (localWidth > newMaxWidth) {
+				newMaxWidth = localWidth;
+				newMaxPlayer = all;
 			}
 		}
-		return oldMaxWidth != maxWidth;
+		boolean changed = newMaxWidth != maxWidth;
+		maxPlayer = newMaxPlayer;
+		maxWidth = newMaxWidth;
+		return changed;
 	}
 	
 	@Override

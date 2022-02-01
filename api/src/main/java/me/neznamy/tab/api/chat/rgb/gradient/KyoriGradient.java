@@ -7,7 +7,8 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.TextColor;
 
 /**
- * Gradient applier for <gradient:#RRGGBB:#RRGGBB>Text</gradient> and <gradient:#RRGGBB|L:#RRGGBB>Text</gradient>
+ * Gradient applier for &lt;gradient:#RRGGBB:#RRGGBB>Text&lt;/gradient>
+ * and &lt;gradient:#RRGGBB|L:#RRGGBB>Text&lt;/gradient>
  */
 public class KyoriGradient implements GradientPattern {
 

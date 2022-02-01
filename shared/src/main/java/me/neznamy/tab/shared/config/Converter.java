@@ -50,7 +50,7 @@ public class Converter {
      *          if an I/O operation with the files fails
      */
     public void convertToV3(ConfigurationFile currentConfig) throws IOException {
-        if (currentConfig.hasConfigOption("mysql") && !new File(TAB.getInstance().getPlatform().getDataFolder(), "bossbar.yml").exists()) return;
+        if (currentConfig.hasConfigOption("mysql")) return;
         TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
         TAB.getInstance().sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
         TAB.getInstance().sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
@@ -374,5 +374,11 @@ public class Converter {
     private String translateWorldGroup(ConfigurationFile oldConfig, String group) {
         String oldSeparator = oldConfig.hasConfigOption("multi-world-separator") ? oldConfig.getString("multi-world-separator") : "-";
         return group.replace(oldSeparator, ";");
+    }
+
+    public void removeOldOptions(ConfigurationFile config) {
+        if (config.hasConfigOption("placeholders.remove-strings")) {
+            config.set("placeholders.remove-strings", null);
+        }
     }
 }

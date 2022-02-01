@@ -85,22 +85,14 @@ public class VelocityPipelineInjector extends PipelineInjector {
             if (packet.getPlayers() == null) return;
             List<String> col = Lists.newArrayList(packet.getPlayers());
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                if (col.contains(getName(p)) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
+                if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
                         !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
                     logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-                    col.remove(getName(p));
+                    col.remove(p.getNickname());
                 }
             }
             packet.setPlayers(col);
             TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
-        }
-
-        private String getName(TabPlayer p) {
-            NickCompatibility nick = (NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY);
-            if (nick != null) {
-                return nick.getNickname(p);
-            }
-            return p.getName();
         }
     }
 }

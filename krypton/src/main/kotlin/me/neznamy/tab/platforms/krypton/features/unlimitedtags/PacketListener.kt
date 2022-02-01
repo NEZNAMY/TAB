@@ -44,7 +44,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntityMove(receiver: TabPlayer, entityId: Int) {
         val player = nameTagX.entityIdMap[entityId]
         if (player != null) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, CpuUsageCategory.PACKET_ENTITY_MOVE) {
+            TAB.getInstance().cpuManager.runMeasuredTask(nameTagX, CpuUsageCategory.PACKET_ENTITY_MOVE) {
                 player.armorStandManager.teleport(receiver)
             }
             return
@@ -52,7 +52,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
         nameTagX.vehicleManager.vehicles(entityId).forEach {
             val passenger = nameTagX.entityIdMap[(it as KryptonEntity).id]
             if (passenger != null && passenger.armorStandManager != null) {
-                TAB.getInstance().cpuManager.runMeasuredTask("processing EntityMove", nameTagX, CpuUsageCategory.PACKET_ENTITY_MOVE) {
+                TAB.getInstance().cpuManager.runMeasuredTask(nameTagX, CpuUsageCategory.PACKET_ENTITY_MOVE) {
                     passenger.armorStandManager.teleport(receiver)
                 }
             }
@@ -62,7 +62,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntitySpawn(receiver: TabPlayer, entityId: Int) {
         val spawnedPlayer = nameTagX.entityIdMap[entityId]
         if (spawnedPlayer != null && spawnedPlayer.isLoaded) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntitySpawn", nameTagX, CpuUsageCategory.PACKET_ENTITY_SPAWN) {
+            TAB.getInstance().cpuManager.runMeasuredTask(nameTagX, CpuUsageCategory.PACKET_ENTITY_SPAWN) {
                 spawnedPlayer.armorStandManager.spawn(receiver)
             }
         }
@@ -71,7 +71,7 @@ class PacketListener(private val nameTagX: NameTagX) : TabFeature(nameTagX.featu
     private fun onEntityDestroy(receiver: TabPlayer, entity: Int) {
         val deSpawnedPlayer = nameTagX.entityIdMap[entity]
         if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded) {
-            TAB.getInstance().cpuManager.runMeasuredTask("processing EntityDestroy", nameTagX, CpuUsageCategory.PACKET_ENTITY_DESTROY) {
+            TAB.getInstance().cpuManager.runMeasuredTask(nameTagX, CpuUsageCategory.PACKET_ENTITY_DESTROY) {
                 deSpawnedPlayer.armorStandManager.destroy(receiver)
             }
         }

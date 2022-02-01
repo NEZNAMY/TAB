@@ -46,7 +46,6 @@ public class Permissions extends SortingType {
 		}
 		if (chars == null) {
 			chars = String.valueOf(sortedGroups.size()+1);
-			TAB.getInstance().getErrorManager().oneTimeConsoleError("Sorting by permissions is enabled but player " + p.getName() + " does not have any sorting permission.");
 			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer does not have any of the defined permissions. &r");
 		}
 		return chars;

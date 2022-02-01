@@ -91,7 +91,7 @@ public final class EventBusImpl implements EventBus {
         }
 
         @Override
-        public void invoke(@NonNull E event) throws Throwable {
+        public void invoke(@NonNull E event) {
             handler.handle(event);
         }
     }

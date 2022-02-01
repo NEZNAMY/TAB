@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.config;
 
 import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
@@ -13,7 +12,6 @@ import org.yaml.snakeyaml.error.YAMLException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,7 +26,6 @@ public class Configs {
 	//config.yml file
 	private ConfigurationFile config;
 
-	private String[] removeStrings;
 	private boolean bukkitPermissions;
 
 	//hidden config options
@@ -56,6 +53,8 @@ public class Configs {
 	private PropertyConfiguration userFile;
 	
 	private MySQL mysql;
+
+	private boolean debugMode;
 
 	/**
 	 * Constructs new instance with given parameter
@@ -92,17 +91,13 @@ public class Configs {
 	public void loadConfig() throws YAMLException, IOException {
 		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
 		converter.convertToV3(config);
-		List<String> list = config.getStringList("placeholders.remove-strings", Arrays.asList("[] ", "< > "));
-		removeStrings = new String[list.size()];
-		for (int i=0; i<list.size(); i++) {
-			removeStrings[i] = EnumChatFormat.color(list.get(i));
-		}
-		tab.setDebugMode(getConfig().getBoolean("debug", false));
+		converter.removeOldOptions(config);
+		debugMode = getConfig().getBoolean("debug", false);
 		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		} else {
 			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
-			armorStandsAlwaysVisible = (boolean) getSecretOption("unlimited-nametag-prefix-suffix-mode.always-visible", false);
+			armorStandsAlwaysVisible = (boolean) getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
 		}
 		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
 		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
@@ -131,10 +126,6 @@ public class Configs {
 		if (getConfig() == null) return defaultValue;
 		Object value = getConfig().getObject(path);
 		return value == null ? defaultValue : value;
-	}
-
-	public String[] getRemoveStrings() {
-		return removeStrings;
 	}
 
 	public boolean isUnregisterBeforeRegister() {
@@ -215,5 +206,9 @@ public class Configs {
 			}
 		}
 		return element;
+	}
+
+	public boolean isDebugMode() {
+		return debugMode;
 	}
 }

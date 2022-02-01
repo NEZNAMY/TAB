@@ -99,7 +99,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
-		if (!p.isLoaded() || forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) || 
+		if (forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) ||
 				announcement != null || otherPluginScoreboard.containsKey(p) || joinDelayed.contains(p)) return;
 		sendHighestScoreboard(p);
 	}
@@ -120,7 +120,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		}
 		if (joinDelay > 0) {
 			joinDelayed.add(connectedPlayer);
-			TAB.getInstance().getCPUManager().runTaskLater(joinDelay, "processing player join", this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
+			TAB.getInstance().getCPUManager().runTaskLater(joinDelay, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
 
 				if (!otherPluginScoreboard.containsKey(connectedPlayer)) setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
 				joinDelayed.remove(connectedPlayer);
@@ -217,7 +217,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 			TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
 			otherPluginScoreboard.put(receiver, packet.getObjectiveName());
 			if (activeScoreboard.containsKey(receiver)) {
-				TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> activeScoreboard.get(receiver).removePlayer(receiver));
+				TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> activeScoreboard.get(receiver).removePlayer(receiver));
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		if (respectOtherPlugins && packet.getMethod() == 1 && otherPluginScoreboard.containsKey(receiver) && otherPluginScoreboard.get(receiver).equals(packet.getObjectiveName())) {
 			TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
 			otherPluginScoreboard.remove(receiver);
-			TAB.getInstance().getCPUManager().runMeasuredTask("sending packets", this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sendHighestScoreboard(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sendHighestScoreboard(receiver));
 		}
 	}
 
@@ -340,27 +340,25 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 		if (duration < 0) throw new IllegalArgumentException("Duration cannot be negative");
 		ScoreboardImpl sb = (ScoreboardImpl) scoreboards.get(scoreboard);
 		if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
-		new Thread(() -> {
-			try {
-				announcement = sb;
-				Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					if (!hasScoreboardVisible(all)) continue;
-					previous.put(all, activeScoreboard.get(all));
-					if (activeScoreboard.containsKey(all)) activeScoreboard.get(all).removePlayer(all);
-					sb.addPlayer(all);
-				}
-				Thread.sleep(duration*1000L);
-				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-					if (!hasScoreboardVisible(all)) continue;
-					sb.removePlayer(all);
-					if (previous.get(all) != null) previous.get(all).addPlayer(all);
-				}
-				announcement = null;
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
+		Map<TabPlayer, ScoreboardImpl> previous = new HashMap<>();
+		TAB.getInstance().getCPUManager().runTask(() -> {
+			announcement = sb;
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (!hasScoreboardVisible(all)) continue;
+				previous.put(all, activeScoreboard.get(all));
+				if (activeScoreboard.containsKey(all)) activeScoreboard.get(all).removePlayer(all);
+				sb.addPlayer(all);
 			}
-		}).start();
+		});
+		TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
+				this, "Removing announced Scoreboard", () -> {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (!hasScoreboardVisible(all)) continue;
+				sb.removePlayer(all);
+				if (previous.get(all) != null) previous.get(all).addPlayer(all);
+			}
+			announcement = null;
+		});
 	}
 
 	@Override
@@ -370,6 +368,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
+		otherPluginScoreboard.remove(packetReceiver);
 		ScoreboardImpl scoreboard = activeScoreboard.get(packetReceiver);
 		if (scoreboard != null) {
 			scoreboard.removePlayer(packetReceiver);

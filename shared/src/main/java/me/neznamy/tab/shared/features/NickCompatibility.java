@@ -32,7 +32,7 @@ public class NickCompatibility extends TabFeature {
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
 		if (packet.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
 		for (PlayerInfoData data : packet.getEntries()) {
-			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(data.getUniqueId());
+			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(data.getUniqueId());
 			if (packetPlayer == null || packetPlayer == receiver) continue;
 			if (!packetPlayer.getName().equals(data.getName())) {
 				if (!nickedPlayers.containsKey(packetPlayer)) {
@@ -49,7 +49,7 @@ public class NickCompatibility extends TabFeature {
 	}
 	
 	private void processNameChange(TabPlayer player, String name) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("processing nickname change", this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
+		TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
 			
 			if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
 				for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

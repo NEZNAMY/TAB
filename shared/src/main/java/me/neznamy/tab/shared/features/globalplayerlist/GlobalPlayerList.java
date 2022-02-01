@@ -84,7 +84,7 @@ public class GlobalPlayerList extends TabFeature {
 	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		//delay due to waterfall bug calling server switch when players leave
-		TAB.getInstance().getCPUManager().runTaskLater(50, "removing players", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
+		TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
 
 			PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -132,7 +132,7 @@ public class GlobalPlayerList extends TabFeature {
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
 		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
-				TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+				TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
 					//not preventing NPC removals
 				if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {
 					//remove packet not coming from tab
@@ -144,7 +144,7 @@ public class GlobalPlayerList extends TabFeature {
 		if (!displayAsSpectators) return;
 		if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER || info.getAction() == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
 			for (PlayerInfoData playerInfoData : info.getEntries()) {
-				TabPlayer packetPlayer = TAB.getInstance().getPlayerByTablistUUID(playerInfoData.getUniqueId());
+				TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
 				if (packetPlayer != null && !receiver.getServer().equals(packetPlayer.getServer())) {
 					playerInfoData.setGameMode(EnumGamemode.SPECTATOR);
 				}

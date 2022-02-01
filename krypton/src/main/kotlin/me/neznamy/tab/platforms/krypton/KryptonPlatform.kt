@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.permission.PermissionPlugin
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.kryptonmc.api.auth.ProfileProperty
 import java.io.File
 
 class KryptonPlatform(
@@ -91,8 +90,6 @@ class KryptonPlatform(
     override fun getMaxPlayers(): Int = server.maxPlayers
 
     override fun getPacketBuilder(): PacketBuilder = KryptonPacketBuilder
-
-    override fun getSkin(properties: List<String>): Any = listOf(ProfileProperty.of("textures", properties[0], properties[1]))
 
     override fun isProxy(): Boolean = false
 

@@ -107,7 +107,11 @@ public class BossBarLine implements BossBar {
 	 * @return parsed color
 	 */
 	public BarColor parseColor(String color) {
-		return TAB.getInstance().getErrorManager().parseColor(color, BarColor.PURPLE);
+		try {
+			return BarColor.valueOf(color);
+		} catch (IllegalArgumentException e) {
+			return BarColor.PURPLE;
+		}
 	}
 	
 	/**
@@ -117,7 +121,11 @@ public class BossBarLine implements BossBar {
 	 * @return parsed style
 	 */
 	public BarStyle parseStyle(String style) {
-		return TAB.getInstance().getErrorManager().parseStyle(style, BarStyle.PROGRESS);
+		try {
+			return BarStyle.valueOf(style);
+		} catch (IllegalArgumentException e) {
+			return BarStyle.PROGRESS;
+		}
 	}
 
 	/**

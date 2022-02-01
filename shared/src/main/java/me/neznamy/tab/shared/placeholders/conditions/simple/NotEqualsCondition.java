@@ -9,7 +9,9 @@ public class NotEqualsCondition extends SimpleCondition {
 
 	/**
 	 * Constructs new instance with given condition line
-	 * @param line - condition line
+	 *
+	 * @param	line
+	 * 			configured condition line
 	 */
 	public NotEqualsCondition(String line) {
 		String[] arr = line.split("!=");

@@ -98,7 +98,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 	}
 	
 	public void load(TabPlayer player) {
-		TAB.getInstance().getCPUManager().runTask("Loading MySQL data", () -> {
+		TAB.getInstance().getCPUManager().runTask(() -> {
 			
 			try {
 				CachedRowSet crs = mysql.getCRS("select * from `tab_users` where `user` = ?", player.getName().toLowerCase());

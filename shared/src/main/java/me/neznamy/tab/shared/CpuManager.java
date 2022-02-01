@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,67 +20,60 @@ import me.neznamy.tab.api.task.ThreadManager;
  */
 public class CpuManager implements ThreadManager {
 
-	//data reset interval in milliseconds
+	/** Data reset interval in milliseconds */
 	private static final int BUFFER_SIZE_MILLIS = 10000;
 
-	//nanoseconds worked in the current 10 seconds
+	/** Active time in current time period saved as nanoseconds from features */
 	private Map<String, Map<String, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
+
+	/** Active time in current time period saved as nanoseconds from placeholders */
 	private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
-	private Map<String, AtomicLong> bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
+
+	/** Active time in current time period saved as nanoseconds from chosen methods */
 	private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
 	
-	//packets sent in the current 10 seconds
+	/** Amount of sent packets in current time period */
 	private Map<String, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
 
-	//nanoseconds worked in the previous 10 seconds
+	/** Active time in previous time period saved as nanoseconds from features */
 	private Map<String, Map<String, AtomicLong>> featureUsagePrevious = new HashMap<>();
+
+	/** Active time in previous time period saved as nanoseconds from placeholders */
 	private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
-	private Map<String, AtomicLong> bridgePlaceholderUsagePrevious = new HashMap<>();
+
+	/** Active time in previous time period saved as nanoseconds from chosen methods */
 	private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
 	
-	//packets sent in the previous 10 seconds
+	/** Amount of sent packets in previous time period */
 	private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
-	//thread pool
-	private ThreadPoolExecutor exe = (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB - Thread %d").build());
+	/** TAB's main thread where all tasks are executed */
+	private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
-	//error manager
-	private final ErrorManager errorManager;
+	/** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
+	private final ExecutorService threadPool = Executors.newCachedThreadPool();
+
+	/** Tasks submitted to main thread before plugin was fully enabled */
+	private final List<Runnable> taskQueue = new ArrayList<>();
+
+	/** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
+	private boolean enabled = false;
 
 	/**
-	 * Constructs new instance and starts repeating task that resets values every 10 seconds
-	 * @param errorManager - error manager
+	 * Constructs new instance and starts repeating task that resets values in configured interval
 	 */
-	public CpuManager(ErrorManager errorManager) {
-		this.errorManager = errorManager;
-	}
-	
-	public void registerPlaceholder() {
-		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%cpu%", BUFFER_SIZE_MILLIS, () -> {
-			
-			//dummy placeholder to trigger refresh periodically from placeholder refreshing thread to not need a new thread just for this
+	public CpuManager() {
+		startRepeatingTask(BUFFER_SIZE_MILLIS, () -> {
 			featureUsagePrevious = featureUsageCurrent;
 			placeholderUsagePrevious = placeholderUsageCurrent;
-			bridgePlaceholderUsagePrevious = bridgePlaceholderUsageCurrent;
 			methodUsagePrevious = methodUsageCurrent;
 			packetsPrevious = packetsCurrent;
 
 			featureUsageCurrent = new ConcurrentHashMap<>();
 			placeholderUsageCurrent = new ConcurrentHashMap<>();
-			bridgePlaceholderUsageCurrent = new ConcurrentHashMap<>();
 			methodUsageCurrent = new ConcurrentHashMap<>();
 			packetsCurrent = new ConcurrentHashMap<>();
-			return "";
 		});
-		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%cpu%"));
-	}
-
-	/**
-	 * Returns amount of active and total threads
-	 * @return active and total threads from this thread pool
-	 */
-	public String getThreadCount() {
-		return exe.getActiveCount() + "/" + exe.getPoolSize();
 	}
 
 	/**
@@ -89,109 +81,77 @@ public class CpuManager implements ThreadManager {
 	 */
 	public void cancelAllTasks() {
 		//preventing errors when tasks are inserted while shutting down
-		ExecutorService old = exe;
-		exe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+		ExecutorService old = thread;
+		thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 		old.shutdownNow();
+		threadPool.shutdownNow();
 	}
 
-	@Override
-	public Future<Void> runMeasuredTask(String errorDescription, TabFeature feature, String type, Runnable task) {
-		return submit(errorDescription, () -> {
-			long time = System.nanoTime();
-			task.run();
-			addTime(feature, type, System.nanoTime()-time);
-		});
+	/**
+	 * Marks cpu manager as loaded and submits all queued tasks
+	 */
+	public void enable() {
+		enabled = true;
+		taskQueue.forEach(this::submit);
+		taskQueue.clear();
 	}
 
-	@Override
-	public Future<Void> runTask(String errorDescription, Runnable task) {
-		return submit(errorDescription, task);
-	}
-
-	@Override
-	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return new TabRepeatingTask(exe, task, errorDescription, feature, type, intervalMilliseconds);
-	}
-
-	@Override
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, TabFeature feature, String type, Runnable task) {
-		return runTaskLater(delayMilliseconds, errorDescription, feature.getFeatureName(), type, task);
-	}
-	
-	@Override
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, String feature, String type, Runnable task) {
-		return submit(errorDescription, () -> {
-			try {
-				Thread.sleep(delayMilliseconds);
-				long time = System.nanoTime();
-				task.run();
-				addTime(feature, type, System.nanoTime()-time);
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
-			}
-		});
-	}
-	
-	@Override
-	public Future<Void> runTaskLater(int delayMilliseconds, String errorDescription, Runnable task) {
-		return submit(errorDescription, () -> {
-			try {
-				Thread.sleep(delayMilliseconds);
-				task.run();
-			} catch (InterruptedException pluginDisabled) {
-				Thread.currentThread().interrupt();
-			}
-		});
-	}
-	
+	/**
+	 * Submits task to TAB's main thread. If plugin is not enabled yet,
+	 * queues the task instead and executes once it's loaded.
+	 *
+	 * @param	task
+	 * 			task to execute
+	 * @return	future returned by executor service
+	 */
 	@SuppressWarnings("unchecked")
-	private Future<Void> submit(String errorDescription, Runnable task) {
-		return (Future<Void>) exe.submit(() -> {
+	private Future<Void> submit(Runnable task) {
+		if (!enabled) {
+			taskQueue.add(task);
+			return null;
+		}
+		return (Future<Void>) thread.submit(() -> {
 			try {
 				task.run();
-			} catch (Exception | NoClassDefFoundError e) {
-				errorManager.printError("An error occurred when " + errorDescription, e);
+			} catch (Exception | LinkageError e) {
+				TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
 			}
 		});
 	}
 
 	/**
-	 * Returns cpu usage map of placeholders from previous 10 seconds
-	 * @return cpu usage map of placeholders
+	 * Returns cpu usage map of placeholders from previous time period
+	 *
+	 * @return	cpu usage map of placeholders
 	 */
 	public Map<String, Float> getPlaceholderUsage(){
 		return getUsage(placeholderUsagePrevious);
 	}
-
-	/**
-	 * Returns cpu usage map of placeholders on bukkit side from previous 10 seconds. This is only used
-	 * when TAB is on BungeeCord with PAPI placeholder support
-	 * @return cpu usage map of placeholders
-	 */
-	public Map<String, Float> getBridgeUsage(){
-		return getUsage(bridgePlaceholderUsagePrevious);
-	}
 	
 	/**
-	 * Returns cpu usage map of methods previous 10 seconds
-	 * @return cpu usage map of methods
+	 * Returns cpu usage map of methods previous time period
+	 *
+	 * @return	cpu usage map of methods
 	 */
 	public Map<String, Float> getMethodUsage(){
 		return getUsage(methodUsagePrevious);
 	}
 	
 	/**
-	 * Returns map of sent packets per feature in previous 10 seconds
-	 * @return map of sent packets per feature
+	 * Returns map of sent packets per feature in previous time period
+	 *
+	 * @return	map of sent packets per feature
 	 */
 	public Map<String, AtomicInteger> getSentPackets(){
 		return sortByValue1(packetsPrevious);
 	}
 
 	/**
-	 * Converts nano map to percent and sorts it from highest to lowest usage
-	 * @param map - map to converted
-	 * @return converted and sorted map
+	 * Converts nano map to percent and sorts it from highest to lowest usage.
+	 *
+	 * @param	map
+	 * 			map to convert
+	 * @return	converted and sorted map
 	 */
 	private Map<String, Float> getUsage(Map<String, AtomicLong> map){
 		Map<String, Long> nanoMap = new HashMap<>();
@@ -209,8 +169,9 @@ public class CpuManager implements ThreadManager {
 	}
 
 	/**
-	 * Returns map of CPU usage per feature and type in the previous 10 seconds
-	 * @return map of CPU usage per feature and type
+	 * Returns map of CPU usage per feature and type in the previous time period
+	 *
+	 * @return	map of CPU usage per feature and type
 	 */
 	public Map<String, Map<String, Float>> getFeatureUsage(){
 		Map<String, Map<String, Long>> total = new HashMap<>();
@@ -236,9 +197,11 @@ public class CpuManager implements ThreadManager {
 	}
 
 	/**
-	 * Converts nanoseconds to percent usage
-	 * @param nanos - nanoseconds worked
-	 * @return usage in % (0-100)
+	 * Converts nanoseconds to percent usage.
+	 *
+	 * @param	nanos
+	 * 			nanoseconds of cpu time
+	 * @return	usage in % (0-100)
 	 */
 	private float nanosToPercent(long nanos) {
 		float percent = (float) nanos / BUFFER_SIZE_MILLIS / 1000000; //relative usage (0-1)
@@ -248,10 +211,14 @@ public class CpuManager implements ThreadManager {
 
 	/**
 	 * Sorts map by value from highest to lowest
-	 * @param <K> - map key
-	 * @param <V> - map value
-	 * @param map - map to sort
-	 * @return sorted map
+	 *
+	 * @param	<K>
+	 *     		map key type
+	 * @param	<V>
+	 *     		map value type
+	 * @param	map
+	 * 			map to sort
+	 * @return	sorted map
 	 */
 	private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
 		Comparator<K> valueComparator = (k1, k2) -> {
@@ -265,9 +232,12 @@ public class CpuManager implements ThreadManager {
 	
 	/**
 	 * Sorts map by value from highest to lowest
-	 * @param <K> - map key
-	 * @param map - map to sort
-	 * @return sorted map
+	 *
+	 * @param	<K>
+	 *     		map key type
+	 * @param	map
+	 * 			map to sort
+	 * @return	sorted map
 	 */
 	private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
 		Comparator<K> valueComparator = (k1, k2) -> {
@@ -281,9 +251,11 @@ public class CpuManager implements ThreadManager {
 
 	/**
 	 * Sorts keys by map nested values from highest to lowest and returns sorted list of keys
-	 * @param <K> - map key
-	 * @param map - map to sort
-	 * @return list of keys sorted from the highest usage to lowest
+	 * @param	<K>
+	 *     		map key type
+	 * @param	map
+	 * 			map to sort
+	 * @return	list of keys sorted from the highest map value to lowest
 	 */
 	private <K> List<K> sortKeys(Map<K, Map<String, Long>> map){
 		Map<K, Long> simplified = new LinkedHashMap<>();
@@ -295,19 +267,27 @@ public class CpuManager implements ThreadManager {
 
 	/**
 	 * Adds cpu time to specified feature and usage type
-	 * @param feature - feature to add time to
-	 * @param type - usage to add time to of the feature
-	 * @param nanoseconds - time to add
+	 *
+	 * @param	feature
+	 * 			feature to add time to
+	 * @param	type
+	 * 			sub-feature to add time to
+	 * @param	nanoseconds
+	 * 			time to add
 	 */
 	public void addTime(TabFeature feature, String type, long nanoseconds) {
-		featureUsageCurrent.computeIfAbsent(feature.getFeatureName(), f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
+		addTime(feature.getFeatureName(), type, nanoseconds);
 	}
 	
 	/**
 	 * Adds cpu time to specified feature and usage type
-	 * @param feature - feature to add time to
-	 * @param type - usage to add time to of the feature
-	 * @param nanoseconds - time to add
+	 *
+	 * @param	feature
+	 * 			feature to add time to
+	 * @param	type
+	 * 			sub-feature to add time to
+	 * @param	nanoseconds
+	 * 			time to add
 	 */
 	public void addTime(String feature, String type, long nanoseconds) {
 		featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
@@ -315,36 +295,37 @@ public class CpuManager implements ThreadManager {
 	
 	/**
 	 * Adds used time to specified key into specified map
-	 * @param map - map to add usage to
-	 * @param key - usage key
-	 * @param time - nanoseconds the task took
+	 *
+	 * @param	map
+	 * 			map to add usage to
+	 * @param	key
+	 * 			usage key
+	 * @param	time
+	 * 			nanoseconds to add
 	 */
 	private void addTime(Map<String, AtomicLong> map, String key, long time) {
 		map.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(time);
 	}
 
 	/**
-	 * Adds placeholder time to defined placeholder
-	 * @param placeholder - placeholder to add time to
-	 * @param nanoseconds - time to add
+	 * Adds placeholder time to specified placeholder
+	 *
+	 * @param	placeholder
+	 * 			placeholder to add time to
+	 * @param	nanoseconds
+	 * 			time to add
 	 */
 	public void addPlaceholderTime(String placeholder, long nanoseconds) {
 		addTime(placeholderUsageCurrent, placeholder, nanoseconds);
 	}
 
 	/**
-	 * Adds placeholder time to defined placeholder
-	 * @param placeholder - placeholder to add time to
-	 * @param nanoseconds - time to add
-	 */
-	public void addBridgePlaceholderTime(String placeholder, long nanoseconds) {
-		addTime(bridgePlaceholderUsageCurrent, placeholder, nanoseconds);
-	}
-	
-	/**
-	 * Adds method time to defined method
-	 * @param method - method to add time to
-	 * @param nanoseconds - time to add
+	 * Adds method time to specified method
+	 *
+	 * @param	method
+	 * 			method to add time to
+	 * @param	nanoseconds
+	 * 			time to add
 	 */
 	public void addMethodTime(String method, long nanoseconds) {
 		addTime(methodUsageCurrent, method, nanoseconds);
@@ -352,9 +333,64 @@ public class CpuManager implements ThreadManager {
 	
 	/**
 	 * Increments packets sent by 1 of specified feature
-	 * @param feature - feature to increment packet counter of
+	 *
+	 * @param	feature
+	 * 			feature to increment packet counter of
 	 */
 	public void packetSent(String feature) {
 		packetsCurrent.computeIfAbsent(feature, f -> new AtomicInteger()).incrementAndGet();
+	}
+
+	@Override
+	public Future<Void> runMeasuredTask(TabFeature feature, String type, Runnable task) {
+		return runMeasuredTask(feature.getFeatureName(), type, task);
+	}
+
+	@Override
+	public Future<Void> runMeasuredTask(String feature, String type, Runnable task) {
+		return submit(() -> {
+			long time = System.nanoTime();
+			task.run();
+			addTime(feature, type, System.nanoTime()-time);
+		});
+	}
+
+	@Override
+	public Future<Void> runTask(Runnable task) {
+		return submit(task);
+	}
+
+	@Override
+	public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
+		return new TabRepeatingTask(threadPool, task, feature, type, intervalMilliseconds);
+	}
+
+	@Override
+	public RepeatingTask startRepeatingTask(int intervalMilliseconds, Runnable task) {
+		return new TabRepeatingTask(threadPool, task, null, null, intervalMilliseconds);
+	}
+
+	@Override
+	public Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
+		return threadPool.submit(() -> {
+			try {
+				Thread.sleep(delayMilliseconds);
+				runMeasuredTask(feature, type, task);
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
+			}
+		});
+	}
+
+	@Override
+	public Future<?> runTaskLater(int delayMilliseconds, Runnable task) {
+		return threadPool.submit(() -> {
+			try {
+				Thread.sleep(delayMilliseconds);
+				submit(task);
+			} catch (InterruptedException pluginDisabled) {
+				Thread.currentThread().interrupt();
+			}
+		});
 	}
 }

@@ -1,49 +1,37 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
  * An abstract class representing a simple condition
  */
 public abstract class SimpleCondition {
-	
-	//all known condition types
-	private static final Map<String, Function<String, SimpleCondition>> conditionTypes = new LinkedHashMap<>();
-	
-	//left side of condition
+
+	/** Text on the left side of condition */
 	private String leftSide;
 	
-	//placeholders used in left side of condition
+	/** Placeholders used on the left side */
 	private String[] leftSidePlaceholders;
-	
-	//ride side of condition
+
+	/** Text on the right side of condition */
 	private String rightSide;
-	
-	//placeholders used in right side of condition
+
+	/** Placeholders used on the right side */
 	private String[] rightSidePlaceholders;
-	
-	static {
-		conditionTypes.put("permission:", PermissionCondition::new);
-		conditionTypes.put("<-", ContainsCondition::new);
-		conditionTypes.put(">=", MoreThanOrEqualsCondition::new);
-		conditionTypes.put(">", MoreThanCondition::new);
-		conditionTypes.put("<=", LessThanOrEqualsCondition::new);
-		conditionTypes.put("<", LessThanCondition::new);
-		conditionTypes.put("!=", NotEqualsCondition::new);
-		conditionTypes.put("=", EqualsCondition::new);
-	}
 
 	/**
-	 * Sets raw values and finds used placeholders
-	 * @param leftSide - left side of condition
-	 * @param rightSide - right side of condition
+	 * Sets raw values of sides and finds used placeholders
+	 *
+	 * @param	leftSide
+	 * 			left side of condition
+	 * @param	rightSide
+	 * 			right side of condition
 	 */
 	protected void setSides(String leftSide, String rightSide) {
 		this.leftSide = leftSide;
@@ -54,8 +42,10 @@ public abstract class SimpleCondition {
 	
 	/**
 	 * Replaces placeholders on the left side and return result
-	 * @param p - player to replace placeholders for
-	 * @return replaced left side
+	 *
+	 * @param	p
+	 * 			player to replace placeholders for
+	 * @return	replaced left side
 	 */
 	public String parseLeftSide(TabPlayer p) {
 		return parseSide(p, leftSide, leftSidePlaceholders);
@@ -63,8 +53,10 @@ public abstract class SimpleCondition {
 	
 	/**
 	 * Replaces placeholders on the right side and return result
-	 * @param p - player to replace placeholders for
-	 * @return replaced right side
+	 *
+	 * @param	p
+	 * 			player to replace placeholders for
+	 * @return	replaced right side
 	 */
 	public String parseRightSide(TabPlayer p) {
 		return parseSide(p, rightSide, rightSidePlaceholders);
@@ -72,33 +64,40 @@ public abstract class SimpleCondition {
 	
 	/**
 	 * Replaces placeholders in provided value
-	 * @param p - player to replace placeholders for
-	 * @param value - string to replace placeholders in
-	 * @param placeholders - used placeholders
-	 * @return replaced string
+	 *
+	 * @param	p
+	 * 			player to replace placeholders for
+	 * @param	value
+	 * 			string to replace placeholders in
+	 * @param	placeholders
+	 * 			used placeholders
+	 * @return	replaced string
 	 */
 	public String parseSide(TabPlayer p, String value, String[] placeholders) {
-		Object result = value;
+		String result = value;
 		for (String identifier : placeholders) {
-			result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result.toString(), p);
+			result = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier).set(result, p);
 		}
-		return result == null ? "null" : EnumChatFormat.color(result.toString());
+		return result == null ? "null" : EnumChatFormat.color(result);
 	}
 	
 	/**
-	 * Returns true if condition is met for player, false if not
-	 * @param p - player to check condition for
-	 * @return true if met, false if not
+	 * Returns {@code true} if condition is met for player, {@code false} if not
+	 * @param	p
+	 * 			player to check condition for
+	 * @return	{@code true} if met, {@code false} if not
 	 */
 	public abstract boolean isMet(TabPlayer p);
 	
 	/**
-	 * Compiles condition from condition line
-	 * @param line - condition line
-	 * @return compiled condition
+	 * Compiles condition from condition line. This includes detection
+	 * what kind of condition it is and creating it.
+	 * @param	line
+	 * 			condition line
+	 * @return	compiled condition or null if no valid pattern was found
 	 */
 	public static SimpleCondition compile(String line) {
-		for (Entry<String, Function<String, SimpleCondition>> entry : conditionTypes.entrySet()) {
+		for (Entry<String, Function<String, SimpleCondition>> entry : Condition.getConditionTypes().entrySet()) {
 			if (line.contains(entry.getKey())) {
 				return entry.getValue().apply(line);
 			}

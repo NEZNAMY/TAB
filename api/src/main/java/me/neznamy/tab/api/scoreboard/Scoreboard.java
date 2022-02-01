@@ -34,7 +34,7 @@ public interface Scoreboard {
 	 * to try to keep placeholders up to date. Supports RGB codes using any of 
 	 * the supported formats.
 	 * <p>
-	 * Length is limited to 32 characters on <1.13. If the limit is exceeded,
+	 * Length is limited to 32 characters on &lt;1.13. If the limit is exceeded,
 	 * text will be cut to 32 characters.
 	 * <p>
 	 * Calling this method with same title as before will not do anything.
@@ -74,7 +74,7 @@ public interface Scoreboard {
 	 * @param	index
 	 * 			Index of line to remove, starting at 0
 	 * @throws	IndexOutOfBoundsException
-	 * 			if the index is out of range (index < 0 || index >= {@link #getLines()}.size())
+	 * 			if the index is out of range (index &lt; 0 || index >= {@link #getLines()}.size())
 	 * @see		#getLines()
 	 * @see		#addLine(String)
 	 */

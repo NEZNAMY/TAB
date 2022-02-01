@@ -9,7 +9,9 @@ public class MoreThanCondition extends NumericCondition {
 
 	/**
 	 * Constructs new instance with given condition line
-	 * @param line - condition line
+	 *
+	 * @param	line
+	 * 			configured condition line
 	 */
 	public MoreThanCondition(String line) {
 		String[] arr = line.split(">");

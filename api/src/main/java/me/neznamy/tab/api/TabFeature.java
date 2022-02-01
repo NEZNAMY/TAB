@@ -47,6 +47,8 @@ public abstract class TabFeature {
 				methodOverrides.add("onQuit");
 			if (getClass().getMethod("onWorldChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("onWorldChange");
+			if (getClass().getMethod("onServerChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onServerChange");
 			if (getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class) 
 				methodOverrides.add("onDisplayObjective");
 			if (getClass().getMethod("onLoginPacket", TabPlayer.class).getDeclaringClass() != TabFeature.class) 

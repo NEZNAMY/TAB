@@ -5,7 +5,7 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 
 public class TabPlaceholderRegisterEvent implements PlaceholderRegisterEvent {
 
-    private String identifier;
+    private final String identifier;
     private Placeholder placeholder;
 
     public TabPlaceholderRegisterEvent(String identifier) {

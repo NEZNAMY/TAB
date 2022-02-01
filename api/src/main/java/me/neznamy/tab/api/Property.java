@@ -3,12 +3,6 @@ package me.neznamy.tab.api;
 public interface Property {
 
 	/**
-	 * Changes raw value to new one
-	 * @param rawValue - new value to be used
-	 */
-	void changeRawValue(String rawValue);
-
-	/**
 	 * Returns original raw value ignoring API calls
 	 * @return original raw value
 	 */

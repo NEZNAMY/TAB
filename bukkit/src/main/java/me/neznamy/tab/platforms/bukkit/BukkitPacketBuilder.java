@@ -10,13 +10,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import com.mojang.authlib.properties.Property;
+import me.neznamy.tab.api.protocol.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.PropertyMap;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
@@ -25,19 +26,10 @@ import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.TextColor;
-import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
@@ -126,7 +118,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		List<Object> items = new ArrayList<>();
 		for (PlayerInfoData data : packet.getEntries()) {
 			GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
-			if (data.getSkin() != null) profile.getProperties().putAll((PropertyMap) data.getSkin());
+			if (data.getSkin() != null) profile.getProperties().put("textures", new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()));
 			List<Object> parameters = new ArrayList<>();
 			if (nms.newPlayerInfoData.getParameterCount() == 5) {
 				parameters.add(nmsPacket);
@@ -239,7 +231,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 */
 	public Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
 		try {
-			return nms.newPacketPlayOutEntityDestroy.newInstance(packet.getEntities());
+			return nms.newPacketPlayOutEntityDestroy.newInstance(new Object[]{packet.getEntities()});
 		} catch (IllegalArgumentException e) {
 			//1.17.0
 			return nms.newPacketPlayOutEntityDestroy.newInstance(packet.getEntities()[0]);
@@ -339,9 +331,13 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
 			Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
 			IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
-			PropertyMap map = new PropertyMap();
-			map.putAll(profile.getProperties());
-			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), map, (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName));
+			Skin skin = null;
+			if (!profile.getProperties().get("textures").isEmpty()) {
+				Property pr = (Property) profile.getProperties().get("textures").iterator().next();
+				skin = new Skin(pr.getValue(), pr.getSignature());
+			}
+			listData.add(new PlayerInfoData(profile.getName(), profile.getId(), skin,
+					(int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName));
 		}
 		return new PacketPlayOutPlayerInfo(action, listData);
 	}

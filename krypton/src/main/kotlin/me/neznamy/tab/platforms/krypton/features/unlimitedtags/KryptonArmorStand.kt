@@ -227,7 +227,6 @@ class KryptonArmorStand(
             // 1.8.8 client sided bug
             TAB.getInstance().cpuManager.runTaskLater(
                 50,
-                "compensating for 1.8.0 bugs",
                 manager,
                 TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION,
                 spawn

@@ -7,6 +7,4 @@ public interface RepeatingTask {
 	void setInterval(int paramInt);
 
 	void cancel();
-
-	void setRunnable(Runnable paramRunnable);
 }

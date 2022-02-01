@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -27,10 +28,36 @@ public class VehicleRefresher extends TabFeature {
 	public VehicleRefresher(NameTagX feature) {
 		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
+		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
+				this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
+					for (TabPlayer inVehicle : playersInVehicle.keySet()) {
+						inVehicle.getArmorStandManager().teleport();
+//						feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
+					}
+					for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+						if (p.isPreviewingNametag()) {
+							p.getArmorStandManager().teleport(p);
+						}
+					}
+		});
 		addUsedPlaceholders(Collections.singletonList("%vehicle%"));
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle());
+		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
 	}
-	
+
+	@Override
+	public void load() {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+			Entity vehicle = ((Player)p.getPlayer()).getVehicle();
+			if (vehicle != null) {
+				vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+				playersInVehicle.put(p, vehicle);
+				if (feature.isDisableOnBoats() && vehicle.getType() == EntityType.BOAT) {
+					playersOnBoats.add(p);
+				}
+			}
+		}
+	}
+
 	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		if (feature.isPlayerDisabled(p)) return;
@@ -109,9 +136,5 @@ public class VehicleRefresher extends TabFeature {
 			}
 			processPassengers(passenger);
 		}
-	}
-
-	public Map<TabPlayer, Entity> getPlayersInVehicle() {
-		return playersInVehicle;
 	}
 }
