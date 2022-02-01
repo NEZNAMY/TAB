@@ -30,29 +30,17 @@ public class MySQL {
 	}
 	
 	private void openConnection() throws SQLException {
-		if (!isConnected()) {
-			con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
-			TAB.getInstance().getPlatform().sendConsoleMessage("&a[TAB] Successfully connected to MySQL", true);
-		}
+		if (isConnected()) return;
+		con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
+		TAB.getInstance().getPlatform().sendConsoleMessage("&a[TAB] Successfully connected to MySQL", true);
 	}
 	
-	public void closeConnection() {
-		if (isConnected()) {
-			try {
-				con.close();
-			} catch (SQLException e) {
-				TAB.getInstance().getErrorManager().printError("Failed to close MySQL connection", e);
-			}
-		}
+	public void closeConnection() throws SQLException {
+		if (isConnected()) con.close();
 	}
 
-	private boolean isConnected() {
-		try {
-			return con != null && !con.isClosed();
-		} catch (SQLException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to check MySQL connection", e);
-		}
-		return false;
+	private boolean isConnected() throws SQLException {
+		return con != null && !con.isClosed();
 	}
 
 	public void execute(String query, Object... vars) throws SQLException {
