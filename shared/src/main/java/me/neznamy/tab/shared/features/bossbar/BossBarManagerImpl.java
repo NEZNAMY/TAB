@@ -121,7 +121,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 	public void onJoin(TabPlayer connectedPlayer) {
 		if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
 			addDisabledPlayer(connectedPlayer);
-			return;
 		}
 		setBossBarVisible(connectedPlayer, !bossBarOffPlayers.contains(connectedPlayer.getName()) && !hiddenByDefault, false);
 	}
