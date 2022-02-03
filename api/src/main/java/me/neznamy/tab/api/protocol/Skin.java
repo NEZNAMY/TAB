@@ -38,4 +38,13 @@ public class Skin {
     public String getSignature() {
         return signature;
     }
+
+    /**
+     * Returns user-friendly representation of this object
+     * @return  user-friendly representation of this object
+     */
+    @Override
+    public String toString() {
+        return String.format("Skin{value=%s,signature=%s}", value, signature);
+    }
 }
