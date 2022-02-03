@@ -38,7 +38,7 @@ public class Layout extends TabFeature {
 		if (viewers.contains(p)) return;
 		viewers.add(p);
 		List<PlayerInfoData> list = new ArrayList<>();
-		groups.forEach(g -> g.sendTo(p));
+		groups.forEach(g -> list.addAll(g.getSlots(p)));
 		for (FixedSlot slot : fixedSlots.values()) {
 			p.setProperty(slot, slot.getPropertyName(), slot.getText());
 			list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), slot.getPing(), EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).get())));

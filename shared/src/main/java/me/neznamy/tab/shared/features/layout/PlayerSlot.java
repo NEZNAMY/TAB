@@ -37,12 +37,11 @@ public class PlayerSlot {
 		for (TabPlayer viewer : layout.getViewers()) {
 			if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
 			viewer.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
-			sendSlot(viewer);
+			viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getSlot(viewer)), TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
 		}
 	}
 	
-	public void sendSlot(TabPlayer p) {
-		if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
+	public PlayerInfoData getSlot(TabPlayer p) {
 		PlayerInfoData data;
 		TabPlayer player = this.player; //avoiding NPE from concurrent access
 		if (player != null) {
@@ -50,7 +49,7 @@ public class PlayerSlot {
 		} else {
 			data = new PlayerInfoData("", id, layout.getManager().getSkinManager().getDefaultSkin(), layout.getManager().getEmptySlotPing(), EnumGamemode.SURVIVAL, new IChatBaseComponent(text));
 		}
-		p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, data), TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+		return data;
 	}
 	
 	public void setText(String text) {

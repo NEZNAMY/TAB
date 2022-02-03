@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -48,8 +49,10 @@ public class ParentGroup {
 		}
 	}
 	
-	public void sendTo(TabPlayer p) {
-		playerSlots.values().forEach(s -> s.sendSlot(p));
+	public List<PlayerInfoData> getSlots(TabPlayer p) {
+		List<PlayerInfoData> data = new ArrayList<>();
+		playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
+		return data;
 	}
 	
 	public Map<TabPlayer, PlayerSlot> getPlayers() {
