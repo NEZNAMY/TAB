@@ -29,6 +29,18 @@ public class PetFix extends TabFeature {
 	private final WeakHashMap<TabPlayer, Long> lastInteractFix = new WeakHashMap<>();
 
 	/**
+	 * Since 1.16, client sends interact packet twice for entities affected
+	 * by removed owner field. Because of that, we need to cancel the duplicated
+	 * packet to avoid double toggle and preventing the entity from getting
+	 * its pose changed. The duplicated packet is usually sent instantly in the
+	 * same millisecond, however, when installing ProtocolLib with MyPet, the delay
+	 * is up to 3 ticks. When holding right-click on an entity, interact is sent every
+	 * 200 milliseconds, which is the value we should not go above. Optimal value is
+	 * therefore between 150 and 200 milliseconds.
+	 */
+	private static final int INTERACT_COOLDOWN = 160;
+
+	/**
 	 * Constructs new instance with given parameter
 	 */
 	public PetFix() {
@@ -67,7 +79,7 @@ public class PetFix extends TabFeature {
 	@Override
 	public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
 		if (nms.PacketPlayInUseEntity.isInstance(packet)) {
-			if (lastInteractFix.containsKey(sender) && (System.currentTimeMillis() - lastInteractFix.get(sender) < 5)) {
+			if (lastInteractFix.containsKey(sender) && (System.currentTimeMillis() - lastInteractFix.get(sender) < INTERACT_COOLDOWN)) {
 				//last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
 				return true;
 			}
