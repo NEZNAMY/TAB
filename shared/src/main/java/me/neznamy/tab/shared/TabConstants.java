@@ -8,7 +8,7 @@ public class TabConstants {
 
 	public static final String PLUGIN_VERSION = "@plugin_version@";
 	public static final String DEFAULT_GROUP = "NONE";
-	public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-1";
+	public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-2";
 
 	/**
 	 * Private constructor to prevent the class from being instantiated
@@ -229,13 +229,12 @@ public class TabConstants {
 		public static final String GROUP_MANAGER = "GroupManager";
 		public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
 		public static final String PET_FIX = "PetFix";
-
-		//Bukkit only
-		public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
 		public static final String UNLIMITED_NAME_TAGS = "NameTagX";
 		public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
 		public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";
-		public static final String UNLIMITED_NAME_TAGS_LOCATION_REFRESHER = "nametagx-location";
+
+		//Bukkit only
+		public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
 
 		//BungeeCord only
 		public static final String REDIS_BUNGEE = "RedisBungee";

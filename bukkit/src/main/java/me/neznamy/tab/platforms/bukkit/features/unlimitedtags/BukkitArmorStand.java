@@ -32,7 +32,7 @@ public class BukkitArmorStand implements ArmorStand {
 	private static int idCounter = 2000000000;
 
 	//NameTag feature
-	private final NameTagX manager = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+	private final BukkitNameTagX manager = (BukkitNameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 
 	//owner of the armor stand
 	private final TabPlayer owner;
@@ -64,19 +64,12 @@ public class BukkitArmorStand implements ArmorStand {
 	//entity destroy packet
 	private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
-	/**
-	 * Constructs new instance with given parameters
-	 * @param owner - armor stand owner
-	 * @param property - property for armor stand's name
-	 * @param yOffset - offset in blocks
-	 * @param staticOffset - if offset is static or not
-	 */
-	public BukkitArmorStand(TabPlayer owner, Property property, double yOffset, boolean staticOffset) {
+	public BukkitArmorStand(TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = (Player) owner.getPlayer();
 		this.yOffset = yOffset;
-		this.property = property;
+		this.property = owner.getProperty(propertyName);
 		visible = getVisibility();
 	}
 
@@ -105,7 +98,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
+		for (TabPlayer all : manager.getArmorStandManager(owner).getNearbyPlayers()) {
 			all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE);
 		}
 	}
@@ -119,7 +112,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		for (TabPlayer all : manager.getArmorStandManager(owner).getNearbyPlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 	
 	@Override
@@ -129,15 +122,15 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void teleport() {
-		for (TabPlayer all : owner.getArmorStandManager().getNearbyPlayers()) {
+		for (TabPlayer all : manager.getArmorStandManager(owner).getNearbyPlayers()) {
 			all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
 	}
 
 	@Override
 	public void teleport(TabPlayer viewer) {
-		if (!owner.getArmorStandManager().isNearby(viewer) && viewer != owner) {
-			owner.getArmorStandManager().spawn(viewer);
+		if (!manager.getArmorStandManager(owner).isNearby(viewer) && viewer != owner) {
+			manager.getArmorStandManager(owner).spawn(viewer);
 		} else {
 			viewer.sendCustomPacket(getTeleportPacket(viewer), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
@@ -147,7 +140,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void sneak(boolean sneaking) {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
-		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
+		for (TabPlayer viewer : manager.getArmorStandManager(owner).getNearbyPlayers()) {
 			if (viewer.getVersion().getMinorVersion() == 14 && !alwaysVisible) {
 				//1.14.x client sided bug, de-spawning completely
 				if (sneaking) {
@@ -166,8 +159,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void updateVisibility(boolean force) {
 		boolean visibility = getVisibility();
 		if (visible != visibility || force) {
-			visible = visibility;
-			updateMetadata();
+			refresh();
 		}
 	}
 
@@ -189,7 +181,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Updates armor stand's metadata
 	 */
 	public void updateMetadata() {
-		for (TabPlayer viewer : owner.getArmorStandManager().getNearbyPlayers()) {
+		for (TabPlayer viewer : manager.getArmorStandManager(owner).getNearbyPlayers()) {
 			viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
 		}
 	}

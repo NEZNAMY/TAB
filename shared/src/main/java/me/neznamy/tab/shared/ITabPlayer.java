@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.*;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
@@ -58,20 +57,14 @@ public abstract class ITabPlayer implements TabPlayer {
 	/** Player's property map where key is unique identifier and value is property object */
 	private final Map<String, Property> properties = new HashMap<>();
 
-	/** Player's armor stand manager for unlimited NameTags */
-	private ArmorStandManager armorStandManager;
-
 	/** Player's game version */
 	protected ProtocolVersion version;
 
 	/** Player's network channel */
 	protected Channel channel;
 
-	/** Flag tracking if this player is previewing NameTag or not */
-	private boolean previewingNameTag;
-
 	/**
-	 *  Player's load status, {@code true} when player is fully loaded,
+	 * Player's load status, {@code true} when player is fully loaded,
 	 * {@code false} if not yet
 	 */
 	private boolean onJoinFinished;
@@ -163,7 +156,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	 * Marks the player as loaded and calls PlayerLoadEvent
 	 *
 	 * @param	join
-	 * 			{@code true} if this is a player join, {@code false} if a reload
+	 * 			{@code true} if this is a player join, {@code false} if reload
 	 */
 	public void markAsLoaded(boolean join) {
 		onJoinFinished = true;
@@ -367,24 +360,6 @@ public abstract class ITabPlayer implements TabPlayer {
 	}
 
 	@Override
-	public void toggleNametagPreview() {
-		if (armorStandManager == null) throw new IllegalStateException("Unlimited NameTag mode is not enabled");
-		if (previewingNameTag) {
-			armorStandManager.destroy(this);
-			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
-		} else {
-			armorStandManager.spawn(this);
-			sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
-		}
-		previewingNameTag = !previewingNameTag;
-	}
-
-	@Override
-	public boolean isPreviewingNametag() {
-		return previewingNameTag;
-	}
-
-	@Override
 	public Channel getChannel() {
 		return channel;
 	}
@@ -412,16 +387,6 @@ public abstract class ITabPlayer implements TabPlayer {
 			return setProperty(feature, property, value[0], value[1]);
 		}
 		return setProperty(feature, property, ifNotSet, "None");
-	}
-
-	@Override
-	public ArmorStandManager getArmorStandManager() {
-		return armorStandManager;
-	}
-
-	@Override
-	public void setArmorStandManager(ArmorStandManager armorStandManager) {
-		this.armorStandManager = armorStandManager;
 	}
 
 	@Override

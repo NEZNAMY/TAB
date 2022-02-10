@@ -13,6 +13,9 @@ import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Universal interface for proxy to manage plugin messages
  */
@@ -53,13 +56,13 @@ public abstract class PluginMessageHandler {
 		if ("Group".equals(subChannel)) {
 			player.setGroup(in.readUTF());
 		}
+		if ("Boat".equals(subChannel)) {
+			player.setOnBoat(in.readBoolean());
+		}
 		if ("Permission".equals(subChannel)) {
 			player.setHasPermission(in.readUTF(), in.readBoolean());
 		}
 		if ("PlayerJoinResponse".equals(subChannel)) {
-			player.setVanished(in.readBoolean());
-			player.setDisguised(in.readBoolean());
-			player.setInvisible(in.readBoolean());
 			TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
 			if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge) player.setGroup(in.readUTF());
 			int placeholderCount = in.readInt();
@@ -75,6 +78,15 @@ public abstract class PluginMessageHandler {
 					((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).updateValue(player, in.readUTF());
 				}
 			}
+		}
+		if ("PlaceholderError".equals(subChannel)) {
+			String message = in.readUTF();
+			int count = in.readInt();
+			List<String> stack = new ArrayList<>();
+			for (int i=0; i<count; i++) {
+				stack.add(in.readUTF());
+			}
+            TAB.getInstance().getErrorManager().placeholderError(message, stack);
 		}
 	}
 
@@ -111,6 +123,8 @@ public abstract class PluginMessageHandler {
 			out.writeBoolean((boolean) value);
 		} else if (value instanceof Integer) {
 			out.writeInt((int) value);
+		} else if (value instanceof Double) {
+			out.writeDouble((double) value);
 		} else throw new IllegalArgumentException("Unhandled message data type " + value.getClass().getName());
 	}
 

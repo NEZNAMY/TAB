@@ -67,7 +67,7 @@ public class ErrorManager {
 	}
 
 	/**
-	 * Prints error message and stack trace into errors.log file
+	 * Prints error message and stack trace into specified file
 	 *
 	 * @param	message
 	 * 			message to print
@@ -83,6 +83,29 @@ public class ErrorManager {
 		if (error instanceof InvocationTargetException) {
 			error = error.getCause();
 		}
+		List<String> lines = new ArrayList<>();
+		if (error != null) {
+			lines.add(error.getClass().getName() + ": " + error.getMessage());
+			for (StackTraceElement ste : error.getStackTrace()) {
+				lines.add(ste.toString());
+			}
+		}
+		printError(message, lines, intoConsoleToo, file);
+	}
+
+	/**
+	 * Prints error message and stack trace into specified file
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	error
+	 * 			thrown error
+	 * @param	intoConsoleToo
+	 * 			if the message should be printed into console as well or not
+	 * @param	file
+	 * 			file to print error to
+	 */
+	private void printError(String message, List<String> error, boolean intoConsoleToo, File file) {
 		try {
 			if (!file.exists()) Files.createFile(file.toPath());
 			if (file.length() > 1000000) return; //not going over 1 MB
@@ -90,11 +113,8 @@ public class ErrorManager {
 				if (message != null) {
 					write(buf, "&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ", EnumChatFormat.decolor(message), intoConsoleToo);
 				}
-				if (error != null) {
-					write(buf, "&c", error.getClass().getName() + ": " + error.getMessage(), intoConsoleToo);
-					for (StackTraceElement ste : error.getStackTrace()) {
-						write(buf, "&c       at ", ste.toString(), intoConsoleToo);
-					}
+				for (String line : error) {
+					write(buf, "&c", line, intoConsoleToo);
 				}
 			}
 		} catch (IOException ex) {
@@ -104,11 +124,8 @@ public class ErrorManager {
 				TAB.getInstance().getPlatform().sendConsoleMessage("\t" + e.toString(), true);
 			}
 			TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
-			if (error != null) {
-				TAB.getInstance().getPlatform().sendConsoleMessage(error.getClass().getName() + ": " + error.getMessage(), true);
-				for (StackTraceElement e : error.getStackTrace()) {
-					TAB.getInstance().getPlatform().sendConsoleMessage("\t" + e.toString(), true);
-				}
+			for (String line : error) {
+				TAB.getInstance().getPlatform().sendConsoleMessage(line, true);
 			}
 		}
 	}
@@ -122,6 +139,18 @@ public class ErrorManager {
 	 * 			thrown error
 	 */
 	public void placeholderError(String message, Throwable t) {
+		printError(message, t, false, placeholderErrorLog);
+	}
+
+	/**
+	 * Prints error message thrown by placeholder and stack trace into placeholder-errors.log file
+	 *
+	 * @param	message
+	 * 			message to print
+	 * @param	t
+	 * 			thrown stack trace elements
+	 */
+	public void placeholderError(String message, List<String> t) {
 		printError(message, t, false, placeholderErrorLog);
 	}
 

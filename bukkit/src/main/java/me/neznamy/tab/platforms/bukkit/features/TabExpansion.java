@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,7 +72,8 @@ public class TabExpansion extends PlaceholderExpansion {
 			return translate(hasBossBarVisible(p));
 		}
 		if ("ntpreview".equals(identifier)) {
-			return translate(p.isPreviewingNametag());
+			NameTagX nameTagX = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+			return translate(nameTagX != null && nameTagX.isPreviewingNametag(p));
 		}
 		if (identifier.startsWith("replace_")) {
 			return findReplacement("%" + identifier.substring(8) + "%", player);

@@ -21,7 +21,7 @@ import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
-import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.NameTagX;
+import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
@@ -103,7 +103,7 @@ public class BukkitPlatform implements Platform {
 		new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
 			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
-				tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new NameTagX(plugin));
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new BukkitNameTagX(plugin));
 			} else {
 				tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
 			}

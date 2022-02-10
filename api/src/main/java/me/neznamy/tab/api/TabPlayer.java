@@ -138,17 +138,6 @@ public interface TabPlayer {
 	String getGroup();
 
 	/**
-	 * Toggles armor stands preview mode for the player
-	 */
-	void toggleNametagPreview();
-
-	/**
-	 * Returns whether player is previewing NameTag or not
-	 * @return true if previewing, false if not
-	 */
-	boolean isPreviewingNametag();
-
-	/**
 	 * Returns player's channel or null if server is 1.7 or older
 	 * @return player's channel
 	 */
@@ -235,18 +224,6 @@ public interface TabPlayer {
 	 * @return true if online, false if not
 	 */
 	boolean isOnline();
-
-	/**
-	 * Returns player's armor stand manager if unlimited GameMode mode is enabled, null if disabled
-	 * @return player's armor stand manager
-	 */
-	ArmorStandManager getArmorStandManager();
-
-	/**
-	 * Sets player's armor stands manager to new instance
-	 * @param armorStandManager - new instance
-	 */
-	void setArmorStandManager(ArmorStandManager armorStandManager);
 	
 	/**
 	 * Returns GameMode of the player (0 for survival, 1 creative, 2 adventure, 3 spectator)

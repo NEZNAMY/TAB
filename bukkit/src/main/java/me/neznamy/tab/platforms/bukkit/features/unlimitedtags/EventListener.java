@@ -17,13 +17,13 @@ import me.neznamy.tab.shared.TAB;
 public class EventListener implements Listener {
 	
 	//the NameTag feature handler
-	private final NameTagX feature;
+	private final BukkitNameTagX feature;
 
 	/**
 	 * Constructs new instance with given parameters
 	 * @param feature - NameTag feature handler
 	 */
-	public EventListener(NameTagX feature) {
+	public EventListener(BukkitNameTagX feature) {
 		this.feature = feature;
 	}
 	
@@ -35,9 +35,7 @@ public class EventListener implements Listener {
 	public void onSneak(PlayerToggleSneakEvent e) {
 		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 		if (p == null || feature.isPlayerDisabled(p)) return;
-		TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> {
-			if (p.getArmorStandManager() != null) p.getArmorStandManager().sneak(e.isSneaking());
-		});
+		TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(e.isSneaking()));
 	}
 	
 	/**
@@ -49,7 +47,7 @@ public class EventListener implements Listener {
 		TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
 			TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
 			if (feature.isPlayerDisabled(respawned)) return;
-			respawned.getArmorStandManager().teleport();
+			feature.getArmorStandManager(respawned).teleport();
 		});
 	}
 	
@@ -59,22 +57,11 @@ public class EventListener implements Listener {
 		if (p == null || !p.isLoaded()) return;
 		long time = System.nanoTime();
 		String to = e.getPlayer().getWorld().getName();
-		if (feature.isDisabled(to)) {
-			feature.getPlayersInDisabledUnlimitedWorlds().add(p);
-		} else {
-			feature.getPlayersInDisabledUnlimitedWorlds().remove(p);
-		}
-		//TODO delete the block below
-		TabPlayer[] nearby = p.getArmorStandManager().getNearbyPlayers();
-		p.getArmorStandManager().destroy();
-		feature.loadArmorStands(p);
-		feature.getVehicleManager().loadPassengers(p);
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			if (viewer.getArmorStandManager() != null) viewer.getArmorStandManager().destroy(p);
-			if (!to.equals(viewer.getWorld())) continue;
-			for (TabPlayer player : nearby) {
-				if (player == viewer) feature.spawnArmorStands(p, viewer, true);
-			}
+		if (feature.isUnlimitedDisabled(p.getServer(), to)) {
+			feature.getDisabledUnlimitedPlayers().add(p);
+			feature.updateTeamData(p);
+		} else if (feature.getDisabledUnlimitedPlayers().remove(p)) {
+			feature.updateTeamData(p);
 		}
 		TAB.getInstance().getCPUManager().addTime(feature, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 	}

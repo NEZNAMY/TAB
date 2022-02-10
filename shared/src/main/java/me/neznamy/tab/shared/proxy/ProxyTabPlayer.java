@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.permission.VaultBridge;
 
 import java.util.HashMap;
@@ -25,6 +26,9 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 
 	/** Player's invisibility potion status from backend server */
 	private boolean invisible;
+
+	/** Player's boat vehicle status for unlimited NameTags */
+	private boolean onBoat;
 
 	/** Map of player's requested permissions */
 	private final Map<String, Boolean> permissions = new HashMap<>();
@@ -54,7 +58,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	 * joined, containing all plugin configuration data.
 	 */
 	public void sendJoinPluginMessage() {
-		List<Object> args = Lists.newArrayList("PlayerJoin", TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge,
+		List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
+				TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge,
 				TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX));
 		ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
 		Map<String, Integer> placeholders = platform.getBridgePlaceholders();
@@ -62,6 +67,24 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 		for (Map.Entry<String, Integer> entry : placeholders.entrySet()) {
 			args.add(entry.getKey());
 			args.add(entry.getValue());
+		}
+		NameTagX nametagx = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+		boolean enabled = nametagx != null && !nametagx.getDisabledUnlimitedServers().contains(getServer());
+		args.add(enabled);
+		if (enabled) {
+			args.add(nametagx.isMarkerFor18x());
+			args.add(nametagx.getSpaceBetweenLines());
+			args.add(nametagx.isDisableOnBoats());
+			args.add(TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible());
+			args.add(nametagx.getDisabledUnlimitedWorlds().size());
+			args.addAll(nametagx.getDisabledUnlimitedWorlds());
+			args.add(nametagx.getDynamicLines().size());
+			args.addAll(nametagx.getDynamicLines());
+			args.add(nametagx.getStaticLines().size());
+			for (Map.Entry<String, Object> entry : nametagx.getStaticLines().entrySet()) {
+				args.add(entry.getKey());
+				args.add(Double.valueOf(String.valueOf(entry.getValue())));
+			}
 		}
 		((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
 	}
@@ -94,6 +117,16 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	 */
 	public void setInvisible(boolean invisible) {
 		this.invisible = invisible;
+	}
+
+	/**
+	 * Sets boat status to provided value
+	 *
+	 * @param	onBoat
+	 * 			new boat status
+	 */
+	public void setOnBoat(boolean onBoat) {
+		this.onBoat = onBoat;
 	}
 
 	/**
@@ -130,6 +163,16 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	@Override
 	public boolean hasInvisibilityPotion() {
 		return invisible;
+	}
+
+	/**
+	 * Returns {@code true} if player is on boat, {@code false} if not.
+	 * This requires bridge installed to forward the data.
+	 *
+	 * @return	{@code true} if on boat, {@code false} if not
+	 */
+	public boolean isOnBoat() {
+		return onBoat;
 	}
 
 	@Override

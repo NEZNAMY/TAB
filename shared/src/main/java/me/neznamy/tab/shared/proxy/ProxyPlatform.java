@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.nametags.unlimited.ProxyNameTagX;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,8 +76,13 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true))
-			tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
+		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
+			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX(plm));
+			} else {
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
+			}
+		}
 		tab.loadUniversalFeatures();
 		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false))
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());

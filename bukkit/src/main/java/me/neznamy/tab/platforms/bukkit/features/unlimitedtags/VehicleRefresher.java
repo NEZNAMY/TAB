@@ -23,20 +23,20 @@ public class VehicleRefresher extends TabFeature {
 	//set of players currently on boats
 	private final Set<TabPlayer> playersOnBoats = Collections.newSetFromMap(new WeakHashMap<>());
 	
-	private final NameTagX feature;
+	private final BukkitNameTagX feature;
 		
-	public VehicleRefresher(NameTagX feature) {
+	public VehicleRefresher(BukkitNameTagX feature) {
 		super(feature.getFeatureName(), "Refreshing vehicles");
 		this.feature = feature;
 		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
 				this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
 					for (TabPlayer inVehicle : playersInVehicle.keySet()) {
-						inVehicle.getArmorStandManager().teleport();
+						feature.getArmorStandManager(inVehicle).teleport();
 //						feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
 					}
 					for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-						if (p.isPreviewingNametag()) {
-							p.getArmorStandManager().teleport(p);
+						if (feature.isPreviewingNametag(p)) {
+							feature.getArmorStandManager(p).teleport(p);
 						}
 					}
 		});
@@ -59,13 +59,24 @@ public class VehicleRefresher extends TabFeature {
 	}
 
 	@Override
+	public void onJoin(TabPlayer connectedPlayer) {
+		Entity vehicle = ((Entity) connectedPlayer.getPlayer()).getVehicle();
+		if (vehicle != null) vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+	}
+
+	@Override
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
+	}
+
+	@Override
 	public void refresh(TabPlayer p, boolean force) {
 		if (feature.isPlayerDisabled(p)) return;
 		Entity vehicle = ((Player)p.getPlayer()).getVehicle();
 		if (playersInVehicle.containsKey(p) && vehicle == null) {
 			//vehicle exit
 			vehicles.remove(playersInVehicle.get(p).getEntityId());
-			p.getArmorStandManager().teleport();
+			feature.getArmorStandManager(p).teleport();
 			playersInVehicle.remove(p);
 			if (feature.isDisableOnBoats() && playersOnBoats.contains(p)) {
 				playersOnBoats.remove(p);
@@ -75,7 +86,7 @@ public class VehicleRefresher extends TabFeature {
 		if (!playersInVehicle.containsKey(p) && vehicle != null) {
 			//vehicle enter
 			vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
-			p.getArmorStandManager().respawn(); //making teleport instant instead of showing teleport animation
+			feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
 			playersInVehicle.put(p, vehicle);
 			if (feature.isDisableOnBoats() && vehicle.getType() == EntityType.BOAT) {
 				playersOnBoats.add(p);
@@ -86,11 +97,6 @@ public class VehicleRefresher extends TabFeature {
 
 	public boolean isOnBoat(TabPlayer p) {
 		return playersOnBoats.contains(p);
-	}
-
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
 	}
 	
 	public Map<Integer, List<Entity>> getVehicles() {
@@ -114,17 +120,7 @@ public class VehicleRefresher extends TabFeature {
 			}
 		}
 	}
-	
-	/**
-	 * Loads all passengers riding this player and adds them to vehicle list
-	 * @param p - player to load passengers of
-	 */
-	public void loadPassengers(TabPlayer p) {
-		Entity vehicle = ((Entity) p.getPlayer()).getVehicle();
-		if (vehicle == null) return;
-		vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
-	}
-	
+
 	/**
 	 * Teleports armor stands of all passengers on specified vehicle
 	 * @param vehicle - entity to check passengers of
@@ -132,7 +128,7 @@ public class VehicleRefresher extends TabFeature {
 	public void processPassengers(Entity vehicle) {
 		for (Entity passenger : getPassengers(vehicle)) {
 			if (passenger instanceof Player) {
-				TAB.getInstance().getPlayer(passenger.getUniqueId()).getArmorStandManager().teleport();
+				feature.getArmorStandManager(TAB.getInstance().getPlayer(passenger.getUniqueId())).teleport();
 			}
 			processPassengers(passenger);
 		}

@@ -164,6 +164,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
 		String from = changed.getServer();
 		((ITabPlayer)changed).setServer(to);
+		((ProxyTabPlayer)changed).sendJoinPluginMessage();
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onServerChange")) continue;
 			long time = System.nanoTime();
@@ -171,7 +172,6 @@ public class FeatureManagerImpl implements FeatureManager {
 			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
 		}
 		((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
-		((ProxyTabPlayer)changed).sendJoinPluginMessage();
 	}
 
 	/**

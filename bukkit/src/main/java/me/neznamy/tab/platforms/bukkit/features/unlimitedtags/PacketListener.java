@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,7 +20,10 @@ import me.neznamy.tab.shared.TAB;
 public class PacketListener extends TabFeature {
 
 	//main feature
-	private final NameTagX nameTagX;
+	private final BukkitNameTagX nameTagX;
+
+	//player data by entityId, used for better performance
+	private final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
 	
 	//nms storage
 	private final NMSStorage nms = NMSStorage.getInstance();
@@ -27,9 +32,26 @@ public class PacketListener extends TabFeature {
 	 * Constructs new instance with given parameters and loads config options
 	 * @param nameTagX - main feature
 	 */
-	public PacketListener(NameTagX nameTagX) {
+	public PacketListener(BukkitNameTagX nameTagX) {
 		super(nameTagX.getFeatureName(), null);
 		this.nameTagX = nameTagX;
+	}
+
+	@Override
+	public void load() {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
+		}
+	}
+
+	@Override
+	public void onJoin(TabPlayer connectedPlayer) {
+		entityIdMap.put(((Player) connectedPlayer.getPlayer()).getEntityId(), connectedPlayer);
+	}
+
+	@Override
+	public void onQuit(TabPlayer disconnectedPlayer) {
+		entityIdMap.remove(((Player) disconnectedPlayer.getPlayer()).getEntityId());
 	}
 
 	@Override
@@ -38,7 +60,7 @@ public class PacketListener extends TabFeature {
 			int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
 			TabPlayer attacked = null;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				if (all.isLoaded() && all.getArmorStandManager().hasArmorStandWithID(entityId)) {
+				if (all.isLoaded() && nameTagX.getArmorStandManager(all).hasArmorStandWithID(entityId)) {
 					attacked = all;
 					break;
 				}
@@ -54,7 +76,7 @@ public class PacketListener extends TabFeature {
 	@Override
 	public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
 		if (receiver.getVersion().getMinorVersion() < 8) return;
-		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.getPlayersInDisabledUnlimitedWorlds().contains(receiver)) return;
+		if (!receiver.isLoaded() || nameTagX.isDisabledPlayer(receiver) || nameTagX.getDisabledUnlimitedPlayers().contains(receiver)) return;
 		if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
 			onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
 		} else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
@@ -82,27 +104,30 @@ public class PacketListener extends TabFeature {
 	 * @param entityId - entity that moved
 	 */
 	private void onEntityMove(TabPlayer receiver, int entityId) {
-		TabPlayer pl = nameTagX.getEntityIdMap().get(entityId);
+		TabPlayer pl = entityIdMap.get(entityId);
 		List<Entity> vehicleList;
 		if (pl != null) {
 			//player moved
 			if (nameTagX.isPlayerDisabled(pl)) return;
-			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE, () -> pl.getArmorStandManager().teleport(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE,
+					() -> nameTagX.getArmorStandManager(pl).teleport(receiver));
 		} else if ((vehicleList = nameTagX.getVehicleManager().getVehicles().get(entityId)) != null){
 			//a vehicle carrying something moved
 			for (Entity entity : vehicleList) {
-				TabPlayer passenger = nameTagX.getEntityIdMap().get(entity.getEntityId());
-				if (passenger != null && passenger.getArmorStandManager() != null) {
-					TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER, () -> passenger.getArmorStandManager().teleport(receiver));
+				TabPlayer passenger = entityIdMap.get(entity.getEntityId());
+				if (passenger != null && nameTagX.getArmorStandManager(passenger) != null) {
+					TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
+							() -> nameTagX.getArmorStandManager(passenger).teleport(receiver));
 				}
 			}
 		}
 	}
 	
 	private void onEntitySpawn(TabPlayer receiver, int entityId) {
-		TabPlayer spawnedPlayer = nameTagX.getEntityIdMap().get(entityId);
+		TabPlayer spawnedPlayer = entityIdMap.get(entityId);
 		if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
-			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN, () -> spawnedPlayer.getArmorStandManager().spawn(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
+					() -> nameTagX.getArmorStandManager(spawnedPlayer).spawn(receiver));
 		}
 	}
 
@@ -119,8 +144,9 @@ public class PacketListener extends TabFeature {
 	}
 	
 	private void onEntityDestroy(TabPlayer receiver, int entity) {
-		TabPlayer deSpawnedPlayer = nameTagX.getEntityIdMap().get(entity);
+		TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
 		if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer))
-			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY, () -> deSpawnedPlayer.getArmorStandManager().destroy(receiver));
+			TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
+					() -> nameTagX.getArmorStandManager(deSpawnedPlayer).destroy(receiver));
 	}
 }

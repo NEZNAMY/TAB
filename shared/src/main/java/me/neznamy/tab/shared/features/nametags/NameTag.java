@@ -23,7 +23,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
 	private final Set<TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
 	protected final Set<TabPlayer> teamHandlingPaused = Collections.newSetFromMap(new WeakHashMap<>());
-	private final WeakHashMap<TabPlayer, List<TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
+	protected final WeakHashMap<TabPlayer, List<TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
 	private final WeakHashMap<TabPlayer, String> forcedTeamName = new WeakHashMap<>();
 
 	private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") ||
@@ -155,7 +155,6 @@ public class NameTag extends TabFeature implements TeamManager {
 		if (hiddenNameTagFor.get(player).contains(viewer)) return;
 		hiddenNameTagFor.get(player).add(viewer);
 		updateTeamData(player, viewer);
-		if (player.getArmorStandManager() != null) player.getArmorStandManager().updateVisibility(true);
 	}
 
 	@Override
@@ -170,7 +169,6 @@ public class NameTag extends TabFeature implements TeamManager {
 		if (!hiddenNameTagFor.get(player).contains(viewer)) return;
 		hiddenNameTagFor.get(player).remove(viewer);
 		updateTeamData(player, viewer);
-		if (player.getArmorStandManager() != null) player.getArmorStandManager().updateVisibility(true);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ allprojects {
 val platforms = setOf(
     projects.bukkit,
     projects.bungeecord,
-    projects.krypton,
+//    projects.krypton,
     projects.velocity
 ).map { it.dependencyProject }
 
