@@ -171,7 +171,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 		if (bars == null) return;
 		for (String defaultBar : bars) {
 			BossBarLine bar = (BossBarLine) lines.get(defaultBar);
-			if (bar.isConditionMet(p) && !bar.getPlayers().contains(p)) {
+			if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {
 				bar.addPlayer(p);
 			}
 		}

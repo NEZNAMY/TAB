@@ -279,6 +279,11 @@ public class BossBarLine implements BossBar {
 	public List<TabPlayer> getPlayers() {
 		return new ArrayList<>(players);
 	}
+
+	@Override
+	public boolean containsPlayer(TabPlayer player) {
+		return players.contains(player);
+	}
 	
 	public boolean isAnnouncementOnly() {
 		return announcementOnly;

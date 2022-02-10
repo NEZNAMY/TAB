@@ -46,7 +46,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
 		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
 			if (p.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
 			for (BossBar line : getRegisteredBossBars().values()) {
-				if (!line.getPlayers().contains(p)) continue;
+				if (!line.containsPlayer(p)) continue;
 				Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
 				if (loc.getY() < 1) loc.setY(1);
 				p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc), TabConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);

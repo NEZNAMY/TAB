@@ -182,4 +182,12 @@ public interface BossBar {
 	 * @return	List of players seeing this BossBar
 	 */
 	List<TabPlayer> getPlayers();
+
+	/**
+	 * Returns {@code true} if specified player can see this BossBar, {@code false} if not
+	 * @param	player
+	 * 			Player to check for
+	 * @return	{@code true} if contains, {@code false} if not
+	 */
+	boolean containsPlayer(TabPlayer player);
 }
