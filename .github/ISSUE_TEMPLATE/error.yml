@@ -51,3 +51,5 @@ body:
           required: true
         - label: I have included a paste of the error
           required: true
+        - label: I am not trying to run the plugin on an unsupported server version
+          required: true
