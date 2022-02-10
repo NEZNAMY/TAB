@@ -65,7 +65,10 @@ public class Converter {
         ConfigurationFile groups = new YamlConfigurationFile(null, new File(folder, "groups.yml"));
         ConfigurationFile users = new YamlConfigurationFile(null, new File(folder, "users.yml"));
         File oldConfigsFolder = new File(folder, "old_configs");
-        Files.copy(new File(oldConfigsFolder, "animations.yml").toPath(), new File(folder, "animations.yml").toPath());
+        File oldAnimations = new File(oldConfigsFolder, "animations.yml");
+        if (oldAnimations.exists()) {
+            Files.copy(oldAnimations.toPath(), new File(folder, "animations.yml").toPath());
+        }
         File premiumFile = new File(oldConfigsFolder, "premiumconfig.yml");
         ConfigurationFile premiumConfig = premiumFile.exists() ? new YamlConfigurationFile(null, premiumFile) : null;
         File bossBarFile = new File(oldConfigsFolder, "bossbar.yml");
