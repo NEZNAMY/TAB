@@ -49,5 +49,5 @@ body:
       options:
         - label: I am running latest version of the plugin
           required: true
-        - label: I have read the wiki to make sure it's not an issue with configuration
+        - label: I have included a paste of the error
           required: true
