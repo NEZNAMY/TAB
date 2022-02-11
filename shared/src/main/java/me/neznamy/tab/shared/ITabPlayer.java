@@ -58,7 +58,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private final Map<String, Property> properties = new HashMap<>();
 
 	/** Player's game version */
-	protected ProtocolVersion version;
+	protected final ProtocolVersion version;
 
 	/** Player's network channel */
 	protected Channel channel;
