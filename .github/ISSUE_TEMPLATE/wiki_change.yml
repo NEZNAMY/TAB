@@ -1,0 +1,29 @@
+name: Wiki change
+description: Change to text on a wiki page or adding a new section.
+labels: ["Wiki"]
+body:
+  - type: input
+    attributes:
+      label: Page link
+      description: Link to the page that should receive the change.
+      placeholder: https://github.com/NEZNAMY/TAB/wiki/Installation
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Current text (if applicable)
+      description: Current version of the text (if modifying), ignore in case of new section.
+      placeholder: |
+        Installation on Bukkit/Spigot/Paper is as simple as it can be. Just put the plugin into plugins folder and restart the server. You can also run `/plugman load tab` to load the plugin while server is running.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: New text
+      description: What the text should be changed to / how should new section look
+      placeholder: |
+        Put the plugin into plugins folder and restart the server. In case you don't want to restart your server, loading with plugins like PlugMan is supported.
+    validations:
+      required: true
