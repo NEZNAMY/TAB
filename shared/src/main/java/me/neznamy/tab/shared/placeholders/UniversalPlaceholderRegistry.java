@@ -93,7 +93,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 			String type = String.valueOf(condition.getValue().get("type"));
 			String yes = condition.getValue().getOrDefault(true, true).toString();
 			String no = condition.getValue().getOrDefault(false, false).toString();
-			Condition c = new Condition("AND".equals(type), condition.getKey(), list, yes, no);
+			Condition c = new Condition(!"OR".equals(type), condition.getKey(), list, yes, no);
 			String identifier = "%condition:" + c.getName() + "%";
 			manager.registerPlayerPlaceholder(identifier, c.getRefresh(), c::getText);
 		}
