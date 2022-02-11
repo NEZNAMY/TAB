@@ -70,6 +70,9 @@ public abstract class TabPlaceholder implements Placeholder {
 		for (String nested : getNestedPlaceholders("")) {
 			TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
 		}
+		for (String nested : replacements.getNestedPlaceholders()) {
+			TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
+		}
 	}
 
 	/**
@@ -165,6 +168,17 @@ public abstract class TabPlaceholder implements Placeholder {
 	 */
 	private void addParent(String parent) {
 		if (!parents.contains(parent)) parents.add(parent);
+	}
+
+	/**
+	 * Updates all placeholders that use this placeholder
+	 * as a nested placeholder
+	 *
+	 * @param	player
+	 * 			Player to update placeholders for.
+	 */
+	public void updateParents(TabPlayer player) {
+		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(player));
 	}
 
 	/**

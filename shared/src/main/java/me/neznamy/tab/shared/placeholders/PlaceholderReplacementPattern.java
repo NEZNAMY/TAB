@@ -1,10 +1,13 @@
 package me.neznamy.tab.shared.placeholders;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.TAB;
 
 /**
  * Placeholder replacement pattern class for placeholder output replacements
@@ -22,6 +25,9 @@ public class PlaceholderReplacementPattern {
 	 */
 	private final Map<float[], String> numberIntervals = new HashMap<>();
 
+	/** Set of all used placeholders in replacement values */
+	private final Set<String> nestedPlaceholders = new HashSet<>();
+
 	/**
 	 * Constructs new instance from given replacement map from config
 	 *
@@ -33,6 +39,8 @@ public class PlaceholderReplacementPattern {
 			String key = String.valueOf(entry.getKey());
 			String value = String.valueOf(entry.getValue());
 			replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
+			nestedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(value));
+			nestedPlaceholders.remove("%value%"); //not a real placeholder
 			//snakeyaml converts yes & no to booleans, making them not work when used without "
 			if ("true".equals(key)) {
 				replacements.put("yes", value);
@@ -47,6 +55,16 @@ public class PlaceholderReplacementPattern {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns set of all nested placeholders used inside placeholder output
+	 * replacement values in all lines.
+	 *
+	 * @return	All used nested placeholders in values.
+	 */
+	public Set<String> getNestedPlaceholders() {
+		return nestedPlaceholders;
 	}
 
 	/**
@@ -84,7 +102,7 @@ public class PlaceholderReplacementPattern {
 		}
 		
 		//number interval
-		if (numberIntervals.size() > 0) {
+		if (numberIntervals.size() > 0) {  //not parsing number if no intervals are configured
 			try {
 				//supporting placeholders with fancy output using "," every 3 digits
 				String cleanValue = output.contains(",") ? output.replace(",", "") : output;

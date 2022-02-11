@@ -51,6 +51,9 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 		}
 		if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
 			lastValue = newValue;
+			for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+				updateParents(player);
+			}
 			return true;
 		}
 		return false;
@@ -67,7 +70,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 	 * 			whether refreshing should be forced or not
 	 */
 	private void updateValue(Object value, boolean force) {
-		String s = getReplacements().findReplacement(String.valueOf(value));
+		String s = getReplacements().findReplacement(value == null ? lastValue == null ? identifier : lastValue : value.toString());
 		if (s.equals(lastValue) && !force) return;
 		lastValue = s;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
@@ -78,8 +81,8 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 				f.refresh(player, false);
 				TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
 			}
+			updateParents(player);
 		}
-		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(null));
 	}
 
 	@Override

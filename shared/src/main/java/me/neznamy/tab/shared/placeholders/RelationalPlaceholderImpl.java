@@ -52,6 +52,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 		String newValue = getReplacements().findReplacement(String.valueOf(output));
 		if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
 			lastValues.get(viewer).put(target, newValue);
+			updateParents(viewer);
+			updateParents(target);
 			return true;
 		}
 		return false;
@@ -97,8 +99,8 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 			f.refresh(target, true);
 			TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
 		}
-		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(viewer));
-		parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(target));
+		updateParents(viewer);
+		updateParents(target);
 	}
 
 	@Override
