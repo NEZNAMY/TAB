@@ -260,10 +260,10 @@ public class BossBarLine implements BossBar {
 		player.setProperty(colorAndStyleRefresher, propertyStyle, style);
 		player.sendCustomPacket(new PacketPlayOutBoss(
 				uuid, 
-				player.getProperty(propertyTitle).get(), 
-				parseProgress(player.getProperty(propertyProgress).get())/100, 
-				parseColor(player.getProperty(propertyColor).get()), 
-				parseStyle(player.getProperty(propertyStyle).get())
+				player.getProperty(propertyTitle).updateAndGet(),
+				parseProgress(player.getProperty(propertyProgress).updateAndGet())/100,
+				parseColor(player.getProperty(propertyColor).updateAndGet()),
+				parseStyle(player.getProperty(propertyStyle).updateAndGet())
 			), manager
 		);
 	}
