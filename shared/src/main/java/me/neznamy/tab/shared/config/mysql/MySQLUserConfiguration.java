@@ -1,10 +1,7 @@
 package me.neznamy.tab.shared.config.mysql;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import javax.sql.rowset.CachedRowSet;
 
@@ -83,6 +80,26 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 		values.remove(user);
 		perWorld.keySet().forEach(world -> perWorld.get(world).remove(user));
 		perServer.keySet().forEach(server -> perServer.get(server).remove(user));
+	}
+
+	@Override
+	public Map<String, String> getGlobalSettings(String name) {
+		throw new UnsupportedOperationException("Not supported for users");
+	}
+
+	@Override
+	public Map<String, Map<String, String>> getPerWorldSettings(String name) {
+		throw new UnsupportedOperationException("Not supported for users");
+	}
+
+	@Override
+	public Map<String, Map<String, String>> getPerServerSettings(String name) {
+		throw new UnsupportedOperationException("Not supported for users");
+	}
+
+	@Override
+	public Set<String> getAllEntries() {
+		throw new UnsupportedOperationException("Not supported for users");
 	}
 
 	private TabPlayer getPlayer(String string) {

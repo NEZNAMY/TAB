@@ -110,6 +110,8 @@ public class TabConstants {
 		public static final String COMMAND_BOSSBAR_SEND = "tab.send.bar";
 		public static final String COMMAND_CPU = "tab.cpu";
 		public static final String COMMAND_DEBUG = "tab.debug";
+		public static final String COMMAND_GROUP_INFO = "tab.groupinfo";
+		public static final String COMMAND_GROUP_LIST = "tab.grouplist";
 		public static final String COMMAND_NTPREVIEW = "tab.ntpreview";
 		public static final String COMMAND_PARSE = "tab.parse";
 		public static final String COMMAND_SCOREBOARD_ANNOUNCE = "tab.announce.scoreboard";

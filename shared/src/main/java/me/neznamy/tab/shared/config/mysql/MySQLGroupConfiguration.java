@@ -1,14 +1,15 @@
 package me.neznamy.tab.shared.config.mysql;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.sql.rowset.CachedRowSet;
-
 import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.MySQL;
+
+import javax.sql.rowset.CachedRowSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
@@ -90,5 +91,28 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 		values.getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, null, null, null));
 		perWorld.keySet().forEach(world -> perWorld.get(world).getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, null, world, null)));
 		perServer.keySet().forEach(server -> perServer.get(server).getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, server, null, null)));
+	}
+
+	@Override
+	public Map<String, String> getGlobalSettings(String name) {
+		return values.get(name);
+	}
+
+	@Override
+	public Map<String, Map<String, String>> getPerWorldSettings(String name) {
+		return convertMap(perWorld, name);
+	}
+
+	@Override
+	public Map<String, Map<String, String>> getPerServerSettings(String name) {
+		return convertMap(perServer, name);
+	}
+
+	@Override
+	public Set<String> getAllEntries() {
+		Set<String> set = new HashSet<>(values.keySet());
+		perWorld.values().forEach(map -> set.addAll(map.keySet()));
+		perServer.values().forEach(map -> set.addAll(map.keySet()));
+		return set;
 	}
 }

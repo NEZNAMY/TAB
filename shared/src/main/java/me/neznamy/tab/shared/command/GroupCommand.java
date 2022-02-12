@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -21,8 +22,16 @@ public class GroupCommand extends PropertyCommand {
 	@Override
 	public void execute(TabPlayer sender, String[] args) {
 		//<name> <property> [value...]
-		if (args.length <= 1) {
+		if (args.length == 0) {
 			help(sender);
+			return;
+		}
+		if (args.length == 1) {
+			if (hasPermission(sender, TabConstants.Permission.COMMAND_GROUP_INFO)) {
+				sendGroupInfo(sender, args[0]);
+			} else {
+				sendMessage(sender, getMessages().getNoPermission());
+			}
 			return;
 		}
 		String group = args[0];
@@ -69,6 +78,27 @@ public class GroupCommand extends PropertyCommand {
 			}
 		}
 		help(sender);
+	}
+
+	private void sendGroupInfo(TabPlayer sender, String group) {
+		sendMessage(sender, "&f=== Group &9" + group + "&f ===");
+		for (Map.Entry<String, String> entry : TAB.getInstance().getConfiguration().getGroups().getGlobalSettings(group).entrySet()) {
+			sendRawMessage(sender, "  " + entry.getKey() + ": " + entry.getValue());
+		}
+		for (Map.Entry<String, Map<String, String>> entry : TAB.getInstance().getConfiguration().getGroups().getPerWorldSettings(group).entrySet()) {
+			if (entry.getValue() == null) continue;
+			sendMessage(sender, "&6World " + entry.getKey() + ":&e");
+			for (Map.Entry<String, String> properties : entry.getValue().entrySet()) {
+				sendRawMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
+			}
+		}
+		for (Map.Entry<String, Map<String, String>> entry : TAB.getInstance().getConfiguration().getGroups().getPerServerSettings(group).entrySet()) {
+			if (entry.getValue() == null) continue;
+			sendMessage(sender, "&3Server " + entry.getKey() + ":&b");
+			for (Map.Entry<String, String> properties : entry.getValue().entrySet()) {
+				sendRawMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
+			}
+		}
 	}
 
 	/**

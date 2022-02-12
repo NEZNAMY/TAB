@@ -3,8 +3,7 @@ package me.neznamy.tab.shared.config.file;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.error.YAMLException;
@@ -23,7 +22,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 	private final List<Object> worldGroups = new ArrayList<>(getConfigurationSection(PER_WORLD).keySet());
 	private final List<Object> serverGroups = new ArrayList<>(getConfigurationSection(PER_SERVER).keySet());
 	
-	public YamlPropertyConfigurationFile(InputStream source, File destination) throws IllegalStateException, YAMLException, IOException {
+	public YamlPropertyConfigurationFile(InputStream source, File destination) throws YAMLException, IOException {
 		super(source, destination);
 		category = destination.getName().contains("groups") ? "group" : "user";
 	}
@@ -76,5 +75,31 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 		set(name, null);
 		getConfigurationSection(PER_WORLD).keySet().forEach(world -> set(PER_WORLD + "." + world + "." + name, null));
 		getConfigurationSection(PER_SERVER).keySet().forEach(server -> set(PER_SERVER + "." + server + "." + name, null));
+	}
+
+	@Override
+	public Map<String, String> getGlobalSettings(String name) {
+		return getConfigurationSection(name);
+	}
+
+	@Override
+	public Map<String, Map<String, String>> getPerWorldSettings(String name) {
+		return convertMap(getConfigurationSection(PER_WORLD), name);
+	}
+
+	@Override
+	public Map<String, Map<String, String>> getPerServerSettings(String name) {
+		return convertMap(getConfigurationSection(PER_SERVER), name);
+	}
+	@Override
+	public Set<String> getAllEntries() {
+		Set<String> set = new HashSet<>(values.keySet());
+		set.remove(PER_WORLD);
+		set.remove(PER_SERVER);
+		Map<String, Map<String, Map<String, String>>> perWorld = getConfigurationSection(PER_WORLD);
+		perWorld.values().forEach(m -> set.addAll(m.keySet()));
+		Map<String, Map<String, Map<String, String>>> perServer = getConfigurationSection(PER_SERVER);
+		perServer.values().forEach(m -> set.addAll(m.keySet()));
+		return set;
 	}
 }
