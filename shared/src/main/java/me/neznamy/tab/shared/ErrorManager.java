@@ -87,7 +87,7 @@ public class ErrorManager {
 		if (error != null) {
 			lines.add(error.getClass().getName() + ": " + error.getMessage());
 			for (StackTraceElement ste : error.getStackTrace()) {
-				lines.add("\t\tat " + ste.toString());
+				lines.add("\tat " + ste.toString());
 			}
 		}
 		printError(message, lines, intoConsoleToo, file);
