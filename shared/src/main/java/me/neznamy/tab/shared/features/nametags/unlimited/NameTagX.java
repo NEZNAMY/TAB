@@ -5,6 +5,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
 import java.util.*;
@@ -64,6 +65,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
             if (isUnlimitedDisabled(all.getServer(), all.getWorld())) {
                 disabledUnlimitedPlayers.add(all);
             }
+            TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+            if (expansion != null) expansion.setNameTagPreview(all, false);
         }
         super.load();
     }
@@ -74,6 +77,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
             disabledUnlimitedPlayers.add(connectedPlayer);
         super.onJoin(connectedPlayer);
         armorStandManagerMap.put(connectedPlayer, armorStandFunction.apply(this, connectedPlayer));
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+        if (expansion != null) expansion.setNameTagPreview(connectedPlayer, false);
     }
 
     @Override
@@ -129,6 +134,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
             player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
             playersPreviewingNametag.add(player);
         }
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+        if (expansion != null) expansion.setNameTagPreview(player, isPreviewingNametag(player));
     }
 
     public boolean isPreviewingNametag(TabPlayer player) {

@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 
 /**
@@ -16,6 +17,9 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
  * will receive refresh call letting it know and allowing to get new value.
  */
 public class DynamicText implements Property {
+
+	/** Internal identifier for this text */
+	private final String name;
 
 	/**
 	 * Feature defining this text, which will receive refresh function
@@ -69,7 +73,8 @@ public class DynamicText implements Property {
 	 * @param	source
 	 * 			Source of the text used in debug command
 	 */
-	public DynamicText(TabFeature listener, TabPlayer owner, String rawValue, String source) {
+	public DynamicText(String name, TabFeature listener, TabPlayer owner, String rawValue, String source) {
+		this.name = name;
 		this.listener = listener;
 		this.owner = owner;
 		this.source = source;
@@ -114,6 +119,11 @@ public class DynamicText implements Property {
 		}
 		lastReplacedValue = rawFormattedValue;
 		update();
+		TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+		if (expansion != null) {
+			expansion.setPropertyValue(owner, name, lastReplacedValue);
+			expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
+		}
 	}
 
 	/**

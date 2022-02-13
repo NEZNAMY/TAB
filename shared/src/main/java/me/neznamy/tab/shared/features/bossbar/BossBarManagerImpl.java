@@ -10,6 +10,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.TabExpansion;
 
 /**
  * Class for handling BossBar feature
@@ -241,6 +242,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 				TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", bossBarOffPlayers);
 			}
 		}
+		TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+		if (expansion != null) expansion.setBossBarVisible(player, visible);
 	}
 
 	@Override

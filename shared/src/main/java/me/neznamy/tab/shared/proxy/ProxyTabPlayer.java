@@ -60,7 +60,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	public void sendJoinPluginMessage() {
 		List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
 				TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge,
-				TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX));
+				TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX),
+				TAB.getInstance().getPlaceholderManager().getTabExpansion() != null);
 		ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
 		Map<String, Integer> placeholders = platform.getBridgePlaceholders();
 		args.add(placeholders.size());

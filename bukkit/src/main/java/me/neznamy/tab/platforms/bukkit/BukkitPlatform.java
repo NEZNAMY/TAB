@@ -19,7 +19,7 @@ import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
-import me.neznamy.tab.platforms.bukkit.features.TabExpansion;
+import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
@@ -120,8 +120,10 @@ public class BukkitPlatform implements Platform {
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new PetFix());
 		if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false))
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, new PerWorldPlayerList(plugin));
-		if (placeholderAPI) {
-			new TabExpansion(plugin);
+		if (placeholderAPI && tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", true)) {
+			BukkitTabExpansion expansion = new BukkitTabExpansion();
+			expansion.register();
+			TAB.getInstance().getPlaceholderManager().setTabExpansion(expansion);
 		}
 		for (Player p : getOnlinePlayers()) {
 			tab.addPlayer(new BukkitTabPlayer(p, getProtocolVersion(p)));

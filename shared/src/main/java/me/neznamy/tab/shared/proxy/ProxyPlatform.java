@@ -90,6 +90,9 @@ public abstract class ProxyPlatform implements Platform {
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
 		if (tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new TabFeature("", "") {});
+		if (tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
+			tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion(plm));
+		}
 	}
 
 	@Override

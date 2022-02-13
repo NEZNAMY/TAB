@@ -12,6 +12,7 @@ import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.features.TabExpansion;
 
 /**
  * Feature handler for scoreboard feature
@@ -320,6 +321,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 				}
 			}
 		}
+		TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+		if (expansion != null) expansion.setScoreboardVisible(player, visible);
 	}
 
 	@Override

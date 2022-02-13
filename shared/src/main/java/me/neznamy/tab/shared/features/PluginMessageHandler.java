@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,6 +89,9 @@ public abstract class PluginMessageHandler {
 			}
             TAB.getInstance().getErrorManager().placeholderError(message, stack);
 		}
+		if ("RegisterPlaceholder".equals(subChannel)) {
+			TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(in.readUTF()));
+		}
 	}
 
 	/**
@@ -99,6 +103,7 @@ public abstract class PluginMessageHandler {
 	 * 			Messages to encode
 	 */
 	public void sendMessage(TabPlayer player, Object... args) {
+//		System.out.println(player.getName() + ": " + Arrays.toString(args));
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		for (Object arg : args) {
 			writeObject(out, arg);

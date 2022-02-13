@@ -14,6 +14,7 @@ import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.scoreboard.lines.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
@@ -126,6 +127,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		}
 		manager.getActiveScoreboards().put(p, this);
 		recalculateScores(p);
+		TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+		if (expansion != null) expansion.setScoreboardName(p, name);
 	}
 
 	@Override
@@ -144,6 +147,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 		}
 		players.remove(p);
 		manager.getActiveScoreboards().remove(p);
+		TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+		if (expansion != null) expansion.setScoreboardName(p, "");
 	}
 
 	@Override

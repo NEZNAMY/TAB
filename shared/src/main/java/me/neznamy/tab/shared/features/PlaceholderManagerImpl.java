@@ -49,6 +49,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	private final AtomicInteger atomic = new AtomicInteger();
 	private final RepeatingTask refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, this, "Refreshing placeholders", this::refresh);
 
+	private TabExpansion tabExpansion;
+
 	public PlaceholderManagerImpl(){
 		super("Refreshing placeholders", "Updating placeholders");
 	}
@@ -117,6 +119,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		long startTime = System.nanoTime();
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (placeholder.update(all)) {
+				if (tabExpansion != null) tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValue(all));
 				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 				somethingChanged = true;
 			}
@@ -131,6 +134,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 		if (placeholder.update()) {
 			somethingChanged = true;
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (tabExpansion != null) tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValue(null));
 				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
 			}
 		}
@@ -242,6 +246,11 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 			recalculateUsedPlaceholders();
 			TabPlaceholder p = getPlaceholder(identifier);
 			p.markAsUsed();
+			if (tabExpansion != null) {
+				for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+					tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
+				}
+			}
 			if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh() && !p.isTriggerMode()) {
 				TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + p.getRefresh() + "ms due to placeholder " + identifier);
 				refreshTask.setInterval(p.getRefresh());
@@ -270,5 +279,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 	
 	public AtomicInteger getLoopTime() {
 		return atomic;
+	}
+
+	public TabExpansion getTabExpansion() {
+		return tabExpansion;
+	}
+
+	public void setTabExpansion(TabExpansion tabExpansion) {
+		this.tabExpansion = tabExpansion;
 	}
 }

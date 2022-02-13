@@ -121,7 +121,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
 		DynamicText p = (DynamicText) getProperty(identifier);
 		if (p == null) {
-			properties.put(identifier, new DynamicText(feature, this, rawValue, source));
+			properties.put(identifier, new DynamicText(identifier, feature, this, rawValue, source));
 			return true;
 		} else {
 			if (!p.getOriginalRawValue().equals(rawValue)) {
