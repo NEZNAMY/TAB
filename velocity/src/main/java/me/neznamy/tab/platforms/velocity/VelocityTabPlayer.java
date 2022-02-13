@@ -8,7 +8,6 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 
-import io.netty.channel.Channel;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
@@ -45,12 +44,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 				p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol());
 		UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
 		tabListId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
-		try {
-			Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
-			channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
-		} catch (ReflectiveOperationException e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getUsername(), e);
-		}
 	}
 	
 	@Override
@@ -86,7 +79,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			handle((PacketPlayOutScoreboardScore) packet);
 		} else if (packet instanceof PacketPlayOutScoreboardTeam) {
 			handle((PacketPlayOutScoreboardTeam) packet);
-		} else if (channel != null) channel.writeAndFlush(packet, channel.voidPromise());
+		}
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 
