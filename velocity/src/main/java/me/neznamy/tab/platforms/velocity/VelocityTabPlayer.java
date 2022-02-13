@@ -9,11 +9,13 @@ import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 
 import io.netty.channel.Channel;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
@@ -76,6 +78,14 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			handle((PacketPlayOutBoss) packet);
 		} else if (packet instanceof PacketPlayOutPlayerInfo) {
 			handle((PacketPlayOutPlayerInfo) packet);
+		} else if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
+			handle((PacketPlayOutScoreboardDisplayObjective) packet);
+		} else if (packet instanceof PacketPlayOutScoreboardObjective) {
+			handle((PacketPlayOutScoreboardObjective) packet);
+		} else if (packet instanceof PacketPlayOutScoreboardScore) {
+			handle((PacketPlayOutScoreboardScore) packet);
+		} else if (packet instanceof PacketPlayOutScoreboardTeam) {
+			handle((PacketPlayOutScoreboardTeam) packet);
 		} else if (channel != null) channel.writeAndFlush(packet, channel.voidPromise());
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
@@ -164,7 +174,60 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 			break;
 		}
 	}
-	
+
+	private void handle(PacketPlayOutScoreboardDisplayObjective packet) {
+		((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
+				"PacketPlayOutScoreboardDisplayObjective", packet.getSlot(), packet.getObjectiveName());
+	}
+
+	private void handle(PacketPlayOutScoreboardObjective packet) {
+		List<Object> args = new ArrayList<>();
+		args.add("PacketPlayOutScoreboardObjective");
+		args.add(packet.getObjectiveName());
+		args.add(packet.getMethod());
+		if (packet.getMethod() == 0 || packet.getMethod() == 2) {
+			args.add(getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+					.cutTo(packet.getDisplayName(), 32) : packet.getDisplayName());
+			args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
+			args.add(packet.getRenderType().ordinal());
+		}
+		((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+	}
+
+	private void handle(PacketPlayOutScoreboardScore packet) {
+		List<Object> args = new ArrayList<>();
+		args.add("PacketPlayOutScoreboardScore");
+		args.add(packet.getObjectiveName());
+		args.add(packet.getAction().ordinal());
+		args.add(packet.getPlayer());
+		args.add(packet.getScore());
+		((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+	}
+
+	private void handle(PacketPlayOutScoreboardTeam packet) {
+		List<Object> args = new ArrayList<>();
+		args.add("PacketPlayOutScoreboardTeam");
+		args.add(packet.getName());
+		args.add(packet.getMethod());
+		args.add(packet.getPlayers().size());
+		args.addAll(packet.getPlayers());
+		if (packet.getMethod() == 0 || packet.getMethod() == 2) {
+			String prefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+					.cutTo(packet.getPlayerPrefix(), 16) : packet.getPlayerPrefix();
+			String suffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+					.cutTo(packet.getPlayerSuffix(), 16) : packet.getPlayerSuffix();
+			args.add(prefix);
+			args.add(IChatBaseComponent.optimizedComponent(prefix).toString(getVersion()));
+			args.add(suffix);
+			args.add(IChatBaseComponent.optimizedComponent(suffix).toString(getVersion()));
+			args.add(packet.getOptions());
+			args.add(packet.getNameTagVisibility());
+			args.add(packet.getCollisionRule());
+			args.add((packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal());
+		}
+		((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+	}
+
 	private void processFlag(BossBar bar, boolean targetValue, Flag flag) {
 		if (targetValue) {
 			if (!bar.hasFlag(flag)) {

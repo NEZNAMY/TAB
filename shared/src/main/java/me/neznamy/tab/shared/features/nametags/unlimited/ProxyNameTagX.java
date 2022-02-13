@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features.nametags.unlimited;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
@@ -13,14 +12,6 @@ public class ProxyNameTagX extends NameTagX {
     public ProxyNameTagX(PluginMessageHandler plm) {
         super(ProxyArmorStandManager::new);
         this.plm = plm;
-    }
-
-    @Override
-    public void unload() {
-        super.unload();
-        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-            plm.sendMessage(player, "Unload");
-        }
     }
 
     @Override

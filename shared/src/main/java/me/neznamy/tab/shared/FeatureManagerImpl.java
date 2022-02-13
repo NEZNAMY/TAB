@@ -12,6 +12,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import me.neznamy.tab.shared.features.PluginMessageHandler;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -44,6 +46,12 @@ public class FeatureManagerImpl implements FeatureManager {
 	 */
 	public void unload() {
 		for (TabFeature f : values) f.unload();
+		if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
+			PluginMessageHandler plm = ((ProxyPlatform) TAB.getInstance().getPlatform()).getPluginMessageHandler();
+			for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+				plm.sendMessage(player, "Unload");
+			}
+		}
 	}
 
 	/**

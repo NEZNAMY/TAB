@@ -38,22 +38,22 @@ public class VelocityPacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
-		return null;
+		return packet;
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-		return null;
+		return packet;
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
-		return null;
+		return packet;
 	}
 
 	@Override
 	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
-		return null;
+		return packet;
 	}
 
 	@Override
