@@ -80,7 +80,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 	 */
 	private void updateValue(TabPlayer player, Object value, boolean force) {
 		String s = getReplacements().findReplacement(value == null ? lastValues.getOrDefault(player, identifier) : value.toString());
-		if (lastValues.containsKey(player) && lastValues.get(player).equals(s) && !force) return;
+		if (lastValues.getOrDefault(player, identifier).equals(s) && !force) return;
 		lastValues.put(player, s);
 		if (!player.isLoaded()) return;
 		Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
