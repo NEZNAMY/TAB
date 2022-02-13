@@ -6,10 +6,7 @@ import me.neznamy.tab.shared.config.MySQL;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
@@ -95,7 +92,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
 	@Override
 	public Map<String, String> getGlobalSettings(String name) {
-		return values.get(name);
+		return values.getOrDefault(name, Collections.emptyMap());
 	}
 
 	@Override
