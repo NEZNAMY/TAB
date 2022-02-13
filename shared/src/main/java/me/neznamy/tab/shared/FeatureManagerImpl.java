@@ -172,6 +172,7 @@ public class FeatureManagerImpl implements FeatureManager {
 		TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
 		String from = changed.getServer();
 		((ITabPlayer)changed).setServer(to);
+		if (!isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) ((ITabPlayer)changed).clearRegisteredObjectives();
 		((ProxyTabPlayer)changed).sendJoinPluginMessage();
 		for (TabFeature f : values) {
 			if (!f.overridesMethod("onServerChange")) continue;
