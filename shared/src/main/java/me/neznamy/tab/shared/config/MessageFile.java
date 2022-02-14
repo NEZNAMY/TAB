@@ -188,4 +188,27 @@ public class MessageFile extends YamlConfigurationFile {
 				,"    &7Clears all data about player/group"
 				,"&m                                                                                "));
 	}
+
+	public List<String> getMySQLHelpMenu() {
+		return getStringList("mysql-help-menu", Arrays.asList(
+				"/tab mysql upload - uploads data from files to mysql",
+				"/tab mysql download - downloads data from mysql to files"
+		));
+	}
+
+	public String getMySQLFailNotEnabled() {
+		return getString("mysql-fail-not-enabled", "&cCannot download/upload data from/to MySQL, because it's disabled.");
+	}
+
+	public String getMySQLFailError() {
+		return getString("mysql-fail-error", "MySQL download failed due to an error. Check console for more info.");
+	}
+
+	public String getMySQLDownloadSuccess() {
+		return getString("mysql-download-success", "&aMySQL data downloaded successfully.");
+	}
+
+	public String getMySQLUploadSuccess() {
+		return getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
+	}
 }

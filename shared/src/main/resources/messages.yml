@@ -53,3 +53,10 @@ help-menu:
   - " &8>> &3&l/tab group/player <name> remove"
   - "      - &7Clears all data about player/group"
   - "&m                                                                                "
+mysql-help-menu:
+  - "&6/tab mysql upload - uploads data from files to mysql"
+  - "&6/tab mysql download - downloads data from mysql to files"
+mysql-fail-not-enabled: "&cCannot download/upload data from/to MySQL, because it's disabled."
+mysql-fail-error: "MySQL download failed due to an error. Check console for more info."
+mysql-download-success: "&aMySQL data downloaded successfully."
+mysql-upload-success: "&aMySQL data uploaded successfully."
