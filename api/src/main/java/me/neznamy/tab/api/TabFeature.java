@@ -63,6 +63,8 @@ public abstract class TabFeature {
 				methodOverrides.add("onPacketSend");
 			if (getClass().getMethod("refresh", TabPlayer.class, boolean.class).getDeclaringClass() != TabFeature.class)
 				methodOverrides.add("refresh");
+			if (getClass().getMethod("onVanishStatusChange", TabPlayer.class).getDeclaringClass() != TabFeature.class)
+				methodOverrides.add("onVanishStatusChange");
 		} catch (NoSuchMethodException e) {
 			//this will never happen
 		}
@@ -191,6 +193,10 @@ public abstract class TabFeature {
 	 * @param force - if refresh should be forced despite refresh seemingly not needed
 	 */
 	public void refresh(TabPlayer refreshed, boolean force) {
+		//empty by default
+	}
+
+	public void onVanishStatusChange(TabPlayer player){
 		//empty by default
 	}
 

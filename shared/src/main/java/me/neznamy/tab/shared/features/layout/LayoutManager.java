@@ -35,7 +35,7 @@ public class LayoutManager extends TabFeature {
 			uuids.put(slot, new UUID(0, translateSlot(slot)));
 		}
 		loadLayouts();
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_VANISH, new VanishListener(this));
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
 		TAB.getInstance().debug("Loaded Layout feature");
 	}
 
@@ -144,6 +144,11 @@ public class LayoutManager extends TabFeature {
 		}
 	}
 
+	@Override
+	public void onVanishStatusChange(TabPlayer p) {
+		layouts.values().forEach(Layout::tick);
+	}
+
 	private Layout getHighestLayout(TabPlayer p) {
 		for (Layout layout : layouts.values()) {
 			if (layout.isConditionMet(p)) return layout;
@@ -184,10 +189,6 @@ public class LayoutManager extends TabFeature {
 
 	public Map<TabPlayer, Layout> getPlayerViews() {
 		return playerViews;
-	}
-
-	public Map<String, Layout> getLayouts() {
-		return layouts;
 	}
 
 	public int getEmptySlotPing() {

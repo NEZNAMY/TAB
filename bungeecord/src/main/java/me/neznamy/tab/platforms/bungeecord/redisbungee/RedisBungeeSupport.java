@@ -223,7 +223,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 	}
 	
 	private boolean shouldSee(TabPlayer viewer, String viewerServer, String server, boolean targetVanished) {
-		if (targetVanished && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
+		if (targetVanished && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
 		if (global.getSpyServers().contains(viewerServer)) return true;
 		return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
 	}

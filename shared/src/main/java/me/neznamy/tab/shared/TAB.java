@@ -21,7 +21,7 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.AlignedPlayerList;
+import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.GhostPlayerFix;
 import me.neznamy.tab.shared.features.HeaderFooter;

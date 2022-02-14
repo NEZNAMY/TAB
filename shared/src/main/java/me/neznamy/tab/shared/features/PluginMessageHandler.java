@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
@@ -121,7 +122,7 @@ public abstract class PluginMessageHandler {
 	 * 			Value to write
 	 */
 	private void writeObject(ByteArrayDataOutput out, Object value) {
-		if (value == null) return;
+		Preconditions.checkNotNull(value, "Cannot write null value");
 		if (value instanceof String) {
 			out.writeUTF((String) value);
 		} else if (value instanceof Boolean) {

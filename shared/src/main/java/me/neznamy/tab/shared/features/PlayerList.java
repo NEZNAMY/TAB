@@ -55,7 +55,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 	 * 			TabList viewer
 	 * @return	UUID of TabList entry representing requested player
 	 */
-	protected UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
+	public UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
 		LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
 		if (manager != null) {
 			Layout layout = manager.getPlayerViews().get(viewer);
@@ -92,11 +92,11 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 	 * @param	format
 	 * 			Whether player's actual format should be used or {@code null} for reset
 	 */
-	private void updatePlayer(TabPlayer p, boolean format) {
+	protected void updatePlayer(TabPlayer p, boolean format) {
 		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
 			if (viewer.getVersion().getMinorVersion() < 8) continue;
 			viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-					new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer, true) : null)), this);
+					new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null)), this);
 		}
 		RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 		if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
@@ -109,11 +109,9 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 	 * 			Player to get format of
 	 * @param	viewer
 	 * 			Viewer seeing the format
-	 * @param	updateWidths
-	 * 			If this class is AlignedPlayerList and player widths should be updated
 	 * @return	Format of specified player for viewer
 	 */
-	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer, boolean updateWidths) {
+	public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
 		Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
 		Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
 		Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
@@ -153,9 +151,9 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-					new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p, false))), this);
+					new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p))), this);
 			if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-					new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all, false))), this);
+					new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all))), this);
 		}
 	}
 	
@@ -209,7 +207,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 				if (all == connectedPlayer) continue; //already sent 4 lines above
-				list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer, false)));
+				list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer)));
 			}
 			if (!list.isEmpty()) connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
 		};
@@ -226,7 +224,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 		for (PlayerInfoData playerInfoData : info.getEntries()) {
 			TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
 			if (packetPlayer != null && !isDisabledPlayer(packetPlayer)) {
-				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver, false));
+				playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
 			}
 		}
 	}

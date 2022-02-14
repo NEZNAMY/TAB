@@ -29,7 +29,7 @@ public class GlobalPlayerList extends TabFeature {
 		super("Global PlayerList", null);
 		boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 		if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_VANISH, new VanishRefresher(this));
+		TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
 		TAB.getInstance().debug(String.format("Loaded GlobalPlayerList feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",
 				spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers, updateLatency));
 	}
@@ -46,7 +46,7 @@ public class GlobalPlayerList extends TabFeature {
 
 	public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
 		if (displayed == viewer) return true;
-		if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.GLOBAL_PLAYERLIST_SEE_VANISHED)) return false;
+		if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
 		if (spyServers.contains(viewer.getServer())) return true;
 		return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
 	}
@@ -122,7 +122,7 @@ public class GlobalPlayerList extends TabFeature {
 		IChatBaseComponent format = null;
 		PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 		if (playerlist != null) {
-			format = playerlist.getTabFormat(p, viewer, false);
+			format = playerlist.getTabFormat(p, viewer);
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(), 
 				p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
@@ -147,6 +147,25 @@ public class GlobalPlayerList extends TabFeature {
 				TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
 				if (packetPlayer != null && !receiver.getServer().equals(packetPlayer.getServer())) {
 					playerInfoData.setGameMode(EnumGamemode.SPECTATOR);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onVanishStatusChange(TabPlayer p) {
+		if (p.isVanished()) {
+			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+				if (all == p) continue;
+				if (!shouldSee(all, p)) {
+					all.sendCustomPacket(getRemovePacket(p), TabConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
+				}
+			}
+		} else {
+			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+				if (viewer == p) continue;
+				if (shouldSee(viewer, p)) {
+					viewer.sendCustomPacket(getAddPacket(p, viewer), TabConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
 				}
 			}
 		}

@@ -130,7 +130,7 @@ public class TabConstants {
 		public static final String STAFF = "tab.staff";
 
 		public static final String PER_WORLD_PLAYERLIST_BYPASS = "tab.bypass";
-		public static final String GLOBAL_PLAYERLIST_SEE_VANISHED = "tab.seevanished";
+		public static final String SEE_VANISHED = "tab.seevanished";
 		public static final String SPECTATOR_BYPASS = "tab.spectatorbypass";
 
 		public static final String TEST_PERMISSION = "tab.testpermission";
@@ -223,7 +223,6 @@ public class TabConstants {
 		public static final String PING_SPOOF = "PingSpoof";
 		public static final String SORTING = "sorting";
 		public static final String LAYOUT = "layout";
-		public static final String LAYOUT_VANISH = "layout-vanish";
 		public static final String NICK_COMPATIBILITY = "nick";
 		public static final String PIPELINE_INJECTION = "injection";
 		public static final String BOSS_BAR = "BossBar";
@@ -244,7 +243,6 @@ public class TabConstants {
 		public static final String REDIS_BUNGEE = "RedisBungee";
 		public static final String GLOBAL_PLAYER_LIST = "GlobalPlayerList";
 		public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
-		public static final String GLOBAL_PLAYER_LIST_VANISH = "GlobalPlayerList-Vanish";
 
 		//additional info displayed in cpu command
 		public static final String PACKET_SERIALIZING = "Packet serializing";

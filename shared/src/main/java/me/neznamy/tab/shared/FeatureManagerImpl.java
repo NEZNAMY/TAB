@@ -307,6 +307,15 @@ public class FeatureManagerImpl implements FeatureManager {
 		}
 	}
 
+	public void onVanishStatusChange(TabPlayer player) {
+		for (TabFeature f : values) {
+			if (!f.overridesMethod("onVanishStatusChange")) continue;
+			long time = System.nanoTime();
+			f.onVanishStatusChange(player);
+			TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+		}
+	}
+
 	@Override
 	public void registerFeature(String featureName, TabFeature featureHandler) {
 		features.put(featureName, featureHandler);
