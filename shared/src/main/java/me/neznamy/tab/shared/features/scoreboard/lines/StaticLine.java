@@ -46,7 +46,8 @@ public class StaticLine extends ScoreboardLine {
 		suffix17 = v17[2];
 	}
 
-	protected String getPlayerName(TabPlayer viewer) {
+	@Override
+	public String getPlayerName(TabPlayer viewer) {
 		if (viewer.getVersion().getMinorVersion() >= 13) {
 			return playerName;
 		} else if (viewer.getVersion().getMinorVersion() >= 8) {

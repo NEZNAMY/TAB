@@ -70,4 +70,9 @@ public class LongLine extends ScoreboardLine {
 			refresh(p, true);
 		}
 	}
+
+	@Override
+	public String getPlayerName(TabPlayer viewer) {
+		return viewer.getProperty(nameProperty).get();
+	}
 }

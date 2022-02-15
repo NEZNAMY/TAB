@@ -59,6 +59,10 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
 	 */
 	public abstract void unregister(TabPlayer p);
 
+	public String getPlayerName(TabPlayer viewer) {
+		return playerName;
+	}
+
 	/**
 	 * Splits the text into 2 with given max length of first string
 	 * @param string - string to split
