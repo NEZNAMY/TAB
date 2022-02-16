@@ -9,6 +9,7 @@ public class TabConstants {
 	public static final String PLUGIN_VERSION = "@plugin_version@";
 	public static final String DEFAULT_GROUP = "NONE";
 	public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-2";
+	public static final String REDIS_CHANNEL_NAME = "TAB";
 
 	/**
 	 * Private constructor to prevent the class from being instantiated

@@ -1,89 +1,190 @@
-package me.neznamy.tab.platforms.bungeecord.redisbungee;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map.Entry;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
+package me.neznamy.tab.shared.features.redis;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
-import me.neznamy.tab.shared.features.RedisSupport;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.event.EventHandler;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Feature synchronizing player display data between
+ * multiple proxies connected with a redis plugin.
+ */
 @SuppressWarnings("unchecked")
-public class RedisBungeeSupport extends TabFeature implements RedisSupport, Listener {
+public abstract class RedisSupport extends TabFeature {
 
-	private static final String CHANNEL_NAME = "TAB";
+	/** Redis players on other proxies by their UUID */
+	protected final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
 
-	private final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
-	private final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
-	private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-	private final NameTag nametags = (NameTag) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NAME_TAGS);
-	private final UUID proxy = UUID.randomUUID();
+	/** UUID of this proxy to ignore messages coming from the same proxy */
+	protected final UUID proxy = UUID.randomUUID();
 
-	public RedisBungeeSupport(Plugin plugin) {
+	/** Global PlayerList feature */
+	protected final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
+
+	/** PlayerList feature */
+	private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+
+	/** NameTag feature */
+	private final NameTag nameTags = (NameTag) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NAME_TAGS);
+
+	/**
+	 * Constructs new instance
+	 */
+	protected RedisSupport() {
 		super("RedisBungee", null);
-		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
-		RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(CHANNEL_NAME);
-		overridePlaceholders();
-	}
-	
-	private void overridePlaceholders() {
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%online%", 1000, () ->
-			Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
-			redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
+				Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
+						redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
 		TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%staffonline%", 1000, () ->
-			Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
-			redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
-		for (Entry<String, ServerInfo> server : ProxyServer.getInstance().getServers().entrySet()) {
-			TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%online_" + server.getKey() + "%", 1000, () ->
-				Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> all.getServer().equals(server.getValue().getName()) && !all.isVanished()).count() +
-				redisPlayers.values().stream().filter(all -> all.getServer().equals(server.getValue().getName()) && !all.isVanished()).count());
-		}
-	}
-	
-	@Override
-	public void load() {
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, "{\"action\":\"loadrequest\",\"proxy\":\"" + proxy.toString() + "\"}");
+				Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
+						redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
 	}
 
-	@Override
-	public void unload() {
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onQuit(p);
-		RedisBungeeAPI.getRedisBungeeApi().unregisterPubSubChannels(CHANNEL_NAME);
-		ProxyServer.getInstance().getPluginManager().unregisterListener(this);
+	/**
+	 * Returns all players on other proxies
+	 *
+	 * @return	all players on other proxies
+	 */
+	public Map<String, RedisPlayer> getRedisPlayers(){
+		return redisPlayers;
 	}
 
-	@EventHandler
-	public void onMessage(PubSubMessageEvent e) {
-		if (!e.getChannel().equals(CHANNEL_NAME)) return;
+	/**
+	 * Returns PlayerList feature if it's enabled, {@code null} if disabled
+	 *
+	 * @return	PlayerList feature instance
+	 */
+	public PlayerList getPlayerList() {
+		return playerList;
+	}
+
+	/**
+	 * Returns NameTag feature if it's enabled, {@code null} if disabled
+	 *
+	 * @return	NameTag feature instance
+	 */
+	public NameTag getNameTags() {
+		return nameTags;
+	}
+
+	/**
+	 * Sends a message to all other proxies to update
+	 * player list formatting of requested player.
+	 *
+	 * @param	p
+	 * 			Player to update
+	 * @param	format
+	 * 			TabList name format to use
+	 */
+	public void updateTabFormat(TabPlayer p, String format) {
+		JSONObject json = new JSONObject();
+		json.put("proxy", proxy.toString());
+		json.put("action", "tabformat");
+		json.put("UUID", p.getTablistUUID().toString());
+		json.put("tabformat", format);
+		sendMessage(json.toString());
+	}
+
+	/**
+	 * Sends a message to all other proxies to update
+	 * NameTag prefix / suffix values of requested player.
+	 *
+	 * @param	p
+	 * 			Player to update
+	 * @param	tagPrefix
+	 * 			New NameTag prefix
+	 * @param	tagSuffix
+	 * 			New NameTag suffix
+	 */
+	public void updateNameTag(TabPlayer p, String tagPrefix, String tagSuffix) {
+		JSONObject json = new JSONObject();
+		json.put("proxy", proxy.toString());
+		json.put("action", "nametag");
+		json.put("UUID", p.getTablistUUID().toString());
+		json.put(TabConstants.Property.TAGPREFIX, tagPrefix);
+		json.put(TabConstants.Property.TAGSUFFIX, tagSuffix);
+		sendMessage(json.toString());
+	}
+
+	/**
+	 * Sends a message to all other proxies to update
+	 * BelowName number of requested player.
+	 *
+	 * @param	p
+	 * 			Player to update
+	 * @param	value
+	 * 			New BelowName value
+	 */
+	public void updateBelowName(TabPlayer p, String value) {
+		JSONObject json = new JSONObject();
+		json.put("proxy", proxy.toString());
+		json.put("action", "belowname");
+		json.put("UUID", p.getTablistUUID().toString());
+		json.put("belowname", value);
+		sendMessage(json.toString());
+	}
+
+	/**
+	 * Sends a message to all other proxies to update
+	 * yellow number of requested player.
+	 *
+	 * @param	p
+	 * 			Player to update
+	 * @param	value
+	 * 			New number value
+	 */
+	public void updateYellowNumber(TabPlayer p, String value) {
+		JSONObject json = new JSONObject();
+		json.put("proxy", proxy.toString());
+		json.put("action", "yellow-number");
+		json.put("UUID", p.getTablistUUID().toString());
+		json.put("yellow-number", value);
+		sendMessage(json.toString());
+	}
+
+	/**
+	 * Sends a message to all other proxies to change
+	 * team name of requested player.
+	 *
+	 * @param	p
+	 * 			Player to update
+	 * @param	to
+	 * 			New team name
+	 */
+	public void updateTeamName(TabPlayer p, String to) {
+		JSONObject json = new JSONObject();
+		json.put("proxy", proxy.toString());
+		json.put("action", "team");
+		json.put("UUID", p.getTablistUUID().toString());
+		json.put("to", to);
+		sendMessage(json.toString());
+	}
+
+	/**
+	 * Processes incoming redis message
+	 *
+	 * @param	msg
+	 * 			json message to process
+	 */
+	public void processMessage(String msg) {
 		TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
 			JSONObject message;
 			try {
-				message = (JSONObject) new JSONParser().parse(e.getMessage());
+				message = (JSONObject) new JSONParser().parse(msg);
 			} catch (ParseException ex) {
-				TAB.getInstance().getErrorManager().printError("Failed to parse json message \"" + e.getMessage() + "\"", ex);
+				TAB.getInstance().getErrorManager().printError("Failed to parse json message \"" + msg + "\"", ex);
 				return;
 			}
 			if (message.get("proxy").equals(proxy.toString())) return; //message coming from current proxy
@@ -100,7 +201,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 						players.add(RedisPlayer.toJson(this, all));
 					}
 					json.put("players", players);
-					RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
+					sendMessage(json.toString());
 					break;
 				case "load":
 					List<JSONObject> players1 = (List<JSONObject>) message.get("players");
@@ -197,7 +298,13 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			}
 		});
 	}
-	
+
+	/**
+	 * Processes player join of specified player and sends packets to everyone
+	 *
+	 * @param	target
+	 * 			player to process join of
+	 */
 	private void join(RedisPlayer target) {
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 			all.sendCustomPacket(target.getRegisterTeamPacket(), this);
@@ -217,22 +324,48 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 			}
 		}
 	}
-	
+
 	private boolean shouldSee(TabPlayer viewer, String server, boolean targetVanished) {
 		return shouldSee(viewer, viewer.getServer(), server, targetVanished);
 	}
-	
+
 	private boolean shouldSee(TabPlayer viewer, String viewerServer, String server, boolean targetVanished) {
 		if (targetVanished && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
 		if (global.getSpyServers().contains(viewerServer)) return true;
 		return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
 	}
 
+	/**
+	 * Sends message to all proxies
+	 *
+	 * @param	message
+	 * 			message to send
+	 */
+	public abstract void sendMessage(String message);
+
+	/**
+	 * Unregisters event and redis message listeners
+	 */
+	public abstract void unregister();
+
+
+	@Override
+	public void load() {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
+		sendMessage("{\"action\":\"loadrequest\",\"proxy\":\"" + proxy.toString() + "\"}");
+	}
+
+	@Override
+	public void unload() {
+		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onQuit(p);
+		unregister();
+	}
+
 	@Override
 	public void onJoin(TabPlayer p) {
-		JSONObject obj = RedisPlayer.toJson(this, p);
-		obj.put("proxy", proxy.toString());
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, obj.toString());
+		JSONObject json = RedisPlayer.toJson(this, p);
+		json.put("proxy", proxy.toString());
+		sendMessage(json.toString());
 		for (RedisPlayer redis : redisPlayers.values()) {
 			p.sendCustomPacket(redis.getRegisterTeamPacket(), this);
 			p.sendCustomPacket(redis.getBelowNameUpdatePacket(), this);
@@ -255,7 +388,7 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		json.put("action", "server");
 		json.put("UUID", p.getTablistUUID().toString());
 		json.put("server", to);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
+		sendMessage(json.toString());
 		if (p.getVersion().getMinorVersion() < 8 || global == null) return;
 		for (RedisPlayer redis : redisPlayers.values()) {
 			boolean before = shouldSee(p, from, redis.getServer(), redis.isVanished());
@@ -275,64 +408,13 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 		json.put("proxy", proxy.toString());
 		json.put("action", "quit");
 		json.put("UUID", p.getTablistUUID().toString());
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-	}
-	
-	@Override
-	public void updateTabFormat(TabPlayer p, String format) {
-		JSONObject json = new JSONObject();
-		json.put("proxy", proxy.toString());
-		json.put("action", "tabformat");
-		json.put("UUID", p.getTablistUUID().toString());
-		json.put("tabformat", format);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
+		sendMessage(json.toString());
 	}
 
 	@Override
-	public void updateNameTag(TabPlayer p, String tagprefix, String tagsuffix) {
-		JSONObject json = new JSONObject();
-		json.put("proxy", proxy.toString());
-		json.put("action", "nametag");
-		json.put("UUID", p.getTablistUUID().toString());
-		json.put(TabConstants.Property.TAGPREFIX, tagprefix);
-		json.put(TabConstants.Property.TAGSUFFIX, tagsuffix);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-	}
-	
-	@Override
-	public void updateBelowName(TabPlayer p, String value) {
-		JSONObject json = new JSONObject();
-		json.put("proxy", proxy.toString());
-		json.put("action", "belowname");
-		json.put("UUID", p.getTablistUUID().toString());
-		json.put("belowname", value);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-	}
-	
-	@Override
-	public void updateYellowNumber(TabPlayer p, String value) {
-		JSONObject json = new JSONObject();
-		json.put("proxy", proxy.toString());
-		json.put("action", "yellow-number");
-		json.put("UUID", p.getTablistUUID().toString());
-		json.put("yellow-number", value);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-	}
-	
-	@Override
-	public void updateTeamName(TabPlayer p, String to) {
-		JSONObject json = new JSONObject();
-		json.put("proxy", proxy.toString());
-		json.put("action", "team");
-		json.put("UUID", p.getTablistUUID().toString());
-		json.put("to", to);
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(CHANNEL_NAME, json.toString());
-	}
-	
-	@Override
 	public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-		if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER && global != null) {
-			for (PlayerInfoData playerInfoData : info.getEntries()) {
+		if (info.getAction() == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER && global != null) {
+			for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
 				RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
 				if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {
 					//remove packet not coming from tab
@@ -341,15 +423,15 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 				}
 			}
 		}
-		if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
-		for (PlayerInfoData playerInfoData : info.getEntries()) {
+		if (info.getAction() != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) return;
+		for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
 			RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
 			if (packetPlayer != null && !packetPlayer.hasDisabledPlayerlist()) {
 				playerInfoData.setDisplayName(IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat()));
 			}
 		}
 	}
-	
+
 	@Override
 	public void onLoginPacket(TabPlayer packetReceiver) {
 		for (RedisPlayer p : redisPlayers.values()) {
@@ -357,17 +439,5 @@ public class RedisBungeeSupport extends TabFeature implements RedisSupport, List
 				all.sendCustomPacket(p.getRegisterTeamPacket());
 			}
 		}
-	}
-	
-	public Map<String, RedisPlayer> getRedisPlayers(){
-		return redisPlayers;
-	}
-
-	public PlayerList getPlayerlist() {
-		return playerlist;
-	}
-
-	public NameTag getNametags() {
-		return nametags;
 	}
 }

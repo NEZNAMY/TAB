@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 
 /**
  * Feature handler for TabList display names

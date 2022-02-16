@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungeecord.redisbungee;
+package me.neznamy.tab.shared.features.redis;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -23,7 +23,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 
 public class RedisPlayer {
 
-	private RedisBungeeSupport redis;
+	private RedisSupport redis;
 	private boolean disabledPlayerList;
 	private boolean disabledNameTags;
 
@@ -44,7 +44,7 @@ public class RedisPlayer {
 	private RedisPlayer() {
 	}
 
-	public static RedisPlayer fromJson(RedisBungeeSupport redis, JSONObject json) {
+	public static RedisPlayer fromJson(RedisSupport redis, JSONObject json) {
 		RedisPlayer player = new RedisPlayer();
 		player.redis = redis;
 		player.uniqueId = UUID.fromString((String) json.get("UUID"));
@@ -63,19 +63,19 @@ public class RedisPlayer {
 		player.belowName = (String) json.get("belowname");
 		player.yellowNumber = (String) json.get("yellow-number");
 		player.staff = (boolean) json.get("staff");
-		player.disabledPlayerList = redis.getPlayerlist() == null || redis.getPlayerlist().isDisabled(player.server, null);
-		player.disabledNameTags = redis.getNametags() == null || redis.getNametags().isDisabled(player.server, null);
+		player.disabledPlayerList = redis.getPlayerList() == null || redis.getPlayerList().isDisabled(player.server, null);
+		player.disabledNameTags = redis.getNameTags() == null || redis.getNameTags().isDisabled(player.server, null);
 		return player;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static JSONObject toJson(RedisBungeeSupport redis, TabPlayer p) {
+	public static JSONObject toJson(RedisSupport redis, TabPlayer p) {
 		JSONObject json = new JSONObject();
 		json.put("action", "join");
 		json.put("UUID", p.getTablistUUID().toString());
 		json.put("name", p.getName());
 		json.put("server", p.getServer());
-		if (redis.getPlayerlist() != null) {
+		if (redis.getPlayerList() != null) {
 			json.put("tabformat", p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
 		}
 		if (p.getProperty(TabConstants.Property.TAGPREFIX) != null) {
@@ -149,9 +149,9 @@ public class RedisPlayer {
 
 	public void setServer(String server) {
 		this.server = server;
-		if (redis.getPlayerlist() != null) {
+		if (redis.getPlayerList() != null) {
 			if (disabledPlayerList) {
-				if (!redis.getPlayerlist().isDisabled(server, null)) {
+				if (!redis.getPlayerList().isDisabled(server, null)) {
 					disabledPlayerList = false;
 					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 						if (all.getVersion().getMinorVersion() < 8) continue;
@@ -159,7 +159,7 @@ public class RedisPlayer {
 					}
 				}
 			} else {
-				if (redis.getPlayerlist().isDisabled(server, null)) {
+				if (redis.getPlayerList().isDisabled(server, null)) {
 					disabledPlayerList = true;
 					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 						if (all.getVersion().getMinorVersion() < 8) continue;
@@ -168,16 +168,16 @@ public class RedisPlayer {
 				}
 			}
 		}
-		if (redis.getNametags() != null) {
+		if (redis.getNameTags() != null) {
 			if (disabledNameTags) {
-				if (!redis.getNametags().isDisabled(server, null)) {
+				if (!redis.getNameTags().isDisabled(server, null)) {
 					disabledNameTags = false;
 					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 						all.sendCustomPacket(getRegisterTeamPacket(), redis);
 					}
 				}
 			} else {
-				if (redis.getNametags().isDisabled(server, null)) {
+				if (redis.getNameTags().isDisabled(server, null)) {
 					disabledNameTags = true;
 					for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
 						all.sendCustomPacket(getUnregisterTeamPacket(), redis);

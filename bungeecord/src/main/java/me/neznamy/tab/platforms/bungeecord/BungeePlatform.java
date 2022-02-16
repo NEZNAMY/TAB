@@ -8,7 +8,6 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
-import me.neznamy.tab.platforms.bungeecord.redisbungee.RedisBungeeSupport;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;

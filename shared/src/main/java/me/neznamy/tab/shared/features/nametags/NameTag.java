@@ -10,7 +10,7 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.RedisSupport;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
