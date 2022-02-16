@@ -15,27 +15,34 @@ To compile the plugin, run `./gradlew build` from the terminal.
 Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.
 
 # Links
-The precompiled JAR can be downloaded for free from 
-[github releases](https://github.com/NEZNAMY/TAB/releases)
-and [MC-Market](https://www.mc-market.org/resources/20631/).  
-  
-If you want to show your appreciation for my work, you can purchase the plugin on 
-[MC-Market](https://www.mc-market.org/resources/14009/),
-[Polymart](https://polymart.org/resource/484) or just [send a donation](https://paypal.me/neznamy1).
-  
-Support is provided to buyers on [discord](https://discord.gg/EaSvdk6).  
+The precompiled JAR can be downloaded for free from:  
+* Releases: https://github.com/NEZNAMY/TAB/releases
+* MC-Market: https://www.mc-market.org/resources/20631/
 
-A detailed explanation of all the plugin's functions can be found on the 
-[wiki](https://github.com/NEZNAMY/TAB/wiki).
+Supporting my work:  
+* MC-Market: https://www.mc-market.org/resources/14009/
+* Polymart: https://polymart.org/resource/484
+* Donation link: https://paypal.me/neznamy1
+
+Other links:
+* Discord: https://discord.gg/EaSvdk6  
+* Wiki: https://github.com/NEZNAMY/TAB/wiki  
 
 # Issues
-The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** available for **bug reports**
-or other issues which are not directly a bug (performance issues, errors, etc.).
-Support is provided on discord and feature requests are currently not accepted due to high demand and
-being busy with bug reports, which take priority over new features. 
-We are not looking to add any new major features anymore. 
-We would rather spend time improving existing features instead.  
-  
-When opening a bug report, make sure you provide all necessary information to reproduce the bug,
-otherwise we will not able to fix it. Saying "it only occurs randomly" or "I don't know how to 
-reproduce it" has no value and cannot be converted into actual code.
+The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** available for cases included in templates.
+In other words, they **are not available for**:  
+* **Support**. Support is provided on discord for buyers, where roles are given to verified users
+allowing us to know who bought it and who didn't. It also serves as a much faster way of communication.
+* **Feature requests**. These are currently not accepted due to high demand in other areas, as well as existing feature requests.
+
+# Contributing
+If this plugin has helped you in any way, and you would like to return something back 
+to make the plugin even better, there is a lot of ways to contribute:  
+* Open a **pull request** containing a new feature or a bug fix, which you believe many users will benefit from.
+* Make detailed high-quality **bug reports**. The difference between a bug getting fixed in 1 week vs 1 hour 
+is in quality of the report (typically providing correct steps to reproduce that actually work).
+* Test **experimental builds**, which can be found in [Github Actions](https://github.com/NEZNAMY/TAB/actions) or in a form of pre-releases on discord
+for problems of any kind including bugs. This way you will help make the actual releases more stable / help get stable releases sooner.
+* Help improve the wiki by opening a [Wiki change issue](https://github.com/NEZNAMY/TAB/issues/new?assignees=&labels=Wiki&template=wiki_change.yml), 
+where you can improve existing descriptions, add information you found missing, fix typos / grammar mistakes or add more examples of usage of functions.
+* [Buy a copy](https://www.mc-market.org/resources/14009/) of the plugin or [send a donation](https://paypal.me/neznamy1) to keep the plugin active.
