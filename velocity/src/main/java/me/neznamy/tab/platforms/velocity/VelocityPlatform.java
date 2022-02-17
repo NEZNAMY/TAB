@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -53,7 +54,7 @@ public class VelocityPlatform extends ProxyPlatform {
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
-		new VelocityPlaceholderRegistry(server).registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		super.loadFeatures();
 		for (Player p : server.getAllPlayers()) {
 			tab.addPlayer(new VelocityTabPlayer(p));

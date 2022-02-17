@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.nametags.unlimited.ProxyNameTagX;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,6 +60,13 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+		//internal dynamic %online_<server>% placeholder
+		if (identifier.startsWith("%online_")) {
+			String server = identifier.substring(8, identifier.length()-1);
+			pl.registerServerPlaceholder(identifier, 1000,
+					() -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count());
+			return;
+		}
 		Placeholder placeholder;
 		if (identifier.startsWith("%rel_")) {
 			placeholder = pl.registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> null);

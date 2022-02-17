@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.permission.VaultBridge;
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -58,7 +59,8 @@ public class BungeePlatform extends ProxyPlatform {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection())
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BungeePipelineInjector());
-		new BungeePlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		tab.getPlaceholderManager().registerPlayerPlaceholder("%displayname%", 500, p -> ((ProxiedPlayer) p.getPlayer()).getDisplayName());
 		super.loadFeatures();
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
 			if (RedisBungeeAPI.getRedisBungeeApi() != null) {
