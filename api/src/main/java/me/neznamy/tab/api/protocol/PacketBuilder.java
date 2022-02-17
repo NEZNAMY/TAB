@@ -10,9 +10,12 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.util.BiFunctionWithException;
 
 /**
- * An interface representing a platform-specific packet builder
+ * A class for packet building, methods are overridden in
+ * platform-specific builders which extend this class to build actual packets.
+ * Packets which don't have a method override are forwarded into
+ * sendPacket method, where they are handled using platform's API instead.
  */
-public abstract class PacketBuilder {
+public class PacketBuilder {
 
 	/** Function map turning custom packet class into platform-specific packets */
 	protected final Map<Class<? extends TabPacket>, BiFunctionWithException<TabPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
@@ -21,7 +24,7 @@ public abstract class PacketBuilder {
 	 * Constructs new instance and fills {@link #buildMap} with abstract build methods
 	 * of packets present on all platforms.
 	 */
-	protected PacketBuilder() {
+	public PacketBuilder() {
 		buildMap.put(PacketPlayOutBoss.class, (packet, version) -> build((PacketPlayOutBoss)packet, version));
 		buildMap.put(PacketPlayOutChat.class, (packet, version) -> build((PacketPlayOutChat)packet, version));
 		buildMap.put(PacketPlayOutPlayerInfo.class, (packet, version) -> build((PacketPlayOutPlayerInfo)packet, version));
@@ -59,7 +62,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutChat class based on custom packet class
@@ -72,7 +77,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutPlayerInfo class based on custom packet class
@@ -85,7 +92,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutPlayerListHeaderFooter class based on custom packet class
@@ -98,7 +107,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardDisplayObjective class based on custom packet class
@@ -111,7 +122,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardObjective class based on custom packet class
@@ -124,7 +137,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardScore class based on custom packet class
@@ -137,7 +152,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Constructs platform-specific PacketPlayOutScoreboardTeam class based on custom packet class
@@ -150,7 +167,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return packet;
+	}
 
 	/**
 	 * Cuts given string to specified character length (or length-1 if last character is a color character)
@@ -212,7 +231,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException;
+	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		return null;
+	}
 
 	/**
 	 * Converts platform-specific instance of objective packet into 
@@ -224,7 +245,9 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException;
+	public PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException {
+		return null;
+	}
 
 	/**
 	 * Converts platform-specific instance of display objective packet into 
@@ -236,5 +259,7 @@ public abstract class PacketBuilder {
 	 * @throws	ReflectiveOperationException 
 	 * 			if thrown by reflective operation
 	 */
-	public abstract PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) throws ReflectiveOperationException;
+	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) throws ReflectiveOperationException {
+		return null;
+	}
 }
