@@ -35,12 +35,13 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 				+ owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
 		double height = 0;
 		for (String line : nameTagX.getDynamicLines()) {
-			addArmorStand(line, new BukkitArmorStand(owner, line, height, false));
+			addArmorStand(line, new BukkitArmorStand(this, owner, line, height, false));
 			height += nameTagX.getSpaceBetweenLines();
 		}
 		for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
-			addArmorStand(line.getKey(), new BukkitArmorStand(owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
+			addArmorStand(line.getKey(), new BukkitArmorStand(this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
 		}
+		fixArmorStandHeights();
 	}
 
 	/**

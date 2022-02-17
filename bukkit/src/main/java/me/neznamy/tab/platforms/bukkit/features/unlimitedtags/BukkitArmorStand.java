@@ -34,6 +34,8 @@ public class BukkitArmorStand implements ArmorStand {
 	//NameTag feature
 	private final BukkitNameTagX manager = (BukkitNameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 
+	private final BukkitArmorStandManager asm;
+	
 	//owner of the armor stand
 	private final TabPlayer owner;
 
@@ -64,7 +66,8 @@ public class BukkitArmorStand implements ArmorStand {
 	//entity destroy packet
 	private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
-	public BukkitArmorStand(TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
+	public BukkitArmorStand(BukkitArmorStandManager asm, TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
+		this.asm = asm;
 		this.owner = owner;
 		this.staticOffset = staticOffset;
 		player = (Player) owner.getPlayer();
@@ -98,7 +101,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void setOffset(double offset) {
 		if (yOffset == offset) return;
 		yOffset = offset;
-		for (TabPlayer all : manager.getArmorStandManager(owner).getNearbyPlayers()) {
+		for (TabPlayer all : asm.getNearbyPlayers()) {
 			all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE);
 		}
 	}
@@ -112,7 +115,7 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void destroy() {
-		for (TabPlayer all : manager.getArmorStandManager(owner).getNearbyPlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+		for (TabPlayer all : asm.getNearbyPlayers()) all.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
 	}
 	
 	@Override
@@ -122,15 +125,15 @@ public class BukkitArmorStand implements ArmorStand {
 
 	@Override
 	public void teleport() {
-		for (TabPlayer all : manager.getArmorStandManager(owner).getNearbyPlayers()) {
+		for (TabPlayer all : asm.getNearbyPlayers()) {
 			all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
 	}
 
 	@Override
 	public void teleport(TabPlayer viewer) {
-		if (!manager.getArmorStandManager(owner).isNearby(viewer) && viewer != owner) {
-			manager.getArmorStandManager(owner).spawn(viewer);
+		if (!asm.isNearby(viewer) && viewer != owner) {
+			asm.spawn(viewer);
 		} else {
 			viewer.sendCustomPacket(getTeleportPacket(viewer), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
 		}
@@ -140,7 +143,7 @@ public class BukkitArmorStand implements ArmorStand {
 	public void sneak(boolean sneaking) {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
-		for (TabPlayer viewer : manager.getArmorStandManager(owner).getNearbyPlayers()) {
+		for (TabPlayer viewer : asm.getNearbyPlayers()) {
 			if (viewer.getVersion().getMinorVersion() == 14 && !alwaysVisible) {
 				//1.14.x client sided bug, de-spawning completely
 				if (sneaking) {
@@ -181,7 +184,7 @@ public class BukkitArmorStand implements ArmorStand {
 	 * Updates armor stand's metadata
 	 */
 	public void updateMetadata() {
-		for (TabPlayer viewer : manager.getArmorStandManager(owner).getNearbyPlayers()) {
+		for (TabPlayer viewer : asm.getNearbyPlayers()) {
 			viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
 		}
 	}
