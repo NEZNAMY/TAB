@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.velocity;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
@@ -28,6 +29,18 @@ import net.kyori.adventure.text.Component;
  * TabPlayer for Velocity
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
+
+	private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
+			= new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
+		packetMethods.put(PacketPlayOutBoss.class, (packet) -> handle((PacketPlayOutBoss) packet));
+		packetMethods.put(PacketPlayOutChat.class, (packet) -> handle((PacketPlayOutChat) packet));
+		packetMethods.put(PacketPlayOutPlayerInfo.class, (packet) -> handle((PacketPlayOutPlayerInfo) packet));
+		packetMethods.put(PacketPlayOutPlayerListHeaderFooter.class, (packet) -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
+		packetMethods.put(PacketPlayOutScoreboardDisplayObjective.class, (packet) -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
+		packetMethods.put(PacketPlayOutScoreboardObjective.class, (packet) -> handle((PacketPlayOutScoreboardObjective) packet));
+		packetMethods.put(PacketPlayOutScoreboardScore.class, (packet) -> handle((PacketPlayOutScoreboardScore) packet));
+		packetMethods.put(PacketPlayOutScoreboardTeam.class, (packet) -> handle((PacketPlayOutScoreboardTeam) packet));
+	}};
 
 	//uuid used in TabList
 	private final UUID tabListId;
@@ -63,23 +76,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	public void sendPacket(Object packet) {
 		long time = System.nanoTime();
 		if (packet == null || !getPlayer().isActive()) return;
-		if (packet instanceof PacketPlayOutChat){
-			handle((PacketPlayOutChat) packet);
-		} else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
-			handle((PacketPlayOutPlayerListHeaderFooter) packet);
-		} else if (packet instanceof PacketPlayOutBoss) {
-			handle((PacketPlayOutBoss) packet);
-		} else if (packet instanceof PacketPlayOutPlayerInfo) {
-			handle((PacketPlayOutPlayerInfo) packet);
-		} else if (packet instanceof PacketPlayOutScoreboardDisplayObjective) {
-			handle((PacketPlayOutScoreboardDisplayObjective) packet);
-		} else if (packet instanceof PacketPlayOutScoreboardObjective) {
-			handle((PacketPlayOutScoreboardObjective) packet);
-		} else if (packet instanceof PacketPlayOutScoreboardScore) {
-			handle((PacketPlayOutScoreboardScore) packet);
-		} else if (packet instanceof PacketPlayOutScoreboardTeam) {
-			handle((PacketPlayOutScoreboardTeam) packet);
-		}
+		packetMethods.get(packet.getClass()).accept((TabPacket) packet);
 		TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
 	}
 
