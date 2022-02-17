@@ -53,11 +53,10 @@ public class VelocityPlatform extends ProxyPlatform {
 	
 	@Override
 	public void loadFeatures() {
-		TAB tab = TAB.getInstance();
-		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+		new UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
 		super.loadFeatures();
 		for (Player p : server.getAllPlayers()) {
-			tab.addPlayer(new VelocityTabPlayer(p));
+			TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
 		}
 	}
 	
