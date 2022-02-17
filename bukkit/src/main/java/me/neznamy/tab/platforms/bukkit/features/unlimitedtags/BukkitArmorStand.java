@@ -27,7 +27,6 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitArmorStand implements ArmorStand {
 
-	private final boolean alwaysVisible = TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible();
 	//entity id counter to pick unique entity IDs
 	private static int idCounter = 2000000000;
 
@@ -144,7 +143,7 @@ public class BukkitArmorStand implements ArmorStand {
 		if (this.sneaking == sneaking) return; //idk
 		this.sneaking = sneaking;
 		for (TabPlayer viewer : asm.getNearbyPlayers()) {
-			if (viewer.getVersion().getMinorVersion() == 14 && !alwaysVisible) {
+			if (viewer.getVersion().getMinorVersion() == 14 && !manager.isArmorStandsAlwaysVisible()) {
 				//1.14.x client sided bug, de-spawning completely
 				if (sneaking) {
 					viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SNEAK);
@@ -194,8 +193,8 @@ public class BukkitArmorStand implements ArmorStand {
 	 * @return true if armor stand should be visible, false if not
 	 */
 	public boolean getVisibility() {
+		if (manager.isArmorStandsAlwaysVisible()) return true;
 		if (owner.isDisguised() || manager.getVehicleManager().isOnBoat(owner)) return false;
-		if (alwaysVisible) return true;
 		return !owner.hasInvisibilityPotion() && owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
 	}
 

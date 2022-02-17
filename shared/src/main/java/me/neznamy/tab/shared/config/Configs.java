@@ -30,7 +30,6 @@ public class Configs {
 
 	//hidden config options
 	private boolean unregisterBeforeRegister;
-	private boolean armorStandsAlwaysVisible; //paid private addition
 	private boolean removeGhostPlayers;
 	private boolean pipelineInjection;
 
@@ -96,11 +95,10 @@ public class Configs {
 		if (tab.getPlatform().isProxy()) {
 			bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
 		} else {
-			unregisterBeforeRegister = (boolean) getSecretOption("unregister-before-register", true);
+			unregisterBeforeRegister = getSecretOption("unregister-before-register", true);
 		}
-		armorStandsAlwaysVisible = (boolean) getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
-		removeGhostPlayers = (boolean) getSecretOption("remove-ghost-players", false);
-		pipelineInjection = (boolean) getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
+		removeGhostPlayers = getSecretOption("remove-ghost-players", false);
+		pipelineInjection = getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
 		if (config.getBoolean("mysql.enabled", false)) {
 			try {
 				mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
@@ -122,10 +120,10 @@ public class Configs {
 	 * @param defaultValue - value to return if option is not present in file
 	 * @return value with specified path or default value if not present
 	 */
-	private Object getSecretOption(String path, Object defaultValue) {
-		if (getConfig() == null) return defaultValue;
+	@SuppressWarnings("unchecked")
+	public <T> T getSecretOption(String path, T defaultValue) {
 		Object value = getConfig().getObject(path);
-		return value == null ? defaultValue : value;
+		return value == null ? defaultValue : (T) value;
 	}
 
 	public boolean isUnregisterBeforeRegister() {
@@ -158,10 +156,6 @@ public class Configs {
 
 	public boolean isPipelineInjection() {
 		return pipelineInjection;
-	}
-
-	public boolean isArmorStandsAlwaysVisible() {
-		return armorStandsAlwaysVisible;
 	}
 
 	public String getReloadFailedMessage() {

@@ -76,7 +76,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 			args.add(nametagx.isMarkerFor18x());
 			args.add(nametagx.getSpaceBetweenLines());
 			args.add(nametagx.isDisableOnBoats());
-			args.add(TAB.getInstance().getConfiguration().isArmorStandsAlwaysVisible());
+			args.add(nametagx.isArmorStandsAlwaysVisible());
 			args.add(nametagx.getDisabledUnlimitedWorlds().size());
 			args.addAll(nametagx.getDisabledUnlimitedWorlds());
 			args.add(nametagx.getDynamicLines().size());
