@@ -20,12 +20,12 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	 * 1 = unregister,
 	 * 2 = update title
 	 */
-	private final int method;
+	private final int action;
 
 	/**
 	 * Constructs new instance with given parameters.
 	 * 
-	 * @param	method
+	 * @param	action
 	 * 			Packet action (0 = add, 1 = remove, 2 = update title)
 	 * @param	objectiveName
 	 * 			objective name, up to 16 characters long
@@ -34,13 +34,13 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	 * @throws	IllegalArgumentException
 	 * 			if {@code objectiveName} is null or longer than 16 characters
 	 */
-	public PacketPlayOutScoreboardObjective(int method, String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
+	public PacketPlayOutScoreboardObjective(int action, String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
 		if (objectiveName == null) throw new IllegalArgumentException("objectiveName cannot be null");
 		if (objectiveName.length() > 16) throw new IllegalArgumentException("objectiveName cannot be longer than 16 character (is " + objectiveName.length() + ")");
 		this.objectiveName = objectiveName;
 		this.displayName = displayName;
 		this.renderType = renderType;
-		this.method = method;
+		this.action = action;
 	}
 
 	/**
@@ -56,14 +56,14 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 		if (objectiveName.length() > 16) throw new IllegalArgumentException("objectiveName cannot be longer than 16 character (is " + objectiveName.length() + ")");
 		this.objectiveName = objectiveName;
 		this.displayName = ""; //avoiding NPE on <1.7
-		this.method = 1;
+		this.action = 1;
 		this.renderType = null;
 	}
 
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutScoreboardObjective{objectiveName=%s,displayName=%s,renderType=%s,method=%s}",
-				objectiveName, displayName, renderType, method);
+				objectiveName, displayName, renderType, action);
 	}
 
 	/**
@@ -91,11 +91,11 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	}
 
 	/**
-	 * Returns {@link #method}
+	 * Returns {@link #action}
 	 * @return	packet action
 	 */
-	public int getMethod() {
-		return method;
+	public int getAction() {
+		return action;
 	}
 
 	/**

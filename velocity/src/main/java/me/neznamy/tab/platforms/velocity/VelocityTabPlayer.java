@@ -126,7 +126,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	private void handle(PacketPlayOutBoss packet) {
 		BossBar bar;
-		switch (packet.getOperation()) {
+		switch (packet.getAction()) {
 		case ADD:
 			if (bossBars.containsKey(packet.getId())) return;
 			bar = BossBar.bossBar(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
@@ -174,8 +174,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		List<Object> args = new ArrayList<>();
 		args.add("PacketPlayOutScoreboardObjective");
 		args.add(packet.getObjectiveName());
-		args.add(packet.getMethod());
-		if (packet.getMethod() == 0 || packet.getMethod() == 2) {
+		args.add(packet.getAction());
+		if (packet.getAction() == 0 || packet.getAction() == 2) {
 			args.add(getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
 					.cutTo(packet.getDisplayName(), 32) : packet.getDisplayName());
 			args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
@@ -198,10 +198,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 		List<Object> args = new ArrayList<>();
 		args.add("PacketPlayOutScoreboardTeam");
 		args.add(packet.getName());
-		args.add(packet.getMethod());
+		args.add(packet.getAction());
 		args.add(packet.getPlayers().size());
 		args.addAll(packet.getPlayers());
-		if (packet.getMethod() == 0 || packet.getMethod() == 2) {
+		if (packet.getAction() == 0 || packet.getAction() == 2) {
 			String prefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
 					.cutTo(packet.getPlayerPrefix(), 16) : packet.getPlayerPrefix();
 			String suffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()

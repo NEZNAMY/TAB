@@ -14,7 +14,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	private final UUID id;
 
 	/** Action of this packet */
-	private final Action operation;
+	private final Action action;
 
 	/** BossBar title */
 	private String name;
@@ -53,7 +53,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar style
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
-		this.operation = Action.ADD;
+		this.action = Action.ADD;
 		this.id = id;
 		this.name = name;
 		this.pct = pct;
@@ -69,7 +69,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar uuid
 	 */
 	public PacketPlayOutBoss(UUID id) {
-		this.operation = Action.REMOVE;
+		this.action = Action.REMOVE;
 		this.id = id;
 	}
 
@@ -83,7 +83,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar progress
 	 */
 	public PacketPlayOutBoss(UUID id, float pct) {
-		this.operation = Action.UPDATE_PCT;
+		this.action = Action.UPDATE_PCT;
 		this.id = id;
 		this.pct = pct;
 	}
@@ -98,7 +98,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar title
 	 */
 	public PacketPlayOutBoss(UUID id, String name) {
-		this.operation = Action.UPDATE_NAME;
+		this.action = Action.UPDATE_NAME;
 		this.id = id;
 		this.name = name;
 	}
@@ -115,7 +115,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar style
 	 */
 	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
-		this.operation = Action.UPDATE_STYLE;
+		this.action = Action.UPDATE_STYLE;
 		this.id = id;
 		this.color = color;
 		this.overlay = overlay;
@@ -133,7 +133,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			Create fog flag
 	 */
 	public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-		this.operation = Action.UPDATE_PROPERTIES;
+		this.action = Action.UPDATE_PROPERTIES;
 		this.id = id;
 		this.darkenScreen = darkenScreen;
 		this.playMusic = playMusic;
@@ -159,7 +159,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	@Override
 	public String toString() {
 		return String.format("PacketPlayOutBoss{id=%s,operation=%s,name=%s,pct=%s,color=%s,overlay=%s,darkenScreen=%s,playMusic=%s,createWorldFog=%s}", 
-				id, operation, name, pct, color, overlay, darkenScreen, playMusic, createWorldFog);
+				id, action, name, pct, color, overlay, darkenScreen, playMusic, createWorldFog);
 	}
 
 	/**
@@ -203,11 +203,11 @@ public class PacketPlayOutBoss implements TabPacket {
 	}
 
 	/**
-	 * Returns {@link #operation}
+	 * Returns {@link #action}
 	 * @return	packet action
 	 */
-	public Action getOperation() {
-		return operation;
+	public Action getAction() {
+		return action;
 	}
 
 	/**

@@ -58,7 +58,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * 3 = add entries,
 	 * 4 = remove entries
 	 */
-	private final int method;
+	private final int action;
 
 	/**
 	 * Bit mask.
@@ -71,7 +71,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * Constructs new instance with given parameters. Private constructor used
 	 * internally to validate team name and set action.
 	 * 
-	 * @param	method
+	 * @param	action
 	 * 			Packet action (0 = create team, 1 = remove team, 2 = update team info,
 	 * 			3 = add entries, 4 = remove entries)
 	 * @param	name
@@ -79,10 +79,10 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * @throws	IllegalArgumentException
 	 * 			if {@code name} is null, empty or longer than 16 characters
 	 */
-	private PacketPlayOutScoreboardTeam(int method, String name) {
+	private PacketPlayOutScoreboardTeam(int action, String name) {
 		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
 		if (name.length() > 16) throw new IllegalArgumentException("name cannot be longer than 16 character (is " + name.length() + ")");
-		this.method = method;
+		this.action = action;
 		this.name = name;
 	}
 
@@ -177,7 +177,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	public String toString() {
 		return String.format("PacketPlayOutScoreboardTeam{name=%s,playerPrefix=%s,playerSuffix=%s,nameTagVisibility=%s,"
 				+ "collisionRule=%s,color=%s,players=%s,method=%s,options=%s}",
-				name, playerPrefix, playerSuffix, nameTagVisibility, collisionRule, color, players, method, options);
+				name, playerPrefix, playerSuffix, nameTagVisibility, collisionRule, color, players, action, options);
 	}
 
 	/**
@@ -255,10 +255,10 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	}
 	
 	/**
-	 * Returns {@link #method}
+	 * Returns {@link #action}
 	 * @return	packet action
 	 */
-	public int getMethod() {
-		return method;
+	public int getAction() {
+		return action;
 	}
 }

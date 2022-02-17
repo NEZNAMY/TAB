@@ -29,7 +29,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 	@Override
 	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
 		if (clientVersion.getMinorVersion() < 9) return null;
-		BossBar bungeePacket = new BossBar(packet.getId(), packet.getOperation().ordinal());
+		BossBar bungeePacket = new BossBar(packet.getId(), packet.getAction().ordinal());
 		bungeePacket.setHealth(packet.getPct());
 		bungeePacket.setTitle(packet.getName() == null ? null : IChatBaseComponent.optimizedComponent(packet.getName()).toString(clientVersion));
 		bungeePacket.setColor(packet.getColor() == null ? 0 : packet.getColor().ordinal());
@@ -86,7 +86,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 
 	@Override
 	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-		return new ScoreboardObjective(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : HealthDisplay.valueOf(packet.getRenderType().toString()), (byte)packet.getMethod());
+		return new ScoreboardObjective(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : HealthDisplay.valueOf(packet.getRenderType().toString()), (byte)packet.getAction());
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 		if (clientVersion.getMinorVersion() >= 13) {
 			color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal();
 		}
-		return new Team(packet.getName(), (byte)packet.getMethod(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16), 
+		return new Team(packet.getName(), (byte)packet.getAction(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16),
 				packet.getNameTagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers().toArray(new String[0]));
 	}
 	

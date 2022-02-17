@@ -283,7 +283,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		//avoiding BungeeCord bug kicking all players
 		if (packet instanceof PacketPlayOutScoreboardTeam) {
 			String team = ((PacketPlayOutScoreboardTeam) packet).getName();
-			int method = ((PacketPlayOutScoreboardTeam) packet).getMethod();
+			int method = ((PacketPlayOutScoreboardTeam) packet).getAction();
 			if (method == 0) {
 				if (registeredTeams.contains(team)) {
 					TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + team + " to player " + getName());
@@ -297,7 +297,7 @@ public abstract class ITabPlayer implements TabPlayer {
 		//avoiding BungeeCord bug kicking all players
 		if (packet instanceof PacketPlayOutScoreboardObjective) {
 			String objective = ((PacketPlayOutScoreboardObjective) packet).getObjectiveName();
-			int method = ((PacketPlayOutScoreboardObjective) packet).getMethod();
+			int method = ((PacketPlayOutScoreboardObjective) packet).getAction();
 			if (method == 0) {
 				if (registeredObjectives.contains(objective)) {
 					TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objective + " to player " + getName());

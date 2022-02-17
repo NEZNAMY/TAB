@@ -157,7 +157,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			return nms.newPacketPlayOutScoreboardObjective.newInstance(nms.newScoreboardObjective.newInstance(null, packet.getObjectiveName(), null, 
 					toNMSComponent(IChatBaseComponent.optimizedComponent(displayName), clientVersion), 
 					packet.getRenderType() == null ? null : nms.EnumScoreboardHealthDisplay_values[packet.getRenderType().ordinal()]), 
-					packet.getMethod());
+					packet.getAction());
 		}
 
 		Object nmsPacket = nms.newPacketPlayOutScoreboardObjective.newInstance();
@@ -166,7 +166,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		if (nms.getMinorVersion() >= 8 && packet.getRenderType() != null) {
 			nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_RENDERTYPE, Enum.valueOf((Class<Enum>) nms.EnumScoreboardHealthDisplay, packet.getRenderType().toString()));
 		}
-		nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_METHOD, packet.getMethod());
+		nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_METHOD, packet.getAction());
 		return nmsPacket;
 	}
 
@@ -205,7 +205,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			createTeamLegacy(packet, team, prefix, suffix);
 		}
 		if (nms.getMinorVersion() >= 17) {
-			switch (packet.getMethod()) {
+			switch (packet.getAction()) {
 			case 0:
 				return nms.PacketPlayOutScoreboardTeam_ofBoolean.invoke(null, team, true);
 			case 1:
@@ -217,10 +217,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			case 4:
 				return nms.PacketPlayOutScoreboardTeam_ofString.invoke(null, team, packet.getPlayers().toArray(new String[0])[0], nms.PacketPlayOutScoreboardTeam_PlayerAction_values[1]);
 			default:
-				throw new IllegalArgumentException("Invalid action: " + packet.getMethod());
+				throw new IllegalArgumentException("Invalid action: " + packet.getAction());
 			}
 		}
-		return nms.newPacketPlayOutScoreboardTeam.newInstance(team, packet.getMethod());
+		return nms.newPacketPlayOutScoreboardTeam.newInstance(team, packet.getAction());
 	}
 
 	/**
@@ -366,22 +366,22 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	 * 			if thrown by reflective operation
 	 */
 	private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-		if (packet.getOperation() == Action.UPDATE_STYLE) return null; //nothing to do here
+		if (packet.getAction() == Action.UPDATE_STYLE) return null; //nothing to do here
 
 		int entityId = packet.getId().hashCode();
-		if (packet.getOperation() == Action.REMOVE) {
+		if (packet.getAction() == Action.REMOVE) {
 			return build(new PacketPlayOutEntityDestroy(entityId));
 		}
 		DataWatcher w = new DataWatcher();
-		if (packet.getOperation() == Action.UPDATE_PCT || packet.getOperation() == Action.ADD) {
+		if (packet.getAction() == Action.UPDATE_PCT || packet.getAction() == Action.ADD) {
 			float health = 300*packet.getPct();
 			if (health == 0) health = 1;
 			w.helper().setHealth(health);
 		}
-		if (packet.getOperation() == Action.UPDATE_NAME || packet.getOperation() == Action.ADD) {
+		if (packet.getAction() == Action.UPDATE_NAME || packet.getAction() == Action.ADD) {
 			w.helper().setCustomName(packet.getName(), clientVersion);
 		}
-		if (packet.getOperation() == Action.ADD) {
+		if (packet.getAction() == Action.ADD) {
 			w.helper().setEntityFlags((byte) 32);
 			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w));
 		} else {

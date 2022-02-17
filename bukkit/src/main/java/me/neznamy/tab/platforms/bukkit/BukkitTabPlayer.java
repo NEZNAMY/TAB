@@ -112,7 +112,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	private void handle(PacketPlayOutBoss packet) {
 		BossBar bar = bossBars.get(packet.getId());
-		if (packet.getOperation() == PacketPlayOutBoss.Action.ADD) {
+		if (packet.getAction() == PacketPlayOutBoss.Action.ADD) {
 			if (bossBars.containsKey(packet.getId())) return;
 			bar = Bukkit.createBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16),
 					BarColor.valueOf(packet.getColor().name()),
@@ -126,7 +126,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 			return;
 		}
 		if (bar == null) return; //no idea how
-		switch (packet.getOperation()) {
+		switch (packet.getAction()) {
 		case REMOVE:
 			bar.removePlayer(getPlayer());
 			bossBars.remove(packet.getId());
@@ -160,7 +160,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 	 */
 	private void handleVia(PacketPlayOutBoss packet) {
 		com.viaversion.viaversion.api.legacy.bossbar.BossBar bar;
-		switch (packet.getOperation()) {
+		switch (packet.getAction()) {
 		case ADD:
 			if (viaBossBars.containsKey(packet.getId())) return;
 			bar = Via.getAPI().legacyAPI().createLegacyBossBar(RGBUtils.getInstance().convertToBukkitFormat(packet.getName(), getVersion().getMinorVersion() >= 16), 
