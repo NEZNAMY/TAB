@@ -26,10 +26,8 @@ public abstract class PermissionPlugin {
 	 * @param	player
 	 * 			player to get group of
 	 * @return	player's primary permission group
-	 * @throws	ReflectiveOperationException
-	 * 			if thrown by reflective operation
 	 */
-	public abstract String getPrimaryGroup(TabPlayer player) throws ReflectiveOperationException;
+	public abstract String getPrimaryGroup(TabPlayer player);
 	
 	/**
 	 * Returns version of the permission plugin

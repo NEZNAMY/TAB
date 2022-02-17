@@ -31,7 +31,6 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -68,8 +67,6 @@ public class BukkitPlatform implements Platform {
 	public PermissionPlugin detectPermissionPlugin() {
 		if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
 			return new LuckPerms(getPluginVersion("LuckPerms"));
-		} else if (Bukkit.getPluginManager().isPluginEnabled("UltraPermissions")) {
-			return new UltraPermissions(getPluginVersion("UltraPermissions"));
 		} else if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
 			if (provider == null) return new None();

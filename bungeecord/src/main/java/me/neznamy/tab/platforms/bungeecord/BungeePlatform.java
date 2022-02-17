@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.permission.UltraPermissions;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -47,8 +46,6 @@ public class BungeePlatform extends ProxyPlatform {
 			return new VaultBridge();
 		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
 			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
-		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions") != null) {
-			return new UltraPermissions(ProxyServer.getInstance().getPluginManager().getPlugin("UltraPermissions").getDescription().getVersion());
 		} else {
 			return new VaultBridge();
 		}
