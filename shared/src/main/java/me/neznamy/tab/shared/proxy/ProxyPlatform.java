@@ -12,8 +12,11 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.nametags.unlimited.ProxyNameTagX;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -63,8 +66,9 @@ public abstract class ProxyPlatform implements Platform {
 		//internal dynamic %online_<server>% placeholder
 		if (identifier.startsWith("%online_")) {
 			String server = identifier.substring(8, identifier.length()-1);
-			pl.registerServerPlaceholder(identifier, 1000,
-					() -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count());
+			pl.registerServerPlaceholder(identifier, 1000, () ->
+					Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
+							getRedisPlayers().values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count());
 			return;
 		}
 		Placeholder placeholder;
@@ -80,7 +84,12 @@ public abstract class ProxyPlatform implements Platform {
 			plm.sendMessage(all, "Placeholder", placeholder.getIdentifier(), placeholder.getRefresh());
 		}
 	}
-	
+
+	private Map<String, RedisPlayer> getRedisPlayers() {
+		RedisSupport support = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+		return support == null ? Collections.emptyMap() : support.getRedisPlayers();
+	}
+
 	@Override
 	public void loadFeatures() {
 		TAB tab = TAB.getInstance();
