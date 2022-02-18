@@ -113,9 +113,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * 			Player's display name
 		 */
 		public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
-			Preconditions.checkNotNull(name, "name");
 			Preconditions.checkNotNull(uniqueId, "uuid");
-			Preconditions.checkNotNull(gameMode, "game mode");
 			this.name = name;
 			this.uniqueId = uniqueId;
 			this.skin = skin;
@@ -135,7 +133,6 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 */
 		public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
 			Preconditions.checkNotNull(uniqueId, "uuid");
-			Preconditions.checkNotNull(gameMode, "game mode");
 			this.uniqueId = uniqueId;
 			this.gameMode = gameMode;
 		}
