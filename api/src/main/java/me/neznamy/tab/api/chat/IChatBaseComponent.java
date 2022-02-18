@@ -1,17 +1,12 @@
 package me.neznamy.tab.api.chat;
 
-import java.util.*;
-
-import me.neznamy.tab.api.util.Preconditions;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
-import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import org.json.simple.parser.ParseException;
+import me.neznamy.tab.api.util.Preconditions;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 /**
  * A class representing the n.m.s.IChatBaseComponent class to make work with it much easier
@@ -144,66 +139,7 @@ public class IChatBaseComponent {
 	 */
 	public static IChatBaseComponent deserialize(String json) {
 		if (json == null) return null;
-		if (json.startsWith("\"") && json.endsWith("\"") && json.length() > 1) {
-			//simple component with only text used, minecraft serializer outputs the text in quotes instead of full json
-			return new IChatBaseComponent(json.substring(1, json.length()-1));
-		}
-		JSONObject jsonObject;
-		try {
-			jsonObject = (JSONObject) new JSONParser().parse(json);
-		} catch (ParseException e) {
-			TabAPI.getInstance().logError("Failed to deserialize json component " + json, e);
-			return null;
-		}
-		IChatBaseComponent component;
-		if (jsonObject.containsKey("type")) {
-			return new ChatComponentEntity((String) jsonObject.get("type"), UUID.fromString((String) jsonObject.get("id")), IChatBaseComponent.deserialize(jsonObject.get("name").toString()).toFlatText());
-		}
-		component = new IChatBaseComponent();
-		component.setText((String) jsonObject.get("text"));
-		component.modifier.setBold(getBoolean(jsonObject, "bold"));
-		component.modifier.setItalic(getBoolean(jsonObject, "italic"));
-		component.modifier.setUnderlined(getBoolean(jsonObject, "underlined"));
-		component.modifier.setStrikethrough(getBoolean(jsonObject, "strikethrough"));
-		component.modifier.setObfuscated(getBoolean(jsonObject, "obfuscated"));
-		component.modifier.setColor(TextColor.fromString(((String) jsonObject.get("color"))));
-		if (jsonObject.containsKey("clickEvent")) {
-			JSONObject clickEvent = (JSONObject) jsonObject.get("clickEvent");
-			String action = (String) clickEvent.get("action");
-			String value = clickEvent.get("value").toString();
-			component.modifier.onClick(EnumClickAction.valueOf(action.toUpperCase()), value);
-		}
-		if (jsonObject.containsKey("hoverEvent")) {
-			JSONObject hoverEvent = (JSONObject) jsonObject.get("hoverEvent");
-			String action = (String) hoverEvent.get("action");
-			String value = (String) hoverEvent.get("value");
-			component.modifier.onHover(EnumHoverAction.valueOf(action.toUpperCase()), deserialize(value));
-		}
-		if (jsonObject.containsKey("extra")) {
-			List<Object> list = (List<Object>) jsonObject.get("extra");
-			for (Object extra : list) {
-				String string = extra.toString();
-				//reverting .toString() removing "" for simple text
-				if (!string.startsWith("{")) string = "\"" + string + "\"";
-				component.addExtra(deserialize(string));
-			}
-		}
-		return component;
-	}
-
-	/**
-	 * Returns boolean value of requested key from map
-	 * @param	jsonObject
-	 * 			map to get value from
-	 * @param	key
-	 * 			name of key
-	 * @return	value from json object or null if not present
-	 */
-	private static Boolean getBoolean(JSONObject jsonObject, String key) {
-		Preconditions.checkNotNull(jsonObject, "json object");
-		Preconditions.checkNotNull(key, "key");
-		String value = String.valueOf(jsonObject.getOrDefault(key, null));
-		return "null".equals(value) ? null : Boolean.parseBoolean(value);
+		return new DeserializedChatComponent(json);
 	}
 
 	/**
