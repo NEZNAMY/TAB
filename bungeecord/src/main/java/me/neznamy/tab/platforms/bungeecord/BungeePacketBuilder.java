@@ -110,7 +110,7 @@ public class BungeePacketBuilder extends PacketBuilder {
 		List<PlayerInfoData> listData = new ArrayList<>();
 		for (Item i : item.getItems()) {
 			Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0][1], i.getProperties()[0][2]);
-			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.values()[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
+			listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.VALUES[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
 		}
 		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
 	}

@@ -60,6 +60,9 @@ public enum ProtocolVersion {
 	V1_4_7	(51),
 	V1_4_6	(51);
 
+	/** Value array to iterate over to avoid array creations on each call */
+	public static final ProtocolVersion[] VALUES = values();
+
 	//version's network id found at https://wiki.vg/Protocol_version_numbers
 	private final int networkId;
 	
@@ -144,7 +147,7 @@ public enum ProtocolVersion {
 	 * @return version from given network id
 	 */
 	public static ProtocolVersion fromNetworkId(int networkId) {
-		for (ProtocolVersion v : values()) {
+		for (ProtocolVersion v : VALUES) {
 			if (networkId == v.getNetworkId()) return v;
 		}
 		return UNKNOWN;

@@ -309,6 +309,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		SURVIVAL,
 		CREATIVE,
 		ADVENTURE,
-		SPECTATOR
+		SPECTATOR;
+
+		/** Value array to iterate over to avoid array creations on each call */
+		public static final EnumGamemode[] VALUES = values();
 	}
 }
