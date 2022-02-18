@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.util.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -66,6 +67,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
+		Preconditions.checkNotNull(permission, "permission");
 		long time = System.nanoTime();
 		boolean value = getPlayer().hasPermission(permission);
 		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);

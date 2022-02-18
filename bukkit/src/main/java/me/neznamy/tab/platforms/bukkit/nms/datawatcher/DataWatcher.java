@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 
 /**
@@ -23,6 +24,8 @@ public class DataWatcher {
 	 * @param value - value
 	 */
 	public void setValue(DataWatcherObject type, Object value){
+		Preconditions.checkNotNull(type, "type");
+		Preconditions.checkNotNull(value, "value");
 		dataValues.put(type.getPosition(), new DataWatcherItem(type, value));
 	}
 
@@ -87,6 +90,7 @@ public class DataWatcher {
 	 */
 	@SuppressWarnings("unchecked")
 	public static DataWatcher fromNMS(Object nmsWatcher) throws ReflectiveOperationException {
+		Preconditions.checkNotNull(nmsWatcher, "nmsWatcher");
 		DataWatcher watcher = new DataWatcher();
 		List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
 		if (items != null) {

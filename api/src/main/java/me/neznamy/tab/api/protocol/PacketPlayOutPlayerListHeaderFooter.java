@@ -1,6 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
@@ -23,6 +24,8 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 	 * 			TabList footer
 	 */
 	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
+		Preconditions.checkNotNull(header, "header");
+		Preconditions.checkNotNull(footer, "footer");
 		this.header = IChatBaseComponent.optimizedComponent(header);
 		this.footer = IChatBaseComponent.optimizedComponent(footer);
 	}
@@ -36,6 +39,8 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 	 * 			TabList footer
 	 */
 	public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
+		Preconditions.checkNotNull(header, "header");
+		Preconditions.checkNotNull(footer, "footer");
 		this.header = header;
 		this.footer = footer;
 	}

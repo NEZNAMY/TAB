@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
+import me.neznamy.tab.api.util.Preconditions;
+
 /**
  * Class representing a minecraft skin as a value - signature pair.
  */
@@ -19,6 +21,8 @@ public class Skin {
      *          skin signature
      */
     public Skin(String value, String signature) {
+        Preconditions.checkNotNull(value, "value");
+        Preconditions.checkNotNull(signature, "signature");
         this.value = value;
         this.signature = signature;
     }

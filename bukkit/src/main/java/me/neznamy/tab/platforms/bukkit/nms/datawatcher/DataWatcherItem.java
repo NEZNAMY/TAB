@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 
@@ -17,6 +18,8 @@ public class DataWatcherItem {
 	 * @param value - value
 	 */
 	public DataWatcherItem(DataWatcherObject type, Object value){
+		Preconditions.checkNotNull(type, "type");
+		Preconditions.checkNotNull(value, "value");
 		this.type = type;
 		this.value = value;
 	}

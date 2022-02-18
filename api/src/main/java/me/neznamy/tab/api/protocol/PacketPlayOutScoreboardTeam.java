@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
@@ -80,8 +81,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 * 			if {@code name} is null, empty or longer than 16 characters
 	 */
 	private PacketPlayOutScoreboardTeam(int action, String name) {
-		if (name == null || name.length() == 0) throw new IllegalArgumentException("Team name cannot be null/empty");
-		if (name.length() > 16) throw new IllegalArgumentException("name cannot be longer than 16 character (is " + name.length() + ")");
+		Preconditions.checkNotNull(name, "team name");
+		Preconditions.checkMaxLength(name, 16, "team name");
 		this.action = action;
 		this.name = name;
 	}
@@ -108,6 +109,11 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 */
 	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
 		this(0, team);
+		Preconditions.checkNotNull(prefix, "prefix");
+		Preconditions.checkNotNull(suffix, "suffix");
+		Preconditions.checkNotNull(visibility, "visibility");
+		Preconditions.checkNotNull(collision, "collision");
+		Preconditions.checkNotNull(players, "players");
 		this.playerPrefix = prefix;
 		this.playerSuffix = suffix;
 		this.nameTagVisibility = visibility;
@@ -148,6 +154,11 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 */
 	public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, int options) {
 		this(2, team);
+		Preconditions.checkNotNull(prefix, "prefix");
+		Preconditions.checkNotNull(suffix, "suffix");
+		Preconditions.checkNotNull(visibility, "visibility");
+		Preconditions.checkNotNull(collision, "collision");
+		Preconditions.checkNotNull(players, "players");
 		this.playerPrefix = prefix;
 		this.playerSuffix = suffix;
 		this.nameTagVisibility = visibility;
@@ -170,6 +181,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 	 */
 	public PacketPlayOutScoreboardTeam(String team, Collection<String> players, boolean add) {
 		this(add ? 3 : 4, team);
+		Preconditions.checkNotNull(players, "players");
 		this.players = players;
 	}
 

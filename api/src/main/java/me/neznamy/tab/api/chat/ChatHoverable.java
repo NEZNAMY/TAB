@@ -23,8 +23,8 @@ public class ChatHoverable {
 	 * 			if {@code action} is null or {@code value} is null
 	 */
 	public ChatHoverable(EnumHoverAction action, IChatBaseComponent value) {
-		Preconditions.checkNotNull(action, "hover action cannot be null");
-		Preconditions.checkNotNull(value, "hover value cannot be null");
+		Preconditions.checkNotNull(action, "hover action");
+		Preconditions.checkNotNull(value, "hover value");
 		this.action = action;
 		this.value = value;
 	}

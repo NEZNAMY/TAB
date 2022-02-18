@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -56,6 +57,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public boolean hasPermission0(String permission) {
+		Preconditions.checkNotNull(permission, "permission");
 		long time = System.nanoTime();
 		boolean value = getPlayer().hasPermission(permission);
 		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
@@ -92,6 +94,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	 * @return - packet ID
 	 */
 	public int getPacketId(Class<? extends DefinedPacket> clazz) {
+		Preconditions.checkNotNull(clazz, "class");
 		try {
 			return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());
 		} catch (ReflectiveOperationException e) {

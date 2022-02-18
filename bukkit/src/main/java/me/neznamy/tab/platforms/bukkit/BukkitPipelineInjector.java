@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
@@ -40,6 +41,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
 		 * @param player - player to inject
 		 */
 		public BukkitChannelDuplexHandler(TabPlayer player) {
+			Preconditions.checkNotNull(player, "player");
 			this.player = player;
 		}
 

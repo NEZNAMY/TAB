@@ -122,7 +122,7 @@ public abstract class PluginMessageHandler {
 	 * 			Value to write
 	 */
 	private void writeObject(ByteArrayDataOutput out, Object value) {
-		Preconditions.checkNotNull(value, "Cannot write null value");
+		Preconditions.checkNotNull(value, "value to write");
 		if (value instanceof String) {
 			out.writeUTF((String) value);
 		} else if (value instanceof Boolean) {

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
@@ -53,6 +54,10 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar style
 	 */
 	public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
+		Preconditions.checkNotNull(id, "uuid");
+		Preconditions.checkNotNull(name, "title");
+		Preconditions.checkNotNull(color, "color");
+		Preconditions.checkNotNull(overlay, "style");
 		this.action = Action.ADD;
 		this.id = id;
 		this.name = name;
@@ -69,6 +74,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar uuid
 	 */
 	public PacketPlayOutBoss(UUID id) {
+		Preconditions.checkNotNull(id, "uuid");
 		this.action = Action.REMOVE;
 		this.id = id;
 	}
@@ -83,6 +89,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar progress
 	 */
 	public PacketPlayOutBoss(UUID id, float pct) {
+		Preconditions.checkNotNull(id, "uuid");
 		this.action = Action.UPDATE_PCT;
 		this.id = id;
 		this.pct = pct;
@@ -98,6 +105,8 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar title
 	 */
 	public PacketPlayOutBoss(UUID id, String name) {
+		Preconditions.checkNotNull(id, "uuid");
+		Preconditions.checkNotNull(name, "title");
 		this.action = Action.UPDATE_NAME;
 		this.id = id;
 		this.name = name;
@@ -115,6 +124,9 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			BossBar style
 	 */
 	public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
+		Preconditions.checkNotNull(id, "uuid");
+		Preconditions.checkNotNull(color, "color");
+		Preconditions.checkNotNull(overlay, "style");
 		this.action = Action.UPDATE_STYLE;
 		this.id = id;
 		this.color = color;
@@ -133,6 +145,7 @@ public class PacketPlayOutBoss implements TabPacket {
 	 * 			Create fog flag
 	 */
 	public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
+		Preconditions.checkNotNull(id, "uuid");
 		this.action = Action.UPDATE_PROPERTIES;
 		this.id = id;
 		this.darkenScreen = darkenScreen;

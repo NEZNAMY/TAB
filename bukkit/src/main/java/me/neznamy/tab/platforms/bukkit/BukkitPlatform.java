@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 
 import com.viaversion.viaversion.api.Via;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -60,6 +61,7 @@ public class BukkitPlatform implements Platform {
 	 * 			plugin instance
 	 */
 	public BukkitPlatform(JavaPlugin plugin) {
+		Preconditions.checkNotNull(plugin, "plugin");
 		this.plugin = plugin;
 	}
 
@@ -135,6 +137,7 @@ public class BukkitPlatform implements Platform {
 	 * @return	Plugin version
 	 */
 	private String getPluginVersion(String plugin) {
+		Preconditions.checkNotNull(plugin, "plugin");
 		Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
 		return pl == null ? "" : pl.getDescription().getVersion();
 	}
@@ -162,11 +165,13 @@ public class BukkitPlatform implements Platform {
 
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
+		Preconditions.checkNotNull(message, "message");
 		Bukkit.getConsoleSender().sendMessage(translateColors ? EnumChatFormat.color(message) : message);
 	}
 
 	@Override
 	public void registerUnknownPlaceholder(String identifier) {
+		Preconditions.checkNotNull(identifier, "identifier");
 		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
 		if (identifier.startsWith("%rel_")) {
 			//relational placeholder

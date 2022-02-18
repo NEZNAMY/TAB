@@ -8,6 +8,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.util.BiFunctionWithException;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class for packet building, methods are overridden in
@@ -48,6 +49,8 @@ public class PacketBuilder {
 	 * 			if reflection fails
 	 */
 	public Object build(TabPacket packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+		Preconditions.checkNotNull(packet, "packet");
+		Preconditions.checkNotNull(clientVersion, "clientVersion");
 		return buildMap.get(packet.getClass()).apply(packet, clientVersion);
 	}
 

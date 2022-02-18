@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
+import me.neznamy.tab.api.util.Preconditions;
 import org.bukkit.Location;
 
 import me.neznamy.tab.api.protocol.TabPacket;
@@ -11,6 +12,7 @@ public class PacketPlayOutEntityTeleport implements TabPacket {
 	private final Location location;
 
 	public PacketPlayOutEntityTeleport(int entityId, Location location) {
+		Preconditions.checkNotNull(location, "location");
 		this.entityId = entityId;
 		this.location = location;
 	}

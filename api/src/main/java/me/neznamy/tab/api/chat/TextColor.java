@@ -28,13 +28,14 @@ public class TextColor {
 
 	/**
 	 * Constructs new instance as a clone of the provided color.
+	 *
 	 * @param	color
 	 * 			color to create a clone of
 	 * @throws	IllegalArgumentException
 	 * 			if color is {@code null}
 	 */
 	public TextColor(TextColor color) {
-		Preconditions.checkNotNull(color, "color cannot be null");
+		Preconditions.checkNotNull(color, "color");
 		rgb = color.rgb;
 		legacyColor = color.legacyColor;
 		hexCode = color.hexCode;
@@ -43,18 +44,20 @@ public class TextColor {
 	
 	/**
 	 * Constructs new instance from provided 6-digit hex code string
+	 *
 	 * @param	hexCode
 	 * 			a 6-digit combination of hex numbers as a string
 	 * @throws	IllegalArgumentException
 	 * 			if hexCode is {@code null}
 	 */
 	public TextColor(String hexCode) {
-		Preconditions.checkNotNull(hexCode, "hex code cannot be null");
+		Preconditions.checkNotNull(hexCode, "hex code");
 		this.hexCode = hexCode;
 	}
 	
 	/**
 	 * Constructs new instance from provided 6-digit hex code and forced legacy color
+	 *
 	 * @param	hexCode
 	 * 			6-digit combination of hex numbers as a string
 	 * @param	legacyColor
@@ -63,8 +66,8 @@ public class TextColor {
 	 * 			if {@code hexCode} is {@code null} or {@code legacyColor} is {@code null}
 	 */
 	public TextColor(String hexCode, EnumChatFormat legacyColor) {
-		Preconditions.checkNotNull(hexCode, "hex code cannot be null");
-		Preconditions.checkNotNull(legacyColor, "legacy color cannot be null");
+		Preconditions.checkNotNull(hexCode, "hex code");
+		Preconditions.checkNotNull(legacyColor, "legacy color");
 		this.hexCode = hexCode;
 		this.legacyColorForced = true;
 		this.legacyColor = legacyColor;
@@ -72,19 +75,21 @@ public class TextColor {
 	
 	/**
 	 * Constructs new instance from provided legacy color
+	 *
 	 * @param	legacyColor
 	 * 			legacy color to construct the instance from
 	 * @throws	IllegalArgumentException
 	 * 			if {@code legacyColor} is {@code null}
 	 */
 	public TextColor(EnumChatFormat legacyColor) {
-		Preconditions.checkNotNull(legacyColor, "legacy color cannot be null");
+		Preconditions.checkNotNull(legacyColor, "legacy color");
 		this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
 		this.hexCode = legacyColor.getHexCode();
 	}
 	
 	/**
 	 * Constructs new instance with red, green and blue values
+	 *
 	 * @param	red
 	 * 			red value
 	 * @param	green
@@ -95,9 +100,9 @@ public class TextColor {
 	 * 			if {@code red}, {@code green} or {@code blue} is out of range ({@code 0-255})
 	 */
 	public TextColor(int red, int green, int blue) {
-		Preconditions.checkRange(red, 0, 255, "red color");
-		Preconditions.checkRange(green, 0, 255, "green color");
-		Preconditions.checkRange(blue, 0, 255, "blue color");
+		Preconditions.checkRange(red, 0, 255, "red");
+		Preconditions.checkRange(green, 0, 255, "green");
+		Preconditions.checkRange(blue, 0, 255, "blue");
 		this.rgb = (red << 16) + (green << 8) + blue;
 	}
 	

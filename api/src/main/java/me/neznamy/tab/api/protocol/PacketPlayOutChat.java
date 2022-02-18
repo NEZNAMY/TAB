@@ -1,6 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
@@ -22,6 +23,8 @@ public class PacketPlayOutChat implements TabPacket {
 	 * 			Message position
 	 */
 	public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
+		Preconditions.checkNotNull(message, "message");
+		Preconditions.checkNotNull(type, "message type");
 		this.message = message;
 		this.type = type;
 	}

@@ -14,6 +14,7 @@ import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -80,6 +81,7 @@ public class RGBUtils {
 	 * @return	text where everything is converted to #RRGGBB
 	 */
 	public String applyFormats(String text, boolean ignorePlaceholders) {
+		Preconditions.checkNotNull(text, "text");
 		String replaced = text;
 		for (GradientPattern pattern : gradients) {
 			replaced = pattern.applyPattern(replaced, ignorePlaceholders);
@@ -161,6 +163,7 @@ public class RGBUtils {
 	 * @return	{@code true} if valid, {@code false} if not
 	 */
 	public boolean isHexCode(String string) {
+		Preconditions.checkNotNull(string, "string");
 		if (string.length() != 6) return false;
 		for (int i=0; i<6; i++) {
 			char c = string.charAt(i);

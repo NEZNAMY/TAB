@@ -14,6 +14,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -61,6 +62,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	
 	@Override
 	public boolean hasPermission0(String permission) {
+		Preconditions.checkNotNull(permission, "permission");
 		long time = System.nanoTime();
 		boolean value = getPlayer().hasPermission(permission);
 		TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);

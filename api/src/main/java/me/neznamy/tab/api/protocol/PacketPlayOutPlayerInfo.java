@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
@@ -26,6 +27,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 	 * 			Affected entries
 	 */
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
+		Preconditions.checkNotNull(action, "action");
+		Preconditions.checkNotNull(entries, "entries");
 		this.action = action;
 		this.entries = Arrays.asList(entries);
 	}
@@ -39,6 +42,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 	 * 			Affected entries
 	 */
 	public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
+		Preconditions.checkNotNull(action, "action");
+		Preconditions.checkNotNull(entries, "entries");
 		this.action = action;
 		this.entries = entries;
 	}
@@ -108,6 +113,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * 			Player's display name
 		 */
 		public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
+			Preconditions.checkNotNull(name, "name");
+			Preconditions.checkNotNull(uniqueId, "uuid");
+			Preconditions.checkNotNull(gameMode, "game mode");
 			this.name = name;
 			this.uniqueId = uniqueId;
 			this.skin = skin;
@@ -126,6 +134,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * 			Player's GameMode
 		 */
 		public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
+			Preconditions.checkNotNull(uniqueId, "uuid");
+			Preconditions.checkNotNull(gameMode, "game mode");
 			this.uniqueId = uniqueId;
 			this.gameMode = gameMode;
 		}
@@ -140,6 +150,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * 			Player's ping
 		 */
 		public PlayerInfoData(UUID uniqueId, int latency) {
+			Preconditions.checkNotNull(uniqueId, "uuid");
 			this.uniqueId = uniqueId;
 			this.latency = latency;
 		}
@@ -154,6 +165,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 		 * 			Player's display name
 		 */
 		public PlayerInfoData(UUID uniqueId, IChatBaseComponent displayName) {
+			Preconditions.checkNotNull(uniqueId, "uuid");
 			this.uniqueId = uniqueId;
 			this.displayName = displayName;
 		}

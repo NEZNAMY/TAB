@@ -75,8 +75,6 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
 	@Override
 	public void registerPlaceholders(PlaceholderManager manager) {
 		super.registerPlaceholders(manager);
-
-
 		manager.registerPlayerPlaceholder("%displayname%", 500, p -> ((Player) p.getPlayer()).getDisplayName());
 		if (paperTps) {
 			manager.registerServerPlaceholder("%tps%", 1000, () -> formatTPS(Bukkit.getTPS()[0]));

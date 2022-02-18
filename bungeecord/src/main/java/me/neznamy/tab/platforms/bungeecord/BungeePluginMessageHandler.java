@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.google.common.io.ByteStreams;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -47,6 +48,8 @@ public class BungeePluginMessageHandler extends PluginMessageHandler implements 
 
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
+		Preconditions.checkNotNull(player, "player");
+		Preconditions.checkNotNull(message, "message");
 		if (((ProxiedPlayer) player.getPlayer()).getServer() == null) return; //not connected to any server yet
 		((ProxiedPlayer) player.getPlayer()).getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
 		TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");

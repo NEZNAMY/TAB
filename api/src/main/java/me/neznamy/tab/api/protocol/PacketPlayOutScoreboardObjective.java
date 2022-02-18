@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
+import me.neznamy.tab.api.util.Preconditions;
+
 /**
  * A class representing platform specific packet class
  */
@@ -35,8 +37,10 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	 * 			if {@code objectiveName} is null or longer than 16 characters
 	 */
 	public PacketPlayOutScoreboardObjective(int action, String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
-		if (objectiveName == null) throw new IllegalArgumentException("objectiveName cannot be null");
-		if (objectiveName.length() > 16) throw new IllegalArgumentException("objectiveName cannot be longer than 16 character (is " + objectiveName.length() + ")");
+		Preconditions.checkRange(action, 0, 2, "action");
+		Preconditions.checkNotNull(objectiveName, "objective name");
+		Preconditions.checkMaxLength(objectiveName, 16, "objective name");
+		Preconditions.checkNotNull(renderType, "render type");
 		this.objectiveName = objectiveName;
 		this.displayName = displayName;
 		this.renderType = renderType;
@@ -52,8 +56,8 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 	 * 			if {@code objectiveName} is null or longer than 16 characters
 	 */
 	public PacketPlayOutScoreboardObjective(String objectiveName) {
-		if (objectiveName == null) throw new IllegalArgumentException("objectiveName cannot be null");
-		if (objectiveName.length() > 16) throw new IllegalArgumentException("objectiveName cannot be longer than 16 character (is " + objectiveName.length() + ")");
+		Preconditions.checkNotNull(objectiveName, "objective name");
+		Preconditions.checkMaxLength(objectiveName, 16, "objective name");
 		this.objectiveName = objectiveName;
 		this.displayName = ""; //avoiding NPE on <1.7
 		this.action = 1;

@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
+import me.neznamy.tab.api.util.Preconditions;
+
 /**
  * A class representing platform specific packet class
  */
@@ -32,8 +34,10 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 	 * 			if {@code objectiveName} is null or longer than 16 characters
 	 */
 	public PacketPlayOutScoreboardScore(Action action, String objectiveName, String player, int score) {
-		if (objectiveName == null) throw new IllegalArgumentException("objectiveName cannot be null");
-		if (objectiveName.length() > 16) throw new IllegalArgumentException("objectiveName cannot be longer than 16 character (is " + objectiveName.length() + ")");
+		Preconditions.checkNotNull(action, "action");
+		Preconditions.checkNotNull(objectiveName, "objective name");
+		Preconditions.checkMaxLength(objectiveName, 16, "objective name");
+		Preconditions.checkNotNull(player, "player");
 		this.action = action;
 		this.objectiveName = objectiveName;
 		this.player = player;

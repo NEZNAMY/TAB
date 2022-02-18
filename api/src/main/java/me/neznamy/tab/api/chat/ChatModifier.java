@@ -2,6 +2,7 @@ package me.neznamy.tab.api.chat;
 
 import java.util.UUID;
 
+import me.neznamy.tab.api.util.Preconditions;
 import org.json.simple.JSONObject;
 
 import me.neznamy.tab.api.ProtocolVersion;
@@ -30,6 +31,7 @@ public class ChatModifier {
 	}
 	
 	public ChatModifier(ChatModifier modifier) {
+		Preconditions.checkNotNull(modifier, "modifier");
 		this.color = modifier.color == null ? null : new TextColor(modifier.color);
 		this.bold = modifier.bold;
 		this.italic = modifier.italic;
@@ -151,6 +153,7 @@ public class ChatModifier {
 	 * @param url - url to open
 	 */
 	public void onClickOpenUrl(String url) {
+		Preconditions.checkNotNull(url, "url");
 		clickEvent = new ChatClickable(EnumClickAction.OPEN_URL, url);
 	}
 
@@ -159,6 +162,7 @@ public class ChatModifier {
 	 * @param command - command to perform, might be without / to send a chat message
 	 */
 	public void onClickRunCommand(String command) {
+		Preconditions.checkNotNull(command, "command");
 		clickEvent = new ChatClickable(EnumClickAction.RUN_COMMAND, command);
 	}
 
@@ -167,6 +171,7 @@ public class ChatModifier {
 	 * @param command - command to suggest
 	 */
 	public void onClickSuggestCommand(String command) {
+		Preconditions.checkNotNull(command, "command");
 		clickEvent = new ChatClickable(EnumClickAction.SUGGEST_COMMAND, command);
 	}
 
@@ -184,10 +189,13 @@ public class ChatModifier {
 	 * @param text - text to copy to clipboard on click
 	 */
 	public void onClickCopyToClipBoard(String text) {
+		Preconditions.checkNotNull(text, "text");
 		clickEvent = new ChatClickable(EnumClickAction.COPY_TO_CLIPBOARD, text);
 	}
 	
 	public void onClick(EnumClickAction action, String value) {
+		Preconditions.checkNotNull(action, "action");
+		Preconditions.checkNotNull(value, "value");
 		clickEvent = new ChatClickable(action, value);
 	}
 
@@ -196,6 +204,7 @@ public class ChatModifier {
 	 * @param text - text to show
 	 */
 	public void onHoverShowText(IChatBaseComponent text) {
+		Preconditions.checkNotNull(text, "text");
 		hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_TEXT, text);
 	}
 
@@ -204,6 +213,7 @@ public class ChatModifier {
 	 * @param serializedItem - item to show
 	 */
 	public void onHoverShowItem(String serializedItem) {
+		Preconditions.checkNotNull(serializedItem, "item");
 		hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ITEM, new IChatBaseComponent(serializedItem));
 	}
 
@@ -214,6 +224,8 @@ public class ChatModifier {
 	 * @param name - entity custom name
 	 */
 	public void onHoverShowEntity(String type, UUID id, String name) {
+		Preconditions.checkNotNull(type, "type");
+		Preconditions.checkNotNull(id, "id");
 		if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
 			hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new ChatComponentEntity(type, id, name));
 		} else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
@@ -228,6 +240,8 @@ public class ChatModifier {
 	}
 	
 	public void onHover(EnumHoverAction action, IChatBaseComponent value) {
+		Preconditions.checkNotNull(action, "action");
+		Preconditions.checkNotNull(value, "value");
 		hoverEvent = new ChatHoverable(action, value);
 	}
 

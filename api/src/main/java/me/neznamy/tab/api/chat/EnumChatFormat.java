@@ -225,6 +225,7 @@ public enum EnumChatFormat {
 	 * @return	last colors used in provided text or empty string if nothing was found
 	 */
 	public static String getLastColors(String input) {
+		if (input == null) return "";
 		StringBuilder result = new StringBuilder();
 		int length = input.length();
 		for (int index = length - 1; index > -1; index--){

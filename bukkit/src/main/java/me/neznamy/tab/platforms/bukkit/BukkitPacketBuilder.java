@@ -345,7 +345,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 	@Override
 	public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket) throws ReflectiveOperationException {
 		return new PacketPlayOutScoreboardObjective(nms.PacketPlayOutScoreboardObjective_METHOD.getInt(nmsPacket),
-				(String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket), null, null
+				(String) nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME.get(nmsPacket), null,
+				PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER
 		);
 	}
 
@@ -383,7 +384,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 		}
 		if (packet.getAction() == Action.ADD) {
 			w.helper().setEntityFlags((byte) 32);
-			return build(new PacketPlayOutSpawnEntityLiving(entityId, null, EntityType.WITHER, new Location(null, 0,0,0), w));
+			return build(new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w));
 		} else {
 			return build(new PacketPlayOutEntityMetadata(entityId, w));
 		}

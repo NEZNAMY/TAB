@@ -117,7 +117,8 @@ public class BungeePacketBuilder extends PacketBuilder {
 
 	@Override
 	public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket) {
-		return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) bungeePacket).getAction(), ((ScoreboardObjective) bungeePacket).getName(), null, null);
+		return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) bungeePacket).getAction(), ((ScoreboardObjective) bungeePacket).getName(),
+				null, PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER);
 	}
 
 	@Override

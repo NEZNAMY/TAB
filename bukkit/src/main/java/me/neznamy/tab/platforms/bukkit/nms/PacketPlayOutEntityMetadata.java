@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 
 public class PacketPlayOutEntityMetadata implements TabPacket {
@@ -10,6 +11,7 @@ public class PacketPlayOutEntityMetadata implements TabPacket {
 	private final DataWatcher dataWatcher;
 
 	public PacketPlayOutEntityMetadata(int entityId, DataWatcher dataWatcher) {
+		Preconditions.checkNotNull(dataWatcher, "data watcher");
 		this.entityId = entityId;
 		this.dataWatcher = dataWatcher;
 	}

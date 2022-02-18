@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
@@ -27,6 +28,7 @@ public class DataWatcherHelper {
 	 * @param data - data to write to
 	 */
 	public DataWatcherHelper(DataWatcher data) {
+		Preconditions.checkNotNull(data, "dataWatcher");
 		this.data = data;
 		this.registry = NMSStorage.getInstance().getDataWatcherRegistry();
 	}
@@ -68,6 +70,8 @@ public class DataWatcherHelper {
 	 * @param clientVersion - client version
 	 */
 	public void setCustomName(String customName, ProtocolVersion clientVersion) {
+		Preconditions.checkNotNull(customName, "customName");
+		Preconditions.checkNotNull(clientVersion, "clientVersion");
 		if (TAB.getInstance().getServerVersion().getMinorVersion() >= 13) {
 			try {
 				data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));

@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 
 import java.util.UUID;
 
+import me.neznamy.tab.api.util.Preconditions;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
@@ -21,6 +22,9 @@ public class PacketPlayOutSpawnEntityLiving implements TabPacket {
 	private final DataWatcher dataWatcher;
 
 	public PacketPlayOutSpawnEntityLiving(int entityId, UUID uuid, EntityType entityType, Location location, DataWatcher dataWatcher) {
+		Preconditions.checkNotNull(uuid, "uuid");
+		Preconditions.checkNotNull(entityType, "entityType");
+		Preconditions.checkNotNull(location, "location");
 		this.entityId = entityId;
 		this.uuid = uuid;
 		this.entityType = entityType;

@@ -48,6 +48,7 @@ public class IChatBaseComponent {
 	 * 			component to clone
 	 */
 	public IChatBaseComponent(IChatBaseComponent component) {
+		Preconditions.checkNotNull(component, "component");
 		this.text = component.text;
 		this.modifier = new ChatModifier(component.modifier);
 		for (IChatBaseComponent child : component.getExtra()) {
@@ -93,6 +94,7 @@ public class IChatBaseComponent {
 	 *			component to append
 	 */
 	public void addExtra(IChatBaseComponent child) {
+		Preconditions.checkNotNull(child, "extra");
 		if (extra == null) extra = new ArrayList<>();
 		extra.add(child);
 	}
@@ -198,6 +200,8 @@ public class IChatBaseComponent {
 	 * @return	value from json object or null if not present
 	 */
 	private static Boolean getBoolean(JSONObject jsonObject, String key) {
+		Preconditions.checkNotNull(jsonObject, "json object");
+		Preconditions.checkNotNull(key, "key");
 		String value = String.valueOf(jsonObject.getOrDefault(key, null));
 		return "null".equals(value) ? null : Boolean.parseBoolean(value);
 	}
@@ -276,6 +280,7 @@ public class IChatBaseComponent {
 	 * @return	organized component from colored text
 	 */
 	public static IChatBaseComponent fromColoredText(String originalText){
+		Preconditions.checkNotNull(originalText, "text");
 		String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText), false);
 		List<IChatBaseComponent> components = new ArrayList<>();
 		StringBuilder builder = new StringBuilder();

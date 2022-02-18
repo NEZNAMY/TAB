@@ -6,6 +6,7 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
@@ -73,6 +74,7 @@ public class BungeePlatform extends ProxyPlatform {
 	
 	@Override
 	public void sendConsoleMessage(String message, boolean translateColors) {
+		Preconditions.checkNotNull(message, "message");
 		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? EnumChatFormat.color(message) : message));
 	}
 	

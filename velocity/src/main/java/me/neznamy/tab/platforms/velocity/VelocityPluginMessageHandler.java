@@ -11,6 +11,7 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
@@ -28,6 +29,7 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 	 * @param plugin - instance of main class
 	 */
 	public VelocityPluginMessageHandler(Main plugin) {
+		Preconditions.checkNotNull(plugin, "plugin");
 		String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
 		mc = MinecraftChannelIdentifier.create(name[0], name[1]);
 		plugin.getServer().getChannelRegistrar().register(mc);
@@ -55,6 +57,8 @@ public class VelocityPluginMessageHandler extends PluginMessageHandler {
 
 	@Override
 	public void sendPluginMessage(TabPlayer player, byte[] message) {
+		Preconditions.checkNotNull(player, "player");
+		Preconditions.checkNotNull(message, "message");
 //		((Player) player.getPlayer()).sendPluginMessage(mc, message); //not using this short alternative because it just doesn't work
 		try {
 			Player sender = (Player) player.getPlayer();

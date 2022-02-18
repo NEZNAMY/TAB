@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * Abstract class for configuration file
@@ -49,7 +50,7 @@ public abstract class ConfigurationFile {
 	 * 			if I/O operation with the file unexpectedly fails
 	 */
 	protected ConfigurationFile(InputStream source, File destination) throws IOException {
-		if (destination == null) throw new IllegalArgumentException("Destination cannot be null");
+		Preconditions.checkNotNull(destination, "destination");
 		this.file = destination;
 		if (file.getParentFile() != null) Files.createDirectories(file.getParentFile().toPath());
 		if (!file.exists() && source == null) throw new IllegalStateException("File does not exist and source is null");
