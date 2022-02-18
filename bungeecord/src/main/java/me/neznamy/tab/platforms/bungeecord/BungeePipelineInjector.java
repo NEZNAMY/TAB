@@ -1,13 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Supplier;
-
 import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,20 +8,26 @@ import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
 
+import java.util.Collection;
+import java.util.function.Supplier;
+
+@SuppressWarnings("unchecked")
 public class BungeePipelineInjector extends PipelineInjector {
 
 	//packets that must be deserialized and BungeeCord does not do it automatically
-	private final Map<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> extraPackets = new HashMap<>();
+
+	private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
+	private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
 	/**
 	 * Constructs new instance of the feature
@@ -36,9 +35,6 @@ public class BungeePipelineInjector extends PipelineInjector {
 	public BungeePipelineInjector() {
 		super("inbound-boss");
 		channelFunction = BungeeChannelDuplexHandler::new;
-		extraPackets.put(Team.class, Team::new);
-		extraPackets.put(ScoreboardDisplay.class, ScoreboardDisplay::new);
-		extraPackets.put(ScoreboardObjective.class, ScoreboardObjective::new);
 	}
 
 	/**
@@ -135,9 +131,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 			int marker = buf.readerIndex();
 			try {
 				int packetId = buf.readByte();
-				for (Entry<Class<? extends DefinedPacket>, Supplier<DefinedPacket>> e : extraPackets.entrySet()) {
-					if (packetId == ((BungeeTabPlayer)player).getPacketId(e.getKey())) {
-						DefinedPacket packet = e.getValue().get();
+				for (int i=0; i<extraPacketClasses.length; i++) {
+					if (packetId == ((BungeeTabPlayer)player).getPacketId(extraPacketClasses[i])) {
+						DefinedPacket packet = extraPacketSuppliers[i].get();
 						packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
 						buf.release();
 						return packet;
