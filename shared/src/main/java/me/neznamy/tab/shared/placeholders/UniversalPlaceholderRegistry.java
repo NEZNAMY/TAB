@@ -49,7 +49,6 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 		manager.registerPlayerPlaceholder("%ping%", 500, TabPlayer::getPing);
 		manager.registerPlayerPlaceholder("%player-version%", -1, p -> p.getVersion().getFriendlyName()).enableTriggerMode();
 		manager.registerPlayerPlaceholder("%player-version-id%", -1, p -> p.getVersion().getNetworkId()).enableTriggerMode();
-		manager.registerServerPlaceholder("%maxplayers%", -1, () -> TAB.getInstance().getPlatform().getMaxPlayers()).enableTriggerMode();
 		manager.registerServerPlaceholder("%memory-used%", 200, () -> ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)));
 		manager.registerServerPlaceholder("%memory-max%", -1, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576))).enableTriggerMode();
 		manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));

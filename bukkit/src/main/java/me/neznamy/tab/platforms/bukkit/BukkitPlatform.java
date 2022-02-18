@@ -228,11 +228,6 @@ public class BukkitPlatform implements Platform {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Bukkit.getPluginManager().callEvent(new TabPlayerLoadEvent(player)));
 	}
 
-	@Override
-	public int getMaxPlayers() {
-		return Bukkit.getMaxPlayers();
-	}
-
 	/**
 	 * Returns status of LibsDisguises plugin presence
 	 * @return	{@code true} if plugin is enabled, {@code false} if not

@@ -84,11 +84,6 @@ public class VelocityPlatform extends ProxyPlatform {
 	public void callLoadEvent(TabPlayer player) {}
 
 	@Override
-	public int getMaxPlayers() {
-		return server.getConfiguration().getShowMaxPlayers();
-	}
-
-	@Override
 	public PacketBuilder getPacketBuilder() {
 		return packetBuilder;
 	}

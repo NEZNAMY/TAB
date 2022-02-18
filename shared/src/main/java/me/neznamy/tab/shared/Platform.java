@@ -70,13 +70,6 @@ public interface Platform {
 	void callLoadEvent(TabPlayer player);
 	
 	/**
-	 * Returns max player count configured in server files
-	 *
-	 * @return	max player count
-	 */
-	int getMaxPlayers();
-	
-	/**
 	 * Returns platform-specific packet builder implementation
 	 *
 	 * @return	platform-specific packet builder

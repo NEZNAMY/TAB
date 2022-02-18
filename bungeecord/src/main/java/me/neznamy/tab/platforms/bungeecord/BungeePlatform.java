@@ -99,11 +99,6 @@ public class BungeePlatform extends ProxyPlatform {
 	}
 
 	@Override
-	public int getMaxPlayers() {
-		return ProxyServer.getInstance().getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers();
-	}
-
-	@Override
 	public PacketBuilder getPacketBuilder() {
 		return packetBuilder;
 	}
