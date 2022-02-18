@@ -57,7 +57,6 @@ public class BungeePlatform extends ProxyPlatform {
 		TAB tab = TAB.getInstance();
 		if (tab.getConfiguration().isPipelineInjection())
 			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BungeePipelineInjector());
-		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
 		tab.getPlaceholderManager().registerPlayerPlaceholder("%displayname%", 500, p -> ((ProxiedPlayer) p.getPlayer()).getDisplayName());
 		super.loadFeatures();
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
