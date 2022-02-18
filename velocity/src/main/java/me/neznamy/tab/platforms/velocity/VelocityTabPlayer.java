@@ -33,14 +33,14 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
 	private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
 			= new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
-		packetMethods.put(PacketPlayOutBoss.class, (packet) -> handle((PacketPlayOutBoss) packet));
-		packetMethods.put(PacketPlayOutChat.class, (packet) -> handle((PacketPlayOutChat) packet));
-		packetMethods.put(PacketPlayOutPlayerInfo.class, (packet) -> handle((PacketPlayOutPlayerInfo) packet));
-		packetMethods.put(PacketPlayOutPlayerListHeaderFooter.class, (packet) -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
-		packetMethods.put(PacketPlayOutScoreboardDisplayObjective.class, (packet) -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
-		packetMethods.put(PacketPlayOutScoreboardObjective.class, (packet) -> handle((PacketPlayOutScoreboardObjective) packet));
-		packetMethods.put(PacketPlayOutScoreboardScore.class, (packet) -> handle((PacketPlayOutScoreboardScore) packet));
-		packetMethods.put(PacketPlayOutScoreboardTeam.class, (packet) -> handle((PacketPlayOutScoreboardTeam) packet));
+		put(PacketPlayOutBoss.class, (packet) -> handle((PacketPlayOutBoss) packet));
+		put(PacketPlayOutChat.class, (packet) -> handle((PacketPlayOutChat) packet));
+		put(PacketPlayOutPlayerInfo.class, (packet) -> handle((PacketPlayOutPlayerInfo) packet));
+		put(PacketPlayOutPlayerListHeaderFooter.class, (packet) -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
+		put(PacketPlayOutScoreboardDisplayObjective.class, (packet) -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
+		put(PacketPlayOutScoreboardObjective.class, (packet) -> handle((PacketPlayOutScoreboardObjective) packet));
+		put(PacketPlayOutScoreboardScore.class, (packet) -> handle((PacketPlayOutScoreboardScore) packet));
+		put(PacketPlayOutScoreboardTeam.class, (packet) -> handle((PacketPlayOutScoreboardTeam) packet));
 	}};
 
 	//uuid used in TabList
