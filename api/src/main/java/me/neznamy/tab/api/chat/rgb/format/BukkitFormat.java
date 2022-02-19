@@ -14,7 +14,7 @@ public class BukkitFormat implements RGBFormatter {
 	
 	@Override
 	public String reformat(String text) {
-		if (!text.contains("&") && !text.contains(EnumChatFormat.COLOR_CHAR + "x")) return text;
+		if (!text.contains("&x") && !text.contains(EnumChatFormat.COLOR_CHAR + "x")) return text;
 		String replaced = text;
 		Matcher m = pattern.matcher(replaced);
 		while (m.find()) {
