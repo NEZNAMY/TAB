@@ -52,7 +52,7 @@ public abstract class ConfigurationFile {
 	protected ConfigurationFile(InputStream source, File destination) throws IOException {
 		Preconditions.checkNotNull(destination, "destination");
 		this.file = destination;
-		if (file.getParentFile() != null) Files.createDirectories(file.getParentFile().toPath());
+		if (file.getParentFile() != null && !file.getParentFile().exists()) Files.createDirectories(file.getParentFile().toPath());
 		if (!file.exists() && source == null) throw new IllegalStateException("File does not exist and source is null");
 		if (file.createNewFile()) {
 //			Files.copy(source, file.toPath());
