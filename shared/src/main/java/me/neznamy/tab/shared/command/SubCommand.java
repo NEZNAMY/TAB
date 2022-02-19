@@ -79,7 +79,16 @@ public abstract class SubCommand {
 		if (sender.hasPermission(TabConstants.Permission.COMMAND_ALL)) return true;
 		return sender.hasPermission(permission);
 	}
-	
+
+	/**
+	 * Sends messages to the command sender with colors translated
+	 * @param sender - player or console to send the message to
+	 * @param messages - messages to send
+	 */
+	public void sendMessages(TabPlayer sender, List<String> messages) {
+		messages.forEach(m -> sendMessage(sender, m));
+	}
+
 	/**
 	 * Sends message to the command sender with colors translated
 	 * @param sender - player or console to send the message to

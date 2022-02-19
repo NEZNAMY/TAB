@@ -25,6 +25,7 @@ public class NameTag extends TabFeature implements TeamManager {
 	protected final Set<TabPlayer> teamHandlingPaused = Collections.newSetFromMap(new WeakHashMap<>());
 	protected final WeakHashMap<TabPlayer, List<TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
 	private final WeakHashMap<TabPlayer, String> forcedTeamName = new WeakHashMap<>();
+	protected final Set<TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
 
 	private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") ||
 			TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
@@ -301,7 +302,8 @@ public class NameTag extends TabFeature implements TeamManager {
 	}
 
 	public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
-		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNameTags && (!accepting18x || !p.hasInvisibilityPotion());
+		return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNameTags
+				&& (!accepting18x || !p.hasInvisibilityPotion()) && !playersWithInvisibleNameTagView.contains(viewer);
 	}
 
 	public Sorting getSorting() {
@@ -354,5 +356,24 @@ public class NameTag extends TabFeature implements TeamManager {
 	@Override
 	public String getOriginalSuffix(TabPlayer player) {
 		return player.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
+	}
+
+	@Override
+	public void toggleNameTagVisibilityView(TabPlayer player, boolean sendToggleMessage) {
+		if (playersWithInvisibleNameTagView.contains(player)) {
+			playersWithInvisibleNameTagView.remove(player);
+			if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown(), true);
+		} else {
+			playersWithInvisibleNameTagView.add(player);
+			if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
+		}
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			updateTeamData(all, player);
+		}
+	}
+
+	@Override
+	public boolean hasHiddenNameTagVisibilityView(TabPlayer player) {
+		return playersWithInvisibleNameTagView.contains(player);
 	}
 }

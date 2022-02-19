@@ -266,7 +266,8 @@ public class BukkitArmorStand implements ArmorStand {
 		datawatcher.helper().setCustomName(displayName, viewer.getVersion());
 
 		boolean visibility;
-		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) || manager.hasHiddenNametag(owner, viewer)) {
+		if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) ||
+				manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer)) {
 			visibility = false;
 		} else {
 			visibility = visible;

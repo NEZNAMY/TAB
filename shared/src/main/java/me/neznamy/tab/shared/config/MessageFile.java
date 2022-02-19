@@ -211,4 +211,23 @@ public class MessageFile extends YamlConfigurationFile {
 	public String getMySQLUploadSuccess() {
 		return getString("mysql-upload-success", "&aMySQL data uploaded successfully.");
 	}
+
+	public List<String> getNameTagHelpMenu() {
+		return getStringList("nametag-help-menu", Arrays.asList(
+				"/tab nametag preview - toggles armor stand preview mode",
+				"/tab nametag toggle - toggles nametags on all players for command sender"
+		));
+	}
+
+	public String getNameTagFeatureNotEnabled() {
+		return getString("nametag-feature-not-enabled", "&cThis command requires nametag feature to be enabled.");
+	}
+
+	public String getNameTagsHidden() {
+		return getString("nametags-hidden", "&aNametags of all players were hidden to you");
+	}
+
+	public String getNameTagsShown() {
+		return getString("nametags-shown", "&aNametags of all players were shown to you");
+	}
 }

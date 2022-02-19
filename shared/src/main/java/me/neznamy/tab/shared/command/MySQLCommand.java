@@ -29,9 +29,7 @@ public class MySQLCommand extends SubCommand {
     @Override
     public void execute(TabPlayer sender, String[] args) {
         if (args.length == 0) {
-            for (String message : getMessages().getMySQLHelpMenu()) {
-                sendMessage(sender, message);
-            }
+            sendMessages(sender, getMessages().getMySQLHelpMenu());
             return;
         }
         if (args[0].equalsIgnoreCase("download")) {

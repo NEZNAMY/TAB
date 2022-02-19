@@ -106,6 +106,13 @@ public class BukkitNameTagX extends NameTagX {
 	}
 
 	@Override
+	public void updateNameTagVisibilityView(TabPlayer player) {
+		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+			getArmorStandManager(all).updateVisibility(true);
+		}
+	}
+
+	@Override
 	public void onQuit(TabPlayer disconnectedPlayer) {
 		super.onQuit(disconnectedPlayer);
 		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -149,4 +156,6 @@ public class BukkitNameTagX extends NameTagX {
 	public VehicleRefresher getVehicleManager() {
 		return vehicleManager;
 	}
+
+
 }

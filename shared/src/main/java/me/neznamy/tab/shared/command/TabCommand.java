@@ -29,7 +29,7 @@ public class TabCommand extends SubCommand {
 		registerSubCommand(new GroupCommand());
 		registerSubCommand(new GroupsCommand());
 		registerSubCommand(new MySQLCommand());
-		registerSubCommand(new NTPreviewCommand());
+		registerSubCommand(new NameTagCommand());
 		registerSubCommand(new ParseCommand());
 		registerSubCommand(new PlayerCommand());
 		registerSubCommand(new PlayerUUIDCommand());

@@ -110,4 +110,27 @@ public interface TeamManager {
 	String getOriginalPrefix(TabPlayer player);
 	
 	String getOriginalSuffix(TabPlayer player);
+
+	/**
+	 * Toggles nametag visibility view on all players for specified player.
+	 * On first call, nametags of all players will become invisible for specified
+	 * player. On second call, they will become visible again.
+	 *
+	 * @param	player
+	 * 			player to toggle nametag visibility view for
+	 * @param	sendToggleMessage
+	 * 			{@code true} if configured toggle message should be sent, {@code false} if not
+	 */
+	void toggleNameTagVisibilityView(TabPlayer player, boolean sendToggleMessage);
+
+	/**
+	 * Returns {@code true} if player has hidden nametags by either calling
+	 * {@link #toggleNameTagVisibilityView(TabPlayer, boolean)} or using a command,
+	 * {@code false} if not.
+	 *
+	 * @param	player
+	 * 			player to check
+	 * @return	{@code true} if hidden, {@code false} if not
+	 */
+	boolean hasHiddenNameTagVisibilityView(TabPlayer player);
 }

@@ -42,4 +42,9 @@ public class ProxyNameTagX extends NameTagX {
     public void pauseArmorStands(TabPlayer player) {
         plm.sendMessage(player, "NameTagX", "Pause");
     }
+
+    @Override
+    public void updateNameTagVisibilityView(TabPlayer player) {
+        plm.sendMessage(player, "NameTagX", "VisibilityView");
+    }
 }

@@ -22,6 +22,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     private final List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
     private final Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
     private final boolean armorStandsAlwaysVisible = TAB.getInstance().getConfiguration().getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
+
     private final Set<TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
     private final Set<TabPlayer> disabledUnlimitedPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Map<TabPlayer, ArmorStandManager> armorStandManagerMap = new WeakHashMap<>();
@@ -30,7 +31,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     private final String[] disabledUnlimitedServersArray = disabledUnlimitedServers.toArray(new String[0]);
     private final boolean unlimitedServerWhitelistMode = disabledUnlimitedServers.contains("WHITELIST");
     private final Set<TabPlayer> playersPreviewingNametag = Collections.newSetFromMap(new WeakHashMap<>());
-
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
 
     public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
@@ -200,6 +200,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     public abstract void pauseArmorStands(TabPlayer player);
 
+    public abstract void updateNameTagVisibilityView(TabPlayer player);
+
     /* NameTag override */
 
     @Override
@@ -343,5 +345,11 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
         if (!isDisabledPlayer(player)) registerTeam(player);
         resumeArmorStands(player);
+    }
+
+    @Override
+    public void toggleNameTagVisibilityView(TabPlayer player, boolean sendToggleMessage) {
+        super.toggleNameTagVisibilityView(player, sendToggleMessage);
+        updateNameTagVisibilityView(player);
     }
 }

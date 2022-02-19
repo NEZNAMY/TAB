@@ -115,7 +115,8 @@ public class TabConstants {
 		public static final String COMMAND_GROUP_LIST = "tab.grouplist";
 		public static final String COMMAND_MYSQL_DOWNLOAD = "tab.mysql.download";
 		public static final String COMMAND_MYSQL_UPLOAD = "tab.mysql.upload";
-		public static final String COMMAND_NTPREVIEW = "tab.ntpreview";
+		public static final String COMMAND_NAMETAG_TOGGLE = "tab.nametag.toggle";
+		public static final String COMMAND_NAMETAG_PREVIEW = "tab.nametag.preview";
 		public static final String COMMAND_PARSE = "tab.parse";
 		public static final String COMMAND_SCOREBOARD_ANNOUNCE = "tab.announce.scoreboard";
 		public static final String COMMAND_SCOREBOARD_TOGGLE = "tab.scoreboard.toggle";
