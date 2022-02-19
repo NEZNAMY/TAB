@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -49,20 +48,5 @@ public class EventListener implements Listener {
 			if (feature.isPlayerDisabled(respawned)) return;
 			feature.getArmorStandManager(respawned).teleport();
 		});
-	}
-	
-	@EventHandler
-	public void onWorldChange(PlayerChangedWorldEvent e) {
-		TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-		if (p == null || !p.isLoaded()) return;
-		long time = System.nanoTime();
-		String to = e.getPlayer().getWorld().getName();
-		if (feature.isUnlimitedDisabled(p.getServer(), to)) {
-			feature.getDisabledUnlimitedPlayers().add(p);
-			feature.updateTeamData(p);
-		} else if (feature.getDisabledUnlimitedPlayers().remove(p)) {
-			feature.updateTeamData(p);
-		}
-		TAB.getInstance().getCPUManager().addTime(feature, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
 	}
 }

@@ -115,6 +115,20 @@ public class BukkitNameTagX extends NameTagX {
 		TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> getArmorStandManager(disconnectedPlayer).destroy());
 	}
 
+	@Override
+	public void onWorldChange(TabPlayer p, String from, String to) {
+		super.onWorldChange(p, from, to);
+		if (isUnlimitedDisabled(p.getServer(), to)) {
+			getDisabledUnlimitedPlayers().add(p);
+			updateTeamData(p);
+		} else if (getDisabledUnlimitedPlayers().remove(p)) {
+			updateTeamData(p);
+		}
+		if (isPreviewingNametag(p)) {
+			getArmorStandManager(p).spawn(p);
+		}
+	}
+
 	/**
 	 * Returns flat distance between two players ignoring Y value
 	 * @param player1 - first player
