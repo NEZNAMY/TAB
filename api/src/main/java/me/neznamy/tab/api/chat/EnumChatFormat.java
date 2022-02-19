@@ -31,7 +31,7 @@ public enum EnumChatFormat {
 	RESET('r');
 
 	/** Creating a constant to avoid memory allocations on each request */
-	private static final EnumChatFormat[] VALUES = values();
+	public static final EnumChatFormat[] VALUES = values();
 
 	/** The symbol minecraft uses to colorize text */
 	public static final char COLOR_CHAR = 0x00a7;

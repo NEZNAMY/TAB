@@ -113,7 +113,7 @@ public class TextColor {
 		double minMaxDist = 9999;
 		double maxDist;
 		EnumChatFormat closestColor = EnumChatFormat.WHITE;
-		for (EnumChatFormat color : EnumChatFormat.values()) {
+		for (EnumChatFormat color : EnumChatFormat.VALUES) {
 			int rDiff = Math.abs(color.getRed() - getRed());
 			int gDiff = Math.abs(color.getGreen() - getGreen());
 			int bDiff = Math.abs(color.getBlue() - getBlue());

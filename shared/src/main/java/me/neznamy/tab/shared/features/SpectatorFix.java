@@ -40,7 +40,7 @@ public class SpectatorFix extends TabFeature {
 			List<PlayerInfoData> list = new ArrayList<>();
 			for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
 				if (p == target) continue;
-				list.add(new PlayerInfoData(target.getUniqueId(), realGameMode ? EnumGamemode.values()[target.getGamemode()+1] : EnumGamemode.CREATIVE));
+				list.add(new PlayerInfoData(target.getUniqueId(), realGameMode ? EnumGamemode.VALUES[target.getGamemode()+1] : EnumGamemode.CREATIVE));
 			}
 			p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), this);
 		}

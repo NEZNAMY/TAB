@@ -125,7 +125,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 			}
 			parameters.add(profile);
 			parameters.add(data.getLatency());
-			parameters.add(data.getGameMode() == null ? null : nms.EnumGamemode_values[nms.EnumGamemode_values.length-EnumGamemode.values().length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
+			parameters.add(data.getGameMode() == null ? null : nms.EnumGamemode_values[nms.EnumGamemode_values.length-EnumGamemode.VALUES.length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
 			parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
 			items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
 		}

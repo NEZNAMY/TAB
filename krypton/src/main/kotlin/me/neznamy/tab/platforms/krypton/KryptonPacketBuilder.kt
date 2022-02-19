@@ -101,7 +101,7 @@ object KryptonPacketBuilder : PacketBuilder() {
                 data.uuid,
                 Skin(textures.value, textures.signature),
                 data.latency,
-                PacketPlayOutPlayerInfo.EnumGamemode.values()[data.gameMode.ordinal + 1],
+                PacketPlayOutPlayerInfo.EnumGamemode.VALUES[data.gameMode.ordinal + 1],
                 if (serializedListName != null) IChatBaseComponent.deserialize(serializedListName) else null
             )
         }
