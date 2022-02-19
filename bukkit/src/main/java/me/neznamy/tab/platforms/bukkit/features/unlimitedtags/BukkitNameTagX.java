@@ -78,7 +78,7 @@ public class BukkitNameTagX extends NameTagX {
 		if (target == viewer || isPlayerDisabled(target)) return;
 		if (((Player) viewer.getPlayer()).getWorld() != ((Player) target.getPlayer()).getWorld()) return;
 		if (getDistance(viewer, target) <= 48) {
-			if (((Player)viewer.getPlayer()).canSee((Player)target.getPlayer())) getArmorStandManager(target).spawn(viewer);
+			if (((Player)viewer.getPlayer()).canSee((Player)target.getPlayer()) && !target.isVanished()) getArmorStandManager(target).spawn(viewer);
 		}
 	}
 
