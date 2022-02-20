@@ -45,7 +45,7 @@ public class ParseCommand extends SubCommand {
 		String message = EnumChatFormat.color("&6Replacing placeholder &e%placeholder% &6for player &e" + target.getName()).replace("%placeholder%", replaced);
 		sendRawMessage(sender, message);
 		try {
-			replaced = new DynamicText("parse", null, target, replaced, null).get();
+			replaced = new DynamicText(null, null, target, replaced, null).get();
 		} catch (Exception e) {
 			sendMessage(sender, "&cThe placeholder threw an exception when parsing. Check console for more info.");
 			TAB.getInstance().getErrorManager().printError("Placeholder " + replaced + " threw an exception when parsing for player " + target.getName(), e, true);

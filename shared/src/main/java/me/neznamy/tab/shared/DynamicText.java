@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
  */
 public class DynamicText implements Property {
 
-	/** Internal identifier for this text */
+	/** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
 	private final String name;
 
 	/**
@@ -120,7 +120,7 @@ public class DynamicText implements Property {
 		lastReplacedValue = rawFormattedValue;
 		update();
 		TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-		if (expansion != null) {
+		if (expansion != null && name != null) {
 			expansion.setPropertyValue(owner, name, lastReplacedValue);
 			expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
 		}
@@ -202,6 +202,10 @@ public class DynamicText implements Property {
 		string = EnumChatFormat.color(string);
 		if (!lastReplacedValue.equals(string)) {
 			lastReplacedValue = string;
+			TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+			if (expansion != null && name != null) {
+				expansion.setPropertyValue(owner, name, lastReplacedValue);
+			}
 			TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
 			return true;
 		}

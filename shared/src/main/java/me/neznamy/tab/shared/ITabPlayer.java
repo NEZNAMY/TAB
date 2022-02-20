@@ -118,10 +118,10 @@ public abstract class ITabPlayer implements TabPlayer {
 	 * @return	{@code true} if property did not exist or existed with different raw value,
 	 * 			{@code false} if property existed with the same raw value already.
 	 */
-	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source) {
+	private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source, boolean exposeInExpansion) {
 		DynamicText p = (DynamicText) getProperty(identifier);
 		if (p == null) {
-			properties.put(identifier, new DynamicText(identifier, feature, this, rawValue, source));
+			properties.put(identifier, new DynamicText(exposeInExpansion ? identifier : null, feature, this, rawValue, source));
 			return true;
 		} else {
 			if (!p.getOriginalRawValue().equals(rawValue)) {
@@ -384,9 +384,9 @@ public abstract class ITabPlayer implements TabPlayer {
 			value = TAB.getInstance().getConfiguration().getGroups().getProperty(getGroup(), property, server, world);
 		}
 		if (value.length > 0) {
-			return setProperty(feature, property, value[0], value[1]);
+			return setProperty(feature, property, value[0], value[1], true);
 		}
-		return setProperty(feature, property, ifNotSet, "None");
+		return setProperty(feature, property, ifNotSet, "None", true);
 	}
 
 	@Override
@@ -408,7 +408,7 @@ public abstract class ITabPlayer implements TabPlayer {
 	
 	@Override
 	public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
-		return setProperty(feature, identifier, rawValue, null);
+		return setProperty(feature, identifier, rawValue, null, false);
 	}
 
 	@Override
