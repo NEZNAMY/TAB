@@ -233,37 +233,37 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 	@Override
 	public void setPrefix(TabPlayer player, String prefix) {
 		player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
-		player.forceRefresh();
+		updatePlayer(player, true);
 	}
 
 	@Override
 	public void setName(TabPlayer player, String customName) {
 		player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
-		player.forceRefresh();
+		updatePlayer(player, true);
 	}
 
 	@Override
 	public void setSuffix(TabPlayer player, String suffix) {
 		player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
-		player.forceRefresh();
+		updatePlayer(player, true);
 	}
 
 	@Override
 	public void resetPrefix(TabPlayer player) {
 		player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(null);
-		player.forceRefresh();
+		updatePlayer(player, true);
 	}
 
 	@Override
 	public void resetName(TabPlayer player) {
 		player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(null);
-		player.forceRefresh();
+		updatePlayer(player, true);
 	}
 
 	@Override
 	public void resetSuffix(TabPlayer player) {
 		player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(null);
-		player.forceRefresh();
+		updatePlayer(player, true);
 	}
 
 	@Override

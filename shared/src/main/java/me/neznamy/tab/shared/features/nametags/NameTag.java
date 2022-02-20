@@ -81,7 +81,6 @@ public class NameTag extends TabFeature implements TeamManager {
 			boolean suffix = refreshed.getProperty(TabConstants.Property.TAGSUFFIX).update();
 			refresh = prefix || suffix;
 		}
-
 		if (refresh) updateTeam(refreshed);
 	}
 
@@ -317,25 +316,25 @@ public class NameTag extends TabFeature implements TeamManager {
 	@Override
 	public void setPrefix(TabPlayer player, String prefix) {
 		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
-		player.forceRefresh();
+		updateTeamData(player);
 	}
 
 	@Override
 	public void setSuffix(TabPlayer player, String suffix) {
 		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
-		player.forceRefresh();
+		updateTeamData(player);
 	}
 
 	@Override
 	public void resetPrefix(TabPlayer player) {
 		player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
-		player.forceRefresh();
+		updateTeamData(player);
 	}
 
 	@Override
 	public void resetSuffix(TabPlayer player) {
 		player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
-		player.forceRefresh();
+		updateTeamData(player);
 	}
 
 	@Override

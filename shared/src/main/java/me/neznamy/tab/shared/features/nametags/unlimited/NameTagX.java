@@ -247,26 +247,26 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     public void setName(TabPlayer player, String customName) {
         player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(customName);
         rebuildNameTagLine(player);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
     public void setLine(TabPlayer player, String line, String value) {
         player.getProperty(line).setTemporaryValue(value);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
     public void resetName(TabPlayer player) {
         player.getProperty(TabConstants.Property.CUSTOMTAGNAME).setTemporaryValue(null);
         rebuildNameTagLine(player);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
     public void resetLine(TabPlayer player, String line) {
         player.getProperty(line).setTemporaryValue(null);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
@@ -305,30 +305,30 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void setPrefix(TabPlayer player, String prefix) {
-        player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
+        super.setPrefix(player, prefix);
         rebuildNameTagLine(player);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
     public void setSuffix(TabPlayer player, String suffix) {
-        player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
+        super.setSuffix(player, suffix);
         rebuildNameTagLine(player);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
     public void resetPrefix(TabPlayer player) {
-        player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
+        super.resetPrefix(player);
         rebuildNameTagLine(player);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
     public void resetSuffix(TabPlayer player) {
-        player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
+        super.resetSuffix(player);
         rebuildNameTagLine(player);
-        player.forceRefresh();
+        getArmorStandManager(player).refresh(true);
     }
 
     @Override
