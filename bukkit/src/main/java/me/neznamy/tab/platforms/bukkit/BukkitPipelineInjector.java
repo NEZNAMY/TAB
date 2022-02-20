@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,7 +26,11 @@ public class BukkitPipelineInjector extends PipelineInjector {
 	 */
 	public BukkitPipelineInjector(){
 		super("packet_handler");
-		channelFunction = BukkitChannelDuplexHandler::new;
+	}
+
+	@Override
+	public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
+		return BukkitChannelDuplexHandler::new;
 	}
 
 	/**

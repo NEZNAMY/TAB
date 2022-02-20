@@ -32,9 +32,7 @@ public abstract class PipelineInjector extends TabFeature {
 	//anti-override rules
 	protected final boolean antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) && 
 			TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
-	
-	protected Function<TabPlayer, ChannelDuplexHandler> channelFunction;
-	
+
 	protected boolean byteBufDeserialization;
 	
 	/**
@@ -61,7 +59,7 @@ public abstract class PipelineInjector extends TabFeature {
 		}
 		uninject(player);
 		try {
-			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, channelFunction.apply(player));
+			player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, getChannelFunction().apply(player));
 		} catch (NoSuchElementException | IllegalArgumentException e) {
 			//I don't really know how does this keep happening but whatever
 		}
@@ -108,4 +106,6 @@ public abstract class PipelineInjector extends TabFeature {
 	public void setByteBufDeserialization(boolean byteBufDeserialization) {
 		this.byteBufDeserialization = byteBufDeserialization;
 	}
+
+	public abstract Function<TabPlayer, ChannelDuplexHandler> getChannelFunction();
 }

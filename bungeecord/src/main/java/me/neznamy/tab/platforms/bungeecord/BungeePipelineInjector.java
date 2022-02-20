@@ -19,6 +19,7 @@ import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.Team;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
@@ -34,7 +35,11 @@ public class BungeePipelineInjector extends PipelineInjector {
 	 */
 	public BungeePipelineInjector() {
 		super("inbound-boss");
-		channelFunction = BungeeChannelDuplexHandler::new;
+	}
+
+	@Override
+	public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
+		return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : BungeeChannelDuplexHandler::new;
 	}
 
 	/**
@@ -43,7 +48,7 @@ public class BungeePipelineInjector extends PipelineInjector {
 	public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
 
 		//injected player
-		private final TabPlayer player;
+		protected final TabPlayer player;
 
 		/**
 		 * Constructs new instance with given player
@@ -56,28 +61,25 @@ public class BungeePipelineInjector extends PipelineInjector {
 
 		@Override
 		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
-			long time = System.nanoTime();
-			Object modifiedPacket = packet instanceof ByteBuf && byteBufDeserialization ? deserialize((ByteBuf) packet) : packet;
-			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
 			try {
-				switch(modifiedPacket.getClass().getSimpleName()) {
+				switch(packet.getClass().getSimpleName()) {
 				case "PlayerListItem":
-					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, modifiedPacket), channelPromise);
+					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
 					return;
 				case "Team":
 					if (antiOverrideTeams) {
-						modifyPlayers((Team) modifiedPacket);
+						modifyPlayers((Team) packet);
 					}
 					break;
 				case "ScoreboardDisplay":
-					TAB.getInstance().getFeatureManager().onDisplayObjective(player, modifiedPacket);
+					TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
 					break;
 				case "ScoreboardObjective":
-					TAB.getInstance().getFeatureManager().onObjective(player, modifiedPacket);
+					TAB.getInstance().getFeatureManager().onObjective(player, packet);
 					break;
 				case "Login":
 					//making sure to not send own packets before login packet is actually sent
-					super.write(context, modifiedPacket, channelPromise);
+					super.write(context, packet, channelPromise);
 					TAB.getInstance().getFeatureManager().onLoginPacket(player);
 					return;
 				default:
@@ -87,9 +89,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 				TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
 			}
 			try {
-				super.write(context, modifiedPacket, channelPromise);
+				super.write(context, packet, channelPromise);
 			} catch (Exception e) {
-				TAB.getInstance().getErrorManager().printError("Failed to forward packet " + modifiedPacket.getClass().getSimpleName() + " to " + player.getName(), e);
+				TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
 			}
 		}
 
@@ -119,6 +121,26 @@ public class BungeePipelineInjector extends PipelineInjector {
 			}
 			packet.setPlayers(col.toArray(new String[0]));
 			TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+		}
+	}
+
+	public class DeserializableBungeeChannelDuplexHandler extends BungeeChannelDuplexHandler {
+
+		/**
+		 * Constructs new instance with given player
+		 *
+		 * @param player - player to inject
+		 */
+		public DeserializableBungeeChannelDuplexHandler(TabPlayer player) {
+			super(player);
+		}
+
+		@Override
+		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
+			long time = System.nanoTime();
+			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
+			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
+			super.write(context, modifiedPacket, channelPromise);
 		}
 
 		/**
