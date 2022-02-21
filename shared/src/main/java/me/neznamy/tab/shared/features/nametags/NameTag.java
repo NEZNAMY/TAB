@@ -27,8 +27,10 @@ public class NameTag extends TabFeature implements TeamManager {
 	private final WeakHashMap<TabPlayer, String> forcedTeamName = new WeakHashMap<>();
 	protected final Set<TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
 
-	private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() || TAB.getInstance().getPlatform().isPluginEnabled("ViaRewind") ||
-			TAB.getInstance().getPlatform().isPluginEnabled("ProtocolSupport") || TAB.getInstance().getServerVersion().getMinorVersion() == 8;
+	private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() ||
+			TAB.getInstance().getPlatform().getPluginVersion("ViaRewind") != null ||
+			TAB.getInstance().getPlatform().getPluginVersion("ProtocolSupport") != null ||
+			TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
 	public NameTag() {
 		super("NameTags", "Updating prefix/suffix", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),

@@ -14,6 +14,9 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.nametags.unlimited.ProxyNameTagX;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.permission.LuckPerms;
+import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 
 import java.util.Arrays;
@@ -59,6 +62,17 @@ public abstract class ProxyPlatform implements Platform {
 	 */
 	public Map<String, Integer> getBridgePlaceholders() {
 		return bridgePlaceholders;
+	}
+
+	@Override
+	public PermissionPlugin detectPermissionPlugin() {
+		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+			return new VaultBridge();
+		} else if (getPluginVersion("LuckPerms") != null) {
+			return new LuckPerms(getPluginVersion("LuckPerms"));
+		} else {
+			return new VaultBridge();
+		}
 	}
 
 	@Override
@@ -117,5 +131,10 @@ public abstract class ProxyPlatform implements Platform {
 	@Override
 	public String getConfigName() {
 		return "proxyconfig.yml";
+	}
+
+	@Override
+	public boolean isProxy() {
+		return true;
 	}
 }

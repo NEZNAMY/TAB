@@ -129,17 +129,11 @@ public class BukkitPlatform implements Platform {
 		}
 	}
 
-	/**
-	 * Returns version of specified plugin. If plugin is not installed,
-	 * returns empty string.
-	 * @param	plugin
-	 * 			Plugin to get version of
-	 * @return	Plugin version
-	 */
-	private String getPluginVersion(String plugin) {
+	@Override
+	public String getPluginVersion(String plugin) {
 		Preconditions.checkNotNull(plugin, "plugin");
 		Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
-		return pl == null ? "" : pl.getDescription().getVersion();
+		return pl == null ? null : pl.getDescription().getVersion();
 	}
 
 	/**
@@ -263,11 +257,6 @@ public class BukkitPlatform implements Platform {
 	@Override
 	public boolean isProxy() {
 		return false;
-	}
-
-	@Override
-	public boolean isPluginEnabled(String plugin) {
-		return Bukkit.getPluginManager().isPluginEnabled(plugin);
 	}
 
 	@Override

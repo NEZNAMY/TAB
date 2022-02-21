@@ -12,10 +12,6 @@ import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PluginMessageHandler;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.permission.VaultBridge;
-import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -39,17 +35,6 @@ public class BungeePlatform extends ProxyPlatform {
 	public BungeePlatform(Plugin plugin, PluginMessageHandler plm) {
 		super(plm);
 		this.plugin = plugin;
-	}
-	
-	@Override
-	public PermissionPlugin detectPermissionPlugin() {
-		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge();
-		} else if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
-			return new LuckPerms(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms").getDescription().getVersion());
-		} else {
-			return new VaultBridge();
-		}
 	}
 
 	@Override
@@ -103,12 +88,9 @@ public class BungeePlatform extends ProxyPlatform {
 	}
 
 	@Override
-	public boolean isProxy() {
-		return true;
-	}
-	
-	@Override
-	public boolean isPluginEnabled(String plugin) {
-		return ProxyServer.getInstance().getPluginManager().getPlugin(plugin) != null;
+	public String getPluginVersion(String plugin) {
+		Preconditions.checkNotNull(plugin, "plugin");
+		Plugin pl = ProxyServer.getInstance().getPluginManager().getPlugin(plugin);
+		return pl == null ? null : pl.getDescription().getVersion();
 	}
 }
