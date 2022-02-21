@@ -1,31 +1,23 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.io.File;
-import java.util.Collection;
-
-import com.viaversion.viaversion.api.Via;
-import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.shared.TabConstants;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import com.earth2me.essentials.Essentials;
-
+import com.viaversion.viaversion.api.Via;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
+import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
-import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -34,8 +26,13 @@ import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Collection;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -200,16 +197,6 @@ public class BukkitPlatform implements Platform {
 					placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
 			}
 		}
-	}
-
-	@Override
-	public String getServerVersion() {
-		return Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")";
-	}
-
-	@Override
-	public File getDataFolder() {
-		return plugin.getDataFolder();
 	}
 
 	@Override

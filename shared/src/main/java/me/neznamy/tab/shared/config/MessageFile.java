@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.TAB;
 public class MessageFile extends YamlConfigurationFile {
 
 	public MessageFile() throws YAMLException, IOException {
-		super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getPlatform().getDataFolder(), "messages.yml"));
+		super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));
 	}
 
 	public String getAnnounceCommandUsage() {

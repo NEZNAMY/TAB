@@ -22,13 +22,13 @@ public class ErrorManager {
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
 	/** errors.log file for internal plugin errors */
-	private final File errorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "errors.log");
+	private final File errorLog = new File(TAB.getInstance().getDataFolder(), "errors.log");
 
 	/** anti-override.log file when some plugin or server itself attempts to override the plugin */
-	private final File antiOverrideLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "anti-override.log");
+	private final File antiOverrideLog = new File(TAB.getInstance().getDataFolder(), "anti-override.log");
 
 	/** placeholder-errors.log file for errors thrown by placeholders */
-	private final File placeholderErrorLog = new File(TAB.getInstance().getPlatform().getDataFolder(), "placeholder-errors.log");
+	private final File placeholderErrorLog = new File(TAB.getInstance().getDataFolder(), "placeholder-errors.log");
 
 	/**
 	 * Prints error message into errors.log file

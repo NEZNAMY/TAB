@@ -30,7 +30,7 @@ public class Main extends Plugin {
 			return;
 		}
 		ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
-		TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY));
+		TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder()));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		TAB.getInstance().load();

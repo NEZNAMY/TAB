@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
-import java.io.File;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -46,16 +45,6 @@ public class VelocityPlatform extends ProxyPlatform {
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		Preconditions.checkNotNull(message, "message");
 		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? EnumChatFormat.color(message) : message));
-	}
-	
-	@Override
-	public String getServerVersion() {
-		return server.getVersion().getName() + " v" + server.getVersion().getVersion();
-	}
-
-	@Override
-	public File getDataFolder() {
-		return new File("plugins" + File.separatorChar + "TAB");
 	}
 
 	@Override

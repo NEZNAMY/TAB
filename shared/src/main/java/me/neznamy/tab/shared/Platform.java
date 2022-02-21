@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.io.File;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -42,20 +40,6 @@ public interface Platform {
 	 * 			placeholder's identifier
 	 */
 	void registerUnknownPlaceholder(String identifier);
-	
-	/**
-	 * Returns server's software version
-	 *
-	 * @return	server's software version
-	 */
-	String getServerVersion();
-
-	/**
-	 * Returns plugin's data folder
-	 *
-	 * @return	plugin's data folder
-	 */
-	File getDataFolder();
 	
 	/**
 	 * Calls platform-specific load event.

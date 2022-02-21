@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import java.io.File;
-
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -58,16 +56,6 @@ public class BungeePlatform extends ProxyPlatform {
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		Preconditions.checkNotNull(message, "message");
 		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? EnumChatFormat.color(message) : message));
-	}
-	
-	@Override
-	public String getServerVersion() {
-		return ProxyServer.getInstance().getVersion();
-	}
-
-	@Override
-	public File getDataFolder() {
-		return plugin.getDataFolder();
 	}
 
 	@Override

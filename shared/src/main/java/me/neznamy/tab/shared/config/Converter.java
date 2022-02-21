@@ -57,7 +57,7 @@ public class Converter {
         TAB.getInstance().sendConsoleMessage("&e[TAB] Review your configuration and verify everything is as you want it to be",true);
         TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
 
-        File folder = TAB.getInstance().getPlatform().getDataFolder();
+        File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();
         Files.createFile(new File(folder, "groups.yml").toPath());
         Files.createFile(new File(folder, "users.yml").toPath());
@@ -99,7 +99,7 @@ public class Converter {
      *          if thrown by file move operation
      */
     private void moveOldFiles() throws IOException {
-        File folder = TAB.getInstance().getPlatform().getDataFolder();
+        File folder = TAB.getInstance().getDataFolder();
         File oldFolder = new File(folder, "old_configs");
         if (!oldFolder.exists() && !oldFolder.mkdirs()) throw new RuntimeException("Failed to convert configuration to v3: Failed to create old_configs folder");
         File[] files = folder.listFiles();

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -100,6 +101,12 @@ public class TAB extends TabAPI {
 	/** Boolean checking floodgate plugin presence for hook */
 	private boolean floodgate;
 
+	/** Version string defined by the server */
+	private final String serverVersionString;
+
+	/** TAB's data folder */
+	private final File dataFolder;
+
 	/**
 	 * Constructs new instance with given parameters and sets this
 	 * new instance as {@link me.neznamy.tab.api.TabAPI} instance.
@@ -109,9 +116,11 @@ public class TAB extends TabAPI {
 	 * @param	serverVersion
 	 * 			Version the server is running on
 	 */
-	public TAB(Platform platform, ProtocolVersion serverVersion) {
+	public TAB(Platform platform, ProtocolVersion serverVersion, String serverVersionString, File dataFolder) {
 		this.platform = platform;
 		this.serverVersion = serverVersion;
+		this.serverVersionString = serverVersionString;
+		this.dataFolder = dataFolder;
 		TabAPI.setInstance(this);
 		try {
 			Class.forName("org.geysermc.floodgate.api.FloodgateApi");
@@ -360,6 +369,24 @@ public class TAB extends TabAPI {
 	 */
 	public DisabledCommand getDisabledCommand() {
 		return disabledCommand;
+	}
+
+	/**
+	 * Returns {@link #serverVersionString}
+	 *
+	 * @return	{@link #serverVersionString}
+	 */
+	public String getServerVersionString() {
+		return serverVersionString;
+	}
+
+	/**
+	 * Returns {@link #dataFolder}
+	 *
+	 * @return	{@link #dataFolder}
+	 */
+	public File getDataFolder() {
+		return dataFolder;
 	}
 
 	@Override

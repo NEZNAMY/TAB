@@ -21,7 +21,7 @@ public class SkinManager {
 
 	public SkinManager(String defaultSkin) {
 		try {
-			File f = new File(TAB.getInstance().getPlatform().getDataFolder(), "skincache.yml");
+			File f = new File(TAB.getInstance().getDataFolder(), "skincache.yml");
 			if (f.exists() || f.createNewFile()) {
 				ConfigurationFile cache = new YamlConfigurationFile(null, f);
 				sources.put("player", new PlayerSkin(cache));

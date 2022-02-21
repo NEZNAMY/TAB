@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +74,7 @@ public class Main {
 		String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
 		mc = MinecraftChannelIdentifier.create(name[0], name[1]);
 		server.getChannelRegistrar().register(mc);
-		TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY));
+		TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB")));
 		server.getEventManager().register(this, new VelocityEventListener());
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);

@@ -73,10 +73,10 @@ public class Configs {
 	public void loadFiles() throws YAMLException, IOException {
 		ClassLoader loader = Configs.class.getClassLoader();
 		loadConfig();
-		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getPlatform().getDataFolder(), "animations.yml"));
+		animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getDataFolder(), "animations.yml"));
 		converter.convertAnimationFile(animation);
 		messages = new MessageFile();
-		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getPlatform().getDataFolder(), "layout.yml"));
+		layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getDataFolder(), "layout.yml"));
 		reloadFailed = messages.getReloadFailBrokenFile();
 	}
 
@@ -88,7 +88,7 @@ public class Configs {
 	 * 			if files contain syntax errors
 	 */
 	public void loadConfig() throws YAMLException, IOException {
-		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getPlatform().getDataFolder(), "config.yml"));
+		config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getDataFolder(), "config.yml"));
 		converter.convertToV3(config);
 		converter.removeOldOptions(config);
 		debugMode = getConfig().getBoolean("debug", false);
@@ -110,8 +110,8 @@ public class Configs {
 				TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
 			}
 		}
-		groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getPlatform().getDataFolder(), "groups.yml"));
-		userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getPlatform().getDataFolder(), "users.yml"));
+		groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getDataFolder(), "groups.yml"));
+		userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getDataFolder(), "users.yml"));
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class Configs {
 
 	public ConfigurationFile getPlayerDataFile() {
 		if (playerdata == null) {
-			File file = new File(tab.getPlatform().getDataFolder(), "playerdata.yml");
+			File file = new File(tab.getDataFolder(), "playerdata.yml");
 			try {
 				if (file.exists() || file.createNewFile()) {
 					playerdata = new YamlConfigurationFile(null, file);
