@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.Preconditions;
@@ -23,13 +22,12 @@ public class VelocityPlatform extends ProxyPlatform {
 	//instance of ProxyServer
 	private final ProxyServer server;
 	
-	private final PacketBuilder packetBuilder = new PacketBuilder();
-	
 	/**
 	 * Constructs new instance with given parameter
 	 * @param server - instance of ProxyServer
 	 */
 	public VelocityPlatform(ProxyServer server) {
+		super(new PacketBuilder());
 		this.server = server;
 	}
 
@@ -45,17 +43,6 @@ public class VelocityPlatform extends ProxyPlatform {
 	public void sendConsoleMessage(String message, boolean translateColors) {
 		Preconditions.checkNotNull(message, "message");
 		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? EnumChatFormat.color(message) : message));
-	}
-
-	@Override
-	public void callLoadEvent() {}
-	
-	@Override
-	public void callLoadEvent(TabPlayer player) {}
-
-	@Override
-	public PacketBuilder getPacketBuilder() {
-		return packetBuilder;
 	}
 
 	@Override

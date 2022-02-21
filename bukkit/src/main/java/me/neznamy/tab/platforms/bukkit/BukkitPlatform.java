@@ -5,7 +5,6 @@ import com.viaversion.viaversion.api.Via;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
@@ -37,13 +36,10 @@ import java.util.Collection;
 /**
  * Implementation of Platform interface for Bukkit platform
  */
-public class BukkitPlatform implements Platform {
+public class BukkitPlatform extends Platform {
 
 	/** Plugin instance for registering tasks and events */
 	private final JavaPlugin plugin;
-
-	/** Platform's packet builder implementation */
-	private final BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
 
 	/** Variables checking presence of other plugins to hook into */
 	private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
@@ -58,6 +54,7 @@ public class BukkitPlatform implements Platform {
 	 * 			plugin instance
 	 */
 	public BukkitPlatform(JavaPlugin plugin) {
+		super(new BukkitPacketBuilder());
 		Preconditions.checkNotNull(plugin, "plugin");
 		this.plugin = plugin;
 	}
@@ -234,11 +231,6 @@ public class BukkitPlatform implements Platform {
 	 */
 	public Essentials getEssentials() {
 		return (Essentials) essentials;
-	}
-
-	@Override
-	public PacketBuilder getPacketBuilder() {
-		return packetBuilder;
 	}
 
 	@Override

@@ -8,19 +8,53 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
  * An interface with methods that are called in universal code,
  * but require platform-specific API calls
  */
-public interface Platform {
+public abstract class Platform {
+
+	/** Platform's packet builder implementation */
+	private final PacketBuilder packetBuilder;
+
+	/**
+	 * Constructs new instance with given parameter
+	 *
+	 * @param	packetBuilder
+	 * 			Platform's packet builder
+	 */
+	protected Platform(PacketBuilder packetBuilder) {
+		this.packetBuilder = packetBuilder;
+	}
+
+	/**
+	 * Calls platform-specific load event.
+	 * This method is called when plugin is fully enabled.
+	 */
+	public void callLoadEvent(){}
+
+	/**
+	 * Calls platform-specific player load event.
+	 * This method is called when player is fully loaded.
+	 */
+	public void callLoadEvent(TabPlayer player){}
+
+	/**
+	 * Returns platform-specific packet builder implementation
+	 *
+	 * @return	platform-specific packet builder
+	 */
+	public PacketBuilder getPacketBuilder(){
+		return packetBuilder;
+	}
 
 	/**
 	 * Detects permission plugin and returns it's representing object
 	 *
 	 * @return	the interface representing the permission hook
 	 */
-	PermissionPlugin detectPermissionPlugin();
+	public abstract PermissionPlugin detectPermissionPlugin();
 	
 	/**
 	 * Loads platform-specific features
 	 */
-	void loadFeatures();
+	public abstract void loadFeatures();
 	
 	/**
 	 * Sends a message into console
@@ -30,7 +64,7 @@ public interface Platform {
 	 * @param	translateColors
 	 * 			if color codes should be translated or not
 	 */
-	void sendConsoleMessage(String message, boolean translateColors);
+	public abstract void sendConsoleMessage(String message, boolean translateColors);
 	
 	/**
 	 * Creates an instance of {@link me.neznamy.tab.api.placeholder.Placeholder}
@@ -39,33 +73,14 @@ public interface Platform {
 	 * @param	identifier
 	 * 			placeholder's identifier
 	 */
-	void registerUnknownPlaceholder(String identifier);
-	
-	/**
-	 * Calls platform-specific load event.
-	 * This method is called when plugin is fully enabled.
-	 */
-	void callLoadEvent();
-	
-	/**
-	 * Calls platform-specific player load event.
-	 * This method is called when player is fully loaded.
-	 */
-	void callLoadEvent(TabPlayer player);
-	
-	/**
-	 * Returns platform-specific packet builder implementation
-	 *
-	 * @return	platform-specific packet builder
-	 */
-	PacketBuilder getPacketBuilder();
+	public abstract void registerUnknownPlaceholder(String identifier);
 
 	/**
 	 * Returns {@code true} if this platform is a proxy, {@code false} if a game server
 	 *
 	 * @return	{@code true} if this platform is a proxy, {@code false} if a game server
 	 */
-	boolean isProxy();
+	public abstract boolean isProxy();
 
 	/**
 	 * Performs platform-specific plugin manager call and returns the result.
@@ -75,7 +90,7 @@ public interface Platform {
 	 * 			Plugin to check version of
 	 * @return	Version string if plugin is installed, {@code null} if not
 	 */
-	String getPluginVersion(String plugin);
+	public abstract String getPluginVersion(String plugin);
 
 	/**
 	 * Returns name of default config file for this platform
@@ -83,5 +98,5 @@ public interface Platform {
 	 *
 	 * @return	name of default config file for this platform
 	 */
-	String getConfigName();
+	public abstract String getConfigName();
 }

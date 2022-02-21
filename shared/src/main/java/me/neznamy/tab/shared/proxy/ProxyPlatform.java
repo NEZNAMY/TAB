@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.proxy;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
+import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -27,13 +28,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Abstract class containing common variables and methods
  * shared between proxies.
  */
-public abstract class ProxyPlatform implements Platform {
+public abstract class ProxyPlatform extends Platform {
 
 	/** Plugin message handler for sending and receiving plugin messages */
 	protected final PluginMessageHandler plm = new PluginMessageHandler();
 
 	/** Placeholders which are refreshed on backend server */
 	private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+
+	protected ProxyPlatform(PacketBuilder packetBuilder) {
+		super(packetBuilder);
+	}
 
 	/**
 	 * Returns plugin message handler

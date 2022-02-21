@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
@@ -23,13 +22,12 @@ public class BungeePlatform extends ProxyPlatform {
 	//instance of plugin
 	private final Plugin plugin;
 	
-	private final BungeePacketBuilder packetBuilder = new BungeePacketBuilder();
-	
 	/**
 	 * Constructs new instance with given parameter
 	 * @param plugin - main class
 	 */
 	public BungeePlatform(Plugin plugin) {
+		super(new BungeePacketBuilder());
 		this.plugin = plugin;
 	}
 
@@ -66,11 +64,6 @@ public class BungeePlatform extends ProxyPlatform {
 	@Override
 	public void callLoadEvent(TabPlayer player) {
 		ProxyServer.getInstance().getPluginManager().callEvent(new TabPlayerLoadEvent(player));
-	}
-
-	@Override
-	public PacketBuilder getPacketBuilder() {
-		return packetBuilder;
 	}
 
 	@Override
