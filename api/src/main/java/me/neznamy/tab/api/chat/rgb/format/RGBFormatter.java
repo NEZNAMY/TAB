@@ -5,10 +5,10 @@ package me.neznamy.tab.api.chat.rgb.format;
  */
 public interface RGBFormatter {
 
-	/**
-	 * Reformats RGB codes in provided text into #RRGGBB format
-	 * @param text - text to format
-	 * @return reformatted text
-	 */
-	String reformat(String text);
+    /**
+     * Reformats RGB codes in provided text into #RRGGBB format
+     * @param text - text to format
+     * @return reformatted text
+     */
+    String reformat(String text);
 }

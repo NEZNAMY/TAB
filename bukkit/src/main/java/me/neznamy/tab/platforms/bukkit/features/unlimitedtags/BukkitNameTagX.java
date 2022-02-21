@@ -15,147 +15,147 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class BukkitNameTagX extends NameTagX {
 
-	//bukkit event listener
-	private final EventListener eventListener = new EventListener(this);
-	
-	private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
+    //bukkit event listener
+    private final EventListener eventListener = new EventListener(this);
 
-	/**
-	 * Constructs new instance with given parameters and loads config options
-	 * @param plugin - plugin instance
-	 */
-	public BukkitNameTagX(JavaPlugin plugin) {
-		super(BukkitArmorStandManager::new);
-		Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, new PacketListener(this));
-		TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
-	}
+    private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
-	@Override
-	public void load() {
-		super.load();
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (isPlayerDisabled(all)) continue;
-			for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-				spawnArmorStands(viewer, all);
-			}
-		}
-		startVisibilityRefreshTask();
-	}
+    /**
+     * Constructs new instance with given parameters and loads config options
+     * @param plugin - plugin instance
+     */
+    public BukkitNameTagX(JavaPlugin plugin) {
+        super(BukkitArmorStandManager::new);
+        Bukkit.getPluginManager().registerEvents(eventListener, plugin);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, new PacketListener(this));
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
+    }
 
-	private void startVisibilityRefreshTask() {
-		TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
+    @Override
+    public void load() {
+        super.load();
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (isPlayerDisabled(all)) continue;
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                spawnArmorStands(viewer, all);
+            }
+        }
+        startVisibilityRefreshTask();
+    }
 
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (isPlayerDisabled(p)) continue;
-				getArmorStandManager(p).updateVisibility(false);
-			}
-		});
-	}
+    private void startVisibilityRefreshTask() {
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
-	@Override
-	public void unload() {
-		super.unload();
-		HandlerList.unregisterAll(eventListener);
-	}
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                if (isPlayerDisabled(p)) continue;
+                getArmorStandManager(p).updateVisibility(false);
+            }
+        });
+    }
 
-	@Override
-	public void onJoin(TabPlayer connectedPlayer) {
-		super.onJoin(connectedPlayer);
-		if (isPlayerDisabled(connectedPlayer)) return;
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			spawnArmorStands(viewer, connectedPlayer);
-			spawnArmorStands(connectedPlayer, viewer);
-		}
-	}
+    @Override
+    public void unload() {
+        super.unload();
+        HandlerList.unregisterAll(eventListener);
+    }
 
-	@Override
-	public boolean isOnBoat(TabPlayer player) {
-		return vehicleManager != null && vehicleManager.isOnBoat(player);
-	}
+    @Override
+    public void onJoin(TabPlayer connectedPlayer) {
+        super.onJoin(connectedPlayer);
+        if (isPlayerDisabled(connectedPlayer)) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            spawnArmorStands(viewer, connectedPlayer);
+            spawnArmorStands(connectedPlayer, viewer);
+        }
+    }
 
-	private void spawnArmorStands(TabPlayer viewer, TabPlayer target) {
-		if (target == viewer || isPlayerDisabled(target)) return;
-		if (((Player) viewer.getPlayer()).getWorld() != ((Player) target.getPlayer()).getWorld()) return;
-		if (getDistance(viewer, target) <= 48) {
-			if (((Player)viewer.getPlayer()).canSee((Player)target.getPlayer()) && !target.isVanished()) getArmorStandManager(target).spawn(viewer);
-		}
-	}
+    @Override
+    public boolean isOnBoat(TabPlayer player) {
+        return vehicleManager != null && vehicleManager.isOnBoat(player);
+    }
 
-	@Override
-	public void setNameTagPreview(TabPlayer player, boolean status) {
-		if (status) {
-			getArmorStandManager(player).spawn(player);
-		} else {
-			getArmorStandManager(player).destroy(player);
-		}
-	}
+    private void spawnArmorStands(TabPlayer viewer, TabPlayer target) {
+        if (target == viewer || isPlayerDisabled(target)) return;
+        if (((Player) viewer.getPlayer()).getWorld() != ((Player) target.getPlayer()).getWorld()) return;
+        if (getDistance(viewer, target) <= 48) {
+            if (((Player)viewer.getPlayer()).canSee((Player)target.getPlayer()) && !target.isVanished()) getArmorStandManager(target).spawn(viewer);
+        }
+    }
 
-	@Override
-	public void resumeArmorStands(TabPlayer player) {
-		if (isPlayerDisabled(player)) return;
-		for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-			spawnArmorStands(viewer, player);
-		}
-	}
+    @Override
+    public void setNameTagPreview(TabPlayer player, boolean status) {
+        if (status) {
+            getArmorStandManager(player).spawn(player);
+        } else {
+            getArmorStandManager(player).destroy(player);
+        }
+    }
 
-	@Override
-	public void pauseArmorStands(TabPlayer player) {
-		if (isPlayerDisabled(player)) return;
-		getArmorStandManager(player).destroy();
-	}
+    @Override
+    public void resumeArmorStands(TabPlayer player) {
+        if (isPlayerDisabled(player)) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            spawnArmorStands(viewer, player);
+        }
+    }
 
-	@Override
-	public void updateNameTagVisibilityView(TabPlayer player) {
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			getArmorStandManager(all).updateVisibility(true);
-		}
-	}
+    @Override
+    public void pauseArmorStands(TabPlayer player) {
+        if (isPlayerDisabled(player)) return;
+        getArmorStandManager(player).destroy();
+    }
 
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		super.onQuit(disconnectedPlayer);
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			getArmorStandManager(all).unregisterPlayer(disconnectedPlayer);
-		}
-		getArmorStandManager(disconnectedPlayer).destroy();
-		TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> getArmorStandManager(disconnectedPlayer).destroy());
-	}
+    @Override
+    public void updateNameTagVisibilityView(TabPlayer player) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            getArmorStandManager(all).updateVisibility(true);
+        }
+    }
 
-	@Override
-	public void onWorldChange(TabPlayer p, String from, String to) {
-		super.onWorldChange(p, from, to);
-		if (isUnlimitedDisabled(p.getServer(), to)) {
-			getDisabledUnlimitedPlayers().add(p);
-			updateTeamData(p);
-		} else if (getDisabledUnlimitedPlayers().remove(p)) {
-			updateTeamData(p);
-		}
-		if (isPreviewingNametag(p)) {
-			getArmorStandManager(p).spawn(p);
-		}
-	}
+    @Override
+    public void onQuit(TabPlayer disconnectedPlayer) {
+        super.onQuit(disconnectedPlayer);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            getArmorStandManager(all).unregisterPlayer(disconnectedPlayer);
+        }
+        getArmorStandManager(disconnectedPlayer).destroy();
+        TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> getArmorStandManager(disconnectedPlayer).destroy());
+    }
 
-	/**
-	 * Returns flat distance between two players ignoring Y value
-	 * @param player1 - first player
-	 * @param player2 - second player
-	 * @return flat distance in blocks
-	 */
-	private double getDistance(TabPlayer player1, TabPlayer player2) {
-		Location loc1 = ((Player) player1.getPlayer()).getLocation();
-		Location loc2 = ((Player) player2.getPlayer()).getLocation();
-		return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
-	}
+    @Override
+    public void onWorldChange(TabPlayer p, String from, String to) {
+        super.onWorldChange(p, from, to);
+        if (isUnlimitedDisabled(p.getServer(), to)) {
+            getDisabledUnlimitedPlayers().add(p);
+            updateTeamData(p);
+        } else if (getDisabledUnlimitedPlayers().remove(p)) {
+            updateTeamData(p);
+        }
+        if (isPreviewingNametag(p)) {
+            getArmorStandManager(p).spawn(p);
+        }
+    }
 
-	@Override
-	public BukkitArmorStandManager getArmorStandManager(TabPlayer player) {
-		return (BukkitArmorStandManager) armorStandManagerMap.get(player);
-	}
+    /**
+     * Returns flat distance between two players ignoring Y value
+     * @param player1 - first player
+     * @param player2 - second player
+     * @return flat distance in blocks
+     */
+    private double getDistance(TabPlayer player1, TabPlayer player2) {
+        Location loc1 = ((Player) player1.getPlayer()).getLocation();
+        Location loc2 = ((Player) player2.getPlayer()).getLocation();
+        return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
+    }
 
-	public VehicleRefresher getVehicleManager() {
-		return vehicleManager;
-	}
+    @Override
+    public BukkitArmorStandManager getArmorStandManager(TabPlayer player) {
+        return (BukkitArmorStandManager) armorStandManagerMap.get(player);
+    }
+
+    public VehicleRefresher getVehicleManager() {
+        return vehicleManager;
+    }
 
 
 }

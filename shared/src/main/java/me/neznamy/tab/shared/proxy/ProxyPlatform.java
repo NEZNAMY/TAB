@@ -30,105 +30,105 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class ProxyPlatform extends Platform {
 
-	/** Plugin message handler for sending and receiving plugin messages */
-	protected final PluginMessageHandler plm = new PluginMessageHandler();
+    /** Plugin message handler for sending and receiving plugin messages */
+    protected final PluginMessageHandler plm = new PluginMessageHandler();
 
-	/** Placeholders which are refreshed on backend server */
-	private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+    /** Placeholders which are refreshed on backend server */
+    private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
-	protected ProxyPlatform(PacketBuilder packetBuilder) {
-		super(packetBuilder);
-	}
+    protected ProxyPlatform(PacketBuilder packetBuilder) {
+        super(packetBuilder);
+    }
 
-	/**
-	 * Returns plugin message handler
-	 *
-	 * @return	plugin message handler
-	 */
-	public PluginMessageHandler getPluginMessageHandler() {
-		return plm;
-	}
+    /**
+     * Returns plugin message handler
+     *
+     * @return    plugin message handler
+     */
+    public PluginMessageHandler getPluginMessageHandler() {
+        return plm;
+    }
 
-	/**
-	 * Returns bridge placeholders, which are refreshed on backend server
-	 *
-	 * @return	bridge placeholders, which are refreshed on backend server
-	 */
-	public Map<String, Integer> getBridgePlaceholders() {
-		return bridgePlaceholders;
-	}
+    /**
+     * Returns bridge placeholders, which are refreshed on backend server
+     *
+     * @return    bridge placeholders, which are refreshed on backend server
+     */
+    public Map<String, Integer> getBridgePlaceholders() {
+        return bridgePlaceholders;
+    }
 
-	@Override
-	public PermissionPlugin detectPermissionPlugin() {
-		if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-			return new VaultBridge();
-		} else if (getPluginVersion("LuckPerms") != null) {
-			return new LuckPerms(getPluginVersion("LuckPerms"));
-		} else {
-			return new VaultBridge();
-		}
-	}
+    @Override
+    public PermissionPlugin detectPermissionPlugin() {
+        if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+            return new VaultBridge();
+        } else if (getPluginVersion("LuckPerms") != null) {
+            return new LuckPerms(getPluginVersion("LuckPerms"));
+        } else {
+            return new VaultBridge();
+        }
+    }
 
-	@Override
-	public void registerUnknownPlaceholder(String identifier) {
-		PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
-		//internal dynamic %online_<server>% placeholder
-		if (identifier.startsWith("%online_")) {
-			String server = identifier.substring(8, identifier.length()-1);
-			pl.registerServerPlaceholder(identifier, 1000, () ->
-					Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
-							getRedisPlayers().values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count());
-			return;
-		}
-		Placeholder placeholder;
-		if (identifier.startsWith("%rel_")) {
-			placeholder = pl.registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> null);
-		} else {
-			int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
-			placeholder = pl.registerPlayerPlaceholder(identifier, refresh, player -> null);
-		}
-		placeholder.enableTriggerMode();
-		bridgePlaceholders.put(placeholder.getIdentifier(), placeholder.getRefresh());
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			plm.sendMessage(all, "Placeholder", placeholder.getIdentifier(), placeholder.getRefresh());
-		}
-	}
+    @Override
+    public void registerUnknownPlaceholder(String identifier) {
+        PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+        //internal dynamic %online_<server>% placeholder
+        if (identifier.startsWith("%online_")) {
+            String server = identifier.substring(8, identifier.length()-1);
+            pl.registerServerPlaceholder(identifier, 1000, () ->
+                    Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
+                            getRedisPlayers().values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count());
+            return;
+        }
+        Placeholder placeholder;
+        if (identifier.startsWith("%rel_")) {
+            placeholder = pl.registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> null);
+        } else {
+            int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
+            placeholder = pl.registerPlayerPlaceholder(identifier, refresh, player -> null);
+        }
+        placeholder.enableTriggerMode();
+        bridgePlaceholders.put(placeholder.getIdentifier(), placeholder.getRefresh());
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            plm.sendMessage(all, "Placeholder", placeholder.getIdentifier(), placeholder.getRefresh());
+        }
+    }
 
-	private Map<String, RedisPlayer> getRedisPlayers() {
-		RedisSupport support = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-		return support == null ? Collections.emptyMap() : support.getRedisPlayers();
-	}
+    private Map<String, RedisPlayer> getRedisPlayers() {
+        RedisSupport support = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        return support == null ? Collections.emptyMap() : support.getRedisPlayers();
+    }
 
-	@Override
-	public void loadFeatures() {
-		TAB tab = TAB.getInstance();
-		new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-		if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-			if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
-				tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX(plm));
-			} else {
-				tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
-			}
-		}
-		tab.loadUniversalFeatures();
-		if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false))
-			tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
-		if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false))
-			tab.getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
-		if (tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
-			tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new TabFeature("", "") {});
-		if (tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
-			tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion(plm));
-		}
-	}
+    @Override
+    public void loadFeatures() {
+        TAB tab = TAB.getInstance();
+        new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
+        if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
+            if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
+                tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX(plm));
+            } else {
+                tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
+            }
+        }
+        tab.loadUniversalFeatures();
+        if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false))
+            tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
+        if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false))
+            tab.getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
+        if (tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
+            tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new TabFeature("", "") {});
+        if (tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
+            tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion(plm));
+        }
+    }
 
-	@Override
-	public String getConfigName() {
-		return "proxyconfig.yml";
-	}
+    @Override
+    public String getConfigName() {
+        return "proxyconfig.yml";
+    }
 
-	@Override
-	public boolean isProxy() {
-		return true;
-	}
+    @Override
+    public boolean isProxy() {
+        return true;
+    }
 }

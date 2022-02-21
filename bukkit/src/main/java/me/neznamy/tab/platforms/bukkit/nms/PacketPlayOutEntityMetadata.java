@@ -6,26 +6,26 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 
 public class PacketPlayOutEntityMetadata implements TabPacket {
 
-	private final int entityId;
+    private final int entityId;
 
-	private final DataWatcher dataWatcher;
+    private final DataWatcher dataWatcher;
 
-	public PacketPlayOutEntityMetadata(int entityId, DataWatcher dataWatcher) {
-		Preconditions.checkNotNull(dataWatcher, "data watcher");
-		this.entityId = entityId;
-		this.dataWatcher = dataWatcher;
-	}
+    public PacketPlayOutEntityMetadata(int entityId, DataWatcher dataWatcher) {
+        Preconditions.checkNotNull(dataWatcher, "data watcher");
+        this.entityId = entityId;
+        this.dataWatcher = dataWatcher;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("PacketPlayOutEntityMetadata{entityId=%s,dataWatcher=%s}", entityId, dataWatcher);
-	}
+    @Override
+    public String toString() {
+        return String.format("PacketPlayOutEntityMetadata{entityId=%s,dataWatcher=%s}", entityId, dataWatcher);
+    }
 
-	public int getEntityId() {
-		return entityId;
-	}
+    public int getEntityId() {
+        return entityId;
+    }
 
-	public DataWatcher getDataWatcher() {
-		return dataWatcher;
-	}
+    public DataWatcher getDataWatcher() {
+        return dataWatcher;
+    }
 }

@@ -25,147 +25,147 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public class BungeePipelineInjector extends PipelineInjector {
 
-	//packets that must be deserialized and BungeeCord does not do it automatically
+    //packets that must be deserialized and BungeeCord does not do it automatically
 
-	private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
-	private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
+    private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
+    private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
-	/**
-	 * Constructs new instance of the feature
-	 */
-	public BungeePipelineInjector() {
-		super("inbound-boss");
-	}
+    /**
+     * Constructs new instance of the feature
+     */
+    public BungeePipelineInjector() {
+        super("inbound-boss");
+    }
 
-	@Override
-	public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
-		return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : BungeeChannelDuplexHandler::new;
-	}
+    @Override
+    public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
+        return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : BungeeChannelDuplexHandler::new;
+    }
 
-	/**
-	 * Custom channel duplex handler override
-	 */
-	public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
+    /**
+     * Custom channel duplex handler override
+     */
+    public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
 
-		//injected player
-		protected final TabPlayer player;
+        //injected player
+        protected final TabPlayer player;
 
-		/**
-		 * Constructs new instance with given player
-		 * @param player - player to inject
-		 */
-		public BungeeChannelDuplexHandler(TabPlayer player) {
-			Preconditions.checkNotNull(player, "player");
-			this.player = player;
-		}
+        /**
+         * Constructs new instance with given player
+         * @param player - player to inject
+         */
+        public BungeeChannelDuplexHandler(TabPlayer player) {
+            Preconditions.checkNotNull(player, "player");
+            this.player = player;
+        }
 
-		@Override
-		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
-			try {
-				switch(packet.getClass().getSimpleName()) {
-				case "PlayerListItem":
-					super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-					return;
-				case "Team":
-					if (antiOverrideTeams) {
-						modifyPlayers((Team) packet);
-					}
-					break;
-				case "ScoreboardDisplay":
-					TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
-					break;
-				case "ScoreboardObjective":
-					TAB.getInstance().getFeatureManager().onObjective(player, packet);
-					break;
-				case "Login":
-					//making sure to not send own packets before login packet is actually sent
-					super.write(context, packet, channelPromise);
-					TAB.getInstance().getFeatureManager().onLoginPacket(player);
-					return;
-				default:
-					break;
-				}
-			} catch (Exception e){
-				TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
-			}
-			try {
-				super.write(context, packet, channelPromise);
-			} catch (Exception e) {
-				TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
-			}
-		}
+        @Override
+        public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
+            try {
+                switch(packet.getClass().getSimpleName()) {
+                case "PlayerListItem":
+                    super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+                    return;
+                case "Team":
+                    if (antiOverrideTeams) {
+                        modifyPlayers((Team) packet);
+                    }
+                    break;
+                case "ScoreboardDisplay":
+                    TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
+                    break;
+                case "ScoreboardObjective":
+                    TAB.getInstance().getFeatureManager().onObjective(player, packet);
+                    break;
+                case "Login":
+                    //making sure to not send own packets before login packet is actually sent
+                    super.write(context, packet, channelPromise);
+                    TAB.getInstance().getFeatureManager().onLoginPacket(player);
+                    return;
+                default:
+                    break;
+                }
+            } catch (Exception e){
+                TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
+            }
+            try {
+                super.write(context, packet, channelPromise);
+            } catch (Exception e) {
+                TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
+            }
+        }
 
-		/**
-		 * Removes all real players from packet if the packet doesn't come from TAB
-		 * @param packet - packet to modify
-		 */
-		private void modifyPlayers(Team packet){
-			long time = System.nanoTime();
-			if (packet.getPlayers() == null) return;
-			Collection<String> col = Lists.newArrayList(packet.getPlayers());
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-						!TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
-					logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-					col.remove(p.getNickname());
-				}
-			}
-			RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-			if (redis != null) {
-				for (RedisPlayer p : redis.getRedisPlayers().values()) {
-					if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
-						logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-						col.remove(p.getName());
-					}
-				}
-			}
-			packet.setPlayers(col.toArray(new String[0]));
-			TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
-		}
-	}
+        /**
+         * Removes all real players from packet if the packet doesn't come from TAB
+         * @param packet - packet to modify
+         */
+        private void modifyPlayers(Team packet){
+            long time = System.nanoTime();
+            if (packet.getPlayers() == null) return;
+            Collection<String> col = Lists.newArrayList(packet.getPlayers());
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
+                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
+                    logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+                    col.remove(p.getNickname());
+                }
+            }
+            RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+            if (redis != null) {
+                for (RedisPlayer p : redis.getRedisPlayers().values()) {
+                    if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
+                        logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+                        col.remove(p.getName());
+                    }
+                }
+            }
+            packet.setPlayers(col.toArray(new String[0]));
+            TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+        }
+    }
 
-	public class DeserializableBungeeChannelDuplexHandler extends BungeeChannelDuplexHandler {
+    public class DeserializableBungeeChannelDuplexHandler extends BungeeChannelDuplexHandler {
 
-		/**
-		 * Constructs new instance with given player
-		 *
-		 * @param player - player to inject
-		 */
-		public DeserializableBungeeChannelDuplexHandler(TabPlayer player) {
-			super(player);
-		}
+        /**
+         * Constructs new instance with given player
+         *
+         * @param player - player to inject
+         */
+        public DeserializableBungeeChannelDuplexHandler(TabPlayer player) {
+            super(player);
+        }
 
-		@Override
-		public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
-			long time = System.nanoTime();
-			Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
-			TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
-			super.write(context, modifiedPacket, channelPromise);
-		}
+        @Override
+        public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
+            long time = System.nanoTime();
+            Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
+            TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
+            super.write(context, modifiedPacket, channelPromise);
+        }
 
-		/**
-		 * Deserializes byte buf in case it is one of the tracked packets coming from backend server and returns it.
-		 * If the packet is not one of them, returns input
-		 * @param buf - byte buf to deserialize
-		 * @return deserialized packet or input byte buf if packet is not tracked
-		 */
-		private Object deserialize(ByteBuf buf) {
-			int marker = buf.readerIndex();
-			try {
-				int packetId = buf.readByte();
-				for (int i=0; i<extraPacketClasses.length; i++) {
-					if (packetId == ((BungeeTabPlayer)player).getPacketId(extraPacketClasses[i])) {
-						DefinedPacket packet = extraPacketSuppliers[i].get();
-						packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
-						buf.release();
-						return packet;
-					}
-				}
-			} catch (Exception e) {
-				//rare OverflowPacketException or IndexOutOfBoundsException
-			}
-			buf.readerIndex(marker);
-			return buf;
-		}
-	}
+        /**
+         * Deserializes byte buf in case it is one of the tracked packets coming from backend server and returns it.
+         * If the packet is not one of them, returns input
+         * @param buf - byte buf to deserialize
+         * @return deserialized packet or input byte buf if packet is not tracked
+         */
+        private Object deserialize(ByteBuf buf) {
+            int marker = buf.readerIndex();
+            try {
+                int packetId = buf.readByte();
+                for (int i=0; i<extraPacketClasses.length; i++) {
+                    if (packetId == ((BungeeTabPlayer)player).getPacketId(extraPacketClasses[i])) {
+                        DefinedPacket packet = extraPacketSuppliers[i].get();
+                        packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
+                        buf.release();
+                        return packet;
+                    }
+                }
+            } catch (Exception e) {
+                //rare OverflowPacketException or IndexOutOfBoundsException
+            }
+            buf.readerIndex(marker);
+            return buf;
+        }
+    }
 }

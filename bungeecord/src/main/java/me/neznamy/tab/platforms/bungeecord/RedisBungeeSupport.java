@@ -14,29 +14,29 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class RedisBungeeSupport extends RedisSupport implements Listener {
 
-	/**
-	 * Constructs new instance, registers listeners and overrides placeholders
-	 */
-	public RedisBungeeSupport() {
-		ProxyServer.getInstance().getPluginManager().registerListener(ProxyServer.getInstance().getPluginManager().getPlugin("TAB"), this);
-		RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
-	}
+    /**
+     * Constructs new instance, registers listeners and overrides placeholders
+     */
+    public RedisBungeeSupport() {
+        ProxyServer.getInstance().getPluginManager().registerListener(ProxyServer.getInstance().getPluginManager().getPlugin("TAB"), this);
+        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
+    }
 
-	@EventHandler
-	public void onMessage(PubSubMessageEvent e) {
-		if (!e.getChannel().equals(TabConstants.REDIS_CHANNEL_NAME)) return;
-		processMessage(e.getMessage());
-	}
+    @EventHandler
+    public void onMessage(PubSubMessageEvent e) {
+        if (!e.getChannel().equals(TabConstants.REDIS_CHANNEL_NAME)) return;
+        processMessage(e.getMessage());
+    }
 
-	@Override
-	public void unregister() {
-		ProxyServer.getInstance().getPluginManager().unregisterListener(this);
-		RedisBungeeAPI.getRedisBungeeApi().unregisterPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
-	}
+    @Override
+    public void unregister() {
+        ProxyServer.getInstance().getPluginManager().unregisterListener(this);
+        RedisBungeeAPI.getRedisBungeeApi().unregisterPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
+    }
 
-	@Override
-	public void sendMessage(String message) {
-		Preconditions.checkNotNull(message, "message");
-		RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
-	}
+    @Override
+    public void sendMessage(String message) {
+        Preconditions.checkNotNull(message, "message");
+        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
+    }
 }

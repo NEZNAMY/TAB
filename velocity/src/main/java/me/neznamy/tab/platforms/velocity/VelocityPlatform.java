@@ -19,36 +19,36 @@ import java.util.Optional;
  */
 public class VelocityPlatform extends ProxyPlatform {
 
-	//instance of ProxyServer
-	private final ProxyServer server;
-	
-	/**
-	 * Constructs new instance with given parameter
-	 * @param server - instance of ProxyServer
-	 */
-	public VelocityPlatform(ProxyServer server) {
-		super(new PacketBuilder());
-		this.server = server;
-	}
+    //instance of ProxyServer
+    private final ProxyServer server;
+    
+    /**
+     * Constructs new instance with given parameter
+     * @param server - instance of ProxyServer
+     */
+    public VelocityPlatform(ProxyServer server) {
+        super(new PacketBuilder());
+        this.server = server;
+    }
 
-	@Override
-	public void loadFeatures() {
-		super.loadFeatures();
-		for (Player p : server.getAllPlayers()) {
-			TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
-		}
-	}
-	
-	@Override
-	public void sendConsoleMessage(String message, boolean translateColors) {
-		Preconditions.checkNotNull(message, "message");
-		server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? EnumChatFormat.color(message) : message));
-	}
+    @Override
+    public void loadFeatures() {
+        super.loadFeatures();
+        for (Player p : server.getAllPlayers()) {
+            TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
+        }
+    }
+    
+    @Override
+    public void sendConsoleMessage(String message, boolean translateColors) {
+        Preconditions.checkNotNull(message, "message");
+        server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(translateColors ? EnumChatFormat.color(message) : message));
+    }
 
-	@Override
-	public String getPluginVersion(String plugin) {
-		Preconditions.checkNotNull(plugin, "plugin");
-		Optional<PluginContainer> pl = server.getPluginManager().getPlugin(plugin.toLowerCase(Locale.US));
-		return pl.flatMap(pluginContainer -> pluginContainer.getDescription().getVersion()).orElse(null);
-	}
+    @Override
+    public String getPluginVersion(String plugin) {
+        Preconditions.checkNotNull(plugin, "plugin");
+        Optional<PluginContainer> pl = server.getPluginManager().getPlugin(plugin.toLowerCase(Locale.US));
+        return pl.flatMap(pluginContainer -> pluginContainer.getDescription().getVersion()).orElse(null);
+    }
 }

@@ -5,27 +5,27 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
  */
 public class DataWatcherObject {
 
-	//position in DataWatcher
-	private final int position;
-	
-	//value class type used since 1.9
-	private final Object classType;
+    //position in DataWatcher
+    private final int position;
+    
+    //value class type used since 1.9
+    private final Object classType;
 
-	/**
-	 * Constructs a new instance of this class with given parameters
-	 * @param position - position in DataWatcher
-	 * @param classType - value class type
-	 */
-	public DataWatcherObject(int position, Object classType){
-		this.position = position;
-		this.classType = classType;
-	}
+    /**
+     * Constructs a new instance of this class with given parameters
+     * @param position - position in DataWatcher
+     * @param classType - value class type
+     */
+    public DataWatcherObject(int position, Object classType){
+        this.position = position;
+        this.classType = classType;
+    }
 
-	public int getPosition() {
-		return position;
-	}
+    public int getPosition() {
+        return position;
+    }
 
-	public Object getClassType() {
-		return classType;
-	}
+    public Object getClassType() {
+        return classType;
+    }
 }

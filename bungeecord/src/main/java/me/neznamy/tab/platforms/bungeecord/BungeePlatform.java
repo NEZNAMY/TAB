@@ -19,52 +19,52 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class BungeePlatform extends ProxyPlatform {
 
-	/**
-	 * Constructs new instance with given parameter
-	 */
-	public BungeePlatform() {
-		super(new BungeePacketBuilder());
-	}
+    /**
+     * Constructs new instance with given parameter
+     */
+    public BungeePlatform() {
+        super(new BungeePacketBuilder());
+    }
 
-	@Override
-	public void loadFeatures() {
-		TAB tab = TAB.getInstance();
-		if (tab.getConfiguration().isPipelineInjection())
-			tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BungeePipelineInjector());
-		tab.getPlaceholderManager().registerPlayerPlaceholder("%displayname%", 500, p -> ((ProxiedPlayer) p.getPlayer()).getDisplayName());
-		super.loadFeatures();
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
-			if (RedisBungeeAPI.getRedisBungeeApi() != null) {
-				tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport());
-			} else {
-				TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
-			}
-		}
-		for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			tab.addPlayer(new BungeeTabPlayer(p));
-		}
-	}
-	
-	@Override
-	public void sendConsoleMessage(String message, boolean translateColors) {
-		Preconditions.checkNotNull(message, "message");
-		ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? EnumChatFormat.color(message) : message));
-	}
+    @Override
+    public void loadFeatures() {
+        TAB tab = TAB.getInstance();
+        if (tab.getConfiguration().isPipelineInjection())
+            tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BungeePipelineInjector());
+        tab.getPlaceholderManager().registerPlayerPlaceholder("%displayname%", 500, p -> ((ProxiedPlayer) p.getPlayer()).getDisplayName());
+        super.loadFeatures();
+        if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
+            if (RedisBungeeAPI.getRedisBungeeApi() != null) {
+                tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport());
+            } else {
+                TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
+            }
+        }
+        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+            tab.addPlayer(new BungeeTabPlayer(p));
+        }
+    }
+    
+    @Override
+    public void sendConsoleMessage(String message, boolean translateColors) {
+        Preconditions.checkNotNull(message, "message");
+        ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(translateColors ? EnumChatFormat.color(message) : message));
+    }
 
-	@Override
-	public void callLoadEvent() {
-		ProxyServer.getInstance().getPluginManager().callEvent(new TabLoadEvent());
-	}
-	
-	@Override
-	public void callLoadEvent(TabPlayer player) {
-		ProxyServer.getInstance().getPluginManager().callEvent(new TabPlayerLoadEvent(player));
-	}
+    @Override
+    public void callLoadEvent() {
+        ProxyServer.getInstance().getPluginManager().callEvent(new TabLoadEvent());
+    }
+    
+    @Override
+    public void callLoadEvent(TabPlayer player) {
+        ProxyServer.getInstance().getPluginManager().callEvent(new TabPlayerLoadEvent(player));
+    }
 
-	@Override
-	public String getPluginVersion(String plugin) {
-		Preconditions.checkNotNull(plugin, "plugin");
-		Plugin pl = ProxyServer.getInstance().getPluginManager().getPlugin(plugin);
-		return pl == null ? null : pl.getDescription().getVersion();
-	}
+    @Override
+    public String getPluginVersion(String plugin) {
+        Preconditions.checkNotNull(plugin, "plugin");
+        Plugin pl = ProxyServer.getInstance().getPluginManager().getPlugin(plugin);
+        return pl == null ? null : pl.getDescription().getVersion();
+    }
 }

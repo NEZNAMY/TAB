@@ -6,25 +6,25 @@ import java.util.Set;
 
 public interface PropertyConfiguration {
 
-	void setProperty(String name, String property, String server, String world, String value);
-	
-	String[] getProperty(String name, String property, String server, String world);
-	
-	void remove(String name);
+    void setProperty(String name, String property, String server, String world, String value);
 
-	Map<String, String> getGlobalSettings(String name);
+    String[] getProperty(String name, String property, String server, String world);
 
-	Map<String, Map<String, String>> getPerWorldSettings(String name);
+    void remove(String name);
 
-	Map<String, Map<String, String>> getPerServerSettings(String name);
+    Map<String, String> getGlobalSettings(String name);
 
-	Set<String> getAllEntries();
+    Map<String, Map<String, String>> getPerWorldSettings(String name);
 
-	default Map<String, Map<String, String>> convertMap(Map<String, Map<String, Map<String, String>>> map, String key) {
-		Map<String, Map<String, String>> converted = new HashMap<>();
-		for (Map.Entry<String, Map<String, Map<String, String>>> entry : map.entrySet()) {
-			converted.put(entry.getKey(), entry.getValue().get(key));
-		}
-		return converted;
-	}
+    Map<String, Map<String, String>> getPerServerSettings(String name);
+
+    Set<String> getAllEntries();
+
+    default Map<String, Map<String, String>> convertMap(Map<String, Map<String, Map<String, String>>> map, String key) {
+        Map<String, Map<String, String>> converted = new HashMap<>();
+        for (Map.Entry<String, Map<String, Map<String, String>>> entry : map.entrySet()) {
+            converted.put(entry.getKey(), entry.getValue().get(key));
+        }
+        return converted;
+    }
 }

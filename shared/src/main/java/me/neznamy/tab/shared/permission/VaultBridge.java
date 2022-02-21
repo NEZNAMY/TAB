@@ -7,21 +7,21 @@ import me.neznamy.tab.api.TabPlayer;
  * if no permission plugin on BungeeCord is found.
  */
 public class VaultBridge extends PermissionPlugin {
-	
-	/**
-	 * Constructs new instance
-	 */
-	public VaultBridge() {
-		super(null);
-	}
-	
-	@Override
-	public String getPrimaryGroup(TabPlayer p) {
-		return p.getGroup();
-	}
 
-	@Override
-	public String getName() {
-		return "Vault through BukkitBridge";
-	}
+    /**
+     * Constructs new instance
+     */
+    public VaultBridge() {
+        super(null);
+    }
+
+    @Override
+    public String getPrimaryGroup(TabPlayer p) {
+        return p.getGroup();
+    }
+
+    @Override
+    public String getName() {
+        return "Vault through BukkitBridge";
+    }
 }

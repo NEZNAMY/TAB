@@ -36,125 +36,125 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 @Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
-	private static Main instance;
+    private static Main instance;
 
-	//instance of proxyserver
-	private final ProxyServer server;
-	
-	//metrics factory I guess
-	private final Metrics.Factory metricsFactory;
+    //instance of proxyserver
+    private final ProxyServer server;
+    
+    //metrics factory I guess
+    private final Metrics.Factory metricsFactory;
 
-	//plugin message channel identifier
-	private MinecraftChannelIdentifier mc;
+    //plugin message channel identifier
+    private MinecraftChannelIdentifier mc;
 
-	private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
-	private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
+    private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
+    private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
-	@Inject
-	public Main(ProxyServer server, Metrics.Factory metricsFactory) {
-		this.server = server;
-		this.metricsFactory = metricsFactory;
-	}
+    @Inject
+    public Main(ProxyServer server, Metrics.Factory metricsFactory) {
+        this.server = server;
+        this.metricsFactory = metricsFactory;
+    }
 
-	/**
-	 * Initializes plugin for velocity
-	 * @param event - velocity initialize event
-	 */
-	@Subscribe
-	public void onProxyInitialization(ProxyInitializeEvent event) {
-		if (!isVersionSupported()) {
-			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads")));
-			return;
-		}
-		instance = this;
-		if (server.getConfiguration().isOnlineMode()) {
-			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&6[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
-					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).")));
-		}
-		String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
-		mc = MinecraftChannelIdentifier.create(name[0], name[1]);
-		server.getChannelRegistrar().register(mc);
-		TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB")));
-		server.getEventManager().register(this, new VelocityEventListener());
-		VelocityTABCommand cmd = new VelocityTABCommand();
-		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
-		server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
-		TAB.getInstance().load();
-		Metrics metrics = metricsFactory.make(this, 10533);
-		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
-	}
+    /**
+     * Initializes plugin for velocity
+     * @param event - velocity initialize event
+     */
+    @Subscribe
+    public void onProxyInitialization(ProxyInitializeEvent event) {
+        if (!isVersionSupported()) {
+            server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads")));
+            return;
+        }
+        instance = this;
+        if (server.getConfiguration().isOnlineMode()) {
+            server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&6[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
+                    + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).")));
+        }
+        String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
+        mc = MinecraftChannelIdentifier.create(name[0], name[1]);
+        server.getChannelRegistrar().register(mc);
+        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB")));
+        server.getEventManager().register(this, new VelocityEventListener());
+        VelocityTABCommand cmd = new VelocityTABCommand();
+        server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
+        server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
+        TAB.getInstance().load();
+        Metrics metrics = metricsFactory.make(this, 10533);
+        metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+    }
 
-	public static Main getInstance() {
-		return instance;
-	}
+    public static Main getInstance() {
+        return instance;
+    }
 
-	public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
-		return mc;
-	}
+    public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
+        return mc;
+    }
 
-	/**
-	 * Checks for compatibility and returns true if version is supported, false if not
-	 * @return true if version is compatible, false if not
-	 */
-	private boolean isVersionSupported() {
-		try {
-			Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
-			Class.forName("net.kyori.adventure.identity.Identity"); //1.1.0 b265
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * Unloads the plugin
-	 * @param event - proxy disable event
-	 */
-	@Subscribe
-	public void onProxyShutdown(ProxyShutdownEvent event) {
-		if (TAB.getInstance() != null) TAB.getInstance().unload();
-	}
-	
-	public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
-		if (component == null) return null;
-		return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
-	}
+    /**
+     * Checks for compatibility and returns true if version is supported, false if not
+     * @return true if version is compatible, false if not
+     */
+    private boolean isVersionSupported() {
+        try {
+            Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
+            Class.forName("net.kyori.adventure.identity.Identity"); //1.1.0 b265
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Unloads the plugin
+     * @param event - proxy disable event
+     */
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        if (TAB.getInstance() != null) TAB.getInstance().unload();
+    }
+    
+    public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
+        if (component == null) return null;
+        return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
+    }
 
-	private static Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
-		if (map.containsKey(component)) return map.get(component);
-		Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
-		if (map.size() > 10000) map.clear();
-		map.put(component, obj);
-		return obj;
-	}
+    private static Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
+        if (map.containsKey(component)) return map.get(component);
+        Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
+        if (map.size() > 10000) map.clear();
+        map.put(component, obj);
+        return obj;
+    }
 
-	public static class VelocityTABCommand implements SimpleCommand {
+    public static class VelocityTABCommand implements SimpleCommand {
 
-		@Override
-		public void execute(Invocation invocation) {
-			CommandSource sender = invocation.source();
-			if (TAB.getInstance().isDisabled()) {
-				for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-					sender.sendMessage(Identity.nil(), Component.text(EnumChatFormat.color(message)));
-				}
-			} else {
-				TabPlayer p = null;
-				if (sender instanceof Player) {
-					p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
-					if (p == null) return; //player not loaded correctly
-				}
-				TAB.getInstance().getCommand().execute(p, invocation.arguments());
-			}
-		}
+        @Override
+        public void execute(Invocation invocation) {
+            CommandSource sender = invocation.source();
+            if (TAB.getInstance().isDisabled()) {
+                for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
+                    sender.sendMessage(Identity.nil(), Component.text(EnumChatFormat.color(message)));
+                }
+            } else {
+                TabPlayer p = null;
+                if (sender instanceof Player) {
+                    p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+                    if (p == null) return; //player not loaded correctly
+                }
+                TAB.getInstance().getCommand().execute(p, invocation.arguments());
+            }
+        }
 
-		@Override
-		public List<String> suggest(Invocation invocation) {
-			TabPlayer p = null;
-			if (invocation.source() instanceof Player) {
-				p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
-				if (p == null) return new ArrayList<>(); //player not loaded correctly
-			}
-			return TAB.getInstance().getCommand().complete(p, invocation.arguments());
-		}
-	}
+        @Override
+        public List<String> suggest(Invocation invocation) {
+            TabPlayer p = null;
+            if (invocation.source() instanceof Player) {
+                p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
+                if (p == null) return new ArrayList<>(); //player not loaded correctly
+            }
+            return TAB.getInstance().getCommand().complete(p, invocation.arguments());
+        }
+    }
 }

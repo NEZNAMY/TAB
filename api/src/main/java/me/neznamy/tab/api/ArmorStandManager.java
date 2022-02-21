@@ -5,10 +5,10 @@ package me.neznamy.tab.api;
  */
 public interface ArmorStandManager {
 
-	/**
-	 * Sends destroy packet of all armor stands to everyone and clears nearby players list
-	 */
-	void destroy();
+    /**
+     * Sends destroy packet of all armor stands to everyone and clears nearby players list
+     */
+    void destroy();
 
-	void refresh(boolean force);
+    void refresh(boolean force);
 }

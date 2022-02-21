@@ -13,24 +13,24 @@ import me.neznamy.tab.api.TabPlayer;
 @Deprecated
 public class TabPlayerLoadEvent extends Event {
 
-	private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
-	private final TabPlayer player;
-	
-	public TabPlayerLoadEvent(TabPlayer player) {
-		this.player = player;
-	}
-	
-	@Override
-	public HandlerList getHandlers(){
-		return getHandlerList();
-	}
-	
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
-	
-	public TabPlayer getPlayer() {
-		return player;
-	}
+    private final TabPlayer player;
+
+    public TabPlayerLoadEvent(TabPlayer player) {
+        this.player = player;
+    }
+
+    @Override
+    public HandlerList getHandlers(){
+        return getHandlerList();
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    public TabPlayer getPlayer() {
+        return player;
+    }
 }

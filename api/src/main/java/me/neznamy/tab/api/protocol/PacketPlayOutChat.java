@@ -8,56 +8,56 @@ import me.neznamy.tab.api.util.Preconditions;
  */
 public class PacketPlayOutChat implements TabPacket {
 
-	/** Message to be sent */
-	private final IChatBaseComponent message;
+    /** Message to be sent */
+    private final IChatBaseComponent message;
 
-	/** Message position */
-	private final ChatMessageType type;
+    /** Message position */
+    private final ChatMessageType type;
 
-	/**
-	 * Constructs new instance with given parameters
-	 * 
-	 * @param	message
-	 * 			Chat message to be sent
-	 * @param	type
-	 * 			Message position
-	 */
-	public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
-		Preconditions.checkNotNull(message, "message");
-		Preconditions.checkNotNull(type, "message type");
-		this.message = message;
-		this.type = type;
-	}
+    /**
+     * Constructs new instance with given parameters
+     * 
+     * @param    message
+     *             Chat message to be sent
+     * @param    type
+     *             Message position
+     */
+    public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
+        Preconditions.checkNotNull(message, "message");
+        Preconditions.checkNotNull(type, "message type");
+        this.message = message;
+        this.type = type;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("PacketPlayOutChat{message=%s,type=%s}", message, type);
-	}
+    @Override
+    public String toString() {
+        return String.format("PacketPlayOutChat{message=%s,type=%s}", message, type);
+    }
 
-	/**
-	 * Returns {@link #message}
-	 * @return	message
-	 */
-	public IChatBaseComponent getMessage() {
-		return message;
-	}
+    /**
+     * Returns {@link #message}
+     * @return    message
+     */
+    public IChatBaseComponent getMessage() {
+        return message;
+    }
 
-	/**
-	 * Returns {@link #type}
-	 * @return	type
-	 */
-	public ChatMessageType getType() {
-		return type;
-	}
+    /**
+     * Returns {@link #type}
+     * @return    type
+     */
+    public ChatMessageType getType() {
+        return type;
+    }
 
-	/**
-	 * An enum representing positions of a chat message
-	 * Calling ordinal() will return type's network ID.
-	 */
-	public enum ChatMessageType {
+    /**
+     * An enum representing positions of a chat message
+     * Calling ordinal() will return type's network ID.
+     */
+    public enum ChatMessageType {
 
-		CHAT,
-		SYSTEM,
-		GAME_INFO
-	}
+        CHAT,
+        SYSTEM,
+        GAME_INFO
+    }
 }
