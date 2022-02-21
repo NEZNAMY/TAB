@@ -19,16 +19,11 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class BungeePlatform extends ProxyPlatform {
 
-	//instance of plugin
-	private final Plugin plugin;
-	
 	/**
 	 * Constructs new instance with given parameter
-	 * @param plugin - main class
 	 */
-	public BungeePlatform(Plugin plugin) {
+	public BungeePlatform() {
 		super(new BungeePacketBuilder());
-		this.plugin = plugin;
 	}
 
 	@Override
@@ -40,7 +35,7 @@ public class BungeePlatform extends ProxyPlatform {
 		super.loadFeatures();
 		if (ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null) {
 			if (RedisBungeeAPI.getRedisBungeeApi() != null) {
-				tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport(plugin));
+				tab.getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, new RedisBungeeSupport());
 			} else {
 				TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
 			}

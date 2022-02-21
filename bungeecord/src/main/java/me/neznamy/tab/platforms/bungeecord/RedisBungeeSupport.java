@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 
 /**
@@ -17,12 +16,9 @@ public class RedisBungeeSupport extends RedisSupport implements Listener {
 
 	/**
 	 * Constructs new instance, registers listeners and overrides placeholders
-	 *
-	 * @param	plugin
-	 * 			plugin to register event listener for
 	 */
-	public RedisBungeeSupport(Plugin plugin) {
-		ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
+	public RedisBungeeSupport() {
+		ProxyServer.getInstance().getPluginManager().registerListener(ProxyServer.getInstance().getPluginManager().getPlugin("TAB"), this);
 		RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
 	}
 
