@@ -32,10 +32,7 @@ public class PlayerView {
         }
         recalculateMaxWidth(null);
         if (viewer.getVersion().getMinorVersion() < 8) return;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
-        }
+        updateAllPlayers();
     }
 
     public void playerJoin(TabPlayer connectedPlayer) {
@@ -45,6 +42,8 @@ public class PlayerView {
         if (width > maxWidth && (!connectedPlayer.isVanished() || canSeeVanished)) {
             maxWidth = width;
             maxPlayer = connectedPlayer;
+            updateAllPlayers();
+        } else {
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
                     new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(connectedPlayer, viewer), formatName(connectedPlayer))), feature);
         }
@@ -55,14 +54,18 @@ public class PlayerView {
         if (playerWidths.getOrDefault(target, 0) != width) {
             playerWidths.put(target, width);
             if (recalculateMaxWidth(null)) {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                            new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
-                }
+                updateAllPlayers();
             } else {
                 viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
                         new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))), feature);
             }
+        }
+    }
+
+    private void updateAllPlayers() {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
         }
     }
 
@@ -116,10 +119,7 @@ public class PlayerView {
     public void updatePlayer(TabPlayer target) {
         playerWidths.put(target, getPlayerNameWidth(target));
         if (recalculateMaxWidth(null)) {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
-            }
+            updateAllPlayers();
         } else {
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
                     new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))), feature);
@@ -129,11 +129,7 @@ public class PlayerView {
     public void processPlayerQuit(TabPlayer disconnectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (disconnectedPlayer == maxPlayer && recalculateMaxWidth(disconnectedPlayer)) {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (all == disconnectedPlayer) continue;
-                viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
-            }
+            updateAllPlayers();
         }
     }
 
@@ -196,10 +192,7 @@ public class PlayerView {
     public void onVanishChange(TabPlayer changed) {
         playerWidths.put(changed, getPlayerNameWidth(changed));
         if (recalculateMaxWidth(null)) {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
-            }
+            updateAllPlayers();
         }
     }
 }
