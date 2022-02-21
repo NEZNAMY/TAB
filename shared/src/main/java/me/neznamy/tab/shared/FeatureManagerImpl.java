@@ -312,7 +312,7 @@ public class FeatureManagerImpl implements FeatureManager {
             if (!f.overridesMethod("onVanishStatusChange")) continue;
             long time = System.nanoTime();
             f.onVanishStatusChange(player);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.VANISH_CHANGE, System.nanoTime()-time);
         }
     }
 
