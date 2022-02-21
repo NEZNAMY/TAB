@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
@@ -24,7 +25,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -35,11 +35,16 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 @Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
+	private static Main instance;
+
 	//instance of proxyserver
 	private final ProxyServer server;
 	
 	//metrics factory I guess
 	private final Metrics.Factory metricsFactory;
+
+	//plugin message channel identifier
+	private MinecraftChannelIdentifier mc;
 
 	private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
 	private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
@@ -60,12 +65,15 @@ public class Main {
 			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads")));
 			return;
 		}
+		instance = this;
 		if (server.getConfiguration().isOnlineMode()) {
 			server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&6[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
 					+ "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).")));
 		}
-		PluginMessageHandler plm = new VelocityPluginMessageHandler(this);
-		TAB.setInstance(new TAB(new VelocityPlatform(server, plm), ProtocolVersion.PROXY));
+		String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
+		mc = MinecraftChannelIdentifier.create(name[0], name[1]);
+		server.getChannelRegistrar().register(mc);
+		TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY));
 		server.getEventManager().register(this, new VelocityEventListener());
 		VelocityTABCommand cmd = new VelocityTABCommand();
 		server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
@@ -73,6 +81,14 @@ public class Main {
 		TAB.getInstance().load();
 		Metrics metrics = metricsFactory.make(this, 10533);
 		metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+	}
+
+	public static Main getInstance() {
+		return instance;
+	}
+
+	public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
+		return mc;
 	}
 
 	/**
@@ -109,10 +125,6 @@ public class Main {
 		if (map.size() > 10000) map.clear();
 		map.put(component, obj);
 		return obj;
-	}
-
-	public ProxyServer getServer() {
-		return server;
 	}
 
 	public static class VelocityTABCommand implements SimpleCommand {

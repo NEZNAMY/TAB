@@ -4,10 +4,13 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.command.CommandExecuteEvent.CommandResult;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
 /**
  * The core for velocity forwarding events into all enabled features
@@ -52,5 +55,19 @@ public class VelocityEventListener {
 	public void onCommand(CommandExecuteEvent e) {
 		if (TAB.getInstance().isDisabled()) return;
 		if (e.getCommandSource() instanceof Player && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand())) e.setResult(CommandResult.denied());
+	}
+
+	/**
+	 * Listener to plugin message event
+	 * @param event - plugin message event
+	 */
+	@Subscribe
+	public void onPluginMessageEvent(PluginMessageEvent event){
+		if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
+		if (event.getTarget() instanceof Player) {
+			event.setResult(PluginMessageEvent.ForwardResult.handled());
+			((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
+					((Player) event.getTarget()).getUniqueId(), event.getData());
+		}
 	}
 }

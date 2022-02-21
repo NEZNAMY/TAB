@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -31,20 +30,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class ProxyPlatform implements Platform {
 
 	/** Plugin message handler for sending and receiving plugin messages */
-	protected final PluginMessageHandler plm;
+	protected final PluginMessageHandler plm = new PluginMessageHandler();
 
 	/** Placeholders which are refreshed on backend server */
 	private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
-
-	/**
-	 * Constructs new instance with given parameter
-	 *
-	 * @param	plm
-	 * 			Plugin message handler
-	 */
-	protected ProxyPlatform(PluginMessageHandler plm) {
-		this.plm = plm;
-	}
 
 	/**
 	 * Returns plugin message handler

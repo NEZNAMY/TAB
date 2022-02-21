@@ -12,7 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
+import me.neznamy.tab.shared.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 

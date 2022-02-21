@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
@@ -271,5 +272,19 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 	@Override
 	public int getGamemode() {
 		return 0; //shrug
+	}
+
+	@Override
+	public void sendPluginMessage(byte[] message) {
+		Preconditions.checkNotNull(message, "message");
+		try {
+			Optional<ServerConnection> server = getPlayer().getCurrentServer();
+			if (server.isPresent()) {
+				server.get().sendPluginMessage(Main.getInstance().getMinecraftChannelIdentifier(), message);
+				TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");
+			}
+		} catch (IllegalStateException e) {
+			//java.lang.IllegalStateException: Not connected to server!
+		}
 	}
 }

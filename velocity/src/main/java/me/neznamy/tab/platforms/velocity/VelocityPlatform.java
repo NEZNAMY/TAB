@@ -8,7 +8,6 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -31,8 +30,7 @@ public class VelocityPlatform extends ProxyPlatform {
 	 * Constructs new instance with given parameter
 	 * @param server - instance of ProxyServer
 	 */
-	public VelocityPlatform(ProxyServer server, PluginMessageHandler plm) {
-		super(plm);
+	public VelocityPlatform(ProxyServer server) {
 		this.server = server;
 	}
 

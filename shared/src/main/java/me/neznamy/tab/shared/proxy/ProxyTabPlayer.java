@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.proxy;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteArrayDataOutput;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -143,6 +144,16 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	}
 
 	/**
+	 * Returns {@code true} if player is on boat, {@code false} if not.
+	 * This requires bridge installed to forward the data.
+	 *
+	 * @return	{@code true} if on boat, {@code false} if not
+	 */
+	public boolean isOnBoat() {
+		return onBoat;
+	}
+
+	/**
 	 * Performs platform-specific permission check and returns the result
 	 *
 	 * @param	permission
@@ -150,6 +161,14 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	 * @return	Result from hasPermission call
 	 */
 	public abstract boolean hasPermission0(String permission);
+
+	/**
+	 * Sends plugin message to this player
+	 *
+	 * @param	message
+	 * 			message to send
+	 */
+	public abstract void sendPluginMessage(byte[] message);
 
 	@Override
 	public boolean isVanished() {
@@ -164,16 +183,6 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
 	@Override
 	public boolean hasInvisibilityPotion() {
 		return invisible;
-	}
-
-	/**
-	 * Returns {@code true} if player is on boat, {@code false} if not.
-	 * This requires bridge installed to forward the data.
-	 *
-	 * @return	{@code true} if on boat, {@code false} if not
-	 */
-	public boolean isOnBoat() {
-		return onBoat;
 	}
 
 	@Override

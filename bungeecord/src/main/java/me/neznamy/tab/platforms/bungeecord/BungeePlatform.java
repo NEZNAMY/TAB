@@ -11,7 +11,6 @@ import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -32,8 +31,7 @@ public class BungeePlatform extends ProxyPlatform {
 	 * Constructs new instance with given parameter
 	 * @param plugin - main class
 	 */
-	public BungeePlatform(Plugin plugin, PluginMessageHandler plm) {
-		super(plm);
+	public BungeePlatform(Plugin plugin) {
 		this.plugin = plugin;
 	}
 

@@ -10,7 +10,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -30,8 +29,8 @@ public class Main extends Plugin {
 			ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(EnumChatFormat.color("&c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/")));
 			return;
 		}
-		PluginMessageHandler plm = new BungeePluginMessageHandler(this);
-		TAB.setInstance(new TAB(new BungeePlatform(this, plm), ProtocolVersion.PROXY));
+		ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
+		TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY));
 		getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
 		getProxy().getPluginManager().registerCommand(this, new BTABCommand());
 		TAB.getInstance().load();

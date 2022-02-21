@@ -5,7 +5,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
+import me.neznamy.tab.shared.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
 public class ProxyArmorStandManager implements ArmorStandManager {

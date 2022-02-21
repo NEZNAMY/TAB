@@ -1,13 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
@@ -17,6 +15,9 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * TabPlayer for BungeeCord
@@ -122,5 +123,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 	@Override
 	public int getGamemode() {
 		return ((UserConnection)player).getGamemode();
+	}
+
+	@Override
+	public void sendPluginMessage(byte[] message) {
+		Preconditions.checkNotNull(message, "message");
+		if (getPlayer().getServer() == null) return;
+		getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
+		TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");
 	}
 }

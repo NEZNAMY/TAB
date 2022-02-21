@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.nametags.unlimited;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
+import me.neznamy.tab.shared.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 public class ProxyNameTagX extends NameTagX {

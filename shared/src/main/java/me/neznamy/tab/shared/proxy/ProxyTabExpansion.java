@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.proxy;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.features.PluginMessageHandler;
 import me.neznamy.tab.shared.features.TabExpansion;
 
 public class ProxyTabExpansion implements TabExpansion {
