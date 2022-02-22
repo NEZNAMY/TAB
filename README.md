@@ -31,9 +31,9 @@ Other links:
 # Issues
 The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** available for cases included in templates.
 In other words, they **are not available for**:  
-* **Support**. Support is provided on discord for buyers, where roles are given to verified users
+* **Support** - support is provided on discord for buyers, where roles are given to verified users
 allowing us to know who bought it and who didn't. It also serves as a much faster way of communication.
-* **Feature requests**. These are currently not accepted due to high demand in other areas, as well as existing feature requests.
+* **Feature requests** - closed indefinitely.
 
 # Contributing
 If this plugin has helped you in any way, and you would like to return something back 
