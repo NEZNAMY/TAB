@@ -170,6 +170,7 @@ public class FeatureManagerImpl implements FeatureManager {
      */
     public void onServerChange(UUID playerUUID, String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
+        if (changed == null) return;
         String from = changed.getServer();
         ((ITabPlayer)changed).setServer(to);
         if (!isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) ((ITabPlayer)changed).clearRegisteredObjectives();
