@@ -204,13 +204,13 @@ public class Converter {
         newConfig.set("bossbar.disable-in-worlds", bossBar.getObject("disable-features-in-worlds.bossbar"));
         if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("bossbar.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.bossbar", Collections.singletonList("disabledserver")));
-        Map<String, Map<String, Object>> bars = bossBar.getConfigurationSection("bars");
-        Map<String, List<String>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
-        List<String> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
+        Map<Object, Map<String, Object>> bars = bossBar.getConfigurationSection("bars");
+        Map<String, List<Object>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
+        List<Object> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
         String separator = TAB.getInstance().getPlatform().isProxy() ? "server" : "world";
         if (perWorldBossBars != null) {
-            for (Map.Entry<String, List<String>> entry : perWorldBossBars.entrySet()) {
-                for (String bar : entry.getValue()) {
+            for (Map.Entry<String, List<Object>> entry : perWorldBossBars.entrySet()) {
+                for (Object bar : entry.getValue()) {
                     if (!bars.containsKey(bar)) continue;
                     activeBossBars.add(bar);
                     if (bars.get(bar).containsKey("display-condition")){
@@ -221,8 +221,9 @@ public class Converter {
                 }
             }
         }
-        for (String definedBossBar : bars.keySet()) {
+        for (Object definedBossBar : bars.keySet()) {
             bars.get(definedBossBar).put("announcement-bar", !activeBossBars.contains(definedBossBar));
+            bars.get(definedBossBar).remove("permission-required");
         }
         newConfig.set("bossbar.bars", bars);
     }
