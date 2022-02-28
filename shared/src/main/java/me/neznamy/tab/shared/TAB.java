@@ -176,7 +176,7 @@ public class TAB extends TabAPI {
         } catch (YAMLException e) {
             platform.sendConsoleMessage("&c[TAB] Did not enable due to a broken configuration file.", true);
             kill();
-            return configuration.getReloadFailedMessage().replace("%file%", "-"); //recode soon
+            return configuration.getReloadFailedMessage();
         } catch (Exception e) {
             errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
             kill();
@@ -471,6 +471,11 @@ public class TAB extends TabAPI {
     @Override
     public void logError(String message, Throwable t) {
         errorManager.printError(message, t);
+    }
+
+    @Override
+    public void setBrokenFile(String file) {
+        configuration.setBrokenFile(file);
     }
 
     @Override

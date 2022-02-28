@@ -112,4 +112,6 @@ public abstract class TabAPI {
     public abstract void debug(String message);
 
     public abstract void logError(String message, Throwable t);
+
+    public abstract void setBrokenFile(String file);
 }

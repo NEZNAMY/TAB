@@ -60,6 +60,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
         } catch (YAMLException e) {
             if (input != null) input.close();
             TabAPI tab = TabAPI.getInstance();
+            tab.setBrokenFile(destination.getName());
             tab.sendConsoleMessage("&c[TAB] File " + destination + " has broken syntax.", true);
             tab.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
             List<String> suggestions = YamlAssist.getSuggestions(file);

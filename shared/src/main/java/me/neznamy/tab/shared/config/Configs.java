@@ -55,6 +55,8 @@ public class Configs {
 
     private boolean debugMode;
 
+    private String brokenFile;
+
     /**
      * Constructs new instance with given parameter
      * @param tab - tab instance
@@ -71,11 +73,11 @@ public class Configs {
      *             if files contain syntax errors
      */
     public void loadFiles() throws YAMLException, IOException {
+        messages = new MessageFile();
         ClassLoader loader = Configs.class.getClassLoader();
         loadConfig();
         animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getDataFolder(), "animations.yml"));
         converter.convertAnimationFile(animation);
-        messages = new MessageFile();
         layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getDataFolder(), "layout.yml"));
         reloadFailed = messages.getReloadFailBrokenFile();
     }
@@ -159,7 +161,8 @@ public class Configs {
     }
 
     public String getReloadFailedMessage() {
-        return reloadFailed;
+        String message = messages == null ? reloadFailed : messages.getReloadFailBrokenFile();
+        return message.replace("%file%", brokenFile);
     }
 
     public ConfigurationFile getPlayerDataFile() {
@@ -204,5 +207,9 @@ public class Configs {
 
     public boolean isDebugMode() {
         return debugMode;
+    }
+
+    public void setBrokenFile(String file) {
+        this.brokenFile = file;
     }
 }
