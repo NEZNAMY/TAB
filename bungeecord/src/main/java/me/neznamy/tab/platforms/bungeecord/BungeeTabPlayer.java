@@ -111,7 +111,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean isVanished() {
-        if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(getPlayer())) return true;
+        try {
+            if (ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null && BungeeVanishAPI.isInvisible(getPlayer())) return true;
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().printError("PremiumVanish v" + TAB.getInstance().getPlatform().getPluginVersion("PremiumVanish") +
+                    " generated an error when retrieving vanish status of " + getName(), e);
+        }
         return super.isVanished();
     }
 
