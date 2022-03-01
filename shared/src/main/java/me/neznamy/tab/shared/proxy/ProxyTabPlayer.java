@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.proxy;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteArrayDataOutput;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -189,7 +188,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     public boolean hasPermission(String permission) {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, "Permission", permission);
-            return permissions.getOrDefault(permission, false);
+            return permissions != null && permissions.getOrDefault(permission, false);
         }
         return hasPermission0(permission);
     }
