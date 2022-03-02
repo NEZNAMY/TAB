@@ -61,13 +61,13 @@ public class YamlConfigurationFile extends ConfigurationFile {
             if (input != null) input.close();
             TabAPI tab = TabAPI.getInstance();
             tab.setBrokenFile(destination.getName());
-            tab.sendConsoleMessage("&c[TAB] File " + destination + " has broken syntax.", true);
-            tab.sendConsoleMessage("&6[TAB] Error message from yaml parser: " + e.getMessage(), true);
+            tab.sendConsoleMessage("&cFile " + destination + " has broken syntax.", true);
+            tab.sendConsoleMessage("&6Error message from yaml parser: " + e.getMessage(), true);
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
-                tab.sendConsoleMessage("&d[TAB] Suggestions to fix yaml syntax:", true);
+                tab.sendConsoleMessage("&dSuggestions to fix yaml syntax:", true);
                 for (String suggestion : suggestions) {
-                    tab.sendConsoleMessage("&d[TAB] - " + suggestion, true);
+                    tab.sendConsoleMessage("&d- " + suggestion, true);
                 }
             }
             throw e;
@@ -82,7 +82,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             writer.close();
             fixHeader();
         } catch (IOException e) {
-            TabAPI.getInstance().sendConsoleMessage("&c[TAB] Failed to save yaml file " + file.getPath() + " with content " + values.toString(), true);
+            TabAPI.getInstance().sendConsoleMessage("&cFailed to save yaml file " + file.getPath() + " with content " + values.toString(), true);
         }
     }
 }

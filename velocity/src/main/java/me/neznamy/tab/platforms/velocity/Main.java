@@ -29,6 +29,7 @@ import me.neznamy.tab.shared.TabConstants;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.slf4j.Logger;
 
 /**
  * Main class for Velocity platform
@@ -44,6 +45,8 @@ public class Main {
     //metrics factory I guess
     private final Metrics.Factory metricsFactory;
 
+    private final Logger logger;
+
     //plugin message channel identifier
     private MinecraftChannelIdentifier mc;
 
@@ -51,9 +54,10 @@ public class Main {
     private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
     @Inject
-    public Main(ProxyServer server, Metrics.Factory metricsFactory) {
+    public Main(ProxyServer server, Metrics.Factory metricsFactory, Logger logger) {
         this.server = server;
         this.metricsFactory = metricsFactory;
+        this.logger = logger;
     }
 
     /**
@@ -63,18 +67,18 @@ public class Main {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         if (!isVersionSupported()) {
-            server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&c[TAB] The plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads")));
+            logger.info(EnumChatFormat.color("&cThe plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads"));
             return;
         }
         instance = this;
         if (server.getConfiguration().isOnlineMode()) {
-            server.getConsoleCommandSource().sendMessage(Identity.nil(), Component.text(EnumChatFormat.color("&6[TAB] If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
-                    + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value).")));
+            logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
+                    + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
         String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
         mc = MinecraftChannelIdentifier.create(name[0], name[1]);
         server.getChannelRegistrar().register(mc);
-        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB")));
+        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);

@@ -37,7 +37,7 @@ public class Converter {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
             animations.setValues(animations.getConfigurationSection("animations"));
             animations.save();
-            TAB.getInstance().getPlatform().sendConsoleMessage("&2[TAB] Converted animations.yml to new format.", true);
+            TAB.getInstance().sendConsoleMessage("&2Converted animations.yml to new format.", true);
         }
     }
 
@@ -51,11 +51,11 @@ public class Converter {
      */
     public void convertToV3(ConfigurationFile currentConfig) throws IOException {
         if (currentConfig.hasConfigOption("mysql")) return;
-        TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] Review your configuration and verify everything is as you want it to be",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
+        TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
+        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.9.2 to 3.0.0",true);
+        TAB.getInstance().sendConsoleMessage("&ePlease note that this may not be 100% accurate",true);
+        TAB.getInstance().sendConsoleMessage("&eReview your configuration and verify everything is as you want it to be",true);
+        TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
 
         File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();

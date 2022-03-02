@@ -99,7 +99,7 @@ public abstract class SubCommand {
         if (sender != null) {
             sender.sendMessage(message, true);
         } else {
-            TAB.getInstance().getPlatform().sendConsoleMessage(message, true);
+            TAB.getInstance().sendConsoleMessage(message, true);
         }
     }
 
@@ -113,7 +113,7 @@ public abstract class SubCommand {
         if (sender != null) {
             sender.sendMessage(message, false);
         } else {
-            TAB.getInstance().getPlatform().sendConsoleMessage(message, false);
+            TAB.getInstance().sendConsoleMessage(message, false);
         }
     }
 

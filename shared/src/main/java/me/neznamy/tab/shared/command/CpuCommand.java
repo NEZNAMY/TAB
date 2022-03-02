@@ -90,7 +90,7 @@ public class CpuCommand extends SubCommand {
     }
 
     public void sendToConsole(Map<String, Map<String, Float>> features) {
-        TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
+        TAB.getInstance().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
@@ -98,9 +98,9 @@ public class CpuCommand extends SubCommand {
             for (Entry<String, Float> type : entry.getValue().entrySet()){
                 messages.add(String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)));
             }
-            TAB.getInstance().getPlatform().sendConsoleMessage(core, true);
+            TAB.getInstance().sendConsoleMessage(core, true);
             for (String message : messages) {
-                TAB.getInstance().getPlatform().sendConsoleMessage(message, true);
+                TAB.getInstance().sendConsoleMessage(message, true);
             }
         }
     }
@@ -126,9 +126,9 @@ public class CpuCommand extends SubCommand {
         for (Entry<String, AtomicInteger> entry : packets.entrySet()) {
             messages.add("&8&l" + LINE_CHAR + "     &7" + entry.getKey() + " - " + entry.getValue());
         }
-        TAB.getInstance().getPlatform().sendConsoleMessage("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin: " + packets.values().stream().mapToInt(AtomicInteger::get).sum(), true);
+        TAB.getInstance().sendConsoleMessage("&8&l" + LINE_CHAR + " &r&7Packets sent by the plugin: " + packets.values().stream().mapToInt(AtomicInteger::get).sum(), true);
         for (String message : messages) {
-            TAB.getInstance().getPlatform().sendConsoleMessage(message, true);
+            TAB.getInstance().sendConsoleMessage(message, true);
         }
     }
 

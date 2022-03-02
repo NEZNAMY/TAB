@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -25,16 +26,16 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable(){
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&7[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")"));
+        getLogger().info(EnumChatFormat.color("&7Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")"));
         if (!isVersionSupported()){
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
         BukkitPlatform platform = new BukkitPlatform(this);
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]),
-                Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")", getDataFolder()));
+                Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")", getDataFolder(), getLogger()));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
+            getLogger().info(EnumChatFormat.color("&cUnknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }
         Bukkit.getPluginManager().registerEvents(new BukkitEventListener(platform), this);
         TAB.getInstance().load();
@@ -73,20 +74,16 @@ public class Main extends JavaPlugin {
             long time = System.currentTimeMillis();
             NMSStorage.setInstance(new NMSStorage());
             if (supportedVersions.contains(serverPackage)) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&7[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
+                getLogger().info(EnumChatFormat.color("&7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
                 return true;
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.x - 1.18.2. Disabling just to stay safe."));
+                getLogger().info(EnumChatFormat.color("&cNo compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.x - 1.18.2. Disabling just to stay safe."));
             }
         } catch (Exception ex) {
             if (supportedVersions.contains(serverPackage)) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"));
-                Bukkit.getConsoleSender().sendMessage(ex.getClass().getName() + ": " + ex.getMessage());
-                for (StackTraceElement e : ex.getStackTrace()) {
-                    Bukkit.getConsoleSender().sendMessage("\t" + e.toString());
-                }
+                getLogger().log(Level.SEVERE, EnumChatFormat.color("&cYour server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"), ex);
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.18.2. Disabling."));
+                getLogger().info(EnumChatFormat.color("&cYour server version is completely unsupported. This plugin version only supports 1.5.x - 1.18.2. Disabling."));
             }
         }
         return false;

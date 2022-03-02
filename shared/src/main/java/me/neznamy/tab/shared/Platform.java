@@ -57,16 +57,6 @@ public abstract class Platform {
     public abstract void loadFeatures();
 
     /**
-     * Sends a message into console
-     *
-     * @param    message
-     *             message to send
-     * @param    translateColors
-     *             if color codes should be translated or not
-     */
-    public abstract void sendConsoleMessage(String message, boolean translateColors);
-
-    /**
      * Creates an instance of {@link me.neznamy.tab.api.placeholder.Placeholder}
      * to handle this unknown placeholder (typically a PAPI placeholder)
      *

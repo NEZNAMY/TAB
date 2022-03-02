@@ -118,14 +118,14 @@ public class ErrorManager {
                 }
             }
         } catch (IOException ex) {
-            TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] An error occurred when printing error message into file", true);
-            TAB.getInstance().getPlatform().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
+            TAB.getInstance().sendConsoleMessage("&cAn error occurred when printing error message into file", true);
+            TAB.getInstance().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
             for (StackTraceElement e : ex.getStackTrace()) {
-                TAB.getInstance().getPlatform().sendConsoleMessage("\t" + e.toString(), true);
+                TAB.getInstance().sendConsoleMessage("\t" + e.toString(), true);
             }
-            TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] Original error: " + message, true);
+            TAB.getInstance().sendConsoleMessage("&cOriginal error: " + message, true);
             for (String line : error) {
-                TAB.getInstance().getPlatform().sendConsoleMessage(line, true);
+                TAB.getInstance().sendConsoleMessage(line, true);
             }
         }
     }
@@ -168,7 +168,7 @@ public class ErrorManager {
      */
     private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
         buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
-        if (TAB.getInstance().getConfiguration().isDebugMode() || forceConsole) TAB.getInstance().getPlatform().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
+        if (TAB.getInstance().getConfiguration().isDebugMode() || forceConsole) TAB.getInstance().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
     }
 
     /**
@@ -288,7 +288,7 @@ public class ErrorManager {
      *             message to print into console
      */
     public void startupWarn(String message) {
-        TAB.getInstance().getPlatform().sendConsoleMessage("&c[TAB] " + message, true);
+        TAB.getInstance().sendConsoleMessage("&c" + message, true);
     }
 
     /**

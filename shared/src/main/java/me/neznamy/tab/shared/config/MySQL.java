@@ -32,7 +32,7 @@ public class MySQL {
     private void openConnection() throws SQLException {
         if (isConnected()) return;
         con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
-        TAB.getInstance().getPlatform().sendConsoleMessage("&a[TAB] Successfully connected to MySQL", true);
+        TAB.getInstance().sendConsoleMessage("&aSuccessfully connected to MySQL", true);
     }
     
     public void closeConnection() throws SQLException {

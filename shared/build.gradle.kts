@@ -11,6 +11,7 @@ dependencies {
     compileOnlyApi(libs.luckperms)
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.floodgate)
+    compileOnlyApi(libs.slf4j)
 }
 
 blossom {

@@ -5,8 +5,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
+import org.slf4j.Logger;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.HeaderFooterManager;
@@ -107,6 +109,9 @@ public class TAB extends TabAPI {
     /** TAB's data folder */
     private final File dataFolder;
 
+    /** Plugin's console logger provided by platform */
+    private final Object logger;
+
     /**
      * Constructs new instance with given parameters and sets this
      * new instance as {@link me.neznamy.tab.api.TabAPI} instance.
@@ -116,11 +121,12 @@ public class TAB extends TabAPI {
      * @param    serverVersion
      *             Version the server is running on
      */
-    public TAB(Platform platform, ProtocolVersion serverVersion, String serverVersionString, File dataFolder) {
+    public TAB(Platform platform, ProtocolVersion serverVersion, String serverVersionString, File dataFolder, Object logger) {
         this.platform = platform;
         this.serverVersion = serverVersion;
         this.serverVersionString = serverVersionString;
         this.dataFolder = dataFolder;
+        this.logger = logger;
         TabAPI.setInstance(this);
         try {
             Class.forName("org.geysermc.floodgate.api.FloodgateApi");
@@ -171,10 +177,10 @@ public class TAB extends TabAPI {
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             platform.callLoadEvent();
             disabled = false;
-            platform.sendConsoleMessage("&a[TAB] Enabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
-            platform.sendConsoleMessage("&c[TAB] Did not enable due to a broken configuration file.", true);
+            sendConsoleMessage("&cDid not enable due to a broken configuration file.", true);
             kill();
             return configuration.getReloadFailedMessage();
         } catch (Exception e) {
@@ -194,7 +200,7 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
-            platform.sendConsoleMessage("&a[TAB] Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            sendConsoleMessage("&a Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
         } catch (Exception e) {
             errorManager.criticalError("Failed to disable", e);
         }
@@ -435,7 +441,12 @@ public class TAB extends TabAPI {
 
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        platform.sendConsoleMessage(message, translateColors);
+        if (translateColors) message = EnumChatFormat.color(message);
+        if (logger instanceof java.util.logging.Logger) {
+            ((java.util.logging.Logger) logger).info(message);
+        } else if (logger instanceof org.slf4j.Logger) {
+            ((Logger) logger).info(message);
+        }
     }
 
     @Override
@@ -495,6 +506,6 @@ public class TAB extends TabAPI {
 
     @Override
     public void debug(String message) {
-        if (configuration.isDebugMode()) platform.sendConsoleMessage("&9[TAB DEBUG] " + message, true);
+        if (configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
     }
 }

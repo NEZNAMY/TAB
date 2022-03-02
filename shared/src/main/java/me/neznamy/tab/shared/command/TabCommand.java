@@ -75,7 +75,7 @@ public class TabCommand extends SubCommand {
                 component.addExtra(new IChatBaseComponent(EnumChatFormat.color("&0 by _NEZNAMY_")));
                 sender.sendMessage(component);
             } else {
-                TAB.getInstance().getPlatform().sendConsoleMessage("&3TAB v" + TabConstants.PLUGIN_VERSION, true);
+                TAB.getInstance().sendConsoleMessage("&3TAB v" + TabConstants.PLUGIN_VERSION, true);
             }
             for (String message : getMessages().getHelpMenu()) {
                 if (TAB.getInstance().getPlatform().isProxy()) message = message.replace("/tab", "/btab");

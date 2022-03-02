@@ -26,11 +26,11 @@ public class Main extends Plugin {
     @Override
     public void onEnable(){
         if (!isVersionSupported()) {
-            ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(EnumChatFormat.color("&c[TAB] The plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/")));
+            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
             return;
         }
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
-        TAB.setInstance(new TAB(new BungeePlatform(), ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder()));
+        TAB.setInstance(new TAB(new BungeePlatform(), ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder(), getLogger()));
         getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
         getProxy().getPluginManager().registerCommand(this, new BTABCommand());
         TAB.getInstance().load();

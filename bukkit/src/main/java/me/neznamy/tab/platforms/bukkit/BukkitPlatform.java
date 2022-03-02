@@ -4,7 +4,6 @@ import com.earth2me.essentials.Essentials;
 import com.viaversion.viaversion.api.Via;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
@@ -79,16 +78,16 @@ public class BukkitPlatform extends Platform {
                 Class.forName("com.viaversion.viaversion.api.Via");
                 viaVersion = Bukkit.getPluginManager().getPlugin("ViaVersion");
             } catch (ClassNotFoundException e) {
-                TAB.getInstance().sendConsoleMessage("&c[TAB] An outdated version of ViaVersion (" + getPluginVersion("ViaVersion") + ") was detected.", true);
-                TAB.getInstance().sendConsoleMessage("&c[TAB] TAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
-                TAB.getInstance().sendConsoleMessage("&c[TAB] This might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
+                TAB.getInstance().sendConsoleMessage("&cAn outdated version of ViaVersion (" + getPluginVersion("ViaVersion") + ") was detected.", true);
+                TAB.getInstance().sendConsoleMessage("&cTAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
+                TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
             }
         }
         if (Bukkit.getPluginManager().isPluginEnabled("Tablisknu")) {
-            TAB.getInstance().sendConsoleMessage("&c[TAB] Detected plugin \"Tablisknu\", which causes TAB to not work properly. Consider removing the plugin.", true);
+            TAB.getInstance().sendConsoleMessage("&cDetected plugin \"Tablisknu\", which causes TAB to not work properly. Consider removing the plugin.", true);
         }
         if (Bukkit.getPluginManager().isPluginEnabled("SkBee")) {
-            TAB.getInstance().sendConsoleMessage("&c[TAB] Detected plugin \"SkBee\", which causes TAB's scoreboard to not show. Consider removing the plugin.", true);
+            TAB.getInstance().sendConsoleMessage("&cDetected plugin \"SkBee\", which causes TAB's scoreboard to not show. Consider removing the plugin.", true);
         }
         TAB tab = TAB.getInstance();
         if (tab.getConfiguration().isPipelineInjection())
@@ -149,12 +148,6 @@ public class BukkitPlatform extends Platform {
             TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
             return new Player[0];
         }
-    }
-
-    @Override
-    public void sendConsoleMessage(String message, boolean translateColors) {
-        Preconditions.checkNotNull(message, "message");
-        Bukkit.getConsoleSender().sendMessage(translateColors ? EnumChatFormat.color(message) : message);
     }
 
     @Override

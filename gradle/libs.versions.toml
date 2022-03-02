@@ -8,6 +8,7 @@ jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
 gson = "2.8.9"
+slf4j = "1.7.36"
 
 # General
 luckperms = "5.2"
@@ -41,6 +42,7 @@ jsonSimple = { group = "com.googlecode.json-simple", name = "json-simple", versi
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
 yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
 
 # General
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
