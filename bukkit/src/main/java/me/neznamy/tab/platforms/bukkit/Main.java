@@ -34,7 +34,7 @@ public class Main extends JavaPlugin {
         BukkitPlatform platform = new BukkitPlatform(this);
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]),
                 Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")", getDataFolder(), getLogger()));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN) {
+        if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             getLogger().info(EnumChatFormat.color("&cUnknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }
         Bukkit.getPluginManager().registerEvents(new BukkitEventListener(platform), this);

@@ -227,7 +227,7 @@ public final class NMSStorage {
      *             If any class, field or method fails to load
      */
     public NMSStorage() throws ReflectiveOperationException {
-        ProtocolVersion.UNKNOWN.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
+        ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         Class<?> NetworkManager = getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager");
         if (minorVersion >= 7) {
             NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);

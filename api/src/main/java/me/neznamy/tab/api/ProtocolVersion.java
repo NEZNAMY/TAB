@@ -5,7 +5,8 @@ package me.neznamy.tab.api;
  */
 public enum ProtocolVersion {
 
-    UNKNOWN ("Unknown"),
+    UNKNOWN_SERVER_VERSION ("Unknown"),
+    UNKNOWN_CLIENT_VERSION ("Unknown"),
     PROXY   ("Proxy"),
     V1_18_2 (758),
     V1_18_1 (757),
@@ -119,7 +120,7 @@ public enum ProtocolVersion {
 
     /**
      * Overrides minor version of the version instance. This is used internally to
-     * set minor version of UNKNOWN value to value from package to fix compatibility
+     * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
      * with server forks that set bukkit version field value to "Unknown".
      * @param    minorVersion
      *             minor version to change value to
@@ -129,16 +130,16 @@ public enum ProtocolVersion {
     }
 
     /**
-     * Returns enum constant of entered version or UNKNOWN if unknown version
+     * Returns enum constant of entered version or UNKNOWN_SERVER_VERSION if unknown version
      * @param friendlyName - friendly name of the version
-     * @return version or UNKNOWN if version is unknown
+     * @return version or UNKNOWN_SERVER_VERSION if version is unknown
      */
     public static ProtocolVersion fromFriendlyName(String friendlyName) {
         if (friendlyName.startsWith("1.8")) return V1_8;
         try {
             return valueOf("V" + friendlyName.replace(".", "_"));
         } catch (IllegalArgumentException e) {
-            return UNKNOWN;
+            return UNKNOWN_SERVER_VERSION;
         }
     }
 
@@ -151,6 +152,6 @@ public enum ProtocolVersion {
         for (ProtocolVersion v : VALUES) {
             if (networkId == v.getNetworkId()) return v;
         }
-        return UNKNOWN;
+        return UNKNOWN_CLIENT_VERSION;
     }
 }
