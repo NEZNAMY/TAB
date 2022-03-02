@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import net.md_5.bungee.api.ProxyServer;
@@ -36,7 +35,6 @@ public class RedisBungeeSupport extends RedisSupport implements Listener {
 
     @Override
     public void sendMessage(String message) {
-        Preconditions.checkNotNull(message, "message");
         RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
     }
 }
