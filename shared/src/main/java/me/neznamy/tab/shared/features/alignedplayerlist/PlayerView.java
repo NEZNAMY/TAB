@@ -80,7 +80,7 @@ public class PlayerView {
             return IChatBaseComponent.optimizedComponent(prefixAndName + suffix);
         }
         StringBuilder newFormat = new StringBuilder(prefixAndName).append(EnumChatFormat.RESET.getFormat());
-        int length = maxWidth + 12 - playerWidths.get(target);
+        int length = maxWidth + 12 - playerWidths.computeIfAbsent(target, this::getPlayerNameWidth);
         try {
             newFormat.append(buildSpaces(length));
         } catch (IllegalArgumentException e) {
