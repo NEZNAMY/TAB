@@ -200,7 +200,7 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
-            sendConsoleMessage("&a Disabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            sendConsoleMessage("&aDisabled in " + (System.currentTimeMillis()-time) + "ms", true);
         } catch (Exception e) {
             errorManager.criticalError("Failed to disable", e);
         }
