@@ -153,7 +153,7 @@ public class GroupManager extends TabFeature {
 
     @Override
     public void refresh(TabPlayer p, boolean force) {
-        ((ITabPlayer)p).setGroup(detectPermissionGroup(p));
+        ((ITabPlayer)p).setGroup(TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%").getLastValue(p));
     }
 
     @Override
