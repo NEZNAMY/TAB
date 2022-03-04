@@ -29,10 +29,10 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
     @Override
     public void setProperty(String name, String property, String server, String world, String value) {
-        if (server != null) {
-            set(String.format("%s.%s.%s.%s", PER_SERVER, server, name, property), value);
-        } else if (world != null) {
+        if (world != null) {
             set(String.format("%s.%s.%s.%s", PER_WORLD, world, name, property), value);
+        } else if (server != null) {
+            set(String.format("%s.%s.%s.%s", PER_SERVER, server, name, property), value);
         } else {
             set(String.format("%s.%s", name, property), value);
         }
@@ -41,17 +41,17 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     @Override
     public String[] getProperty(String name, String property, String server, String world) {
         Object value;
-        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), name, property})) != null) {
-            return new String[] {toString(value), category + "=" + name + ", server=" + server};
-        }
-        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), DEFAULT_GROUP, property})) != null) {
-            return new String[] {toString(value), category + "=" + DEFAULT_GROUP + ", server=" + server};
-        }
         if ((value = getObject(new String[] {PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, world), name, property})) != null) {
             return new String[] {toString(value), category + "=" + name + ", world=" + world};
         }
         if ((value = getObject(new String[] {PER_WORLD, TAB.getInstance().getConfiguration().getGroup(worldGroups, world), DEFAULT_GROUP, property})) != null) {
             return new String[] {toString(value), category + "=" + DEFAULT_GROUP + ", world=" + world};
+        }
+        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), name, property})) != null) {
+            return new String[] {toString(value), category + "=" + name + ", server=" + server};
+        }
+        if ((value = getObject(new String[] {PER_SERVER, TAB.getInstance().getConfiguration().getGroup(serverGroups, server), DEFAULT_GROUP, property})) != null) {
+            return new String[] {toString(value), category + "=" + DEFAULT_GROUP + ", server=" + server};
         }
         if ((value = getObject(new String[] {name, property})) != null) {
             return new String[] {toString(value), category + "=" + name};

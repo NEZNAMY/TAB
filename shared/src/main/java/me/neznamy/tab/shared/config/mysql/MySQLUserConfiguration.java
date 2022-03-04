@@ -43,10 +43,10 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     private void setProperty0(TabPlayer user, String property, String server, String world, String value) {
-        if (server != null) {
-            perServer.computeIfAbsent(server, s -> new WeakHashMap<>()).computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
-        } else if (world != null) {
+        if (world != null) {
             perWorld.computeIfAbsent(world, w -> new WeakHashMap<>()).computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
+        } else if (server != null) {
+            perServer.computeIfAbsent(server, s -> new WeakHashMap<>()).computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
         } else {
             values.computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
         }
@@ -56,11 +56,11 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     public String[] getProperty(String user, String property, String server, String world) {
         TabPlayer p = getPlayer(user);
         String value;
-        if ((value = perServer.getOrDefault(server, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("user=%s,server=%s", user, server)};
-        }
         if ((value = perWorld.getOrDefault(world, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
             return new String[] {value, String.format("user=%s,world=%s", user, world)};
+        }
+        if ((value = perServer.getOrDefault(server, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
+            return new String[] {value, String.format("user=%s,server=%s", user, server)};
         }
         if ((value = values.getOrDefault(p, new HashMap<>()).get(property)) != null) {
             return new String[] {value, String.format("user=%s", user)};

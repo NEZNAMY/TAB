@@ -50,10 +50,10 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     }
 
     private void setProperty0(String group, String property, String server, String world, String value) {
-        if (server != null) {
-            perServer.computeIfAbsent(server, s -> new HashMap<>()).computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
-        } else if (world != null) {
+        if (world != null) {
             perWorld.computeIfAbsent(world, w -> new HashMap<>()).computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
+        } else if (server != null) {
+            perServer.computeIfAbsent(server, s -> new HashMap<>()).computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
         } else {
             values.computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
         }
@@ -62,17 +62,17 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     @Override
     public String[] getProperty(String group, String property, String server, String world) {
         String value;
-        if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s,server=%s", group, server)};
-        }
-        if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s,server=%s", DEFAULT_GROUP, server)};
-        }
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
             return new String[] {value, String.format("group=%s,world=%s", group, world)};
         }
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
             return new String[] {value, String.format("group=%s,world=%s", DEFAULT_GROUP, world)};
+        }
+        if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
+            return new String[] {value, String.format("group=%s,server=%s", group, server)};
+        }
+        if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+            return new String[] {value, String.format("group=%s,server=%s", DEFAULT_GROUP, server)};
         }
         if ((value = values.getOrDefault(group, new HashMap<>()).get(property)) != null) {
             return new String[] {value, String.format("group=%s", group)};
