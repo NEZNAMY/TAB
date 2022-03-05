@@ -10,7 +10,7 @@ public class Skin {
     /** Skin value */
     private final String value;
 
-    /** Skin signature */
+    /** Skin signature, can be null */
     private final String signature;
 
     /**
@@ -19,10 +19,11 @@ public class Skin {
      *          skin value
      * @param   signature
      *          skin signature
+     * @throws  IllegalArgumentException
+     *          if {@code value} is {@code null}
      */
     public Skin(String value, String signature) {
         Preconditions.checkNotNull(value, "value");
-        Preconditions.checkNotNull(signature, "signature");
         this.value = value;
         this.signature = signature;
     }
