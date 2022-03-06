@@ -70,17 +70,18 @@ public class PlayerView {
     }
 
     public synchronized IChatBaseComponent formatName(TabPlayer target) {
-        if (!playerWidths.containsKey(target)) return null; //in packet reader, not loaded yet, will send packet after loading player
+        Integer width = playerWidths.get(target);
+        if (width == null) return null; //in packet reader, not loaded yet, will send packet after loading player
         String prefixAndName = target.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) +
                 target.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer);
         String suffix = target.getProperty(TabConstants.Property.TABSUFFIX).getFormat(viewer);
         if (suffix.length() == 0) return IChatBaseComponent.optimizedComponent(prefixAndName);
-        if ((target.isVanished() && !canSeeVanished) || playerWidths.get(target) > maxWidth) {
+        if ((target.isVanished() && !canSeeVanished) || width > maxWidth) {
             //tab sending packets for vanished players or player just unvanished
             return IChatBaseComponent.optimizedComponent(prefixAndName + suffix);
         }
         StringBuilder newFormat = new StringBuilder(prefixAndName).append(EnumChatFormat.RESET.getFormat());
-        int length = maxWidth + 12 - playerWidths.computeIfAbsent(target, this::getPlayerNameWidth);
+        int length = maxWidth + 12 - width;
         try {
             newFormat.append(buildSpaces(length));
         } catch (IllegalArgumentException e) {
