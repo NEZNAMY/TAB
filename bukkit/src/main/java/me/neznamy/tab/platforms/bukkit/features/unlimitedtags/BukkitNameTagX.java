@@ -77,9 +77,8 @@ public class BukkitNameTagX extends NameTagX {
     private void spawnArmorStands(TabPlayer viewer, TabPlayer target) {
         if (target == viewer || isPlayerDisabled(target)) return;
         if (((Player) viewer.getPlayer()).getWorld() != ((Player) target.getPlayer()).getWorld()) return;
-        if (getDistance(viewer, target) <= 48) {
-            if (((Player)viewer.getPlayer()).canSee((Player)target.getPlayer()) && !target.isVanished()) getArmorStandManager(target).spawn(viewer);
-        }
+        if (getDistance(viewer, target) <= 48 && ((Player)viewer.getPlayer()).canSee((Player)target.getPlayer()) && !target.isVanished())
+            getArmorStandManager(target).spawn(viewer);
     }
 
     @Override
