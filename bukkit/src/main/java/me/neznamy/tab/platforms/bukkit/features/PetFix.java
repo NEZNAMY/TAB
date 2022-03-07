@@ -116,7 +116,7 @@ public class PetFix extends TabFeature {
                     if (item == null) continue;
                     if (nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item)) == petOwnerPosition) {
                         Object value = nms.DataWatcherItem_VALUE.get(item);
-                        if (value instanceof java.util.Optional || value instanceof com.google.common.base.Optional) {
+                        if (value instanceof Optional || value instanceof com.google.common.base.Optional) {
                             removedEntry = item;
                         }
                     }
@@ -130,7 +130,7 @@ public class PetFix extends TabFeature {
             //<1.15
             DataWatcher watcher = DataWatcher.fromNMS(nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(packet));
             DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
-            if (petOwner != null && (petOwner.getValue() instanceof java.util.Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
+            if (petOwner != null && (petOwner.getValue() instanceof Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
                 watcher.removeValue(petOwnerPosition);
                 nms.setField(packet, nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER, watcher.toNMS());
             }

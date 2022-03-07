@@ -444,7 +444,7 @@ public class TAB extends TabAPI {
         if (translateColors) message = EnumChatFormat.color(message);
         if (logger instanceof java.util.logging.Logger) {
             ((java.util.logging.Logger) logger).info(message);
-        } else if (logger instanceof org.slf4j.Logger) {
+        } else if (logger instanceof Logger) {
             ((Logger) logger).info(message);
         }
     }
