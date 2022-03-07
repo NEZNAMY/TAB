@@ -2,10 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -51,7 +48,8 @@ public class CpuManager implements ThreadManager {
     private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
-    private final ExecutorService threadPool = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
+    private final ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool(
+            new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
 
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final List<Runnable> taskQueue = new ArrayList<>();
@@ -372,25 +370,37 @@ public class CpuManager implements ThreadManager {
 
     @Override
     public Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
-        return threadPool.submit(() -> {
-            try {
-                Thread.sleep(delayMilliseconds);
-                runMeasuredTask(feature, type, task);
-            } catch (InterruptedException pluginDisabled) {
-                Thread.currentThread().interrupt();
-            }
-        });
+        try {
+            return threadPool.submit(() -> {
+                try {
+                    Thread.sleep(delayMilliseconds);
+                    runMeasuredTask(feature, type, task);
+                } catch (InterruptedException pluginDisabled) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        } catch (OutOfMemoryError e) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to create new delayed task, active thread count: " +
+                    threadPool.getActiveCount() + " / " + threadPool.getPoolSize(), e);
+            return null;
+        }
     }
 
     @Override
     public Future<?> runTaskLater(int delayMilliseconds, Runnable task) {
-        return threadPool.submit(() -> {
-            try {
-                Thread.sleep(delayMilliseconds);
-                submit(task);
-            } catch (InterruptedException pluginDisabled) {
-                Thread.currentThread().interrupt();
-            }
-        });
+        try {
+            return threadPool.submit(() -> {
+                try {
+                    Thread.sleep(delayMilliseconds);
+                    submit(task);
+                } catch (InterruptedException pluginDisabled) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        } catch (OutOfMemoryError e) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to create new delayed task, active thread count: " +
+                    threadPool.getActiveCount() + " / " + threadPool.getPoolSize(), e);
+            return null;
+        }
     }
 }
