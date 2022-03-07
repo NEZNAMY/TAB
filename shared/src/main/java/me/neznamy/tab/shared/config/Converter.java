@@ -95,10 +95,8 @@ public class Converter {
     private void moveOldFiles() throws IOException {
         File folder = TAB.getInstance().getDataFolder();
         File oldFolder = new File(folder, "old_configs");
-        if (!oldFolder.exists() && !oldFolder.mkdirs()) throw new RuntimeException("Failed to convert configuration to v3: Failed to create old_configs folder");
-        File[] files = folder.listFiles();
-        if (files == null) throw new IllegalStateException("Failed to convert configuration to v3: old_configs is not a folder");
-        for (File file : files) {
+        Files.createDirectories(oldFolder.toPath());
+        for (File file : Objects.requireNonNull(folder.listFiles())) {
             if (!file.isFile()) continue; //old_configs folder
             Files.move(file.toPath(), new File(folder.getPath() +
                     File.separator + "old_configs" + File.separator + file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
