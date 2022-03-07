@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -30,11 +29,11 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     @Override
     public void setProperty(String name, String property, String server, String world, String value) {
         if (world != null) {
-            set(String.format("%s.%s.%s.%s", PER_WORLD, world, name, property), value);
+            set(String.format("%s.%s.%s.%s", PER_WORLD, world, name, property), fromString(value));
         } else if (server != null) {
-            set(String.format("%s.%s.%s.%s", PER_SERVER, server, name, property), value);
+            set(String.format("%s.%s.%s.%s", PER_SERVER, server, name, property), fromString(value));
         } else {
-            set(String.format("%s.%s", name, property), value);
+            set(String.format("%s.%s", name, property), fromString(value));
         }
     }
 
@@ -61,14 +60,6 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
         }
         return new String[0];
     }
-    
-    @SuppressWarnings("unchecked")
-    private String toString(Object obj) {
-        if (obj instanceof List) {
-            return ((List<Object>)obj).stream().map(Object::toString).collect(Collectors.joining("\n"));
-        }
-        return obj.toString();
-    }
 
     @Override
     public void remove(String name) {
@@ -78,17 +69,17 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
     }
 
     @Override
-    public Map<String, String> getGlobalSettings(String name) {
+    public Map<String, Object> getGlobalSettings(String name) {
         return getConfigurationSection(name);
     }
 
     @Override
-    public Map<String, Map<String, String>> getPerWorldSettings(String name) {
+    public Map<String, Map<String, Object>> getPerWorldSettings(String name) {
         return convertMap(getConfigurationSection(PER_WORLD), name);
     }
 
     @Override
-    public Map<String, Map<String, String>> getPerServerSettings(String name) {
+    public Map<String, Map<String, Object>> getPerServerSettings(String name) {
         return convertMap(getConfigurationSection(PER_SERVER), name);
     }
     @Override

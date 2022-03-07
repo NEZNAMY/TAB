@@ -82,20 +82,20 @@ public class GroupCommand extends PropertyCommand {
 
     private void sendGroupInfo(TabPlayer sender, String group) {
         sendMessage(sender, "&f=== Group &9" + group + "&f ===");
-        for (Map.Entry<String, String> entry : TAB.getInstance().getConfiguration().getGroups().getGlobalSettings(group).entrySet()) {
+        for (Map.Entry<String, Object> entry : TAB.getInstance().getConfiguration().getGroups().getGlobalSettings(group).entrySet()) {
             sendRawMessage(sender, "  " + entry.getKey() + ": " + entry.getValue());
         }
-        for (Map.Entry<String, Map<String, String>> entry : TAB.getInstance().getConfiguration().getGroups().getPerWorldSettings(group).entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> entry : TAB.getInstance().getConfiguration().getGroups().getPerWorldSettings(group).entrySet()) {
             if (entry.getValue() == null) continue;
             sendMessage(sender, "&6World " + entry.getKey() + ":&e");
-            for (Map.Entry<String, String> properties : entry.getValue().entrySet()) {
+            for (Map.Entry<String, Object> properties : entry.getValue().entrySet()) {
                 sendRawMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
             }
         }
-        for (Map.Entry<String, Map<String, String>> entry : TAB.getInstance().getConfiguration().getGroups().getPerServerSettings(group).entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> entry : TAB.getInstance().getConfiguration().getGroups().getPerServerSettings(group).entrySet()) {
             if (entry.getValue() == null) continue;
             sendMessage(sender, "&3Server " + entry.getKey() + ":&b");
-            for (Map.Entry<String, String> properties : entry.getValue().entrySet()) {
+            for (Map.Entry<String, Object> properties : entry.getValue().entrySet()) {
                 sendRawMessage(sender, "  " + properties.getKey() + ": " + properties.getValue());
             }
         }

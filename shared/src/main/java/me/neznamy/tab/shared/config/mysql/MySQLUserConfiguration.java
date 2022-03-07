@@ -14,9 +14,9 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
 
     private final MySQL mysql;
 
-    private final WeakHashMap<TabPlayer, Map<String, String>> values = new WeakHashMap<>();
-    private final Map<String, WeakHashMap<TabPlayer, Map<String, String>>> perWorld = new HashMap<>();
-    private final Map<String, WeakHashMap<TabPlayer, Map<String, String>>> perServer = new HashMap<>();
+    private final WeakHashMap<TabPlayer, Map<String, Object>> values = new WeakHashMap<>();
+    private final Map<String, WeakHashMap<TabPlayer, Map<String, Object>>> perWorld = new HashMap<>();
+    private final Map<String, WeakHashMap<TabPlayer, Map<String, Object>>> perServer = new HashMap<>();
 
     public MySQLUserConfiguration(MySQL mysql) throws SQLException {
         this.mysql = mysql;
@@ -55,15 +55,15 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     @Override
     public String[] getProperty(String user, String property, String server, String world) {
         TabPlayer p = getPlayer(user);
-        String value;
+        Object value;
         if ((value = perWorld.getOrDefault(world, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("user=%s,world=%s", user, world)};
+            return new String[] {toString(value), String.format("user=%s,world=%s", user, world)};
         }
         if ((value = perServer.getOrDefault(server, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("user=%s,server=%s", user, server)};
+            return new String[] {toString(value), String.format("user=%s,server=%s", user, server)};
         }
         if ((value = values.getOrDefault(p, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("user=%s", user)};
+            return new String[] {toString(value), String.format("user=%s", user)};
         }
         return new String[0];
     }
@@ -83,17 +83,17 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public Map<String, String> getGlobalSettings(String name) {
+    public Map<String, Object> getGlobalSettings(String name) {
         throw new UnsupportedOperationException("Not supported for users");
     }
 
     @Override
-    public Map<String, Map<String, String>> getPerWorldSettings(String name) {
+    public Map<String, Map<String, Object>> getPerWorldSettings(String name) {
         throw new UnsupportedOperationException("Not supported for users");
     }
 
     @Override
-    public Map<String, Map<String, String>> getPerServerSettings(String name) {
+    public Map<String, Map<String, Object>> getPerServerSettings(String name) {
         throw new UnsupportedOperationException("Not supported for users");
     }
 

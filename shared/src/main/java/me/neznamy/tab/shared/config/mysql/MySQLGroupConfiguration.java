@@ -13,9 +13,9 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     private static final String DEFAULT_GROUP = "_DEFAULT_";
     private final MySQL mysql;
 
-    private final Map<String, Map<String, String>> values = new HashMap<>();
-    private final Map<String, Map<String, Map<String, String>>> perWorld = new HashMap<>();
-    private final Map<String, Map<String, Map<String, String>>> perServer = new HashMap<>();
+    private final Map<String, Map<String, Object>> values = new HashMap<>();
+    private final Map<String, Map<String, Map<String, Object>>> perWorld = new HashMap<>();
+    private final Map<String, Map<String, Map<String, Object>>> perServer = new HashMap<>();
 
     public MySQLGroupConfiguration(MySQL mysql) throws SQLException {
         this.mysql = mysql;
@@ -61,24 +61,24 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public String[] getProperty(String group, String property, String server, String world) {
-        String value;
+        Object value;
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s,world=%s", group, world)};
+            return new String[] {toString(value), String.format("group=%s,world=%s", group, world)};
         }
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s,world=%s", DEFAULT_GROUP, world)};
+            return new String[] {toString(value), String.format("group=%s,world=%s", DEFAULT_GROUP, world)};
         }
         if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s,server=%s", group, server)};
+            return new String[] {toString(value), String.format("group=%s,server=%s", group, server)};
         }
         if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s,server=%s", DEFAULT_GROUP, server)};
+            return new String[] {toString(value), String.format("group=%s,server=%s", DEFAULT_GROUP, server)};
         }
         if ((value = values.getOrDefault(group, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s", group)};
+            return new String[] {toString(value), String.format("group=%s", group)};
         }
         if ((value = values.getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {value, String.format("group=%s", DEFAULT_GROUP)};
+            return new String[] {toString(value), String.format("group=%s", DEFAULT_GROUP)};
         }
         return new String[0];
     }
@@ -91,17 +91,17 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public Map<String, String> getGlobalSettings(String name) {
+    public Map<String, Object> getGlobalSettings(String name) {
         return values.getOrDefault(name, Collections.emptyMap());
     }
 
     @Override
-    public Map<String, Map<String, String>> getPerWorldSettings(String name) {
+    public Map<String, Map<String, Object>> getPerWorldSettings(String name) {
         return convertMap(perWorld, name);
     }
 
     @Override
-    public Map<String, Map<String, String>> getPerServerSettings(String name) {
+    public Map<String, Map<String, Object>> getPerServerSettings(String name) {
         return convertMap(perServer, name);
     }
 

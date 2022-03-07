@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MySQLCommand extends SubCommand {
 
@@ -101,22 +102,30 @@ public class MySQLCommand extends SubCommand {
 
     private void upload(YamlPropertyConfigurationFile file, PropertyConfiguration mysqlTable) {
         for (String name : file.getAllEntries()) {
-            for (Map.Entry<String, String> property : file.getGlobalSettings(name).entrySet()) {
-                mysqlTable.setProperty(name, property.getKey(), null, null, property.getValue());
+            for (Map.Entry<String, Object> property : file.getGlobalSettings(name).entrySet()) {
+                mysqlTable.setProperty(name, property.getKey(), null, null, toString(property.getValue()));
             }
-            for (Map.Entry<String, Map<String, String>> world : file.getPerWorldSettings(name).entrySet()) {
+            for (Map.Entry<String, Map<String, Object>> world : file.getPerWorldSettings(name).entrySet()) {
                 if (world.getValue() == null) continue;
-                for (Map.Entry<String, String> property : world.getValue().entrySet()) {
-                    mysqlTable.setProperty(name, property.getKey(), null, world.getKey(), property.getValue());
+                for (Map.Entry<String, Object> property : world.getValue().entrySet()) {
+                    mysqlTable.setProperty(name, property.getKey(), null, world.getKey(), toString(property.getValue()));
                 }
             }
-            for (Map.Entry<String, Map<String, String>> server : file.getPerServerSettings(name).entrySet()) {
+            for (Map.Entry<String, Map<String, Object>> server : file.getPerServerSettings(name).entrySet()) {
                 if (server.getValue() == null) continue;
-                for (Map.Entry<String, String> property : server.getValue().entrySet()) {
-                    mysqlTable.setProperty(name, property.getKey(), server.getKey(), null, property.getValue());
+                for (Map.Entry<String, Object> property : server.getValue().entrySet()) {
+                    mysqlTable.setProperty(name, property.getKey(), server.getKey(), null, toString(property.getValue()));
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String toString(Object obj) {
+        if (obj instanceof List) {
+            return ((List<Object>)obj).stream().map(Object::toString).collect(Collectors.joining("\n"));
+        }
+        return obj.toString();
     }
 
     @Override
