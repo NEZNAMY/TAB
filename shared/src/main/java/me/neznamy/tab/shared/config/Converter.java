@@ -17,12 +17,6 @@ import java.util.*;
 public class Converter {
 
     /**
-     * Creates new instance of this class
-     */
-    public Converter() {
-    }
-
-    /**
      * Converts animation file from old format with everything under "animations" key
      * to new format which does not use the redundant key anymore.
      * <p>
