@@ -58,10 +58,8 @@ public class BukkitTabPlayer extends ITabPlayer {
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);
             playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
-            if (NMSStorage.getInstance().CHANNEL != null)
-                channel = (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get playerConnection or channel of " + p.getName(), e);
+            TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
         }
     }
 
@@ -282,5 +280,16 @@ public class BukkitTabPlayer extends ITabPlayer {
     @Override
     public int getGamemode() {
         return getPlayer().getGameMode().getValue();
+    }
+
+    @Override
+    public Channel getChannel() {
+        try {
+            if (NMSStorage.getInstance().CHANNEL != null)
+                return (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
+        } catch (IllegalAccessException e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get channel of " + getName(), e);
+        }
+        return null;
     }
 }
