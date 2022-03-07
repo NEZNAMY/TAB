@@ -105,7 +105,7 @@ public class ErrorManager {
      * @param    file
      *             file to print error to
      */
-    private void printError(String message, List<String> error, boolean intoConsoleToo, File file) {
+    private synchronized void printError(String message, List<String> error, boolean intoConsoleToo, File file) {
         try {
             if (!file.exists()) Files.createFile(file.toPath());
             if (file.length() > 1000000) return; //not going over 1 MB
