@@ -24,6 +24,11 @@ public class ProxyNameTagX extends NameTagX {
     }
 
     @Override
+    public void onQuit(TabPlayer disconnectedPlayer) {
+        armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
+    }
+
+    @Override
     public boolean isOnBoat(TabPlayer player) {
         return ((ProxyTabPlayer)player).isOnBoat();
     }

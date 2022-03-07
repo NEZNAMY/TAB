@@ -117,8 +117,8 @@ public class BukkitNameTagX extends NameTagX {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(all).unregisterPlayer(disconnectedPlayer);
         }
-        getArmorStandManager(disconnectedPlayer).destroy();
-        TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> getArmorStandManager(disconnectedPlayer).destroy());
+        armorStandManagerMap.get(disconnectedPlayer).destroy();
+        armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
     }
 
     @Override
