@@ -123,8 +123,6 @@ public class NameTag extends TabFeature implements TeamManager {
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
         onWorldChange(p, null, null);
-        if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        onLoginPacket(p);
     }
 
     @Override

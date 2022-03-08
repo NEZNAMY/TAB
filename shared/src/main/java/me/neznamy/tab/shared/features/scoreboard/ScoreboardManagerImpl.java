@@ -163,8 +163,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
         onWorldChange(p, null, null);
-        if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        onLoginPacket(p);
     }
 
     @Override
