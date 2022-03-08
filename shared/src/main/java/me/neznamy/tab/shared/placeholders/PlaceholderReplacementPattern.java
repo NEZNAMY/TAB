@@ -31,13 +31,15 @@ public class PlaceholderReplacementPattern {
     /**
      * Constructs new instance from given replacement map from config
      *
-     * @param    map
-     *             replacement map from config
+     * @param   identifier
+     *          placeholder identifier which this pattern belongs to
+     * @param   map
+     *          replacement map from config
      */
-    public PlaceholderReplacementPattern(Map<Object, Object> map) {
+    public PlaceholderReplacementPattern(String identifier, Map<Object, Object> map) {
         for (Entry<Object, Object> entry : map.entrySet()) {
             String key = String.valueOf(entry.getKey());
-            String value = String.valueOf(entry.getValue());
+            String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
             replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
             nestedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(value));
             nestedPlaceholders.remove("%value%"); //not a real placeholder

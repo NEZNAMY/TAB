@@ -66,7 +66,7 @@ public abstract class TabPlaceholder implements Placeholder {
         if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
         this.identifier = identifier;
         this.refresh = refresh;
-        replacements = new PlaceholderReplacementPattern(TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier));
+        replacements = new PlaceholderReplacementPattern(identifier, TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier));
         for (String nested : getNestedPlaceholders("")) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
         }
