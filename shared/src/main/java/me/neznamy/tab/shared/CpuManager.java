@@ -111,7 +111,7 @@ public class CpuManager implements ThreadManager {
         return (Future<Void>) thread.submit(() -> {
             try {
                 task.run();
-            } catch (Exception | LinkageError e) {
+            } catch (Exception | LinkageError | StackOverflowError e) {
                 TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
             }
         });
