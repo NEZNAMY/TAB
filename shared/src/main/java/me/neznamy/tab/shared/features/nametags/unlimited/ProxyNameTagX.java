@@ -17,6 +17,9 @@ public class ProxyNameTagX extends NameTagX {
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
         super.onServerChange(p, from, to);
+        if (isPreviewingNametag(p)) {
+            plm.sendMessage(p, "NameTagX", "Preview", true);
+        }
         for (String line : getDefinedLines()) {
             String text = p.getProperty(line).get();
             plm.sendMessage(p, "NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(p.getVersion())); //rel placeholder support in the future
