@@ -22,7 +22,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
         mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
         CachedRowSet crs = mysql.getCRS("select * from tab_groups");
         while (crs.next()) {
-            String group = crs.getString("group");
+            String group = crs.getString("group").toLowerCase(Locale.US);
             String property = crs.getString("property");
             String value = crs.getString("value");
             String world = crs.getString("world");
@@ -34,6 +34,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public void setProperty(String group, String property, String server, String world, String value) {
+        group = group.toLowerCase(Locale.US);
         try {
             if (getProperty(group, property, server, world) != null) {
                 mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", group, property, world, server);
@@ -61,6 +62,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public String[] getProperty(String group, String property, String server, String world) {
+        group = group.toLowerCase(Locale.US);
         Object value;
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(group, new HashMap<>()).get(property)) != null) {
             return new String[] {toString(value), String.format("group=%s,world=%s", group, world)};
