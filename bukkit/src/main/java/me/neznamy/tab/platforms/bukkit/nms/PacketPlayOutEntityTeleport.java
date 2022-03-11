@@ -1,30 +1,32 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
+import me.neznamy.tab.api.util.Preconditions;
 import org.bukkit.Location;
 
 import me.neznamy.tab.api.protocol.TabPacket;
 
 public class PacketPlayOutEntityTeleport implements TabPacket {
 
-	private final int entityId;
+    private final int entityId;
 
-	private final Location location;
+    private final Location location;
 
-	public PacketPlayOutEntityTeleport(int entityId, Location location) {
-		this.entityId = entityId;
-		this.location = location;
-	}
+    public PacketPlayOutEntityTeleport(int entityId, Location location) {
+        Preconditions.checkNotNull(location, "location");
+        this.entityId = entityId;
+        this.location = location;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("PacketPlayOutEntityTeleport{entityId=%s,location=%s}", entityId, location);
-	}
+    @Override
+    public String toString() {
+        return String.format("PacketPlayOutEntityTeleport{entityId=%s,location=%s}", entityId, location);
+    }
 
-	public int getEntityId() {
-		return entityId;
-	}
+    public int getEntityId() {
+        return entityId;
+    }
 
-	public Location getLocation() {
-		return location;
-	}
+    public Location getLocation() {
+        return location;
+    }
 }

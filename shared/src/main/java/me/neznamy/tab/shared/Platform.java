@@ -1,7 +1,5 @@
 package me.neznamy.tab.shared;
 
-import java.io.File;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -10,100 +8,85 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
  * An interface with methods that are called in universal code,
  * but require platform-specific API calls
  */
-public interface Platform {
+public abstract class Platform {
 
-	/**
-	 * Detects permission plugin and returns it's representing object
-	 *
-	 * @return	the interface representing the permission hook
-	 */
-	PermissionPlugin detectPermissionPlugin();
-	
-	/**
-	 * Loads platform-specific features
-	 */
-	void loadFeatures();
-	
-	/**
-	 * Sends a message into console
-	 *
-	 * @param	message
-	 * 			message to send
-	 * @param	translateColors
-	 * 			if color codes should be translated or not
-	 */
-	void sendConsoleMessage(String message, boolean translateColors);
-	
-	/**
-	 * Creates an instance of {@link me.neznamy.tab.api.placeholder.Placeholder}
-	 * to handle this unknown placeholder (typically a PAPI placeholder)
-	 *
-	 * @param	identifier
-	 * 			placeholder's identifier
-	 */
-	void registerUnknownPlaceholder(String identifier);
-	
-	/**
-	 * Returns server's software version
-	 *
-	 * @return	server's software version
-	 */
-	String getServerVersion();
+    /** Platform's packet builder implementation */
+    private final PacketBuilder packetBuilder;
 
-	/**
-	 * Returns plugin's data folder
-	 *
-	 * @return	plugin's data folder
-	 */
-	File getDataFolder();
-	
-	/**
-	 * Calls platform-specific load event.
-	 * This method is called when plugin is fully enabled.
-	 */
-	void callLoadEvent();
-	
-	/**
-	 * Calls platform-specific player load event.
-	 * This method is called when player is fully loaded.
-	 */
-	void callLoadEvent(TabPlayer player);
-	
-	/**
-	 * Returns max player count configured in server files
-	 *
-	 * @return	max player count
-	 */
-	int getMaxPlayers();
-	
-	/**
-	 * Returns platform-specific packet builder implementation
-	 *
-	 * @return	platform-specific packet builder
-	 */
-	PacketBuilder getPacketBuilder();
+    /**
+     * Constructs new instance with given parameter
+     *
+     * @param    packetBuilder
+     *             Platform's packet builder
+     */
+    protected Platform(PacketBuilder packetBuilder) {
+        this.packetBuilder = packetBuilder;
+    }
 
-	/**
-	 * Returns {@code true} if this platform is a proxy, {@code false} if a game server
-	 *
-	 * @return	{@code true} if this platform is a proxy, {@code false} if a game server
-	 */
-	boolean isProxy();
+    /**
+     * Calls platform-specific load event.
+     * This method is called when plugin is fully enabled.
+     */
+    public void callLoadEvent(){}
 
-	/**
-	 * Performs platform-specific plugin manager call and returns the result
-	 *
-	 * @param	plugin
-	 * 			Plugin to check presence of
-	 * @return	{@code true} if plugin is installed, {@code} false if not
-	 */
-	boolean isPluginEnabled(String plugin);
+    /**
+     * Calls platform-specific player load event.
+     * This method is called when player is fully loaded.
+     */
+    public void callLoadEvent(TabPlayer player){}
 
-	/**
-	 * Returns name of default config file for this platform
-	 * as it appears in the final jar in root directory.
-	 *
-	 * @return	name of default config file for this platform
-	 */
-	String getConfigName();
+    /**
+     * Returns platform-specific packet builder implementation
+     *
+     * @return    platform-specific packet builder
+     */
+    public PacketBuilder getPacketBuilder(){
+        return packetBuilder;
+    }
+
+    /**
+     * Detects permission plugin and returns it's representing object
+     *
+     * @return    the interface representing the permission hook
+     */
+    public abstract PermissionPlugin detectPermissionPlugin();
+
+    /**
+     * Loads platform-specific features
+     */
+    public abstract void loadFeatures();
+
+    /**
+     * Creates an instance of {@link me.neznamy.tab.api.placeholder.Placeholder}
+     * to handle this unknown placeholder (typically a PAPI placeholder)
+     *
+     * @param    identifier
+     *             placeholder's identifier
+     */
+    public abstract void registerUnknownPlaceholder(String identifier);
+
+    /**
+     * Returns {@code true} if this platform is a proxy, {@code false} if a game server
+     *
+     * @return    {@code true} if this platform is a proxy, {@code false} if a game server
+     */
+    public abstract boolean isProxy();
+
+    /**
+     * Performs platform-specific plugin manager call and returns the result.
+     * If plugin is not installed, returns {@code null}.
+     *
+     * @param    plugin
+     *             Plugin to check version of
+     * @return    Version string if plugin is installed, {@code null} if not
+     */
+    public abstract String getPluginVersion(String plugin);
+
+    /**
+     * Returns name of default config file for this platform
+     * as it appears in the final jar in root directory.
+     *
+     * @return    name of default config file for this platform
+     */
+    public abstract String getConfigName();
 }

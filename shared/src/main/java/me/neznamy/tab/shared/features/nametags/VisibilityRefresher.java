@@ -8,17 +8,17 @@ import me.neznamy.tab.shared.TAB;
 
 public class VisibilityRefresher extends TabFeature {
 
-	private final NameTag nameTags;
+    private final NameTag nameTags;
 
-	public VisibilityRefresher(NameTag nameTags) {
-		super(nameTags.getFeatureName(), "Updating NameTag visibility");
-		this.nameTags = nameTags;
-		TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%invisible%", 500, TabPlayer::hasInvisibilityPotion);
-		addUsedPlaceholders(Collections.singletonList("%invisible%"));
-	}
+    public VisibilityRefresher(NameTag nameTags) {
+        super(nameTags.getFeatureName(), "Updating NameTag visibility");
+        this.nameTags = nameTags;
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%invisible%", 500, TabPlayer::hasInvisibilityPotion);
+        addUsedPlaceholders(Collections.singletonList("%invisible%"));
+    }
 
-	@Override
-	public void refresh(TabPlayer p, boolean force) {
-		nameTags.updateTeamData(p);
-	}
+    @Override
+    public void refresh(TabPlayer p, boolean force) {
+        nameTags.updateTeamData(p);
+    }
 }

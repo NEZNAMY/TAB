@@ -273,7 +273,7 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
     }
 
     private fun loadArmorStands(player: TabPlayer) {
-        player.armorStandManager = ArmorStandManager()
+//        player.armorStandManager = ArmorStandManager()
         rebuildNametagLine(player)
         var height = 0.0
         dynamicLines.forEach {

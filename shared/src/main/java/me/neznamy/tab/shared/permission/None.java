@@ -8,17 +8,17 @@ import me.neznamy.tab.shared.TabConstants;
  */
 public class None extends PermissionPlugin {
 
-	public None() {
-		super(null);
-	}
+    public None() {
+        super(null);
+    }
 
-	@Override
-	public String getPrimaryGroup(TabPlayer p) {
-		return TabConstants.DEFAULT_GROUP;
-	}
+    @Override
+    public String getPrimaryGroup(TabPlayer p) {
+        return TabConstants.DEFAULT_GROUP;
+    }
 
-	@Override
-	public String getName() {
-		return "Unknown/None";
-	}
+    @Override
+    public String getName() {
+        return "Unknown/None";
+    }
 }

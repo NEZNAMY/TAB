@@ -56,6 +56,23 @@ scoreboard-teams:
     - disabledworld
   disable-in-servers:
     - disabledserver
+  # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Unlimited-nametag-mode
+  unlimited-nametag-mode:
+    enabled: false
+    use-marker-tag-for-1-8-x-clients: false
+    disable-on-boats: true
+    space-between-lines: 0.22
+    disable-in-worlds:
+      - disabledworld
+    disable-in-servers:
+      - disabledserver
+    dynamic-lines:
+      - abovename
+      - nametag #the original one, combination of tagprefix + customtagname + tagsuffix
+      - belowname
+      - another
+    static-lines:
+      myCustomLine: 0.66
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Yellow-number
 yellow-number-in-tablist:
@@ -125,7 +142,7 @@ scoreboard:
   static-number: 0
   delay-on-join-milliseconds: 0
   respect-other-plugins: true
-  disable-in-worlds: 
+  disable-in-worlds:
     - disabledworld
   disable-in-servers:
     - disabledserver
@@ -166,6 +183,7 @@ ping-spoof:
   enabled: false
   value: 0
 
+# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Pet-name-fix
 fix-pet-names:
   enabled: false
 
@@ -173,6 +191,7 @@ placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"
   time-offset: 0
+  register-tab-expansion: false
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Placeholder-output-replacements
 placeholder-output-replacements:

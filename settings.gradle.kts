@@ -18,7 +18,6 @@ dependencyResolutionManagement {
         maven("https://nexus.velocitypowered.com/repository/maven-public/")
         maven("https://repo.opencollab.dev/maven-snapshots/")
         maven("https://papermc.io/repo/repository/maven-public/")
-        mavenLocal()
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -31,7 +30,7 @@ rootProject.name = "TAB"
 
 include(":api")
 include(":shared")
-include(":krypton")
+//include(":krypton")
 include(":velocity")
 include(":bukkit")
 include(":bungeecord")

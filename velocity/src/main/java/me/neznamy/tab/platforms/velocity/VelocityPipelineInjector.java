@@ -1,27 +1,35 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.google.common.collect.Lists;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardTeam;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.util.Preconditions;
+import me.neznamy.tab.platforms.velocity.storage.VelocityPacketStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.NickCompatibility;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class VelocityPipelineInjector extends PipelineInjector {
+
+    //packet storage
+    private final VelocityPacketStorage vps = VelocityPacketStorage.getInstance();
 
     /**
      * Constructs new instance of the feature
      */
     public VelocityPipelineInjector() {
         super("handler");
-        channelFunction = VelocityChannelDuplexHandler::new;
+    }
+
+    @Override
+    public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
+        return VelocityChannelDuplexHandler::new;
     }
 
     /**
@@ -30,13 +38,14 @@ public class VelocityPipelineInjector extends PipelineInjector {
     public class VelocityChannelDuplexHandler extends ChannelDuplexHandler {
 
         //injected player
-        private final TabPlayer player;
+        protected final TabPlayer player;
 
         /**
          * Constructs new instance with given player
          * @param player - player to inject
          */
         public VelocityChannelDuplexHandler(TabPlayer player) {
+            Preconditions.checkNotNull(player, "player");
             this.player = player;
         }
 
@@ -44,27 +53,27 @@ public class VelocityPipelineInjector extends PipelineInjector {
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
                 switch(packet.getClass().getSimpleName()) {
-                    case "PlayerListItem":
-                        super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-                        return;
-                    case "ScoreboardTeam":
-                        if (antiOverrideTeams) {
-                            modifyPlayers((ScoreboardTeam) packet);
-                        }
-                        break;
-                    case "ScoreboardDisplay":
-                        TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
-                        break;
-                    case "ScoreboardObjective":
-                        TAB.getInstance().getFeatureManager().onObjective(player, packet);
-                        break;
-                    case "JoinGame":
-                        //making sure to not send own packets before login packet is actually sent
-                        super.write(context, packet, channelPromise);
-                        TAB.getInstance().getFeatureManager().onLoginPacket(player);
-                        return;
-                    default:
-                        break;
+                case "PlayerListItem":
+                    super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
+                    return;
+                case "ScoreboardTeam":
+                    if (antiOverrideTeams) {
+                        modifyPlayers(packet);
+                    }
+                    break;
+                case "ScoreboardDisplay":
+                    TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
+                    break;
+                case "ScoreboardObjective":
+                    TAB.getInstance().getFeatureManager().onObjective(player, packet);
+                    break;
+                case "JoinGame":
+                    //making sure to not send own packets before login packet is actually sent
+                    super.write(context, packet, channelPromise);
+                    TAB.getInstance().getFeatureManager().onLoginPacket(player);
+                    return;
+                default:
+                    break;
                 }
             } catch (Exception e){
                 TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
@@ -80,18 +89,19 @@ public class VelocityPipelineInjector extends PipelineInjector {
          * Removes all real players from packet if the packet doesn't come from TAB
          * @param packet - packet to modify
          */
-        private void modifyPlayers(ScoreboardTeam packet){
+        private void modifyPlayers(Object packetScoreboardTeam) throws ReflectiveOperationException {
             long time = System.nanoTime();
-            if (packet.getPlayers() == null) return;
-            List<String> col = Lists.newArrayList(packet.getPlayers());
+            if (vps.ScoreboardTeam_getPlayers.invoke(packetScoreboardTeam) == null) return;
+            List<String> col = Lists.newArrayList((List<String>) vps.ScoreboardTeam_getPlayers.invoke(packetScoreboardTeam));
+            String name = (String) vps.ScoreboardTeam_getName.invoke(packetScoreboardTeam);
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
-                    logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !name.equals(p.getTeamName())) {
+                    logTeamOverride(name, p.getName(), p.getTeamName());
                     col.remove(p.getNickname());
                 }
             }
-            packet.setPlayers(col);
+            vps.ScoreboardTeam_setPlayers.invoke(packetScoreboardTeam, col);
             TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
