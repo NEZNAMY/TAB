@@ -64,11 +64,11 @@ public class GroupManager extends TabFeature {
      *             Event to process
      */
     private void updatePlayer(UserDataRecalculateEvent event) {
+        TabPlayer player = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
+        if (player == null) return; // player not loaded yet or LP recalculating offline player
         TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.LUCKPERMS_USER_RECALCULATE_EVENT, () -> {
-            TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-            if (p == null) return; // player not loaded yet
-            ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(p, detectPermissionGroup(p));
-            refresh(p, false);
+            ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(player, detectPermissionGroup(player));
+            refresh(player, false);
         });
     }
 
@@ -79,6 +79,7 @@ public class GroupManager extends TabFeature {
      *             Event to process
      */
     private void updateGroup(GroupDataRecalculateEvent event) {
+        if (TAB.getInstance().getOnlinePlayers().length == 0) return;
         TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.LUCKPERMS_GROUP_RECALCULATE_EVENT, () -> {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(player, detectPermissionGroup(player));
