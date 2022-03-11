@@ -10,32 +10,32 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
  */
 public class Groups extends SortingType {
 
-	//map of sorted groups in config
-	private final LinkedHashMap<String, String> sortedGroups;
-	
-	/**
-	 * Constructs new instance
-	 */
-	public Groups(Sorting sorting, String options) {
-		super(sorting, "%group%");
-		sortedGroups = convertSortingElements(options.split(","));
-	}
+    //map of sorted groups in config
+    private final LinkedHashMap<String, String> sortedGroups;
 
-	@Override
-	public String getChars(ITabPlayer p) {
-		String group = p.getGroup();
-		String chars = sortedGroups.get(group.toLowerCase());
-		if (chars == null) {
-			chars = String.valueOf(sortedGroups.size()+1);
-			p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's primary group is not in sorting list. &r");
-		} else {
-			p.setTeamNameNote(p.getTeamNameNote() + String.format("Primary group is #%s in sorting list", Integer.parseInt(chars)) + ". &r");
-		}
-		return chars;
-	}
-	
-	@Override
-	public String toString() {
-		return "GROUPS";
-	}
+    /**
+     * Constructs new instance
+     */
+    public Groups(Sorting sorting, String options) {
+        super(sorting, "%group%");
+        sortedGroups = convertSortingElements(options.split(","));
+    }
+
+    @Override
+    public String getChars(ITabPlayer p) {
+        String group = p.getGroup();
+        String chars = sortedGroups.get(group.toLowerCase());
+        if (chars == null) {
+            chars = String.valueOf(sortedGroups.size()+1);
+            p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's primary group is not in sorting list. &r");
+        } else {
+            p.setTeamNameNote(p.getTeamNameNote() + String.format("Primary group is #%s in sorting list", Integer.parseInt(chars)) + ". &r");
+        }
+        return chars;
+    }
+
+    @Override
+    public String toString() {
+        return "GROUPS";
+    }
 }

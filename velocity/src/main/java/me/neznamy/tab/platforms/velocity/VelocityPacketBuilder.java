@@ -1,11 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardDisplay;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardObjective;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardObjective.HealthDisplay;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardSetScore;
-import com.velocitypowered.proxy.protocol.packet.ScoreboardTeam;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -13,146 +8,98 @@ import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.platforms.velocity.storage.VelocityPacketStorage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Packet builder for Velocity platform
  */
 public class VelocityPacketBuilder extends PacketBuilder {
 
-	private static Class<?> listItem_class;
-	private static Method listItem_getAction;
-	private static Method listItem_getItems;
-	private static Class<?> item_class;
-	private static Method item_getUuid;
-	private static Method item_getName;
-	private static Method item_setName;
-	private static Method item_getProperties;
-	private static Method item_setProperties;
-	private static Method item_getGameMode;
-	private static Method item_setGameMode;
-	private static Method item_getLatency;
-	private static Method item_setLatency;
-	private static Method item_getDisplayName;
-	private static Method item_setDisplayName;
+    //packet storage
+    private final VelocityPacketStorage vps = VelocityPacketStorage.getInstance();
 
-	static {
-		try {
-			listItem_class = Class.forName("com.velocitypowered.proxy.protocol.packet.PlayerListItem");
-			listItem_getAction = listItem_class.getMethod("getAction");
-			listItem_getItems = listItem_class.getMethod("getItems");
-			item_class = Class.forName("com.velocitypowered.proxy.protocol.packet.PlayerListItem$Item");
-			item_getUuid = item_class.getMethod("getUuid");
-			item_getName = item_class.getMethod("getName");
-			item_setName = item_class.getMethod("setName", String.class);
-			item_getProperties = item_class.getMethod("getProperties");
-			item_setProperties = item_class.getMethod("setProperties", List.class);
-			item_getGameMode = item_class.getMethod("getGameMode");
-			item_setGameMode = item_class.getMethod("setGameMode", int.class);
-			item_getLatency = item_class.getMethod("getLatency");
-			item_setLatency = item_class.getMethod("setLatency", int.class);
-			item_getDisplayName = item_class.getMethod("getDisplayName");
-			item_setDisplayName = item_class.getMethod("setDisplayName", Component.class);
-		} catch (ReflectiveOperationException e) {
-			// Should never happen until velocity updates their packet system
-			TAB.getInstance().getErrorManager().criticalError("Failed to initialize methods for packet building", e);
-		}
-	}
+    @Override
+    public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+        List<Object> items = new ArrayList<>();
+        for (PlayerInfoData data : packet.getEntries()) {
+            Object item = vps.newItem.newInstance(data.getUniqueId());
+            if (data.getDisplayName() != null) {
+                if (clientVersion.getMinorVersion() >= 8) {
+                    vps.Item_setDisplayName.invoke(item, Main.convertComponent(data.getDisplayName(), clientVersion));
+                } else {
+                    vps.Item_setDisplayName.invoke(item, LegacyComponentSerializer.legacySection().deserialize(data.getDisplayName().toLegacyText()));
+                }
+            } else if (clientVersion.getMinorVersion() < 8) {
+                vps.Item_setDisplayName.invoke(item, LegacyComponentSerializer.legacySection().deserialize(data.getName()));
+            }
+            if (data.getGameMode() != null) vps.Item_setGameMode.invoke(item, data.getGameMode().ordinal()-1);
+            vps.Item_setLatency.invoke(item, data.getLatency());
+            if (data.getSkin() != null) {
+                vps.Item_setProperties.invoke(item, Collections.singletonList(new GameProfile.Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())));
+            } else {
+                vps.Item_setProperties.invoke(item, Collections.emptyList());
+            }
+            vps.Item_setName.invoke(item, data.getName());
+            items.add(item);
+        }
+        return vps.newPlayerListItem.newInstance(packet.getAction().ordinal(), items);
+    }
 
-	@Override
-	public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
-		return packet;
-	}
+    @Override
+    public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+        return vps.newScoreboardDisplay.newInstance((byte)packet.getSlot(), packet.getObjectiveName());
+    }
 
-	@Override
-	public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
-		return packet;
-	}
+    @Override
+    public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+        return vps.newScoreboardObjective.newInstance(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : vps.HealthDisplay_valueOf.invoke(null, packet.getRenderType().toString()), (byte)packet.getAction());
+    }
 
-	@Override
-	public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-		List<Object> items = new ArrayList<>();
-		for (PlayerInfoData data : packet.getEntries()) {
-			Object item = item_class.getConstructor(UUID.class).newInstance(data.getUniqueId());
-			if (data.getDisplayName() != null) {
-				if (clientVersion.getMinorVersion() >= 8) {
-					item_setDisplayName.invoke(item, Main.convertComponent(data.getDisplayName(), clientVersion));
-				} else {
-					item_setDisplayName.invoke(item, LegacyComponentSerializer.legacySection().deserialize(data.getDisplayName().toLegacyText()));
-				}
-			} else if (clientVersion.getMinorVersion() < 8) {
-				item_setDisplayName.invoke(item, LegacyComponentSerializer.legacySection().deserialize(data.getName()));
-			}
-			if (data.getGameMode() != null) item_setGameMode.invoke(item, data.getGameMode().ordinal()-1);
-			item_setLatency.invoke(item, data.getLatency());
-			if (data.getSkin() != null) {
-				item_setProperties.invoke(item, Collections.singletonList(new GameProfile.Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())));
-			} else {
-				item_setProperties.invoke(item, Collections.emptyList());
-			}
-			item_setName.invoke(item, data.getName());
-			items.add(item);
-		}
-		return listItem_class.getConstructor(int.class, List.class).newInstance(packet.getAction().ordinal(), items);
-	}
+    @Override
+    public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+        return vps.newScoreboardSetScore.newInstance(packet.getPlayer(), (byte)packet.getAction().ordinal(), packet.getObjectiveName(), packet.getScore());
+    }
 
-	@Override
-	public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) {
-		return packet;
-	}
+    @Override
+    public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+        int color = 0;
+        if (clientVersion.getMinorVersion() >= 13) {
+            color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal();
+        }
+        return vps.newScoreboardTeam.newInstance(packet.getName(), (byte)packet.getAction(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16),
+                packet.getNameTagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers() instanceof List ? packet.getPlayers() : new ArrayList<>(packet.getPlayers()));
+    }
 
-	@Override
-	public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
-		return new ScoreboardDisplay((byte)packet.getSlot(), packet.getObjectiveName());
-	}
+    @Override
+    public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+        List<PlayerInfoData> listData = new ArrayList<>();
+        for (Object i : (List<Object>) vps.PlayerListItem_getItems.invoke(packet)) {
+            Component displayNameComponent = (Component) vps.Item_getDisplayName.invoke(i);
+            String displayName = displayNameComponent == null ? null : GsonComponentSerializer.gson().serialize(displayNameComponent);
+            List<GameProfile.Property> properties = vps.Item_getProperties.invoke(i) == null ? null : (List<GameProfile.Property>) vps.Item_getProperties.invoke(i);
+            Skin skin = properties == null || properties.size() == 0 ? null : new Skin(properties.get(0).getValue(), properties.get(0).getSignature());
+            listData.add(new PlayerInfoData((String) vps.Item_getName.invoke(i), (UUID) vps.Item_getUuid.invoke(i), skin, (int) vps.Item_getLatency.invoke(i),
+                    EnumGamemode.VALUES[(int) vps.Item_getGameMode.invoke(i)+1], displayName == null ? null : IChatBaseComponent.deserialize(displayName)));
+        }
+        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[(int) vps.PlayerListItem_getAction.invoke(packet)], listData);
+    }
 
-	@Override
-	public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-		return new ScoreboardObjective(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : HealthDisplay.valueOf(packet.getRenderType().toString()), (byte)packet.getMethod());
-	}
+    @Override
+    public PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException {
+        return new PacketPlayOutScoreboardObjective((byte)vps.ScoreboardObjective_getAction.invoke(packet), (String)vps.ScoreboardObjective_getName.invoke(packet),
+                null, PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER);
+    }
 
-	@Override
-	public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
-		return new ScoreboardSetScore(packet.getPlayer(), (byte)packet.getAction().ordinal(), packet.getObjectiveName(), packet.getScore());
-	}
-
-	@Override
-	public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
-		int color = 0;
-		if (clientVersion.getMinorVersion() >= 13) {
-			color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal();
-		}
-		return new ScoreboardTeam(packet.getName(), (byte)packet.getMethod(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16),
-				packet.getNameTagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers() instanceof List ? (List<String>)packet.getPlayers() : new ArrayList<>(packet.getPlayers()));
-	}
-
-	@Override
-	public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-		List<PlayerInfoData> listData = new ArrayList<>();
-		for (Object i : (List<Object>) listItem_getItems.invoke(packet)) {
-			Component displayNameComponent = (Component) item_getDisplayName.invoke(i);
-			String displayName = displayNameComponent == null ? null : GsonComponentSerializer.gson().serialize(displayNameComponent);
-			List<GameProfile.Property> properties = item_getProperties.invoke(i) == null ? null : (List<GameProfile.Property>) item_getProperties.invoke(i);
-			Skin skin = properties == null || properties.size() == 0 ? null : new Skin(properties.get(0).getValue(), properties.get(0).getSignature());
-			listData.add(new PlayerInfoData((String) item_getName.invoke(i), (UUID) item_getUuid.invoke(i), skin, (int) item_getLatency.invoke(i),
-					EnumGamemode.values()[(int) item_getGameMode.invoke(i)+1], displayName == null ? null : IChatBaseComponent.deserialize(displayName)));
-		}
-		return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.values()[(int) listItem_getAction.invoke(packet)], listData);
-	}
-
-	@Override
-	public PacketPlayOutScoreboardObjective readObjective(Object packet) {
-		return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName(), null, null);
-	}
-
-	@Override
-	public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) {
-		return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
-	}
+    @Override
+    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) throws ReflectiveOperationException {
+        return new PacketPlayOutScoreboardDisplayObjective((byte)vps.ScoreboardDisplay_getPosition.invoke(packet), (String)vps.ScoreboardDisplay_getName.invoke(packet));
+    }
 }

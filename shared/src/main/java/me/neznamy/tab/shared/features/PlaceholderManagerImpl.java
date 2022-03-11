@@ -32,243 +32,261 @@ import me.neznamy.tab.shared.placeholders.TabPlaceholder;
  */
 public class PlaceholderManagerImpl extends TabFeature implements PlaceholderManager {
 
-	private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
+    private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
-	private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-	private final Map<String, Integer> serverPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server");
-	private final Map<String, Integer> playerPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player");
-	private final Map<String, Integer> relationalPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.relational");
+    private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
+    private final Map<String, Integer> serverPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server");
+    private final Map<String, Integer> playerPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player");
+    private final Map<String, Integer> relationalPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.relational");
 
-	//plugin internals + PAPI + API
-	private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
+    //plugin internals + PAPI + API
+    private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
-	//map of String-Set of features using placeholder
-	private final Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
-	private Placeholder[] usedPlaceholders = new Placeholder[0];
-	
-	private final AtomicInteger atomic = new AtomicInteger();
-	private final RepeatingTask refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, this, "Refreshing placeholders", this::refresh);
+    //map of String-Set of features using placeholder
+    private final Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
+    private Placeholder[] usedPlaceholders = new Placeholder[0];
+    
+    private final AtomicInteger atomic = new AtomicInteger();
+    private final RepeatingTask refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, this, "Refreshing placeholders", this::refresh);
 
-	public PlaceholderManagerImpl(){
-		super("Refreshing placeholders", "Updating placeholders");
-	}
-	
-	private void refresh() {
-		int loopTime = atomic.addAndGet(refreshTask.getInterval());
-		int size = TAB.getInstance().getOnlinePlayers().length;
-		Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
-		Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
-		boolean somethingChanged = false;
-		for (Placeholder placeholder : usedPlaceholders) {
-			if (placeholder.getRefresh() == -1 || placeholder.isTriggerMode() || loopTime % placeholder.getRefresh() != 0) continue;
-			if (placeholder instanceof RelationalPlaceholderImpl && updateRelationalPlaceholder((RelationalPlaceholderImpl) placeholder, forceUpdate)) somethingChanged = true;
-			if (placeholder instanceof PlayerPlaceholderImpl && updatePlayerPlaceholder((PlayerPlaceholderImpl) placeholder, update)) somethingChanged = true;
-			if (placeholder instanceof ServerPlaceholderImpl && updateServerPlaceholder((ServerPlaceholderImpl) placeholder, update)) somethingChanged = true;
-		}
-		if (somethingChanged) refresh(forceUpdate, update);
-	}
-	
-	private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
-		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
-			if (forceUpdate.containsKey(entry.getKey())) {
-				entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
-			}
-		}
-		long startRefreshTime = System.nanoTime();
-		for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
-			for (TabFeature r : entry.getValue()) {
-				long startTime = System.nanoTime();
-				r.refresh(entry.getKey(), true);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
-			}
-		}
-		for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
-			for (TabFeature r : entry.getValue()) {
-				long startTime = System.nanoTime();
-				r.refresh(entry.getKey(), false);
-				TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
-			}
-		}
-		//subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
-		TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
-	}
+    private TabExpansion tabExpansion;
 
-	private boolean updateRelationalPlaceholder(RelationalPlaceholderImpl placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {
-		boolean somethingChanged = false;
-		long startTime = System.nanoTime();
-		for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
-			for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
-				if (placeholder.update(p1, p2)) {
-					forceUpdate.computeIfAbsent(p2, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
-					somethingChanged = true;
-				}
-				if (placeholder.update(p2, p1)) {
-					forceUpdate.computeIfAbsent(p1, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
-					somethingChanged = true;
-				}
-			}
-		}
-		TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
-		return somethingChanged;
-	}
+    public PlaceholderManagerImpl(){
+        super("Refreshing placeholders", "Updating placeholders");
+    }
+    
+    private void refresh() {
+        int loopTime = atomic.addAndGet(refreshTask.getInterval());
+        int size = TAB.getInstance().getOnlinePlayers().length;
+        Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
+        Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
+        boolean somethingChanged = false;
+        for (Placeholder placeholder : usedPlaceholders) {
+            if (placeholder.getRefresh() == -1 || placeholder.isTriggerMode() || loopTime % placeholder.getRefresh() != 0) continue;
+            if (placeholder instanceof RelationalPlaceholderImpl && updateRelationalPlaceholder((RelationalPlaceholderImpl) placeholder, forceUpdate)) somethingChanged = true;
+            if (placeholder instanceof PlayerPlaceholderImpl && updatePlayerPlaceholder((PlayerPlaceholderImpl) placeholder, update)) somethingChanged = true;
+            if (placeholder instanceof ServerPlaceholderImpl && updateServerPlaceholder((ServerPlaceholderImpl) placeholder, update)) somethingChanged = true;
+        }
+        if (somethingChanged) refresh(forceUpdate, update);
+    }
+    
+    private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
+        for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+            if (forceUpdate.containsKey(entry.getKey())) {
+                entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
+            }
+        }
+        long startRefreshTime = System.nanoTime();
+        for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
+            for (TabFeature r : entry.getValue()) {
+                long startTime = System.nanoTime();
+                r.refresh(entry.getKey(), true);
+                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+            }
+        }
+        for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
+            for (TabFeature r : entry.getValue()) {
+                long startTime = System.nanoTime();
+                r.refresh(entry.getKey(), false);
+                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+            }
+        }
+        //subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
+        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
+    }
 
-	private boolean updatePlayerPlaceholder(PlayerPlaceholderImpl placeholder, Map<TabPlayer, Set<TabFeature>> update) {
-		boolean somethingChanged = false;
-		long startTime = System.nanoTime();
-		for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-			if (placeholder.update(all)) {
-				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
-				somethingChanged = true;
-			}
-		}
-		TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
-		return somethingChanged;
-	}
+    private boolean updateRelationalPlaceholder(RelationalPlaceholderImpl placeholder, Map<TabPlayer, Set<TabFeature>> forceUpdate) {
+        boolean somethingChanged = false;
+        long startTime = System.nanoTime();
+        for (TabPlayer p1 : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer p2 : TAB.getInstance().getOnlinePlayers()) {
+                if (placeholder.update(p1, p2)) {
+                    forceUpdate.computeIfAbsent(p2, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+                    somethingChanged = true;
+                }
+                if (placeholder.update(p2, p1)) {
+                    forceUpdate.computeIfAbsent(p1, x -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+                    somethingChanged = true;
+                }
+            }
+        }
+        TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+        return somethingChanged;
+    }
 
-	private boolean updateServerPlaceholder(ServerPlaceholderImpl placeholder, Map<TabPlayer, Set<TabFeature>> update) {
-		boolean somethingChanged = false;
-		long startTime = System.nanoTime();
-		if (placeholder.update()) {
-			somethingChanged = true;
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
-			}
-		}
-		TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
-		return somethingChanged;
-	}
+    private boolean updatePlayerPlaceholder(PlayerPlaceholderImpl placeholder, Map<TabPlayer, Set<TabFeature>> update) {
+        boolean somethingChanged = false;
+        long startTime = System.nanoTime();
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (placeholder.update(all)) {
+                if (tabExpansion != null) tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValue(all));
+                if (placeholder.getIdentifier().equals("%vanished%")) TAB.getInstance().getFeatureManager().onVanishStatusChange(all);
+                update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+                somethingChanged = true;
+            }
+        }
+        TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+        return somethingChanged;
+    }
 
-	public int getRelationalRefresh(String identifier) {
-		return relationalPlaceholderRefreshIntervals.getOrDefault(identifier, defaultRefresh);
-	}
+    private boolean updateServerPlaceholder(ServerPlaceholderImpl placeholder, Map<TabPlayer, Set<TabFeature>> update) {
+        boolean somethingChanged = false;
+        long startTime = System.nanoTime();
+        if (placeholder.update()) {
+            somethingChanged = true;
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (tabExpansion != null) tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValue(null));
+                update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
+            }
+        }
+        TAB.getInstance().getCPUManager().addPlaceholderTime(placeholder.getIdentifier(), System.nanoTime()-startTime);
+        return somethingChanged;
+    }
 
-	public Collection<Placeholder> getAllPlaceholders(){
-		return new ArrayList<>(registeredPlaceholders.values());
-	}
+    public int getRelationalRefresh(String identifier) {
+        return relationalPlaceholderRefreshIntervals.getOrDefault(identifier, defaultRefresh);
+    }
 
-	public Placeholder registerPlaceholder(Placeholder placeholder) {
-		if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
-		boolean override = registeredPlaceholders.containsKey(placeholder.getIdentifier());
-		registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
-		recalculateUsedPlaceholders();
-		if (override && placeholderUsage.containsKey(placeholder.getIdentifier())) {
-			((TabPlaceholder) placeholder).markAsUsed();
-			for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-				if (!p.isLoaded()) continue;
-				placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
-			}
-		}
-		return placeholder;
-	}
+    public Collection<Placeholder> getAllPlaceholders(){
+        return new ArrayList<>(registeredPlaceholders.values());
+    }
 
-	public Map<String, Integer> getServerPlaceholderRefreshIntervals() {
-		return serverPlaceholderRefreshIntervals;
-	}
+    public Placeholder registerPlaceholder(Placeholder placeholder) {
+        if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
+        boolean override = registeredPlaceholders.containsKey(placeholder.getIdentifier());
+        registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
+        recalculateUsedPlaceholders();
+        if (override && placeholderUsage.containsKey(placeholder.getIdentifier())) {
+            ((TabPlaceholder) placeholder).markAsUsed();
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                if (!p.isLoaded()) continue;
+                placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
+            }
+        }
+        return placeholder;
+    }
 
-	public Map<String, Integer> getPlayerPlaceholderRefreshIntervals() {
-		return playerPlaceholderRefreshIntervals;
-	}
+    public Map<String, Integer> getServerPlaceholderRefreshIntervals() {
+        return serverPlaceholderRefreshIntervals;
+    }
 
-	public int getDefaultRefresh() {
-		return defaultRefresh;
-	}
-	
-	@Override
-	public void load() {
-		for (Placeholder pl : usedPlaceholders) {
-			if (pl instanceof ServerPlaceholderImpl) {
-				((ServerPlaceholderImpl)pl).update();
-			}
-		}
-		for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-			onJoin(p);
-		}
-	}
-	
-	@Override
-	public void unload() {
-		registeredPlaceholders.values().forEach(Placeholder::unload);
-	}
+    public Map<String, Integer> getPlayerPlaceholderRefreshIntervals() {
+        return playerPlaceholderRefreshIntervals;
+    }
 
-	@Override
-	public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
-		return (ServerPlaceholder) registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
-	}
-	
-	@Override
-	public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
-		return (PlayerPlaceholder) registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
-	}
+    public int getDefaultRefresh() {
+        return defaultRefresh;
+    }
+    
+    @Override
+    public void load() {
+        for (Placeholder pl : usedPlaceholders) {
+            if (pl instanceof ServerPlaceholderImpl) {
+                ((ServerPlaceholderImpl)pl).update();
+            }
+        }
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            onJoin(p);
+        }
+    }
+    
+    @Override
+    public void unload() {
+        registeredPlaceholders.values().forEach(Placeholder::unload);
+    }
 
-	@Override
-	public RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
-		return (RelationalPlaceholder) registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
-	}
+    @Override
+    public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
+        return (ServerPlaceholder) registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
+    }
+    
+    @Override
+    public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
+        return (PlayerPlaceholder) registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
+    }
 
-	@Override
-	public List<String> detectPlaceholders(String text){
-		if (text == null || !text.contains("%")) return Collections.emptyList();
-		List<String> placeholders = new ArrayList<>();
-		Matcher m = placeholderPattern.matcher(text);
-		while (m.find()) {
-			placeholders.add(m.group());
-		}
-		return placeholders;
-	}
+    @Override
+    public RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
+        return (RelationalPlaceholder) registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
+    }
 
-	public TabPlaceholder getPlaceholder(String identifier) {
-		TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
-		if (p == null) {
-			TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
-			if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(event);
-			if (event.getPlaceholder() != null) {
-				registerPlaceholder(event.getPlaceholder());
-			} else {
-				TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
-			}
-			addUsedPlaceholder(identifier, this); //likely used via tab expansion
-			return getPlaceholder(identifier);
-		}
-		if (!placeholderUsage.containsKey(identifier)) {
-			//tab expansion for internal placeholder
-			addUsedPlaceholder(identifier, this);
-		}
-		return p;
-	}
+    @Override
+    public List<String> detectPlaceholders(String text){
+        if (text == null || !text.contains("%")) return Collections.emptyList();
+        List<String> placeholders = new ArrayList<>();
+        Matcher m = placeholderPattern.matcher(text);
+        while (m.find()) {
+            placeholders.add(m.group());
+        }
+        return placeholders;
+    }
 
-	@Override
-	public void addUsedPlaceholder(String identifier, TabFeature feature) {
-		if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
-			recalculateUsedPlaceholders();
-			TabPlaceholder p = getPlaceholder(identifier);
-			p.markAsUsed();
-			if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh() && !p.isTriggerMode()) {
-				TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + p.getRefresh() + "ms due to placeholder " + identifier);
-				refreshTask.setInterval(p.getRefresh());
-				atomic.set(0);
-			} 
-		}
-	}
-	
-	public void recalculateUsedPlaceholders() {
-		usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).distinct().toArray(Placeholder[]::new);
-	}
+    public TabPlaceholder getPlaceholder(String identifier) {
+        TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
+        if (p == null) {
+            TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
+            if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(event);
+            if (event.getPlaceholder() != null) {
+                registerPlaceholder(event.getPlaceholder());
+            } else {
+                TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+            }
+            addUsedPlaceholder(identifier, this); //likely used via tab expansion
+            return getPlaceholder(identifier);
+        }
+        if (!placeholderUsage.containsKey(identifier)) {
+            //tab expansion for internal placeholder
+            addUsedPlaceholder(identifier, this);
+        }
+        return p;
+    }
 
-	@Override
-	public String findReplacement(String placeholder, String output) {
-		return getPlaceholder(placeholder).getReplacements().findReplacement(output);
-	}
+    @Override
+    public void addUsedPlaceholder(String identifier, TabFeature feature) {
+        if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
+            recalculateUsedPlaceholders();
+            TabPlaceholder p = getPlaceholder(identifier);
+            p.markAsUsed();
+            if (tabExpansion != null) {
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                    tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
+                }
+            }
+            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh() && !p.isTriggerMode()) {
+                TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + p.getRefresh() + "ms due to placeholder " + identifier);
+                refreshTask.setInterval(p.getRefresh());
+                atomic.set(0);
+            } 
+        }
+    }
+    
+    public void recalculateUsedPlaceholders() {
+        usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).distinct().toArray(Placeholder[]::new);
+    }
 
-	@Override
-	public List<String> getUsedPlaceholders() {
-		return Arrays.stream(usedPlaceholders).map(Placeholder::getIdentifier).collect(Collectors.toList());
-	}
+    @Override
+    public String findReplacement(String placeholder, String output) {
+        return getPlaceholder(placeholder).getReplacements().findReplacement(output);
+    }
 
-	public Map<String, Set<TabFeature>> getPlaceholderUsage(){
-		return placeholderUsage;
-	}
-	
-	public AtomicInteger getLoopTime() {
-		return atomic;
-	}
+    @Override
+    public List<String> getUsedPlaceholders() {
+        return Arrays.stream(usedPlaceholders).map(Placeholder::getIdentifier).collect(Collectors.toList());
+    }
+
+    public Map<String, Set<TabFeature>> getPlaceholderUsage(){
+        return placeholderUsage;
+    }
+    
+    public AtomicInteger getLoopTime() {
+        return atomic;
+    }
+
+    public TabExpansion getTabExpansion() {
+        return tabExpansion;
+    }
+
+    public void setTabExpansion(TabExpansion tabExpansion) {
+        this.tabExpansion = tabExpansion;
+    }
 }

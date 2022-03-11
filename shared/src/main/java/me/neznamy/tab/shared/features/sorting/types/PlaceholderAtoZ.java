@@ -8,23 +8,23 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
  */
 public class PlaceholderAtoZ extends SortingType {
 
-	/**
-	 * Constructs new instance with given parameter
-	 * @param sortingPlaceholder - placeholder to sort by
-	 */
-	public PlaceholderAtoZ(Sorting sorting, String sortingPlaceholder) {
-		super(sorting, sortingPlaceholder);
-	}
+    /**
+     * Constructs new instance with given parameter
+     * @param sortingPlaceholder - placeholder to sort by
+     */
+    public PlaceholderAtoZ(Sorting sorting, String sortingPlaceholder) {
+        super(sorting, sortingPlaceholder);
+    }
 
-	@Override
-	public String getChars(ITabPlayer p) {
-		String output = setPlaceholders(p);
-		p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\". &r");
-		return output;
-	}
-	
-	@Override
-	public String toString() {
-		return "PLACEHOLDER_A_TO_Z";
-	}
+    @Override
+    public String getChars(ITabPlayer p) {
+        String output = setPlaceholders(p);
+        p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\". &r");
+        return output;
+    }
+
+    @Override
+    public String toString() {
+        return "PLACEHOLDER_A_TO_Z";
+    }
 }

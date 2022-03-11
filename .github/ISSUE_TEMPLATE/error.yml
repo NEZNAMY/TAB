@@ -1,0 +1,55 @@
+name: Error
+description: Error message with a stack trace in console or error file.
+labels: ["Error"]
+body:
+  - type: input
+    attributes:
+      label: Server version
+      description: Version and type of used server software where TAB is installed.
+      placeholder: Spigot 1.18.1
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: TAB version
+      description: Full version in numbers, "latest" is not a version.
+      placeholder: 3.0.2
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Stack trace
+      description: The error message and stack trace you received in console or errors.log file.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce (if known)
+      description: What to do in order to reproduce this issue
+      placeholder: |
+        Step 1: ..
+        Step 2: ..
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional info
+      description: Any other info you want to provide.
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Let's make sure this report is valid
+      options:
+        - label: I am running latest version of the plugin
+          required: true
+        - label: I have included a paste of the error
+          required: true
+        - label: I have read the Compatibility wiki page and am not trying to run the plugin on an unsupported server version / platform
+          required: true

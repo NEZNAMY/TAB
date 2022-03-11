@@ -1,10 +1,10 @@
 package me.neznamy.tab.api.task;
 
 public interface RepeatingTask {
-	
-	int getInterval();
+    
+    int getInterval();
 
-	void setInterval(int paramInt);
+    void setInterval(int paramInt);
 
-	void cancel();
+    void cancel();
 }

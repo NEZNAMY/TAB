@@ -8,6 +8,7 @@ jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
 gson = "2.8.9"
+slf4j = "1.7.36"
 
 # General
 luckperms = "5.2"
@@ -32,7 +33,6 @@ libsDisguises = "10.0.26"
 essentials = "2.19.2"
 premiumVanish = "2.0.3"
 redisBungee = "0.6.5-SNAPSHOT"
-velocityInjector = "1.1.0"
 
 [libraries]
 
@@ -42,6 +42,7 @@ jsonSimple = { group = "com.googlecode.json-simple", name = "json-simple", versi
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
 yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
 
 # General
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
@@ -67,7 +68,6 @@ libsDisguises = { group = "LibsDisguises", name = "LibsDisguises", version.ref =
 essentials = { group = "net.essentialsx", name = "EssentialsX", version.ref = "essentials" }
 premiumVanish = { group = "com.github.MyzelYam", name = "PremiumVanishAPI", version.ref = "premiumVanish" }
 redisBungee = { group = "com.imaginarycode.minecraft", name = "RedisBungee", version.ref = "redisBungee" }
-velocityInjector = { group = "com.github.NEZNAMY", name = "VelocityPacketInjector", version.ref = "velocityInjector" }
 
 # Metrics
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }

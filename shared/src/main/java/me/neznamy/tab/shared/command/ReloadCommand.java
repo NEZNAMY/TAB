@@ -9,16 +9,16 @@ import me.neznamy.tab.shared.TabConstants;
  */
 public class ReloadCommand extends SubCommand {
 
-	/**
-	 * Constructs new instance
-	 */
-	public ReloadCommand() {
-		super("reload", TabConstants.Permission.COMMAND_RELOAD);
-	}
+    /**
+     * Constructs new instance
+     */
+    public ReloadCommand() {
+        super("reload", TabConstants.Permission.COMMAND_RELOAD);
+    }
 
-	@Override
-	public void execute(TabPlayer sender, String[] args) {
-		TAB.getInstance().unload();
-		sendMessage(sender, TAB.getInstance().load());
-	}
+    @Override
+    public void execute(TabPlayer sender, String[] args) {
+        TAB.getInstance().unload();
+        sendMessage(sender, TAB.getInstance().load());
+    }
 }

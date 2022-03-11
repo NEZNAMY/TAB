@@ -17,12 +17,6 @@ import java.util.*;
 public class Converter {
 
     /**
-     * Creates new instance of this class
-     */
-    public Converter() {
-    }
-
-    /**
      * Converts animation file from old format with everything under "animations" key
      * to new format which does not use the redundant key anymore.
      * <p>
@@ -37,7 +31,7 @@ public class Converter {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
             animations.setValues(animations.getConfigurationSection("animations"));
             animations.save();
-            TAB.getInstance().getPlatform().sendConsoleMessage("&2[TAB] Converted animations.yml to new format.", true);
+            TAB.getInstance().sendConsoleMessage("&2Converted animations.yml to new format.", true);
         }
     }
 
@@ -51,13 +45,13 @@ public class Converter {
      */
     public void convertToV3(ConfigurationFile currentConfig) throws IOException {
         if (currentConfig.hasConfigOption("mysql")) return;
-        TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] Performing configuration conversion from 2.9.2 to 3.0.0",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] Please note that this may not be 100% accurate",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] Review your configuration and verify everything is as you want it to be",true);
-        TAB.getInstance().sendConsoleMessage("&e[TAB] --------------------------------------------------------------",true);
+        TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
+        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.9.2 to 3.0.0",true);
+        TAB.getInstance().sendConsoleMessage("&ePlease note that this may not be 100% accurate",true);
+        TAB.getInstance().sendConsoleMessage("&eReview your configuration and verify everything is as you want it to be",true);
+        TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
 
-        File folder = TAB.getInstance().getPlatform().getDataFolder();
+        File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();
         Files.createFile(new File(folder, "groups.yml").toPath());
         Files.createFile(new File(folder, "users.yml").toPath());
@@ -65,7 +59,10 @@ public class Converter {
         ConfigurationFile groups = new YamlConfigurationFile(null, new File(folder, "groups.yml"));
         ConfigurationFile users = new YamlConfigurationFile(null, new File(folder, "users.yml"));
         File oldConfigsFolder = new File(folder, "old_configs");
-        Files.copy(new File(oldConfigsFolder, "animations.yml").toPath(), new File(folder, "animations.yml").toPath());
+        File oldAnimations = new File(oldConfigsFolder, "animations.yml");
+        if (oldAnimations.exists()) {
+            Files.copy(oldAnimations.toPath(), new File(folder, "animations.yml").toPath());
+        }
         File premiumFile = new File(oldConfigsFolder, "premiumconfig.yml");
         ConfigurationFile premiumConfig = premiumFile.exists() ? new YamlConfigurationFile(null, premiumFile) : null;
         File bossBarFile = new File(oldConfigsFolder, "bossbar.yml");
@@ -96,12 +93,10 @@ public class Converter {
      *          if thrown by file move operation
      */
     private void moveOldFiles() throws IOException {
-        File folder = TAB.getInstance().getPlatform().getDataFolder();
+        File folder = TAB.getInstance().getDataFolder();
         File oldFolder = new File(folder, "old_configs");
-        if (!oldFolder.exists() && !oldFolder.mkdirs()) throw new RuntimeException("Failed to convert configuration to v3: Failed to create old_configs folder");
-        File[] files = folder.listFiles();
-        if (files == null) throw new IllegalStateException("Failed to convert configuration to v3: old_configs is not a folder");
-        for (File file : files) {
+        Files.createDirectories(oldFolder.toPath());
+        for (File file : Objects.requireNonNull(folder.listFiles())) {
             if (!file.isFile()) continue; //old_configs folder
             Files.move(file.toPath(), new File(folder.getPath() +
                     File.separator + "old_configs" + File.separator + file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -201,13 +196,13 @@ public class Converter {
         newConfig.set("bossbar.disable-in-worlds", bossBar.getObject("disable-features-in-worlds.bossbar"));
         if (TAB.getInstance().getPlatform().isProxy())
             newConfig.set("bossbar.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.bossbar", Collections.singletonList("disabledserver")));
-        Map<String, Map<String, Object>> bars = bossBar.getConfigurationSection("bars");
-        Map<String, List<String>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
-        List<String> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
+        Map<Object, Map<String, Object>> bars = bossBar.getConfigurationSection("bars");
+        Map<String, List<Object>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
+        List<Object> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
         String separator = TAB.getInstance().getPlatform().isProxy() ? "server" : "world";
         if (perWorldBossBars != null) {
-            for (Map.Entry<String, List<String>> entry : perWorldBossBars.entrySet()) {
-                for (String bar : entry.getValue()) {
+            for (Map.Entry<String, List<Object>> entry : perWorldBossBars.entrySet()) {
+                for (Object bar : entry.getValue()) {
                     if (!bars.containsKey(bar)) continue;
                     activeBossBars.add(bar);
                     if (bars.get(bar).containsKey("display-condition")){
@@ -218,8 +213,9 @@ public class Converter {
                 }
             }
         }
-        for (String definedBossBar : bars.keySet()) {
+        for (Object definedBossBar : bars.keySet()) {
             bars.get(definedBossBar).put("announcement-bar", !activeBossBars.contains(definedBossBar));
+            bars.get(definedBossBar).remove("permission-required");
         }
         newConfig.set("bossbar.bars", bars);
     }

@@ -11,13 +11,13 @@ import net.md_5.bungee.api.plugin.Event;
 @Deprecated
 public class TabPlayerLoadEvent extends Event {
 
-	private final TabPlayer player;
-	
-	public TabPlayerLoadEvent(TabPlayer player) {
-		this.player = player;
-	}
-	
-	public TabPlayer getPlayer() {
-		return player;
-	}
+    private final TabPlayer player;
+    
+    public TabPlayerLoadEvent(TabPlayer player) {
+        this.player = player;
+    }
+    
+    public TabPlayer getPlayer() {
+        return player;
+    }
 }
