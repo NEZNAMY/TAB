@@ -16,16 +16,15 @@ Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.
 
 # Links
 The precompiled JAR can be downloaded for free from:  
-* Releases: https://github.com/NEZNAMY/TAB/releases
+* GitHub releases: https://github.com/NEZNAMY/TAB/releases
 * MC-Market: https://www.mc-market.org/resources/20631/
 
 Supporting my work:  
 * MC-Market: https://www.mc-market.org/resources/14009/
 * Polymart: https://polymart.org/resource/484
-* Donation link: https://paypal.me/neznamy1
 
 Other links:
-* Discord: https://discord.gg/EaSvdk6  
+* Discord support for buyers: https://discord.gg/EaSvdk6  
 * Wiki: https://github.com/NEZNAMY/TAB/wiki  
 
 # Issues
