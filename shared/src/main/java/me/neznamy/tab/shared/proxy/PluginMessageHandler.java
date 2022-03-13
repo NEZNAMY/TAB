@@ -72,7 +72,8 @@ public class PluginMessageHandler {
                     }
                     if ("PlayerJoinResponse".equals(subChannel)) {
                         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
-                        if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge) player.setGroup(in.readUTF());
+                        if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge &&
+                            !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
                         int placeholderCount = in.readInt();
                         for (int i=0; i<placeholderCount; i++) {
                             String identifier = in.readUTF();
