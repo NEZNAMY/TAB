@@ -217,8 +217,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         if (respectOtherPlugins && packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
             otherPluginScoreboard.put(receiver, packet.getObjectiveName());
-            if (activeScoreboard.containsKey(receiver)) {
-                TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> activeScoreboard.get(receiver).removePlayer(receiver));
+            ScoreboardImpl sb = activeScoreboard.get(receiver);
+            if (sb != null) {
+                TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sb.removePlayer(receiver));
             }
         }
     }
