@@ -31,6 +31,7 @@ public class VehicleRefresher extends TabFeature {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
                 this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
+                        if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
 //                        feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
                     }
