@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.permission;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Class to take groups from Vault on bukkit side
@@ -17,7 +18,7 @@ public class VaultBridge extends PermissionPlugin {
 
     @Override
     public String getPrimaryGroup(TabPlayer p) {
-        return p.getGroup();
+        return p.getGroup() == null ? TabConstants.DEFAULT_GROUP : p.getGroup();
     }
 
     @Override

@@ -8,9 +8,11 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -99,8 +101,7 @@ public abstract class ITabPlayer implements TabPlayer {
         this.world = world;
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
         this.bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
-        String group = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
-        permissionGroup = group != null ? group : TabConstants.DEFAULT_GROUP;
+        this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
     }
 
     /**
@@ -171,12 +172,10 @@ public abstract class ITabPlayer implements TabPlayer {
      *             New permission group
      */
     public void setGroup(String permissionGroup) {
+        Preconditions.checkNotNull(permissionGroup, "permissionGroup");
         if (this.permissionGroup.equals(permissionGroup)) return;
-        if (permissionGroup != null) {
-            this.permissionGroup = permissionGroup;
-        } else {
-            this.permissionGroup = TabConstants.DEFAULT_GROUP;
-        }
+        this.permissionGroup = permissionGroup;
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(this, permissionGroup);
         forceRefresh();
     }
 
