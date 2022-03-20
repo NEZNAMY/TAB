@@ -50,11 +50,11 @@ public class PlaceholderReplacementPattern {
                 replacements.put("no", value);
             } else if (key.contains("-")) {
                 try {
-                    numberIntervals.put(new float[]{Float.parseFloat(key.split("-")[0]),
-                            Float.parseFloat(key.split("-")[1])}, value);
-                } catch (NumberFormatException e) {
-                    //not a valid number interval
-                }
+                    numberIntervals.put(new float[]{Float.parseFloat(key.split("-")[0]), Float.parseFloat(key.split("-")[1])}, value);
+                } catch (NumberFormatException ignored) {}
+                try {
+                    numberIntervals.put(new float[]{Float.parseFloat(key.split("~")[0]), Float.parseFloat(key.split("~")[1])}, value);
+                } catch (NumberFormatException ignored) {}
             }
         }
     }
