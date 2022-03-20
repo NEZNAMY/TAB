@@ -252,6 +252,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void setLine(TabPlayer player, String line, String value) {
+        if (!getDefinedLines().contains(line)) throw new IllegalArgumentException("\"" + line + "\" is not a defined line. Defined lines: " + getDefinedLines());
         player.getProperty(line).setTemporaryValue(value);
         getArmorStandManager(player).refresh(true);
     }

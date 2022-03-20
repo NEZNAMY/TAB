@@ -3,18 +3,18 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.72.Final"
+netty = "4.1.75.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
-gson = "2.8.9"
+gson = "2.9.0"
 slf4j = "1.7.36"
 
 # General
-luckperms = "5.2"
-guava = "30.1.1-jre"
+luckperms = "5.4"
+guava = "31.1-jre"
 floodgate = "2.0-SNAPSHOT"
-kotlin = "1.6.0"
+kotlin = "1.6.10"
 event = "3.0.0"
 
 # Platforms

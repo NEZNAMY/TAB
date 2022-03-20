@@ -18,6 +18,8 @@ public abstract class TabAPI {
     private static TabAPI instance;
 
     public static TabAPI getInstance() {
+        if (instance == null) throw new IllegalStateException("API instance is null. This likely means you shaded TAB's API into your project" +
+                " instead of only using it, which is not allowed.");
         return instance;
     }
 
