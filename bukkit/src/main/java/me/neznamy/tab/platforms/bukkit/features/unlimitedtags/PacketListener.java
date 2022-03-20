@@ -145,8 +145,10 @@ public class PacketListener extends TabFeature {
     
     private void onEntityDestroy(TabPlayer receiver, int entity) {
         TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
-        if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer))
+        if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
+            BukkitArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);
             TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
-                    () -> nameTagX.getArmorStandManager(deSpawnedPlayer).destroy(receiver));
+                    () -> asm.destroy(receiver));
+        }
     }
 }
