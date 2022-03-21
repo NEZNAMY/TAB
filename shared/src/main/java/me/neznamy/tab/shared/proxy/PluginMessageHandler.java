@@ -13,10 +13,8 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.io.File;
+import java.util.*;
 
 /**
  * Universal interface for proxy to manage plugin messages
@@ -32,11 +30,10 @@ public class PluginMessageHandler {
      *             incoming message
      */
     public void onPluginMessage(UUID uuid, byte[] bytes) {
-        if (TAB.getInstance().isDisabled()) return; //reload in progress
-        ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
-        if (player == null) return;
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
+                    ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
+                    if (player == null) return;
                     ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
                     String subChannel = in.readUTF();
                     if ("Placeholder".equals(subChannel)){
