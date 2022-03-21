@@ -70,7 +70,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      */
     public String getLastValue(TabPlayer viewer, TabPlayer target) {
         if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
-        return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.get(viewer).get(target))), target);
+        return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).get(target))), target);
     }
 
     /**
