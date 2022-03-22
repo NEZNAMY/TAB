@@ -100,7 +100,6 @@ public class BukkitNameTagX extends NameTagX {
 
     @Override
     public void pauseArmorStands(TabPlayer player) {
-        if (isPlayerDisabled(player)) return;
         getArmorStandManager(player).destroy();
     }
 
