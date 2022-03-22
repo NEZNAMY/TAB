@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -122,5 +122,15 @@ public class GroupCommand extends PropertyCommand {
                 pl.forceRefresh();
             }
         }
+    }
+
+    @Override
+    public List<String> complete(TabPlayer sender, String[] arguments) {
+        if (arguments.length == 1) {
+            Set<String> groups = new HashSet<>(TAB.getInstance().getConfiguration().getGroups().getAllEntries());
+            groups.add("_DEFAULT_");
+            return groups.stream().filter(group -> group.toLowerCase().startsWith(arguments[0].toLowerCase())).collect(Collectors.toList());
+        }
+        return super.complete(sender, arguments);
     }
 }
