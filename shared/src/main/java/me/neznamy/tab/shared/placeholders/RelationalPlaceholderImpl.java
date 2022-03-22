@@ -58,20 +58,6 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         }
         return false;
     }
-    
-    /**
-     * Returns last known value for given players
-     *
-     * @param    viewer
-     *             viewer of the placeholder
-     * @param    target
-     *             target who is the text displayed on
-     * @return    last known value for entered player duo
-     */
-    public String getLastValue(TabPlayer viewer, TabPlayer target) {
-        if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
-        return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).get(target))), target);
-    }
 
     /**
      * Internal method with an additional parameter {@code force}, which, if set to true,
@@ -101,6 +87,12 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         }
         updateParents(viewer);
         updateParents(target);
+    }
+
+    @Override
+    public String getLastValue(TabPlayer viewer, TabPlayer target) {
+        if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
+        return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).get(target))), target);
     }
 
     @Override

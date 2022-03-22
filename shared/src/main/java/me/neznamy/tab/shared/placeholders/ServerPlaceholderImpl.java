@@ -96,6 +96,11 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     }
 
     @Override
+    public String getLastValue() {
+        return lastValue;
+    }
+
+    @Override
     public Object request() {
         try {
             return supplier.get();
