@@ -36,7 +36,7 @@ public interface PropertyConfiguration {
     }
 
     default Object fromString(String string) {
-        if (string.contains("\n")) {
+        if (string != null && string.contains("\n")) {
             return Arrays.asList(string.split("\n"));
         }
         return string;
