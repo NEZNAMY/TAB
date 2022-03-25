@@ -1,22 +1,18 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.EventSubscription;
-import net.luckperms.api.event.user.UserDataRecalculateEvent;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * An implementation of PlaceholderRegistry for universal placeholders
@@ -27,14 +23,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
     /** Decimal formatter for 2 decimal places */
     private final DecimalFormat decimal2 = new DecimalFormat("#.##");
 
-    /** LuckPerms event listeners */
-    private EventSubscription<UserDataRecalculateEvent> luckPermsPrefixSub;
-    private EventSubscription<UserDataRecalculateEvent> luckPermsSuffixSub;
-
     @SuppressWarnings("unchecked")
     @Override
     public void registerPlaceholders(PlaceholderManager manager) {
         manager.registerServerPlaceholder("%%", -1, () -> "%").enableTriggerMode();
+        manager.registerPlayerPlaceholder("%group%", -1, TabPlayer::getGroup).enableTriggerMode();
         manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
         manager.registerPlayerPlaceholder("%world%", -1, TabPlayer::getWorld).enableTriggerMode();
         manager.registerPlayerPlaceholder("%worldonline%", 1000, p -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> p.getWorld().equals(all.getWorld()) && !all.isVanished()).count());
@@ -58,20 +51,8 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
         manager.registerServerPlaceholder("%nonstaffonline%", 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
         PermissionPlugin plugin = TAB.getInstance().getGroupManager().getPlugin();
         if (plugin instanceof LuckPerms) {
-            PlayerPlaceholder prefix = manager.registerPlayerPlaceholder("%luckperms-prefix%", -1, ((LuckPerms)plugin)::getPrefix);
-            prefix.enableTriggerMode(() ->
-                luckPermsPrefixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
-                    TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-                    if (p == null) return; //server still starting up and users connecting already (LP loading them)
-                    prefix.updateValue(p, prefix.request(p));
-                }), () -> luckPermsPrefixSub.close());
-            PlayerPlaceholder suffix = manager.registerPlayerPlaceholder("%luckperms-suffix%", -1, ((LuckPerms)plugin)::getSuffix);
-            suffix.enableTriggerMode(() ->
-                luckPermsSuffixSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, event -> {
-                    TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-                    if (p == null) return; //server still starting up and users connecting already (LP loading them)
-                    suffix.updateValue(p, suffix.request(p));
-                }), () -> luckPermsSuffixSub.close());
+            manager.registerPlayerPlaceholder("%luckperms-prefix%", 1000, ((LuckPerms)plugin)::getPrefix);
+            manager.registerPlayerPlaceholder("%luckperms-suffix%", 1000, ((LuckPerms)plugin)::getSuffix);
         }
         for (Object s : TAB.getInstance().getConfiguration().getAnimationFile().getValues().keySet()) {
             Animation a = new Animation(s.toString(), TAB.getInstance().getConfiguration().getAnimationFile().getStringList(s + ".texts"),

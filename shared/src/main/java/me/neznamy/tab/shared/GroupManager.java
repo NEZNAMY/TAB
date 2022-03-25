@@ -1,17 +1,11 @@
 package me.neznamy.tab.shared;
 
-import java.util.Arrays;
-import java.util.List;
-
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.EventSubscription;
-import net.luckperms.api.event.group.GroupDataRecalculateEvent;
-import net.luckperms.api.event.user.UserDataRecalculateEvent;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Permission group manager retrieving groups from permission plugin
@@ -27,12 +21,6 @@ public class GroupManager extends TabFeature {
     /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
     private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
-    /** UserDataRecalculateEvent LuckPerms event listener */
-    private EventSubscription<UserDataRecalculateEvent> luckPermsSub;
-
-    /** GroupDataRecalculateEvent LuckPerms event listener */
-    private EventSubscription<GroupDataRecalculateEvent> luckPermsSub2;
-
     /**
      * Constructs new instance with given permission plugin, loads
      * event listeners and registers group placeholder.
@@ -41,45 +29,11 @@ public class GroupManager extends TabFeature {
      *             Detected permission plugin
      */
     public GroupManager(PermissionPlugin plugin) {
-        super("Permission group refreshing", "Refreshing groups");
+        super("Permission group refreshing", null);
         this.plugin = plugin;
-        if (plugin instanceof LuckPerms) {
-            luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, this::updatePlayer);
-            luckPermsSub2 = LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class, this::updateGroup);
-        } else if (!(plugin instanceof None) || groupsByPermissions){
-            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, this, TabConstants.CpuUsageCategory.GROUP_REFRESHING, () -> {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    ((ITabPlayer)all).setGroup(detectPermissionGroup(all));
-                }
-            });
-        }
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", -1, TabPlayer::getGroup).enableTriggerMode();
-    }
-
-    /**
-     * Processes UserDataRecalculateEvent
-     *
-     * @param    event
-     *             Event to process
-     */
-    private void updatePlayer(UserDataRecalculateEvent event) {
-        TabPlayer player = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-        if (player == null) return; // player not loaded yet or LP recalculating offline player
-        TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.LUCKPERMS_USER_RECALCULATE_EVENT,
-                () -> ((ITabPlayer)player).setGroup(detectPermissionGroup(player)));
-    }
-
-    /**
-     * Processes GroupDataRecalculateEvent
-     *
-     * @param    event
-     *             Event to process
-     */
-    private void updateGroup(GroupDataRecalculateEvent event) {
-        if (TAB.getInstance().getOnlinePlayers().length == 0) return;
-        TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.LUCKPERMS_GROUP_RECALCULATE_EVENT, () -> {
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                ((ITabPlayer)player).setGroup(detectPermissionGroup(player));
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, this, TabConstants.CpuUsageCategory.GROUP_REFRESHING, () -> {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                ((ITabPlayer)all).setGroup(detectPermissionGroup(all));
             }
         });
     }
@@ -146,13 +100,5 @@ public class GroupManager extends TabFeature {
      */
     public PermissionPlugin getPlugin() {
         return plugin;
-    }
-
-    @Override
-    public void unload() {
-        if (luckPermsSub != null) {
-            luckPermsSub.close();
-            luckPermsSub2.close();
-        }
     }
 }
