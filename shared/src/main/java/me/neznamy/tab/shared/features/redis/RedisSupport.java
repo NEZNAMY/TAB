@@ -289,7 +289,7 @@ public abstract class RedisSupport extends TabFeature {
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         all.sendCustomPacket(target.getUnregisterTeamPacket(), this);
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        all.sendCustomPacket(target.getRemovePacket(), this);
+                        if (!target.getServer().equals(all.getServer())) all.sendCustomPacket(target.getRemovePacket(), this);
                     }
                     redisPlayers.remove(id.toString());
                     break;
