@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.YellowNumber;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 
 public class RedisPlayer {
 
@@ -81,7 +80,7 @@ public class RedisPlayer {
         if (p.getProperty(TabConstants.Property.TAGPREFIX) != null) {
             json.put(TabConstants.Property.TAGPREFIX, p.getProperty(TabConstants.Property.TAGPREFIX).get());
             json.put(TabConstants.Property.TAGSUFFIX, p.getProperty(TabConstants.Property.TAGSUFFIX).get());
-            json.put("namevisibility", ((NameTag)TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NAME_TAGS)).getTeamVisibility(p, p));
+            json.put("namevisibility", redis.getNameTags().getTeamVisibility(p, p));
         } else {
             json.put(TabConstants.Property.TAGPREFIX, "");
             json.put(TabConstants.Property.TAGSUFFIX, "");

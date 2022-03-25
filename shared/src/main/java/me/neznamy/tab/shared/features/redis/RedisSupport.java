@@ -37,7 +37,7 @@ public abstract class RedisSupport extends TabFeature {
     private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
     /** NameTag feature */
-    private final NameTag nameTags = (NameTag) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NAME_TAGS);
+    private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
 
     /**
      * Constructs new instance
