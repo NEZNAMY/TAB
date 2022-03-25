@@ -50,7 +50,8 @@ public class RedisPlayer {
         player.name = (String) json.get("name");
         player.server = (String) json.get("server");
         player.tabFormat = (String) json.get("tabformat");
-        player.teamName = (String) json.get("teamname");
+        String team = (String) json.get("teamname");
+        player.teamName = checkTeamName(redis, team.substring(0, team.length()-1), 65);
         player.vanished = (boolean) json.get("vanished");
         String skinValue = (String) json.get("skin-value");
         if (skinValue != null) {
@@ -65,6 +66,21 @@ public class RedisPlayer {
         player.disabledPlayerList = redis.getPlayerList() == null || redis.getPlayerList().isDisabled(player.server, null);
         player.disabledNameTags = redis.getNameTags() == null || redis.getNameTags().isDisabled(player.server, null);
         return player;
+    }
+
+    private static String checkTeamName(RedisSupport redis, String currentName15, int id) {
+        String potentialTeamName = currentName15 + (char)id;
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
+                return checkTeamName(redis, currentName15, id+1);
+            }
+        }
+        for (RedisPlayer all : redis.getRedisPlayers().values()) {
+            if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
+                return checkTeamName(redis, currentName15, id+1);
+            }
+        }
+        return potentialTeamName;
     }
 
     @SuppressWarnings("unchecked")
@@ -235,6 +251,6 @@ public class RedisPlayer {
     }
 
     public void setTeamName(String teamName) {
-        this.teamName = teamName;
+        this.teamName = checkTeamName(redis, teamName.substring(0, teamName.length()-1), 65);
     }
 }

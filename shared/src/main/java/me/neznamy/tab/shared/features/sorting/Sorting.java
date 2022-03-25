@@ -11,6 +11,8 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.types.Groups;
 import me.neznamy.tab.shared.features.sorting.types.Permissions;
 import me.neznamy.tab.shared.features.sorting.types.Placeholder;
@@ -129,6 +131,14 @@ public class Sorting extends TabFeature {
             if (all == p) continue;
             if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
                 return checkTeamName(p, currentName, id+1);
+            }
+        }
+        if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.REDIS_BUNGEE)) {
+            RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+            for (RedisPlayer all : redis.getRedisPlayers().values()) {
+                if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
+                    return checkTeamName(p, currentName, id+1);
+                }
             }
         }
         return potentialTeamName;
