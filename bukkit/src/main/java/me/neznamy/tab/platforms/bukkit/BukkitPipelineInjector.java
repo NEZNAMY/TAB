@@ -43,7 +43,9 @@ public class BukkitPipelineInjector extends PipelineInjector {
 
         /**
          * Constructs new instance with given player
-         * @param player - player to inject
+         *
+         * @param   player
+         *          player to inject
          */
         public BukkitChannelDuplexHandler(TabPlayer player) {
             Preconditions.checkNotNull(player, "player");
@@ -91,9 +93,11 @@ public class BukkitPipelineInjector extends PipelineInjector {
 
         /**
          * Removes all real players from team if packet does not come from TAB and reports this to override log
-         * @param packetPlayOutScoreboardTeam - team packet
-         * @throws    ReflectiveOperationException
-         *             nmsGameMode
+         *
+         * @param   packetPlayOutScoreboardTeam
+         *          team packet
+         * @throws  ReflectiveOperationException
+         *          nmsGameMode
          */
         @SuppressWarnings("unchecked")
         private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {

@@ -47,9 +47,9 @@ public class YellowNumber extends TabFeature {
     /**
      * Returns current value for specified player
      *
-     * @param    p
-     *             Player to get value of
-     * @return    Current value of player
+     * @param   p
+     *          Player to get value of
+     * @return  Current value of player
      */
     public int getValue(TabPlayer p) {
         return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);

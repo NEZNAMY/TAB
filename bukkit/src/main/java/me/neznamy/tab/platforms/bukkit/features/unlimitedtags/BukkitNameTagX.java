@@ -22,7 +22,9 @@ public class BukkitNameTagX extends NameTagX {
 
     /**
      * Constructs new instance with given parameters and loads config options
-     * @param plugin - plugin instance
+     *
+     * @param   plugin
+     *          plugin instance
      */
     public BukkitNameTagX(JavaPlugin plugin) {
         super(BukkitArmorStandManager::new);
@@ -136,9 +138,12 @@ public class BukkitNameTagX extends NameTagX {
 
     /**
      * Returns flat distance between two players ignoring Y value
-     * @param player1 - first player
-     * @param player2 - second player
-     * @return flat distance in blocks
+     *
+     * @param   player1
+     *          first player
+     * @param   player2
+     *          second player
+     * @return  flat distance in blocks
      */
     private double getDistance(TabPlayer player1, TabPlayer player2) {
         Location loc1 = ((Player) player1.getPlayer()).getLocation();
@@ -154,6 +159,4 @@ public class BukkitNameTagX extends NameTagX {
     public VehicleRefresher getVehicleManager() {
         return vehicleManager;
     }
-
-
 }

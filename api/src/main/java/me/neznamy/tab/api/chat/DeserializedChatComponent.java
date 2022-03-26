@@ -156,11 +156,11 @@ public class DeserializedChatComponent extends IChatBaseComponent {
     /**
      * Returns boolean value of requested key from map
      *
-     * @param    jsonObject
-     *             map to get value from
-     * @param    key
-     *             name of key
-     * @return    value from json object or null if not present
+     * @param   jsonObject
+     *          map to get value from
+     * @param   key
+     *          name of key
+     * @return  value from json object or null if not present
      */
     private static Boolean getBoolean(JSONObject jsonObject, String key) {
         Preconditions.checkNotNull(jsonObject, "json object");

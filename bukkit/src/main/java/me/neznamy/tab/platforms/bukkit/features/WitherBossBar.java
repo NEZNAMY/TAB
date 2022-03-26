@@ -27,7 +27,9 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
     
     /**
      * Constructs a new instance of the class
-     * @param plugin - plugin instance
+     *
+     * @param   plugin
+     *          plugin instance
      */
     public WitherBossBar(JavaPlugin plugin) {
         Preconditions.checkNotNull(plugin, "plugin");

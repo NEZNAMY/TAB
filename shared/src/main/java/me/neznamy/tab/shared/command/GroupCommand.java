@@ -103,10 +103,15 @@ public class GroupCommand extends PropertyCommand {
 
     /**
      * Saves new group settings into config
-     * @param sender - command sender or null if console
-     * @param group - affected group
-     * @param type - property type
-     * @param value - new value
+     *
+     * @param   sender
+     *          command sender or null if console
+     * @param   group
+     *          affected group
+     * @param   type
+     *          property type
+     * @param   value
+     *          new value
      */
     private void saveGroup(TabPlayer sender, String group, String type, String value, String server, String world){
         if (value.length() > 0){

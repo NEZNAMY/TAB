@@ -83,11 +83,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
      * Evaluates inserted date format. If it's not valid, a message is printed into console
      * and format with {@code defaultValue} is returned.
      *
-     * @param    value
-     *             date format to evaluate
-     * @param    defaultValue
-     *             value to use if entered format is not valid
-     * @return    evaluated date format
+     * @param   value
+     *          date format to evaluate
+     * @param   defaultValue
+     *          value to use if entered format is not valid
+     * @return  evaluated date format
      */
     private SimpleDateFormat createDateFormat(String value, String defaultValue) {
         try {

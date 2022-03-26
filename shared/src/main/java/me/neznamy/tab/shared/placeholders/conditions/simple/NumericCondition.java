@@ -26,9 +26,9 @@ public abstract class NumericCondition extends SimpleCondition {
      * Returns left side of this condition. If it's a static number it is
      * returned, if not, placeholders are replaced and then text parsed and returned.
      *
-     * @param    p
-     *             player to get left side for
-     * @return    parsed left side
+     * @param   p
+     *          player to get left side for
+     * @return  parsed left side
      */
     public double getLeftSide(TabPlayer p) {
         if (leftSideStatic) return leftSideValue;
@@ -41,9 +41,9 @@ public abstract class NumericCondition extends SimpleCondition {
      * Returns right side of this condition. If it's a static number it is
      * returned, if not, placeholders are replaced and then text parsed and returned.
      *
-     * @param    p
-     *             player to get right side for
-     * @return    parsed right side
+     * @param   p
+     *          player to get right side for
+     * @return  parsed right side
      */
     public double getRightSide(TabPlayer p) {
         if (rightSideStatic) return rightSideValue;

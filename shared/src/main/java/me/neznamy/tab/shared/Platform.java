@@ -16,8 +16,8 @@ public abstract class Platform {
     /**
      * Constructs new instance with given parameter
      *
-     * @param    packetBuilder
-     *             Platform's packet builder
+     * @param   packetBuilder
+     *          Platform's packet builder
      */
     protected Platform(PacketBuilder packetBuilder) {
         this.packetBuilder = packetBuilder;
@@ -38,7 +38,7 @@ public abstract class Platform {
     /**
      * Returns platform-specific packet builder implementation
      *
-     * @return    platform-specific packet builder
+     * @return  platform-specific packet builder
      */
     public PacketBuilder getPacketBuilder(){
         return packetBuilder;
@@ -47,7 +47,7 @@ public abstract class Platform {
     /**
      * Detects permission plugin and returns it's representing object
      *
-     * @return    the interface representing the permission hook
+     * @return  the interface representing the permission hook
      */
     public abstract PermissionPlugin detectPermissionPlugin();
 
@@ -60,15 +60,15 @@ public abstract class Platform {
      * Creates an instance of {@link me.neznamy.tab.api.placeholder.Placeholder}
      * to handle this unknown placeholder (typically a PAPI placeholder)
      *
-     * @param    identifier
-     *             placeholder's identifier
+     * @param   identifier
+     *          placeholder's identifier
      */
     public abstract void registerUnknownPlaceholder(String identifier);
 
     /**
      * Returns {@code true} if this platform is a proxy, {@code false} if a game server
      *
-     * @return    {@code true} if this platform is a proxy, {@code false} if a game server
+     * @return  {@code true} if this platform is a proxy, {@code false} if a game server
      */
     public abstract boolean isProxy();
 
@@ -76,9 +76,9 @@ public abstract class Platform {
      * Performs platform-specific plugin manager call and returns the result.
      * If plugin is not installed, returns {@code null}.
      *
-     * @param    plugin
-     *             Plugin to check version of
-     * @return    Version string if plugin is installed, {@code null} if not
+     * @param   plugin
+     *          Plugin to check version of
+     * @return  Version string if plugin is installed, {@code null} if not
      */
     public abstract String getPluginVersion(String plugin);
 
@@ -86,7 +86,7 @@ public abstract class Platform {
      * Returns name of default config file for this platform
      * as it appears in the final jar in root directory.
      *
-     * @return    name of default config file for this platform
+     * @return  name of default config file for this platform
      */
     public abstract String getConfigName();
 }

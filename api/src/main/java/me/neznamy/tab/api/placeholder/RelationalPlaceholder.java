@@ -10,6 +10,7 @@ public interface RelationalPlaceholder extends Placeholder {
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
      * file and "ERROR" is returned.
+     *
      * @param   viewer
      *          player looking at output of the placeholder
      * @param   target

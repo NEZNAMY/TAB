@@ -13,8 +13,11 @@ public class DataWatcherObject {
 
     /**
      * Constructs a new instance of this class with given parameters
-     * @param position - position in DataWatcher
-     * @param classType - value class type
+     *
+     * @param   position
+     *          position in DataWatcher
+     * @param   classType
+     *          value class type
      */
     public DataWatcherObject(int position, Object classType){
         this.position = position;

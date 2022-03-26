@@ -116,10 +116,10 @@ public class TAB extends TabAPI {
      * Constructs new instance with given parameters and sets this
      * new instance as {@link me.neznamy.tab.api.TabAPI} instance.
      *
-     * @param    platform
-     *             Platform interface
-     * @param    serverVersion
-     *             Version the server is running on
+     * @param   platform
+     *          Platform interface
+     * @param   serverVersion
+     *          Version the server is running on
      */
     public TAB(Platform platform, ProtocolVersion serverVersion, String serverVersionString, File dataFolder, Object logger) {
         this.platform = platform;
@@ -145,9 +145,9 @@ public class TAB extends TabAPI {
      * Returns player by TabList UUID. This is required due to Velocity
      * as player uuid and TabList uuid do not match there at some circumstances
      *
-     * @param    tabListId
-     *             TabList id of player
-     * @return    player with provided id or null if player was not found
+     * @param   tabListId
+     *          TabList id of player
+     * @return  player with provided id or null if player was not found
      */
     public TabPlayer getPlayerByTabListUUID(UUID tabListId) {
         return playersByTabListId.get(tabListId);
@@ -256,8 +256,8 @@ public class TAB extends TabAPI {
     /**
      * Adds specified player to online players
      *
-     * @param    player
-     *             Player to add
+     * @param   player
+     *          Player to add
      */
     public void addPlayer(TabPlayer player) {
         data.put(player.getUniqueId(), player);
@@ -268,8 +268,8 @@ public class TAB extends TabAPI {
     /**
      * Removes specified player from online players
      *
-     * @param    player
-     *             Player to remove
+     * @param   player
+     *          Player to remove
      */
     public void removePlayer(TabPlayer player) {
         data.remove(player.getUniqueId());
@@ -280,7 +280,7 @@ public class TAB extends TabAPI {
     /**
      * Returns instance of this class
      *
-     * @return    instance of this class
+     * @return  instance of this class
      */
     public static TAB getInstance() {
         return instance;
@@ -289,8 +289,8 @@ public class TAB extends TabAPI {
     /**
      * Changes instance of this class to new value
      *
-     * @param    instance
-     *             Instance to set variable to
+     * @param   instance
+     *          Instance to set variable to
      */
     public static void setInstance(TAB instance) {
         TAB.instance = instance;
@@ -299,7 +299,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@code true} if floodgate plugin is installed, {@code false} if not
      *
-     * @return    {@code true} if floodgate plugin is installed, {@code false} if not
+     * @return  {@code true} if floodgate plugin is installed, {@code false} if not
      */
     public boolean isFloodgateInstalled() {
         return floodgate;
@@ -308,7 +308,7 @@ public class TAB extends TabAPI {
     /**
      * Returns TAB's group manager used to refresh player groups from other plugins
      *
-     * @return    group manager instance
+     * @return  group manager instance
      */
     public GroupManager getGroupManager() {
         return (GroupManager) featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
@@ -317,7 +317,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #platform}
      *
-     * @return    {@link #platform}
+     * @return  {@link #platform}
      */
     public Platform getPlatform() {
         return platform;
@@ -326,7 +326,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #cpu}
      *
-     * @return    {@link #cpu}
+     * @return  {@link #cpu}
      */
     public CpuManager getCPUManager() {
         return cpu;
@@ -335,7 +335,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #errorManager}
      *
-     * @return    {@link #errorManager}
+     * @return  {@link #errorManager}
      */
     public ErrorManager getErrorManager() {
         return errorManager;
@@ -344,7 +344,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #configuration}
      *
-     * @return    {@link #configuration}
+     * @return  {@link #configuration}
      */
     public Configs getConfiguration() {
         return configuration;
@@ -353,7 +353,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #disabled}
      *
-     * @return    {@link #disabled}
+     * @return  {@link #disabled}
      */
     public boolean isDisabled() {
         return disabled;
@@ -362,7 +362,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #command}
      *
-     * @return    {@link #command}
+     * @return  {@link #command}
      */
     public TabCommand getCommand() {
         return command;
@@ -371,7 +371,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #disabledCommand}
      *
-     * @return    {@link #disabledCommand}
+     * @return  {@link #disabledCommand}
      */
     public DisabledCommand getDisabledCommand() {
         return disabledCommand;
@@ -380,7 +380,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #serverVersionString}
      *
-     * @return    {@link #serverVersionString}
+     * @return  {@link #serverVersionString}
      */
     public String getServerVersionString() {
         return serverVersionString;
@@ -389,7 +389,7 @@ public class TAB extends TabAPI {
     /**
      * Returns {@link #dataFolder}
      *
-     * @return    {@link #dataFolder}
+     * @return  {@link #dataFolder}
      */
     public File getDataFolder() {
         return dataFolder;

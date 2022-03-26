@@ -43,7 +43,7 @@ public abstract class ProxyPlatform extends Platform {
     /**
      * Returns plugin message handler
      *
-     * @return    plugin message handler
+     * @return  plugin message handler
      */
     public PluginMessageHandler getPluginMessageHandler() {
         return plm;
@@ -52,7 +52,7 @@ public abstract class ProxyPlatform extends Platform {
     /**
      * Returns bridge placeholders, which are refreshed on backend server
      *
-     * @return    bridge placeholders, which are refreshed on backend server
+     * @return  bridge placeholders, which are refreshed on backend server
      */
     public Map<String, Integer> getBridgePlaceholders() {
         return bridgePlaceholders;

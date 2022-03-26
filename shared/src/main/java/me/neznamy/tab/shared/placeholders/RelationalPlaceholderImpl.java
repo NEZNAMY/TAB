@@ -24,12 +24,12 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     /**
      * Constructs new instance with given parameters
      *
-     * @param    identifier
-     *             placeholder identifier, must start with {@code %rel_} and end with {@code %}
-     * @param    refresh
-     *            refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
-     * @param    function
-     *            refresh function which returns new up-to-date output on request
+     * @param   identifier
+     *          placeholder identifier, must start with {@code %rel_} and end with {@code %}
+     * @param   refresh
+     *          refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
+     * @param   function
+     *          refresh function which returns new up-to-date output on request
      */
     public RelationalPlaceholderImpl(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
         super(identifier, refresh);
@@ -40,11 +40,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     /**
      * Updates value for given players and returns true if value changed, false if not
      *
-     * @param    viewer
-     *             viewer of the placeholder
-     * @param    target
-     *             target who is the text displayed on
-     * @return    true if value changed, false if not
+     * @param   viewer
+     *          viewer of the placeholder
+     * @param   target
+     *          target who is the text displayed on
+     * @return  true if value changed, false if not
      */
     public boolean update(TabPlayer viewer, TabPlayer target) {
         Object output = request(viewer, target);
@@ -64,14 +64,14 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      * features using the placeholder will refresh despite placeholder seemingly not
      * changing output, which is caused by nested placeholder changing value.
      *
-     * @param    viewer
-     *             viewer of the placeholder
-     * @param    target
-     *             target who is the text displayed on
-     * @param    value
-     *             new placeholder output
-     * @param    force
-     *             whether refreshing should be forced or not
+     * @param   viewer
+     *          viewer of the placeholder
+     * @param   target
+     *          target who is the text displayed on
+     * @param   value
+     *          new placeholder output
+     * @param   force
+     *          whether refreshing should be forced or not
      */
     private void updateValue(TabPlayer viewer, TabPlayer target, Object value, boolean force) {
         String s = getReplacements().findReplacement(String.valueOf(value));

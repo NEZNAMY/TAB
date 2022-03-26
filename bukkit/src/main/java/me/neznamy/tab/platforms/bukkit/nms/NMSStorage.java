@@ -223,8 +223,9 @@ public final class NMSStorage {
 
     /**
      * Creates new instance, initializes required NMS classes and fields
-     * @throws    ReflectiveOperationException
-     *             If any class, field or method fails to load
+     *
+     * @throws  ReflectiveOperationException
+     *          If any class, field or method fails to load
      */
     public NMSStorage() throws ReflectiveOperationException {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
@@ -255,7 +256,9 @@ public final class NMSStorage {
 
     /**
      * Sets new instance
-     * @param instance - new instance
+     *
+     * @param   instance
+     *          new instance
      */
     public static void setInstance(NMSStorage instance) {
         NMSStorage.instance = instance;
@@ -263,7 +266,8 @@ public final class NMSStorage {
 
     /**
      * Returns instance
-     * @return instance
+     *
+     * @return  instance
      */
     public static NMSStorage getInstance() {
         return instance;
@@ -494,9 +498,12 @@ public final class NMSStorage {
 
     /**
      * Returns class with given potential names in same order
-     * @param names - possible class names
-     * @return class for specified name(s)
-     * @throws ClassNotFoundException if class does not exist
+     *
+     * @param   names
+     *          possible class names
+     * @return  class for specified names
+     * @throws  ClassNotFoundException
+     *          if class does not exist
      */
     private Class<?> getNMSClass(String fullPath_1_17, String... names) throws ClassNotFoundException {
         if (minorVersion >= 17) {
@@ -514,9 +521,12 @@ public final class NMSStorage {
 
     /**
      * Returns class from given name
-     * @param name - class name
-     * @return class from given name
-     * @throws ClassNotFoundException if class was not found
+     *
+     * @param   name
+     *          class name
+     * @return  class from given name
+     * @throws  ClassNotFoundException
+     *          if class was not found
      */
     private Class<?> getLegacyClass(String name) throws ClassNotFoundException {
         try {
@@ -536,11 +546,16 @@ public final class NMSStorage {
 
     /**
      * Returns method with specified possible names and parameters. Throws exception if no such method was found
-     * @param clazz - class to get method from
-     * @param names - possible method names
-     * @param parameterTypes - parameter types of the method
-     * @return method with specified name and parameters
-     * @throws NoSuchMethodException if no such method exists
+     *
+     * @param   clazz
+     *          lass to get method from
+     * @param   names
+     *          possible method names
+     * @param   parameterTypes
+     *          parameter types of the method
+     * @return  method with specified name and parameters
+     * @throws  NoSuchMethodException
+     *          if no such method exists
      */
     private Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
         for (String name : names) {
@@ -604,9 +619,12 @@ public final class NMSStorage {
 
     /**
      * Returns all fields of class with defined class type
-     * @param clazz - class to check fields of
-     * @param type - field type to check for
-     * @return list of all fields with specified class type
+     *
+     * @param   clazz
+     *          class to check fields of
+     * @param   type
+     *          field type to check for
+     * @return  list of all fields with specified class type
      */
     private List<Field> getFields(Class<?> clazz, Class<?> type){
         if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
@@ -621,10 +639,14 @@ public final class NMSStorage {
 
     /**
      * Returns field with specified name and makes it accessible
-     * @param clazz - class to get field from
-     * @param name - field name
-     * @return accessible field with defined name
-     * @throws NoSuchFieldException if field was not found
+     *
+     * @param   clazz
+     *          class to get field from
+     * @param   name
+     *          field name
+     * @return  accessible field with defined name
+     * @throws  NoSuchFieldException
+     *          if field was not found
      */
     private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         for (Field f : clazz.getDeclaredFields()) {

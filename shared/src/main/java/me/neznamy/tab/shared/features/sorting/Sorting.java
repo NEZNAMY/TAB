@@ -40,7 +40,9 @@ public class Sorting extends TabFeature {
     
     /**
      * Constructs new instance, loads data from configuration and starts repeating task
-     * @param nameTags - NameTag feature
+     *
+     * @param   nameTags
+     *          NameTag feature
      */
     public Sorting(NameTag nameTags) {
         super("Team name refreshing", "Refreshing team name");
@@ -84,7 +86,8 @@ public class Sorting extends TabFeature {
     
     /**
      * Compiles sorting type list into classes
-     * @return list of compiled sorting types
+     *
+     * @return  list of compiled sorting types
      */
     private SortingType[] compile(List<String> options){
         List<SortingType> list = new ArrayList<>();
@@ -101,8 +104,10 @@ public class Sorting extends TabFeature {
     
     /**
      * Constructs team name for specified player
-     * @param p - player to build team name for
-     * @return unique up to 16 character long sequence that sorts the player
+     *
+     * @param   p
+     *          player to build team name for
+     * @return  unique up to 16 character long sequence that sorts the player
      */
     public String getTeamName(TabPlayer p) {
         ((ITabPlayer) p).setTeamNameNote("");
@@ -118,10 +123,14 @@ public class Sorting extends TabFeature {
     
     /**
      * Checks if team name is available and proceeds to try new values until free name is found
-     * @param p - player to build team name for
-     * @param currentName - current up to 15 character long team name start
-     * @param id - current character to check as 16th character
-     * @return first available full team name
+     *
+     * @param   p
+     *          player to build team name for
+     * @param   currentName
+     *          current up to 15 character long team name start
+     * @param   id
+     *          current character to check as 16th character
+     * @return  first available full team name
      */
     private String checkTeamName(TabPlayer p, StringBuilder currentName, int id) {
         String potentialTeamName = currentName.toString();
@@ -146,7 +155,8 @@ public class Sorting extends TabFeature {
     
     /**
      * Converts sorting types into user-friendly sorting types into /tab debug
-     * @return user-friendly representation of sorting types
+     *
+     * @return  user-friendly representation of sorting types
      */
     public String typesToString() {
         return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" then "));

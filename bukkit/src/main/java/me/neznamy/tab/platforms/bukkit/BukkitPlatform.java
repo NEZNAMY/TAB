@@ -49,8 +49,9 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Constructs new instance with given plugin parameter
-     * @param    plugin
-     *             plugin instance
+     *
+     * @param   plugin
+     *          plugin instance
      */
     public BukkitPlatform(JavaPlugin plugin) {
         super(new BukkitPacketBuilder());
@@ -131,7 +132,8 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Returns online players from Bukkit API
-     * @return    online players from Bukkit API
+     *
+     * @return  online players from Bukkit API
      */
     @SuppressWarnings("unchecked")
     private Player[] getOnlinePlayers() {
@@ -201,7 +203,8 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Returns status of LibsDisguises plugin presence
-     * @return    {@code true} if plugin is enabled, {@code false} if not
+     *
+     * @return  {@code true} if plugin is enabled, {@code false} if not
      */
     public boolean isLibsDisguisesEnabled() {
         return libsDisguises;
@@ -211,8 +214,9 @@ public class BukkitPlatform extends Platform {
      * Sets LibsDisguises presence status to provided value. This is used
      * to disable LibsDisguises hook in case the plugin is not correctly loaded
      * for any reason to avoid error spam in the hook.
-     * @param    enabled
-     *             New status of LibsDisguises presence
+     *
+     * @param   enabled
+     *          New status of LibsDisguises presence
      */
     public void setLibsDisguisesEnabled(boolean enabled) {
         libsDisguises = enabled;
@@ -220,7 +224,8 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Returns Essentials' main class if the plugin is installed, {@code null} if not
-     * @return    Essentials instance or {@code null} if plugin is not installed
+     *
+     * @return  Essentials instance or {@code null} if plugin is not installed
      */
     public Essentials getEssentials() {
         return (Essentials) essentials;
@@ -238,9 +243,10 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Gets protocol version of requested player and returns it.
-     * @param    player
-     *             Player to get protocol version of
-     * @return    protocol version of the player
+     *
+     * @param   player
+     *          Player to get protocol version of
+     * @return  protocol version of the player
      */
     public int getProtocolVersion(Player player) {
         if (protocolSupport){
@@ -256,9 +262,10 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Returns protocol version of requested player using ProtocolSupport
-     * @param    player
-     *             Player to get protocol version of
-     * @return    protocol version of the player using ProtocolSupport
+     *
+     * @param   player
+     *          Player to get protocol version of
+     * @return  protocol version of the player using ProtocolSupport
      */
     private int getProtocolVersionPS(Player player){
         try {
@@ -274,9 +281,10 @@ public class BukkitPlatform extends Platform {
 
     /**
      * Returns protocol version of requested player using ViaVersion
-     * @param    player
-     *             Player to get protocol version of
-     * @return    protocol version of the player using ViaVersion
+     *
+     * @param   player
+     *          Player to get protocol version of
+     * @return  protocol version of the player using ViaVersion
      */
     private int getProtocolVersionVia(Player player, int retryLevel){
         try {

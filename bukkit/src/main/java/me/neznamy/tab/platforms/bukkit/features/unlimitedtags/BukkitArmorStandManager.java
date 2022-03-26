@@ -46,7 +46,9 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Teleports armor stands to player's current location for specified viewer
-     * @param viewer - player to teleport armor stands for
+     *
+     * @param   viewer
+     *          player to teleport armor stands for
      */
     public void teleport(TabPlayer viewer) {
         for (ArmorStand a : armorStandArray) a.teleport(viewer);
@@ -62,9 +64,10 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Returns {@code true} if requested player is nearby, {@code false} if not
-     * @param    viewer
-     *             Player to check for
-     * @return    {@code true} if player nearby, {@code false} if not
+     *
+     * @param   viewer
+     *          Player to check for
+     * @return  {@code true} if player nearby, {@code false} if not
      */
     public boolean isNearby(TabPlayer viewer) {
         return nearbyPlayers.contains(viewer);
@@ -72,8 +75,10 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Returns true if manager contains armor stand with specified entity id, false if not
-     * @param entityId - entity id
-     * @return true if armor stand with specified entity id exists, false if not
+     *
+     * @param   entityId
+     *          entity id
+     * @return  true if armor stand with specified entity id exists, false if not
      */
     public boolean hasArmorStandWithID(int entityId) {
         for (ArmorStand a : armorStandArray) {
@@ -86,7 +91,9 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Sets sneak value of armor stands to specified value
-     * @param sneaking - new sneaking status
+     *
+     * @param   sneaking
+     *          new sneaking status
      */
     public void sneak(boolean sneaking) {
         for (ArmorStand a : armorStandArray) a.sneak(sneaking);
@@ -112,7 +119,9 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Spawns all armor stands for specified viewer and adds them into nearby players
-     * @param viewer - player to spawn armor stands for
+     *
+     * @param   viewer
+     *          player to spawn armor stands for
      */
     public void spawn(TabPlayer viewer) {
         nearbyPlayers.add(viewer);
@@ -123,7 +132,9 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Sends destroy packet of all armor stands to specified player and removes them from nearby players list
-     * @param viewer - player to destroy armor stands for
+     *
+     * @param   viewer
+     *          player to destroy armor stands for
      */
     public void destroy(TabPlayer viewer) {
         for (ArmorStand a : armorStandArray) a.destroy(viewer);
@@ -147,10 +158,10 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     /**
      * Adds armor stand to list and registers it to all nearby players
      *
-     * @param    name
-     *             Unique identifier of the text line
-     * @param    as
-     *             Armor stand to add
+     * @param   name
+     *          Unique identifier of the text line
+     * @param   as
+     *          Armor stand to add
      */
     public void addArmorStand(String name, ArmorStand as) {
         armorStands.put(name, as);
@@ -161,9 +172,9 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     /**
      * Gets armor stand by name
      *
-     * @param    name
-     *             Name to get armor stand by
-     * @return    Armor stand with given name or null if not found
+     * @param   name
+     *          Name to get armor stand by
+     * @return  Armor stand with given name or null if not found
      */
     public ArmorStand getArmorStand(String name) {
         return armorStands.get(name);
@@ -172,8 +183,8 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     /**
      * Removes armor stand by given name if exists
      *
-     * @param    name
-     *             Name of line to remove
+     * @param   name
+     *          Name of line to remove
      */
     public void removeArmorStand(String name) {
         if (!armorStands.containsKey(name)) return;
@@ -184,7 +195,9 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Removes specified player from list of nearby players
-     * @param viewer - player to remove
+     *
+     * @param   viewer
+     *          player to remove
      */
     public void unregisterPlayer(TabPlayer viewer) {
         if (nearbyPlayers.remove(viewer)) nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);

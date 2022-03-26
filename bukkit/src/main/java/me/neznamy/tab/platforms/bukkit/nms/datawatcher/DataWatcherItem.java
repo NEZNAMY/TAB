@@ -14,8 +14,11 @@ public class DataWatcherItem {
     
     /**
      * Constructs new instance of the object with given parameters
-     * @param type - value type
-     * @param value - value
+     *
+     * @param   type
+     *          value type
+     * @param   value
+     *          value
      */
     public DataWatcherItem(DataWatcherObject type, Object value){
         Preconditions.checkNotNull(type, "type");
@@ -26,10 +29,12 @@ public class DataWatcherItem {
     
     /**
      * Returns and instance of this class from given NMS item
-     * @param nmsItem - NMS item
-     * @return instance of this class with same data
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   nmsItem
+     *          NMS item
+     * @return  instance of this class with same data
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public static DataWatcherItem fromNMS(Object nmsItem) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();

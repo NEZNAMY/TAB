@@ -22,7 +22,9 @@ public abstract class SortingType {
     
     /**
      * Constructs new instance with given parameter
-     * @param sortingPlaceholder - placeholder to sort by
+     *
+     * @param   sortingPlaceholder
+     *          placeholder to sort by
      */
     protected SortingType(Sorting sorting, String sortingPlaceholder){
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
@@ -35,8 +37,10 @@ public abstract class SortingType {
     
     /**
      * Applies all placeholders for specified player
-     * @param player - player to set placeholders for
-     * @return text with replaced placeholders
+     *
+     * @param   player
+     *          player to set placeholders for
+     * @return  text with replaced placeholders
      */
     protected String setPlaceholders(TabPlayer player) {
         if (sortingPlaceholder == null) return "";
@@ -63,8 +67,10 @@ public abstract class SortingType {
     
     /**
      * Returns current sorting characters of this sorting type for specified player
-     * @param p - player to get chars for
-     * @return an as-short-as-possible character sequence for unique sorting
+     *
+     * @param   p
+     *          player to get chars for
+     * @return  an as-short-as-possible character sequence for unique sorting
      */
     public abstract String getChars(ITabPlayer p);
 }

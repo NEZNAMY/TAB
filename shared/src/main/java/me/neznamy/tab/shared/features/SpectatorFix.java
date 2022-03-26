@@ -31,8 +31,8 @@ public class SpectatorFix extends TabFeature {
      * Sends GameMode update of all players to either their real GameMode if
      * {@code realGameMode} is {@code true} or fake value if it's {@code false}.
      *
-     * @param    realGameMode
-     *             Whether real GameMode should be shown or fake one
+     * @param   realGameMode
+     *          Whether real GameMode should be shown or fake one
      */
     private void updateAll(boolean realGameMode) {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {

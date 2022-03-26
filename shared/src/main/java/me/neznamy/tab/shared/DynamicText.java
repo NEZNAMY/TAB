@@ -64,14 +64,14 @@ public class DynamicText implements Property {
      * Constructs new instance with given parameters and prepares
      * the formatter for use by detecting placeholders and reformatting the text.
      *
-     * @param    listener
-     *             Feature which should receive refresh method if placeholder changes value
-     * @param    owner
-     *             Player this text belongs to
-     * @param    rawValue
-     *             Raw value using raw placeholder identifiers
-     * @param    source
-     *             Source of the text used in debug command
+     * @param   listener
+     *          Feature which should receive refresh method if placeholder changes value
+     * @param   owner
+     *          Player this text belongs to
+     * @param   rawValue
+     *          Raw value using raw placeholder identifiers
+     * @param   source
+     *          Source of the text used in debug command
      */
     public DynamicText(String name, TabFeature listener, TabPlayer owner, String rawValue, String source) {
         this.name = name;
@@ -86,8 +86,8 @@ public class DynamicText implements Property {
      * Finds all placeholders used in the value and prepares it for
      * String formatter using %s for each placeholder.
      *
-     * @param    value
-     *             raw value to analyze
+     * @param   value
+     *          raw value to analyze
      */
     private void analyze(String value) {
         List<String> placeholders0 = new ArrayList<>();
@@ -130,10 +130,10 @@ public class DynamicText implements Property {
      * Changes raw value to new provided value and performs all
      * operations related to it. Changes source as well.
      *
-     * @param    newValue
-     *             new raw value to use
-     * @param    newSource
-     *             new source of the text
+     * @param   newValue
+     *          new raw value to use
+     * @param   newSource
+     *          new source of the text
      */
     public void changeRawValue(String newValue, String newSource) {
         if (rawValue.equals(newValue)) return;
@@ -147,7 +147,7 @@ public class DynamicText implements Property {
     /**
      * Returns source of the raw value or {@code "API"} if it comes from an API call
      *
-     * @return    source of the value
+     * @return  source of the value
      */
     public String getSource() {
         return temporaryValue == null ? source : "API";

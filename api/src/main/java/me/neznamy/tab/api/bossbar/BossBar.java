@@ -23,14 +23,16 @@ public interface BossBar {
      * Returns name of this BossBar. If it was defined in config, returns
      * the name specified in config. If it was made using the API, returns
      * randomly generated ID given to this BossBar when creating.
-     * @return    name of BossBar
+     *
+     * @return  name of BossBar
      */
     String getName();
 
     /**
      * Returns randomly generated uuid of this BossBar used internally to match
      * the BossBar in client with packets or with Bukkit API BossBar instances.
-     * @return    uuid of this BossBar
+     *
+     * @return  uuid of this BossBar
      */
     UUID getUniqueId();
 
@@ -43,8 +45,8 @@ public interface BossBar {
      * <p>
      * If specified title is equal to the current one, nothing happens.
      *
-     * @param    title
-     *             New title to display in this BossBar
+     * @param   title
+     *          New title to display in this BossBar
      */
     void setTitle(String title);
 
@@ -59,8 +61,8 @@ public interface BossBar {
      * <p>
      * If specified progress is equal to the current one, nothing happens.
      *
-     * @param    progress
-     *             New progress to use in this BossBar
+     * @param   progress
+     *          New progress to use in this BossBar
      */
     void setProgress(String progress);
 
@@ -68,8 +70,9 @@ public interface BossBar {
      * Changes BossBar progress to specified value ranging from 0 to 100.
      * <p>
      * If specified progress is equal to the current one, nothing happens.
-     * @param    progress
-     *             New progress to use in this BossBar
+     *
+     * @param   progress
+     *          New progress to use in this BossBar
      */
     void setProgress(float progress);
 
@@ -84,8 +87,8 @@ public interface BossBar {
      * <p>
      * If specified color is equal to the current one, nothing happens.
      *
-     * @param    color
-     *             New color to use in this BossBar
+     * @param   color
+     *          New color to use in this BossBar
      */
     void setColor(String color);
 
@@ -94,8 +97,8 @@ public interface BossBar {
      * <p>
      * If specified color is equal to the current one, nothing happens.
      *
-     * @param    color
-     *             New color to use in this BossBar
+     * @param   color
+     *          New color to use in this BossBar
      */
     void setColor(BarColor color);
 
@@ -110,8 +113,8 @@ public interface BossBar {
      * <p>
      * If specified style is equal to the current one, nothing happens.
      *
-     * @param    style
-     *             New style to use in this BossBar
+     * @param   style
+     *          New style to use in this BossBar
      */
     void setStyle(String style);
 
@@ -120,36 +123,40 @@ public interface BossBar {
      * <p>
      * If specified style is equal to the current one, nothing happens.
      *
-     * @param    style
-     *             New style to use in this BossBar
+     * @param   style
+     *          New style to use in this BossBar
      */
     void setStyle(BarStyle style);
 
     /**
      * Returns current title of the BossBar in raw format. If it contains placeholders,
      * their raw identifiers are used in the result.
-     * @return    title of the BossBar
+     *
+     * @return  title of the BossBar
      */
     String getTitle();
 
     /**
      * Returns progress of the BossBar as a string, which is either entered string
      * containing placeholders or entered number converted to string
-     * @return    entered progress as a string
+     *
+     * @return  entered progress as a string
      */
     String getProgress();
 
     /**
      * Returns color of the BossBar as a string, which is either entered string
      * containing placeholders or entered enum value converted to string
-     * @return    entered color as a string
+     *
+     * @return  entered color as a string
      */
     String getColor();
 
     /**
      * Returns style of the BossBar as a string, which is either entered string
      * containing placeholders or entered enum value converted to string
-     * @return    entered style as a string
+     *
+     * @return  entered style as a string
      */
     String getStyle();
 
@@ -158,8 +165,8 @@ public interface BossBar {
      * <p>
      * If the player already sees this BossBar, nothing happens.
      *
-     * @param    player
-     *             Player to register this BossBar to
+     * @param   player
+     *          Player to register this BossBar to
      */
     void addPlayer(TabPlayer player);
 
@@ -168,8 +175,8 @@ public interface BossBar {
      * <p>
      * If the player does not see this BossBar, nothing happens.
      *
-     * @param    player
-     *             Player to unregister this BossBar from
+     * @param   player
+     *          Player to unregister this BossBar from
      */
     void removePlayer(TabPlayer player);
 
@@ -179,15 +186,17 @@ public interface BossBar {
      * The returned list can only be used to read. Writing
      * will not work properly. For adding/removing players see {@link #addPlayer(TabPlayer)}
      * and {@link #removePlayer(TabPlayer)}.
-     * @return    List of players seeing this BossBar
+     *
+     * @return  List of players seeing this BossBar
      */
     List<TabPlayer> getPlayers();
 
     /**
      * Returns {@code true} if specified player can see this BossBar, {@code false} if not
-     * @param    player
-     *             Player to check for
-     * @return    {@code true} if contains, {@code false} if not
+     *
+     * @param   player
+     *          Player to check for
+     * @return  {@code true} if contains, {@code false} if not
      */
     boolean containsPlayer(TabPlayer player);
 }

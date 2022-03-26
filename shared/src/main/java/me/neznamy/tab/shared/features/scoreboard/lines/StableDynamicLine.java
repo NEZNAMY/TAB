@@ -21,9 +21,13 @@ public class StableDynamicLine extends ScoreboardLine {
 
     /**
      * Constructs new instance with given parameters
-     * @param parent - scoreboard this line belongs to
-     * @param lineNumber - ID of this line
-     * @param text - text to display
+     *
+     * @param   parent
+     *          scoreboard this line belongs to
+     * @param   lineNumber
+     *          ID of this line
+     * @param   text
+     *          text to display
      */
     public StableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
         super(parent, lineNumber);
@@ -56,10 +60,14 @@ public class StableDynamicLine extends ScoreboardLine {
     /**
      * Applies all placeholders and splits the result into prefix/suffix based on client version
      * or hides the line entirely if result is empty (and shows back once it's not)
-     * @param p - player to replace text for
-     * @param force - if action should be done despite update seemingly not needed
-     * @param suppressToggle - if line should NOT be removed despite being empty
-     * @return list of 2 elements for prefix/suffix
+     *
+     * @param   p
+     *          player to replace text for
+     * @param   force
+     *          if action should be done despite update seemingly not needed
+     * @param   suppressToggle
+     *          if line should NOT be removed despite being empty
+     * @return  list of 2 elements for prefix/suffix
      */
     private String[] replaceText(TabPlayer p, boolean force, boolean suppressToggle) {
         Property scoreProperty = p.getProperty(parent.getName() + "-" + teamName);
@@ -92,9 +100,12 @@ public class StableDynamicLine extends ScoreboardLine {
 
     /**
      * Splits text into 2 values (prefix/suffix) based on client version and text itself
-     * @param p - player to split text for
-     * @param text - text to split
-     * @return array of 2 elements for prefix and suffix
+     *
+     * @param   p
+     *          player to split text for
+     * @param   text
+     *          text to split
+     * @return  array of 2 elements for prefix and suffix
      */
     private String[] split(TabPlayer p, String text) {
         int charLimit = 16;

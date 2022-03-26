@@ -4,25 +4,30 @@ public interface ArmorStand {
 
     /**
      * Returns true if offset is static, false if not
-     * @return true if static, false if dynamic
+     *
+     * @return  true if static, false if dynamic
      */
     boolean hasStaticOffset();
     
     /**
      * Changes offset of the armor stand
-     * @param offset - new offset
+     *
+     * @param   offset
+     *          new offset
      */
     void setOffset(double offset);
 
     /**
      * Returns offset of the armor stand
-     * @return offset from base
+     *
+     * @return  offset from base
      */
     double getOffset();
     
     /**
      * Returns property for armor stand's name
-     * @return property for armor stand's name
+     *
+     * @return  property for armor stand's name
      */
     Property getProperty();
     
@@ -33,14 +38,17 @@ public interface ArmorStand {
     
     /**
      * Teleports armor stand to owner's current location for specified player
-     * @param viewer - player to send packet to
+     *
+     * @param   viewer
+     *          player to send packet to
      */
     void teleport(TabPlayer viewer);
     
     /**
      * Changes sneaking flag and sends packets to everyone in range
-     * @param    sneaking
-     *             new sneaking status
+     *
+     * @param   sneaking
+     *          new sneaking status
      */
     void sneak(boolean sneaking);
     
@@ -51,7 +59,9 @@ public interface ArmorStand {
     
     /**
      * DeSpawns armor stand for specified player
-     * @param viewer - player to send packet to
+     *
+     * @param   viewer
+     *          player to send packet to
      */
     void destroy(TabPlayer viewer);
     
@@ -62,19 +72,24 @@ public interface ArmorStand {
     
     /**
      * Updates visibility if needed
-     * @param force - if refresh should be forced
+     *
+     * @param   force
+     *          if refresh should be forced
      */
     void updateVisibility(boolean force);
     
     /**
      * Returns entity ID of this armor stand
-     * @return entity ID of this armor stand
+     *
+     * @return  entity ID of this armor stand
      */
     int getEntityId();
     
     /**
      * Spawns armor stand for specified player
-     * @param viewer - player to spawn for
+     *
+     * @param   viewer
+     *          player to spawn for
      */
     void spawn(TabPlayer viewer);
     

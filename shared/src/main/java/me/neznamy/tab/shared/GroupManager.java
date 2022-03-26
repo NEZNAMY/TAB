@@ -25,8 +25,8 @@ public class GroupManager extends TabFeature {
      * Constructs new instance with given permission plugin, loads
      * event listeners and registers group placeholder.
      *
-     * @param    plugin
-     *             Detected permission plugin
+     * @param   plugin
+     *          Detected permission plugin
      */
     public GroupManager(PermissionPlugin plugin) {
         super("Permission group refreshing", null);
@@ -41,9 +41,9 @@ public class GroupManager extends TabFeature {
     /**
      * Detects player's permission group using configured method and returns it
      *
-     * @param    player
-     *             Player to detect permission group of
-     * @return    Detected permission group
+     * @param   player
+     *          Player to detect permission group of
+     * @return  Detected permission group
      */
     public String detectPermissionGroup(TabPlayer player) {
         return groupsByPermissions ? getByPermission(player) : getByPrimary(player);
@@ -52,9 +52,9 @@ public class GroupManager extends TabFeature {
     /**
      * Returns player's permission group from detected permission plugin
      *
-     * @param    player
-     *             Player to get permission group of
-     * @return    Permission group from permission plugin
+     * @param   player
+     *          Player to get permission group of
+     * @return  Permission group from permission plugin
      */
     private String getByPrimary(TabPlayer player) {
         try {
@@ -69,10 +69,10 @@ public class GroupManager extends TabFeature {
      * Returns player's permission group based on highest permission
      * or {@link TabConstants#DEFAULT_GROUP} if player has no permission.
      *
-     * @param    player
-     *             Player to get permission group of
-     * @return    Highest permission group player has permission for
-     *             or {@link TabConstants#DEFAULT_GROUP} if player does not have any
+     * @param   player
+     *          Player to get permission group of
+     * @return  Highest permission group player has permission for
+     *          or {@link TabConstants#DEFAULT_GROUP} if player does not have any
      */
     private String getByPermission(TabPlayer player) {
         for (String group : primaryGroupFindingList) {
@@ -87,7 +87,7 @@ public class GroupManager extends TabFeature {
      * Returns {@code true} if assigning by permissions is configured,
      * {@code false} if not.
      *
-     * @return    {@code true} if assigning by permissions, {@code false} if not
+     * @return  {@code true} if assigning by permissions, {@code false} if not
      */
     public boolean isGroupsByPermissions() {
         return groupsByPermissions;
@@ -96,7 +96,7 @@ public class GroupManager extends TabFeature {
     /**
      * Returns detected permission plugin
      *
-     * @return    detected permission plugin
+     * @return  detected permission plugin
      */
     public PermissionPlugin getPlugin() {
         return plugin;

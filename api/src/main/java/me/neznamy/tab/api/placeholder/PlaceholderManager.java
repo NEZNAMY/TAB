@@ -27,16 +27,21 @@ public interface PlaceholderManager {
 
     /**
      * Detects placeholders in text using %% pattern and returns list of all detected identifiers
-     * @param text - text to detect placeholders in
-     * @return list of detected identifiers
+     *
+     * @param   text
+     *          text to detect placeholders in
+     * @return  list of detected identifiers
      */
     List<String> detectPlaceholders(String text);
 
     /**
      * Adds placeholder to list of used placeholders and assigns this feature as using it,
      * which will then receive refresh() if values changes
-     * @param identifier - placeholder identifier
-     * @param feature - feature using the placeholder
+     *
+     * @param   identifier
+     *          placeholder identifier
+     * @param   feature
+     *          feature using the placeholder
      */
     void addUsedPlaceholder(String identifier, TabFeature feature);
 

@@ -62,7 +62,9 @@ public class Main {
 
     /**
      * Initializes plugin for velocity
-     * @param event - velocity initialize event
+     *
+     * @param   event
+     *          velocity initialize event
      */
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
@@ -98,7 +100,8 @@ public class Main {
 
     /**
      * Checks for compatibility and returns true if version is supported, false if not
-     * @return true if version is compatible, false if not
+     *
+     * @return  true if version is compatible, false if not
      */
     private boolean isVersionSupported() {
         try {
@@ -112,7 +115,9 @@ public class Main {
     
     /**
      * Unloads the plugin
-     * @param event - proxy disable event
+     *
+     * @param   event
+     *          proxy disable event
      */
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {

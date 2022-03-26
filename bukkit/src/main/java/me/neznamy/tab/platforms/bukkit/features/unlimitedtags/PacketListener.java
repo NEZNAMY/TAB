@@ -30,7 +30,9 @@ public class PacketListener extends TabFeature {
 
     /**
      * Constructs new instance with given parameters and loads config options
-     * @param nameTagX - main feature
+     *
+     * @param   nameTagX
+     *          main feature
      */
     public PacketListener(BukkitNameTagX nameTagX) {
         super(nameTagX.getFeatureName(), null);
@@ -100,8 +102,11 @@ public class PacketListener extends TabFeature {
 
     /**
      * Processes entity move packet
-     * @param receiver - packet receiver
-     * @param entityId - entity that moved
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entityId
+     *          entity that moved
      */
     private void onEntityMove(TabPlayer receiver, int entityId) {
         TabPlayer pl = entityIdMap.get(entityId);

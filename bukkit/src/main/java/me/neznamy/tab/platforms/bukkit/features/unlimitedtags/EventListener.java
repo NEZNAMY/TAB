@@ -20,7 +20,9 @@ public class EventListener implements Listener {
 
     /**
      * Constructs new instance with given parameters
-     * @param feature - NameTag feature handler
+     *
+     * @param   feature
+     *          NameTag feature handler
      */
     public EventListener(BukkitNameTagX feature) {
         this.feature = feature;
@@ -28,7 +30,9 @@ public class EventListener implements Listener {
 
     /**
      * Sneak event listener to de-spawn and spawn armor stands to skip animation
-     * @param e - sneak event
+     *
+     * @param   e
+     *          sneak event
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSneak(PlayerToggleSneakEvent e) {
@@ -39,7 +43,9 @@ public class EventListener implements Listener {
 
     /**
      * Respawning armor stands as respawn screen destroys all entities in client
-     * @param e - respawn event
+     *
+     * @param   e
+     *          respawn event
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {

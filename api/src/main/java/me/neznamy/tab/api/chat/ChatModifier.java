@@ -94,7 +94,8 @@ public class ChatModifier {
 
     /**
      * Returns true if bold is defined and set to true, false otherwise
-     * @return true if bold is defined and set to true, false otherwise
+     *
+     * @return  true if bold is defined and set to true, false otherwise
      */
     public boolean isBold(){
         return Boolean.TRUE.equals(bold);
@@ -102,7 +103,8 @@ public class ChatModifier {
 
     /**
      * Returns true if italic is defined and set to true, false otherwise
-     * @return true if italic is defined and set to true, false otherwise
+     *
+     * @return  true if italic is defined and set to true, false otherwise
      */
     public boolean isItalic(){
         return Boolean.TRUE.equals(italic);
@@ -110,7 +112,8 @@ public class ChatModifier {
 
     /**
      * Returns true if underlined is defined and set to true, false otherwise
-     * @return true if underlined is defined and set to true, false otherwise
+     *
+     * @return  true if underlined is defined and set to true, false otherwise
      */
     public boolean isUnderlined(){
         return Boolean.TRUE.equals(underlined);
@@ -118,7 +121,8 @@ public class ChatModifier {
 
     /**
      * Returns true if strikethrough is defined and set to true, false otherwise
-     * @return true if strikethrough is defined and set to true, false otherwise
+     *
+     * @return  true if strikethrough is defined and set to true, false otherwise
      */
     public boolean isStrikethrough(){
         return Boolean.TRUE.equals(strikethrough);
@@ -126,7 +130,8 @@ public class ChatModifier {
 
     /**
      * Returns true if obfuscation is defined and set to true, false otherwise
-     * @return true if obfuscation is defined and set to true, false otherwise
+     *
+     * @return  true if obfuscation is defined and set to true, false otherwise
      */
     public boolean isObfuscated(){
         return Boolean.TRUE.equals(obfuscated);
@@ -150,7 +155,9 @@ public class ChatModifier {
 
     /**
      * Sets click action to OPEN_URL and url to given value
-     * @param url - url to open
+     *
+     * @param   url
+     *          url to open
      */
     public void onClickOpenUrl(String url) {
         Preconditions.checkNotNull(url, "url");
@@ -159,7 +166,9 @@ public class ChatModifier {
 
     /**
      * Sets click action to RUN_COMMAND and command to given value
-     * @param command - command to perform, might be without / to send a chat message
+     *
+     * @param   command
+     *          command to perform, might be without / to send a chat message
      */
     public void onClickRunCommand(String command) {
         Preconditions.checkNotNull(command, "command");
@@ -168,7 +177,9 @@ public class ChatModifier {
 
     /**
      * Sets click action to SUGGEST_COMMAND and command to given value
-     * @param command - command to suggest
+     *
+     * @param   command
+     *          command to suggest
      */
     public void onClickSuggestCommand(String command) {
         Preconditions.checkNotNull(command, "command");
@@ -177,7 +188,9 @@ public class ChatModifier {
 
     /**
      * Sets click action to CHANGE_PAGE and page id to given value
-     * @param newPage - id of new page
+     *
+     * @param   newPage
+     *          id of new page
      */
     public void onClickChangePage(int newPage) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("change_page click action is not supported on <1.8");
@@ -186,7 +199,9 @@ public class ChatModifier {
 
     /**
      * Sets click action to COPY_TO_CLIPBOARD and text to provided value
-     * @param text - text to copy to clipboard on click
+     *
+     * @param   text
+     *          text to copy to clipboard on click
      */
     public void onClickCopyToClipBoard(String text) {
         Preconditions.checkNotNull(text, "text");
@@ -201,7 +216,9 @@ public class ChatModifier {
 
     /**
      * Sets hover action to SHOW_TEXT and text to given value
-     * @param text - text to show
+     *
+     * @param   text
+     *          text to show
      */
     public void onHoverShowText(IChatBaseComponent text) {
         Preconditions.checkNotNull(text, "text");
@@ -210,7 +227,9 @@ public class ChatModifier {
 
     /**
      * Sets hover action to SHOW_ITEM and item to given value
-     * @param serializedItem - item to show
+     *
+     * @param   serializedItem
+     *          item to show
      */
     public void onHoverShowItem(String serializedItem) {
         Preconditions.checkNotNull(serializedItem, "item");
@@ -219,9 +238,13 @@ public class ChatModifier {
 
     /**
      * Sets hover action to SHOW_ENTITY and entity data to given values
-     * @param type - entity type
-     * @param id - entity uuid
-     * @param name - entity custom name
+     *
+     * @param   type
+     *          entity type
+     * @param   id
+     *          entity uuid
+     * @param   name
+     *          entity custom name
      */
     public void onHoverShowEntity(String type, UUID id, String name) {
         Preconditions.checkNotNull(type, "type");

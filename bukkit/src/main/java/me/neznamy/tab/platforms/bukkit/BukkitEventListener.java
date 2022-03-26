@@ -23,7 +23,9 @@ public class BukkitEventListener implements Listener {
     
     /**
      * Listener to PlayerQuitEvent to remove player data and forward the event to features
-     * @param e quit event
+     *
+     * @param   e
+     *          quit event
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent e){
@@ -33,7 +35,9 @@ public class BukkitEventListener implements Listener {
     
     /**
      * Listener to PlayerJoinEvent to create player data and forward the event to features
-     * @param e join event
+     *
+     * @param   e
+     *          join event
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
@@ -43,7 +47,9 @@ public class BukkitEventListener implements Listener {
 
     /**
      * Listener to PlayerChangedWorldEvent to forward the event to features
-     * @param e world changed event
+     *
+     * @param   e
+     *          world changed event
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onWorldChange(PlayerChangedWorldEvent e){
@@ -53,7 +59,9 @@ public class BukkitEventListener implements Listener {
 
     /**
      * Listener to PlayerChangedWorldEvent to forward the event to features
-     * @param e command preprocess event
+     *
+     * @param   e
+     *          command preprocess event
      */
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {

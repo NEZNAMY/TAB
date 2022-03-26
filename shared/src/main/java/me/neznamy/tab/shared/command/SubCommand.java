@@ -34,8 +34,11 @@ public abstract class SubCommand {
 
     /**
      * Constructs new instance with given parameters
-     * @param name - command name
-     * @param permission - permission requirement
+     *
+     * @param   name
+     *          command name
+     * @param   permission
+     *          permission requirement
      */
     protected SubCommand(String name, String permission) {
         this.name = name;
@@ -44,7 +47,9 @@ public abstract class SubCommand {
 
     /**
      * Registers new subcommand
-     * @param subcommand - subcommand to register
+     *
+     * @param   subcommand
+     *          subcommand to register
      */
     public void registerSubCommand(SubCommand subcommand) {
         getSubcommands().put(subcommand.getName(), subcommand);
@@ -52,7 +57,8 @@ public abstract class SubCommand {
 
     /**
      * Returns name of this command
-     * @return name of this command
+     *
+     * @return  name of this command
      */
     public String getName() {
         return name;
@@ -60,8 +66,10 @@ public abstract class SubCommand {
 
     /**
      * Returns whether player has permission to run this command or not
-     * @param sender - player who ran command or null if console
-     * @return true if sender has permission or is console, false otherwise
+     *
+     * @param   sender
+     *          player who ran command or null if console
+     * @return  true if sender has permission or is console, false otherwise
      */
     public boolean hasPermission(TabPlayer sender) {
         return hasPermission(sender, permission);
@@ -69,9 +77,12 @@ public abstract class SubCommand {
 
     /**
      * Returns whether player has given permission or not
-     * @param sender - player who ran command or null if console
-     * @param permission - permission to check for
-     * @return true if sender has permission or is console, false otherwise
+     *
+     * @param   sender
+     *          player who ran command or null if console
+     * @param   permission
+     *          permission to check for
+     * @return  true if sender has permission or is console, false otherwise
      */
     public boolean hasPermission(TabPlayer sender, String permission) {
         if (permission == null) return true; //no permission required
@@ -82,8 +93,11 @@ public abstract class SubCommand {
 
     /**
      * Sends messages to the command sender with colors translated
-     * @param sender - player or console to send the message to
-     * @param messages - messages to send
+     *
+     * @param   sender
+     *          player or console to send the message to
+     * @param   messages
+     *          messages to send
      */
     public void sendMessages(TabPlayer sender, List<String> messages) {
         messages.forEach(m -> sendMessage(sender, m));
@@ -91,8 +105,11 @@ public abstract class SubCommand {
 
     /**
      * Sends message to the command sender with colors translated
-     * @param sender - player or console to send the message to
-     * @param message - the message to sent
+     *
+     * @param   sender
+     *          player or console to send the message to
+     * @param   message
+     *          the message to sent
      */
     public void sendMessage(TabPlayer sender, String message) {
         if (message == null || message.length() == 0) return;
@@ -105,8 +122,11 @@ public abstract class SubCommand {
 
     /**
      * Sends message to the command sender without colors translated
-     * @param sender - player or console to send the message to
-     * @param message - the message to sent
+     *
+     * @param   sender
+     *          player or console to send the message to
+     * @param   message
+     *          the message to sent
      */
     public void sendRawMessage(TabPlayer sender, String message) {
         if (message == null || message.length() == 0) return;
@@ -119,8 +139,10 @@ public abstract class SubCommand {
 
     /**
      * Returns all players whose name start with given string
-     * @param nameStart - beginning of the name
-     * @return List of compatible players
+     *
+     * @param   nameStart
+     *          beginning of the name
+     * @return  List of compatible players
      */
     public List<String> getOnlinePlayers(String nameStart){
         List<String> suggestions = new ArrayList<>();
@@ -136,9 +158,12 @@ public abstract class SubCommand {
 
     /**
      * Performs command complete and returns list of arguments to be shown
-     * @param sender - command sender
-     * @param arguments - arguments inserted in chat so far
-     * @return List of possible arguments
+     *
+     * @param   sender
+     *          command sender
+     * @param   arguments
+     *          arguments inserted in chat so far
+     * @return  List of possible arguments
      */
     public List<String> complete(TabPlayer sender, String[] arguments) {
         String argument;
@@ -167,8 +192,11 @@ public abstract class SubCommand {
 
     /**
      * Performs the command
-     * @param sender - command sender or null if console
-     * @param args - arguments of the command
+     *
+     * @param   sender
+     *          command sender or null if console
+     * @param   args
+     *          arguments of the command
      */
     public abstract void execute(TabPlayer sender, String[] args);
 

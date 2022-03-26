@@ -98,9 +98,9 @@ public class CpuManager implements ThreadManager {
      * Submits task to TAB's main thread. If plugin is not enabled yet,
      * queues the task instead and executes once it's loaded.
      *
-     * @param    task
-     *             task to execute
-     * @return    future returned by executor service
+     * @param   task
+     *          task to execute
+     * @return  future returned by executor service
      */
     @SuppressWarnings("unchecked")
     private Future<Void> submit(Runnable task) {
@@ -120,7 +120,7 @@ public class CpuManager implements ThreadManager {
     /**
      * Returns cpu usage map of placeholders from previous time period
      *
-     * @return    cpu usage map of placeholders
+     * @return  cpu usage map of placeholders
      */
     public Map<String, Float> getPlaceholderUsage(){
         return getUsage(placeholderUsagePrevious);
@@ -129,7 +129,7 @@ public class CpuManager implements ThreadManager {
     /**
      * Returns cpu usage map of methods previous time period
      *
-     * @return    cpu usage map of methods
+     * @return  cpu usage map of methods
      */
     public Map<String, Float> getMethodUsage(){
         return getUsage(methodUsagePrevious);
@@ -138,7 +138,7 @@ public class CpuManager implements ThreadManager {
     /**
      * Returns map of sent packets per feature in previous time period
      *
-     * @return    map of sent packets per feature
+     * @return  map of sent packets per feature
      */
     public Map<String, AtomicInteger> getSentPackets(){
         return sortByValue1(packetsPrevious);
@@ -147,9 +147,9 @@ public class CpuManager implements ThreadManager {
     /**
      * Converts nano map to percent and sorts it from highest to lowest usage.
      *
-     * @param    map
-     *             map to convert
-     * @return    converted and sorted map
+     * @param   map
+     *          map to convert
+     * @return  converted and sorted map
      */
     private Map<String, Float> getUsage(Map<String, AtomicLong> map){
         Map<String, Long> nanoMap = new HashMap<>();
@@ -169,7 +169,7 @@ public class CpuManager implements ThreadManager {
     /**
      * Returns map of CPU usage per feature and type in the previous time period
      *
-     * @return    map of CPU usage per feature and type
+     * @return  map of CPU usage per feature and type
      */
     public Map<String, Map<String, Float>> getFeatureUsage(){
         Map<String, Map<String, Long>> total = new HashMap<>();
@@ -197,9 +197,9 @@ public class CpuManager implements ThreadManager {
     /**
      * Converts nanoseconds to percent usage.
      *
-     * @param    nanos
-     *             nanoseconds of cpu time
-     * @return    usage in % (0-100)
+     * @param   nanos
+     *          nanoseconds of cpu time
+     * @return  usage in % (0-100)
      */
     private float nanosToPercent(long nanos) {
         float percent = (float) nanos / BUFFER_SIZE_MILLIS / 1000000; //relative usage (0-1)
@@ -210,13 +210,13 @@ public class CpuManager implements ThreadManager {
     /**
      * Sorts map by value from highest to lowest
      *
-     * @param    <K>
-     *             map key type
-     * @param    <V>
-     *             map value type
-     * @param    map
-     *             map to sort
-     * @return    sorted map
+     * @param   <K>
+     *          map key type
+     * @param   <V>
+     *          map value type
+     * @param   map
+     *          map to sort
+     * @return  sorted map
      */
     private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
         Comparator<K> valueComparator = (k1, k2) -> {
@@ -231,11 +231,11 @@ public class CpuManager implements ThreadManager {
     /**
      * Sorts map by value from highest to lowest
      *
-     * @param    <K>
-     *             map key type
-     * @param    map
-     *             map to sort
-     * @return    sorted map
+     * @param   <K>
+     *          map key type
+     * @param   map
+     *          map to sort
+     * @return  sorted map
      */
     private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
         Comparator<K> valueComparator = (k1, k2) -> {
@@ -249,11 +249,11 @@ public class CpuManager implements ThreadManager {
 
     /**
      * Sorts keys by map nested values from highest to lowest and returns sorted list of keys
-     * @param    <K>
-     *             map key type
-     * @param    map
-     *             map to sort
-     * @return    list of keys sorted from the highest map value to lowest
+     * @param   <K>
+     *          map key type
+     * @param   map
+     *          map to sort
+     * @return  list of keys sorted from the highest map value to lowest
      */
     private <K> List<K> sortKeys(Map<K, Map<String, Long>> map){
         Map<K, Long> simplified = new LinkedHashMap<>();
@@ -266,12 +266,12 @@ public class CpuManager implements ThreadManager {
     /**
      * Adds cpu time to specified feature and usage type
      *
-     * @param    feature
-     *             feature to add time to
-     * @param    type
-     *             sub-feature to add time to
-     * @param    nanoseconds
-     *             time to add
+     * @param   feature
+     *          feature to add time to
+     * @param   type
+     *          sub-feature to add time to
+     * @param   nanoseconds
+     *          time to add
      */
     public void addTime(TabFeature feature, String type, long nanoseconds) {
         addTime(feature.getFeatureName(), type, nanoseconds);
@@ -280,12 +280,12 @@ public class CpuManager implements ThreadManager {
     /**
      * Adds cpu time to specified feature and usage type
      *
-     * @param    feature
-     *             feature to add time to
-     * @param    type
-     *             sub-feature to add time to
-     * @param    nanoseconds
-     *             time to add
+     * @param   feature
+     *          feature to add time to
+     * @param   type
+     *          sub-feature to add time to
+     * @param   nanoseconds
+     *          time to add
      */
     public void addTime(String feature, String type, long nanoseconds) {
         featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
@@ -294,12 +294,12 @@ public class CpuManager implements ThreadManager {
     /**
      * Adds used time to specified key into specified map
      *
-     * @param    map
-     *             map to add usage to
-     * @param    key
-     *             usage key
-     * @param    time
-     *             nanoseconds to add
+     * @param   map
+     *          map to add usage to
+     * @param   key
+     *          usage key
+     * @param   time
+     *          nanoseconds to add
      */
     private void addTime(Map<String, AtomicLong> map, String key, long time) {
         map.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(time);
@@ -308,10 +308,10 @@ public class CpuManager implements ThreadManager {
     /**
      * Adds placeholder time to specified placeholder
      *
-     * @param    placeholder
-     *             placeholder to add time to
-     * @param    nanoseconds
-     *             time to add
+     * @param   placeholder
+     *          placeholder to add time to
+     * @param   nanoseconds
+     *          time to add
      */
     public void addPlaceholderTime(String placeholder, long nanoseconds) {
         addTime(placeholderUsageCurrent, placeholder, nanoseconds);
@@ -320,10 +320,10 @@ public class CpuManager implements ThreadManager {
     /**
      * Adds method time to specified method
      *
-     * @param    method
-     *             method to add time to
-     * @param    nanoseconds
-     *             time to add
+     * @param   method
+     *          method to add time to
+     * @param   nanoseconds
+     *          time to add
      */
     public void addMethodTime(String method, long nanoseconds) {
         addTime(methodUsageCurrent, method, nanoseconds);
@@ -332,8 +332,8 @@ public class CpuManager implements ThreadManager {
     /**
      * Increments packets sent by 1 of specified feature
      *
-     * @param    feature
-     *             feature to increment packet counter of
+     * @param   feature
+     *          feature to increment packet counter of
      */
     public void packetSent(String feature) {
         packetsCurrent.computeIfAbsent(feature, f -> new AtomicInteger()).incrementAndGet();

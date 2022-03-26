@@ -31,8 +31,6 @@ public class TabConstants {
         public static final String PLAYER_RESPAWN = "Player Respawn";
         public static final String PLUGIN_MESSAGE = "PluginMessageEvent";
         public static final String REDIS_BUNGEE_MESSAGE = "PubSubMessageEvent";
-        public static final String LUCKPERMS_USER_RECALCULATE_EVENT = "UserDataRecalculateEvent";
-        public static final String LUCKPERMS_GROUP_RECALCULATE_EVENT = "GroupDataRecalculateEvent";
         public static final String VANISH_CHANGE = "Vanish status change";
         public static final String ANTI_OVERRIDE = "Anti override";
 

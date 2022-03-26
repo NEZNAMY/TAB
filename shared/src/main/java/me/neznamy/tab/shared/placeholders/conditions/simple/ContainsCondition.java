@@ -10,8 +10,8 @@ public class ContainsCondition extends SimpleCondition {
     /**
      * Constructs new instance with given condition line
      *
-     * @param    line
-     *             configured condition line
+     * @param   line
+     *          configured condition line
      */
     public ContainsCondition(String line) {
         String[] arr = line.split("<-");

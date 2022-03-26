@@ -10,8 +10,8 @@ public class LessThanOrEqualsCondition extends NumericCondition {
     /**
      * Constructs new instance with given condition line
      *
-     * @param    line
-     *             configured condition line
+     * @param   line
+     *          configured condition line
      */
     public LessThanOrEqualsCondition(String line) {
         String[] arr = line.split("<=");

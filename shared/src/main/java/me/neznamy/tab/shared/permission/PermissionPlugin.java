@@ -13,8 +13,8 @@ public abstract class PermissionPlugin {
     /**
      * Constructs new instance with given version parameter
      *
-     * @param    version
-     *             version of permission plugin
+     * @param   version
+     *          version of permission plugin
      */
     protected PermissionPlugin(String version) {
         this.version = version;
@@ -23,16 +23,16 @@ public abstract class PermissionPlugin {
     /**
      * Returns primary permission group of player
      *
-     * @param    player
-     *             player to get group of
-     * @return    player's primary permission group
+     * @param   player
+     *          player to get group of
+     * @return  player's primary permission group
      */
     public abstract String getPrimaryGroup(TabPlayer player);
     
     /**
      * Returns version of the permission plugin
      *
-     * @return    version of the permission plugin
+     * @return  version of the permission plugin
      */
     public String getVersion() {
         return version;
@@ -41,7 +41,7 @@ public abstract class PermissionPlugin {
     /**
      * Returns name of the permission plugin
      *
-     * @return    name of the permission plugin
+     * @return  name of the permission plugin
      */
     public String getName() {
         return getClass().getSimpleName();

@@ -59,10 +59,11 @@ public enum EnumChatFormat {
 
     /**
      * Constructs new color instance with given character and hex code
-     * @param    character
-     *             character which the color goes by
-     * @param    hexCode
-     *             6-digit hex code of the color
+     *
+     * @param   character
+     *          character which the color goes by
+     * @param   hexCode
+     *          6-digit hex code of the color
      */
     EnumChatFormat(char character, String hexCode) {
         this.character = character;
@@ -76,8 +77,9 @@ public enum EnumChatFormat {
 
     /**
      * Constructs new magic code instance with given character
-     * @param    character
-     *             character representing the magic code
+     *
+     * @param   character
+     *          character representing the magic code
      */
     EnumChatFormat(char character) {
         this.character = character;
@@ -90,7 +92,8 @@ public enum EnumChatFormat {
 
     /**
      * Returns red value of this color code
-     * @return    red value
+     *
+     * @return  red value
      */
     public short getRed() {
         return red;
@@ -98,7 +101,8 @@ public enum EnumChatFormat {
 
     /**
      * Returns green value of this color code
-     * @return    green value
+     *
+     * @return  green value
      */
     public short getGreen() {
         return green;
@@ -106,7 +110,8 @@ public enum EnumChatFormat {
 
     /**
      * Returns blue value of this color code
-     * @return    blue value
+     *
+     * @return  blue value
      */
     public short getBlue() {
         return blue;
@@ -114,9 +119,10 @@ public enum EnumChatFormat {
 
     /**
      * Returns enum value based on provided character or null if character is not valid
-     * @param    c
-     *             color code character (0-9, a-f, k-o, r)
-     * @return    instance from the character or null if character is not valid
+     *
+     * @param   c
+     *          color code character (0-9, a-f, k-o, r)
+     * @return  instance from the character or null if character is not valid
      */
     public static EnumChatFormat getByChar(char c) {
         for (EnumChatFormat format : VALUES) {
@@ -128,9 +134,10 @@ public enum EnumChatFormat {
     /**
      * Returns enum value of last colors used in given string.
      * If it's null, empty or does not contain color codes, WHITE is returned.
-     * @param    string
-     *             string to check last colors of
-     * @return    last used color code in given string or WHITE if nothing is found
+     *
+     * @param   string
+     *          string to check last colors of
+     * @return  last used color code in given string or WHITE if nothing is found
      */
     public static EnumChatFormat lastColorsOf(String string) {
         if (string == null || string.length() == 0) return EnumChatFormat.WHITE;
@@ -147,7 +154,8 @@ public enum EnumChatFormat {
 
     /**
      * Returns color char followed by color's character
-     * @return color char followed by color's character
+     *
+     * @return  color char followed by color's character
      */
     public String getFormat() {
         return chatFormat;
@@ -155,7 +163,8 @@ public enum EnumChatFormat {
 
     /**
      * Returns character representing this color
-     * @return character representing this color
+     *
+     * @return  character representing this color
      */
     public char getCharacter() {
         return character;
@@ -163,7 +172,8 @@ public enum EnumChatFormat {
 
     /**
      * Returns hex code of this format, null if this is a magic code
-     * @return hex code of this format
+     *
+     * @return  hex code of this format
      */
     public String getHexCode() {
         return hexCode;
@@ -171,13 +181,14 @@ public enum EnumChatFormat {
 
     /**
      * Returns enum value with exact red, green and blue values or null if no match was found
-     * @param    red
-     *             exact red value
-     * @param    green
-     *             exact green value
-     * @param    blue
-     *             exact blue value
-     * @return    enum value or null if no such combination exists
+     *
+     * @param   red
+     *          exact red value
+     * @param   green
+     *          exact green value
+     * @param   blue
+     *          exact blue value
+     * @return  enum value or null if no such combination exists
      */
     public static EnumChatFormat fromRGBExact(int red, int green, int blue){
         for (EnumChatFormat format : VALUES) {
@@ -189,9 +200,10 @@ public enum EnumChatFormat {
     /**
      * Color translation method taken from bukkit, which converts '&amp;' symbol into
      * the actual color character if followed by a valid color character.
-     * @param    textToTranslate
-     *             text to replace color symbol in
-     * @return    colorized string from provided text
+     *
+     * @param   textToTranslate
+     *          text to replace color symbol in
+     * @return  colorized string from provided text
      */
     public static String color(String textToTranslate){
         if (textToTranslate == null) return null;
@@ -208,9 +220,10 @@ public enum EnumChatFormat {
 
     /**
      * Turns back the color symbol into '&amp;' symbol in provided text.
-     * @param    text
-     *             text to revert colors in
-     * @return    reverted text
+     *
+     * @param   text
+     *          text to revert colors in
+     * @return  reverted text
      */
     public static String decolor(String text) {
         if (text == null) return null;
@@ -220,9 +233,10 @@ public enum EnumChatFormat {
 
     /**
      * Code taken from bukkit, which returns last color codes used in provided text.
-     * @param    input
-     *             text to get last colors from
-     * @return    last colors used in provided text or empty string if nothing was found
+     *
+     * @param   input
+     *          text to get last colors from
+     * @return  last colors used in provided text or empty string if nothing was found
      */
     public static String getLastColors(String input) {
         if (input == null) return "";

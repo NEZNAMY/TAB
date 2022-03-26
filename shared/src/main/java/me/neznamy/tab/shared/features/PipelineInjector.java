@@ -37,8 +37,9 @@ public abstract class PipelineInjector extends TabFeature {
 
     /**
      * Constructs new instance with given parameter
-     * @param    injectPosition
-     *             position to inject handler before
+     *
+     * @param   injectPosition
+     *          position to inject handler before
      */
     protected PipelineInjector(String injectPosition) {
         super("Pipeline injection", null);
@@ -48,8 +49,9 @@ public abstract class PipelineInjector extends TabFeature {
 
     /**
      * Injects custom channel duplex handler to prevent other plugins from overriding this one
-     * @param    player
-     *             player to inject
+     *
+     * @param   player
+     *          player to inject
      */
     public void inject(TabPlayer player) {
         if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248

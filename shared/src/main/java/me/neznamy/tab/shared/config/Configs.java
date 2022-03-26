@@ -59,7 +59,9 @@ public class Configs {
 
     /**
      * Constructs new instance with given parameter
-     * @param tab - tab instance
+     *
+     * @param   tab
+     *          tab instance
      */
     public Configs(TAB tab) {
         this.tab = tab;
@@ -67,10 +69,11 @@ public class Configs {
 
     /**
      * Loads all configuration files and converts files to latest version
-     * @throws    IOException
-     *             if File I/O operation fails
-     * @throws    YAMLException
-     *             if files contain syntax errors
+     *
+     * @throws  IOException
+     *          if File I/O operation fails
+     * @throws  YAMLException
+     *          if files contain syntax errors
      */
     public void loadFiles() throws YAMLException, IOException {
         messages = new MessageFile();
@@ -84,10 +87,11 @@ public class Configs {
 
     /**
      * Loads config.yml and some of its values
-     * @throws    IOException
-     *             if File I/O operation fails
-     * @throws    YAMLException
-     *             if files contain syntax errors
+     *
+     * @throws  IOException
+     *          if File I/O operation fails
+     * @throws  YAMLException
+     *          if files contain syntax errors
      */
     public void loadConfig() throws YAMLException, IOException {
         config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getDataFolder(), "config.yml"));
@@ -118,9 +122,12 @@ public class Configs {
 
     /**
      * Returns value of hidden config option with specified path if it exists, defaultValue otherwise
-     * @param path - path to value
-     * @param defaultValue - value to return if option is not present in file
-     * @return value with specified path or default value if not present
+     *
+     * @param   path
+     *          path to value
+     * @param   defaultValue
+     *          value to return if option is not present in file
+     * @return  value with specified path or default value if not present
      */
     @SuppressWarnings("unchecked")
     public <T> T getSecretOption(String path, T defaultValue) {

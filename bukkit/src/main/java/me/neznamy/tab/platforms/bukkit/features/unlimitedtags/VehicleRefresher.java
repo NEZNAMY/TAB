@@ -109,8 +109,10 @@ public class VehicleRefresher extends TabFeature {
     
     /**
      * Returns list of all passengers on specified vehicle
-     * @param vehicle - vehicle to check passengers of
-     * @return list of passengers
+     *
+     * @param   vehicle
+     *          vehicle to check passengers of
+     * @return  list of passengers
      */
     @SuppressWarnings("deprecation")
     public List<Entity> getPassengers(Entity vehicle){
@@ -127,7 +129,9 @@ public class VehicleRefresher extends TabFeature {
 
     /**
      * Teleports armor stands of all passengers on specified vehicle
-     * @param vehicle - entity to check passengers of
+     *
+     * @param   vehicle
+     *          entity to check passengers of
      */
     public void processPassengers(Entity vehicle) {
         for (Entity passenger : getPassengers(vehicle)) {

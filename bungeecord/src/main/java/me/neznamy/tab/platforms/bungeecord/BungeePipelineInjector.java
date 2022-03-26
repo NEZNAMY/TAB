@@ -52,7 +52,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 
         /**
          * Constructs new instance with given player
-         * @param player - player to inject
+         *
+         * @param   player
+         *          player to inject
          */
         public BungeeChannelDuplexHandler(TabPlayer player) {
             Preconditions.checkNotNull(player, "player");
@@ -97,7 +99,9 @@ public class BungeePipelineInjector extends PipelineInjector {
 
         /**
          * Removes all real players from packet if the packet doesn't come from TAB
-         * @param packet - packet to modify
+         *
+         * @param   packet
+         *          packet to modify
          */
         private void modifyPlayers(Team packet){
             long time = System.nanoTime();
@@ -129,7 +133,8 @@ public class BungeePipelineInjector extends PipelineInjector {
         /**
          * Constructs new instance with given player
          *
-         * @param player - player to inject
+         * @param   player
+         *          player to inject
          */
         public DeserializableBungeeChannelDuplexHandler(TabPlayer player) {
             super(player);
@@ -146,8 +151,10 @@ public class BungeePipelineInjector extends PipelineInjector {
         /**
          * Deserializes byte buf in case it is one of the tracked packets coming from backend server and returns it.
          * If the packet is not one of them, returns input
-         * @param buf - byte buf to deserialize
-         * @return deserialized packet or input byte buf if packet is not tracked
+         *
+         * @param   buf
+         *          byte buf to deserialize
+         * @return  deserialized packet or input byte buf if packet is not tracked
          */
         private Object deserialize(ByteBuf buf) {
             int marker = buf.readerIndex();

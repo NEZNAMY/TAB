@@ -10,7 +10,9 @@ public class PlaceholderZtoA extends SortingType {
 
     /**
      * Constructs new instance with given parameter
-     * @param sortingPlaceholder - placeholder to sort by
+     *
+     * @param   sortingPlaceholder
+     *          placeholder to sort by
      */
     public PlaceholderZtoA(Sorting sorting, String sortingPlaceholder) {
         super(sorting, sortingPlaceholder);

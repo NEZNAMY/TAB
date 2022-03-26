@@ -17,10 +17,10 @@ public class PacketPlayOutChat implements TabPacket {
     /**
      * Constructs new instance with given parameters
      * 
-     * @param    message
-     *             Chat message to be sent
-     * @param    type
-     *             Message position
+     * @param   message
+     *          Chat message to be sent
+     * @param   type
+     *          Message position
      */
     public PacketPlayOutChat(IChatBaseComponent message, ChatMessageType type) {
         Preconditions.checkNotNull(message, "message");
@@ -36,7 +36,8 @@ public class PacketPlayOutChat implements TabPacket {
 
     /**
      * Returns {@link #message}
-     * @return    message
+     *
+     * @return  message
      */
     public IChatBaseComponent getMessage() {
         return message;
@@ -44,7 +45,8 @@ public class PacketPlayOutChat implements TabPacket {
 
     /**
      * Returns {@link #type}
-     * @return    type
+     *
+     * @return  type
      */
     public ChatMessageType getType() {
         return type;

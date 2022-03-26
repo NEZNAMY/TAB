@@ -19,8 +19,8 @@ public class LuckPerms extends PermissionPlugin {
     /**
      * Constructs new instance with given parameter
      *
-     * @param    version
-     *             LuckPerms version
+     * @param   version
+     *          LuckPerms version
      */
     public LuckPerms(String version) {
         super(version);
@@ -42,9 +42,9 @@ public class LuckPerms extends PermissionPlugin {
     /**
      * Returns player's prefix configured in LuckPerms
      *
-     * @param    p
-     *             Player to get prefix of
-     * @return    Player's prefix
+     * @param   p
+     *          Player to get prefix of
+     * @return  Player's prefix
      */
     public String getPrefix(TabPlayer p) {
         return getValue(p, true);
@@ -53,9 +53,9 @@ public class LuckPerms extends PermissionPlugin {
     /**
      * Returns player's suffix configured in LuckPerms
      *
-     * @param    p
-     *             Player to get suffix of
-     * @return    Player's suffix
+     * @param   p
+     *          Player to get suffix of
+     * @return  Player's suffix
      */
     public String getSuffix(TabPlayer p) {
         return getValue(p, false);
@@ -65,11 +65,11 @@ public class LuckPerms extends PermissionPlugin {
      * Returns player's metadata value based on entered boolean flag,
      * {@code true} for prefix, {@code false} for suffix.
      *
-     * @param    p
-     *             Player to get metadata value of
-     * @param    prefix
-     *             {@code true} if prefix should be returned, {@code false} if suffix
-     * @return    Player's metadata value
+     * @param   p
+     *          Player to get metadata value of
+     * @param   prefix
+     *          {@code true} if prefix should be returned, {@code false} if suffix
+     * @return  Player's metadata value
      */
     private String getValue(TabPlayer p, boolean prefix) {
         try {

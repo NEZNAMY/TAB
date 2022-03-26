@@ -63,7 +63,7 @@ public class PlaceholderReplacementPattern {
      * Returns set of all nested placeholders used inside placeholder output
      * replacement values in all lines.
      *
-     * @return    All used nested placeholders in values.
+     * @return  All used nested placeholders in values.
      */
     public Set<String> getNestedPlaceholders() {
         return nestedPlaceholders;
@@ -73,9 +73,9 @@ public class PlaceholderReplacementPattern {
      * Finds replacement using provided output as well as applying
      * %value% placeholder for original output inside replacements.
      *
-     * @param    output
-     *             placeholder's output
-     * @return    replacement or {@code output} if no pattern is matching
+     * @param   output
+     *          placeholder's output
+     * @return  replacement or {@code output} if no pattern is matching
      */
     public String findReplacement(String output) {
         String replacement = findReplacement0(output);
@@ -90,9 +90,9 @@ public class PlaceholderReplacementPattern {
      * Internal method that returns value based on provided
      * placeholder output and configured replacements.
      *
-     * @param    output
-     *             placeholder's output
-     * @return    replacement or {@code output} if no pattern is matching
+     * @param   output
+     *          placeholder's output
+     * @return  replacement or {@code output} if no pattern is matching
      */
     private String findReplacement0(String output) {
         //skipping check if no replacements are defined

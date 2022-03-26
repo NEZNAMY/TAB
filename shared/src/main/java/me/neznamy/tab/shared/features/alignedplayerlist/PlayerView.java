@@ -94,9 +94,12 @@ public class PlayerView {
      * Returns a combination of normal and bold spaces to build exactly the requested amount of pixels.
      * Must be at least 12 as lower numbers cannot always be built using numbers 4 (normal space + 1 pixel) and 5 (bold space + 1 pixel)
      * Returns the result string with normal then bold spaces, such as "   &l   &r"
-     * @param pixelWidth - amount of pixels to be built
-     * @return string consisting of spaces and &l &r
-     * @throws IllegalArgumentException if pixelWidth is < 12
+     *
+     * @param   pixelWidth
+     *          amount of pixels to be built
+     * @return  string consisting of spaces and &l &r
+     * @throws  IllegalArgumentException
+     *          if pixelWidth is < 12
      */
     private String buildSpaces(int pixelWidth) {
         if (pixelWidth < 12) throw new IllegalArgumentException("Cannot build space lower than 12 pixels wide");

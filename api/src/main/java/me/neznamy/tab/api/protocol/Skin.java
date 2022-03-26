@@ -15,6 +15,7 @@ public class Skin {
 
     /**
      * Constructs new instance with given parameters
+     *
      * @param   value
      *          skin value
      * @param   signature
@@ -30,6 +31,7 @@ public class Skin {
 
     /**
      * Returns skin value
+     *
      * @return  skin value
      */
     public String getValue() {
@@ -38,6 +40,7 @@ public class Skin {
 
     /**
      * Returns skin signature
+     *
      * @return  skin signature
      */
     public String getSignature() {
@@ -46,6 +49,7 @@ public class Skin {
 
     /**
      * Returns user-friendly representation of this object
+     *
      * @return  user-friendly representation of this object
      */
     @Override

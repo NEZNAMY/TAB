@@ -84,8 +84,10 @@ public class DataWatcherRegistry {
 
     /**
      * Gets values of all static fields in a class
-     * @param clazz class to return field values from
-     * @return map of values
+     *
+     * @param   clazz
+     *          class to return field values from
+     * @return  map of values
      */
     private Map<String, Object> getStaticFields(Class<?> clazz, NMSStorage nms){
         Map<String, Object> fields = new HashMap<>();

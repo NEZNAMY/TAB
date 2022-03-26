@@ -156,7 +156,9 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     /**
      * Updates raw values of properties for specified player
-     * @param p - player to update
+     *
+     * @param   p
+     *          player to update
      */
     @Override
     public boolean updateProperties(TabPlayer p) {

@@ -28,10 +28,10 @@ public abstract class SimpleCondition {
     /**
      * Sets raw values of sides and finds used placeholders
      *
-     * @param    leftSide
-     *             left side of condition
-     * @param    rightSide
-     *             right side of condition
+     * @param   leftSide
+     *          left side of condition
+     * @param   rightSide
+     *          right side of condition
      */
     protected void setSides(String leftSide, String rightSide) {
         this.leftSide = leftSide;
@@ -43,9 +43,9 @@ public abstract class SimpleCondition {
     /**
      * Replaces placeholders on the left side and return result
      *
-     * @param    p
-     *             player to replace placeholders for
-     * @return    replaced left side
+     * @param   p
+     *          player to replace placeholders for
+     * @return  replaced left side
      */
     public String parseLeftSide(TabPlayer p) {
         return parseSide(p, leftSide, leftSidePlaceholders);
@@ -55,8 +55,8 @@ public abstract class SimpleCondition {
      * Replaces placeholders on the right side and return result
      *
      * @param    p
-     *             player to replace placeholders for
-     * @return    replaced right side
+     *           player to replace placeholders for
+     * @return   replaced right side
      */
     public String parseRightSide(TabPlayer p) {
         return parseSide(p, rightSide, rightSidePlaceholders);
@@ -65,13 +65,13 @@ public abstract class SimpleCondition {
     /**
      * Replaces placeholders in provided value
      *
-     * @param    p
-     *             player to replace placeholders for
-     * @param    value
-     *             string to replace placeholders in
-     * @param    placeholders
-     *             used placeholders
-     * @return    replaced string
+     * @param   p
+     *          player to replace placeholders for
+     * @param   value
+     *          string to replace placeholders in
+     * @param   placeholders
+     *          used placeholders
+     * @return  replaced string
      */
     public String parseSide(TabPlayer p, String value, String[] placeholders) {
         String result = value;
@@ -83,18 +83,20 @@ public abstract class SimpleCondition {
     
     /**
      * Returns {@code true} if condition is met for player, {@code false} if not
-     * @param    p
-     *             player to check condition for
-     * @return    {@code true} if met, {@code false} if not
+     *
+     * @param   p
+     *          player to check condition for
+     * @return  {@code true} if met, {@code false} if not
      */
     public abstract boolean isMet(TabPlayer p);
     
     /**
      * Compiles condition from condition line. This includes detection
      * what kind of condition it is and creating it.
-     * @param    line
-     *             condition line
-     * @return    compiled condition or null if no valid pattern was found
+     *
+     * @param   line
+     *          condition line
+     * @return  compiled condition or null if no valid pattern was found
      */
     public static SimpleCondition compile(String line) {
         for (Entry<String, Function<String, SimpleCondition>> entry : Condition.getConditionTypes().entrySet()) {

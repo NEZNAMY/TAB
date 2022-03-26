@@ -50,11 +50,11 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
      * When it's not enabled, returns player's TabList UUID, which may not match
      * with player's actual UUID due to velocity.
      *
-     * @param    p
-     *             Player to get tablist UUID of
-     * @param    viewer
-     *             TabList viewer
-     * @return    UUID of TabList entry representing requested player
+     * @param   p
+     *          Player to get tablist UUID of
+     * @param   viewer
+     *          TabList viewer
+     * @return  UUID of TabList entry representing requested player
      */
     public UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
         LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
@@ -74,9 +74,9 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
      * Loads all properties from config and returns {@code true} if at least
      * one of them either wasn't loaded or changed value, {@code false} otherwise.
      *
-     * @param    p
-     *             Player to update properties of
-     * @return    {@code true} if at least one property changed, {@code false} if not
+     * @param   p
+     *          Player to update properties of
+     * @return  {@code true} if at least one property changed, {@code false} if not
      */
     protected boolean updateProperties(TabPlayer p) {
         boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
@@ -88,10 +88,10 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     /**
      * Updates TabList format of requested player to everyone.
      *
-     * @param    p
-     *             Player to update
-     * @param    format
-     *             Whether player's actual format should be used or {@code null} for reset
+     * @param   p
+     *          Player to update
+     * @param   format
+     *          Whether player's actual format should be used or {@code null} for reset
      */
     protected void updatePlayer(TabPlayer p, boolean format) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -106,11 +106,11 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     /**
      * Returns TabList format of player for viewer
      *
-     * @param    p
-     *             Player to get format of
-     * @param    viewer
-     *             Viewer seeing the format
-     * @return    Format of specified player for viewer
+     * @param   p
+     *          Player to get format of
+     * @param   viewer
+     *          Viewer seeing the format
+     * @return  Format of specified player for viewer
      */
     public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
         Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
