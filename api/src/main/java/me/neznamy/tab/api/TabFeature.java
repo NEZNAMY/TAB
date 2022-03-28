@@ -114,6 +114,7 @@ public abstract class TabFeature {
      *          player who disconnected
      */
     public void onQuit(TabPlayer disconnectedPlayer) {
+        //empty by default
     }
 
     /**

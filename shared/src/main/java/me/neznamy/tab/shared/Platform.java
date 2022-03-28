@@ -27,13 +27,17 @@ public abstract class Platform {
      * Calls platform-specific load event.
      * This method is called when plugin is fully enabled.
      */
-    public void callLoadEvent(){}
+    public void callLoadEvent(){
+        //do nothing by default, old event system will be removed
+    }
 
     /**
      * Calls platform-specific player load event.
      * This method is called when player is fully loaded.
      */
-    public void callLoadEvent(TabPlayer player){}
+    public void callLoadEvent(TabPlayer player){
+        //do nothing by default, old event system will be removed
+    }
 
     /**
      * Returns platform-specific packet builder implementation
