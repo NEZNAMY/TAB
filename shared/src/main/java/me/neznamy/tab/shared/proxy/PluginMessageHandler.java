@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 
-import java.io.File;
 import java.util.*;
 
 /**
