@@ -34,6 +34,7 @@ scoreboard-show-usage: "Usage: /tab scoreboard show <scoreboard> [player]"
 bossbar-not-marked-as-announcement: "&cThis bossbar is not marked as an announcement bar and is therefore already displayed permanently (if display condition is met)"
 bossbar-announcement-success: "&aAnnouncing bossbar &6%bossbar% &afor %length% seconds."
 bossbar-send-success: "&aSending bossbar &6%bossbar% &ato player &6%player% &afor %length% seconds."
+armorstands-disabled-cannot-use-preview: "&cYour armor stands are disabled, therefore you cannot use preview feature"
 help-menu:
   - "&m                                                                                "
   - " &8>> &3&l/tab reload"

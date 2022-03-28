@@ -230,4 +230,8 @@ public class MessageFile extends YamlConfigurationFile {
     public String getNameTagsShown() {
         return getString("nametags-shown", "&aNametags of all players were shown to you");
     }
+
+    public String getArmorStandsDisabledCannotPreview() {
+        return getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
+    }
 }
