@@ -34,13 +34,13 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public void setProperty(String group, String property, String server, String world, String value) {
-        group = group.toLowerCase(Locale.US);
+        String lowercaseGroup = group.toLowerCase(Locale.US);
         try {
-            if (getProperty(group, property, server, world) != null) {
-                mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", group, property, world, server);
+            if (getProperty(lowercaseGroup, property, server, world) != null) {
+                mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", lowercaseGroup, property, world, server);
             }
-            setProperty0(group, property, server, world, value);
-            if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", group, property, value, world, server);
+            setProperty0(lowercaseGroup, property, server, world, value);
+            if (value != null) mysql.execute("insert into `tab_groups` (`group`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", lowercaseGroup, property, value, world, server);
         } catch (SQLException e) {
             TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
         }

@@ -441,11 +441,10 @@ public class TAB extends TabAPI {
 
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        if (translateColors) message = EnumChatFormat.color(message);
         if (logger instanceof java.util.logging.Logger) {
-            ((java.util.logging.Logger) logger).info(message);
+            ((java.util.logging.Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
         } else if (logger instanceof Logger) {
-            ((Logger) logger).info(message);
+            ((Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
         }
     }
 
