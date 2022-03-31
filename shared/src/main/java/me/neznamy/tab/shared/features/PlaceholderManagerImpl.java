@@ -250,12 +250,19 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                     tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
                 }
             }
-            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh() && !p.isTriggerMode()) {
-                TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + p.getRefresh() + "ms due to placeholder " + identifier);
-                refreshTask.setInterval(p.getRefresh());
-                atomic.set(0);
-            } 
+            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && !p.isTriggerMode()) {
+                int refresh = gcd(p.getRefresh(), refreshTask.getInterval());
+                if (refreshTask.getInterval() != refresh) {
+                    TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + refresh + "ms due to placeholder " + identifier);
+                    refreshTask.setInterval(refresh);
+                    atomic.set(0);
+                }
+            }
         }
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
     }
     
     public void recalculateUsedPlaceholders() {
