@@ -34,7 +34,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public void setProperty(String group, String property, String server, String world, String value) {
-        String lowercaseGroup = group.toLowerCase(Locale.US);
+        String lowercaseGroup = group.equals(DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
         try {
             if (getProperty(lowercaseGroup, property, server, world) != null) {
                 mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", lowercaseGroup, property, world, server);
