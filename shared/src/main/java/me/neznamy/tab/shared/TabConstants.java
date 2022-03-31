@@ -77,6 +77,7 @@ public class TabConstants {
 
         public static final String LAYOUT_FIXED_SLOTS = "Layout (Fixed slots)";
         public static final String LAYOUT_PLAYER_SLOTS = "Layout (Player slots)";
+        public static final String LAYOUT_LATENCY = "Layout (Updating latency)";
 
         public static final String NAMETAGS_TEAM_REGISTER = "NameTags (Team register)";
         public static final String NAMETAGS_TEAM_UNREGISTER = "NameTags (Team unregister)";
@@ -224,6 +225,7 @@ public class TabConstants {
         public static final String PING_SPOOF = "PingSpoof";
         public static final String SORTING = "sorting";
         public static final String LAYOUT = "layout";
+        public static final String LAYOUT_LATENCY = "layout-latency";
         public static final String NICK_COMPATIBILITY = "nick";
         public static final String PIPELINE_INJECTION = "injection";
         public static final String BOSS_BAR = "BossBar";
