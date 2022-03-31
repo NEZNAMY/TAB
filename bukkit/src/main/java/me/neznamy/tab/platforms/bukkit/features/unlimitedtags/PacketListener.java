@@ -113,7 +113,7 @@ public class PacketListener extends TabFeature {
         List<Entity> vehicleList;
         if (pl != null) {
             //player moved
-            if (nameTagX.isPlayerDisabled(pl)) return;
+            if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
             TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE,
                     () -> nameTagX.getArmorStandManager(pl).teleport(receiver));
         } else if ((vehicleList = nameTagX.getVehicleManager().getVehicles().get(entityId)) != null){
