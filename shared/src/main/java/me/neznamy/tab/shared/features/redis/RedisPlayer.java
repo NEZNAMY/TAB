@@ -28,6 +28,7 @@ public class RedisPlayer {
 
     private UUID uniqueId;
     private String name;
+    private String nickname;
     private String server;
     private String tabFormat;
     private String teamName;
@@ -48,6 +49,7 @@ public class RedisPlayer {
         player.redis = redis;
         player.uniqueId = UUID.fromString((String) json.get("UUID"));
         player.name = (String) json.get("name");
+        player.nickname = player.name;
         player.server = (String) json.get("server");
         player.tabFormat = (String) json.get("tabformat");
         String team = (String) json.get("teamname");
@@ -119,7 +121,7 @@ public class RedisPlayer {
     }
 
     public PacketPlayOutPlayerInfo getAddPacket() {
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(name, uniqueId, skin, 0, EnumGamemode.SURVIVAL,
+        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(nickname, uniqueId, skin, 0, EnumGamemode.SURVIVAL,
                 disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat)));
     }
 
@@ -129,13 +131,13 @@ public class RedisPlayer {
 
     public PacketPlayOutPlayerInfo getRemovePacket() {
         PlayerInfoData data = new PlayerInfoData(uniqueId);
-        data.setName(name); //making null check not kill own packets
+        data.setName(nickname); //making null check not kill own packets
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
     }
 
     public PacketPlayOutScoreboardTeam getRegisterTeamPacket() {
         if (disabledNameTags) return null;
-        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", Collections.singletonList(name), 0);
+        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", Collections.singletonList(nickname), 0);
     }
 
     public PacketPlayOutScoreboardTeam getUpdateTeamPacket() {
@@ -150,12 +152,12 @@ public class RedisPlayer {
 
     public PacketPlayOutScoreboardScore getBelowNameUpdatePacket() {
         if (belowName == null) return null;
-        return new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, name, TAB.getInstance().getErrorManager().parseInteger(belowName, 0));
+        return new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, nickname, TAB.getInstance().getErrorManager().parseInteger(belowName, 0));
     }
 
     public PacketPlayOutScoreboardScore getYellowNumberUpdatePacket() {
         if (yellowNumber == null) return null;
-        return new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, name, TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0));
+        return new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, nickname, TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0));
     }
 
     public String getServer() {
@@ -208,6 +210,14 @@ public class RedisPlayer {
 
     public String getName() {
         return name;
+    }
+
+    public String getNickName() {
+        return nickname;
+    }
+
+    public void setNickName(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getTabFormat() {

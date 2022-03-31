@@ -117,9 +117,9 @@ public class BungeePipelineInjector extends PipelineInjector {
             RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
             if (redis != null) {
                 for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                    if (col.contains(p.getName()) && !packet.getName().equals(p.getTeamName())) {
+                    if (col.contains(p.getNickName()) && !packet.getName().equals(p.getTeamName())) {
                         logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-                        col.remove(p.getName());
+                        col.remove(p.getNickName());
                     }
                 }
             }
