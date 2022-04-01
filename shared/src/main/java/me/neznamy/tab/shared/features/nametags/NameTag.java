@@ -33,8 +33,7 @@ public class NameTag extends TabFeature implements TeamManager {
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {
-        super("NameTags", "Updating prefix/suffix", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
+        super("NameTags", "Updating prefix/suffix", "scoreboard-teams");
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.SORTING, sorting);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);

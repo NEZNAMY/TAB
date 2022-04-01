@@ -21,8 +21,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
     private final List<Object> serverGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
 
     public HeaderFooter() {
-        super("Header/Footer", "Updating header/footer", TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.disable-in-worlds"));
+        super("Header/Footer", "Updating header/footer", "header-footer");
         TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s, disabledServers=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
     }
 

@@ -46,8 +46,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
      * Constructs new instance and loads configuration
      */
     public BossBarManagerImpl() {
-        super("BossBar", "Processing display conditions", TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("bossbar.disable-in-worlds"));
+        super("BossBar", "Processing display conditions", "bossbar");
         for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
             BossBarLine line = loadFromConfig(bar.toString());
             lines.put(bar.toString(), line);

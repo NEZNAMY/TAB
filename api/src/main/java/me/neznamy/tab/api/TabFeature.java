@@ -10,34 +10,16 @@ public abstract class TabFeature {
 
     private final String featureName;
     private final String refreshDisplayName;
-    protected final String[] disabledServers;
-    private final boolean serverWhitelistMode;
-    protected final String[] disabledWorlds;
-    private final boolean worldWhitelistMode;
+    protected String[] disabledServers = new String[0];
+    private boolean serverWhitelistMode = false;
+    protected String[] disabledWorlds = new String[0];
+    private boolean worldWhitelistMode = false;
     private final Set<TabPlayer> disabledPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     private final List<String> methodOverrides = new ArrayList<>();
 
     protected TabFeature(String featureName, String refreshDisplayName) {
-        this(featureName, refreshDisplayName, null, null);
-    }
-
-    protected TabFeature(String featureName, String refreshDisplayName, List<String> disabledServers, List<String> disabledWorlds) {
         this.featureName = featureName;
         this.refreshDisplayName = refreshDisplayName;
-        if (disabledServers != null) {
-            this.disabledServers = disabledServers.toArray(new String[0]);
-            serverWhitelistMode = disabledServers.contains("WHITELIST");
-        } else {
-            this.disabledServers = new String[0];
-            serverWhitelistMode = false;
-        }
-        if (disabledWorlds != null) {
-            this.disabledWorlds = disabledWorlds.toArray(new String[0]);
-            worldWhitelistMode = disabledWorlds.contains("WHITELIST");
-        } else {
-            this.disabledWorlds = new String[0];
-            worldWhitelistMode = false;
-        }
         try {
             if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onCommand");
@@ -67,6 +49,20 @@ public abstract class TabFeature {
                 methodOverrides.add("onVanishStatusChange");
         } catch (NoSuchMethodException e) {
             //this will never happen
+        }
+    }
+
+    protected TabFeature(String featureName, String refreshDisplayName, String configSection) {
+        this(featureName, refreshDisplayName);
+        List<String> disabledServers = TabAPI.getInstance().getConfig().getStringList(configSection + ".disable-in-servers");
+        List<String> disabledWorlds = TabAPI.getInstance().getConfig().getStringList(configSection + "disable-in-worlds");
+        if (disabledServers != null) {
+            this.disabledServers = disabledServers.toArray(new String[0]);
+            serverWhitelistMode = disabledServers.contains("WHITELIST");
+        }
+        if (disabledWorlds != null) {
+            this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+            worldWhitelistMode = disabledWorlds.contains("WHITELIST");
         }
     }
 
