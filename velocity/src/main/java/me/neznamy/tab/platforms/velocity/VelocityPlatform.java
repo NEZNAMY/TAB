@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -13,30 +12,24 @@ import java.util.Locale;
  */
 public class VelocityPlatform extends ProxyPlatform {
 
-    //instance of ProxyServer
-    private final ProxyServer server;
-
     /**
-     * Constructs new instance with given parameter
-     *
-     * @param   server
-     *          instance of ProxyServer
+     * Constructs new instance
      */
-    public VelocityPlatform(ProxyServer server) {
+    public VelocityPlatform() {
         super(new PacketBuilder());
-        this.server = server;
     }
 
     @Override
     public void loadFeatures() {
         super.loadFeatures();
-        for (Player p : server.getAllPlayers()) {
+        for (Player p : Main.getInstance().getServer().getAllPlayers()) {
             TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
         }
     }
 
     @Override
     public String getPluginVersion(String plugin) {
-        return server.getPluginManager().getPlugin(plugin.toLowerCase(Locale.US)).flatMap(pluginContainer -> pluginContainer.getDescription().getVersion()).orElse(null);
+        return Main.getInstance().getServer().getPluginManager().getPlugin(plugin.toLowerCase(Locale.US))
+                .flatMap(pluginContainer -> pluginContainer.getDescription().getVersion()).orElse(null);
     }
 }

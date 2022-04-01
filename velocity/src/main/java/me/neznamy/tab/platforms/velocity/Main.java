@@ -39,26 +39,23 @@ public class Main {
 
     private static Main instance;
 
-    //instance of proxyserver
-    private final ProxyServer server;
+    /** ProxyServer instance */
+    @Inject
+    private ProxyServer server;
     
-    //metrics factory I guess
-    private final Metrics.Factory metricsFactory;
+    /** Metrics factory for bStats */
+    @Inject
+    private Metrics.Factory metricsFactory;
 
-    private final Logger logger;
+    /** Console logger with TAB's prefix */
+    @Inject
+    private Logger logger;
 
-    //plugin message channel identifier
+    /** TAB's plugin message channel */
     private MinecraftChannelIdentifier mc;
 
     private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
     private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
-
-    @Inject
-    public Main(ProxyServer server, Metrics.Factory metricsFactory, Logger logger) {
-        this.server = server;
-        this.metricsFactory = metricsFactory;
-        this.logger = logger;
-    }
 
     /**
      * Initializes plugin for velocity
@@ -80,7 +77,7 @@ public class Main {
         String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
         mc = MinecraftChannelIdentifier.create(name[0], name[1]);
         server.getChannelRegistrar().register(mc);
-        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
+        TAB.setInstance(new TAB(new VelocityPlatform(), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
@@ -92,6 +89,10 @@ public class Main {
 
     public static Main getInstance() {
         return instance;
+    }
+
+    public ProxyServer getServer() {
+        return server;
     }
 
     public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
