@@ -28,6 +28,7 @@ public class ProxyNameTagX extends NameTagX {
 
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
+        super.onQuit(disconnectedPlayer);
         armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
     }
 

@@ -50,7 +50,8 @@ public class PetFix extends TabFeature {
 
     /**
      * Returns position of pet owner field based on server version
-     * @return position of pet owner field based on server version
+     *
+     * @return  position of pet owner field based on server version
      */
     private int getPetOwnerPosition() {
         if (nms.getMinorVersion() >= 17) {
@@ -72,9 +73,10 @@ public class PetFix extends TabFeature {
     }
 
     /**
-     * Cancels a packet if previous one arrived with no delay to prevent double toggle on 1.16
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * Cancels a packet if previous one arrived with no delay to prevent double toggle since 1.16
+     *
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     @Override
     public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
@@ -101,8 +103,9 @@ public class PetFix extends TabFeature {
 
     /**
      * Removes pet owner field from DataWatcher
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     @SuppressWarnings("unchecked")
     @Override

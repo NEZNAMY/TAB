@@ -43,11 +43,17 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     /**
      * Constructs new instance with given parameters and registers lines to feature manager
-     * @param manager - scoreboard manager
-     * @param name - name of this scoreboard
-     * @param title - scoreboard title
-     * @param lines - lines of scoreboard
-     * @param displayCondition - display condition
+     *
+     * @param   manager
+     *          scoreboard manager
+     * @param   name
+     *          name of this scoreboard
+     * @param   title
+     *          scoreboard title
+     * @param   lines
+     *          lines of scoreboard
+     * @param   displayCondition
+     *          display condition
      */
     public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition) {
         this(manager, name, title, lines, false);
@@ -59,10 +65,15 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     /**
      * Constructs new instance with given parameters and registers lines to feature manager
-     * @param manager - scoreboard manager
-     * @param name - name of this scoreboard
-     * @param title - scoreboard title
-     * @param lines - lines of scoreboard
+     *
+     * @param   manager
+     *          scoreboard manager
+     * @param   name
+     *          name of this scoreboard
+     * @param   title
+     *          scoreboard title
+     * @param   lines
+     *          lines of scoreboard
      */
     public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, boolean dynamicLinesOnly) {
         super(manager.getFeatureName(), "Updating scoreboard title");
@@ -83,9 +94,12 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     /**
      * Registers line with given text and line number
-     * @param lineNumber - ID of line
-     * @param text - text to display
-     * @return most optimal line from provided text
+     *
+     * @param   lineNumber
+     *          ID of line
+     * @param   text
+     *          text to display
+     * @return  most optimal line from provided text
      */
     private ScoreboardLine registerLine(int lineNumber, String text) {
         if (text.startsWith("Custom|")) {
@@ -108,8 +122,10 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     /**
      * Returns true if condition is null or is met, false otherwise
-     * @param p - player to check
-     * @return true if condition is null or is met, false otherwise
+     *
+     * @param   p
+     *          player to check
+     * @return  true if condition is null or is met, false otherwise
      */
     public boolean isConditionMet(TabPlayer p) {
         return displayCondition == null || displayCondition.isMet(p);

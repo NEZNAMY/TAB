@@ -13,8 +13,8 @@ public class PermissionCondition extends SimpleCondition {
     /**
      * Constructs new instance with given condition line
      *
-     * @param    line
-     *             configured condition line
+     * @param   line
+     *          configured condition line
      */
     public PermissionCondition(String line) {
         permission = line.split(":")[1];

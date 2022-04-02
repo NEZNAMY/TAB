@@ -15,12 +15,13 @@ public class ChatHoverable {
 
     /**
      * Constructs new instance with given action and value.
-     * @param    action
-     *             hover event action
-     * @param    value
-     *             hover event value
-     * @throws    IllegalArgumentException
-     *             if {@code action} is null or {@code value} is null
+     *
+     * @param   action
+     *          hover event action
+     * @param   value
+     *          hover event value
+     * @throws  IllegalArgumentException
+     *          if {@code action} is null or {@code value} is null
      */
     public ChatHoverable(EnumHoverAction action, IChatBaseComponent value) {
         Preconditions.checkNotNull(action, "hover action");
@@ -31,7 +32,8 @@ public class ChatHoverable {
 
     /**
      * Returns hover action defined in constructor
-     * @return    hover action
+     *
+     * @return  hover action
      */
     public EnumHoverAction getAction() {
         return action;
@@ -39,7 +41,8 @@ public class ChatHoverable {
 
     /**
      * Returns hover value defined in constructor
-     * @return    hover value
+     *
+     * @return  hover value
      */
     public IChatBaseComponent getValue() {
         return value;

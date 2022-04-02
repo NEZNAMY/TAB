@@ -55,6 +55,10 @@ public class NameTagCommand extends SubCommand {
             sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
             return;
         }
+        if (nameTagX.hasDisabledArmorStands(sender)) {
+            sendMessage(sender, getMessages().getArmorStandsDisabledCannotPreview());
+            return;
+        }
         nameTagX.toggleNametagPreview(sender);
     }
 

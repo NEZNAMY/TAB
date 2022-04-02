@@ -64,8 +64,10 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
     /**
      * Loads BossBar from config by its name
-     * @param bar - name of BossBar in config
-     * @return loaded BossBar
+     *
+     * @param   bar
+     *          name of BossBar in config
+     * @return  loaded BossBar
      */
     private BossBarLine loadFromConfig(String bar) {
         Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
@@ -155,7 +157,9 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
     /**
      * Clears and resends all BossBars to specified player
-     * @param p - player to process
+     *
+     * @param   p
+     *          player to process
      */
     protected void detectBossBarsAndSend(TabPlayer p) {
         if (isDisabledPlayer(p) || !hasBossBarVisible(p)) return;
@@ -165,8 +169,11 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
     /**
      * Shows BossBars to player if display condition is met
-     * @param p - player to show BossBars to
-     * @param bars - list of BossBars to check
+     *
+     * @param   p
+     *          player to show BossBars to
+     * @param   bars
+     *          list of BossBars to check
      */
     private void showBossBars(TabPlayer p, List<String> bars) {
         if (bars == null) return;

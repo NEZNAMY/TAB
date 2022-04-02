@@ -11,7 +11,7 @@ public interface Line {
      * Returns configured raw text of this line. Placeholders
      * remain in raw format.
      * 
-     * @return    raw text of this line
+     * @return  raw text of this line
      */
     String getText();
     
@@ -22,8 +22,8 @@ public interface Line {
      * keep placeholders up to date. If value is identical to previous 
      * one, nothing happens.
      * 
-     * @param    text
-     *             Raw text to display in the line
+     * @param   text
+     *          Raw text to display in the line
      */
     void setText(String text);
 }

@@ -19,7 +19,9 @@ public class VelocityEventListener {
 
     /**
      * Disconnect event listener to forward the event to all features
-     * @param e - disconnect event
+     *
+     * @param   e
+     *          disconnect event
      */
     @Subscribe
     public void onQuit(DisconnectEvent e){
@@ -30,8 +32,9 @@ public class VelocityEventListener {
     
     /**
      * Listener to join / server switch to forward the event to all features
-     * @param    e
-     *             connect event
+     *
+     * @param   e
+     *          connect event
      */
     @Subscribe
     public void onConnect(ServerPostConnectEvent e){
@@ -48,8 +51,9 @@ public class VelocityEventListener {
 
     /**
      * Listener to commands to forward the event to all features
-     * @param    e
-     *             command event
+     *
+     * @param   e
+     *          command event
      */
     @Subscribe
     public void onCommand(CommandExecuteEvent e) {
@@ -59,7 +63,9 @@ public class VelocityEventListener {
 
     /**
      * Listener to plugin message event
-     * @param event - plugin message event
+     *
+     * @param   event
+     *          plugin message event
      */
     @Subscribe
     public void onPluginMessageEvent(PluginMessageEvent event){

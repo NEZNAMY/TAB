@@ -38,16 +38,16 @@ public abstract class ConfigurationFile {
      * Constructs new instance and attempts to load specified configuration file.
      * If file does not exist, default file is copied from {@code source}.
      *
-     * @param    source
-     *             Source to copy file from if it does not exist
-     * @param    destination
-     *             File destination to use
-     * @throws    IllegalArgumentException
-     *             if {@code destination} is null
-     * @throws    IllegalStateException
-     *             if file does not exist and source is null
-     * @throws    IOException
-     *             if I/O operation with the file unexpectedly fails
+     * @param   source
+     *          Source to copy file from if it does not exist
+     * @param   destination
+     *          File destination to use
+     * @throws  IllegalArgumentException
+     *          if {@code destination} is null
+     * @throws  IllegalStateException
+     *          if file does not exist and source is null
+     * @throws  IOException
+     *          if I/O operation with the file unexpectedly fails
      */
     protected ConfigurationFile(InputStream source, File destination) throws IOException {
         Preconditions.checkNotNull(destination, "destination");
@@ -76,7 +76,8 @@ public abstract class ConfigurationFile {
 
     /**
      * Returns simple name of the file
-     * @return    simple name of the file
+     *
+     * @return  simple name of the file
      */
     public String getName() {
         return file.getName();
@@ -84,7 +85,8 @@ public abstract class ConfigurationFile {
 
     /**
      * Returns the root value map
-     * @return    the root value map
+     *
+     * @return  the root value map
      */
     public Map<String, Object> getValues(){
         return values;
@@ -99,11 +101,11 @@ public abstract class ConfigurationFile {
      * {@code defaultValue} is not {@code null}, value is inserted, {@link #save()}
      * called and {@code defaultValue} returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    defaultValue
-     *             Value to be inserted and returned if option is not present
-     * @return    value from configuration file
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   defaultValue
+     *          Value to be inserted and returned if option is not present
+     * @return  value from configuration file
      */
     public Object getObject(String path, Object defaultValue) {
         Object value = values;
@@ -126,9 +128,9 @@ public abstract class ConfigurationFile {
      * Returns config option with specified path. If option is not present,
      * {@code null} is returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @return    value from configuration file or null if not present
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @return  value from configuration file or null if not present
      */
     public Object getObject(String path) {
         return getObject(path, null);
@@ -149,11 +151,11 @@ public abstract class ConfigurationFile {
      * Returns value from map without case sensitivity of the key. Returns
      * {@code null} if no such key is found.
      *
-     * @param    map
-     *             map to get value from
-     * @param    key
-     *             case-insensitive key name
-     * @return    map value from case-insensitive key
+     * @param   map
+     *          map to get value from
+     * @param   key
+     *          case-insensitive key name
+     * @return  map value from case-insensitive key
      */
     private Object getIgnoreCase(Map<Object, Object> map, String key) {
         for (Entry<Object, Object> entry : map.entrySet()) {
@@ -166,9 +168,9 @@ public abstract class ConfigurationFile {
      * Returns config option with specified path as {@code String}. Returns {@code null} if
      * option is not present.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @return    value from file or null if not present
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @return  value from file or null if not present
      */
     public String getString(String path) {
         return getString(path, null);
@@ -179,11 +181,11 @@ public abstract class ConfigurationFile {
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    defaultValue
-     *             Value to be inserted and returned if option is not present
-     * @return    value from configuration file as {@code String}
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   defaultValue
+     *          Value to be inserted and returned if option is not present
+     * @return  value from configuration file as {@code String}
      */
     public String getString(String path, String defaultValue) {
         Object value = getObject(path, defaultValue);
@@ -195,9 +197,9 @@ public abstract class ConfigurationFile {
      * Returns config option with specified path as {@code List<String>}. Returns {@code null} if
      * option is not present.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @return    value from file or null if not present
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @return  value from file or null if not present
      */
     public List<String> getStringList(String path) {
         return getStringList(path, null);
@@ -208,11 +210,11 @@ public abstract class ConfigurationFile {
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
      *
-     * @param    path
-     *             Path of the option with sections separated with "{@code .}"
-     * @param    defaultValue
-     *             Value to be inserted and returned if option is not present
-     * @return    value from configuration file as {@code List<String>}
+     * @param   path
+     *          Path of the option with sections separated with "{@code .}"
+     * @param   defaultValue
+     *          Value to be inserted and returned if option is not present
+     * @return  value from configuration file as {@code List<String>}
      */
     public List<String> getStringList(String path, List<String> defaultValue) {
         Object value = getObject(path, defaultValue);
@@ -231,9 +233,9 @@ public abstract class ConfigurationFile {
      * Returns config option with specified path as {@code Integer}. Returns {@code null} if
      * option is not present.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @return    value from file or null if not present
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @return  value from file or null if not present
      */
     public Integer getInt(String path) {
         return getInt(path, null);
@@ -244,11 +246,11 @@ public abstract class ConfigurationFile {
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    defaultValue
-     *             Value to be inserted and returned if option is not present
-     * @return    value from configuration file as {@code Integer}
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   defaultValue
+     *          Value to be inserted and returned if option is not present
+     * @return  value from configuration file as {@code Integer}
      */
     public Integer getInt(String path, Integer defaultValue) {
         Object value = getObject(path, defaultValue);
@@ -265,11 +267,11 @@ public abstract class ConfigurationFile {
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    defaultValue
-     *             Value to be inserted and returned if option is not present
-     * @return    value from configuration file as {@code Boolean}
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   defaultValue
+     *          Value to be inserted and returned if option is not present
+     * @return  value from configuration file as {@code Boolean}
      */
     public boolean getBoolean(String path, boolean defaultValue) {
         Object value = getObject(path, defaultValue);
@@ -282,11 +284,11 @@ public abstract class ConfigurationFile {
      * and {@code defaultValue} is not {@code null}, value is inserted, {@link #save()} called
      * and {@code defaultValue} returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    defaultValue
-     *             Value to be inserted and returned if option is not present
-     * @return    value from configuration file as {@code Double}
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   defaultValue
+     *          Value to be inserted and returned if option is not present
+     * @return  value from configuration file as {@code Double}
      */
     public Double getDouble(String path, double defaultValue) {
         Object value = getObject(path, defaultValue);
@@ -302,9 +304,9 @@ public abstract class ConfigurationFile {
      * Returns config option with specified path as {@code Map<K, V>}. If the option
      * is not present or value is not a {@code Map}, new empty {@code Map} is returned.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @return    value from configuration file as {@code Map<K, V>}
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @return  value from configuration file as {@code Map<K, V>}
      */
     public <K, V> Map<K, V> getConfigurationSection(String path) {
         if (path == null || path.length() == 0) return (Map<K, V>) values;
@@ -320,9 +322,9 @@ public abstract class ConfigurationFile {
      * Returns {@code true} if the file has option with specified path, {@code false}
      * if not.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @return    {@code true} if present, {@code false} if not
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @return  {@code true} if present, {@code false} if not
      */
     public boolean hasConfigOption(String path) {
         return getObject(path) != null;
@@ -331,10 +333,10 @@ public abstract class ConfigurationFile {
     /**
      * Sets value to the specified path and saves the file to disk by calling {@link #save()}.
      *
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    value
-     *             Value to save
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   value
+     *          Value to save
      */
     public void set(String path, Object value) {
         set(values, path, value);
@@ -345,13 +347,13 @@ public abstract class ConfigurationFile {
      * Sets value to the specified map with specified path and value. This is an internal method
      * that correctly creates maps to separate sections using "{@code .}".
      *
-     * @param    map
-     *             Map to insert value to
-     * @param    path
-     *             Path to the option with sections separated with "{@code .}"
-     * @param    value
-     *             Value to save
-     * @return    the first argument to allow chaining
+     * @param   map
+     *          Map to insert value to
+     * @param   path
+     *          Path to the option with sections separated with "{@code .}"
+     * @param   value
+     *          Value to save
+     * @return  the first argument to allow chaining
      */
     private Map<String, Object> set(Map<String, Object> map, String path, Object value) {
         if (path.contains(".")) {
@@ -375,11 +377,11 @@ public abstract class ConfigurationFile {
      * Returns the real key name without case sensitivity from map. If not found, inserted key
      * is returned.
      *
-     * @param    map
-     *             Map to check keys of
-     * @param    key
-     *             Key to find
-     * @return    The real key name
+     * @param   map
+     *          Map to check keys of
+     * @param   key
+     *          Key to find
+     * @return  The real key name
      */
     private String getRealKey(Map<?, ?> map, String key) {
         for (Object mapKey : map.keySet()) {
@@ -391,8 +393,8 @@ public abstract class ConfigurationFile {
     /**
      * Detects header of a file (first lines of file starting with #).
      *
-     * @throws    IOException
-     *             if I/O operation fails
+     * @throws  IOException
+     *          if I/O operation fails
      */
     private void detectHeader() throws IOException {
         header = new ArrayList<>();
@@ -409,8 +411,8 @@ public abstract class ConfigurationFile {
      * Inserts header back into file. This is required after calling {@link #save()}, because
      * it destroys the header.
      *
-     * @throws    IOException
-     *             if I/O operation fails
+     * @throws  IOException
+     *          if I/O operation fails
      */
     public void fixHeader() throws IOException {
         if (header == null) return;

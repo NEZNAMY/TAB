@@ -15,7 +15,7 @@ public interface Scoreboard {
      * scoreboards from config use name they were defined with. This value is
      * used internally and in /tab announce scoreboard command.
      * 
-     * @return    custom name of this scoreboard
+     * @return  custom name of this scoreboard
      */
     String getName();
 
@@ -23,8 +23,8 @@ public interface Scoreboard {
      * Returns raw title of this scoreboard. Placeholders stay in their
      * raw format.
      * 
-     * @return    scoreboard title
-     * @see        #setTitle(String)
+     * @return  scoreboard title
+     * @see     #setTitle(String)
      */
     String getTitle();
 
@@ -39,9 +39,9 @@ public interface Scoreboard {
      * <p>
      * Calling this method with same title as before will not do anything.
      * 
-     * @param    title
-     *             New title to use with placeholder support
-     * @see        #getTitle()
+     * @param   title
+     *          New title to use with placeholder support
+     * @see     #getTitle()
      */
     void setTitle(String title);
 
@@ -50,9 +50,9 @@ public interface Scoreboard {
      * in game (first line is on top). This list should only be used for reading,
      * for adding/removing lines see {@link #addLine(String)} and {@link #removeLine(int)}.
      * 
-     * @return    list of lines in this scoreboard
-     * @see        #addLine(String)
-     * @see        #removeLine(int)
+     * @return  list of lines in this scoreboard
+     * @see     #addLine(String)
+     * @see     #removeLine(int)
      */
     List<Line> getLines();
 
@@ -60,10 +60,10 @@ public interface Scoreboard {
      * Adds line with specified text on the bottom of scoreboard. Supports
      * placeholders, which will automatically be refreshed.
      * 
-     * @param    text
-     *             Text to display
-     * @see        #getLines()
-     * @see        #removeLine(int)
+     * @param   text
+     *          Text to display
+     * @see     #getLines()
+     * @see     #removeLine(int)
      */
     void addLine(String text);
 
@@ -71,12 +71,12 @@ public interface Scoreboard {
      * Removes line with specified index. Index starts at {@code 0} and ends at 
      * {@link #getLines()}.size()-1.
      * 
-     * @param    index
-     *             Index of line to remove, starting at 0
-     * @throws    IndexOutOfBoundsException
-     *             if the index is out of range (index &lt; 0 || index >= {@link #getLines()}.size())
-     * @see        #getLines()
-     * @see        #addLine(String)
+     * @param   index
+     *          Index of line to remove, starting at 0
+     * @throws  IndexOutOfBoundsException
+     *          if the index is out of range (index &lt; 0 || index >= {@link #getLines()}.size())
+     * @see     #getLines()
+     * @see     #addLine(String)
      */
     void removeLine(int index);
 

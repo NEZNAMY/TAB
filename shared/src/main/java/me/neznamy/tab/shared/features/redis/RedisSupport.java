@@ -37,7 +37,7 @@ public abstract class RedisSupport extends TabFeature {
     private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
     /** NameTag feature */
-    private final NameTag nameTags = (NameTag) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NAME_TAGS);
+    private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
 
     /**
      * Constructs new instance
@@ -55,7 +55,7 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Returns all players on other proxies
      *
-     * @return    all players on other proxies
+     * @return  all players on other proxies
      */
     public Map<String, RedisPlayer> getRedisPlayers(){
         return redisPlayers;
@@ -64,7 +64,7 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Returns PlayerList feature if it's enabled, {@code null} if disabled
      *
-     * @return    PlayerList feature instance
+     * @return  PlayerList feature instance
      */
     public PlayerList getPlayerList() {
         return playerList;
@@ -73,7 +73,7 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Returns NameTag feature if it's enabled, {@code null} if disabled
      *
-     * @return    NameTag feature instance
+     * @return  NameTag feature instance
      */
     public NameTag getNameTags() {
         return nameTags;
@@ -83,10 +83,10 @@ public abstract class RedisSupport extends TabFeature {
      * Sends a message to all other proxies to update
      * player list formatting of requested player.
      *
-     * @param    p
-     *             Player to update
-     * @param    format
-     *             TabList name format to use
+     * @param   p
+     *          Player to update
+     * @param   format
+     *          TabList name format to use
      */
     public void updateTabFormat(TabPlayer p, String format) {
         JSONObject json = new JSONObject();
@@ -101,12 +101,12 @@ public abstract class RedisSupport extends TabFeature {
      * Sends a message to all other proxies to update
      * NameTag prefix / suffix values of requested player.
      *
-     * @param    p
-     *             Player to update
-     * @param    tagPrefix
-     *             New NameTag prefix
-     * @param    tagSuffix
-     *             New NameTag suffix
+     * @param   p
+     *          Player to update
+     * @param   tagPrefix
+     *          New NameTag prefix
+     * @param   tagSuffix
+     *          New NameTag suffix
      */
     public void updateNameTag(TabPlayer p, String tagPrefix, String tagSuffix) {
         JSONObject json = new JSONObject();
@@ -122,10 +122,10 @@ public abstract class RedisSupport extends TabFeature {
      * Sends a message to all other proxies to update
      * BelowName number of requested player.
      *
-     * @param    p
-     *             Player to update
-     * @param    value
-     *             New BelowName value
+     * @param   p
+     *          Player to update
+     * @param   value
+     *          New BelowName value
      */
     public void updateBelowName(TabPlayer p, String value) {
         JSONObject json = new JSONObject();
@@ -140,10 +140,10 @@ public abstract class RedisSupport extends TabFeature {
      * Sends a message to all other proxies to update
      * yellow number of requested player.
      *
-     * @param    p
-     *             Player to update
-     * @param    value
-     *             New number value
+     * @param   p
+     *          Player to update
+     * @param   value
+     *          New number value
      */
     public void updateYellowNumber(TabPlayer p, String value) {
         JSONObject json = new JSONObject();
@@ -158,10 +158,10 @@ public abstract class RedisSupport extends TabFeature {
      * Sends a message to all other proxies to change
      * team name of requested player.
      *
-     * @param    p
-     *             Player to update
-     * @param    to
-     *             New team name
+     * @param   p
+     *          Player to update
+     * @param   to
+     *          New team name
      */
     public void updateTeamName(TabPlayer p, String to) {
         JSONObject json = new JSONObject();
@@ -175,8 +175,8 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Processes incoming redis message
      *
-     * @param    msg
-     *             json message to process
+     * @param   msg
+     *          json message to process
      */
     public void processMessage(String msg) {
         TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
@@ -289,7 +289,7 @@ public abstract class RedisSupport extends TabFeature {
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         all.sendCustomPacket(target.getUnregisterTeamPacket(), this);
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        all.sendCustomPacket(target.getRemovePacket(), this);
+                        if (!target.getServer().equals(all.getServer())) all.sendCustomPacket(target.getRemovePacket(), this);
                     }
                     redisPlayers.remove(id.toString());
                     break;
@@ -302,8 +302,8 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Processes player join of specified player and sends packets to everyone
      *
-     * @param    target
-     *             player to process join of
+     * @param   target
+     *          player to process join of
      */
     private void join(RedisPlayer target) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -338,8 +338,8 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Sends message to all proxies
      *
-     * @param    message
-     *             message to send
+     * @param   message
+     *          message to send
      */
     public abstract void sendMessage(String message);
 

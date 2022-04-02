@@ -29,15 +29,15 @@ public interface ScoreboardManager {
      * Client can only see up to 15 lines at a time, however you can define
      * more, if some of them only consist of placeholder that might be empty.
      * 
-     * @param    name
-     *             Internal name of the scoreboard
-     * @param    title
-     *             The scoreboard title
-     * @param    lines
-     *             Lines of text in scoreboard (supports placeholders)
-     * @return    The new scoreboard with given parameters
-     * @throws    NullPointerException
-     *             if {@code name} or {@code lines} is {@code null}
+     * @param   name
+     *          Internal name of the scoreboard
+     * @param   title
+     *          The scoreboard title
+     * @param   lines
+     *          Lines of text in scoreboard (supports placeholders)
+     * @return  The new scoreboard with given parameters
+     * @throws  NullPointerException
+     *          if {@code name} or {@code lines} is {@code null}
      */
     Scoreboard createScoreboard(String name, String title, List<String> lines);
     
@@ -47,7 +47,7 @@ public interface ScoreboardManager {
      * or using {@link #createScoreboard(String, String, List)}.
      * Map value is reference to the actual scoreboard.
      * 
-     * @return    map of registered scoreboards
+     * @return  map of registered scoreboards
      */
     Map<String, Scoreboard> getRegisteredScoreboards();
     
@@ -57,14 +57,14 @@ public interface ScoreboardManager {
      * {@link #resetScoreboard(TabPlayer)}. If the player already sees
      * this scoreboard, nothing will happen.
      * 
-     * @param    player
-     *             Player to send scoreboard to
-     * @param    scoreboard
-     *             Scoreboard to display
-     * @throws    NullPointerException
-     *             if {@code player} or {@code scoreboard} is {@code null}
-     * @see        #hasCustomScoreboard(TabPlayer)
-     * @see        #resetScoreboard(TabPlayer)
+     * @param   player
+     *          Player to send scoreboard to
+     * @param   scoreboard
+     *          Scoreboard to display
+     * @throws  NullPointerException
+     *          if {@code player} or {@code scoreboard} is {@code null}
+     * @see     #hasCustomScoreboard(TabPlayer)
+     * @see     #resetScoreboard(TabPlayer)
      */
     void showScoreboard(TabPlayer player, Scoreboard scoreboard);
     
@@ -72,12 +72,12 @@ public interface ScoreboardManager {
      * Returns {@code true} if player has custom scoreboard set using
      * {@link #showScoreboard(TabPlayer, Scoreboard)}, {@code false} if not.
      * 
-     * @param    player
-     *             Player to check
-     * @return    {@code true} if player has custom scoreboard set using API, 
-     *             {@code false} if not
-     * @see        #showScoreboard(TabPlayer, Scoreboard)
-     * @see        #resetScoreboard(TabPlayer)
+     * @param   player
+     *          Player to check
+     * @return  {@code true} if player has custom scoreboard set using API,
+     *          {@code false} if not
+     * @see      #showScoreboard(TabPlayer, Scoreboard)
+     * @see     #resetScoreboard(TabPlayer)
      */
     boolean hasCustomScoreboard(TabPlayer player);
     
@@ -86,10 +86,10 @@ public interface ScoreboardManager {
      * and re-enables internal display logic with conditions. If player does not
      * have any forced scoreboard, nothing happens.
      * 
-     * @param    player
-     *             Player to hide custom scoreboard from
-     * @see        #showScoreboard(TabPlayer, Scoreboard)
-     * @see        #hasCustomScoreboard(TabPlayer)
+     * @param   player
+     *          Player to hide custom scoreboard from
+     * @see     #showScoreboard(TabPlayer, Scoreboard)
+     * @see     #hasCustomScoreboard(TabPlayer)
      */
     void resetScoreboard(TabPlayer player);
     
@@ -99,11 +99,11 @@ public interface ScoreboardManager {
      * {@link #toggleScoreboard(TabPlayer, boolean)} or
      * {@link #setScoreboardVisible(TabPlayer, boolean, boolean)}.
      * 
-     * @param    player
-     *             Player to get visibility status of
-     * @return    {@code true} if visible, {@code false} if disabled
-     * @see        #setScoreboardVisible(TabPlayer, boolean, boolean)
-     * @see        #toggleScoreboard(TabPlayer, boolean)
+     * @param   player
+     *          Player to get visibility status of
+     * @return  {@code true} if visible, {@code false} if disabled
+     * @see     #setScoreboardVisible(TabPlayer, boolean, boolean)
+     * @see     #toggleScoreboard(TabPlayer, boolean)
      */
     boolean hasScoreboardVisible(TabPlayer player);
     
@@ -113,14 +113,14 @@ public interface ScoreboardManager {
      * visibility, scoreboard is toggled. If {@code sendToggleMessage} is {@code true},
      * toggle message defined in configuration is sent.
      * 
-     * @param    player
-     *             Player to set visibility for
-     * @param    visible
-     *             New visibility status
-     * @param    sendToggleMessage
-     *             whether to send toggle message if status changed or not
-     * @see        #toggleScoreboard(TabPlayer, boolean)
-     * @see        #hasScoreboardVisible(TabPlayer)
+     * @param   player
+     *          Player to set visibility for
+     * @param   visible
+     *          New visibility status
+     * @param   sendToggleMessage
+     *          whether to send toggle message if status changed or not
+     * @see     #toggleScoreboard(TabPlayer, boolean)
+     * @see     #hasScoreboardVisible(TabPlayer)
      */
     void setScoreboardVisible(TabPlayer player, boolean visible, boolean sendToggleMessage);
     
@@ -129,12 +129,12 @@ public interface ScoreboardManager {
      * hides it. If hidden, shows it. If {@code sendToggleMessage} is {@code true},
      * toggle message defined in configuration is sent.
      * 
-     * @param    player
-     *             Player to toggle scoreboard for
-     * @param    sendToggleMessage
-     *             Whether to send toggle message or not
-     * @see        #hasScoreboardVisible(TabPlayer)
-     * @see        #setScoreboardVisible(TabPlayer, boolean, boolean)
+     * @param   player
+     *          Player to toggle scoreboard for
+     * @param   sendToggleMessage
+     *          Whether to send toggle message or not
+     * @see     #hasScoreboardVisible(TabPlayer)
+     * @see     #setScoreboardVisible(TabPlayer, boolean, boolean)
      */
     void toggleScoreboard(TabPlayer player, boolean sendToggleMessage);
     
@@ -143,13 +143,13 @@ public interface ScoreboardManager {
      * time (in milliseconds). Scoreboard name is either defined in config, or 
      * through API in {@link #createScoreboard(String, String, List)}.
      * 
-     * @param    scoreboard
-     *             Scoreboard from config or registered via API
-     * @param    duration
-     *             Duration in milliseconds
-     * @throws    IllegalArgumentException
-     *             if no scoreboard was found with such name or {@code duration}
-     *             is &lt; 0.
+     * @param   scoreboard
+     *          Scoreboard from config or registered via API
+     * @param   duration
+     *          Duration in milliseconds
+     * @throws  IllegalArgumentException
+     *          if no scoreboard was found with such name or {@code duration}
+     *          is &lt; 0.
      */
     void announceScoreboard(String scoreboard, int duration);
 
@@ -157,9 +157,10 @@ public interface ScoreboardManager {
      * Returns player's currently displayed scoreboard. This can be either with
      * configuration, overridden with commands or the API. Will return {@code null}
      * if player does not see any scoreboard due to not meeting any display condition.
-     * @param    player
-     *             player to get active scoreboard of
-     * @return    player's active scoreboard or {@code null} if player has no scoreboard
+     *
+     * @param   player
+     *          player to get active scoreboard of
+     * @return  player's active scoreboard or {@code null} if player has no scoreboard
      */
     Scoreboard getActiveScoreboard(TabPlayer player);
 }

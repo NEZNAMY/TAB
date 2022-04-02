@@ -27,14 +27,16 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
     /**
      * Constructs new instance with given parameters.
      *
-     * @param    action
-     *             Packet action (0 = add, 1 = remove, 2 = update title)
-     * @param    objectiveName
-     *             objective name, up to 16 characters long
-     * @param displayName - title
-     * @param renderType - display type
-     * @throws    IllegalArgumentException
-     *             if {@code objectiveName} is null or longer than 16 characters
+     * @param   action
+     *          Packet action (0 = add, 1 = remove, 2 = update title)
+     * @param   objectiveName
+     *          objective name, up to 16 characters long
+     * @param   displayName
+     *          title
+     * @param   renderType
+     *          display type
+     * @throws  IllegalArgumentException
+     *          if {@code objectiveName} is null or longer than 16 characters
      */
     public PacketPlayOutScoreboardObjective(int action, String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
         Preconditions.checkRange(action, 0, 2, "action");
@@ -50,10 +52,10 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
     /**
      * Constructs new packet with given objective name and 1 (unregister) action.
      *
-     * @param    objectiveName
-     *             objective name, up to 16 characters long
-     * @throws    IllegalArgumentException
-     *             if {@code objectiveName} is null or longer than 16 characters
+     * @param   objectiveName
+     *          objective name, up to 16 characters long
+     * @throws  IllegalArgumentException
+     *          if {@code objectiveName} is null or longer than 16 characters
      */
     public PacketPlayOutScoreboardObjective(String objectiveName) {
         Preconditions.checkNotNull(objectiveName, "objective name");
@@ -72,7 +74,8 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 
     /**
      * Returns {@link #displayName}
-     * @return    displayName
+     *
+     * @return  displayName
      */
     public String getDisplayName() {
         return displayName;
@@ -80,7 +83,8 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 
     /**
      * Returns {@link #objectiveName}
-     * @return    objectiveName
+     *
+     * @return  objectiveName
      */
     public String getObjectiveName() {
         return objectiveName;
@@ -88,7 +92,8 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 
     /**
      * Returns {@link #renderType}
-     * @return    renderType
+     *
+     * @return  renderType
      */
     public EnumScoreboardHealthDisplay getRenderType() {
         return renderType;
@@ -96,7 +101,8 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
 
     /**
      * Returns {@link #action}
-     * @return    packet action
+     *
+     * @return  packet action
      */
     public int getAction() {
         return action;

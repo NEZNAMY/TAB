@@ -22,12 +22,12 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     /**
      * Constructs new instance with given parameters
      *
-     * @param    identifier
-     *             placeholder's identifier, must start and end with %
-     * @param    refresh
-     *             refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
-     * @param    supplier
-     *             supplier returning fresh output on request
+     * @param   identifier
+     *          placeholder's identifier, must start and end with %
+     * @param   refresh
+     *          refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
+     * @param   supplier
+     *          supplier returning fresh output on request
      */
     public ServerPlaceholderImpl(String identifier, int refresh, Supplier<Object> supplier) {
         super(identifier, refresh);
@@ -39,7 +39,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     /**
      * Updates placeholder, saves it and returns true if value changed, false if not
      *
-     * @return    true if value changed, false if not
+     * @return  true if value changed, false if not
      */
     public boolean update() {
         String obj = getReplacements().findReplacement(String.valueOf(request()));
@@ -53,6 +53,8 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
+                if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
+                    TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
             }
             return true;
         }
@@ -64,10 +66,10 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      * features using the placeholder will refresh despite placeholder seemingly not
      * changing output, which is caused by nested placeholder changing value.
      *
-     * @param    value
-     *             new placeholder output
-     * @param    force
-     *             whether refreshing should be forced or not
+     * @param   value
+     *          new placeholder output
+     * @param   force
+     *          whether refreshing should be forced or not
      */
     private void updateValue(Object value, boolean force) {
         String s = getReplacements().findReplacement(value == null ? lastValue == null ? identifier : lastValue : value.toString());
@@ -82,6 +84,8 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
                 TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
             }
             updateParents(player);
+            if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
+                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
         }
     }
 
@@ -92,6 +96,11 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
     @Override
     public String getLastValue(TabPlayer p) {
+        return lastValue;
+    }
+
+    @Override
+    public String getLastValue() {
         return lastValue;
     }
 

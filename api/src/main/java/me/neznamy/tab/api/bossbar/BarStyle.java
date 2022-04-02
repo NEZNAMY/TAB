@@ -19,8 +19,8 @@ public enum BarStyle {
     /**
      * Initializes enum constant with given bukkit name
      *
-     * @param     bukkitName
-     *             Name of color to be returned in {@code getBukkitName()}
+     * @param   bukkitName
+     *          Name of color to be returned in {@code getBukkitName()}
      */
     BarStyle(String bukkitName){
         this.bukkitName = bukkitName;
@@ -28,7 +28,7 @@ public enum BarStyle {
 
     /**
      * Returns name of this style in Bukkit API
-     * @return    name of this style in Bukkit API
+     * @return  name of this style in Bukkit API
      */
     public String getBukkitName() {
         return bukkitName;

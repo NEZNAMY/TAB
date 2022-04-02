@@ -26,13 +26,13 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     @Override
     public void setProperty(String user, String property, String server, String world, String value) {
         TabPlayer p = getPlayer(user);
-        user = user.toLowerCase();
+        String lowercaseUser = user.toLowerCase();
         try {
-            if (getProperty(user, property, server, world) != null) {
-                mysql.execute("delete from `tab_users` where `user` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", user, property, world, server);
+            if (getProperty(lowercaseUser, property, server, world) != null) {
+                mysql.execute("delete from `tab_users` where `user` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", lowercaseUser, property, world, server);
             }
             if (p != null) setProperty0(p, property, server, world, value);
-            if (value != null) mysql.execute("insert into `tab_users` (`user`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", user, property, value, world, server);
+            if (value != null) mysql.execute("insert into `tab_users` (`user`, `property`, `value`, `world`, `server`) values (?, ?, ?, ?, ?)", lowercaseUser, property, value, world, server);
         } catch (SQLException e) {
             TAB.getInstance().getErrorManager().printError("Failed to execute MySQL query", e);
         }

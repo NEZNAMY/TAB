@@ -61,7 +61,8 @@ public class Main extends JavaPlugin {
      * Initializes all used NMS classes, constructors, fields and methods.
      * Returns {@code true} if everything went successfully and version is marked as compatible,
      * {@code false} if anything went wrong or version is not marked as compatible.
-     * @return    {@code true} if server version is compatible, {@code false} if not
+     *
+     * @return  {@code true} if server version is compatible, {@code false} if not
      */
     private boolean isVersionSupported(){
         List<String> supportedVersions = Arrays.asList(

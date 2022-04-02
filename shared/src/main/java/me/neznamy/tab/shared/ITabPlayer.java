@@ -8,9 +8,11 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.NickCompatibility;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -78,18 +80,18 @@ public abstract class ITabPlayer implements TabPlayer {
     /**
      * Constructs new instance with given parameters
      *
-     * @param    player
-     *             platform-specific player object
-     * @param    uniqueId
-     *             Player's unique ID
-     * @param    name
-     *             Player's name
-     * @param    server
-     *             Player's server
-     * @param    world
-     *             Player's world
-     * @param    protocolVersion
-     *             Player's game version
+     * @param   player
+     *          platform-specific player object
+     * @param   uniqueId
+     *          Player's unique ID
+     * @param   name
+     *          Player's name
+     * @param   server
+     *          Player's server
+     * @param   world
+     *          Player's world
+     * @param   protocolVersion
+     *          Player's game version
      */
     protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion) {
         this.player = player;
@@ -99,24 +101,23 @@ public abstract class ITabPlayer implements TabPlayer {
         this.world = world;
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
         this.bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
-        String group = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
-        permissionGroup = group != null ? group : TabConstants.DEFAULT_GROUP;
+        this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
     }
 
     /**
      * Sets player's property with provided key to provided value. If it existed,
      * the raw value is changed. If it did not exist, it is created.
      *
-     * @param    feature
-     *             Feature creating the property
-     * @param    identifier
-     *             Property's unique identifier
-     * @param    rawValue
-     *             Raw value with raw placeholders
-     * @param    source
-     *             Source of raw value
-     * @return    {@code true} if property did not exist or existed with different raw value,
-     *             {@code false} if property existed with the same raw value already.
+     * @param   feature
+     *          Feature creating the property
+     * @param   identifier
+     *          Property's unique identifier
+     * @param   rawValue
+     *          Raw value with raw placeholders
+     * @param   source
+     *          Source of raw value
+     * @return  {@code true} if property did not exist or existed with different raw value,
+     *          {@code false} if property existed with the same raw value already.
      */
     private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source, boolean exposeInExpansion) {
         DynamicText p = (DynamicText) getProperty(identifier);
@@ -135,8 +136,8 @@ public abstract class ITabPlayer implements TabPlayer {
     /**
      * Sets team name to given value
      *
-     * @param    name
-     *             Team name to use
+     * @param   name
+     *          Team name to use
      */
     public void setTeamName(String name) {
         teamName = name;
@@ -145,8 +146,8 @@ public abstract class ITabPlayer implements TabPlayer {
     /**
      * Sets team name note to given value
      *
-     * @param    note
-     *             New team name note
+     * @param   note
+     *          New team name note
      */
     public void setTeamNameNote(String note) {
         teamNameNote = note;
@@ -155,8 +156,8 @@ public abstract class ITabPlayer implements TabPlayer {
     /**
      * Marks the player as loaded and calls PlayerLoadEvent
      *
-     * @param    join
-     *             {@code true} if this is a player join, {@code false} if reload
+     * @param   join
+     *          {@code true} if this is a player join, {@code false} if reload
      */
     public void markAsLoaded(boolean join) {
         onJoinFinished = true;
@@ -167,24 +168,22 @@ public abstract class ITabPlayer implements TabPlayer {
     /**
      * Changes player's group to provided value and all features are refreshed.
      *
-     * @param    permissionGroup
-     *             New permission group
+     * @param   permissionGroup
+     *          New permission group
      */
     public void setGroup(String permissionGroup) {
+        Preconditions.checkNotNull(permissionGroup, "permissionGroup");
         if (this.permissionGroup.equals(permissionGroup)) return;
-        if (permissionGroup != null) {
-            this.permissionGroup = permissionGroup;
-        } else {
-            this.permissionGroup = TabConstants.DEFAULT_GROUP;
-        }
+        this.permissionGroup = permissionGroup;
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(this, permissionGroup);
         forceRefresh();
     }
 
     /**
      * Sets player's world to given value
      *
-     * @param    name
-     *             Name of the new world
+     * @param   name
+     *          Name of the new world
      */
     public void setWorld(String name) {
         world = name;
@@ -193,8 +192,8 @@ public abstract class ITabPlayer implements TabPlayer {
     /**
      * Sets player's server to given value
      *
-     * @param    name
-     *             Name of the new server
+     * @param   name
+     *          Name of the new server
      */
     public void setServer(String name) {
         server = name;

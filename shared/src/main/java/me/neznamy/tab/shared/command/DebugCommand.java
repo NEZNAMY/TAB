@@ -43,8 +43,11 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Performs debug on player and displays output
-     * @param sender - command sender or null if console
-     * @param analyzed - player to be analyzed
+     *
+     * @param   sender
+     *          command sender or null if console
+     * @param   analyzed
+     *          player to be analyzed
      */
     private void debug(TabPlayer sender, TabPlayer analyzed) {
         TAB tab = TAB.getInstance();
@@ -89,7 +92,8 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Returns group choice logic
-     * @return group choice logic
+     *
+     * @return  group choice logic
      */
     private String getGroupChoiceLogic() {
         if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
@@ -101,7 +105,8 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Returns sorting type
-     * @return sorting type
+     *
+     * @return  sorting type
      */
     private String getSortingType() {
         NameTag nametag = (NameTag) TAB.getInstance().getTeamManager();
@@ -114,8 +119,10 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Returns all info about player's group
-     * @param analyzed - player to check group of
-     * @return all info about player's group
+     *
+     * @param   analyzed
+     *          player to check group of
+     * @return  all info about player's group
      */
     private String getGroup(TabPlayer analyzed) {
         if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
@@ -126,8 +133,10 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Returns team name of specified player
-     * @param analyzed - player to get team name of
-     * @return team name of specified player
+     *
+     * @param   analyzed
+     *          player to get team name of
+     * @return  team name of specified player
      */
     private String getTeamName(TabPlayer analyzed) {
         if (TAB.getInstance().getTeamManager() != null) {
@@ -143,8 +152,10 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Returns team name note of specified player
-     * @param analyzed - player to get team name note of
-     * @return team name note of specified player
+     *
+     * @param   analyzed
+     *          player to get team name note of
+     * @return  team name note of specified player
      */
     private String getTeamNameNote(TabPlayer analyzed) {
         if (TAB.getInstance().getTeamManager() != null &&
@@ -156,7 +167,8 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Returns list of extra properties if unlimited nametag mode is enabled
-     * @return list of extra properties
+     *
+     * @return  list of extra properties
      */
     public List<String> getExtraLines(){
         if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) return new ArrayList<>();
@@ -170,10 +182,15 @@ public class DebugCommand extends SubCommand {
 
     /**
      * Shows value and source of player's property
-     * @param sender - command sender or null if console
-     * @param analyzed - analyzed player
-     * @param property - property name
-     * @param disabled - if feature the property belongs to is disabled or not
+     *
+     * @param   sender
+     *          command sender or null if console
+     * @param   analyzed
+     *          analyzed player
+     * @param   property
+     *          property name
+     * @param   disabled
+     *          if feature the property belongs to is disabled or not
      */
     private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
         if (disabled) {

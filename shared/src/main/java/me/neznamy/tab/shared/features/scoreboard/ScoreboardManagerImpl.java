@@ -133,7 +133,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     /**
      * Sends the player scoreboard he should see according to conditions and worlds
-     * @param p - player to send scoreboard to
+     *
+     * @param   p
+     *          player to send scoreboard to
      */
     public void sendHighestScoreboard(TabPlayer p) {
         if (isDisabledPlayer(p) || !hasScoreboardVisible(p)) return;
@@ -151,7 +153,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     /**
      * Removes this player from registered users in scoreboard and sends unregister packets if set
-     * @param p - player to unregister scoreboard to
+     *
+     * @param   p
+     *          player to unregister scoreboard to
      */
     public void unregisterScoreboard(TabPlayer p) {
         if (activeScoreboard.containsKey(p)) {
@@ -191,8 +195,10 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     /**
      * Returns currently the highest scoreboard in chain for specified player
-     * @param p - player to check
-     * @return highest scoreboard player should see
+     *
+     * @param   p
+     *          player to check
+     * @return  highest scoreboard player should see
      */
     public Scoreboard detectHighestScoreboard(TabPlayer p) {
         if (forcedScoreboard.containsKey(p)) return forcedScoreboard.get(p);
@@ -217,8 +223,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         if (respectOtherPlugins && packet.getSlot() == DISPLAY_SLOT && !packet.getObjectiveName().equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + packet.getObjectiveName() + ", hiding TAB one.");
             otherPluginScoreboard.put(receiver, packet.getObjectiveName());
-            if (activeScoreboard.containsKey(receiver)) {
-                TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> activeScoreboard.get(receiver).removePlayer(receiver));
+            ScoreboardImpl sb = activeScoreboard.get(receiver);
+            if (sb != null) {
+                TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.SCOREBOARD_PACKET_CHECK, () -> sb.removePlayer(receiver));
             }
         }
     }

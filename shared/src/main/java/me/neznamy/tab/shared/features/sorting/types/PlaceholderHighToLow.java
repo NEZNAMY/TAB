@@ -11,7 +11,9 @@ public class PlaceholderHighToLow extends SortingType {
 
     /**
      * Constructs new instance with given parameter
-     * @param sortingPlaceholder - placeholder to sort by
+     *
+     * @param   sortingPlaceholder
+     *          placeholder to sort by
      */
     public PlaceholderHighToLow(Sorting sorting, String sortingPlaceholder) {
         super(sorting, sortingPlaceholder);

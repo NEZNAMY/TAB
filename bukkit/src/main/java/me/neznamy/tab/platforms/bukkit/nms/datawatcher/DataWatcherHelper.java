@@ -25,7 +25,9 @@ public class DataWatcherHelper {
 
     /**
      * Constructs new instance of this class with given parent
-     * @param data - data to write to
+     *
+     * @param   data
+     *          data to write to
      */
     public DataWatcherHelper(DataWatcher data) {
         Preconditions.checkNotNull(data, "dataWatcher");
@@ -35,7 +37,8 @@ public class DataWatcherHelper {
 
     /**
      * Returns armor stand flags position based on server version
-     * @return armor stand flags position based on server version
+     *
+     * @return  armor stand flags position based on server version
      */
     private int getArmorStandFlagsPosition() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 17) {
@@ -58,7 +61,9 @@ public class DataWatcherHelper {
 
     /**
      * Writes entity byte flags
-     * @param flags - flags to write
+     *
+     * @param   flags
+     *          flags to write
      */
     public void setEntityFlags(byte flags) {
         data.setValue(new DataWatcherObject(0, registry.getByte()), flags);
@@ -66,8 +71,11 @@ public class DataWatcherHelper {
 
     /**
      * Writes entity custom name with position based on server version and value depending on client version (RGB or not)
-     * @param customName - target custom name
-     * @param clientVersion - client version
+     *
+     * @param   customName
+     *          target custom name
+     * @param   clientVersion
+     *          client version
      */
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
         Preconditions.checkNotNull(customName, "customName");
@@ -94,7 +102,9 @@ public class DataWatcherHelper {
 
     /**
      * Writes custom name visibility boolean
-     * @param visible - if visible or not
+     *
+     * @param   visible
+     *          if visible or not
      */
     public void setCustomNameVisible(boolean visible) {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
@@ -106,7 +116,9 @@ public class DataWatcherHelper {
 
     /**
      * Writes entity health
-     * @param health - health of entity
+     *
+     * @param   health
+     *          health of entity
      */
     public void setHealth(float health) {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
@@ -118,7 +130,9 @@ public class DataWatcherHelper {
 
     /**
      * Writes armor stand flags
-     * @param flags - flags to write
+     *
+     * @param   flags
+     *          flags to write
      */
     public void setArmorStandFlags(byte flags) {
         data.setValue(new DataWatcherObject(armorStandFlagsPosition, registry.getByte()), flags);

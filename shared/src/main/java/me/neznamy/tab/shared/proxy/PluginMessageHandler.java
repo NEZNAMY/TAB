@@ -13,10 +13,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Universal interface for proxy to manage plugin messages
@@ -26,17 +23,16 @@ public class PluginMessageHandler {
     /**
      * Handles incoming plugin message with tab's channel name
      *
-     * @param    uuid
-     *             plugin message receiver
-     * @param    bytes
-     *             incoming message
+     * @param   uuid
+     *          plugin message receiver
+     * @param   bytes
+     *          incoming message
      */
     public void onPluginMessage(UUID uuid, byte[] bytes) {
-        if (TAB.getInstance().isDisabled()) return; //reload in progress
-        ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
-        if (player == null) return;
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
+                    ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
+                    if (player == null) return;
                     ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
                     String subChannel = in.readUTF();
                     if ("Placeholder".equals(subChannel)){
@@ -72,7 +68,8 @@ public class PluginMessageHandler {
                     }
                     if ("PlayerJoinResponse".equals(subChannel)) {
                         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
-                        if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge) player.setGroup(in.readUTF());
+                        if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge &&
+                            !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
                         int placeholderCount = in.readInt();
                         for (int i=0; i<placeholderCount; i++) {
                             String identifier = in.readUTF();
@@ -105,10 +102,10 @@ public class PluginMessageHandler {
     /**
      * Sends plugin message to specified player
      *
-     * @param    player
-     *             Player to send plugin message to
-     * @param    args
-     *             Messages to encode
+     * @param   player
+     *          Player to send plugin message to
+     * @param   args
+     *          Messages to encode
      */
     public void sendMessage(TabPlayer player, Object... args) {
 //        System.out.println(player.getName() + ": " + Arrays.toString(args));
@@ -123,10 +120,10 @@ public class PluginMessageHandler {
      * Writes object to data input by calling proper write method
      * based on data type of the object.
      *
-     * @param    out
-     *             Data output to write to
-     * @param    value
-     *             Value to write
+     * @param   out
+     *          Data output to write to
+     * @param   value
+     *          Value to write
      */
     private void writeObject(ByteArrayDataOutput out, Object value) {
         Preconditions.checkNotNull(value, "value to write");

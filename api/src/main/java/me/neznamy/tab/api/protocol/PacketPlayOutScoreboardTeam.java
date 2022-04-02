@@ -72,13 +72,13 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
      * Constructs new instance with given parameters. Private constructor used
      * internally to validate team name and set action.
      * 
-     * @param    action
-     *             Packet action (0 = create team, 1 = remove team, 2 = update team info,
-     *             3 = add entries, 4 = remove entries)
-     * @param    name
-     *             Team name, up to 16 characters long
-     * @throws    IllegalArgumentException
-     *             if {@code name} is null, empty or longer than 16 characters
+     * @param   action
+     *          Packet action (0 = create team, 1 = remove team, 2 = update team info,
+     *          3 = add entries, 4 = remove entries)
+     * @param   name
+     *          Team name, up to 16 characters long
+     * @throws  IllegalArgumentException
+     *          if {@code name} is null, empty or longer than 16 characters
      */
     private PacketPlayOutScoreboardTeam(int action, String name) {
         Preconditions.checkNotNull(name, "team name");
@@ -90,22 +90,22 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     /**
      * Constructs new instance with given parameters and 0 (CREATE) action
      * 
-     * @param    team
-     *             Team name, up to 16 characters long
-     * @param    prefix
-     *             Prefix of players in team
-     * @param    suffix
-     *             Suffix of players in team
-     * @param    visibility
-     *             NameTag visibility rule
-     * @param    collision
-     *             Collision rule
-     * @param    players
-     *             Affected entities
-     * @param    options
-     *             bitmask of team options
-     * @throws    IllegalArgumentException
-     *             if {@code name} is null, empty or longer than 16 characters
+     * @param   team
+     *          Team name, up to 16 characters long
+     * @param   prefix
+     *          Prefix of players in team
+     * @param   suffix
+     *          Suffix of players in team
+     * @param   visibility
+     *          NameTag visibility rule
+     * @param   collision
+     *          Collision rule
+     * @param   players
+     *          Affected entities
+     * @param   options
+     *          bitmask of team options
+     * @throws  IllegalArgumentException
+     *          if {@code name} is null, empty or longer than 16 characters
      */
     public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
         this(0, team);
@@ -125,10 +125,10 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     /**
      * Constructs new instance with given parameters and 1 (REMOVE) action
      * 
-     * @param    team
-     *             Team name, up to 16 characters long
-     * @throws    IllegalArgumentException
-     *             if {@code name} is null, empty or longer than 16 characters
+     * @param   team
+     *          Team name, up to 16 characters long
+     * @throws  IllegalArgumentException
+     *          if {@code name} is null, empty or longer than 16 characters
      */
     public PacketPlayOutScoreboardTeam(String team) {
         this(1, team);
@@ -137,20 +137,20 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     /**
      * Constructs new instance with given parameters and 2 (UPDATE_TEAM_INFO) action
      * 
-     * @param    team
-     *             Team name, up to 16 characters long
-     * @param    prefix
-     *             Prefix of players in team
-     * @param    suffix
-     *             Suffix of players in team
-     * @param    visibility
-     *             NameTag visibility rule
-     * @param    collision
-     *             Collision rule
-     * @param    options
-     *             bitmask of team options
-     * @throws    IllegalArgumentException
-     *             if {@code name} is null, empty or longer than 16 characters
+     * @param   team
+     *          Team name, up to 16 characters long
+     * @param   prefix
+     *          Prefix of players in team
+     * @param   suffix
+     *          Suffix of players in team
+     * @param   visibility
+     *          NameTag visibility rule
+     * @param   collision
+     *          Collision rule
+     * @param   options
+     *          bitmask of team options
+     * @throws  IllegalArgumentException
+     *          if {@code name} is null, empty or longer than 16 characters
      */
     public PacketPlayOutScoreboardTeam(String team, String prefix, String suffix, String visibility, String collision, int options) {
         this(2, team);
@@ -170,14 +170,14 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
      * Constructs new instance with given parameters and 3 (ADD_PLAYERS) if {@code add} is {@code true}, 
      * 4 (REMOVE_PLAYERS) if {@code add} is {@code false} action.
      * 
-     * @param    team
-     *             Team name, up to 16 characters long
-     * @param    players
-     *             Affected entities
-     * @param    add
-     *             {@code true} if players should be added, {@code false} if removed from team
-     * @throws    IllegalArgumentException
-     *             if {@code name} is null, empty or longer than 16 characters
+     * @param   team
+     *          Team name, up to 16 characters long
+     * @param   players
+     *          Affected entities
+     * @param   add
+     *          {@code true} if players should be added, {@code false} if removed from team
+     * @throws  IllegalArgumentException
+     *          if {@code name} is null, empty or longer than 16 characters
      */
     public PacketPlayOutScoreboardTeam(String team, Collection<String> players, boolean add) {
         this(add ? 3 : 4, team);
@@ -194,7 +194,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #name}
-     * @return    team name
+     *
+     * @return  team name
      */
     public String getName() {
         return name;
@@ -202,7 +203,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #playerPrefix}
-     * @return    playerPrefix
+     *
+     * @return  playerPrefix
      */
     public String getPlayerPrefix() {
         return playerPrefix;
@@ -210,7 +212,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #playerSuffix}
-     * @return    playerSuffix
+     *
+     * @return  playerSuffix
      */
     public String getPlayerSuffix() {
         return playerSuffix;
@@ -218,7 +221,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #nameTagVisibility}
-     * @return    nameTagVisibility
+     *
+     * @return  nameTagVisibility
      */
     public String getNameTagVisibility() {
         return nameTagVisibility;
@@ -226,7 +230,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     
     /**
      * Returns {@link #collisionRule}
-     * @return    collisionRule
+     *
+     * @return  collisionRule
      */
     public String getCollisionRule() {
         return collisionRule;
@@ -235,8 +240,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     /**
      * Sets {@link #color} to specified color
      * 
-     * @param    color
-     *             color to use
+     * @param   color
+     *          color to use
      */
     public void setColor(EnumChatFormat color) {
         this.color = color;
@@ -244,7 +249,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #color}
-     * @return    color
+     *
+     * @return  color
      */
     public EnumChatFormat getColor() {
         return color;
@@ -252,7 +258,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #players}
-     * @return    players
+     *
+     * @return  players
      */
     public Collection<String> getPlayers() {
         return players;
@@ -260,7 +267,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /**
      * Returns {@link #options}
-     * @return    team options
+     *
+     * @return  team options
      */
     public int getOptions() {
         return options;
@@ -268,7 +276,8 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     
     /**
      * Returns {@link #action}
-     * @return    packet action
+     *
+     * @return  packet action
      */
     public int getAction() {
         return action;

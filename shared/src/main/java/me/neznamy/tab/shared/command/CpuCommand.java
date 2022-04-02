@@ -145,8 +145,10 @@ public class CpuCommand extends SubCommand {
 
     /**
      * Returns colored usage from provided usage
-     * @param usage - usage
-     * @return colored usage
+     *
+     * @param   usage
+     *          usage
+     * @return  colored usage
      */
     private String colorize(String usage, float threshold1, float threshold2) {
         float percent = Float.parseFloat(usage.replace(",", "."));

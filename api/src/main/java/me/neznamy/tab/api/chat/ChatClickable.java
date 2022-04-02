@@ -15,12 +15,13 @@ public class ChatClickable {
 
     /**
      * Constructs new instance with given action and value.
-     * @param    action
-     *             click event action
-     * @param    value
-     *             click event value
-     * @throws    IllegalArgumentException
-     *             if {@code action} is null or {@code value} is null
+     *
+     * @param   action
+     *          click event action
+     * @param   value
+     *          click event value
+     * @throws  IllegalArgumentException
+     *          if {@code action} is null or {@code value} is null
      */
     public ChatClickable(EnumClickAction action, String value) {
         Preconditions.checkNotNull(action, "hover action");
@@ -31,7 +32,8 @@ public class ChatClickable {
 
     /**
      * Returns click action defined in constructor
-     * @return    click action
+     *
+     * @return  click action
      */
     public EnumClickAction getAction() {
         return action;
@@ -39,7 +41,8 @@ public class ChatClickable {
 
     /**
      * Returns click action defined in constructor
-     * @return    click action
+     *
+     * @return  click action
      */
     public String getValue() {
         return value;

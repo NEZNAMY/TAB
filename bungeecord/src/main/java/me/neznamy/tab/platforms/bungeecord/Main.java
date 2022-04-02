@@ -41,7 +41,8 @@ public class Main extends Plugin {
 
     /**
      * Checks for compatibility and returns true if version is supported, false if not
-     * @return true if version is compatible, false if not
+     *
+     * @return  true if version is compatible, false if not
      */
     private boolean isVersionSupported() {
         try {

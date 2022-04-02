@@ -39,8 +39,9 @@ public class IChatBaseComponent {
     
     /**
      * Constructs a new component which is a clone of provided component
-     * @param    component
-     *             component to clone
+     *
+     * @param   component
+     *          component to clone
      */
     public IChatBaseComponent(IChatBaseComponent component) {
         Preconditions.checkNotNull(component, "component");
@@ -53,8 +54,9 @@ public class IChatBaseComponent {
 
     /**
      * Constructs new instance with given text
-     * @param    text
-     *             text to display
+     *
+     * @param   text
+     *          text to display
      */
     public IChatBaseComponent(String text) {
         this.text = text;
@@ -62,7 +64,8 @@ public class IChatBaseComponent {
 
     /**
      * Returns list of extra components. If no extra components are defined, returns empty list.
-     * @return    list of extra components
+     *
+     * @return  list of extra components
      */
     public List<IChatBaseComponent> getExtra(){
         if (extra == null) return Collections.emptyList();
@@ -71,11 +74,12 @@ public class IChatBaseComponent {
 
     /**
      * Sets full list of extra components to given list. Does not allow empty list.
-     * @param    components
-     *             components to use as extra
-     * @return    self
-     * @throws    IllegalArgumentException
-     *             if {@code components} is an empty list
+     *
+     * @param   components
+     *          components to use as extra
+     * @return  self
+     * @throws  IllegalArgumentException
+     *          if {@code components} is an empty list
      */
     public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
         if (components.isEmpty()) throw new IllegalArgumentException("Unexpected empty array of components"); //exception taken from minecraft
@@ -85,8 +89,9 @@ public class IChatBaseComponent {
 
     /**
      * Appends provided component as extra component
-     * @param    child
-     *            component to append
+     *
+     * @param   child
+     *          component to append
      */
     public void addExtra(IChatBaseComponent child) {
         Preconditions.checkNotNull(child, "extra");
@@ -96,7 +101,8 @@ public class IChatBaseComponent {
 
     /**
      * Returns text of this component
-     * @return    text of this component
+     *
+     * @return  text of this component
      */
     public String getText() {
         return text;
@@ -104,7 +110,8 @@ public class IChatBaseComponent {
 
     /**
      * Returns chat modifier of this component
-     * @return    chat modifier of this component
+     *
+     * @return  chat modifier of this component
      */
     public ChatModifier getModifier() {
         return modifier;
@@ -112,10 +119,11 @@ public class IChatBaseComponent {
 
     /**
      * Sets modifier to provided value
-     * @param    modifier
-     *             modifier to set value to
-     * @throws    IllegalArgumentException
-     *             if {@code modifier} is null
+     *
+     * @param   modifier
+     *          modifier to set value to
+     * @throws  IllegalArgumentException
+     *          if {@code modifier} is null
      */
     public void setModifier(ChatModifier modifier) {
         Preconditions.checkNotNull(modifier, "modifier");
@@ -124,8 +132,9 @@ public class IChatBaseComponent {
 
     /**
      * Changes text of this component
-     * @param    text
-     *             text to show
+     *
+     * @param   text
+     *          text to show
      */
     public void setText(String text) {
         this.text = text;
@@ -133,9 +142,10 @@ public class IChatBaseComponent {
 
     /**
      * Deserializes string and returns created component. If provided string is null, returns null.
-     * @param    json
-     *             serialized string
-     * @return    Deserialized component or null if input is null
+     *
+     * @param   json
+     *          serialized string
+     * @return  Deserialized component or null if input is null
      */
     public static IChatBaseComponent deserialize(String json) {
         if (json == null) return null;
@@ -146,8 +156,9 @@ public class IChatBaseComponent {
      * Converts the component to a string representing the serialized component.
      * This method is only used internally by json library since it's missing
      * protocol version field used by the method.
-     * @return    serialized component in string form
-     * @see #toString(ProtocolVersion)
+     *
+     * @return  serialized component in string form
+     * @see     #toString(ProtocolVersion)
      */
     @Override
     public String toString() {
@@ -162,9 +173,10 @@ public class IChatBaseComponent {
     /**
      * Serializes this component with colors based on client version.
      * If client version is &lt;1.16, HEX colors will be converted to legacy colors.
-     * @param    clientVersion
-     *             client version to adapt component for
-     * @return    serialized string
+     *
+     * @param   clientVersion
+     *          client version to adapt component for
+     * @return  serialized string
      */
     public String toString(ProtocolVersion clientVersion) {
         return toString(clientVersion, false);
@@ -173,11 +185,12 @@ public class IChatBaseComponent {
     /**
      * Serializes this component with colors based on client version.
      * If client version is &lt;1.16, HEX colors will be converted to legacy colors.
-     * @param    clientVersion
-     *             client version to adapt component for
-     * @param    sendTranslatableIfEmpty
-     *             whether empty translatable should be sent if text is empty or not
-     * @return    serialized string
+     *
+     * @param   clientVersion
+     *          client version to adapt component for
+     * @param   sendTranslatableIfEmpty
+     *          whether empty translatable should be sent if text is empty or not
+     * @return  serialized string
      */
     public String toString(ProtocolVersion clientVersion, boolean sendTranslatableIfEmpty) {
         if (extra == null) {
@@ -211,9 +224,10 @@ public class IChatBaseComponent {
 
     /**
      * Returns organized component from colored text
-     * @param    originalText
-     *             text to convert
-     * @return    organized component from colored text
+     *
+     * @param   originalText
+     *          text to convert
+     * @return  organized component from colored text
      */
     public static IChatBaseComponent fromColoredText(String originalText){
         Preconditions.checkNotNull(originalText, "text");
@@ -299,11 +313,12 @@ public class IChatBaseComponent {
 
     /**
      * Returns true if text contains legacy color request at defined RGB index start
-     * @param    text
-     *             text to check
-     * @param    i
-     *             current index start
-     * @return    true if legacy color is defined, false if not
+     *
+     * @param   text
+     *          text to check
+     * @param   i
+     *          current index start
+     * @return  true if legacy color is defined, false if not
      */
     private static boolean containsLegacyCode(String text, int i) {
         if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
@@ -312,7 +327,8 @@ public class IChatBaseComponent {
 
     /**
      * Converts this component into a simple text with legacy colors (the closest match if color is set to RGB)
-     * @return    The simple text format
+     *
+     * @return  The simple text format
      */
     public String toLegacyText() {
         StringBuilder builder = new StringBuilder();
@@ -323,11 +339,12 @@ public class IChatBaseComponent {
     /**
      * Appends text to string builder, might also add color and magic codes if they are different
      * from previous component in chain.
-     * @param    builder
-     *             builder to append text to
-     * @param    previousFormatting
-     *             colors and magic codes in previous component
-     * @return    wew formatting, might be identical to previous one
+     *
+     * @param   builder
+     *          builder to append text to
+     * @param   previousFormatting
+     *          colors and magic codes in previous component
+     * @return  new formatting, might be identical to previous one
      */
     private String append(StringBuilder builder, String previousFormatting) {
         String formatting = previousFormatting;
@@ -347,7 +364,8 @@ public class IChatBaseComponent {
 
     /**
      * Returns colors and magic codes of this component
-     * @return    used colors and magic codes
+     *
+     * @return  used colors and magic codes
      */
     private String getFormatting() {
         StringBuilder builder = new StringBuilder();
@@ -365,7 +383,8 @@ public class IChatBaseComponent {
 
     /**
      * Returns raw text without colors, only works correctly when component is organized
-     * @return    raw text in this component and all child components
+     *
+     * @return  raw text in this component and all child components
      */
     public String toRawText() {
         StringBuilder builder = new StringBuilder();
@@ -378,7 +397,8 @@ public class IChatBaseComponent {
 
     /**
      * Converts the component into flat text with used colors (including rgb) and magic codes
-     * @return    converted text
+     *
+     * @return  converted text
      */
     public String toFlatText() {
         StringBuilder builder = new StringBuilder();
@@ -395,9 +415,10 @@ public class IChatBaseComponent {
      * Returns the most optimized component based on text. Returns null if text is null,
      * organized component if RGB colors are used or simple component with only text field
      * containing the whole text when no RGB colors are used
-     * @param    text
-     *             text to create component from
-     * @return    The most performance-optimized component based on text
+     *
+     * @param   text
+     *          text to create component from
+     * @return  The most performance-optimized component based on text
      */
     public static IChatBaseComponent optimizedComponent(String text){
         if (text == null) return null;

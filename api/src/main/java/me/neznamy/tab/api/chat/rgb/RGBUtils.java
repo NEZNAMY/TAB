@@ -63,7 +63,8 @@ public class RGBUtils {
 
     /**
      * Returns instance of this class
-     * @return    instance
+     *
+     * @return  instance
      */
     public static RGBUtils getInstance() {
         return instance;
@@ -74,11 +75,12 @@ public class RGBUtils {
      * This method is called on every property initialization to convert formats
      * once instead of on every refresh, if possible. Because of that, parameter
      * {@code ignorePlaceholders} exists to not break raw placeholder identifiers
-     * @param    text
-     *             original text
-     * @param    ignorePlaceholders
-     *             whether placeholders should be ignored or not
-     * @return    text where everything is converted to #RRGGBB
+     *
+     * @param   text
+     *          original text
+     * @param   ignorePlaceholders
+     *          whether placeholders should be ignored or not
+     * @return  text where everything is converted to #RRGGBB
      */
     public String applyFormats(String text, boolean ignorePlaceholders) {
         Preconditions.checkNotNull(text, "text");
@@ -96,11 +98,12 @@ public class RGBUtils {
      * Converts TAB's RGB format (#RRGGBB) into bukkit one
      * (&amp;x&amp;r&amp;r&amp;g&amp;g&amp;b&amp;b) for modern
      * clients (1.16+), for legacy clients it will use the closest color.
-     * @param    text
-     *             text to convert
-     * @param    rgbClient
-     *             whether client accepts RGB or not
-     * @return    converted text
+     *
+     * @param   text
+     *          text to convert
+     * @param   rgbClient
+     *          whether client accepts RGB or not
+     * @return  converted text
      */
     public String convertToBukkitFormat(String text, boolean rgbClient) {
         if (text == null) return null;
@@ -124,9 +127,10 @@ public class RGBUtils {
 
     /**
      * Converts all hex codes in given string to legacy codes
-     * @param    text
-     *             text to convert
-     * @return    translated text
+     *
+     * @param   text
+     *          text to convert
+     * @return  translated text
      */
     public String convertRGBtoLegacy(String text) {
         if (text == null) return null;
@@ -158,9 +162,10 @@ public class RGBUtils {
     /**
      * Returns true if entered string is a valid 6-digit combination of
      * hexadecimal numbers, false if not
-     * @param    string
-     *             string to check
-     * @return    {@code true} if valid, {@code false} if not
+     *
+     * @param   string
+     *          string to check
+     * @return  {@code true} if valid, {@code false} if not
      */
     public boolean isHexCode(String string) {
         Preconditions.checkNotNull(string, "string");
@@ -174,11 +179,12 @@ public class RGBUtils {
 
     /**
      * Returns true if text contains legacy color request at defined RGB index start
-     * @param    text
-     *             text to check
-     * @param    i
-     *             current index start
-     * @return    {@code true} if legacy color is defined and valid, {@code false} otherwise
+     *
+     * @param   text
+     *          text to check
+     * @param   i
+     *          current index start
+     * @return  {@code true} if legacy color is defined and valid, {@code false} otherwise
      */
     private static boolean containsLegacyCode(String text, int i) {
         if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;

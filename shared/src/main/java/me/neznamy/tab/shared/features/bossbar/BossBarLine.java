@@ -58,13 +58,21 @@ public class BossBarLine implements BossBar {
 
     /**
      * Constructs new instance with given parameters
-     * @param manager - BossBar manager to count sent packets for
-     * @param name - name of BossBar
-     * @param displayCondition - display condition
-     * @param color - BossBar color
-     * @param style - BossBar style
-     * @param title - BossBar title
-     * @param progress - BossBar progress
+     *
+     * @param   manager
+     *          BossBar manager to count sent packets for
+     * @param   name
+     *          name of BossBar
+     * @param   displayCondition
+     *          display condition
+     * @param   color
+     *          BossBar color
+     * @param   style
+     *          BossBar style
+     * @param   title
+     *          BossBar title
+     * @param   progress
+     *          BossBar progress
      */
     public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition,
                        String color, String style, String title, String progress, boolean announcementOnly) {
@@ -112,9 +120,11 @@ public class BossBarLine implements BossBar {
     }
 
     /**
-     * Returns true if condition is null or is met, false otherwise
-     * @param p - player to check condition for
-     * @return true if met, false if not
+     * Returns true if condition is null or is met, false otherwise.
+     *
+     * @param   p
+     *          player to check condition for
+     * @return  true if met, false if not
      */
     public boolean isConditionMet(TabPlayer p) {
         if (displayCondition == null) return true;
@@ -122,10 +132,11 @@ public class BossBarLine implements BossBar {
     }
 
     /**
-     * Parses string into color and returns it. If parsing failed, PURPLE is returned instead and
-     * error message is printed into error log
-     * @param color - string to parse
-     * @return parsed color
+     * Parses string into color and returns it. If parsing failed, PURPLE is returned.
+     *
+     * @param   color
+     *          string to parse
+     * @return  parsed color
      */
     public BarColor parseColor(String color) {
         try {
@@ -136,10 +147,11 @@ public class BossBarLine implements BossBar {
     }
 
     /**
-     * Parses string into style and returns it. If parsing failed, PROGRESS is returned instead and
-     * error message is printed into error log
-     * @param style - string to parse
-     * @return parsed style
+     * Parses string into style and returns it. If parsing failed, PROGRESS is returned.
+     *
+     * @param   style
+     *          string to parse
+     * @return  parsed style
      */
     public BarStyle parseStyle(String style) {
         try {
@@ -152,8 +164,10 @@ public class BossBarLine implements BossBar {
     /**
      * Parses string into progress and returns it. If parsing failed, 100 is returned instead and
      * error message is printed into error log
-     * @param progress - string to parse
-     * @return parsed progress
+     *
+     * @param   progress
+     *          string to parse
+     * @return  parsed progress
      */
     public float parseProgress(String progress) {
         return TAB.getInstance().getErrorManager().parseFloat(progress, 100);

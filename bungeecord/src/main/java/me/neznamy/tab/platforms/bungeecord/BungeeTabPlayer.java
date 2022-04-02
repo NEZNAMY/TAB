@@ -45,7 +45,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /**
      * Constructs new instance for given player
-     * @param p - BungeeCord player
+     *
+     * @param   p
+     *          BungeeCord player
      */
     public BungeeTabPlayer(ProxiedPlayer p) {
         super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
@@ -91,8 +93,10 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /**
      * Returns packet ID for this player of provided packet class
-     * @param clazz - packet class
-     * @return - packet ID
+     *
+     * @param   clazz
+     *          packet class
+     * @return  packet ID
      */
     public int getPacketId(Class<? extends DefinedPacket> clazz) {
         Preconditions.checkNotNull(clazz, "class");

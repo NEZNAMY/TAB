@@ -42,16 +42,16 @@ public class PacketPlayOutBoss implements TabPacket {
      * Constructs new instance with given parameters and
      * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.ADD action
      *
-     * @param    id
-     *             BossBar uuid
-     * @param    name
-     *             BossBar title
-     * @param    pct
-     *             BossBar progress
-     * @param    color
-     *             BossBar color
-     * @param    overlay
-     *             BossBar style
+     * @param   id
+     *          BossBar uuid
+     * @param   name
+     *          BossBar title
+     * @param   pct
+     *          BossBar progress
+     * @param   color
+     *          BossBar color
+     * @param   overlay
+     *          BossBar style
      */
     public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
         Preconditions.checkNotNull(id, "uuid");
@@ -70,8 +70,8 @@ public class PacketPlayOutBoss implements TabPacket {
      * Constructs new instance with given parameters and
      * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.REMOVE action
      *
-     * @param    id
-     *             BossBar uuid
+     * @param   id
+     *          BossBar uuid
      */
     public PacketPlayOutBoss(UUID id) {
         Preconditions.checkNotNull(id, "uuid");
@@ -83,10 +83,10 @@ public class PacketPlayOutBoss implements TabPacket {
      * Constructs new instance with given parameters and
      * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PCT action
      *
-     * @param    id
-     *             BossBar uuid
-     * @param    pct
-     *             BossBar progress
+     * @param   id
+     *          BossBar uuid
+     * @param   pct
+     *          BossBar progress
      */
     public PacketPlayOutBoss(UUID id, float pct) {
         Preconditions.checkNotNull(id, "uuid");
@@ -99,10 +99,10 @@ public class PacketPlayOutBoss implements TabPacket {
      * Constructs new instance with given parameters and
      * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_NAME action
      *
-     * @param    id
-     *             BossBar uuid
-     * @param    name
-     *             BossBar title
+     * @param   id
+     *          BossBar uuid
+     * @param   name
+     *          BossBar title
      */
     public PacketPlayOutBoss(UUID id, String name) {
         Preconditions.checkNotNull(id, "uuid");
@@ -116,12 +116,12 @@ public class PacketPlayOutBoss implements TabPacket {
      * Constructs new instance with given parameters and
      * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_STYLE action
      *
-     * @param    id
-     *             BossBar uuid
-     * @param    color
-     *             BossBar color
-     * @param    overlay
-     *             BossBar style
+     * @param   id
+     *          BossBar uuid
+     * @param   color
+     *          BossBar color
+     * @param   overlay
+     *          BossBar style
      */
     public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
         Preconditions.checkNotNull(id, "uuid");
@@ -137,12 +137,12 @@ public class PacketPlayOutBoss implements TabPacket {
      * Constructs new instance with given parameters and
      * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PROPERTIES action
      *
-     * @param    darkenScreen
-     *             Darken screen flag
-     * @param    playMusic
-     *             Play music flag
-     * @param    createWorldFog
-     *             Create fog flag
+     * @param   darkenScreen
+     *          Darken screen flag
+     * @param   playMusic
+     *          Play music flag
+     * @param   createWorldFog
+     *          Create fog flag
      */
     public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
         Preconditions.checkNotNull(id, "uuid");
@@ -159,7 +159,7 @@ public class PacketPlayOutBoss implements TabPacket {
      * {@link #darkenScreen} adds {@code 1}, {@link #playMusic} {@code 2} and {@link #darkenScreen} {@code 4}
      * to the final value.
      *
-     * @return the bitmask
+     * @return  the bitmask
      */
     public byte getFlags(){
         byte value = 0;
@@ -177,7 +177,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #color}
-     * @return    color
+     *
+     * @return  color
      */
     public BarColor getColor() {
         return color;
@@ -185,7 +186,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #overlay}
-     * @return    style
+     *
+     * @return  style
      */
     public BarStyle getOverlay() {
         return overlay;
@@ -193,7 +195,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #name}
-     * @return    name
+     *
+     * @return  name
      */
     public String getName() {
         return name;
@@ -201,7 +204,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #id}
-     * @return    id
+     *
+     * @return  id
      */
     public UUID getId() {
         return id;
@@ -209,7 +213,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #pct}
-     * @return    progress
+     *
+     * @return  progress
      */
     public float getPct() {
         return pct;
@@ -217,7 +222,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #action}
-     * @return    packet action
+     *
+     * @return  packet action
      */
     public Action getAction() {
         return action;
@@ -225,7 +231,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #darkenScreen}
-     * @return    darkenScreen
+     *
+     * @return  darkenScreen
      */
     public boolean isDarkenScreen() {
         return darkenScreen;
@@ -233,7 +240,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #createWorldFog}
-     * @return    createWorldFog
+     *
+     * @return  createWorldFog
      */
     public boolean isCreateWorldFog() {
         return createWorldFog;
@@ -241,7 +249,8 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Returns {@link #playMusic}
-     * @return    playMusic
+     *
+     * @return  playMusic
      */
     public boolean isPlayMusic() {
         return playMusic;
@@ -250,8 +259,8 @@ public class PacketPlayOutBoss implements TabPacket {
     /**
      * Sets {@link #darkenScreen} to specified value
      *
-     * @param    darkenScreen
-     *             Darken screen flag
+     * @param   darkenScreen
+     *          Darken screen flag
      */
     public void setDarkenScreen(boolean darkenScreen) {
         this.darkenScreen = darkenScreen;
@@ -260,8 +269,8 @@ public class PacketPlayOutBoss implements TabPacket {
     /**
      * Sets {@link #createWorldFog} to specified value
      *
-     * @param    createWorldFog
-     *             Create fog flag
+     * @param   createWorldFog
+     *          Create fog flag
      */
     public void setCreateWorldFog(boolean createWorldFog) {
         this.createWorldFog = createWorldFog;
@@ -270,8 +279,8 @@ public class PacketPlayOutBoss implements TabPacket {
     /**
      * Sets {@link #playMusic} to specified value
      *
-     * @param    playMusic
-     *             Play music flag
+     * @param   playMusic
+     *          Play music flag
      */
     public void setPlayMusic(boolean playMusic) {
         this.playMusic = playMusic;

@@ -86,9 +86,12 @@ public abstract class TabFeature {
 
     /**
      * Processes command from player
-     * @param sender - command sender
-     * @param message - command line
-     * @return true if event should be cancelled, false if not
+     *
+     * @param   sender
+     *          command sender
+     * @param   message
+     *          command line
+     * @return  true if event should be cancelled, false if not
      */
     public boolean onCommand(TabPlayer sender, String message) {
         return false;
@@ -96,7 +99,9 @@ public abstract class TabFeature {
 
     /**
      * Processes join event
-     * @param connectedPlayer - player who connected
+     *
+     * @param   connectedPlayer
+     *          player who connected
      */
     public void onJoin(TabPlayer connectedPlayer) {
         //empty by default
@@ -104,16 +109,23 @@ public abstract class TabFeature {
 
     /**
      * Processes quit event
-     * @param disconnectedPlayer - player who disconnected
+     *
+     * @param   disconnectedPlayer
+     *          player who disconnected
      */
     public void onQuit(TabPlayer disconnectedPlayer) {
+        //empty by default
     }
 
     /**
      * Processes world switch
-     * @param changed - player who switched world
-     * @param from - world player changed from
-     * @param to - world player changed to
+     *
+     * @param   changed
+     *          player who switched world
+     * @param   from
+     *          world player changed from
+     * @param   to
+     *          world player changed to
      */
     public void onWorldChange(TabPlayer changed, String from, String to) {
         //empty by default
@@ -121,9 +133,13 @@ public abstract class TabFeature {
 
     /**
      * Processes server switch
-     * @param changed - player who switched server
-     * @param from - server player changed from
-     * @param to - server player changed to
+     *
+     * @param   changed
+     *          player who switched server
+     * @param   from
+     *          server player changed from
+     * @param   to
+     *          server player changed to
      */
     public void onServerChange(TabPlayer changed, String from, String to) {
         //empty by default
@@ -131,8 +147,11 @@ public abstract class TabFeature {
 
     /**
      * Processes the packet send and returns true if packet should be cancelled
-     * @param receiver - player receiving packet
-     * @param packet - received packet
+     *
+     * @param   receiver
+     *          player receiving packet
+     * @param   packet
+     *          received packet
      */
     public void onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
         //empty by default
@@ -140,7 +159,9 @@ public abstract class TabFeature {
 
     /**
      * Processes login packet, only available on BungeeCord
-     * @param packetReceiver - player receiving client reset packet
+     *
+     * @param   packetReceiver
+     *          player receiving client reset packet
      */
     public void onLoginPacket(TabPlayer packetReceiver) {
         //empty by default
@@ -148,8 +169,11 @@ public abstract class TabFeature {
 
     /**
      * Processes the packet send
-     * @param receiver - player receiving packet
-     * @param packet - received packet
+     *
+     * @param   receiver
+     *          player receiving packet
+     * @param   packet
+     *          received packet
      */
     public void onObjective(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
         //empty by default
@@ -157,8 +181,11 @@ public abstract class TabFeature {
 
     /**
      * Processes the packet send and possibly modifies it
-     * @param receiver - player receiving packet
-     * @param info - received packet
+     *
+     * @param   receiver
+     *          player receiving packet
+     * @param   info
+     *          received packet
      */
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
         //empty by default
@@ -166,11 +193,14 @@ public abstract class TabFeature {
 
     /**
      * Processes raw packet sent by client
-     * @param sender - packet sender
-     * @param packet - packet received
-     * @return true if false should be cancelled, false if not
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   sender
+     *          packet sender
+     * @param   packet
+     *          packet received
+     * @return  true if false should be cancelled, false if not
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
         return false;
@@ -178,10 +208,13 @@ public abstract class TabFeature {
 
     /**
      * Processes raw packet sent to client
-     * @param receiver - packet receiver
-     * @param packet - the packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   packet
+     *          the packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
         //empty by default
@@ -189,8 +222,11 @@ public abstract class TabFeature {
 
     /**
      * Performs refresh of specified player
-     * @param refreshed - player to refresh
-     * @param force - if refresh should be forced despite refresh seemingly not needed
+     *
+     * @param   refreshed
+     *          player to refresh
+     * @param   force
+     *          if refresh should be forced despite refresh seemingly not needed
      */
     public void refresh(TabPlayer refreshed, boolean force) {
         //empty by default
@@ -202,7 +238,9 @@ public abstract class TabFeature {
 
     /**
      * Registers this feature as one using specified placeholders
-     * @param placeholders - placeholders to add as used in this feature
+     *
+     * @param   placeholders
+     *          placeholders to add as used in this feature
      */
     public void addUsedPlaceholders(Collection<String> placeholders) {
         if (placeholders.isEmpty()) return;
@@ -211,9 +249,12 @@ public abstract class TabFeature {
 
     /**
      * Returns true if world or server is disabled, false if not
-     * @param world - world to check
-     * @param server - server to check
-     * @return true if feature should be disabled, false if not
+     *
+     * @param   server
+     *          server to check
+     * @param   world
+     *          world to check
+     * @return  true if feature should be disabled, false if not
      */
     public boolean isDisabled(String server, String world) {
         boolean contains = contains(disabledWorlds, world);
@@ -238,7 +279,8 @@ public abstract class TabFeature {
 
     /**
      * Returns name of the feature displayed in /tab cpu.
-     * @return name of the feature displayed in /tab cpu
+     *
+     * @return  name of the feature displayed in /tab cpu
      */
     public String getFeatureName() {
         return featureName;

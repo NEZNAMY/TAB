@@ -36,6 +36,7 @@ public class LayoutManager extends TabFeature {
         }
         loadLayouts();
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         TAB.getInstance().debug("Loaded Layout feature");
     }
 

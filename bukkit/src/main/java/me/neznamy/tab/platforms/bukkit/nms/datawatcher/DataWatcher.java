@@ -20,8 +20,11 @@ public class DataWatcher {
 
     /**
      * Sets value into data values
-     * @param type - type of value
-     * @param value - value
+     *
+     * @param   type
+     *          type of value
+     * @param   value
+     *          value
      */
     public void setValue(DataWatcherObject type, Object value){
         Preconditions.checkNotNull(type, "type");
@@ -31,7 +34,9 @@ public class DataWatcher {
 
     /**
      * Removes value by position
-     * @param position - position of value to remove
+     *
+     * @param   position
+     *          position of value to remove
      */
     public void removeValue(int position) {
         dataValues.remove(position);
@@ -39,8 +44,10 @@ public class DataWatcher {
 
     /**
      * Returns item with given position
-     * @param position - position of item
-     * @return item or null if not set
+     *
+     * @param   position
+     *          position of item
+     * @return  item or null if not set
      */
     public DataWatcherItem getItem(int position) {
         return dataValues.get(position);
@@ -48,7 +55,8 @@ public class DataWatcher {
 
     /**
      * Returns helper created by this instance
-     * @return data write helper
+     *
+     * @return  data write helper
      */
     public DataWatcherHelper helper() {
         return helper;
@@ -56,9 +64,10 @@ public class DataWatcher {
 
     /**
      * Converts the class into an instance of NMS.DataWatcher
-     * @return an instance of NMS.DataWatcher with same data
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @return  an instance of NMS.DataWatcher with same data
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object toNMS() throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
@@ -83,10 +92,12 @@ public class DataWatcher {
 
     /**
      * Reads NMS data watcher and returns and instance of this class with same data
-     * @param nmsWatcher - NMS DataWatcher to read
-     * @return an instance of this class with same values
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   nmsWatcher
+     *          NMS DataWatcher to read
+     * @return  an instance of this class with same values
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     @SuppressWarnings("unchecked")
     public static DataWatcher fromNMS(Object nmsWatcher) throws ReflectiveOperationException {

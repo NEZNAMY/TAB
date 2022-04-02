@@ -34,7 +34,9 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
 
     /**
      * Constructs new instance with given parameters and loads config options
-     * @param plugin - plugin instance
+     *
+     * @param   plugin
+     *          plugin instance
      */
     public PerWorldPlayerList(JavaPlugin plugin) {
         super("Per world PlayerList", null);

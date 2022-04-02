@@ -37,16 +37,16 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * Constructs new instance with given parameters and sends a message
      * to bridge about this player joining with join data
      *
-     * @param    player
-     *             platform-specific player object
-     * @param    uniqueId
-     *             Player's unique ID
-     * @param    name
-     *             Player's name
-     * @param    server
-     *             Player's server
-     * @param    protocolVersion
-     *             Player's protocol network id
+     * @param   player
+     *          platform-specific player object
+     * @param   uniqueId
+     *          Player's unique ID
+     * @param   name
+     *          Player's name
+     * @param   server
+     *          Player's server
+     * @param   protocolVersion
+     *          Player's protocol network id
      */
     protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
         super(player, uniqueId, name, server, "N/A", protocolVersion);
@@ -59,7 +59,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      */
     public void sendJoinPluginMessage() {
         List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
-                TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge,
+                TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge && !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX),
                 TAB.getInstance().getPlaceholderManager().getTabExpansion() != null);
         ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
@@ -93,8 +93,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     /**
      * Sets vanish status to provided value
      *
-     * @param    vanished
-     *             new vanish status
+     * @param   vanished
+     *          new vanish status
      */
     public void setVanished(boolean vanished) {
         this.vanished = vanished;
@@ -103,8 +103,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     /**
      * Sets disguise status to provided value
      *
-     * @param    disguised
-     *             new disguise status
+     * @param   disguised
+     *          new disguise status
      */
     public void setDisguised(boolean disguised) {
         this.disguised = disguised;
@@ -113,8 +113,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     /**
      * Sets invisibility status to provided value
      *
-     * @param    invisible
-     *             new invisibility status
+     * @param   invisible
+     *          new invisibility status
      */
     public void setInvisible(boolean invisible) {
         this.invisible = invisible;
@@ -123,8 +123,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     /**
      * Sets boat status to provided value
      *
-     * @param    onBoat
-     *             new boat status
+     * @param   onBoat
+     *          new boat status
      */
     public void setOnBoat(boolean onBoat) {
         this.onBoat = onBoat;
@@ -133,10 +133,10 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     /**
      * Sets permission presence status to provided value
      *
-     * @param    permission
-     *             Requested permission node
-     * @param    value
-     *             Permission value
+     * @param   permission
+     *          Requested permission node
+     * @param   value
+     *          Permission value
      */
     public void setHasPermission(String permission, boolean value) {
         permissions.put(permission, value);
@@ -146,7 +146,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * Returns {@code true} if player is on boat, {@code false} if not.
      * This requires bridge installed to forward the data.
      *
-     * @return    {@code true} if on boat, {@code false} if not
+     * @return  {@code true} if on boat, {@code false} if not
      */
     public boolean isOnBoat() {
         return onBoat;
@@ -155,17 +155,17 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     /**
      * Performs platform-specific permission check and returns the result
      *
-     * @param    permission
-     *             Permission to check for
-     * @return    Result from hasPermission call
+     * @param   permission
+     *          Permission to check for
+     * @return  Result from hasPermission call
      */
     public abstract boolean hasPermission0(String permission);
 
     /**
      * Sends plugin message to this player
      *
-     * @param    message
-     *             message to send
+     * @param   message
+     *          message to send
      */
     public abstract void sendPluginMessage(byte[] message);
 

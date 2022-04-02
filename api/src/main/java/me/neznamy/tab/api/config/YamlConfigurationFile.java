@@ -36,18 +36,18 @@ public class YamlConfigurationFile extends ConfigurationFile {
      * Constructs new instance and attempts to load specified configuration file.
      * If file does not exist, default file is copied from {@code source}.
      *
-     * @param    source
-     *             Source to copy file from if it does not exist
-     * @param    destination
-     *             File destination to use
-     * @throws    IllegalArgumentException
-     *             if {@code destination} is null
-     * @throws    IllegalStateException
-     *             if file does not exist and source is null
-     * @throws    YAMLException
-     *             if file has invalid YAML syntax
-     * @throws    IOException
-     *             if I/O operation with the file unexpectedly fails
+     * @param   source
+     *          Source to copy file from if it does not exist
+     * @param   destination
+     *          File destination to use
+     * @throws  IllegalArgumentException
+     *          if {@code destination} is null
+     * @throws  IllegalStateException
+     *          if file does not exist and source is null
+     * @throws  YAMLException
+     *          if file has invalid YAML syntax
+     * @throws  IOException
+     *          if I/O operation with the file unexpectedly fails
      */
     public YamlConfigurationFile(InputStream source, File destination) throws YAMLException, IOException {
         super(source, destination);

@@ -40,13 +40,13 @@ public class PacketBuilder {
      * Converts custom packet into platform-specific packet by calling a function from
      * {@link #buildMap}.
      *
-     * @param    packet
-     *             Packet to build
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if reflection fails
+     * @param   packet
+     *          Packet to build
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if reflection fails
      */
     public Object build(TabPacket packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         Preconditions.checkNotNull(packet, "packet");
@@ -57,13 +57,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutBoss class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -72,13 +72,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutChat class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -87,13 +87,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutPlayerInfo class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -102,13 +102,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutPlayerListHeaderFooter class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -117,13 +117,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutScoreboardDisplayObjective class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -132,13 +132,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutScoreboardObjective class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -147,13 +147,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutScoreboardScore class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -162,13 +162,13 @@ public class PacketBuilder {
     /**
      * Constructs platform-specific PacketPlayOutScoreboardTeam class based on custom packet class
      *
-     * @param    packet
-     *             Custom packet to be built
-     * @param    clientVersion
-     *             Protocol version of player to build the packet for
-     * @return    Platform-specific packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          Custom packet to be built
+     * @param   clientVersion
+     *          Protocol version of player to build the packet for
+     * @return  Platform-specific packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return packet;
@@ -179,11 +179,12 @@ public class PacketBuilder {
      * and translates RGB to legacy colors. If string is not that long, the original string is returned.
      * RGB codes are converted into legacy, since cutting is only needed for &lt;1.13.
      * If {@code string} is {@code null}, empty string is returned.
-     * @param    string
-     *             String to cut
-     * @param    length
-     *             Length to cut to
-     * @return    string cut to {@code length} characters
+     *
+     * @param   string
+     *          String to cut
+     * @param   length
+     *          Length to cut to
+     * @return  string cut to {@code length} characters
      */
     public String cutTo(String string, int length) {
         if (string == null) return "";
@@ -207,11 +208,11 @@ public class PacketBuilder {
      * If {@code clientVersion} is &lt; 1.12, the text is cut to {@code length} characters if
      * needed and returned.
      *
-     * @param    text
-     *             Text to convert
-     * @param    clientVersion
-     *             Version of player to convert text for
-     * @return    serialized component for 1.13+ clients, cut string for 1.12-
+     * @param   text
+     *          Text to convert
+     * @param   clientVersion
+     *          Version of player to convert text for
+     * @return  serialized component for 1.13+ clients, cut string for 1.12-
      */
     public String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
         if (text == null) return null;
@@ -226,13 +227,13 @@ public class PacketBuilder {
      * Converts platform-specific instance of player info packet into
      * {@link PacketPlayOutPlayerInfo} object.
      *
-     * @param    packet
-     *             platform-specific info packet
-     * @param    clientVersion
-     *             Version of client receiving the packet
-     * @return    The packet converted into {@link PacketPlayOutPlayerInfo}
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          platform-specific info packet
+     * @param   clientVersion
+     *          Version of client receiving the packet
+     * @return  The packet converted into {@link PacketPlayOutPlayerInfo}
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return null;
@@ -242,11 +243,11 @@ public class PacketBuilder {
      * Converts platform-specific instance of objective packet into
      * {@link PacketPlayOutScoreboardObjective} object.
      *
-     * @param    packet
-     *             platform-specific objective packet
-     * @return    The packet converted into {@link PacketPlayOutScoreboardObjective}
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          platform-specific objective packet
+     * @return  The packet converted into {@link PacketPlayOutScoreboardObjective}
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException {
         return null;
@@ -256,11 +257,11 @@ public class PacketBuilder {
      * Converts platform-specific instance of display objective packet into
      * {@link PacketPlayOutScoreboardDisplayObjective} object.
      *
-     * @param    packet
-     *             platform-specific display objective packet
-     * @return    The packet converted into {@link PacketPlayOutScoreboardDisplayObjective}
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @param   packet
+     *          platform-specific display objective packet
+     * @return  The packet converted into {@link PacketPlayOutScoreboardDisplayObjective}
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) throws ReflectiveOperationException {
         return null;

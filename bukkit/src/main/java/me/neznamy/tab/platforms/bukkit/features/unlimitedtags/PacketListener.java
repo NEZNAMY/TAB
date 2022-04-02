@@ -30,7 +30,9 @@ public class PacketListener extends TabFeature {
 
     /**
      * Constructs new instance with given parameters and loads config options
-     * @param nameTagX - main feature
+     *
+     * @param   nameTagX
+     *          main feature
      */
     public PacketListener(BukkitNameTagX nameTagX) {
         super(nameTagX.getFeatureName(), null);
@@ -100,15 +102,18 @@ public class PacketListener extends TabFeature {
 
     /**
      * Processes entity move packet
-     * @param receiver - packet receiver
-     * @param entityId - entity that moved
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entityId
+     *          entity that moved
      */
     private void onEntityMove(TabPlayer receiver, int entityId) {
         TabPlayer pl = entityIdMap.get(entityId);
         List<Entity> vehicleList;
         if (pl != null) {
             //player moved
-            if (nameTagX.isPlayerDisabled(pl)) return;
+            if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
             TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE,
                     () -> nameTagX.getArmorStandManager(pl).teleport(receiver));
         } else if ((vehicleList = nameTagX.getVehicleManager().getVehicles().get(entityId)) != null){
@@ -145,8 +150,10 @@ public class PacketListener extends TabFeature {
     
     private void onEntityDestroy(TabPlayer receiver, int entity) {
         TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
-        if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer))
+        if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
+            BukkitArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);
             TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
-                    () -> nameTagX.getArmorStandManager(deSpawnedPlayer).destroy(receiver));
+                    () -> asm.destroy(receiver));
+        }
     }
 }

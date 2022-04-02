@@ -21,10 +21,10 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
     /**
      * Constructs new instance with given parameters.
      * 
-     * @param    action
-     *             Packet action
-     * @param    entries
-     *             Affected entries
+     * @param   action
+     *          Packet action
+     * @param   entries
+     *          Affected entries
      */
     public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
         Preconditions.checkNotNull(action, "action");
@@ -36,10 +36,10 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
     /**
      * Constructs new instance with given parameters.
      * 
-     * @param    action
-     *             Packet action
-     * @param    entries
-     *             Affected entries
+     * @param   action
+     *          Packet action
+     * @param   entries
+     *          Affected entries
      */
     public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
         Preconditions.checkNotNull(action, "action");
@@ -55,7 +55,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
     /**
      * Returns {@link #action}
-     * @return    packet action
+     *
+     * @return  packet action
      */
     public EnumPlayerInfoAction getAction() {
         return action;
@@ -63,7 +64,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
     /**
      * Returns {@link #entries}
-     * @return    affected entries
+     *
+     * @return  affected entries
      */
     public List<PlayerInfoData> getEntries() {
         return entries;
@@ -99,18 +101,18 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * Constructs new instance with given parameters. Suitable for 
          * {@link EnumPlayerInfoAction}.ADD_PLAYER action
          * 
-         * @param    name
-         *             Player's name
-         * @param    uniqueId
-         *             Player's uuid
-         * @param    skin
-         *             Player's platform-specific skin object
-         * @param    latency
-         *             Player's ping
-         * @param    gameMode
-         *             Player's GameMode
-         * @param    displayName
-         *             Player's display name
+         * @param   name
+         *          Player's name
+         * @param   uniqueId
+         *          Player's uuid
+         * @param   skin
+         *          Player's platform-specific skin object
+         * @param   latency
+         *          Player's ping
+         * @param   gameMode
+         *          Player's GameMode
+         * @param   displayName
+         *          Player's display name
          */
         public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
             Preconditions.checkNotNull(uniqueId, "uuid");
@@ -126,10 +128,10 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * Constructs new instance with given parameters. Suitable for 
          * {@link EnumPlayerInfoAction}.UPDATE_GAME_MODE action
          * 
-         * @param    uniqueId
-         *             Player's uuid
-         * @param    gameMode
-         *             Player's GameMode
+         * @param   uniqueId
+         *          Player's uuid
+         * @param   gameMode
+         *          Player's GameMode
          */
         public PlayerInfoData(UUID uniqueId, EnumGamemode gameMode) {
             Preconditions.checkNotNull(uniqueId, "uuid");
@@ -141,10 +143,10 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * Constructs new instance with given parameters. Suitable for 
          * {@link EnumPlayerInfoAction}.UPDATE_LATENCY action
          * 
-         * @param    uniqueId
-         *             Player's uuid
-         * @param    latency
-         *             Player's ping
+         * @param   uniqueId
+         *          Player's uuid
+         * @param   latency
+         *          Player's ping
          */
         public PlayerInfoData(UUID uniqueId, int latency) {
             Preconditions.checkNotNull(uniqueId, "uuid");
@@ -156,10 +158,10 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * Constructs new instance with given parameters. Suitable for 
          * {@link EnumPlayerInfoAction}.UPDATE_DISPLAY_NAME action
          * 
-         * @param    uniqueId
-         *             Player's uuid
-         * @param    displayName
-         *             Player's display name
+         * @param   uniqueId
+         *          Player's uuid
+         * @param   displayName
+         *          Player's display name
          */
         public PlayerInfoData(UUID uniqueId, IChatBaseComponent displayName) {
             Preconditions.checkNotNull(uniqueId, "uuid");
@@ -171,8 +173,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * Constructs new instance with given parameter. Suitable for 
          * {@link EnumPlayerInfoAction}.REMOVE_PLAYER action
          * 
-         * @param    uniqueId
-         *             Player's uuid
+         * @param   uniqueId
+         *          Player's uuid
          */
         public PlayerInfoData(UUID uniqueId) {
             this.uniqueId = uniqueId;
@@ -186,7 +188,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Returns {@link #latency}
-         * @return    latency
+         *
+         * @return  latency
          */
         public int getLatency() {
             return latency;
@@ -194,8 +197,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Sets {@link #latency} to specified value
-         * @param    latency
-         *             Latency to use
+         *
+         * @param   latency
+         *          Latency to use
          */
         public void setLatency(int latency) {
             this.latency = latency;
@@ -203,7 +207,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Returns {@link #displayName}
-         * @return    displayName
+         *
+         * @return  displayName
          */
         public IChatBaseComponent getDisplayName() {
             return displayName;
@@ -211,8 +216,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Sets {@link #displayName} to specified value
-         * @param    displayName
-         *             Display name to use
+         *
+         * @param   displayName
+         *          Display name to use
          */
         public void setDisplayName(IChatBaseComponent displayName) {
             this.displayName = displayName;
@@ -220,7 +226,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Returns {@link #uniqueId}
-         * @return    uniqueId
+         *
+         * @return  uniqueId
          */
         public UUID getUniqueId() {
             return uniqueId;
@@ -228,8 +235,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Sets {@link #uniqueId} to specified value
-         * @param    uniqueId
-         *             UUID to use
+         *
+         * @param   uniqueId
+         *          UUID to use
          */
         public void setUniqueId(UUID uniqueId) {
             this.uniqueId = uniqueId;
@@ -237,7 +245,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Returns {@link #name}
-         * @return    name
+         *
+         * @return  name
          */
         public String getName() {
             return name;
@@ -245,8 +254,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Sets {@link #name} to specified value
-         * @param    name
-         *             name to use
+         *
+         * @param   name
+         *          name to use
          */
         public void setName(String name) {
             this.name = name;
@@ -254,7 +264,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Returns {@link #gameMode}
-         * @return    gameMode
+         *
+         * @return  gameMode
          */
         public EnumGamemode getGameMode() {
             return gameMode;
@@ -262,8 +273,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Sets {@link #gameMode} to specified value
-         * @param    gameMode
-         *             GameMode to use
+         *
+         * @param   gameMode
+         *          GameMode to use
          */
         public void setGameMode(EnumGamemode gameMode) {
             this.gameMode = gameMode;
@@ -271,7 +283,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Returns {@link #skin}
-         * @return    skin
+         *
+         * @return  skin
          */
         public Skin getSkin() {
             return skin;
@@ -279,8 +292,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Sets {@link #skin} to specified value
-         * @param    skin
-         *             Skin to use
+         *
+         * @param   skin
+         *          Skin to use
          */
         public void setSkin(Skin skin) {
             this.skin = skin;

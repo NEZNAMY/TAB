@@ -10,17 +10,23 @@ public interface GradientPattern {
 
     /**
      * Applies gradients in provided text and returns text using only #RRGGBB
-     * @param text - text to be reformatted
-     * @return reformatted text
+     *
+     * @param   text
+     *          text to be reformatted
+     * @return  reformatted text
      */
     String applyPattern(String text, boolean ignorePlaceholders);
 
     /**
      * Returns gradient text based on start color, text and end color
-     * @param start - start color
-     * @param text - text to be reformatted
-     * @param end - end color
-     * @return reformatted text
+     *
+     * @param   start
+     *          start color
+     * @param   text
+     *          text to be reformatted
+     * @param   end
+     *          end color
+     * @return  reformatted text
      */
     default String asGradient(TextColor start, String text, TextColor end) {
         //lazy support for magic codes in gradients

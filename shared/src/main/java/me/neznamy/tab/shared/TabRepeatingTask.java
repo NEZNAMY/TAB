@@ -33,16 +33,16 @@ public class TabRepeatingTask implements RepeatingTask {
     /**
      * Constructs new instance with given parameters and starts the task.
      *
-     * @param    exe
-     *             Executor service to submit the repeating task to
-     * @param    runnable
-     *            Task to run periodically
-     * @param    feature
-     *             Feature creating this task, used in cpu command output
-     * @param    type
-     *             Sub-feature creating this task, used in cpu command output
-     * @param    interval
-     *            Interval in milliseconds how often to submit the task to main thread
+     * @param   exe
+     *          Executor service to submit the repeating task to
+     * @param   runnable
+     *          Task to run periodically
+     * @param   feature
+     *          Feature creating this task, used in cpu command output
+     * @param   type
+     *          Sub-feature creating this task, used in cpu command output
+     * @param   interval
+     *          Interval in milliseconds how often to submit the task to main thread
      */
     public TabRepeatingTask(ExecutorService exe, Runnable runnable, TabFeature feature, String type, int interval) {
         if (interval < 0) throw new IllegalArgumentException("Interval cannot be negative");

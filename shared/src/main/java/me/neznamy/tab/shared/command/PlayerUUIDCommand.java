@@ -75,10 +75,15 @@ public class PlayerUUIDCommand extends PropertyCommand {
 
     /**
      * Saves new player settings into config
-     * @param sender - command sender or null if console
-     * @param player - affected player
-     * @param type - property type
-     * @param value - new value
+     *
+     * @param   sender
+     *          command sender or null if console
+     * @param   player
+     *          affected player
+     * @param   type
+     *          property type
+     * @param   value
+     *          new value
      */
     public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value, String server, String world){
         if (value.length() > 0){

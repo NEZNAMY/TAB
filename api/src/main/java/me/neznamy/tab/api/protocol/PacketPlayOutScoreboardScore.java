@@ -22,16 +22,16 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
     /**
      * Constructs new instance with given parameters
      *
-     * @param    action
-     *             Packet action
-     * @param    objectiveName
-     *             Objective name
-     * @param    player
-     *             Affected player
-     * @param    score
-     *             Player's score
-     * @throws    IllegalArgumentException
-     *             if {@code objectiveName} is null or longer than 16 characters
+     * @param   action
+     *          Packet action
+     * @param   objectiveName
+     *          Objective name
+     * @param   player
+     *          Affected player
+     * @param   score
+     *          Player's score
+     * @throws  IllegalArgumentException
+     *          if {@code objectiveName} is null or longer than 16 characters
      */
     public PacketPlayOutScoreboardScore(Action action, String objectiveName, String player, int score) {
         Preconditions.checkNotNull(action, "action");
@@ -52,7 +52,8 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 
     /**
      * Returns {@link #action}
-     * @return    packet action
+     *
+     * @return  packet action
      */
     public Action getAction() {
         return action;
@@ -60,7 +61,8 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 
     /**
      * Returns {@link #objectiveName}
-     * @return    objective name
+     *
+     * @return  objective name
      */
     public String getObjectiveName() {
         return objectiveName;
@@ -68,7 +70,8 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 
     /**
      * Returns {@link #player}
-     * @return    player
+     *
+     * @return  player
      */
     public String getPlayer() {
         return player;
@@ -76,7 +79,8 @@ public class PacketPlayOutScoreboardScore implements TabPacket {
 
     /**
      * Returns {@link #score}
-     * @return    score
+     *
+     * @return  score
      */
     public int getScore() {
         return score;

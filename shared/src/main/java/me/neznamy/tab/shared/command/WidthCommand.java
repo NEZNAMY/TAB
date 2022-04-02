@@ -170,9 +170,12 @@ public class WidthCommand extends SubCommand {
 
     /**
      * Returns line of text with characters that build specified text width
-     * @param width - with to display
-     * @param c - character to set click action to
-     * @return line of text with characters that build specified text width
+     *
+     * @param   width
+     *          with to display
+     * @param   c
+     *          character to set click action to
+     * @return  line of text with characters that build specified text width
      */
     private IChatBaseComponent getText(int width, int c) {
         StringBuilder text = new StringBuilder();

@@ -12,11 +12,16 @@ public class LongLine extends ScoreboardLine {
 
     private final String textProperty;
     private final String nameProperty;
+
     /**
      * Constructs new instance with given parameters
-     * @param parent - scoreboard this line belongs to
-     * @param lineNumber - ID of this line
-     * @param text - line text
+     *
+     * @param   parent
+     *          scoreboard this line belongs to
+     * @param   lineNumber
+     *          ID of this line
+     * @param   text
+     *          line text
      */
     public LongLine(ScoreboardImpl parent, int lineNumber, String text) {
         super(parent, lineNumber);

@@ -174,7 +174,7 @@ public class MessageFile extends YamlConfigurationFile {
                 ,"    &7Reloads plugin and config"
                 ," &8>> &3&l/tab &9group&3/&9player &3<name> &9<property> &3<value...>"
                 ,"    &7Do &8/tab group/player &7to show properties"
-                ," &8>> &3&l/tab ntpreview"
+                ," &8>> &3&l/tab nametag preview"
                 ,"    &7Shows your nametag for yourself, for testing purposes"
                 ," &8>> &3&l/tab announce bar &3<name> &9<seconds>"
                 ,"    &7Temporarily displays bossbar to all players"
@@ -229,5 +229,9 @@ public class MessageFile extends YamlConfigurationFile {
 
     public String getNameTagsShown() {
         return getString("nametags-shown", "&aNametags of all players were shown to you");
+    }
+
+    public String getArmorStandsDisabledCannotPreview() {
+        return getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
     }
 }

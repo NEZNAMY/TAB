@@ -76,7 +76,9 @@ public enum ProtocolVersion {
 
     /**
      * Constructs new instance with given network id
-     * @param networkId - network id of this version
+     *
+     * @param   networkId
+     *          network id of this version
      */
     ProtocolVersion(int networkId){
         this.networkId = networkId;
@@ -86,7 +88,9 @@ public enum ProtocolVersion {
 
     /**
      * Constructs new instance with given friendly name
-     * @param friendlyName - friendly name to display
+     *
+     * @param   friendlyName
+     *          friendly name to display
      */
     ProtocolVersion(String friendlyName){
         this.networkId = 999;
@@ -96,7 +100,8 @@ public enum ProtocolVersion {
 
     /**
      * Returns the version's network id
-     * @return version's network id
+     *
+     * @return  version's network id
      */
     public int getNetworkId() {
         return networkId;
@@ -104,7 +109,8 @@ public enum ProtocolVersion {
 
     /**
      * Returns user-friendly name of the version (such as 1.16.2 instead of V1_16_2)
-     * @return    user-friendly name of the version
+     *
+     * @return  user-friendly name of the version
      */
     public String getFriendlyName() {
         return friendlyName;
@@ -112,7 +118,8 @@ public enum ProtocolVersion {
 
     /**
      * Returns minor version of this release, such as 8 for 1.8.x or 13 for 1.13.x
-     * @return version's minor version
+     *
+     * @return  version's minor version
      */
     public int getMinorVersion() {
         return minorVersion;
@@ -122,8 +129,9 @@ public enum ProtocolVersion {
      * Overrides minor version of the version instance. This is used internally to
      * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
      * with server forks that set bukkit version field value to "Unknown".
-     * @param    minorVersion
-     *             minor version to change value to
+     *
+     * @param   minorVersion
+     *          minor version to change value to
      */
     public void setMinorVersion(int minorVersion) {
         this.minorVersion = minorVersion;
@@ -131,8 +139,10 @@ public enum ProtocolVersion {
 
     /**
      * Returns enum constant of entered version or UNKNOWN_SERVER_VERSION if unknown version
-     * @param friendlyName - friendly name of the version
-     * @return version or UNKNOWN_SERVER_VERSION if version is unknown
+     *
+     * @param   friendlyName
+     *          friendly name of the version
+     * @return  version or UNKNOWN_SERVER_VERSION if version is unknown
      */
     public static ProtocolVersion fromFriendlyName(String friendlyName) {
         if (friendlyName.startsWith("1.8")) return V1_8;
@@ -145,8 +155,10 @@ public enum ProtocolVersion {
 
     /**
      * Returns version from given network id
-     * @param networkId - network id of protocol version
-     * @return version from given network id
+     *
+     * @param   networkId
+     *          network id of protocol version
+     * @return  version from given network id
      */
     public static ProtocolVersion fromNetworkId(int networkId) {
         for (ProtocolVersion v : VALUES) {

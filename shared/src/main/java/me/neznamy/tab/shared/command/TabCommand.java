@@ -64,7 +64,9 @@ public class TabCommand extends SubCommand {
 
     /**
      * Sends help menu to the sender
-     * @param sender - player who ran command or null if from console
+     *
+     * @param   sender
+     *          player who ran command or null if from console
      */
     private void help(TabPlayer sender){
         if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {

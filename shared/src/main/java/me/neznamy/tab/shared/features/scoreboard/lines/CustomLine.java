@@ -26,12 +26,19 @@ public class CustomLine extends ScoreboardLine {
 
     /**
      * Constructs new instance with given parameters
-     * @param parent - scoreboard this line belongs to
-     * @param lineNumber - ID of this line
-     * @param prefix - prefix
-     * @param name - name
-     * @param suffix - suffix
-     * @param score - score
+     *
+     * @param   parent
+     *          scoreboard this line belongs to
+     * @param   lineNumber
+     *          ID of this line
+     * @param   prefix
+     *          prefix
+     * @param   name
+     *          name
+     * @param   suffix
+     *          suffix
+     * @param   score
+     *          score
      */
     public CustomLine(ScoreboardImpl parent, int lineNumber, String prefix, String name, String suffix, int score) {
         super(parent, lineNumber);

@@ -119,7 +119,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         long startTime = System.nanoTime();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (placeholder.update(all)) {
-                if (tabExpansion != null) tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValue(all));
                 if (placeholder.getIdentifier().equals("%vanished%")) TAB.getInstance().getFeatureManager().onVanishStatusChange(all);
                 update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
                 somethingChanged = true;
@@ -135,7 +134,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         if (placeholder.update()) {
             somethingChanged = true;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (tabExpansion != null) tabExpansion.setPlaceholderValue(all, placeholder.getIdentifier(), placeholder.getLastValue(null));
                 update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
             }
         }
@@ -252,12 +250,19 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                     tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
                 }
             }
-            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && refreshTask.getInterval() > p.getRefresh() && !p.isTriggerMode()) {
-                TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + p.getRefresh() + "ms due to placeholder " + identifier);
-                refreshTask.setInterval(p.getRefresh());
-                atomic.set(0);
-            } 
+            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && !p.isTriggerMode()) {
+                int refresh = gcd(p.getRefresh(), refreshTask.getInterval());
+                if (refreshTask.getInterval() != refresh) {
+                    TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + refresh + "ms due to placeholder " + identifier);
+                    refreshTask.setInterval(refresh);
+                    atomic.set(0);
+                }
+            }
         }
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
     }
     
     public void recalculateUsedPlaceholders() {

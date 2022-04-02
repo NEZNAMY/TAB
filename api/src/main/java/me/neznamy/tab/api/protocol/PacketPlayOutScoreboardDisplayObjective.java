@@ -20,12 +20,13 @@ public class PacketPlayOutScoreboardDisplayObjective implements TabPacket {
 
     /**
      * Constructs new instance with given parameters
-     * @param    slot
-     *             Display slot
-     * @param    objectiveName
-     *             Internal name of the objective
-     * @throws    IllegalArgumentException
-     *             if {@code objectiveName} is null or longer than 16 characters
+     *
+     * @param   slot
+     *          Display slot
+     * @param   objectiveName
+     *          Internal name of the objective
+     * @throws  IllegalArgumentException
+     *          if {@code objectiveName} is null or longer than 16 characters
      */
     public PacketPlayOutScoreboardDisplayObjective(int slot, String objectiveName) {
         Preconditions.checkNotNull(objectiveName, "objective name");
@@ -41,7 +42,8 @@ public class PacketPlayOutScoreboardDisplayObjective implements TabPacket {
 
     /**
      * Returns {@link #slot}
-     * @return    slot
+     *
+     * @return  slot
      */
     public int getSlot() {
         return slot;
@@ -49,7 +51,8 @@ public class PacketPlayOutScoreboardDisplayObjective implements TabPacket {
 
     /**
      * Returns {@link #objectiveName}
-     * @return    objectiveName
+     *
+     * @return  objectiveName
      */
     public String getObjectiveName() {
         return objectiveName;

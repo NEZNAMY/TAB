@@ -18,7 +18,9 @@ public class VelocityPlatform extends ProxyPlatform {
 
     /**
      * Constructs new instance with given parameter
-     * @param server - instance of ProxyServer
+     *
+     * @param   server
+     *          instance of ProxyServer
      */
     public VelocityPlatform(ProxyServer server) {
         super(new VelocityPacketBuilder());

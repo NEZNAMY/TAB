@@ -24,6 +24,7 @@ public class Converter {
      * to call this method, even if conversion is not needed.
      * <p>
      * This change was made from 2.8.10 -> 2.9.0
+     *
      * @param   animations
      *          animation file to convert
      */
@@ -38,6 +39,7 @@ public class Converter {
     /**
      * Converts all configuration files from 2.9.2 into new 3.0.0 format and saves a copy
      * of old files into a new "old_configs" folder.
+     *
      * @param   currentConfig
      *          currently detected config.yml file
      * @throws  IOException
@@ -89,6 +91,7 @@ public class Converter {
 
     /**
      * Creates a new "old_configs" folder and moves all files in TAB's folder into it.
+     *
      * @throws  IOException
      *          if thrown by file move operation
      */

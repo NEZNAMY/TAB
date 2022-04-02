@@ -41,7 +41,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
      * Constructs new instance for given player
-     * @param p - velocity player
+     *
+     * @param   p
+     *          velocity player
      */
     public VelocityTabPlayer(Player p) {
         super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?

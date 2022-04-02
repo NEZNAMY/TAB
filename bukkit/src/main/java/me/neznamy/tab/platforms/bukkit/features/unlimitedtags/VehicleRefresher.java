@@ -31,6 +31,7 @@ public class VehicleRefresher extends TabFeature {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
                 this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
+                        if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
 //                        feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
                     }
@@ -67,6 +68,9 @@ public class VehicleRefresher extends TabFeature {
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
+        for (List<Entity> entities : vehicles.values()) {
+            entities.remove((Player) disconnectedPlayer.getPlayer());
+        }
     }
 
     @Override
@@ -105,8 +109,10 @@ public class VehicleRefresher extends TabFeature {
     
     /**
      * Returns list of all passengers on specified vehicle
-     * @param vehicle - vehicle to check passengers of
-     * @return list of passengers
+     *
+     * @param   vehicle
+     *          vehicle to check passengers of
+     * @return  list of passengers
      */
     @SuppressWarnings("deprecation")
     public List<Entity> getPassengers(Entity vehicle){
@@ -123,7 +129,9 @@ public class VehicleRefresher extends TabFeature {
 
     /**
      * Teleports armor stands of all passengers on specified vehicle
-     * @param vehicle - entity to check passengers of
+     *
+     * @param   vehicle
+     *          entity to check passengers of
      */
     public void processPassengers(Entity vehicle) {
         for (Entity passenger : getPassengers(vehicle)) {

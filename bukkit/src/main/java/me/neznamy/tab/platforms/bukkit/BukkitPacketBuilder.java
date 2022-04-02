@@ -225,9 +225,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /**
      * Builds entity destroy packet with given parameter
-     * @return destroy packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @return  destroy packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
         try {
@@ -245,9 +246,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
     /**
      * Builds entity spawn packet with given parameters
      *
-     * @return entity spawn packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     * @return  entity spawn packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
         Object nmsPacket;
@@ -278,9 +279,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /**
      * Builds entity teleport packet with given parameters
-     * @return entity teleport packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @return  entity teleport packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException {
         Object nmsPacket;
@@ -360,11 +362,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /**
      * Builds entity BossBar packet
-     * @param packet - packet to build
-     * @param clientVersion - client version
-     * @return entity BossBar packet
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   packet
+     *          packet to build
+     * @param   clientVersion
+     *          client version
+     * @return  entity BossBar packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     private Object buildBossPacketEntity(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (packet.getAction() == Action.UPDATE_STYLE) return null; //nothing to do here
@@ -392,8 +397,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /**
      * A method taken from minecraft code used to convert double to int
-     * @param paramDouble double value
-     * @return int value
+     *
+     * @param   paramDouble
+     *          double value
+     * @return  int value
      */
     private int floor(double paramDouble){
         int i = (int)paramDouble;
@@ -402,10 +409,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /**
      * Converts minecraft IChatBaseComponent into TAB's component class. Currently, does not support show_item hover event on 1.16+.
-     * @param component - component to convert
-     * @return converted component
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   component
+     *          component to convert
+     * @return  converted component
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     private IChatBaseComponent fromNMSComponent(Object component) throws ReflectiveOperationException {
         if (!nms.ChatComponentText.isInstance(component)) return null; //paper
@@ -462,11 +471,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /**
      * Converts TAB's IChatBaseComponent into minecraft's component. Currently, does not support hover event.
-     * @param component - component to convert
-     * @param clientVersion - client version used to decide RGB conversion
-     * @return converted component
-     * @throws    ReflectiveOperationException
-     *             if thrown by reflective operation
+     *
+     * @param   component
+     *          component to convert
+     * @param   clientVersion
+     *          client version used to decide RGB conversion
+     * @return  converted component
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         Object obj;

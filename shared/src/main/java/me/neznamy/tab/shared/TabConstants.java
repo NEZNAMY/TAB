@@ -31,8 +31,6 @@ public class TabConstants {
         public static final String PLAYER_RESPAWN = "Player Respawn";
         public static final String PLUGIN_MESSAGE = "PluginMessageEvent";
         public static final String REDIS_BUNGEE_MESSAGE = "PubSubMessageEvent";
-        public static final String LUCKPERMS_USER_RECALCULATE_EVENT = "UserDataRecalculateEvent";
-        public static final String LUCKPERMS_GROUP_RECALCULATE_EVENT = "GroupDataRecalculateEvent";
         public static final String VANISH_CHANGE = "Vanish status change";
         public static final String ANTI_OVERRIDE = "Anti override";
 
@@ -49,6 +47,7 @@ public class TabConstants {
         public static final String RAW_PACKET_OUT = "Packet reading (out)";
 
         public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
+        public static final String GROUP_REFRESHING = "Refreshing groups";
 
         public static final String V1_8_0_BUG_COMPENSATION = "Compensating for 1.8.0 bugs";
         public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
@@ -78,6 +77,7 @@ public class TabConstants {
 
         public static final String LAYOUT_FIXED_SLOTS = "Layout (Fixed slots)";
         public static final String LAYOUT_PLAYER_SLOTS = "Layout (Player slots)";
+        public static final String LAYOUT_LATENCY = "Layout (Updating latency)";
 
         public static final String NAMETAGS_TEAM_REGISTER = "NameTags (Team register)";
         public static final String NAMETAGS_TEAM_UNREGISTER = "NameTags (Team unregister)";
@@ -225,6 +225,7 @@ public class TabConstants {
         public static final String PING_SPOOF = "PingSpoof";
         public static final String SORTING = "sorting";
         public static final String LAYOUT = "layout";
+        public static final String LAYOUT_LATENCY = "layout-latency";
         public static final String NICK_COMPATIBILITY = "nick";
         public static final String PIPELINE_INJECTION = "injection";
         public static final String BOSS_BAR = "BossBar";

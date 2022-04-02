@@ -18,10 +18,10 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
      * Constructs new instance with given parameters. They are converted to {@link IChatBaseComponent}
      * using {@link IChatBaseComponent#optimizedComponent(String)} method.
      * 
-     * @param    header
-     *             TabList header
-     * @param    footer
-     *             TabList footer
+     * @param   header
+     *          TabList header
+     * @param   footer
+     *          TabList footer
      */
     public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
         Preconditions.checkNotNull(header, "header");
@@ -33,10 +33,10 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
     /**
      * Constructs new instance with given parameters.
      * 
-     * @param    header
-     *             TabList header
-     * @param    footer
-     *             TabList footer
+     * @param   header
+     *          TabList header
+     * @param   footer
+     *          TabList footer
      */
     public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
         Preconditions.checkNotNull(header, "header");
@@ -52,7 +52,8 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
     /**
      * Returns {@link #header}
-     * @return    header
+     *
+     * @return  header
      */
     public IChatBaseComponent getHeader() {
         return header;
@@ -60,7 +61,8 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
     /**
      * Returns {@link #footer}
-     * @return    footer
+     *
+     * @return  footer
      */
     public IChatBaseComponent getFooter() {
         return footer;
