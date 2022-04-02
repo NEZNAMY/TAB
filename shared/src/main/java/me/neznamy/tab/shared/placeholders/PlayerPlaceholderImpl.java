@@ -98,6 +98,11 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @Override
+    public void updateValue(TabPlayer player, Object value) {
+        updateValue(player, value, false);
+    }
+
+    @Override
     public void updateFromNested(TabPlayer player) {
         updateValue(player, request(player), true);
     }
@@ -120,10 +125,5 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
             TAB.getInstance().getErrorManager().placeholderError("Player placeholder " + identifier + " generated an error when setting for player " + p.getName(), t);
             return ERROR_VALUE;
         }
-    }
-
-    @Override
-    public void updateValue(TabPlayer player, Object value) {
-        updateValue(player, value, false);
     }
 }

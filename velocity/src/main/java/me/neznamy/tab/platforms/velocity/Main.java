@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 @Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
+    /** Plugin instance */
     private static Main instance;
 
     /** ProxyServer instance */
@@ -55,7 +56,10 @@ public class Main {
     private final MinecraftChannelIdentifier mc = MinecraftChannelIdentifier.create(
             TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
 
+    /** Component cache for 1.16+ players to save CPU when creating components */
     private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
+
+    /** Component cache for 1.15- players to save CPU when creating components */
     private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
     /**
@@ -82,14 +86,29 @@ public class Main {
         metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
 
+    /**
+     * Returns instance of the plugin
+     *
+     * @return  instance of the plugin
+     */
     public static Main getInstance() {
         return instance;
     }
 
+    /**
+     * Returns instance of the proxy server
+     *
+     * @return  ProxyServer instance
+     */
     public ProxyServer getServer() {
         return server;
     }
 
+    /**
+     * Returns TAB's plugin message channel
+     *
+     * @return  TAB's plugin message channel
+     */
     public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
         return mc;
     }
@@ -104,12 +123,34 @@ public class Main {
     public void onProxyShutdown(ProxyShutdownEvent event) {
         TAB.getInstance().unload();
     }
-    
+
+    /**
+     * Converts TAB's component class into adventure component.
+     * Currently, the only way of conversion is string serialization / deserialization.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   clientVersion
+     *          Version of player to convert for
+     * @return  Converted component
+     */
     public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (component == null) return null;
         return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
     }
 
+    /**
+     * Loads component's adventure version from cache if present. If not, it is created,
+     * inserted into cache and returned.
+     *
+     * @param   map
+     *          Cache to load / save component
+     * @param   component
+     *          Component to convert
+     * @param   clientVersion
+     *          Player version to convert component for
+     * @return  Converted component
+     */
     private static Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (map.containsKey(component)) return map.get(component);
         Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
@@ -118,6 +159,9 @@ public class Main {
         return obj;
     }
 
+    /**
+     * TAB's command
+     */
     public static class VelocityTABCommand implements SimpleCommand {
 
         @Override

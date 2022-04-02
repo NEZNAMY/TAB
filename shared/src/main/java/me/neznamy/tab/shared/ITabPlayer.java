@@ -133,6 +133,11 @@ public abstract class ITabPlayer implements TabPlayer {
         }
     }
 
+    @Override
+    public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
+        return setProperty(feature, identifier, rawValue, null, false);
+    }
+
     /**
      * Sets team name to given value
      *
@@ -335,18 +340,6 @@ public abstract class ITabPlayer implements TabPlayer {
         sendCustomPacket(packet);
         if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature);
     }
-    
-    @Override
-    public void sendPacket(Object nmsPacket, TabFeature feature) {
-        sendPacket(nmsPacket);
-        if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature.getFeatureName());
-    }
-
-    @Override
-    public void sendPacket(Object packet, String feature) {
-        sendPacket(packet);
-        if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature);
-    }
 
     @Override
     public Property getProperty(String name) {
@@ -403,11 +396,6 @@ public abstract class ITabPlayer implements TabPlayer {
     @Override
     public boolean isBedrockPlayer() {
         return bedrockPlayer;
-    }
-    
-    @Override
-    public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
-        return setProperty(feature, identifier, rawValue, null, false);
     }
 
     @Override

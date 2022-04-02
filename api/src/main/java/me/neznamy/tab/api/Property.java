@@ -1,5 +1,9 @@
 package me.neznamy.tab.api;
 
+/**
+ * An interface representing a property assigned to a player,
+ * which may contain placeholders and can be changed using the API.
+ */
 public interface Property {
 
     /**

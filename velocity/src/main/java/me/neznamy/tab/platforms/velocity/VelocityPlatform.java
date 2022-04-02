@@ -13,7 +13,7 @@ import java.util.Locale;
 public class VelocityPlatform extends ProxyPlatform {
 
     /**
-     * Constructs new instance
+     * Constructs new instance with default packet builder
      */
     public VelocityPlatform() {
         super(new PacketBuilder());

@@ -66,7 +66,21 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      */
     public abstract void unregister(TabPlayer p);
 
+    /**
+     * Returns forced name start of this line to specified viewer
+     *
+     * @return  forced name start of this line to specified viewer
+     */
     public String getPlayerName(TabPlayer viewer) {
+        return playerName;
+    }
+
+    /**
+     * Returns forced name start of this line
+     *
+     * @return  forced name start of this line
+     */
+    public String getPlayerName() {
         return playerName;
     }
 
@@ -84,15 +98,6 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
         int splitIndex = firstElementMaxLength;
         if (string.charAt(splitIndex-1) == EnumChatFormat.COLOR_CHAR) splitIndex--;
         return new String[] {string.substring(0, splitIndex), string.substring(splitIndex)};
-    }
-    
-    /**
-     * Returns forced name start of this player
-     *
-     * @return  forced name start of this player
-     */
-    public String getPlayerName() {
-        return playerName;
     }
 
     /**

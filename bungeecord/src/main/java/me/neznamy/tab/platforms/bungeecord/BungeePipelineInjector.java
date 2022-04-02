@@ -7,7 +7,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PipelineInjector;
@@ -22,11 +21,15 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Pipeline injection to secure proper functionality
+ * of some features by preventing other plugins
+ * from overriding it.
+ */
 @SuppressWarnings("unchecked")
 public class BungeePipelineInjector extends PipelineInjector {
 
-    //packets that must be deserialized and BungeeCord does not do it automatically
-
+    /** Packets used by the plugin that must be deserialized and BungeeCord does not do it automatically */
     private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
     private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
@@ -47,7 +50,7 @@ public class BungeePipelineInjector extends PipelineInjector {
      */
     public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
 
-        //injected player
+        /** Injected player */
         protected final TabPlayer player;
 
         /**
@@ -57,7 +60,6 @@ public class BungeePipelineInjector extends PipelineInjector {
          *          player to inject
          */
         public BungeeChannelDuplexHandler(TabPlayer player) {
-            Preconditions.checkNotNull(player, "player");
             this.player = player;
         }
 
@@ -128,6 +130,11 @@ public class BungeePipelineInjector extends PipelineInjector {
         }
     }
 
+    /**
+     * Channel duplex handler override if features using packets that must be
+     * deserialized manually are used. If they are disabled, deserialization is
+     * disabled for better performance.
+     */
     public class DeserializableBungeeChannelDuplexHandler extends BungeeChannelDuplexHandler {
 
         /**

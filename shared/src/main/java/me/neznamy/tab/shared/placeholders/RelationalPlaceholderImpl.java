@@ -90,9 +90,19 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     }
 
     @Override
+    public void updateValue(TabPlayer viewer, TabPlayer target, Object value) {
+        updateValue(viewer, target, value, false);
+    }
+
+    @Override
     public String getLastValue(TabPlayer viewer, TabPlayer target) {
         if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
         return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).get(target))), target);
+    }
+
+    @Override
+    public String getLastValue(TabPlayer p) {
+        return identifier;
     }
 
     @Override
@@ -103,11 +113,6 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     }
 
     @Override
-    public String getLastValue(TabPlayer p) {
-        return identifier;
-    }
-
-    @Override
     public Object request(TabPlayer viewer, TabPlayer target) {
         try {
             return function.apply(viewer, target);
@@ -115,10 +120,5 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
             TAB.getInstance().getErrorManager().placeholderError("Relational placeholder " + identifier + " generated an error when setting for players " + viewer.getName() + " and " + target.getName(), t);
             return "ERROR";
         }
-    }
-
-    @Override
-    public void updateValue(TabPlayer viewer, TabPlayer target, Object value) {
-        updateValue(viewer, target, value, false);
     }
 }

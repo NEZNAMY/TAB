@@ -20,13 +20,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * TabPlayer for BungeeCord
+ * TabPlayer implementation for BungeeCord
  */
 public class BungeeTabPlayer extends ProxyTabPlayer {
 
-    //bungee internals to get player channel
+    /** Bungee channel wrapper */
     private static Field wrapperField;
+
+    /** Bungee protocol direction */
     private static Object directionData;
+
+    /** Bungee method returning packet ID for specified client version */
     private static Method getId;
 
     static {

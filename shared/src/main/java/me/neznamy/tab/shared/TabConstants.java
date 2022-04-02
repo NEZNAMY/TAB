@@ -260,6 +260,10 @@ public class TabConstants {
             return "scoreboard-" + line;
         }
 
+        public static String scoreboardLine(String scoreboard, int index) {
+            return "scoreboard-score-" + scoreboard + "-" + index;
+        }
+
         public static String layout(String name) {
             return "layout-" + name;
         }
@@ -278,10 +282,6 @@ public class TabConstants {
 
         public static String bossBarColorStyle(String name) {
             return "BossBar-color-style-" + name;
-        }
-
-        public static String scoreboardLine(String scoreboard, int index) {
-            return "scoreboard-score-" + scoreboard + "-" + index;
         }
     }
 }
