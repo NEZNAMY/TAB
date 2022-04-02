@@ -52,7 +52,8 @@ public class Main {
     private Logger logger;
 
     /** TAB's plugin message channel */
-    private MinecraftChannelIdentifier mc;
+    private final MinecraftChannelIdentifier mc = MinecraftChannelIdentifier.create(
+            TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
 
     private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
     private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
@@ -65,17 +66,11 @@ public class Main {
      */
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        if (!isVersionSupported()) {
-            logger.info(EnumChatFormat.color("&cThe plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads"));
-            return;
-        }
         instance = this;
         if (server.getConfiguration().isOnlineMode()) {
             logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
-        String[] name = TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":");
-        mc = MinecraftChannelIdentifier.create(name[0], name[1]);
         server.getChannelRegistrar().register(mc);
         TAB.setInstance(new TAB(new VelocityPlatform(), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
@@ -98,21 +93,6 @@ public class Main {
     public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
         return mc;
     }
-
-    /**
-     * Checks for compatibility and returns true if version is supported, false if not
-     *
-     * @return  true if version is compatible, false if not
-     */
-    private boolean isVersionSupported() {
-        try {
-            Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
-            Class.forName("net.kyori.adventure.identity.Identity"); //1.1.0 b265
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
     
     /**
      * Unloads the plugin
@@ -122,7 +102,7 @@ public class Main {
      */
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
-        if (TAB.getInstance() != null) TAB.getInstance().unload();
+        TAB.getInstance().unload();
     }
     
     public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
