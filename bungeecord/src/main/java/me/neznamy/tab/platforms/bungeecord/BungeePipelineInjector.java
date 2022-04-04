@@ -72,7 +72,9 @@ public class BungeePipelineInjector extends PipelineInjector {
                     return;
                 case "Team":
                     if (antiOverrideTeams) {
+                        long time = System.nanoTime();
                         modifyPlayers((Team) packet);
+                        TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                     }
                     break;
                 case "ScoreboardDisplay":
@@ -106,8 +108,7 @@ public class BungeePipelineInjector extends PipelineInjector {
          *          packet to modify
          */
         private void modifyPlayers(Team packet){
-            long time = System.nanoTime();
-            if (packet.getPlayers() == null) return;
+            if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
             Collection<String> col = Lists.newArrayList(packet.getPlayers());
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
@@ -126,7 +127,6 @@ public class BungeePipelineInjector extends PipelineInjector {
                 }
             }
             packet.setPlayers(col.toArray(new String[0]));
-            TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
 
