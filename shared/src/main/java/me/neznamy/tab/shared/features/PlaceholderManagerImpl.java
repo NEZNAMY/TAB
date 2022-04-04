@@ -62,7 +62,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
         boolean somethingChanged = false;
         for (Placeholder placeholder : usedPlaceholders) {
-            if (placeholder.getRefresh() == -1 || placeholder.isTriggerMode() || loopTime % placeholder.getRefresh() != 0) continue;
+            if (placeholder.getRefresh() == -1 || loopTime % placeholder.getRefresh() != 0) continue;
             if (placeholder instanceof RelationalPlaceholderImpl && updateRelationalPlaceholder((RelationalPlaceholderImpl) placeholder, forceUpdate)) somethingChanged = true;
             if (placeholder instanceof PlayerPlaceholderImpl && updatePlayerPlaceholder((PlayerPlaceholderImpl) placeholder, update)) somethingChanged = true;
             if (placeholder instanceof ServerPlaceholderImpl && updateServerPlaceholder((ServerPlaceholderImpl) placeholder, update)) somethingChanged = true;
@@ -250,7 +250,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                     tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
                 }
             }
-            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0 && !p.isTriggerMode()) {
+            if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0) {
                 int refresh = gcd(p.getRefresh(), refreshTask.getInterval());
                 if (refreshTask.getInterval() != refresh) {
                     TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + refresh + "ms due to placeholder " + identifier);

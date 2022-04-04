@@ -87,7 +87,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
                 }
             });
         } else {
-            manager.registerServerPlaceholder("%tps%", -1, () -> "-1").enableTriggerMode();
+            manager.registerServerPlaceholder("%tps%", -1, () -> "-1");
         }
         if (paperMspt) {
             manager.registerServerPlaceholder("%mspt%", 1000, () -> numberFormat.format(Bukkit.getAverageTickTime()));
@@ -112,8 +112,8 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             manager.registerPlayerPlaceholder("%vault-prefix%", 1000, p -> ((Chat) chat).getPlayerPrefix((Player) p.getPlayer()));
             manager.registerPlayerPlaceholder("%vault-suffix%", 1000, p -> ((Chat) chat).getPlayerSuffix((Player) p.getPlayer()));
         } else {
-            manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "").enableTriggerMode();
-            manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "").enableTriggerMode();
+            manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "");
+            manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "");
         }
         manager.registerPlayerPlaceholder("%health%", 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
     }
