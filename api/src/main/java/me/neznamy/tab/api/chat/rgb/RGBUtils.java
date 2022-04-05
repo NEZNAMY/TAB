@@ -74,24 +74,36 @@ public class RGBUtils {
 
     /**
      * Applies all RGB formats and gradients to text and returns it.
-     * This method is called on every property initialization to convert formats
-     * once instead of on every refresh, if possible. Because of that, parameter
-     * {@code ignorePlaceholders} exists to not break raw placeholder identifiers
      *
      * @param   text
      *          original text
-     * @param   ignorePlaceholders
-     *          whether placeholders should be ignored or not
      * @return  text where everything is converted to #RRGGBB
      */
-    public String applyFormats(String text, boolean ignorePlaceholders) {
+    public String applyFormats(String text) {
         Preconditions.checkNotNull(text, "text");
         String replaced = text;
         for (GradientPattern pattern : gradients) {
-            replaced = pattern.applyPattern(replaced, ignorePlaceholders);
+            replaced = pattern.applyPattern(replaced, false);
         }
         for (RGBFormatter formatter : formats) {
             replaced = formatter.reformat(replaced);
+        }
+        return replaced;
+    }
+
+    /**
+     * Applies all gradient formats to text and returns it. This only affects
+     * usage where no placeholder is used inside.
+     *
+     * @param   text
+     *          original text
+     * @return  text where all gradients with static text are converted to #RRGGBB
+     */
+    public String applyCleanGradients(String text) {
+        Preconditions.checkNotNull(text, "text");
+        String replaced = text;
+        for (GradientPattern pattern : gradients) {
+            replaced = pattern.applyPattern(replaced, true);
         }
         return replaced;
     }
@@ -112,7 +124,7 @@ public class RGBUtils {
         if (!text.contains("#")) return text; //no rgb codes
         if (rgbClient) {
             //converting random formats to TAB one
-            String replaced = applyFormats(text, false);
+            String replaced = applyFormats(text);
             for (Pattern p : new Pattern[]{tabPatternLegacy, tabPattern}) {
                 Matcher m = p.matcher(replaced);
                 while (m.find()) {
@@ -137,7 +149,7 @@ public class RGBUtils {
     public String convertRGBtoLegacy(String text) {
         if (text == null) return null;
         if (!text.contains("#")) return EnumChatFormat.color(text);
-        String applied = applyFormats(text, false);
+        String applied = applyFormats(text);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < applied.length(); i++){
             char c = applied.charAt(i);
