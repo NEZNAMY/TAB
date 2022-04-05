@@ -134,6 +134,12 @@ public class BukkitNameTagX extends NameTagX {
         if (isPreviewingNametag(p)) {
             getArmorStandManager(p).spawn(p);
         }
+        //for some reason this is needed for some users
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getWorld().equals(from)) {
+                getArmorStandManager(p).destroy(viewer);
+            }
+        }
     }
 
     /**
