@@ -84,12 +84,6 @@ public class BukkitPlatform extends Platform {
                 TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
             }
         }
-        if (Bukkit.getPluginManager().isPluginEnabled("Tablisknu")) {
-            TAB.getInstance().sendConsoleMessage("&cDetected plugin \"Tablisknu\", which causes TAB to not work properly. Consider removing the plugin.", true);
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("SkBee")) {
-            TAB.getInstance().sendConsoleMessage("&cDetected plugin \"SkBee\", which causes TAB's scoreboard to not show. Consider removing the plugin.", true);
-        }
         TAB tab = TAB.getInstance();
         if (tab.getConfiguration().isPipelineInjection())
             tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BukkitPipelineInjector());
