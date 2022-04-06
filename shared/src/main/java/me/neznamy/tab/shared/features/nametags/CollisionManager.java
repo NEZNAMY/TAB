@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.nametags;
 import java.util.Collections;
 import java.util.WeakHashMap;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -20,7 +21,7 @@ public class CollisionManager extends TabFeature {
         this.collisionRule = collisionRule;
         if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
         if (!collisionRule) return; //no need to refresh disguise status since collision is disabled
-        if (TAB.getInstance().getPlatform().getPluginVersion("LibsDisguises") == null && !TAB.getInstance().getPlatform().isProxy()) return; //no disguise plugin available
+        if (TAB.getInstance().getPlatform().getPluginVersion("LibsDisguises") == null && TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return; //no disguise plugin available
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%collision%", 500, p -> {
 
             if (forcedCollision.containsKey(p)) return forcedCollision.get(p);

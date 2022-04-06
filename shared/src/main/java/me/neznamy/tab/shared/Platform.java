@@ -70,13 +70,6 @@ public abstract class Platform {
     public abstract void registerUnknownPlaceholder(String identifier);
 
     /**
-     * Returns {@code true} if this platform is a proxy, {@code false} if a game server
-     *
-     * @return  {@code true} if this platform is a proxy, {@code false} if a game server
-     */
-    public abstract boolean isProxy();
-
-    /**
      * Performs platform-specific plugin manager call and returns the result.
      * If plugin is not installed, returns {@code null}.
      *

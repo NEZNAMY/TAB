@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.nametags;
 import java.util.*;
 
 import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
@@ -27,7 +28,7 @@ public class NameTag extends TabFeature implements TeamManager {
     private final WeakHashMap<TabPlayer, String> forcedTeamName = new WeakHashMap<>();
     protected final Set<TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
 
-    private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() ||
+    private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
             TAB.getInstance().getPlatform().getPluginVersion("ViaRewind") != null ||
             TAB.getInstance().getPlatform().getPluginVersion("ProtocolSupport") != null ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;

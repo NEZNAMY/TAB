@@ -232,11 +232,6 @@ public class BukkitPlatform extends Platform {
     }
 
     @Override
-    public boolean isProxy() {
-        return false;
-    }
-
-    @Override
     public String getConfigName() {
         return "bukkitconfig.yml";
     }

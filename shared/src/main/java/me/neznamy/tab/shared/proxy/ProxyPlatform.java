@@ -124,9 +124,4 @@ public abstract class ProxyPlatform extends Platform {
     public String getConfigName() {
         return "proxyconfig.yml";
     }
-
-    @Override
-    public boolean isProxy() {
-        return true;
-    }
 }
