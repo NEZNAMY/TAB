@@ -29,7 +29,6 @@ public class Configs {
     private boolean bukkitPermissions;
 
     //hidden config options
-    private boolean unregisterBeforeRegister;
     private boolean removeGhostPlayers;
     private boolean pipelineInjection;
 
@@ -100,8 +99,6 @@ public class Configs {
         debugMode = getConfig().getBoolean("debug", false);
         if (tab.getPlatform().isProxy()) {
             bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
-        } else {
-            unregisterBeforeRegister = getSecretOption("unregister-before-register", true);
         }
         removeGhostPlayers = getSecretOption("remove-ghost-players", false);
         pipelineInjection = getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
@@ -133,10 +130,6 @@ public class Configs {
     public <T> T getSecretOption(String path, T defaultValue) {
         Object value = getConfig().getObject(path);
         return value == null ? defaultValue : (T) value;
-    }
-
-    public boolean isUnregisterBeforeRegister() {
-        return unregisterBeforeRegister;
     }
 
     public MessageFile getMessages() {
