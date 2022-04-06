@@ -112,6 +112,9 @@ public class TAB extends TabAPI {
     /** Plugin's console logger provided by platform */
     private final Object logger;
 
+    /** File with YAML syntax error, which prevented plugin from loading */
+    private String brokenFile;
+
     /**
      * Constructs new instance with given parameters and sets this
      * new instance as {@link me.neznamy.tab.api.TabAPI} instance.
@@ -162,11 +165,10 @@ public class TAB extends TabAPI {
     public String load() {
         try {
             long time = System.currentTimeMillis();
-            this.errorManager = new ErrorManager();
+            errorManager = new ErrorManager();
             cpu = new CpuManager();
             featureManager = new FeatureManagerImpl();
-            configuration = new Configs(this);
-            configuration.loadFiles();
+            configuration = new Configs();
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
             platform.loadFeatures();
@@ -182,7 +184,8 @@ public class TAB extends TabAPI {
         } catch (YAMLException e) {
             sendConsoleMessage("&cDid not enable due to a broken configuration file.", true);
             kill();
-            return configuration.getReloadFailedMessage();
+            return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
+                    : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
         } catch (Exception e) {
             errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
             kill();
@@ -485,7 +488,7 @@ public class TAB extends TabAPI {
 
     @Override
     public void setBrokenFile(String file) {
-        configuration.setBrokenFile(file);
+        this.brokenFile = file;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config;
 
 import me.neznamy.tab.api.PropertyConfiguration;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
@@ -19,32 +20,27 @@ import java.util.List;
  */
 public class Configs {
 
-    private final TAB tab;
-
-    private final Converter converter = new Converter();
-
     //config.yml file
-    private ConfigurationFile config;
+    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream(TAB.getInstance().getPlatform().getConfigName()),
+            new File(TAB.getInstance().getDataFolder(), "config.yml"));
 
-    private boolean bukkitPermissions;
-
-    //hidden config options
-    private boolean removeGhostPlayers;
-    private boolean pipelineInjection;
+    private final boolean bukkitPermissions = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY && config.getBoolean("use-bukkit-permissions-manager", false);
+    private final boolean debugMode = config.getBoolean("debug", false);
+    private final boolean removeGhostPlayers = getSecretOption("remove-ghost-players", false);
+    private final boolean pipelineInjection = getSecretOption("pipeline-injection", true) && TAB.getInstance().getServerVersion().getMinorVersion() >= 8;
 
     //animations.yml file
-    private ConfigurationFile animation;
+    private final ConfigurationFile animation = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("animations.yml"),
+            new File(TAB.getInstance().getDataFolder(), "animations.yml"));
 
     //messages.yml file
-    private MessageFile messages;
-
-    //default reload message in case plugin did not load translation file due to an error
-    private String reloadFailed = "&4Failed to reload, file %file% has broken syntax. Check console for more info.";
+    private final MessageFile messages = new MessageFile();
 
     //playerdata.yml, used for bossbar & scoreboard toggle saving
     private ConfigurationFile playerdata;
 
-    private ConfigurationFile layout;
+    private final ConfigurationFile layout = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout.yml"),
+            new File(TAB.getInstance().getDataFolder(), "layout.yml"));
 
     private PropertyConfiguration groupFile;
 
@@ -52,56 +48,20 @@ public class Configs {
 
     private MySQL mysql;
 
-    private boolean debugMode;
-
-    private String brokenFile;
-
     /**
-     * Constructs new instance with given parameter
-     *
-     * @param   tab
-     *          tab instance
-     */
-    public Configs(TAB tab) {
-        this.tab = tab;
-    }
-
-    /**
-     * Loads all configuration files and converts files to latest version
+     * Constructs new instance and loads configuration files.
+     * If needed, converts old configuration files as well.
      *
      * @throws  IOException
      *          if File I/O operation fails
      * @throws  YAMLException
      *          if files contain syntax errors
      */
-    public void loadFiles() throws YAMLException, IOException {
-        messages = new MessageFile();
-        ClassLoader loader = Configs.class.getClassLoader();
-        loadConfig();
-        animation = new YamlConfigurationFile(loader.getResourceAsStream("animations.yml"), new File(tab.getDataFolder(), "animations.yml"));
-        converter.convertAnimationFile(animation);
-        layout = new YamlConfigurationFile(loader.getResourceAsStream("layout.yml"), new File(tab.getDataFolder(), "layout.yml"));
-        reloadFailed = messages.getReloadFailBrokenFile();
-    }
-
-    /**
-     * Loads config.yml and some of its values
-     *
-     * @throws  IOException
-     *          if File I/O operation fails
-     * @throws  YAMLException
-     *          if files contain syntax errors
-     */
-    public void loadConfig() throws YAMLException, IOException {
-        config = new YamlConfigurationFile(Configs.class.getClassLoader().getResourceAsStream(tab.getPlatform().getConfigName()), new File(tab.getDataFolder(), "config.yml"));
+    public Configs() throws YAMLException, IOException {
+        Converter converter = new Converter();
         converter.convertToV3(config);
         converter.removeOldOptions(config);
-        debugMode = getConfig().getBoolean("debug", false);
-        if (tab.getPlatform().isProxy()) {
-            bukkitPermissions = getConfig().getBoolean("use-bukkit-permissions-manager", false);
-        }
-        removeGhostPlayers = getSecretOption("remove-ghost-players", false);
-        pipelineInjection = getSecretOption("pipeline-injection", true) && tab.getServerVersion().getMinorVersion() >= 8;
+        converter.convertAnimationFile(animation);
         if (config.getBoolean("mysql.enabled", false)) {
             try {
                 mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
@@ -113,8 +73,8 @@ public class Configs {
                 TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
             }
         }
-        groupFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("groups.yml"), new File(tab.getDataFolder(), "groups.yml"));
-        userFile = new YamlPropertyConfigurationFile(Configs.class.getClassLoader().getResourceAsStream("users.yml"), new File(tab.getDataFolder(), "users.yml"));
+        groupFile = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
+        userFile = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
     }
 
     /**
@@ -128,7 +88,7 @@ public class Configs {
      */
     @SuppressWarnings("unchecked")
     public <T> T getSecretOption(String path, T defaultValue) {
-        Object value = getConfig().getObject(path);
+        Object value = config.getObject(path);
         return value == null ? defaultValue : (T) value;
     }
 
@@ -160,20 +120,15 @@ public class Configs {
         return pipelineInjection;
     }
 
-    public String getReloadFailedMessage() {
-        String message = messages == null ? reloadFailed : messages.getReloadFailBrokenFile();
-        return message.replace("%file%", brokenFile);
-    }
-
     public ConfigurationFile getPlayerDataFile() {
         if (playerdata == null) {
-            File file = new File(tab.getDataFolder(), "playerdata.yml");
+            File file = new File(TAB.getInstance().getDataFolder(), "playerdata.yml");
             try {
                 if (file.exists() || file.createNewFile()) {
                     playerdata = new YamlConfigurationFile(null, file);
                 }
             } catch (IOException e) {
-                tab.getErrorManager().criticalError("Failed to load playerdata.yml", e);
+                TAB.getInstance().getErrorManager().criticalError("Failed to load playerdata.yml", e);
             }
         }
         return playerdata;
@@ -207,9 +162,5 @@ public class Configs {
 
     public boolean isDebugMode() {
         return debugMode;
-    }
-
-    public void setBrokenFile(String file) {
-        this.brokenFile = file;
     }
 }

@@ -28,7 +28,6 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
             String value = crs.getString("value");
             String world = crs.getString("world");
             String server = crs.getString("server");
-            TAB.getInstance().debug("Loaded group: " + String.format("%s, %s, %s, %s, %s", group, property, value, world, server));
             setProperty0(group, property, server, world, value);
         }
     }
