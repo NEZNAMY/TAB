@@ -20,9 +20,7 @@ import me.neznamy.tab.shared.TabConstants;
 public class CpuCommand extends SubCommand {
 
     private final DecimalFormat decimal3 = new DecimalFormat("#.###");
-
-    private static final char LINE_CHAR = (char)9553;
-    private static final String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
+    private final char LINE_CHAR = (char)9553;
 
     /**
      * Constructs new instance
@@ -33,6 +31,7 @@ public class CpuCommand extends SubCommand {
 
     @Override
     public void execute(TabPlayer sender, String[] args) {
+        String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
         TAB tab = TAB.getInstance();
         Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
         double placeholdersTotal = placeholders.values().stream().mapToDouble(Float::floatValue).sum();

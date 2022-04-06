@@ -57,10 +57,10 @@ public class Main {
             TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
 
     /** Component cache for 1.16+ players to save CPU when creating components */
-    private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
+    private final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
 
     /** Component cache for 1.15- players to save CPU when creating components */
-    private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
+    private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
     /**
      * Initializes plugin for velocity
@@ -134,7 +134,7 @@ public class Main {
      *          Version of player to convert for
      * @return  Converted component
      */
-    public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
+    public Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (component == null) return null;
         return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
     }
@@ -151,7 +151,7 @@ public class Main {
      *          Player version to convert component for
      * @return  Converted component
      */
-    private static Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
+    private Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (map.containsKey(component)) return map.get(component);
         Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
         if (map.size() > 10000) map.clear();
@@ -162,7 +162,7 @@ public class Main {
     /**
      * TAB's command
      */
-    public static class VelocityTABCommand implements SimpleCommand {
+    private class VelocityTABCommand implements SimpleCommand {
 
         @Override
         public void execute(Invocation invocation) {

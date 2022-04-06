@@ -10,7 +10,7 @@ import java.util.*;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
-    private static final String DEFAULT_GROUP = "_DEFAULT_";
+    private final String DEFAULT_GROUP = "_DEFAULT_";
     private final MySQL mysql;
 
     private final Map<String, Map<String, Object>> values = new HashMap<>();

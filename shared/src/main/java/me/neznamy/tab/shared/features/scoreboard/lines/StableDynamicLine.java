@@ -18,7 +18,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  */
 public class StableDynamicLine extends ScoreboardLine {
 
-    private static final String[] EMPTY_ARRAY = new String[0];
+    private final String[] EMPTY_ARRAY = new String[0];
 
     /**
      * Constructs new instance with given parameters

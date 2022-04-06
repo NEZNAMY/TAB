@@ -17,7 +17,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * Internal constant used to detect if placeholder threw an error.
      * If so, placeholder's last known value is displayed.
      */
-    private static final String ERROR_VALUE = "ERROR";
+    private final String ERROR_VALUE = "ERROR";
 
     /** Placeholder function returning fresh output on request */
     private final Function<TabPlayer, Object> function;

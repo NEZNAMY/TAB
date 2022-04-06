@@ -93,7 +93,7 @@ public class Main extends JavaPlugin {
     /**
      * Command handler for /tab command
      */
-    public static class TABCommand implements CommandExecutor, TabCompleter {
+    private class TABCommand implements CommandExecutor, TabCompleter {
 
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
