@@ -35,7 +35,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
     private final List<BossBar> announcements = new ArrayList<>();
 
     //players with toggled BossBar
-    private List<String> bossBarOffPlayers = new ArrayList<>();
+    private final List<String> bossBarOffPlayers;
 
     //time when BossBar announce ends, used for placeholder
     private long announceEndTime;
@@ -55,6 +55,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
         lineValues = lines.values().toArray(new BossBar[0]);
         if (rememberToggleChoice) {
             bossBarOffPlayers = TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off", new ArrayList<>());
+        } else {
+            bossBarOffPlayers = Collections.emptyList();
         }
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%countdown%", 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
         TAB.getInstance().debug(String.format("Loaded BossBar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",

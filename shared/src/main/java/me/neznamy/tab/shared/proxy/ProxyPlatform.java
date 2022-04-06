@@ -103,7 +103,7 @@ public abstract class ProxyPlatform extends Platform {
         new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
         if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
             if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX(plm));
+                tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX());
             } else {
                 tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
             }
@@ -116,7 +116,7 @@ public abstract class ProxyPlatform extends Platform {
         if (tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
             tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new TabFeature("", "") {});
         if (tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
-            tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion(plm));
+            tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion());
         }
     }
 
