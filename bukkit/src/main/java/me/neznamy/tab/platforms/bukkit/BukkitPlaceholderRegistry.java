@@ -24,7 +24,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
     /** Number formatter for 2 decimal places */
     private final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
-    private Object chat;
+    private Object chat; // Object because Fabric
     private final Plugin essentials = Bukkit.getPluginManager().getPlugin("Essentials");
     private Object server;
     private Field recentTps;
@@ -37,13 +37,9 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
      */
     public BukkitPlaceholderRegistry() {
         numberFormat.setMaximumFractionDigits(2);
-        try {
-            if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-                RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Class.forName("net.milkbowl.vault.chat.Chat"));
-                if (rspChat != null) chat = rspChat.getProvider();
-            }
-        } catch (ClassNotFoundException e) {
-            //modded server without vault
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            RegisteredServiceProvider<?> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
+            if (rspChat != null) chat = rspChat.getProvider();
         }
         try {
             server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
