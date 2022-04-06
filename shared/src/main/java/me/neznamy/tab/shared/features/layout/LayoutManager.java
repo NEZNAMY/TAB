@@ -24,16 +24,17 @@ public class LayoutManager extends TabFeature {
     private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
     private final SkinManager skinManager = new SkinManager(defaultSkin);
 
+    private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>(){{
+        for (int slot=1; slot<=80; slot++) {
+            put(slot, new UUID(0, translateSlot(slot)));
+        }
+    }};
     private final Map<String, Layout> layouts = loadLayouts();
     private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
-    private final Map<Integer, UUID> uuids = new HashMap<>();
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(TabPlayer::getTeamName)));
 
     public LayoutManager() {
         super("Layout", "Switching layouts");
-        for (int slot=1; slot<=80; slot++) {
-            uuids.put(slot, new UUID(0, translateSlot(slot)));
-        }
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         TAB.getInstance().debug("Loaded Layout feature");
