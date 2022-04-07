@@ -294,4 +294,14 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     public void setTabExpansion(TabExpansion tabExpansion) {
         this.tabExpansion = tabExpansion;
     }
+
+    @Override
+    public void onJoin(TabPlayer connectedPlayer) {
+        if (tabExpansion == null) return;
+        for (Placeholder p : usedPlaceholders) {
+            if (p instanceof ServerPlaceholder) { // server placeholders don't update on join
+                tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholder) p).getLastValue());
+            }
+        }
+    }
 }
