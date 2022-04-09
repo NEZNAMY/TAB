@@ -4,6 +4,7 @@ import com.earth2me.essentials.Essentials;
 import com.viaversion.viaversion.api.Via;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
@@ -296,5 +297,19 @@ public class BukkitPlatform extends Platform {
             TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s", player.getName(), viaVersion.getDescription().getVersion()), e);
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
+    }
+
+    /**
+     * Sends console message using ConsoleCommandSender, due to
+     * Paper not translating colors correctly in Logger messages
+     *
+     * @param   message
+     *          Message to send
+     * @param   translateColors
+     *          Whether color codes should be translated or not
+     */
+    @Override
+    public void sendConsoleMessage(String message, boolean translateColors) {
+        Bukkit.getConsoleSender().sendMessage("[TAB] "+ (translateColors ? EnumChatFormat.color(message) : message));
     }
 }

@@ -1,8 +1,10 @@
 package me.neznamy.tab.shared;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import org.slf4j.Logger;
 
 /**
  * An interface with methods that are called in universal code,
@@ -46,6 +48,15 @@ public abstract class Platform {
      */
     public PacketBuilder getPacketBuilder(){
         return packetBuilder;
+    }
+
+    public void sendConsoleMessage(String message, boolean translateColors) {
+        Object logger = TAB.getInstance().getLogger();
+        if (logger instanceof java.util.logging.Logger) {
+            ((java.util.logging.Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
+        } else if (logger instanceof Logger) {
+            ((Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
+        }
     }
 
     /**
