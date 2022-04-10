@@ -21,21 +21,21 @@ import java.util.stream.Collectors;
 public class AlignedPlayerList extends PlayerList {
 
     private final WeakHashMap<TabPlayer, PlayerView> playerViews = new WeakHashMap<>();
-    private final byte[] widths = new byte[65536];
+    private final byte[] widths = loadWidths();
 
     public AlignedPlayerList() {
-        loadWidths();
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
     }
 
     /**
      * Loads widths from included widths.txt file as well as width overrides from config
      */
-    private void loadWidths() {
+    private byte[] loadWidths() {
+        byte[] widths = new byte[65536];
         InputStream file = getClass().getClassLoader().getResourceAsStream("widths.txt");
         if (file == null) {
             TAB.getInstance().getErrorManager().criticalError("Failed to load widths.txt file. Is it inside the jar? Aligned suffix will not work.", null);
-            return;
+            return widths;
         }
         int characterId = 1;
         for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
@@ -45,6 +45,7 @@ public class AlignedPlayerList extends PlayerList {
         for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
             widths[entry.getKey()] = (byte)(int)entry.getValue();
         }
+        return widths;
     }
 
     @Override

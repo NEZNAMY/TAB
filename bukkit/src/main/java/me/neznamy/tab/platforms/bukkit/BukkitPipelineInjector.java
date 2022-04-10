@@ -70,7 +70,9 @@ public class BukkitPipelineInjector extends PipelineInjector {
                     return;
                 }
                 if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam != null && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+                    long time = System.nanoTime();
                     modifyPlayers(packet);
+                    TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                     super.write(context, packet, channelPromise);
                     return;
                 }
@@ -101,7 +103,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
          */
         @SuppressWarnings("unchecked")
         private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
-            long time = System.nanoTime();
+            int action = nms.PacketPlayOutScoreboardTeam_ACTION.getInt(packetPlayOutScoreboardTeam);
+            if (action == 1 || action == 2 || action == 4) return;
             Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
             String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
             if (players == null) return;
@@ -121,7 +124,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
                 }
             }
             nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
-            TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
 
         private TabPlayer getPlayer(String name) {

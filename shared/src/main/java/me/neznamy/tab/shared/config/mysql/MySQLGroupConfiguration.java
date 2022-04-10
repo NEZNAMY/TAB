@@ -10,7 +10,7 @@ import java.util.*;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
-    private static final String DEFAULT_GROUP = "_DEFAULT_";
+    private final String DEFAULT_GROUP = "_DEFAULT_";
     private final MySQL mysql;
 
     private final Map<String, Map<String, Object>> values = new HashMap<>();
@@ -28,7 +28,6 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
             String value = crs.getString("value");
             String world = crs.getString("world");
             String server = crs.getString("server");
-            TAB.getInstance().debug("Loaded group: " + String.format("%s, %s, %s, %s, %s", group, property, value, world, server));
             setProperty0(group, property, server, world, value);
         }
     }

@@ -115,33 +115,11 @@ public interface TabPlayer {
     void sendPacket(Object packet);
 
     /**
-     * Sends the player a platform-specific packet and adds that packet into counter that
-     * is displayed in /tab cpu
-     *
-     * @param   packet
-     *          an instance of packet depending on platform
-     * @param   feature
-     *          feature to increment sent packet counter of
-     */
-    void sendPacket(Object packet, TabFeature feature);
-
-    /**
-     * Sends the player a platform-specific packet and adds that packet into counter that
-     * is displayed in /tab cpu
-     *
-     * @param   packet
-     *          an instance of packet depending on platform
-     * @param   feature
-     *          feature to increment sent packet counter of
-     */
-    void sendPacket(Object packet, String feature);
-
-    /**
      * Returns player's property by name
      *
      * @param   name
      *          name of property
-     * @return  the property or null if not found
+     * @return  the property or {@code null} if not found
      */
     Property getProperty(String name);
 
@@ -164,14 +142,7 @@ public interface TabPlayer {
     void sendMessage(IChatBaseComponent message);
 
     /**
-     * Returns player's primary permission group
-     *
-     * @return  player's group depending on configuration
-     */
-    String getGroup();
-
-    /**
-     * Returns player's channel or null if server is 1.7 or older
+     * Returns player's netty channel. On servers running version 1.7 or older returns {@code null}.
      *
      * @return  player's channel
      */
@@ -194,13 +165,14 @@ public interface TabPlayer {
     /**
      * Returns true once the player is successfully loaded (onJoin method ran through all methods)
      *
-     * @return  true if player is fully loaded, false otherwise
+     * @return  {@code true} if player is fully loaded, {@code false} otherwise
      */
     boolean isLoaded();
 
     /**
      * Sets property with specified name to new value. If property did not exist before, it is
-     * created and true is returned. If it existed, it is overridden and true is returned. False is returned otherwise.
+     * created and {@code true} is returned. If it existed, it is overridden and {@code true} is returned.
+     * {@code false} is returned otherwise.
      *
      * @param   feature
      *          feature using this property to get placeholders registered
@@ -208,7 +180,7 @@ public interface TabPlayer {
      *          property name
      * @param   rawValue
      *          new raw value
-     * @return  true if value changed / did not exist, false if value did not change
+     * @return  {@code true} if value changed / did not exist, {@code false} if value did not change
      */
     boolean setProperty(TabFeature feature, String identifier, String rawValue);
 
@@ -217,24 +189,24 @@ public interface TabPlayer {
      *
      * @param   property
      *          property name to load
-     * @return  true if value did not exist or changed, false otherwise
+     * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
     boolean loadPropertyFromConfig(TabFeature feature, String property);
 
     /**
      * Loads property from config using standard property loading algorithm. If the property is
-     * not set in config, sets it to ifNotSet value
+     * not set in config, {@code ifNotSet} value is used.
      *
      * @param   property
      *          property name to load
      * @param   ifNotSet
      *          value to use if property is not defined in config
-     * @return  true if value did not exist or changed, false otherwise
+     * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
     boolean loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet);
 
     /**
-     * Returns name of player's scoreboard team or null if NameTag feature is disabled
+     * Returns name of player's scoreboard team or {@code null} if NameTag feature is disabled
      *
      * @return  name of player's team
      */
@@ -248,32 +220,31 @@ public interface TabPlayer {
     String getTeamNameNote();
 
     /**
-     * Returns true if player is disguised using LibsDisguises
+     * Returns {@code true} if player is disguised using LibsDisguises, {@code false} if not
      *
-     * @return  true if player is disguised, false if not
+     * @return  {@code true} if player is disguised, {@code false} if not
      */
     boolean isDisguised();
 
     /**
-     * Returns true if player has invisibility potion, false if not. For bukkit, API is used, for BungeeCord
-     * bukkit bridge is used
+     * Returns {@code true} if player has invisibility potion, {@code false} if not.
+     * For bukkit, API is used, for BungeeCord, bridge is used.
      *
-     * @return  true if player has invisibility potion, false if not
+     * @return  {@code true} if player has invisibility potion, {@code false} if not
      */
     boolean hasInvisibilityPotion();
 
     /**
-     * Currently only PV hook on BungeeCord for global PlayerList function. Looking to expand this
-     * in the future
+     * Checks if player is vanished using any supported vanish plugin and returns the result.
      *
-     * @return  true if vanished with PV on BungeeCord
+     * @return  {@code true} if player is vanished, {@code false} if not
      */
     boolean isVanished();
 
     /**
-     * Returns true if player is online according to server
+     * Calls platform-specific method and returns the result
      *
-     * @return  true if online, false if not
+     * @return  {@code true} if player is online, {@code false} if not
      */
     boolean isOnline();
     
@@ -283,14 +254,60 @@ public interface TabPlayer {
      * @return  GameMode of the player
      */
     int getGamemode();
-    
+
+    /**
+     * Returns {@code true} if this is a bedrock player, {@code false} if not
+     *
+     * @return  {@code true} if player is a bedrock player, {@code false} if not
+     */
     boolean isBedrockPlayer();
 
+    /**
+     * Returns player's primary permission group. If group has been changed using
+     * {@link #setTemporaryGroup(String)}, returns that value. Otherwise, returns group
+     * detected by standard group assign logic
+     *
+     * @return  player's primary permission group
+     */
+    String getGroup();
+
+    /**
+     * Temporarily overrides player's group and applies all changes coming from new group.
+     * This includes all properties and sorting, if used.
+     *
+     * @param   group
+     *          New group to use
+     * @see     #hasTemporaryGroup()
+     * @see     #resetTemporaryGroup()
+     */
     void setTemporaryGroup(String group);
 
+    /**
+     * Returns temporary group applied to the player using {@link #setTemporaryGroup(String)}.
+     * If no group was set, returns {@code null}
+     *
+     * @return  Temporary group assigned to player or {@code null} if not set
+     * @see     #setTemporaryGroup(String)
+     * @see     #resetTemporaryGroup()
+     */
     boolean hasTemporaryGroup();
 
+    /**
+     * Resets temporary group assigned using {@link #setTemporaryGroup(String)}.
+     * If no temporary group is set, doesn't do anything.
+     *
+     * @see     #setTemporaryGroup(String)
+     * @see     #hasTemporaryGroup()
+     */
     void resetTemporaryGroup();
 
+    /**
+     * Returns player's game profile name as seen by other players. By default,
+     * this returns player's name. If using a nickname / disguise plugin that changes
+     * game profile name for other players and change was successfully detected, returns
+     * that value.
+     *
+     * @return  player's game profile name as seen by other players
+     */
     String getNickname();
 }

@@ -17,7 +17,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * Internal constant used to detect if placeholder threw an error.
      * If so, placeholder's last known value is displayed.
      */
-    private static final String ERROR_VALUE = "ERROR";
+    private final String ERROR_VALUE = "ERROR";
 
     /** Placeholder function returning fresh output on request */
     private final Function<TabPlayer, Object> function;
@@ -98,6 +98,11 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @Override
+    public void updateValue(TabPlayer player, Object value) {
+        updateValue(player, value, false);
+    }
+
+    @Override
     public void updateFromNested(TabPlayer player) {
         updateValue(player, request(player), true);
     }
@@ -120,10 +125,5 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
             TAB.getInstance().getErrorManager().placeholderError("Player placeholder " + identifier + " generated an error when setting for player " + p.getName(), t);
             return ERROR_VALUE;
         }
-    }
-
-    @Override
-    public void updateValue(TabPlayer player, Object value) {
-        updateValue(player, value, false);
     }
 }

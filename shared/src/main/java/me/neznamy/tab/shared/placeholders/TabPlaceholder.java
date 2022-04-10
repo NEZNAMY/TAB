@@ -26,13 +26,6 @@ public abstract class TabPlaceholder implements Placeholder {
     private boolean active;
 
     /**
-     * Boolean tracking whether this placeholder is in trigger mode or not.
-     * When a placeholder is in trigger mode, it is not refreshed periodically,
-     * only when updateValue method is called.
-     */
-    private boolean triggerMode;
-
-    /**
      * Runnable to run when this placeholder becomes used and this is a trigger placeholder.
      * This is typically registering an event listener so placeholders don't listen to
      * events if they are not used at all. May be null if nothing should run.
@@ -210,23 +203,12 @@ public abstract class TabPlaceholder implements Placeholder {
     }
 
     @Override
-    public boolean isTriggerMode() {
-        return triggerMode;
-    }
-
-    @Override
     public void unload() {
         if (onDisable != null && active) onDisable.run();
     }
 
     @Override
-    public void enableTriggerMode() {
-        triggerMode = true;
-    }
-
-    @Override
     public void enableTriggerMode(Runnable onActivation, Runnable onDisable) {
-        triggerMode = true;
         this.onActivation = onActivation;
         this.onDisable = onDisable;
         if (active && onActivation != null) onActivation.run();

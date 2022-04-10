@@ -231,7 +231,7 @@ public class IChatBaseComponent {
      */
     public static IChatBaseComponent fromColoredText(String originalText){
         Preconditions.checkNotNull(originalText, "text");
-        String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText), false);
+        String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
         List<IChatBaseComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         IChatBaseComponent component = new IChatBaseComponent();

@@ -168,7 +168,7 @@ public class ErrorManager {
      */
     private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
         buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
-        if (TAB.getInstance().getConfiguration().isDebugMode() || forceConsole) TAB.getInstance().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
+        if (forceConsole || TAB.getInstance().getConfiguration().isDebugMode()) TAB.getInstance().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
     }
 
     /**

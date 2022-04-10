@@ -71,7 +71,7 @@ public class StaticLine extends ScoreboardLine {
     @Override
     public void unregister(TabPlayer p) {
         if (text.length() > 0) {
-            removeLine(p, getPlayerName(p));
+            removeLine(p, getPlayerName());
         }
     }
 

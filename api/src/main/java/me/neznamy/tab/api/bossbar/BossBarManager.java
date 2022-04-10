@@ -4,15 +4,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
  * An interface allowing work with BossBars such as creating, sending
  * and toggling.
  * <p>
- * Instance can be obtained using {@link me.neznamy.tab.api.TabAPI#getBossBarManager()}.
+ * Instance can be obtained using {@link TabAPI#getBossBarManager()}.
  * This requires the BossBar feature to be enabled in config, otherwise the method will
- * return null.
+ * return {@code null}.
  */
 public interface BossBarManager {
 

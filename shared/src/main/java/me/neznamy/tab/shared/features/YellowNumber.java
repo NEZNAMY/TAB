@@ -39,8 +39,7 @@ public class YellowNumber extends TabFeature {
      * Constructs new instance and sends debug message that feature loaded.
      */
     public YellowNumber() {
-        super("Yellow number", "Updating value", TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("yellow-number-in-tablist.disable-in-worlds"));
+        super("Yellow number", "Updating value", "yellow-number-in-tablist");
         TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), displayType));
     }
 

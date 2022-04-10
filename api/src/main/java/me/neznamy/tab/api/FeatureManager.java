@@ -1,5 +1,8 @@
 package me.neznamy.tab.api;
 
+/**
+ * Feature manager allows registration and work with features.
+ */
 public interface FeatureManager {
 
     /**

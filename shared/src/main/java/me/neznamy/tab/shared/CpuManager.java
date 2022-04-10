@@ -18,7 +18,7 @@ import me.neznamy.tab.api.task.ThreadManager;
 public class CpuManager implements ThreadManager {
 
     /** Data reset interval in milliseconds */
-    private static final int BUFFER_SIZE_MILLIS = 10000;
+    private final int BUFFER_SIZE_MILLIS = 10000;
 
     /** Active time in current time period saved as nanoseconds from features */
     private Map<String, Map<String, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
@@ -17,7 +18,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  */
 public class StableDynamicLine extends ScoreboardLine {
 
-    private static final String[] EMPTY_ARRAY = new String[0];
+    private final String[] EMPTY_ARRAY = new String[0];
 
     /**
      * Constructs new instance with given parameters
@@ -109,7 +110,7 @@ public class StableDynamicLine extends ScoreboardLine {
      */
     private String[] split(TabPlayer p, String text) {
         int charLimit = 16;
-        if (!TAB.getInstance().getPlatform().isProxy() &&
+        if (TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY &&
             TAB.getInstance().getServerVersion().getMinorVersion() >= 13 &&
             p.getVersion().getMinorVersion() < 13) {
             //ProtocolSupport bug

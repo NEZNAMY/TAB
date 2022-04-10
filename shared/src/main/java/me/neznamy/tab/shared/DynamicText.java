@@ -110,7 +110,7 @@ public class DynamicText implements Property {
                 rawFormattedValue0 = sb.toString();
             }
         }
-        rawFormattedValue0 = RGBUtils.getInstance().applyFormats(rawFormattedValue0, true);
+        rawFormattedValue0 = RGBUtils.getInstance().applyCleanGradients(rawFormattedValue0);
         rawFormattedValue = EnumChatFormat.color(rawFormattedValue0);
         placeholders = placeholders0.toArray(new String[0]);
         relPlaceholders = relPlaceholders0.toArray(new String[0]);

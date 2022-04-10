@@ -55,6 +55,13 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     }
 
     /**
+     * Teleports armor stands to player's current location for all nearby players
+     */
+    public void teleport() {
+        for (ArmorStand a : armorStandArray) a.teleport();
+    }
+
+    /**
      * Returns array of nearby players
      * @return array of nearby players
      */
@@ -100,13 +107,6 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     }
 
     /**
-     * Teleports armor stands to player's current location for all nearby players
-     */
-    public void teleport() {
-        for (ArmorStand a : armorStandArray) a.teleport();
-    }
-
-    /**
      * Performs respawn operation on all armor stands to skip teleport animation
      */
     public void respawn() {
@@ -128,17 +128,6 @@ public class BukkitArmorStandManager implements ArmorStandManager {
         nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
         if (viewer.getVersion().getMinorVersion() < 8) return;
         for (ArmorStand a : armorStandArray) a.spawn(viewer);
-    }
-
-    /**
-     * Sends destroy packet of all armor stands to specified player and removes them from nearby players list
-     *
-     * @param   viewer
-     *          player to destroy armor stands for
-     */
-    public void destroy(TabPlayer viewer) {
-        for (ArmorStand a : armorStandArray) a.destroy(viewer);
-        unregisterPlayer(viewer);
     }
 
     /**
@@ -205,6 +194,17 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     public void updateVisibility(boolean force) {
         for (ArmorStand a : armorStandArray) a.updateVisibility(force);
+    }
+
+    /**
+     * Sends destroy packet of all armor stands to specified player and removes them from nearby players list
+     *
+     * @param   viewer
+     *          player to destroy armor stands for
+     */
+    public void destroy(TabPlayer viewer) {
+        for (ArmorStand a : armorStandArray) a.destroy(viewer);
+        unregisterPlayer(viewer);
     }
 
     @Override
