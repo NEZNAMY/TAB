@@ -28,11 +28,6 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     }
 
     @Override
-    public boolean canRegister(){
-        return true;
-    }
-
-    @Override
     public @NotNull String getAuthor(){
         return "NEZNAMY";
     }
@@ -63,37 +58,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     }
 
     @Override
-    public void setScoreboardVisible(TabPlayer player, boolean visible) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put("scoreboard_visible", visible ? "Enabled" : "Disabled");
-    }
-
-    @Override
-    public void setScoreboardName(TabPlayer player, String name) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put("scoreboard_name", name);
-    }
-
-    @Override
-    public void setBossBarVisible(TabPlayer player, boolean visible) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put("bossbar_visible", visible ? "Enabled" : "Disabled");
-    }
-
-    @Override
-    public void setNameTagPreview(TabPlayer player, boolean previewing) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put("ntpreview", previewing ? "Enabled" : "Disabled");
-    }
-
-    @Override
-    public void setPlaceholderValue(TabPlayer player, String placeholder, String value) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put("placeholder_" + placeholder.substring(1, placeholder.length()-1), value);
-    }
-
-    @Override
-    public void setPropertyValue(TabPlayer player, String property, String value) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put(property, value);
-    }
-
-    @Override
-    public void setRawPropertyValue(TabPlayer player, String property, String value) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put(property + "_raw", value);
+    public void setValue(TabPlayer player, String key, String value) {
+        values.computeIfAbsent(player, p -> new HashMap<>()).put(key, value);
     }
 }

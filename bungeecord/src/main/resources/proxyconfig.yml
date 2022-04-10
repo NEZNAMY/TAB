@@ -200,10 +200,10 @@ placeholder-output-replacements:
     "no": ""
   "%essentials_nickname%":
     "%essentials_nickname%": "%player%" # placeholder did not parse correctly, show real name instead
-    
+
   # bukkit-only placeholders used in default groups.yml, doing this as a fix
   "%afk%":
-    "%afk%": "" 
+    "%afk%": ""
   "%vault-prefix%":
     "%vault-prefix%" : ""
   "%vault-suffix%":

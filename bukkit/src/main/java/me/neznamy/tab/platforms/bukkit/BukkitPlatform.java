@@ -4,6 +4,7 @@ import com.earth2me.essentials.Essentials;
 import com.viaversion.viaversion.api.Via;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
 import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
@@ -83,12 +84,6 @@ public class BukkitPlatform extends Platform {
                 TAB.getInstance().sendConsoleMessage("&cTAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
                 TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
             }
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("Tablisknu")) {
-            TAB.getInstance().sendConsoleMessage("&cDetected plugin \"Tablisknu\", which causes TAB to not work properly. Consider removing the plugin.", true);
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("SkBee")) {
-            TAB.getInstance().sendConsoleMessage("&cDetected plugin \"SkBee\", which causes TAB's scoreboard to not show. Consider removing the plugin.", true);
         }
         TAB tab = TAB.getInstance();
         if (tab.getConfiguration().isPipelineInjection())
@@ -232,11 +227,6 @@ public class BukkitPlatform extends Platform {
     }
 
     @Override
-    public boolean isProxy() {
-        return false;
-    }
-
-    @Override
     public String getConfigName() {
         return "bukkitconfig.yml";
     }
@@ -307,5 +297,19 @@ public class BukkitPlatform extends Platform {
             TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s", player.getName(), viaVersion.getDescription().getVersion()), e);
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
+    }
+
+    /**
+     * Sends console message using ConsoleCommandSender, due to
+     * Paper not translating colors correctly in Logger messages
+     *
+     * @param   message
+     *          Message to send
+     * @param   translateColors
+     *          Whether color codes should be translated or not
+     */
+    @Override
+    public void sendConsoleMessage(String message, boolean translateColors) {
+        Bukkit.getConsoleSender().sendMessage("[TAB] "+ (translateColors ? EnumChatFormat.color(message) : message));
     }
 }

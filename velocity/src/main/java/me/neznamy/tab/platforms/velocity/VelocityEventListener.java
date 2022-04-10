@@ -40,13 +40,13 @@ public class VelocityEventListener {
     public void onConnect(ServerPostConnectEvent e){
         Player p = e.getPlayer();
         if (TAB.getInstance().isDisabled()) return;
-        if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
-            TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p)));
-        } else {
-            TAB.getInstance().getCPUManager().runTaskLater(300, () ->
-                TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null")
-            );
-        }
+        TAB.getInstance().getCPUManager().runTaskLater(200, () -> {
+            if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
+                TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p)));
+            } else {
+                TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null");
+            }
+        });
     }
 
     /**

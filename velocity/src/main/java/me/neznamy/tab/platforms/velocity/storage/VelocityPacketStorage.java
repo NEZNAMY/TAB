@@ -55,6 +55,7 @@ public final class VelocityPacketStorage {
     public Class<?> ScoreboardTeam;
     public Constructor<?> newScoreboardTeam;
     public Method ScoreboardTeam_getName;
+    public Method ScoreboardTeam_getMode;
     public Method ScoreboardTeam_getPlayers;
     public Method ScoreboardTeam_setPlayers;
 
@@ -124,6 +125,7 @@ public final class VelocityPacketStorage {
         ScoreboardTeam = Class.forName("com.velocitypowered.proxy.protocol.packet.ScoreboardTeam");
         newScoreboardTeam = ScoreboardTeam.getConstructor(String.class, byte.class, String.class, String.class, String.class, String.class, String.class, int.class, byte.class, List.class);
         ScoreboardTeam_getName = ScoreboardTeam.getMethod("getName");
+        ScoreboardTeam_getMode = ScoreboardTeam.getMethod("getMode");
         ScoreboardTeam_getPlayers = ScoreboardTeam.getMethod("getPlayers");
         ScoreboardTeam_setPlayers = ScoreboardTeam.getMethod("setPlayers", List.class);
     }

@@ -39,8 +39,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
      * Constructs new instance and sends debug message that feature loaded.
      */
     public PlayerList() {
-        super("TabList prefix/suffix", "Updating TabList format", TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("tablist-name-formatting.disable-in-worlds"));
+        super("TabList prefix/suffix", "Updating TabList format", "tablist-name-formatting");
         TAB.getInstance().debug(String.format("Loaded PlayerList feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTabList=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), antiOverrideTabList));
     }
 

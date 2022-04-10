@@ -26,7 +26,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable(){
-        getLogger().info(EnumChatFormat.color("&7Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")"));
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")"));
         if (!isVersionSupported()){
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -35,7 +35,7 @@ public class Main extends JavaPlugin {
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]),
                 Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")", getDataFolder(), getLogger()));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
-            getLogger().info(EnumChatFormat.color("&cUnknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
+            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }
         Bukkit.getPluginManager().registerEvents(new BukkitEventListener(platform), this);
         TAB.getInstance().load();
@@ -75,16 +75,17 @@ public class Main extends JavaPlugin {
             long time = System.currentTimeMillis();
             NMSStorage.setInstance(new NMSStorage());
             if (supportedVersions.contains(serverPackage)) {
-                getLogger().info(EnumChatFormat.color("&7Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
                 return true;
             } else {
-                getLogger().info(EnumChatFormat.color("&cNo compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.x - 1.18.2. Disabling just to stay safe."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.x - 1.18.2. Disabling just to stay safe."));
             }
         } catch (Exception ex) {
             if (supportedVersions.contains(serverPackage)) {
-                getLogger().log(Level.SEVERE, EnumChatFormat.color("&cYour server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"), ex);
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"));
+                getLogger().log(Level.SEVERE, "", ex);
             } else {
-                getLogger().info(EnumChatFormat.color("&cYour server version is completely unsupported. This plugin version only supports 1.5.x - 1.18.2. Disabling."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.18.2. Disabling."));
             }
         }
         return false;
@@ -93,7 +94,7 @@ public class Main extends JavaPlugin {
     /**
      * Command handler for /tab command
      */
-    public static class TABCommand implements CommandExecutor, TabCompleter {
+    private class TABCommand implements CommandExecutor, TabCompleter {
 
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {

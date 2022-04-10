@@ -14,7 +14,7 @@ import net.luckperms.api.query.QueryOptions;
  */
 public class LuckPerms extends PermissionPlugin {
 
-    private static final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
+    private final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
 
     /**
      * Constructs new instance with given parameter

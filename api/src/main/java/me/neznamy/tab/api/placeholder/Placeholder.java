@@ -6,10 +6,6 @@ public interface Placeholder {
 
     String getIdentifier();
 
-    boolean isTriggerMode();
-
-    void enableTriggerMode();
-
     void enableTriggerMode(Runnable onActivation, Runnable onDisable);
 
     void unload();

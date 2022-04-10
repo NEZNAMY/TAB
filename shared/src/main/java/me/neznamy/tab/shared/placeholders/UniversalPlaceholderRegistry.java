@@ -26,26 +26,26 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
     @SuppressWarnings("unchecked")
     @Override
     public void registerPlaceholders(PlaceholderManager manager) {
-        manager.registerServerPlaceholder("%%", -1, () -> "%").enableTriggerMode();
-        manager.registerPlayerPlaceholder("%group%", -1, TabPlayer::getGroup).enableTriggerMode();
+        manager.registerServerPlaceholder("%%", -1, () -> "%");
+        manager.registerPlayerPlaceholder("%group%", -1, TabPlayer::getGroup);
         manager.registerPlayerPlaceholder("%vanished%", 1000, TabPlayer::isVanished);
-        manager.registerPlayerPlaceholder("%world%", -1, TabPlayer::getWorld).enableTriggerMode();
+        manager.registerPlayerPlaceholder("%world%", -1, TabPlayer::getWorld);
         manager.registerPlayerPlaceholder("%worldonline%", 1000, p -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> p.getWorld().equals(all.getWorld()) && !all.isVanished()).count());
-        manager.registerPlayerPlaceholder("%server%", -1, TabPlayer::getServer).enableTriggerMode();
+        manager.registerPlayerPlaceholder("%server%", -1, TabPlayer::getServer);
         manager.registerPlayerPlaceholder("%serveronline%", 1000, p -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> p.getServer().equals(all.getServer()) && !all.isVanished()).count());
-        manager.registerPlayerPlaceholder("%player%", -1, TabPlayer::getName).enableTriggerMode();
+        manager.registerPlayerPlaceholder("%player%", -1, TabPlayer::getName);
         double timeOffset = TAB.getInstance().getConfiguration().getConfig().getDouble("placeholders.time-offset", 0);
         SimpleDateFormat timeFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.time-format", "[HH:mm:ss / h:mm a]"), "[HH:mm:ss / h:mm a]");
         manager.registerServerPlaceholder("%time%", 500, () -> timeFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
         SimpleDateFormat dateFormat = createDateFormat(TAB.getInstance().getConfiguration().getConfig().getString("placeholders.date-format", "dd.MM.yyyy"), "dd.MM.yyyy");
         manager.registerServerPlaceholder("%date%", 60000, () -> dateFormat.format(new Date(System.currentTimeMillis() + (int)(timeOffset*3600000))));
         manager.registerPlayerPlaceholder("%ping%", 500, TabPlayer::getPing);
-        manager.registerPlayerPlaceholder("%player-version%", -1, p -> p.getVersion().getFriendlyName()).enableTriggerMode();
-        manager.registerPlayerPlaceholder("%player-version-id%", -1, p -> p.getVersion().getNetworkId()).enableTriggerMode();
+        manager.registerPlayerPlaceholder("%player-version%", -1, p -> p.getVersion().getFriendlyName());
+        manager.registerPlayerPlaceholder("%player-version-id%", -1, p -> p.getVersion().getNetworkId());
         manager.registerServerPlaceholder("%memory-used%", 200, () -> ((int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)));
-        manager.registerServerPlaceholder("%memory-max%", -1, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576))).enableTriggerMode();
+        manager.registerServerPlaceholder("%memory-max%", -1, () -> ((int) (Runtime.getRuntime().maxMemory() / 1048576)));
         manager.registerServerPlaceholder("%memory-used-gb%", 200, () -> decimal2.format((float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) /1024/1024/1024));
-        manager.registerServerPlaceholder("%memory-max-gb%", -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory() /1024/1024/1024)).enableTriggerMode();
+        manager.registerServerPlaceholder("%memory-max-gb%", -1, () -> decimal2.format((float)Runtime.getRuntime().maxMemory()/1024/1024/1024));
         manager.registerServerPlaceholder("%online%", 1000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count());
         manager.registerServerPlaceholder("%staffonline%", 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
         manager.registerServerPlaceholder("%nonstaffonline%", 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());

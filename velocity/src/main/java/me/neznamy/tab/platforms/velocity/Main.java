@@ -36,31 +36,34 @@ import org.slf4j.Logger;
 /**
  * Main class for Velocity platform
  */
-@Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"}, dependencies = {@Dependency(id = "velocitypacketinjector")})
+@Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works",
+        authors = {"NEZNAMY"}, dependencies = {@Dependency(id = "velocitypacketinjector")})
 public class Main {
 
+    /** Plugin instance */
     private static Main instance;
 
-    //instance of proxyserver
-    private final ProxyServer server;
-    
-    //metrics factory I guess
-    private final Metrics.Factory metricsFactory;
-
-    private final Logger logger;
-
-    //plugin message channel identifier
-    private MinecraftChannelIdentifier mc;
-
-    private static final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
-    private static final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
-
+    /** ProxyServer instance */
     @Inject
-    public Main(ProxyServer server, Metrics.Factory metricsFactory, Logger logger) {
-        this.server = server;
-        this.metricsFactory = metricsFactory;
-        this.logger = logger;
-    }
+    private ProxyServer server;
+    
+    /** Metrics factory for bStats */
+    @Inject
+    private Metrics.Factory metricsFactory;
+
+    /** Console logger with TAB's prefix */
+    @Inject
+    private Logger logger;
+
+    /** TAB's plugin message channel */
+    private final MinecraftChannelIdentifier mc = MinecraftChannelIdentifier.create(
+            TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
+
+    /** Component cache for 1.16+ players to save CPU when creating components */
+    private final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
+
+    /** Component cache for 1.15- players to save CPU when creating components */
+    private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
     /**
      * Initializes plugin for velocity
@@ -71,7 +74,6 @@ public class Main {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         if (!isVersionSupported()) {
-            logger.info(EnumChatFormat.color("&cThe plugin requires Velocity 1.1.0 and up to work. Get it at https://velocitypowered.com/downloads"));
             return;
         }
         instance = this;
@@ -79,9 +81,8 @@ public class Main {
             logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
-        mc = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
         server.getChannelRegistrar().register(mc);
-        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
+        TAB.setInstance(new TAB(new VelocityPlatform(), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").aliases("vtab").build(), new VelocityTABCommand());
         TAB.getInstance().load();
@@ -89,12 +90,22 @@ public class Main {
         metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
 
+    /**
+     * Returns instance of the plugin
+     *
+     * @return  instance of the plugin
+     */
     public static Main getInstance() {
         return instance;
     }
 
-    public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
-        return mc;
+    /**
+     * Returns instance of the proxy server
+     *
+     * @return  ProxyServer instance
+     */
+    public ProxyServer getServer() {
+        return server;
     }
 
     /**
@@ -104,18 +115,25 @@ public class Main {
      */
     private boolean isVersionSupported() {
         try {
-            Class.forName("org.yaml.snakeyaml.Yaml"); //1.1.0+
-            Class.forName("net.kyori.adventure.identity.Identity"); //1.1.0 b265
             long time = System.currentTimeMillis();
             VelocityPacketStorage.setInstance(new VelocityPacketStorage());
-            logger.info(EnumChatFormat.color("&7Loaded packet hook in " + (System.currentTimeMillis()-time) + "ms"));
+            logger.info(EnumChatFormat.color("&7Loaded packet hook in " + (System.currentTimeMillis() - time) + "ms"));
             return true;
         } catch (Exception e) {
-            logger.error("Failed to load packet hook! Make sure you are using a supported Velocity version and have VelocityPacketInjector installed", e);
+            logger.error("Failed to load packet hook! Make sure you are using a supported Velocity version and have VelocityPacketInjector installed.", e);
             return false;
         }
     }
-    
+
+    /**
+     * Returns TAB's plugin message channel
+     *
+     * @return  TAB's plugin message channel
+     */
+    public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
+        return mc;
+    }
+
     /**
      * Unloads the plugin
      *
@@ -124,15 +142,37 @@ public class Main {
      */
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
-        if (TAB.getInstance() != null) TAB.getInstance().unload();
+        TAB.getInstance().unload();
     }
-    
-    public static Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
+
+    /**
+     * Converts TAB's component class into adventure component.
+     * Currently, the only way of conversion is string serialization / deserialization.
+     *
+     * @param   component
+     *          Component to convert
+     * @param   clientVersion
+     *          Version of player to convert for
+     * @return  Converted component
+     */
+    public Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (component == null) return null;
         return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
     }
 
-    private static Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
+    /**
+     * Loads component's adventure version from cache if present. If not, it is created,
+     * inserted into cache and returned.
+     *
+     * @param   map
+     *          Cache to load / save component
+     * @param   component
+     *          Component to convert
+     * @param   clientVersion
+     *          Player version to convert component for
+     * @return  Converted component
+     */
+    private Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (map.containsKey(component)) return map.get(component);
         Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
         if (map.size() > 10000) map.clear();
@@ -140,7 +180,10 @@ public class Main {
         return obj;
     }
 
-    public static class VelocityTABCommand implements SimpleCommand {
+    /**
+     * TAB's command
+     */
+    private class VelocityTABCommand implements SimpleCommand {
 
         @Override
         public void execute(Invocation invocation) {

@@ -38,7 +38,7 @@ public class PetFix extends TabFeature {
      * 200 milliseconds, which is the value we should not go above. Optimal value is
      * therefore between 150 and 200 milliseconds.
      */
-    private static final int INTERACT_COOLDOWN = 160;
+    private final int INTERACT_COOLDOWN = 160;
 
     /**
      * Constructs new instance with given parameter

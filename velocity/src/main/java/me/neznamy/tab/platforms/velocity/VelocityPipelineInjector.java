@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 public class VelocityPipelineInjector extends PipelineInjector {
 
-    //packet storage
+    /** Packet storage */
     private final VelocityPacketStorage vps = VelocityPacketStorage.getInstance();
 
     /**
@@ -37,15 +37,16 @@ public class VelocityPipelineInjector extends PipelineInjector {
      */
     public class VelocityChannelDuplexHandler extends ChannelDuplexHandler {
 
-        //injected player
+        /** Injected player */
         protected final TabPlayer player;
 
         /**
          * Constructs new instance with given player
-         * @param player - player to inject
+         *
+         * @param   player
+         *          player to inject
          */
         public VelocityChannelDuplexHandler(TabPlayer player) {
-            Preconditions.checkNotNull(player, "player");
             this.player = player;
         }
 
@@ -58,7 +59,9 @@ public class VelocityPipelineInjector extends PipelineInjector {
                     return;
                 case "ScoreboardTeam":
                     if (antiOverrideTeams) {
+                        long time = System.nanoTime();
                         modifyPlayers(packet);
+                        TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                     }
                     break;
                 case "ScoreboardDisplay":
@@ -90,7 +93,8 @@ public class VelocityPipelineInjector extends PipelineInjector {
          * @param packet - packet to modify
          */
         private void modifyPlayers(Object packetScoreboardTeam) throws ReflectiveOperationException {
-            long time = System.nanoTime();
+            final byte mode = (byte) vps.ScoreboardTeam_getMode.invoke(packetScoreboardTeam);
+            if (mode == 1 || mode == 2 || mode == 4) return;
             if (vps.ScoreboardTeam_getPlayers.invoke(packetScoreboardTeam) == null) return;
             List<String> col = Lists.newArrayList((List<String>) vps.ScoreboardTeam_getPlayers.invoke(packetScoreboardTeam));
             String name = (String) vps.ScoreboardTeam_getName.invoke(packetScoreboardTeam);
@@ -102,7 +106,6 @@ public class VelocityPipelineInjector extends PipelineInjector {
                 }
             }
             vps.ScoreboardTeam_setPlayers.invoke(packetScoreboardTeam, col);
-            TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }
 }

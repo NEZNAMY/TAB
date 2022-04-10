@@ -6,38 +6,53 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 
+/**
+ * Abstract class representing a core feature of the plugin.
+ * <p>
+ * It receives all kinds of events and can react to them.
+ */
 public abstract class TabFeature {
 
+    /** Feature's name displayed in /tab cpu */
     private final String featureName;
+
+    /** Feature's function name displayed in place of refreshing in /tab cpu */
     private final String refreshDisplayName;
-    protected final String[] disabledServers;
-    private final boolean serverWhitelistMode;
-    protected final String[] disabledWorlds;
-    private final boolean worldWhitelistMode;
+
+    /** Servers where the feature is disabled (or enabled if using whitelist mode) */
+    protected String[] disabledServers = new String[0];
+
+    /** Flag tracking whether disabled server list is a whitelist or blacklist */
+    private boolean serverWhitelistMode = false;
+
+    /** Worlds where the feature is disabled (or enabled if using whitelist mode) */
+    protected String[] disabledWorlds = new String[0];
+
+    /** Flag tracking whether disabled world list is a whitelist or blacklist */
+    private boolean worldWhitelistMode = false;
+
+    /** Players located in currently disabled worlds / servers */
     private final Set<TabPlayer> disabledPlayers = Collections.newSetFromMap(new WeakHashMap<>());
+
+    /**
+     * List of methods overridden (implemented) by each feature.
+     * If a method is not overridden, it is not called at all.
+     * This avoids a massive spam for every single method
+     * in every single feature in /tab cpu output
+     */
     private final List<String> methodOverrides = new ArrayList<>();
 
+    /**
+     * Constructs new instance with given parameters and loads method overrides
+     *
+     * @param   featureName
+     *          Feature's name in /tab cpu
+     * @param   refreshDisplayName
+     *          "refreshing" cpu display type name of the feature
+     */
     protected TabFeature(String featureName, String refreshDisplayName) {
-        this(featureName, refreshDisplayName, null, null);
-    }
-
-    protected TabFeature(String featureName, String refreshDisplayName, List<String> disabledServers, List<String> disabledWorlds) {
         this.featureName = featureName;
         this.refreshDisplayName = refreshDisplayName;
-        if (disabledServers != null) {
-            this.disabledServers = disabledServers.toArray(new String[0]);
-            serverWhitelistMode = disabledServers.contains("WHITELIST");
-        } else {
-            this.disabledServers = new String[0];
-            serverWhitelistMode = false;
-        }
-        if (disabledWorlds != null) {
-            this.disabledWorlds = disabledWorlds.toArray(new String[0]);
-            worldWhitelistMode = disabledWorlds.contains("WHITELIST");
-        } else {
-            this.disabledWorlds = new String[0];
-            worldWhitelistMode = false;
-        }
         try {
             if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onCommand");
@@ -71,7 +86,34 @@ public abstract class TabFeature {
     }
 
     /**
-     * Loads all players and sends packets
+     * Constructs new instance with given parameters and loads method overrides.
+     * Also loads lists of disabled worlds and servers of this feature with config
+     * section path specified with {@code configSection} parameter.
+     *
+     * @param   featureName
+     *          Feature's name in /tab cpu
+     * @param   refreshDisplayName
+     *          "refreshing" cpu display type name of the feature
+     * @param   configSection
+     *          Configuration section of the feature to load disabled
+     *          servers / worlds from
+     */
+    protected TabFeature(String featureName, String refreshDisplayName, String configSection) {
+        this(featureName, refreshDisplayName);
+        List<String> disabledServers = TabAPI.getInstance().getConfig().getStringList(configSection + ".disable-in-servers");
+        List<String> disabledWorlds = TabAPI.getInstance().getConfig().getStringList(configSection + "disable-in-worlds");
+        if (disabledServers != null) {
+            this.disabledServers = disabledServers.toArray(new String[0]);
+            serverWhitelistMode = disabledServers.contains("WHITELIST");
+        }
+        if (disabledWorlds != null) {
+            this.disabledWorlds = disabledWorlds.toArray(new String[0]);
+            worldWhitelistMode = disabledWorlds.contains("WHITELIST");
+        }
+    }
+
+    /**
+     * Loads all online players and sends packets
      */
     public void load() {
         //empty by default
@@ -85,13 +127,13 @@ public abstract class TabFeature {
     }
 
     /**
-     * Processes command from player
+     * Processes command from player. This is typically a toggle command.
      *
      * @param   sender
      *          command sender
      * @param   message
      *          command line
-     * @return  true if event should be cancelled, false if not
+     * @return  {@code true} if event should be cancelled, {@code true} if not
      */
     public boolean onCommand(TabPlayer sender, String message) {
         return false;
@@ -232,6 +274,12 @@ public abstract class TabFeature {
         //empty by default
     }
 
+    /**
+     * Processes vanish status change of player
+     *
+     * @param   player
+     *          Player who changed vanish status
+     */
     public void onVanishStatusChange(TabPlayer player){
         //empty by default
     }
@@ -248,13 +296,13 @@ public abstract class TabFeature {
     }
 
     /**
-     * Returns true if world or server is disabled, false if not
+     * Returns {@code true} if world or server is disabled, {@code false} if not
      *
      * @param   server
      *          server to check
      * @param   world
      *          world to check
-     * @return  true if feature should be disabled, false if not
+     * @return  {@code true} if feature should be disabled, {@code false} if not
      */
     public boolean isDisabled(String server, String world) {
         boolean contains = contains(disabledWorlds, world);
@@ -265,6 +313,17 @@ public abstract class TabFeature {
         return contains;
     }
 
+    /**
+     * Returns {@code true} if list contains the specified element or element
+     * ends with {@code "*"} and element meeting that requirement is present,
+     * {@code false} otherwise.
+     *
+     * @param   list
+     *          List to check
+     * @param   element
+     *          Element to find
+     * @return  {@code true} if element was found, {@code false} if not
+     */
     protected boolean contains(String[] list, String element) {
         if (element == null) return false;
         for (String s : list) {
@@ -286,24 +345,60 @@ public abstract class TabFeature {
         return featureName;
     }
 
+    /**
+     * Returns text to display in /tab cpu of this feature refreshing visuals
+     *
+     * @return  Text to display as refreshing of this feature
+     */
+    public String getRefreshDisplayName() {
+        return refreshDisplayName;
+    }
+
+    /**
+     * Returns {@code true} if method with specified name is overridden
+     * in the implementation, {@code false} if not
+     *
+     * @param   method
+     *          Method to check
+     * @return  {@code true} if overridden, {@code false} if not
+     */
     public boolean overridesMethod(String method) {
         return methodOverrides.contains(method);
     }
 
+    /**
+     * Returns {@code true} if player is currently located in a server
+     * or world, which is marked as disabled, {@code false} if not
+     *
+     * @param   p
+     *          Player to check
+     * @return  {@code true} if player is in disabled server / world,
+     *          {@code false} if not
+     */
     public boolean isDisabledPlayer(TabPlayer p) {
         return disabledPlayers.contains(p);
     }
 
+    /**
+     * Adds specified player into list of players in disabled
+     * servers / worlds.
+     *
+     * @param   p
+     *          Player to add
+     */
     public void addDisabledPlayer(TabPlayer p) {
         if (disabledPlayers.contains(p)) return;
         disabledPlayers.add(p);
     }
 
+    /**
+     * Removes specified player from list of players in disabled
+     * servers / worlds
+     *
+     * @param   p
+     *          Player to check
+     */
     public void removeDisabledPlayer(TabPlayer p) {
         disabledPlayers.remove(p);
-    }
-
-    public String getRefreshDisplayName() {
-        return refreshDisplayName;
     }
 }

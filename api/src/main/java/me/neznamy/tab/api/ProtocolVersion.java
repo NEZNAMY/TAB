@@ -65,13 +65,13 @@ public enum ProtocolVersion {
     /** Value array to iterate over to avoid array creations on each call */
     public static final ProtocolVersion[] VALUES = values();
 
-    //version's network id found at https://wiki.vg/Protocol_version_numbers
+    /** Version's network id found at https://wiki.vg/Protocol_version_numbers */
     private final int networkId;
 
-    //minor version, such as 16
+    /** Version's minor version, such as 16 for 1.16.x */
     private int minorVersion;
 
-    //friendly name displayed in %player-version% placeholder
+    /** Version's friendly name displayed in %player-version% placeholder */
     private final String friendlyName;
 
     /**

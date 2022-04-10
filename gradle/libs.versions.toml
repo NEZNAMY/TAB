@@ -52,7 +52,7 @@ kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", versio
 event = { group = "net.kyori", name = "event-method", version.ref = "event" }
 
 # Platforms
-bukkit = { group = "com.destroystokyo.paper", name = "paper-api", version.ref = "bukkit" }
+bukkit = { group = "org.purpurmc.purpur", name = "purpur-api", version.ref = "bukkit" }
 bungeecord = { group = "net.md-5", name = "bungeecord-proxy", version.ref = "bungeecord" }
 krypton-api = { group = "org.kryptonmc", name = "krypton-api", version.ref = "krypton" }
 krypton-server = { group = "org.kryptonmc", name = "krypton-server", version.ref = "krypton" }

@@ -1,22 +1,6 @@
 package me.neznamy.tab.shared;
 
-import java.io.File;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.shared.event.EventBusImpl;
-import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
-import org.slf4j.Logger;
-import org.yaml.snakeyaml.error.YAMLException;
-
-import me.neznamy.tab.api.HeaderFooterManager;
-import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.TablistFormatManager;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
@@ -24,20 +8,20 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
+import me.neznamy.tab.shared.event.EventBusImpl;
+import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
+import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
-import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.GhostPlayerFix;
-import me.neznamy.tab.shared.features.HeaderFooter;
-import me.neznamy.tab.shared.features.NickCompatibility;
-import me.neznamy.tab.shared.features.PingSpoof;
-import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.PlayerList;
-import me.neznamy.tab.shared.features.SpectatorFix;
-import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import org.yaml.snakeyaml.error.YAMLException;
+
+import java.io.File;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Main class of the plugin storing data and implementing API
@@ -112,6 +96,9 @@ public class TAB extends TabAPI {
     /** Plugin's console logger provided by platform */
     private final Object logger;
 
+    /** File with YAML syntax error, which prevented plugin from loading */
+    private String brokenFile;
+
     /**
      * Constructs new instance with given parameters and sets this
      * new instance as {@link me.neznamy.tab.api.TabAPI} instance.
@@ -162,11 +149,10 @@ public class TAB extends TabAPI {
     public String load() {
         try {
             long time = System.currentTimeMillis();
-            this.errorManager = new ErrorManager();
+            errorManager = new ErrorManager();
             cpu = new CpuManager();
             featureManager = new FeatureManagerImpl();
-            configuration = new Configs(this);
-            configuration.loadFiles();
+            configuration = new Configs();
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
             platform.loadFeatures();
@@ -182,7 +168,8 @@ public class TAB extends TabAPI {
         } catch (YAMLException e) {
             sendConsoleMessage("&cDid not enable due to a broken configuration file.", true);
             kill();
-            return configuration.getReloadFailedMessage();
+            return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
+                    : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
         } catch (Exception e) {
             errorManager.criticalError("Failed to enable. Did you just invent a new way to break the plugin by misconfiguring it?", e);
             kill();
@@ -395,6 +382,15 @@ public class TAB extends TabAPI {
         return dataFolder;
     }
 
+    /**
+     * Returns {@link #logger}
+     *
+     * @return  {@link #logger}
+     */
+    public Object getLogger() {
+        return logger;
+    }
+
     @Override
     public EventBusImpl getEventBus() {
         return eventBus;
@@ -441,11 +437,7 @@ public class TAB extends TabAPI {
 
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        if (logger instanceof java.util.logging.Logger) {
-            ((java.util.logging.Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
-        } else if (logger instanceof Logger) {
-            ((Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
-        }
+        platform.sendConsoleMessage(message, translateColors);
     }
 
     @Override
@@ -485,7 +477,7 @@ public class TAB extends TabAPI {
 
     @Override
     public void setBrokenFile(String file) {
-        configuration.setBrokenFile(file);
+        this.brokenFile = file;
     }
 
     @Override

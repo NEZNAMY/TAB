@@ -56,8 +56,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      */
     @SuppressWarnings("unchecked")
     public ScoreboardManagerImpl() {
-        super("Scoreboard", "Switching displayed scoreboard", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard.disable-in-worlds"));
+        super("Scoreboard", "Switching displayed scoreboard", "scoreboard");
         if (rememberToggleChoice) {
             sbOffPlayers = Collections.synchronizedList(new ArrayList<>(TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("scoreboard-off", new ArrayList<>())));
         } else {

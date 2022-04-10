@@ -22,10 +22,13 @@ import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
 
 /**
- * TabPlayer for Velocity
+ * TabPlayer implementation for Velocity
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
+    /**
+     * Map of methods executing tasks API calls equal to sending the actual packets
+     */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
         put(PacketPlayOutBoss.class, (packet) -> handle((PacketPlayOutBoss) packet));
@@ -33,10 +36,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         put(PacketPlayOutPlayerListHeaderFooter.class, (packet) -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
     }};
 
-    //uuid used in TabList
+    /** Player's tablist UUID */
     private final UUID tabListId;
-
-    //player's visible boss bars
+    
+    /** BossBars currently displayed to this player */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
     /**
@@ -84,69 +87,91 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
     }
 
+    /**
+     * Handles PacketPlayOutChat request using Velocity API
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
     private void handle(PacketPlayOutChat packet) {
         if (packet.getType() == ChatMessageType.GAME_INFO) {
-            getPlayer().sendActionBar(Main.convertComponent(packet.getMessage(), getVersion()));
+            getPlayer().sendActionBar(Main.getInstance().convertComponent(packet.getMessage(), getVersion()));
         } else {
-            getPlayer().sendMessage(Identity.nil(), Main.convertComponent(packet.getMessage(), getVersion()), MessageType.valueOf(packet.getType().name()));
+            getPlayer().sendMessage(Identity.nil(), Main.getInstance().convertComponent(packet.getMessage(), getVersion()), MessageType.valueOf(packet.getType().name()));
         }
     }
 
+    /**
+     * Handles PacketPlayOutPlayerListHeaderFooter request using Velocity API
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
     private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-        getPlayer().getTabList().setHeaderAndFooter(Main.convertComponent(packet.getHeader(), getVersion()), Main.convertComponent(packet.getFooter(), getVersion()));
+        getPlayer().getTabList().setHeaderAndFooter(Main.getInstance().convertComponent(packet.getHeader(), getVersion()),
+                Main.getInstance().convertComponent(packet.getFooter(), getVersion()));
     }
 
+    /**
+     * Handles PacketPlayOutBoss request using Velocity API
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
     private void handle(PacketPlayOutBoss packet) {
         BossBar bar;
         switch (packet.getAction()) {
-            case ADD:
-                if (bossBars.containsKey(packet.getId())) return;
-                bar = BossBar.bossBar(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
-                        packet.getPct(),
-                        Color.valueOf(packet.getColor().toString()),
-                        Overlay.valueOf(packet.getOverlay().toString()));
-                if (packet.isCreateWorldFog()) bar.addFlag(Flag.CREATE_WORLD_FOG);
-                if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
-                if (packet.isPlayMusic()) bar.addFlag(Flag.PLAY_BOSS_MUSIC);
-                bossBars.put(packet.getId(), bar);
-                getPlayer().showBossBar(bar);
-                break;
-            case REMOVE:
-                getPlayer().hideBossBar(bossBars.get(packet.getId()));
-                bossBars.remove(packet.getId());
-                break;
-            case UPDATE_PCT:
-                bossBars.get(packet.getId()).progress(packet.getPct());
-                break;
-            case UPDATE_NAME:
-                bossBars.get(packet.getId()).name(Main.convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
-                break;
-            case UPDATE_STYLE:
-                bar = bossBars.get(packet.getId());
-                bar.overlay(Overlay.valueOf(packet.getOverlay().toString()));
-                bar.color(Color.valueOf(packet.getColor().toString()));
-                break;
-            case UPDATE_PROPERTIES:
-                bar = bossBars.get(packet.getId());
-                processFlag(bar, packet.isCreateWorldFog(), Flag.CREATE_WORLD_FOG);
-                processFlag(bar, packet.isDarkenScreen(), Flag.DARKEN_SCREEN);
-                processFlag(bar, packet.isPlayMusic(), Flag.PLAY_BOSS_MUSIC);
-                break;
-            default:
-                break;
+        case ADD:
+            if (bossBars.containsKey(packet.getId())) return;
+            bar = BossBar.bossBar(Main.getInstance().convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
+                    packet.getPct(), 
+                    Color.valueOf(packet.getColor().toString()), 
+                    Overlay.valueOf(packet.getOverlay().toString()));
+            if (packet.isCreateWorldFog()) bar.addFlag(Flag.CREATE_WORLD_FOG);
+            if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
+            if (packet.isPlayMusic()) bar.addFlag(Flag.PLAY_BOSS_MUSIC);
+            bossBars.put(packet.getId(), bar);
+            getPlayer().showBossBar(bar);
+            break;
+        case REMOVE:
+            getPlayer().hideBossBar(bossBars.get(packet.getId()));
+            bossBars.remove(packet.getId());
+            break;
+        case UPDATE_PCT:
+            bossBars.get(packet.getId()).progress(packet.getPct());
+            break;
+        case UPDATE_NAME:
+            bossBars.get(packet.getId()).name(Main.getInstance().convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
+            break;
+        case UPDATE_STYLE:
+            bar = bossBars.get(packet.getId());
+            bar.overlay(Overlay.valueOf(packet.getOverlay().toString()));
+            bar.color(Color.valueOf(packet.getColor().toString()));
+            break;
+        case UPDATE_PROPERTIES:
+            bar = bossBars.get(packet.getId());
+            processFlag(bar, packet.isCreateWorldFog(), Flag.CREATE_WORLD_FOG);
+            processFlag(bar, packet.isDarkenScreen(), Flag.DARKEN_SCREEN);
+            processFlag(bar, packet.isPlayMusic(), Flag.PLAY_BOSS_MUSIC);
+            break;
+        default:
+            break;
         }
     }
 
+    /**
+     * Processes bossbar flag by adding or removing it based on provided value.
+     *
+     * @param   bar
+     *          Bossbar to process flag of
+     * @param   targetValue
+     *          Flag value
+     * @param   flag
+     *          Flag to process
+     */
     private void processFlag(BossBar bar, boolean targetValue, Flag flag) {
-        if (targetValue) {
-            if (!bar.hasFlag(flag)) {
-                bar.addFlag(flag);
-            }
-        } else {
-            if (bar.hasFlag(flag)) {
-                bar.removeFlag(flag);
-            }
-        }
+        if (targetValue && !bar.hasFlag(flag)) bar.addFlag(flag);
+        if (!targetValue && bar.hasFlag(flag)) bar.removeFlag(flag);
     }
 
     @Override

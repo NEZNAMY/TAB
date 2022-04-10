@@ -21,7 +21,7 @@ import me.neznamy.tab.shared.TAB;
 public abstract class PipelineInjector extends TabFeature {
 
     //name of the pipeline decoder injected in netty
-    public static final String DECODER_NAME = "TAB";
+    public final String DECODER_NAME = "TAB";
 
     //handler to inject before
     private final String injectPosition;

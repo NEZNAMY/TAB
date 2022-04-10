@@ -15,14 +15,29 @@ import me.neznamy.tab.api.team.TeamManager;
  */
 public abstract class TabAPI {
 
+    /** Instance of the API */
     private static TabAPI instance;
 
+    /**
+     * Returns API instance. If instance was not set by the plugin, throws
+     * {@code IllegalStateException}. This is usually caused by shading the API
+     * into own project, which is not allowed. Another option is calling the method
+     * before plugin was able to load.
+     *
+     * @return  API instance
+     */
     public static TabAPI getInstance() {
         if (instance == null) throw new IllegalStateException("API instance is null. This likely means you shaded TAB's API into your project" +
                 " instead of only using it, which is not allowed.");
         return instance;
     }
 
+    /**
+     * Instance setter for internal use by the plugin only.
+     *
+     * @param   instance
+     *          API instance
+     */
     public static void setInstance(TabAPI instance) {
         TabAPI.instance = instance;
     }
@@ -53,26 +68,31 @@ public abstract class TabAPI {
     public abstract TabPlayer[] getOnlinePlayers();
 
     /**
-     * Return BossBar manager instance if the feature is enabled. Returns null otherwise.
+     * Return BossBar manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  BossBar manager
      */
     public abstract BossBarManager getBossBarManager();
 
     /**
-     * Returns scoreboard manager instance if the feature is enabled. Returns null otherwise.
+     * Returns scoreboard manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  scoreboard manager
      */
     public abstract ScoreboardManager getScoreboardManager();
 
     /**
-     * Returns team manager instance if the feature is enabled, false otherwise
+     * Returns team manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  team manager
      */
     public abstract TeamManager getTeamManager();
 
+    /**
+     * Returns header/footer manager instance if the feature is enabled. If not, returns {@code null}.
+     *
+     * @return  Header/footer manager
+     */
     public abstract HeaderFooterManager getHeaderFooterManager();
 
     /**
@@ -89,6 +109,11 @@ public abstract class TabAPI {
      */
     public abstract FeatureManager getFeatureManager();
 
+    /**
+     * Returns Tablist name format manager instance if the feature is enabled. If not, returns {@code null}.
+     *
+     * @return  Tablist name format manager
+     */
     public abstract TablistFormatManager getTablistFormatManager();
 
     /**
@@ -111,10 +136,15 @@ public abstract class TabAPI {
      * @param   message
      *          message to print
      * @param   translateColors
-     *          true if colors should be translated, false if not
+     *          {@code true} if colors should be translated, {@code false} if not
      */
     public abstract void sendConsoleMessage(String message, boolean translateColors);
 
+    /**
+     * Returns TAB's Thread manager, which allows task submitting
+     *
+     * @return  ThreadManager instance
+     */
     public abstract ThreadManager getThreadManager();
 
     public abstract ConfigurationFile getPlayerCache();

@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.nametags;
 import java.util.*;
 
 import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
@@ -27,14 +28,13 @@ public class NameTag extends TabFeature implements TeamManager {
     private final WeakHashMap<TabPlayer, String> forcedTeamName = new WeakHashMap<>();
     protected final Set<TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
 
-    private final boolean accepting18x = TAB.getInstance().getPlatform().isProxy() ||
+    private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
             TAB.getInstance().getPlatform().getPluginVersion("ViaRewind") != null ||
             TAB.getInstance().getPlatform().getPluginVersion("ProtocolSupport") != null ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {
-        super("NameTags", "Updating prefix/suffix", TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-servers"),
-                TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.disable-in-worlds"));
+        super("NameTags", "Updating prefix/suffix", "scoreboard-teams");
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.SORTING, sorting);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
@@ -267,9 +267,6 @@ public class NameTag extends TabFeature implements TeamManager {
         if (hasTeamHandlingPaused(p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        if (viewer.getVersion().getMinorVersion() >= 8 && TAB.getInstance().getConfiguration().isUnregisterBeforeRegister()) {
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
-        }
         viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
                 translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
     }

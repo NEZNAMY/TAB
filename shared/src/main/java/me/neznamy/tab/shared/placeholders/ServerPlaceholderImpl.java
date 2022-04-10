@@ -90,6 +90,11 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     }
 
     @Override
+    public void updateValue(Object value) {
+        updateValue(value, false);
+    }
+
+    @Override
     public void updateFromNested(TabPlayer player) {
         updateValue(request(), true);
     }
@@ -112,10 +117,5 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
             TAB.getInstance().getErrorManager().placeholderError("Server placeholder " + identifier + " generated an error", t);
             return "ERROR";
         }
-    }
-
-    @Override
-    public void updateValue(Object value) {
-        updateValue(value, false);
     }
 }

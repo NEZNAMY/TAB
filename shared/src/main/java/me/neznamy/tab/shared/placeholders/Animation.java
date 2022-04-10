@@ -53,7 +53,7 @@ public class Animation {
         int refresh = this.interval;
         List<String> nestedPlaceholders0 = new ArrayList<>();
         for (int i=0; i<messages.length; i++) {
-            messages[i] = RGBUtils.getInstance().applyFormats(messages[i], true);
+            messages[i] = RGBUtils.getInstance().applyCleanGradients(messages[i]);
             messages[i] = EnumChatFormat.color(messages[i]);
             nestedPlaceholders0.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(messages[i]));
         }

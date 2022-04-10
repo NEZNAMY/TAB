@@ -205,6 +205,7 @@ public final class NMSStorage {
     public Constructor<?> newScoreboardTeam;
     public Constructor<?> newPacketPlayOutScoreboardTeam;
     public Field PacketPlayOutScoreboardTeam_NAME;
+    public Field PacketPlayOutScoreboardTeam_ACTION;
     public Field PacketPlayOutScoreboardTeam_PLAYERS;
     public Method ScoreboardTeam_getPlayerNameSet;
     public Method ScoreboardTeam_setNameTagVisibility;
@@ -463,6 +464,7 @@ public final class NMSStorage {
         Class<?> ScoreboardTeam = getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam");
         newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
         PacketPlayOutScoreboardTeam_NAME = getFields(PacketPlayOutScoreboardTeam, String.class).get(0);
+        PacketPlayOutScoreboardTeam_ACTION = getInstanceFields(PacketPlayOutScoreboardTeam, int.class).get(0);
         PacketPlayOutScoreboardTeam_PLAYERS = getFields(PacketPlayOutScoreboardTeam, Collection.class).get(0);
         ScoreboardTeam_getPlayerNameSet = getMethods(ScoreboardTeam, Collection.class).get(0);
         ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a", "func_96660_a"}, boolean.class);
@@ -631,6 +633,26 @@ public final class NMSStorage {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type) {
+                list.add(setAccessible(field));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Returns all instance fields of class with defined class type
+     *
+     * @param   clazz
+     *          class to check fields of
+     * @param   type
+     *          field type to check for
+     * @return  list of all fields with specified class type
+     */
+    private List<Field> getInstanceFields(Class<?> clazz, Class<?> type){
+        if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
+        List<Field> list = new ArrayList<>();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType() == type && !Modifier.isStatic(field.getModifiers())) {
                 list.add(setAccessible(field));
             }
         }
