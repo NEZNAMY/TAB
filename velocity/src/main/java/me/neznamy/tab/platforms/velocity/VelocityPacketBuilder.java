@@ -33,7 +33,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
             Object item = vps.newItem.newInstance(data.getUniqueId());
             if (data.getDisplayName() != null) {
                 if (clientVersion.getMinorVersion() >= 8) {
-                    vps.Item_setDisplayName.invoke(item, Main.convertComponent(data.getDisplayName(), clientVersion));
+                    vps.Item_setDisplayName.invoke(item, Main.getInstance().convertComponent(data.getDisplayName(), clientVersion));
                 } else {
                     vps.Item_setDisplayName.invoke(item, LegacyComponentSerializer.legacySection().deserialize(data.getDisplayName().toLegacyText()));
                 }
