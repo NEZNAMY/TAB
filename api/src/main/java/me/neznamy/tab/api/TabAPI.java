@@ -25,6 +25,8 @@ public abstract class TabAPI {
      * before plugin was able to load.
      *
      * @return  API instance
+     * @throws  IllegalStateException
+     *          If instance is {@code null}
      */
     public static TabAPI getInstance() {
         if (instance == null) throw new IllegalStateException("API instance is null. This likely means you shaded TAB's API into your project" +
@@ -147,17 +149,59 @@ public abstract class TabAPI {
      */
     public abstract ThreadManager getThreadManager();
 
+    /**
+     * Returns TAB's cache file used to store player toggle data
+     *
+     * @return  TAB's player cache file
+     */
     public abstract ConfigurationFile getPlayerCache();
 
+    /**
+     * Returns TAB's config.yml file
+     *
+     * @return  config.yml file
+     */
     public abstract ConfigurationFile getConfig();
 
+    /**
+     * Returns TAB's group configuration
+     *
+     * @return  TAB's group configuration
+     */
     public abstract PropertyConfiguration getGroups();
 
+    /**
+     * Returns TAB's user configuration
+     *
+     * @return  TAB's user configuration
+     */
     public abstract PropertyConfiguration getUsers();
 
+    /**
+     * Sends a debug message into console if the option
+     * is enabled in config.
+     *
+     * @param   message
+     *          Message to send
+     */
     public abstract void debug(String message);
 
+    /**
+     * Logs an error into errors.log file
+     *
+     * @param   message
+     *          Error message
+     * @param   t
+     *          Thrown error
+     */
     public abstract void logError(String message, Throwable t);
 
+    /**
+     * Sets name of file with syntax error, which prevented
+     * the plugin from enabling. Internal use only.
+     *
+     * @param   file
+     *          Name of file with syntax error
+     */
     public abstract void setBrokenFile(String file);
 }

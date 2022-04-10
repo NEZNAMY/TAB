@@ -39,13 +39,16 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitPacketBuilder extends PacketBuilder {
 
-    //nms storage
+    /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
 
-    //entity type ids
+    /** Map of entity type ids for entities used by the plugin */
     private final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
 
+    /** Component cache for better performance (1.16+ players) */
     private final Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
+
+    /** Component cache for better performance (1.15- players) */
     private final Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
 
     /**
@@ -208,9 +211,11 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Builds entity destroy packet with given parameter
+     * Builds entity destroy packet from custom packet class
      *
-     * @return  destroy packet
+     * @param   packet
+     *          Destroy packet
+     * @return  NMS destroy packet
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
@@ -223,14 +228,25 @@ public class BukkitPacketBuilder extends PacketBuilder {
         }
     }
 
+    /**
+     * Builds entity metadata packet from custom packet class
+     *
+     * @param   packet
+     *          Metadata packet
+     * @return  NMS metadata packet
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
+     */
     public Object build(PacketPlayOutEntityMetadata packet) throws ReflectiveOperationException {
         return nms.newPacketPlayOutEntityMetadata.newInstance(packet.getEntityId(), packet.getDataWatcher().toNMS(), true);
     }
 
     /**
-     * Builds entity spawn packet with given parameters
+     * Builds entity spawn packet from custom packet class
      *
-     * @return  entity spawn packet
+     * @param   packet
+     *          Spawn packet
+     * @return  NMS spawn packet
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
@@ -262,9 +278,11 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Builds entity teleport packet with given parameters
+     * Builds entity teleport packet from custom packet class
      *
-     * @return  entity teleport packet
+     * @param   packet
+     *          Teleport packet
+     * @return  NMS teleport packet
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
@@ -289,7 +307,23 @@ public class BukkitPacketBuilder extends PacketBuilder {
         nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_PITCH, (byte) (packet.getLocation().getPitch()/360*256));
         return nmsPacket;
     }
-    
+
+    /**
+     * Writes data into NMS team from custom team packet. Used on 1.13+ servers.
+     *
+     * @param   packet
+     *          Packet to read from
+     * @param   clientVersion
+     *          Version of player
+     * @param   team
+     *          Team to write to
+     * @param   prefix
+     *          Prefix to use
+     * @param   suffix
+     *          Suffix to use
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
+     */
     private void createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix) throws ReflectiveOperationException {
         if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
         if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
@@ -299,6 +333,20 @@ public class BukkitPacketBuilder extends PacketBuilder {
         nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
     }
 
+    /**
+     * Writes data into NMS team from custom team packet. Used on 1.12- servers.
+     *
+     * @param   packet
+     *          Packet to read from
+     * @param   team
+     *          Team to write to
+     * @param   prefix
+     *          Prefix to use
+     * @param   suffix
+     *          Suffix to use
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
+     */
     private void createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix) throws ReflectiveOperationException {
         if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
         if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
@@ -437,6 +485,15 @@ public class BukkitPacketBuilder extends PacketBuilder {
         return chat;
     }
 
+    /**
+     * Converts NMS color into TAB's TextColor class.
+     *
+     * @param   color
+     *          NMS color, ChatHexColor on 1.16+, EnumChatFormat on 1.15-
+     * @return  Converted color
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
+     */
     private TextColor fromNMSColor(Object color) throws ReflectiveOperationException {
         if (color == null) return null;
         if (nms.getMinorVersion() >= 16) {
@@ -454,7 +511,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Converts TAB's IChatBaseComponent into minecraft's component. Currently, does not support hover event.
+     * Converts TAB's IChatBaseComponent into minecraft's component.
      *
      * @param   component
      *          component to convert
@@ -465,27 +522,13 @@ public class BukkitPacketBuilder extends PacketBuilder {
      *          if thrown by reflective operation
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        Object obj;
-        if (clientVersion.getMinorVersion() >= 16) {
-            if (componentCacheModern.containsKey(component)) return componentCacheModern.get(component);
-            obj = toNMSComponent0(component, clientVersion);
-            if (componentCacheModern.size() > 10000) componentCacheModern.clear();
-            componentCacheModern.put(component, obj);
-        } else {
-            if (componentCacheLegacy.containsKey(component)) return componentCacheLegacy.get(component);
-            obj = toNMSComponent0(component, clientVersion);
-            if (componentCacheLegacy.size() > 10000) componentCacheLegacy.clear();
-            componentCacheLegacy.put(component, obj);
-        }
-        return obj;
-    }
-
-    //separate method to prevent extras counting cpu again due to recursion and finally showing higher usage than real
-    private Object toNMSComponent0(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (component == null) return null;
+        Map<IChatBaseComponent, Object> cache = clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy;
+        if (cache.containsKey(component)) return cache.get(component);
+        if (cache.size() > 10000) cache.clear();
         Object chat = nms.newChatComponentText.newInstance(component.getText());
         Object modifier;
-        Object clickEvent = component.getModifier().getClickEvent() == null ? null : nms.newChatClickable.newInstance(Enum.valueOf((Class<Enum>) nms.EnumClickAction, 
+        Object clickEvent = component.getModifier().getClickEvent() == null ? null : nms.newChatClickable.newInstance(Enum.valueOf((Class<Enum>) nms.EnumClickAction,
                 component.getModifier().getClickEvent().getAction().toString().toUpperCase()), component.getModifier().getClickEvent().getValue());
         if (nms.getMinorVersion() >= 16) {
             Object color = null;
@@ -500,17 +543,17 @@ public class BukkitPacketBuilder extends PacketBuilder {
             if (component.getModifier().getHoverEvent() != null) {
                 Object nmsAction = nms.EnumHoverAction_a.invoke(null, component.getModifier().getHoverEvent().getAction().toString().toLowerCase());
                 switch (component.getModifier().getHoverEvent().getAction()) {
-                case SHOW_TEXT:
-                    hoverEvent = nms.newChatHoverable.newInstance(nmsAction, toNMSComponent0(component.getModifier().getHoverEvent().getValue(), clientVersion));
-                    break;
-                case SHOW_ENTITY:
-                    hoverEvent = nms.EnumHoverAction_fromJson.invoke(nmsAction, ((ChatComponentEntity) component.getModifier().getHoverEvent().getValue()).toJson());
-                    break;
-                case SHOW_ITEM:
-                    hoverEvent = nms.EnumHoverAction_fromLegacyComponent.invoke(nmsAction, toNMSComponent0(component.getModifier().getHoverEvent().getValue(), clientVersion));
-                    break;
-                default:
-                    break;
+                    case SHOW_TEXT:
+                        hoverEvent = nms.newChatHoverable.newInstance(nmsAction, toNMSComponent(component.getModifier().getHoverEvent().getValue(), clientVersion));
+                        break;
+                    case SHOW_ENTITY:
+                        hoverEvent = nms.EnumHoverAction_fromJson.invoke(nmsAction, ((ChatComponentEntity) component.getModifier().getHoverEvent().getValue()).toJson());
+                        break;
+                    case SHOW_ITEM:
+                        hoverEvent = nms.EnumHoverAction_fromLegacyComponent.invoke(nmsAction, toNMSComponent(component.getModifier().getHoverEvent().getValue(), clientVersion));
+                        break;
+                    default:
+                        break;
                 }
             }
             modifier = nms.newChatModifier.newInstance(
@@ -531,17 +574,27 @@ public class BukkitPacketBuilder extends PacketBuilder {
             nms.setField(modifier, nms.ChatModifier_obfuscated, component.getModifier().getObfuscated());
             if (clickEvent != null) nms.setField(modifier, nms.ChatModifier_clickEvent, clickEvent);
             if (component.getModifier().getHoverEvent() != null) {
-                nms.setField(modifier, nms.ChatModifier_hoverEvent, nms.newChatHoverable.newInstance(nms.EnumHoverAction_a.invoke(null, 
-                        component.getModifier().getHoverEvent().getAction().toString().toLowerCase()), toNMSComponent0(component.getModifier().getHoverEvent().getValue(), clientVersion)));
+                nms.setField(modifier, nms.ChatModifier_hoverEvent, nms.newChatHoverable.newInstance(nms.EnumHoverAction_a.invoke(null,
+                        component.getModifier().getHoverEvent().getAction().toString().toLowerCase()), toNMSComponent(component.getModifier().getHoverEvent().getValue(), clientVersion)));
             }
         }
         nms.setField(chat, nms.ChatBaseComponent_modifier, modifier);
         for (IChatBaseComponent extra : component.getExtra()) {
-            nms.ChatComponentText_addSibling.invoke(chat, toNMSComponent0(extra, clientVersion));
+            nms.ChatComponentText_addSibling.invoke(chat, toNMSComponent(extra, clientVersion));
         }
+        cache.put(component, chat);
         return chat;
     }
 
+    /**
+     * Creates a new Scoreboard Objective with given name.
+     *
+     * @param   objectiveName
+     *          Objective name
+     * @return  NMS Objective
+     * @throws  ReflectiveOperationException
+     *          if thrown by reflective operation
+     */
     private Object newScoreboardObjective(String objectiveName) throws ReflectiveOperationException {
         if (nms.getMinorVersion() >= 13) {
             return nms.newScoreboardObjective.newInstance(null, objectiveName, null, nms.newChatComponentText.newInstance(""), null);
