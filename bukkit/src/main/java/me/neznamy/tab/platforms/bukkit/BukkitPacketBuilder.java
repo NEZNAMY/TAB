@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.protocol.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
@@ -49,9 +48,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
     private final Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
     private final Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
 
-    private Object emptyScoreboard;
-    private Object dummyEntity;
-
     /**
      * Constructs new instance
      */
@@ -63,18 +59,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
             entityIds.put(EntityType.WITHER, 64);
             if (nms.getMinorVersion() >= 8){
                 entityIds.put(EntityType.ARMOR_STAND, 30);
-            }
-        }
-        try {
-            emptyScoreboard = nms.newScoreboard.newInstance();
-        } catch (ReflectiveOperationException e) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Failed to create instance of \"Scoreboard\""));
-        }
-        if (nms.getMinorVersion() >= 8) {
-            try {
-                dummyEntity = nms.newEntityArmorStand.newInstance(nms.World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
-            } catch (ReflectiveOperationException e) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Failed to create instance of \"EntityArmorStand\""));
             }
         }
         buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet));
@@ -178,7 +162,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (packet.getAction() == PacketPlayOutScoreboardScore.Action.REMOVE) {
             return nms.newPacketPlayOutScoreboardScore_String.newInstance(packet.getPlayer());
         }
-        Object score = nms.newScoreboardScore.newInstance(emptyScoreboard, newScoreboardObjective(packet.getObjectiveName()), packet.getPlayer());
+        Object score = nms.newScoreboardScore.newInstance(nms.emptyScoreboard, newScoreboardObjective(packet.getObjectiveName()), packet.getPlayer());
         nms.ScoreboardScore_setScore.invoke(score, packet.getScore());
         if (nms.getMinorVersion() >= 8) {
             return nms.newPacketPlayOutScoreboardScore.newInstance(score);
@@ -189,7 +173,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     @Override
     public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (nms.PacketPlayOutScoreboardTeam == null) return null; //fabric
-        Object team = nms.newScoreboardTeam.newInstance(emptyScoreboard, packet.getName());
+        Object team = nms.newScoreboardTeam.newInstance(nms.emptyScoreboard, packet.getName());
         String prefix = packet.getPlayerPrefix();
         String suffix = packet.getPlayerSuffix();
         if (clientVersion.getMinorVersion() < 13) {
@@ -253,7 +237,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     public Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
-            nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance(dummyEntity);
+            nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance(nms.dummyEntity);
         } else {
             nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance();
         }
@@ -287,7 +271,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     public Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException {
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
-            nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance(dummyEntity);
+            nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance(nms.dummyEntity);
         } else {
             nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance();
         }

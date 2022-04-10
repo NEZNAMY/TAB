@@ -222,6 +222,10 @@ public final class NMSStorage {
     public Enum[] EnumTeamPush_values;
     public Enum[] PacketPlayOutScoreboardTeam_PlayerAction_values;
 
+    //other
+    public final Object emptyScoreboard = newScoreboard.newInstance();
+    public Object dummyEntity;
+
     /**
      * Creates new instance, initializes required NMS classes and fields
      *
@@ -239,6 +243,7 @@ public final class NMSStorage {
             getProfile = getMethods(getNMSClass("net.minecraft.world.entity.player.EntityHuman", "EntityHuman"), GameProfile.class).get(0);
             newEntityArmorStand = getNMSClass("net.minecraft.world.entity.decoration.EntityArmorStand", "EntityArmorStand")
                     .getConstructor(getNMSClass("net.minecraft.world.level.World", "World"), double.class, double.class, double.class);
+            dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
         initializeChatComponents();
         initializeChatPacket();
