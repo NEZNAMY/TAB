@@ -19,11 +19,12 @@ public class LayoutLatencyRefresher extends TabFeature {
     @Override
     public void refresh(TabPlayer p, boolean force) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            PlayerSlot slot = manager.getPlayerViews().get(all).getSlot(p);
-            if (slot != null) {
-                all.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_LATENCY,
-                        new PacketPlayOutPlayerInfo.PlayerInfoData(slot.getUUID(), p.getPing())), TabConstants.PacketCategory.LAYOUT_LATENCY);
-            }
+            Layout layout = manager.getPlayerViews().get(all);
+            if (layout == null) continue;
+            PlayerSlot slot = layout.getSlot(p);
+            if (slot == null) continue;
+            all.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_LATENCY,
+                    new PacketPlayOutPlayerInfo.PlayerInfoData(slot.getUUID(), p.getPing())), TabConstants.PacketCategory.LAYOUT_LATENCY);
         }
     }
 }
