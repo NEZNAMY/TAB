@@ -263,6 +263,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
     @Override
     public void forceRefresh() {
+        if (!onJoinFinished) return;
         TAB.getInstance().getFeatureManager().refresh(this, true);
     }
 
