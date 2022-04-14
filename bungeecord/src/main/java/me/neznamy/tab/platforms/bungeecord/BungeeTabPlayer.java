@@ -98,8 +98,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public Skin getSkin() {
         try {
             Object loginResult = InitialHandler_getLoginProfile.invoke(getPlayer().getPendingConnection());
+            if (loginResult == null) return null;
             Object[] properties = (Object[]) LoginResult_getProperties.invoke(loginResult);
-            if (loginResult == null || properties == null || properties.length == 0) return null;
+            if (properties == null || properties.length == 0) return null;
             return new Skin((String) LoginResult_Property_getValue.invoke(properties[0]),
                     (String) LoginResult_Property_getSignature.invoke(properties[0]));
         } catch (ReflectiveOperationException e) {
