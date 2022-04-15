@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import me.neznamy.tab.api.HeaderFooterManager;
 import me.neznamy.tab.api.TabFeature;
@@ -110,6 +111,15 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
         List<String> lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-server." + TAB.getInstance().getConfiguration().getGroup(serverGroups, p.getServer()) + "." + property);
         if (lines == null) {
             lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
+        }
+        if (lines == null) {
+            Map<String, Object> permSection = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("header-footer.per-permission");
+            for (String permission : permSection.keySet()) {
+                if (p.hasPermission(permission)) {
+                    //noinspection unchecked
+                    lines = (List<String>) ((Map<String, Object>) permSection.get(permission)).get(property);
+                }
+            }
         }
         if (lines == null) {
              lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer." + property);

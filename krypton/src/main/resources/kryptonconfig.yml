@@ -64,6 +64,12 @@ header-footer:
       header:
         - "This is a shared header for"
         - "world2 and world3"
+  per-permission:
+    some-tab:
+      header:
+        - "To see this tab you need a"
+      footer:
+        - "'some-tab' permission"
 
 
 yellow-number-in-tablist:
