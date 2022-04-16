@@ -30,11 +30,12 @@ header-footer:
         - "This is a shared header for"
         - "server2 and server3"
   per-permission:
-    some-tab:
+    any-tab-name:
+      permission: "some.tab"
       header:
         - "To see this tab you need a"
       footer:
-        - "'some-tab' permission"
+        - "'some.tab' permission"
 
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Tablist-name-formatting
 tablist-name-formatting:

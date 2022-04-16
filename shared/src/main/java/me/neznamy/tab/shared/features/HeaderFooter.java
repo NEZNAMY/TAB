@@ -113,11 +113,12 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
             lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer.per-world." + TAB.getInstance().getConfiguration().getGroup(worldGroups, p.getWorld()) + "." + property);
         }
         if (lines == null) {
-            Map<String, Object> permSection = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("header-footer.per-permission");
-            for (String permission : permSection.keySet()) {
+            Map<String, Map<String, Object>> permTabsSection = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("header-footer.per-permission");
+            for (Map<String, Object> permTab : permTabsSection.values()) {
+                String permission = (String) permTab.get("permission");
                 if (p.hasPermission(permission)) {
                     //noinspection unchecked
-                    lines = (List<String>) ((Map<String, Object>) permSection.get(permission)).get(property);
+                    lines = (List<String>) permTab.get(property);
                 }
             }
         }
