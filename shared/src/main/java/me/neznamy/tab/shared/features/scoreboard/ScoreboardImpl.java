@@ -102,6 +102,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
      * @return  most optimal line from provided text
      */
     private ScoreboardLine registerLine(int lineNumber, String text) {
+        if (text == null) return new StaticLine(this, lineNumber, "");
         if (text.startsWith("Custom|")) {
             String[] elements = text.split("\\|");
             return new CustomLine(this, lineNumber, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
