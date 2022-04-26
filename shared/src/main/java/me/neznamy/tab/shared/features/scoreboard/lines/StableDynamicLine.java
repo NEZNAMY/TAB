@@ -138,7 +138,7 @@ public class StableDynamicLine extends ScoreboardLine {
     public void setText(String text) {
         this.text = text;
         for (TabPlayer p : parent.getPlayers()) {
-            p.setProperty(this, teamName, text);
+            p.setProperty(this, parent.getName() + "-" + teamName, text);
             refresh(p, true);
         }
     }
