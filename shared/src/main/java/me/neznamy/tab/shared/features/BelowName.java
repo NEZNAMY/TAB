@@ -106,6 +106,7 @@ public class BelowName extends TabFeature {
             onJoin(p);
             return;
         }
+        if (disabledNow) return;
         int number = getValue(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
             if (sameServerAndWorld(all, p)) {
