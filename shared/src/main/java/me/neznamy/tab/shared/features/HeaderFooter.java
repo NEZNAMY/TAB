@@ -85,7 +85,22 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
             p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));
         }
         if (isDisabledPlayer(p) || p.getVersion().getMinorVersion() < 8) return;
-        p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(TabConstants.Property.HEADER).updateAndGet(), p.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        String header = p.getProperty(TabConstants.Property.HEADER).updateAndGet();
+        String footer = p.getProperty(TabConstants.Property.FOOTER).updateAndGet();
+        p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(stripRemovedLines(header), stripRemovedLines(footer)), this);
+    }
+
+    private String stripRemovedLines(String input) {
+        StringBuilder result = new StringBuilder();
+        String[] split = input.split("\n");
+        for (int i = 0; i < split.length; i++) {
+            String line = split[i];
+            if (!line.equals(EnumChatFormat.COLOR_CHAR + "r" + "#rm#")) {
+                if (i != 0) result.append('\n');
+                result.append(line);
+            }
+        }
+        return result.toString();
     }
 
     private String getProperty(TabPlayer p, String property) {
