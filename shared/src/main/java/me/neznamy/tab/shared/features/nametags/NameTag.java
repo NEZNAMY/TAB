@@ -237,7 +237,7 @@ public class NameTag extends TabFeature implements TeamManager {
             String currentPrefix = tagPrefix.getFormat(viewer);
             String currentSuffix = tagSuffix.getFormat(viewer);
             boolean visible = getTeamVisibility(p, viewer);
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 2), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
         }
         RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) redis.updateNameTag(p, p.getProperty(TabConstants.Property.TAGPREFIX).get(), p.getProperty(TabConstants.Property.TAGSUFFIX).get());
@@ -247,7 +247,7 @@ public class NameTag extends TabFeature implements TeamManager {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), 2), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
     }
 
     public void unregisterTeam(TabPlayer p) {
@@ -268,7 +268,7 @@ public class NameTag extends TabFeature implements TeamManager {
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
         viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
-                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), 0), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), 2), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
     }
 
     private void updateTeam(TabPlayer p) {

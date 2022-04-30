@@ -83,7 +83,7 @@ public class NickCompatibility extends TabFeature {
                     String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
                     viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName(), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
-                            nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(name), 0), this);
+                            nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(name), 2), this);
                 }
             }
             if (belowname != null) {
