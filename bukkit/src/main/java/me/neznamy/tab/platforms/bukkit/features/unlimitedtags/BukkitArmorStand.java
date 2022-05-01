@@ -337,12 +337,8 @@ public class BukkitArmorStand implements ArmorStand {
     @Override
     public void respawn(TabPlayer viewer) {
         viewer.sendCustomPacket(destroyPacket, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
-        Runnable spawn = () -> spawn(viewer);
-        if (viewer.getVersion().getMinorVersion() == 8) {
-            //1.8.0 client sided bug
-            TAB.getInstance().getCPUManager().runTaskLater(50, manager, TabConstants.CpuUsageCategory.V1_8_0_BUG_COMPENSATION, spawn);
-        } else {
-            spawn.run();
-        }
+        // 1.8.0 will not see entity that respawned in the same tick
+        // creating new delayed task every time someone sneaks can be abused and cause OOM
+        spawn(viewer);
     }
 }
