@@ -6,25 +6,21 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 import com.mojang.authlib.properties.Property;
+import me.neznamy.tab.api.chat.WrappedChatComponent;
 import me.neznamy.tab.api.protocol.*;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.ChatComponentEntity;
-import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.chat.TextColor;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -364,7 +360,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
             EnumGamemode gameMode = (nmsGameMode == null) ? null : EnumGamemode.valueOf(nmsGameMode.toString());
             GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
             Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
-            IChatBaseComponent listName = nmsComponent == null ? null : fromNMSComponent(nmsComponent);
+            IChatBaseComponent listName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
             Skin skin = null;
             if (!profile.getProperties().get("textures").isEmpty()) {
                 Property pr = (Property) profile.getProperties().get("textures").iterator().next();
@@ -440,77 +436,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Converts minecraft IChatBaseComponent into TAB's component class. Currently, does not support show_item hover event on 1.16+.
-     *
-     * @param   component
-     *          component to convert
-     * @return  converted component
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    private IChatBaseComponent fromNMSComponent(Object component) throws ReflectiveOperationException {
-        if (!nms.ChatComponentText.isInstance(component)) return null; //paper
-        IChatBaseComponent chat = new IChatBaseComponent((String) nms.ChatComponentText_text.get(component));
-        Object modifier = nms.ChatBaseComponent_modifier.get(component);
-        if (modifier != null) {
-            chat.getModifier().setColor(fromNMSColor(nms.ChatModifier_color.get(modifier)));
-            chat.getModifier().setBold((Boolean) nms.ChatModifier_bold.get(modifier));
-            chat.getModifier().setItalic((Boolean) nms.ChatModifier_italic.get(modifier));
-            chat.getModifier().setObfuscated((Boolean) nms.ChatModifier_obfuscated.get(modifier));
-            chat.getModifier().setStrikethrough((Boolean) nms.ChatModifier_strikethrough.get(modifier));
-            chat.getModifier().setUnderlined((Boolean) nms.ChatModifier_underlined.get(modifier));
-            Object clickEvent = nms.ChatModifier_clickEvent.get(modifier);
-            if (clickEvent != null) {
-                chat.getModifier().onClick(EnumClickAction.valueOf(nms.ChatClickable_action.get(clickEvent).toString().toUpperCase()), (String) nms.ChatClickable_value.get(clickEvent));
-            }
-            Object hoverEvent = nms.ChatModifier_hoverEvent.get(modifier);
-            if (hoverEvent != null) {
-                EnumHoverAction action;
-                IChatBaseComponent value;
-                if (nms.getMinorVersion() >= 16) {
-                    //does not support show_item on 1.16+
-                    JsonObject json = (JsonObject) nms.ChatHoverable_serialize.invoke(hoverEvent);
-                    action = EnumHoverAction.valueOf(json.get("action").getAsString().toUpperCase());
-                    value = IChatBaseComponent.deserialize(json.get("contents").getAsJsonObject().toString());
-                } else {
-                    action = EnumHoverAction.valueOf(nms.ChatHoverable_getAction.invoke(hoverEvent).toString().toUpperCase());
-                    value = fromNMSComponent(nms.ChatHoverable_getValue.invoke(hoverEvent));
-                }
-                chat.getModifier().onHover(action, value);
-            }
-        }
-        for (Object extra : (List<Object>) nms.ChatBaseComponent_extra.get(component)) {
-            chat.addExtra(fromNMSComponent(extra));
-        }
-        return chat;
-    }
-
-    /**
-     * Converts NMS color into TAB's TextColor class.
-     *
-     * @param   color
-     *          NMS color, ChatHexColor on 1.16+, EnumChatFormat on 1.15-
-     * @return  Converted color
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    private TextColor fromNMSColor(Object color) throws ReflectiveOperationException {
-        if (color == null) return null;
-        if (nms.getMinorVersion() >= 16) {
-            String name = (String) nms.ChatHexColor_name.get(color);
-            if (name != null) {
-                //legacy code
-                return new TextColor(EnumChatFormat.valueOf(name.toUpperCase(Locale.US)));
-            } else {
-                int rgb = (int) nms.ChatHexColor_rgb.get(color);
-                return new TextColor((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
-            }
-        } else {
-            return new TextColor(EnumChatFormat.valueOf(((Enum)color).name()));
-        }
-    }
-
-    /**
      * Converts TAB's IChatBaseComponent into minecraft's component.
      *
      * @param   component
@@ -523,6 +448,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (component == null) return null;
+        if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).get();
         Map<IChatBaseComponent, Object> cache = clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy;
         if (cache.containsKey(component)) return cache.get(component);
         if (cache.size() > 10000) cache.clear();

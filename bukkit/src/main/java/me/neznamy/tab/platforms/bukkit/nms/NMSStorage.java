@@ -15,7 +15,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
@@ -46,7 +45,6 @@ public final class NMSStorage {
     private final Class<?> Entity = getNMSClass("net.minecraft.world.entity.Entity", "Entity");
     private final Class<?> EntityLiving = getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving");
     private final Class<?> PlayerConnection = getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection");
-    public Constructor<?> newEntityArmorStand;
     public final Field PING = getField(EntityPlayer, "ping", "latency", "field_71138_i", "field_13967", "e");
     public final Field PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
     public Field NETWORK_MANAGER;
@@ -54,23 +52,16 @@ public final class NMSStorage {
     public final Method getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
     public final Method sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
     public Method getProfile;
-    public final Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
     public final Enum[] EnumChatFormat_values = getEnumValues(EnumChatFormat);
 
     //chat
-    public Class<?> ChatComponentText;
-    public Class<?> ChatHoverable;
     public Class<?> EnumClickAction;
     private Class<?> IChatBaseComponent;
     public Constructor<?> newChatComponentText;
     public Constructor<?> newChatClickable;
     public Constructor<?> newChatModifier;
     public Constructor<?> newChatHoverable;
-    public Field ChatBaseComponent_extra;
     public Field ChatBaseComponent_modifier;
-    public Field ChatComponentText_text;
-    public Field ChatClickable_action;
-    public Field ChatClickable_value;
     public Field ChatModifier_bold;
     public Field ChatModifier_italic;
     public Field ChatModifier_underlined;
@@ -78,16 +69,11 @@ public final class NMSStorage {
     public Field ChatModifier_obfuscated;
     public Field ChatModifier_clickEvent;
     public Field ChatModifier_hoverEvent;
-    public Field ChatHexColor_name;
-    public Field ChatHexColor_rgb;
     public Field ChatModifier_color;
     public Method ChatComponentText_addSibling;
     public Method EnumHoverAction_a;
-    public Method ChatHoverable_getAction;
     public Method ChatHexColor_ofInt;
     public Method ChatHexColor_ofString;
-    public Method ChatHoverable_serialize;
-    public Method ChatHoverable_getValue;
     public Method EnumHoverAction_fromJson;
     public Method EnumHoverAction_fromLegacyComponent;
 
@@ -182,7 +168,7 @@ public final class NMSStorage {
     private final Class<?> IScoreboardCriteria = getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria", "IScoreboardCriteria");
     public Class<?> EnumScoreboardHealthDisplay;
     public final Constructor<?> newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
-    public final Constructor<?> newScoreboard = Scoreboard.getConstructor();
+    private final Constructor<?> newScoreboard = Scoreboard.getConstructor();
     public final Constructor<?> newScoreboardScore = ScoreboardScore.getConstructor(Scoreboard, ScoreboardObjective, String.class);
     public final Constructor<?> newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor(int.class, ScoreboardObjective);
     public Constructor<?> newPacketPlayOutScoreboardObjective;
@@ -241,8 +227,9 @@ public final class NMSStorage {
         if (minorVersion >= 8) {
             CHANNEL = getFields(NetworkManager, Channel.class).get(0);
             getProfile = getMethods(getNMSClass("net.minecraft.world.entity.player.EntityHuman", "EntityHuman"), GameProfile.class).get(0);
-            newEntityArmorStand = getNMSClass("net.minecraft.world.entity.decoration.EntityArmorStand", "EntityArmorStand")
+            Constructor<?> newEntityArmorStand = getNMSClass("net.minecraft.world.entity.decoration.EntityArmorStand", "EntityArmorStand")
                     .getConstructor(getNMSClass("net.minecraft.world.level.World", "World"), double.class, double.class, double.class);
+            Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
         initializeChatComponents();
@@ -283,19 +270,15 @@ public final class NMSStorage {
         if (minorVersion < 7) return;
         Class<?> ChatBaseComponent = getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent");
         Class<?> ChatClickable = getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable");
-        ChatComponentText = getNMSClass("net.minecraft.network.chat.ChatComponentText", "ChatComponentText");
-        ChatHoverable = getNMSClass("net.minecraft.network.chat.ChatHoverable", "ChatHoverable");
+        Class<?> ChatComponentText = getNMSClass("net.minecraft.network.chat.ChatComponentText", "ChatComponentText");
+        Class<?> ChatHoverable = getNMSClass("net.minecraft.network.chat.ChatHoverable", "ChatHoverable");
         Class<?> ChatModifier = getNMSClass("net.minecraft.network.chat.ChatModifier", "ChatModifier");
         EnumClickAction = getNMSClass("net.minecraft.network.chat.ChatClickable$EnumClickAction", "ChatClickable$EnumClickAction", "EnumClickAction");
         Class<?> EnumHoverAction = getNMSClass("net.minecraft.network.chat.ChatHoverable$EnumHoverAction", "ChatHoverable$EnumHoverAction", "EnumHoverAction");
         IChatBaseComponent = getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
         newChatComponentText = ChatComponentText.getConstructor(String.class);
         newChatClickable = ChatClickable.getConstructor(EnumClickAction, String.class);
-        ChatBaseComponent_extra = getFields(ChatBaseComponent, List.class).get(0);
         ChatBaseComponent_modifier = getFields(ChatBaseComponent, ChatModifier).get(0);
-        ChatComponentText_text = getFields(ChatComponentText, String.class).get(0);
-        ChatClickable_action = getFields(ChatClickable, EnumClickAction).get(0);
-        ChatClickable_value = getFields(ChatClickable, String.class).get(0);
         List<Field> booleans = getFields(ChatModifier, Boolean.class);
         ChatModifier_bold = booleans.get(0);
         ChatModifier_italic = booleans.get(1);
@@ -306,27 +289,20 @@ public final class NMSStorage {
         ChatModifier_hoverEvent = getFields(ChatModifier, ChatHoverable).get(0);
         ChatComponentText_addSibling = getMethod(ChatComponentText, new String[]{"addSibling", "a", "func_150257_a", "method_10852"}, IChatBaseComponent);
         EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a", "method_27670"}, String.class);
-        ChatHoverable_getAction = getMethods(ChatHoverable, EnumHoverAction).get(0);
         if (minorVersion >= 16) {
             Class<?> ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
             Class<?> MinecraftKey = getNMSClass("net.minecraft.resources.MinecraftKey", "MinecraftKey");
             newChatModifier = setAccessible(ChatModifier.getDeclaredConstructor(ChatHexColor, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, ChatClickable, ChatHoverable, String.class, MinecraftKey));
             newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, Object.class);
-            List<Field> list = getFields(ChatHexColor, String.class);
-            ChatHexColor_name = list.get(list.size()-1);
-            ChatHexColor_rgb = getFields(ChatHexColor, int.class).get(0);
             ChatModifier_color = getFields(ChatModifier, ChatHexColor).get(0);
             ChatHexColor_ofInt = getMethods(ChatHexColor, ChatHexColor, int.class).get(0);
             ChatHexColor_ofString = getMethods(ChatHexColor, ChatHexColor, String.class).get(0);
-            ChatHoverable_serialize = getMethods(ChatHoverable, JsonObject.class).get(0);
-            ChatHoverable_getValue = getMethods(ChatHoverable, Object.class, EnumHoverAction).get(0);
             EnumHoverAction_fromJson = getMethods(EnumHoverAction, ChatHoverable, JsonElement.class).get(0);
             EnumHoverAction_fromLegacyComponent = getMethods(EnumHoverAction, ChatHoverable, IChatBaseComponent).get(0);
         } else {
             newChatModifier = ChatModifier.getConstructor();
             newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, IChatBaseComponent);
             ChatModifier_color = getFields(ChatModifier, EnumChatFormat).get(0);
-            ChatHoverable_getValue = getMethods(ChatHoverable, IChatBaseComponent).get(0);
         }
     }
 
