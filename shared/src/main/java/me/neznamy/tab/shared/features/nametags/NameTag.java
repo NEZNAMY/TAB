@@ -8,6 +8,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -312,45 +313,53 @@ public class NameTag extends TabFeature implements TeamManager {
 
     @Override
     public void setPrefix(TabPlayer player, String prefix) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
         updateTeamData(player);
     }
 
     @Override
     public void setSuffix(TabPlayer player, String suffix) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
         updateTeamData(player);
     }
 
     @Override
     public void resetPrefix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
         updateTeamData(player);
     }
 
     @Override
     public void resetSuffix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
         updateTeamData(player);
     }
 
     @Override
     public String getCustomPrefix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
     }
 
     @Override
     public String getCustomSuffix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
     }
 
     @Override
     public String getOriginalPrefix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
     }
 
     @Override
     public String getOriginalSuffix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
     }
 
