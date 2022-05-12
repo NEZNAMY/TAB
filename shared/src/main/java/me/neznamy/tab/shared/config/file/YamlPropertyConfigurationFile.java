@@ -15,7 +15,7 @@ public class YamlPropertyConfigurationFile extends YamlConfigurationFile impleme
 
     private final String PER_SERVER = "per-server";
     private final String PER_WORLD = "per-world";
-    private final String DEFAULT_GROUP = "_DEFAULT_";
+    private static final String DEFAULT_GROUP = "_DEFAULT_";
     
     private final String category;
     private final List<Object> worldGroups = new ArrayList<>(getConfigurationSection(PER_WORLD).keySet());

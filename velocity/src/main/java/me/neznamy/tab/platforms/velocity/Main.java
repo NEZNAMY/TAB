@@ -162,7 +162,7 @@ public class Main {
     /**
      * TAB's command
      */
-    private class VelocityTABCommand implements SimpleCommand {
+    private static class VelocityTABCommand implements SimpleCommand {
 
         @Override
         public void execute(Invocation invocation) {

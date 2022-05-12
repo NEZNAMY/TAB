@@ -629,7 +629,7 @@ public final class NMSStorage {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
-    private List<Field> getInstanceFields(Class<?> clazz, Class<?> type){
+    public List<Field> getInstanceFields(Class<?> clazz, Class<?> type){
         if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {

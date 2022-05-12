@@ -33,7 +33,6 @@ public class VehicleRefresher extends TabFeature {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
                         if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
-//                        feature.getVehicleManager().processPassengers((Entity) inVehicle.getPlayer());
                     }
                     for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                         if (feature.isPreviewingNametag(p)) {
@@ -124,21 +123,6 @@ public class VehicleRefresher extends TabFeature {
             } else {
                 return new ArrayList<>();
             }
-        }
-    }
-
-    /**
-     * Teleports armor stands of all passengers on specified vehicle
-     *
-     * @param   vehicle
-     *          entity to check passengers of
-     */
-    public void processPassengers(Entity vehicle) {
-        for (Entity passenger : getPassengers(vehicle)) {
-            if (passenger instanceof Player) {
-                feature.getArmorStandManager(TAB.getInstance().getPlayer(passenger.getUniqueId())).teleport();
-            }
-            processPassengers(passenger);
         }
     }
 }
