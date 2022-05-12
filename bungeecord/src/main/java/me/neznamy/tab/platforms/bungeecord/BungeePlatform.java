@@ -1,10 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.platforms.bungeecord.event.TabLoadEvent;
-import me.neznamy.tab.platforms.bungeecord.event.TabPlayerLoadEvent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -44,18 +40,7 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    public void callLoadEvent() {
-        ProxyServer.getInstance().getPluginManager().callEvent(new TabLoadEvent());
-    }
-    
-    @Override
-    public void callLoadEvent(TabPlayer player) {
-        ProxyServer.getInstance().getPluginManager().callEvent(new TabPlayerLoadEvent(player));
-    }
-
-    @Override
     public String getPluginVersion(String plugin) {
-        Preconditions.checkNotNull(plugin, "plugin");
         Plugin pl = ProxyServer.getInstance().getPluginManager().getPlugin(plugin);
         return pl == null ? null : pl.getDescription().getVersion();
     }
