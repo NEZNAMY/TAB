@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
@@ -30,7 +29,6 @@ public class DataWatcherHelper {
      *          data to write to
      */
     public DataWatcherHelper(DataWatcher data) {
-        Preconditions.checkNotNull(data, "dataWatcher");
         this.data = data;
         this.registry = NMSStorage.getInstance().getDataWatcherRegistry();
     }
@@ -78,8 +76,6 @@ public class DataWatcherHelper {
      *          client version
      */
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
-        Preconditions.checkNotNull(customName, "customName");
-        Preconditions.checkNotNull(clientVersion, "clientVersion");
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 13) {
             try {
                 data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
@@ -92,12 +88,11 @@ public class DataWatcherHelper {
             //name length is limited to 64 characters on <1.8
             String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
             if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6){
-                data.setValue(new DataWatcherObject(10, registry.getString()), cutName);
+                data.setValue(new DataWatcherObject(10, null), cutName);
             } else {
-                data.setValue(new DataWatcherObject(5, registry.getString()), cutName);
+                data.setValue(new DataWatcherObject(5, null), cutName);
             }
         }
-
     }
 
     /**
@@ -110,7 +105,7 @@ public class DataWatcherHelper {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
             data.setValue(new DataWatcherObject(3, registry.getBoolean()), visible);
         } else {
-            data.setValue(new DataWatcherObject(3, registry.getByte()), (byte)(visible?1:0));
+            data.setValue(new DataWatcherObject(3, null), (byte)(visible?1:0));
         }
     }
 
@@ -124,7 +119,7 @@ public class DataWatcherHelper {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
             data.setValue(new DataWatcherObject(6, registry.getFloat()), health);
         } else {
-            data.setValue(new DataWatcherObject(16, registry.getInteger()), (int)health);
+            data.setValue(new DataWatcherObject(16, null), (int)health);
         }
     }
 
