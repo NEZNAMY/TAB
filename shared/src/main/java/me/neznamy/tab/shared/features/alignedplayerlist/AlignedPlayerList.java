@@ -24,7 +24,7 @@ public class AlignedPlayerList extends PlayerList {
     private final byte[] widths = loadWidths();
 
     public AlignedPlayerList() {
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
     }
 
     /**

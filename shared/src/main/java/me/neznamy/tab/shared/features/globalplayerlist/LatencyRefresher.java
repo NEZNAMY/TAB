@@ -12,7 +12,7 @@ public class LatencyRefresher extends TabFeature {
 
     public LatencyRefresher() {
         super("Global PlayerList", "Updating latency");
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%ping%", this);
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
     }
 
     @Override

@@ -26,24 +26,25 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable(){
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Server version: " + Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")"));
+        String version = Bukkit.getBukkitVersion().split("-")[0];
+        String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Server version: " + version + " (" + serverPackage + ")"));
         if (!isVersionSupported()){
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
         BukkitPlatform platform = new BukkitPlatform(this);
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]),
-                Bukkit.getBukkitVersion().split("-")[0] + " (" + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + ")", getDataFolder(), getLogger()));
+        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version + " (" + serverPackage + ")", getDataFolder(), getLogger()));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }
         Bukkit.getPluginManager().registerEvents(new BukkitEventListener(platform), this);
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 5304);
-        metrics.addCustomChart(new SimplePie("unlimited_nametag_mode_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
-        metrics.addCustomChart(new SimplePie("placeholderapi", () -> Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") ? "Yes" : "No"));
-        metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
-        metrics.addCustomChart(new SimplePie("server_version", () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PLACEHOLDER_API, () -> Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
         PluginCommand cmd = Bukkit.getPluginCommand("tab");
         if (cmd == null) return;
         TABCommand command = new TABCommand();
@@ -53,7 +54,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //null check due to L31 return making L34 not run
+        //null check due to L34 return making L37 not run
         if (TAB.getInstance() != null) TAB.getInstance().unload();
     }
     

@@ -4,6 +4,7 @@ import java.util.*;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -18,7 +19,7 @@ public class ParentGroup {
         this.layout = layout;
         this.condition = condition;
         if (condition != null) {
-            layout.addUsedPlaceholders(Collections.singletonList("%condition:" + condition.getName() + "%"));
+            layout.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
         }
         this.slots = slots;
         for (int slot : slots) {

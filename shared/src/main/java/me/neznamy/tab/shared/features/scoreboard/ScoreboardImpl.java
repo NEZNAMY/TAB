@@ -59,7 +59,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         this(manager, name, title, lines, false);
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
-            manager.addUsedPlaceholders(Collections.singletonList("%condition:" + this.displayCondition.getName() + "%"));
+            manager.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(this.displayCondition.getName())));
         }
     }
 

@@ -40,8 +40,8 @@ public class VehicleRefresher extends TabFeature {
                         }
                     }
         });
-        addUsedPlaceholders(Collections.singletonList("%vehicle%"));
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%vehicle%", 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
+        addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
     }
 
     @Override

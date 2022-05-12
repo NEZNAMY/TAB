@@ -4,6 +4,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,7 +159,7 @@ public class Converter {
                 sortingTypes.add(type + ":" + sortingPlaceholder);
             }
         }
-        sortingTypes.add("PLACEHOLDER_A_TO_Z:%player%");
+        sortingTypes.add("PLACEHOLDER_A_TO_Z:" + TabConstants.Placeholder.PLAYER);
         newConfig.set("scoreboard-teams.sorting-types", sortingTypes);
     }
 
@@ -178,8 +179,8 @@ public class Converter {
     }
 
     private void convertYellowNumber(ConfigurationFile oldConfig, ConfigurationFile newConfig) {
-        newConfig.set("yellow-number-in-tablist.enabled", !oldConfig.getString("yellow-number-in-tablist","%ping%").equals(""));
-        newConfig.set("yellow-number-in-tablist.value", oldConfig.getString("yellow-number-in-tablist","%ping%"));
+        newConfig.set("yellow-number-in-tablist.enabled", !oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING).equals(""));
+        newConfig.set("yellow-number-in-tablist.value", oldConfig.getString("yellow-number-in-tablist", TabConstants.Placeholder.PING));
         newConfig.set("yellow-number-in-tablist.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.yellow-number", Collections.singletonList("disabledworld")));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
             newConfig.set("yellow-number-in-tablist.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.yellow-number", Collections.singletonList("disabledserver")));
@@ -360,13 +361,13 @@ public class Converter {
             }
         }
         groups.set("per-" + separator, groupMap);
-        groups.set("_DEFAULT_", groups.getConfigurationSection("_OTHER_"));
+        groups.set(TabConstants.DEFAULT_GROUP, groups.getConfigurationSection("_OTHER_"));
         groups.set("_OTHER_", null);
         users.set("per-" + separator, userMap);
         for (Object world : groups.getConfigurationSection("per-" + separator).keySet()) {
             String gPath = "per-" + separator + "." + world;
             if (!groups.hasConfigOption(gPath + "._OTHER_")) continue;
-            groups.set(gPath + "._DEFAULT_", groups.getObject(gPath + "._OTHER_"));
+            groups.set(gPath + "." + TabConstants.DEFAULT_GROUP, groups.getObject(gPath + "._OTHER_"));
             groups.set(gPath + "._OTHER_", null);
         }
     }

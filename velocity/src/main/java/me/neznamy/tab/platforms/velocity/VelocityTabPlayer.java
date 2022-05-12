@@ -33,18 +33,18 @@ import net.kyori.adventure.text.Component;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
-     * Map of methods executing tasks API calls equal to sending the actual packets
+     * Map of methods executing tasks using API calls equal to sending the actual packets
      */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
-        put(PacketPlayOutBoss.class, (packet) -> handle((PacketPlayOutBoss) packet));
-        put(PacketPlayOutChat.class, (packet) -> handle((PacketPlayOutChat) packet));
-        put(PacketPlayOutPlayerInfo.class, (packet) -> handle((PacketPlayOutPlayerInfo) packet));
-        put(PacketPlayOutPlayerListHeaderFooter.class, (packet) -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
-        put(PacketPlayOutScoreboardDisplayObjective.class, (packet) -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
-        put(PacketPlayOutScoreboardObjective.class, (packet) -> handle((PacketPlayOutScoreboardObjective) packet));
-        put(PacketPlayOutScoreboardScore.class, (packet) -> handle((PacketPlayOutScoreboardScore) packet));
-        put(PacketPlayOutScoreboardTeam.class, (packet) -> handle((PacketPlayOutScoreboardTeam) packet));
+        put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
+        put(PacketPlayOutChat.class, packet -> handle((PacketPlayOutChat) packet));
+        put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
+        put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
+        put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
+        put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
+        put(PacketPlayOutScoreboardScore.class, packet -> handle((PacketPlayOutScoreboardScore) packet));
+        put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }};
 
     /** Player's tablist UUID */
@@ -68,7 +68,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     
     @Override
     public boolean hasPermission0(String permission) {
-        Preconditions.checkNotNull(permission, "permission");
         long time = System.nanoTime();
         boolean value = getPlayer().hasPermission(permission);
         TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);

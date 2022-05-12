@@ -59,21 +59,21 @@ public class GroupManager extends TabFeature {
     private String getByPrimary(TabPlayer player) {
         try {
             String group = plugin.getPrimaryGroup(player);
-            return group == null ? TabConstants.DEFAULT_GROUP : group;
+            return group == null ? TabConstants.NO_GROUP : group;
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + plugin.getName() + " v" + plugin.getVersion(), e);
-            return TabConstants.DEFAULT_GROUP;
+            return TabConstants.NO_GROUP;
         }
     }
 
     /**
      * Returns player's permission group based on highest permission
-     * or {@link TabConstants#DEFAULT_GROUP} if player has no permission.
+     * or {@link TabConstants#NO_GROUP} if player has no permission.
      *
      * @param   player
      *          Player to get permission group of
      * @return  Highest permission group player has permission for
-     *          or {@link TabConstants#DEFAULT_GROUP} if player does not have any
+     *          or {@link TabConstants#NO_GROUP} if player does not have any
      */
     private String getByPermission(TabPlayer player) {
         for (String group : primaryGroupFindingList) {
@@ -81,7 +81,7 @@ public class GroupManager extends TabFeature {
                 return group;
             }
         }
-        return TabConstants.DEFAULT_GROUP;
+        return TabConstants.NO_GROUP;
     }
 
     /**

@@ -183,7 +183,7 @@ public abstract class ITabPlayer implements TabPlayer {
         Preconditions.checkNotNull(permissionGroup, "permissionGroup");
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(this, permissionGroup);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);
         forceRefresh();
     }
 

@@ -29,10 +29,10 @@ public class YellowNumber extends TabFeature {
     private static final String TITLE = "PlayerListObjectiveTitle";
 
     /** Numeric value to display */
-    private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", "%ping%");
+    private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", TabConstants.Placeholder.PING);
 
     /** Display type, either INTEGER or HEARTS */
-    private final EnumScoreboardHealthDisplay displayType = "%health%".equals(rawValue) || "%player_health%".equals(rawValue) ||
+    private final EnumScoreboardHealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) || "%player_health%".equals(rawValue) ||
             "%player_health_rounded%".equals(rawValue) ? EnumScoreboardHealthDisplay.HEARTS : EnumScoreboardHealthDisplay.INTEGER;
 
     /**

@@ -56,7 +56,7 @@ public class BungeeEventListener implements Listener {
     @EventHandler
     public void onChat(ChatEvent e) {
         if (TAB.getInstance().isDisabled()) return;
-        if (e.getMessage().startsWith("/") && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+        if (e.isCommand() && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
     }
 
     /**

@@ -10,6 +10,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.TabExpansion;
 
 /**
@@ -58,7 +59,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
         } else {
             bossBarOffPlayers = Collections.emptyList();
         }
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%countdown%", 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
         TAB.getInstance().debug(String.format("Loaded BossBar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
                 Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), toggleCommand, defaultBars, hiddenByDefault, rememberToggleChoice));
     }

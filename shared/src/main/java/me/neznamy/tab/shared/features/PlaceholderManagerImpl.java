@@ -119,7 +119,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         long startTime = System.nanoTime();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (placeholder.update(all)) {
-                if (placeholder.getIdentifier().equals("%vanished%")) TAB.getInstance().getFeatureManager().onVanishStatusChange(all);
+                if (placeholder.getIdentifier().equals(TabConstants.Placeholder.VANISHED)) TAB.getInstance().getFeatureManager().onVanishStatusChange(all);
                 update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
                 somethingChanged = true;
             }

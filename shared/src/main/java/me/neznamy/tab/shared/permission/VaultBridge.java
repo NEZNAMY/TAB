@@ -18,7 +18,7 @@ public class VaultBridge extends PermissionPlugin {
 
     @Override
     public String getPrimaryGroup(TabPlayer p) {
-        return p.getGroup() == null ? TabConstants.DEFAULT_GROUP : p.getGroup();
+        return p.getGroup() == null ? TabConstants.NO_GROUP : p.getGroup();
     }
 
     @Override

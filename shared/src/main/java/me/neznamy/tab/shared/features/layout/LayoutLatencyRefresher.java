@@ -13,7 +13,7 @@ public class LayoutLatencyRefresher extends TabFeature {
     public LayoutLatencyRefresher(LayoutManager manager) {
         super(manager.getFeatureName(), "Updating latency");
         this.manager = manager;
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%ping%", this);
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
     }
 
     @Override

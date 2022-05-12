@@ -161,7 +161,7 @@ public class FeatureManagerImpl implements FeatureManager {
             f.onWorldChange(changed, from, to);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
         }
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%world%")).updateValue(changed, to);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
     /**
@@ -185,7 +185,7 @@ public class FeatureManagerImpl implements FeatureManager {
             f.onServerChange(changed, from, to);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
         }
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
     }
 
     /**
