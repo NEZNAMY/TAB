@@ -90,7 +90,7 @@ public abstract class ProxyPlatform extends Platform {
             refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier,
                     pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
         }
-        bridgePlaceholders.put(placeholder.getIdentifier(), placeholder.getRefresh());
+        bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             plm.sendMessage(all, "Placeholder", placeholder.getIdentifier(), refresh);
         }
