@@ -10,9 +10,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class AlignedPlayerList extends PlayerList {
 
-    private final WeakHashMap<TabPlayer, PlayerView> playerViews = new WeakHashMap<>();
+    private final Map<TabPlayer, PlayerView> playerViews = new HashMap<>();
     private final byte[] widths = loadWidths();
 
     public AlignedPlayerList() {
@@ -43,7 +43,7 @@ public class AlignedPlayerList extends PlayerList {
         }
         Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
         for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            widths[entry.getKey()] = (byte)(int)entry.getValue();
+            widths[entry.getKey()] = entry.getValue().byteValue();
         }
         return widths;
     }
@@ -85,6 +85,7 @@ public class AlignedPlayerList extends PlayerList {
     public void onQuit(TabPlayer p) {
         super.onQuit(p);
         playerViews.values().forEach(v -> v.processPlayerQuit(p));
+        playerViews.remove(p);
     }
 
     @Override
