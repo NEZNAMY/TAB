@@ -91,7 +91,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (nms.getMinorVersion() == 7) {
             return nms.newPacketPlayOutChat.newInstance(component);
         }
-        throw new IllegalStateException("Not supported on <1.7");
+        return packet;
     }
 
     @Override
