@@ -385,22 +385,4 @@ public class CpuManager implements ThreadManager {
             return null;
         }
     }
-
-    @Override
-    public Future<?> runTaskLater(int delayMilliseconds, Runnable task) {
-        try {
-            return threadPool.submit(() -> {
-                try {
-                    Thread.sleep(delayMilliseconds);
-                    submit(task);
-                } catch (InterruptedException pluginDisabled) {
-                    Thread.currentThread().interrupt();
-                }
-            });
-        } catch (OutOfMemoryError e) {
-            TAB.getInstance().getErrorManager().criticalError("Failed to create new delayed task, active thread count: " +
-                    threadPool.getActiveCount() + " / " + threadPool.getPoolSize(), e);
-            return null;
-        }
-    }
 }
