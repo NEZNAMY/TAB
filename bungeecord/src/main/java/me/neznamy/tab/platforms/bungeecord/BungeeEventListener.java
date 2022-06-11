@@ -70,8 +70,15 @@ public class BungeeEventListener implements Listener {
         if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);
-            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
-                    ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
+            TAB.getInstance().getCPUManager().getThreadPool().submit(() -> {
+                try {
+                    while (TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId()) == null) {
+                        Thread.sleep(100);
+                    }
+                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
+                            ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
+                } catch (InterruptedException ignored) {}
+            });
         }
     }
 }
