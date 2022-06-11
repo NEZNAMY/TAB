@@ -385,4 +385,8 @@ public class CpuManager implements ThreadManager {
             return null;
         }
     }
+
+    public ThreadPoolExecutor getThreadPool() {
+        return threadPool;
+    }
 }
