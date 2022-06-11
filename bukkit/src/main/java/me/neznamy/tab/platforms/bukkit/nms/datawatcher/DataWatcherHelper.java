@@ -40,7 +40,7 @@ public class DataWatcherHelper {
      */
     private int getArmorStandFlagsPosition() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 17) {
-            //1.17.x, 1.18.x
+            //1.17.x, 1.18.x, 1.19.x
             return 15;
         } else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
             //1.15.x, 1.16.x

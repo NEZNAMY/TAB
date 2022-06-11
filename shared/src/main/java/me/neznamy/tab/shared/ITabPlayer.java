@@ -241,12 +241,12 @@ public abstract class ITabPlayer implements TabPlayer {
         } else {
             component = new IChatBaseComponent(message);
         }
-        sendCustomPacket(new PacketPlayOutChat(component, ChatMessageType.CHAT));
+        sendCustomPacket(new PacketPlayOutChat(component, ChatMessageType.SYSTEM));
     }
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        sendCustomPacket(new PacketPlayOutChat(message, ChatMessageType.CHAT));
+        sendCustomPacket(new PacketPlayOutChat(message, ChatMessageType.SYSTEM));
     }
 
     @Override

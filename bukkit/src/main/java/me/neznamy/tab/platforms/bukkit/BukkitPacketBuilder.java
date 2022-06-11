@@ -1,24 +1,18 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.chat.WrappedChatComponent;
 import me.neznamy.tab.api.protocol.*;
+import me.neznamy.tab.shared.TAB;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import com.mojang.authlib.GameProfile;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.chat.ChatComponentEntity;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
@@ -51,9 +45,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
      * Constructs new instance
      */
     public BukkitPacketBuilder() {
-        if (nms.getMinorVersion() >= 13) {
+        if (nms.getMinorVersion() >= 19) {
+            entityIds.put(EntityType.ARMOR_STAND, 2);
+        } else if (nms.getMinorVersion() >= 13) {
             entityIds.put(EntityType.ARMOR_STAND, 1);
-            entityIds.put(EntityType.WITHER, 83);
         } else {
             entityIds.put(EntityType.WITHER, 64);
             if (nms.getMinorVersion() >= 8){
@@ -79,18 +74,16 @@ public class BukkitPacketBuilder extends PacketBuilder {
     @Override
     public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         Object component = toNMSComponent(packet.getMessage(), clientVersion);
-        if (nms.getMinorVersion() >= 16) {
+        if (nms.getMinorVersion() >= 19)
+            return nms.newPacketPlayOutChat.newInstance(component, packet.getType().ordinal());
+        if (nms.getMinorVersion() >= 16)
             return nms.newPacketPlayOutChat.newInstance(component, nms.ChatMessageType_values[packet.getType().ordinal()], UUID.randomUUID());
-        }
-        if (nms.getMinorVersion() >= 12) {
+        if (nms.getMinorVersion() >= 12)
             return nms.newPacketPlayOutChat.newInstance(component, Enum.valueOf((Class<Enum>) nms.ChatMessageType, packet.getType().toString()));
-        }
-        if (nms.getMinorVersion() >= 8) {
+        if (nms.getMinorVersion() >= 8)
             return nms.newPacketPlayOutChat.newInstance(component, (byte) packet.getType().ordinal());
-        }
-        if (nms.getMinorVersion() == 7) {
+        if (nms.getMinorVersion() == 7)
             return nms.newPacketPlayOutChat.newInstance(component);
-        }
         return packet;
     }
 
@@ -103,13 +96,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
             GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
             if (data.getSkin() != null) profile.getProperties().put("textures", new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()));
             List<Object> parameters = new ArrayList<>();
-            if (nms.newPlayerInfoData.getParameterCount() == 5) {
+            if (nms.newPlayerInfoData.getParameterTypes()[0] == nms.PacketPlayOutPlayerInfo) {
                 parameters.add(nmsPacket);
             }
             parameters.add(profile);
             parameters.add(data.getLatency());
             parameters.add(data.getGameMode() == null ? null : nms.EnumGamemode_values[nms.EnumGamemode_values.length-EnumGamemode.VALUES.length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
             parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
+            if (nms.getMinorVersion() >= 19) parameters.add(null);
             items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
         }
         nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
@@ -254,7 +248,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
             nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance();
         }
         nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYID, packet.getEntityId());
-        nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, entityIds.get(packet.getEntityType()));
         nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_YAW, (byte)(packet.getLocation().getYaw() * 256.0f / 360.0f));
         nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_PITCH, (byte)(packet.getLocation().getPitch() * 256.0f / 360.0f));
         if (nms.getMinorVersion() <= 14) {
@@ -269,6 +262,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
             nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_X, floor(packet.getLocation().getX()*32));
             nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_Y, floor(packet.getLocation().getY()*32));
             nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_Z, floor(packet.getLocation().getZ()*32));
+        }
+        int id = entityIds.get(packet.getEntityType());
+        if (nms.getMinorVersion() >= 19) {
+            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, nms.Registry_a.invoke(nms.IRegistry_X, id));
+        } else {
+            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, id);
         }
         return nmsPacket;
     }
@@ -452,62 +451,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         Map<IChatBaseComponent, Object> cache = clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy;
         if (cache.containsKey(component)) return cache.get(component);
         if (cache.size() > 10000) cache.clear();
-        Object chat = nms.newChatComponentText.newInstance(component.getText());
-        Object modifier;
-        Object clickEvent = component.getModifier().getClickEvent() == null ? null : nms.newChatClickable.newInstance(Enum.valueOf((Class<Enum>) nms.EnumClickAction,
-                component.getModifier().getClickEvent().getAction().toString().toUpperCase()), component.getModifier().getClickEvent().getValue());
-        if (nms.getMinorVersion() >= 16) {
-            Object color = null;
-            if (component.getModifier().getColor() != null) {
-                if (clientVersion.getMinorVersion() >= 16) {
-                    color = nms.ChatHexColor_ofInt.invoke(null, (component.getModifier().getColor().getRed() << 16) + (component.getModifier().getColor().getGreen() << 8) + component.getModifier().getColor().getBlue());
-                } else {
-                    color = nms.ChatHexColor_ofString.invoke(null, component.getModifier().getColor().getLegacyColor().toString().toLowerCase());
-                }
-            }
-            Object hoverEvent = null;
-            if (component.getModifier().getHoverEvent() != null) {
-                Object nmsAction = nms.EnumHoverAction_a.invoke(null, component.getModifier().getHoverEvent().getAction().toString().toLowerCase());
-                switch (component.getModifier().getHoverEvent().getAction()) {
-                    case SHOW_TEXT:
-                        hoverEvent = nms.newChatHoverable.newInstance(nmsAction, toNMSComponent(component.getModifier().getHoverEvent().getValue(), clientVersion));
-                        break;
-                    case SHOW_ENTITY:
-                        hoverEvent = nms.EnumHoverAction_fromJson.invoke(nmsAction, ((ChatComponentEntity) component.getModifier().getHoverEvent().getValue()).toJson());
-                        break;
-                    case SHOW_ITEM:
-                        hoverEvent = nms.EnumHoverAction_fromLegacyComponent.invoke(nmsAction, toNMSComponent(component.getModifier().getHoverEvent().getValue(), clientVersion));
-                        break;
-                    default:
-                        break;
-                }
-            }
-            modifier = nms.newChatModifier.newInstance(
-                    color,
-                    component.getModifier().getBold(),
-                    component.getModifier().getItalic(),
-                    component.getModifier().getUnderlined(),
-                    component.getModifier().getStrikethrough(),
-                    component.getModifier().getObfuscated(),
-                    clickEvent, hoverEvent, null, null);
-        } else {
-            modifier = nms.newChatModifier.newInstance();
-            if (component.getModifier().getColor() != null) nms.setField(modifier, nms.ChatModifier_color, Enum.valueOf((Class<Enum>) nms.EnumChatFormat, component.getModifier().getColor().getLegacyColor().toString()));
-            nms.setField(modifier, nms.ChatModifier_bold, component.getModifier().getBold());
-            nms.setField(modifier, nms.ChatModifier_italic, component.getModifier().getItalic());
-            nms.setField(modifier, nms.ChatModifier_underlined, component.getModifier().getUnderlined());
-            nms.setField(modifier, nms.ChatModifier_strikethrough, component.getModifier().getStrikethrough());
-            nms.setField(modifier, nms.ChatModifier_obfuscated, component.getModifier().getObfuscated());
-            if (clickEvent != null) nms.setField(modifier, nms.ChatModifier_clickEvent, clickEvent);
-            if (component.getModifier().getHoverEvent() != null) {
-                nms.setField(modifier, nms.ChatModifier_hoverEvent, nms.newChatHoverable.newInstance(nms.EnumHoverAction_a.invoke(null,
-                        component.getModifier().getHoverEvent().getAction().toString().toLowerCase()), toNMSComponent(component.getModifier().getHoverEvent().getValue(), clientVersion)));
-            }
-        }
-        nms.setField(chat, nms.ChatBaseComponent_modifier, modifier);
-        for (IChatBaseComponent extra : component.getExtra()) {
-            nms.ChatComponentText_addSibling.invoke(chat, toNMSComponent(extra, clientVersion));
-        }
+        Object chat = nms.ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion));
         cache.put(component, chat);
         return chat;
     }
@@ -523,7 +467,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
      */
     private Object newScoreboardObjective(String objectiveName) throws ReflectiveOperationException {
         if (nms.getMinorVersion() >= 13) {
-            return nms.newScoreboardObjective.newInstance(null, objectiveName, null, nms.newChatComponentText.newInstance(""), null);
+            return nms.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
         }
         return nms.newScoreboardObjective.newInstance(null, objectiveName, nms.IScoreboardCriteria_self.get(null));
     }

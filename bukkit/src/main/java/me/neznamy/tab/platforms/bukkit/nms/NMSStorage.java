@@ -6,15 +6,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 
-import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.channel.Channel;
@@ -55,27 +50,8 @@ public final class NMSStorage {
     public final Enum[] EnumChatFormat_values = getEnumValues(EnumChatFormat);
 
     //chat
-    public Class<?> EnumClickAction;
     private Class<?> IChatBaseComponent;
-    public Constructor<?> newChatComponentText;
-    public Constructor<?> newChatClickable;
-    public Constructor<?> newChatModifier;
-    public Constructor<?> newChatHoverable;
-    public Field ChatBaseComponent_modifier;
-    public Field ChatModifier_bold;
-    public Field ChatModifier_italic;
-    public Field ChatModifier_underlined;
-    public Field ChatModifier_strikethrough;
-    public Field ChatModifier_obfuscated;
-    public Field ChatModifier_clickEvent;
-    public Field ChatModifier_hoverEvent;
-    public Field ChatModifier_color;
-    public Method ChatComponentText_addSibling;
-    public Method EnumHoverAction_a;
-    public Method ChatHexColor_ofInt;
-    public Method ChatHexColor_ofString;
-    public Method EnumHoverAction_fromJson;
-    public Method EnumHoverAction_fromLegacyComponent;
+    public Method ChatSerializer_DESERIALIZE;
 
     //PacketPlayOutChat
     public Class<?> ChatMessageType;
@@ -96,10 +72,11 @@ public final class NMSStorage {
     private DataWatcherRegistry registry;
 
     //PacketPlayOutSpawnEntityLiving
-    public final Class<?> PacketPlayOutSpawnEntityLiving = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
+    public final Class<?> PacketPlayOutSpawnEntityLiving = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving",
+            "net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
     public Constructor<?> newPacketPlayOutSpawnEntityLiving;
     public final Field PacketPlayOutSpawnEntityLiving_ENTITYID = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(0);
-    public final Field PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(1);
+    public Field PacketPlayOutSpawnEntityLiving_ENTITYTYPE;
     public final Field PacketPlayOutSpawnEntityLiving_YAW = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
     public final Field PacketPlayOutSpawnEntityLiving_PITCH = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
     public Field PacketPlayOutSpawnEntityLiving_UUID;
@@ -107,6 +84,8 @@ public final class NMSStorage {
     public Field PacketPlayOutSpawnEntityLiving_Y;
     public Field PacketPlayOutSpawnEntityLiving_Z;
     public Field PacketPlayOutSpawnEntityLiving_DATAWATCHER;
+    public Method Registry_a;
+    public Object IRegistry_X;
 
     //PacketPlayOutEntityTeleport
     public final Class<?> PacketPlayOutEntityTeleport = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
@@ -223,6 +202,8 @@ public final class NMSStorage {
         Class<?> NetworkManager = getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager");
         if (minorVersion >= 7) {
             NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
+            IChatBaseComponent = getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
+            ChatSerializer_DESERIALIZE = getMethod(getNMSClass("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer"), new String[]{"a", "func_150699_a"}, String.class);
         }
         if (minorVersion >= 8) {
             CHANNEL = getFields(NetworkManager, Channel.class).get(0);
@@ -232,7 +213,6 @@ public final class NMSStorage {
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
-        initializeChatComponents();
         initializeChatPacket();
         initializeDataWatcher();
         initializeEntityPackets();
@@ -266,53 +246,16 @@ public final class NMSStorage {
         return instance;
     }
 
-    private void initializeChatComponents() throws ReflectiveOperationException {
-        if (minorVersion < 7) return;
-        Class<?> ChatBaseComponent = getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent");
-        Class<?> ChatClickable = getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable");
-        Class<?> ChatComponentText = getNMSClass("net.minecraft.network.chat.ChatComponentText", "ChatComponentText");
-        Class<?> ChatHoverable = getNMSClass("net.minecraft.network.chat.ChatHoverable", "ChatHoverable");
-        Class<?> ChatModifier = getNMSClass("net.minecraft.network.chat.ChatModifier", "ChatModifier");
-        EnumClickAction = getNMSClass("net.minecraft.network.chat.ChatClickable$EnumClickAction", "ChatClickable$EnumClickAction", "EnumClickAction");
-        Class<?> EnumHoverAction = getNMSClass("net.minecraft.network.chat.ChatHoverable$EnumHoverAction", "ChatHoverable$EnumHoverAction", "EnumHoverAction");
-        IChatBaseComponent = getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
-        newChatComponentText = ChatComponentText.getConstructor(String.class);
-        newChatClickable = ChatClickable.getConstructor(EnumClickAction, String.class);
-        ChatBaseComponent_modifier = getFields(ChatBaseComponent, ChatModifier).get(0);
-        List<Field> booleans = getFields(ChatModifier, Boolean.class);
-        ChatModifier_bold = booleans.get(0);
-        ChatModifier_italic = booleans.get(1);
-        ChatModifier_underlined = booleans.get(2);
-        ChatModifier_strikethrough = booleans.get(3);
-        ChatModifier_obfuscated = booleans.get(4);
-        ChatModifier_clickEvent = getFields(ChatModifier, ChatClickable).get(0);
-        ChatModifier_hoverEvent = getFields(ChatModifier, ChatHoverable).get(0);
-        ChatComponentText_addSibling = getMethod(ChatComponentText, new String[]{"addSibling", "a", "func_150257_a", "method_10852"}, IChatBaseComponent);
-        EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a", "method_27670"}, String.class);
-        if (minorVersion >= 16) {
-            Class<?> ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
-            Class<?> MinecraftKey = getNMSClass("net.minecraft.resources.MinecraftKey", "MinecraftKey");
-            newChatModifier = setAccessible(ChatModifier.getDeclaredConstructor(ChatHexColor, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, ChatClickable, ChatHoverable, String.class, MinecraftKey));
-            newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, Object.class);
-            ChatModifier_color = getFields(ChatModifier, ChatHexColor).get(0);
-            ChatHexColor_ofInt = getMethods(ChatHexColor, ChatHexColor, int.class).get(0);
-            ChatHexColor_ofString = getMethods(ChatHexColor, ChatHexColor, String.class).get(0);
-            EnumHoverAction_fromJson = getMethods(EnumHoverAction, ChatHoverable, JsonElement.class).get(0);
-            EnumHoverAction_fromLegacyComponent = getMethods(EnumHoverAction, ChatHoverable, IChatBaseComponent).get(0);
-        } else {
-            newChatModifier = ChatModifier.getConstructor();
-            newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, IChatBaseComponent);
-            ChatModifier_color = getFields(ChatModifier, EnumChatFormat).get(0);
-        }
-    }
-
     private void initializeChatPacket() throws ReflectiveOperationException {
-        Class<?> PacketPlayOutChat = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
-        if (minorVersion >= 12) {
+        Class<?> PacketPlayOutChat = getNMSClass("net.minecraft.network.protocol.game.ClientboundSystemChatPacket",
+                "net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
+        if (minorVersion >= 12 && minorVersion <= 18) {
             ChatMessageType = getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
             ChatMessageType_values = getEnumValues(ChatMessageType);
         }
-        if (minorVersion >= 16) {
+        if (minorVersion >= 19) {
+            newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, int.class);
+        } else if (minorVersion >= 16) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType, UUID.class);
         } else if (minorVersion >= 12) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType);
@@ -362,14 +305,23 @@ public final class NMSStorage {
             PacketPlayInUseEntity_ENTITY = getFields(PacketPlayInUseEntity, int.class).get(0);
             PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
         }
+
         if (minorVersion >= 9) {
             PacketPlayOutSpawnEntityLiving_UUID = getFields(PacketPlayOutSpawnEntityLiving, UUID.class).get(0);
-            PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(0);
-            PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(1);
-            PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
             PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, double.class).get(0);
             PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, double.class).get(1);
             PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, double.class).get(2);
+            if (minorVersion >= 19) {
+                PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
+                PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(3);
+                PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(4);
+                Registry_a = Class.forName("net.minecraft.core.Registry").getMethod("a", int.class);
+                IRegistry_X = Class.forName("net.minecraft.core.IRegistry").getDeclaredField("X").get(null);
+            } else {
+                PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(0);
+                PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(1);
+                PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
+            }
         } else {
             PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(2);
             PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(3);
@@ -377,6 +329,11 @@ public final class NMSStorage {
             PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, int.class).get(1);
             PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, int.class).get(2);
             PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, int.class).get(3);
+        }
+        if (minorVersion >= 19) {
+            PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "e");
+        } else {
+            PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(1);
         }
         if (minorVersion <= 14) {
             PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0);
@@ -488,18 +445,15 @@ public final class NMSStorage {
      * @throws  ClassNotFoundException
      *          if class does not exist
      */
-    private Class<?> getNMSClass(String fullPath_1_17, String... names) throws ClassNotFoundException {
-        if (minorVersion >= 17) {
-            return Class.forName(fullPath_1_17);
-        }
+    private Class<?> getNMSClass(String... names) throws ClassNotFoundException {
         for (String name : names) {
             try {
-                return getLegacyClass(name);
+                return minorVersion >= 17 ? Class.forName(name) : getLegacyClass(name);
             } catch (ClassNotFoundException e) {
                 //not the first class name in array
             }
         }
-        throw new ClassNotFoundException("No class found with possible names {modern = " + fullPath_1_17 + ", legacy = " + Arrays.toString(names) + "}");
+        throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
     }
 
     /**
@@ -698,5 +652,27 @@ public final class NMSStorage {
     public <T extends AccessibleObject> T setAccessible(T o) {
         o.setAccessible(true);
         return o;
+    }
+
+    /**
+     * Gets values of all static fields in a class
+     *
+     * @param   clazz
+     *          class to return field values from
+     * @return  map of values
+     */
+    public Map<String, Object> getStaticFields(Class<?> clazz){
+        Map<String, Object> fields = new HashMap<>();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                setAccessible(field);
+                try {
+                    fields.put(field.getName(), field.get(null));
+                } catch (IllegalAccessException e) {
+                    //this will never happen
+                }
+            }
+        }
+        return fields;
     }
 }

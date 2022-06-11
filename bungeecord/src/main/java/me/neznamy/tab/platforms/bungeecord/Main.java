@@ -26,7 +26,7 @@ public class Main extends Plugin {
     @Override
     public void onEnable(){
         if (!isVersionSupported()) {
-            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
+            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1637 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
             return;
         }
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
@@ -46,7 +46,7 @@ public class Main extends Plugin {
      */
     private boolean isVersionSupported() {
         try {
-            Class.forName("net.md_5.bungee.protocol.packet.ScoreboardObjective$HealthDisplay");
+            Class.forName("net.md_5.bungee.protocol.Property");
             return true;
         } catch (ClassNotFoundException e) {
             return false;

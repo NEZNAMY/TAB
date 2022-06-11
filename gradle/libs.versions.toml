@@ -19,7 +19,7 @@ event = "3.0.0"
 
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
-bungeecord = "1.18-R0.1-SNAPSHOT"
+bungeecord = "1.19-R0.1-SNAPSHOT"
 krypton = "0.59.2"
 velocity = "1.1.0"
 

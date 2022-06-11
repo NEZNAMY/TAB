@@ -40,7 +40,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
             Class<?> channelWrapper = Class.forName("net.md_5.bungee.netty.ChannelWrapper");
             ChannelWrapper_getHandle = channelWrapper.getMethod("getHandle");
             Class<?> loginResult = Class.forName("net.md_5.bungee.connection.LoginResult");
-            Class<?> loginResult_Property = Class.forName("net.md_5.bungee.connection.LoginResult$Property");
+            Class<?> loginResult_Property = Class.forName("net.md_5.bungee.protocol.Property");
             LoginResult_Property_getValue = loginResult_Property.getMethod("getValue");
             LoginResult_Property_getSignature = loginResult_Property.getMethod("getSignature");
             LoginResult_getProperties = loginResult.getMethod("getProperties");
