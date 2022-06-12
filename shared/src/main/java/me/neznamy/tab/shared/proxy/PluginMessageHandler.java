@@ -70,6 +70,10 @@ public class PluginMessageHandler {
                         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
                         if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge &&
                             !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
+                        // reset attributes from previous server to default false values, new server will send separate update packets if needed
+                        player.setVanished(false);
+                        player.setDisguised(false);
+                        player.setInvisible(false);
                         int placeholderCount = in.readInt();
                         for (int i=0; i<placeholderCount; i++) {
                             String identifier = in.readUTF();
