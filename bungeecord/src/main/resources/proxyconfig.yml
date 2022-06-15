@@ -138,6 +138,7 @@ scoreboard:
   toggle-command: /sb
   remember-toggle-choice: false
   hidden-by-default: false
+  hide-when-empty: false
   use-numbers: false
   static-number: 0
   delay-on-join-milliseconds: 0

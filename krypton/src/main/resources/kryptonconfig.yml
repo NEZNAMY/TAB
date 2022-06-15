@@ -128,6 +128,7 @@ scoreboard:
   toggle-command: /sb
   remember-toggle-choice: false
   hidden-by-default: false
+  hide-when-empty: false
   # when enabled, will show 0-14 in red next to lines
   use-numbers: false
   # if use-numbers is disabled, this number will show in red next to all lines

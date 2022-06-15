@@ -27,6 +27,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     private final boolean useNumbers = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.use-numbers", false);
     private final boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.remember-toggle-choice", false);
     private final boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hidden-by-default", false);
+    private final boolean hideWhenEmpty = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.hide-when-empty", false);
     private final boolean respectOtherPlugins = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
     private final int staticNumber = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.static-number", 0);
     private final int joinDelay = TAB.getInstance().getConfiguration().getConfig().getInt("scoreboard.delay-on-join-milliseconds", 0);
@@ -190,6 +191,10 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     public int getStaticNumber() {
         return staticNumber;
+    }
+
+    public boolean isHideWhenEmpty() {
+        return hideWhenEmpty;
     }
 
     /**
