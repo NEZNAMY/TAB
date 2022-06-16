@@ -10,9 +10,9 @@ allprojects {
 
 val platforms = setOf(
     projects.bukkit,
-//    projects.bungeecord,
+    projects.bungeecord,
 //    projects.krypton,
-//    projects.velocity
+    projects.velocity
 ).map { it.dependencyProject }
 
 val special = setOf(

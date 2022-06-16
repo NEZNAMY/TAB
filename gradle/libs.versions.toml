@@ -21,7 +21,7 @@ event = "3.0.0"
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.18-R0.1-SNAPSHOT"
 krypton = "0.59.2"
-velocity = "1.1.0"
+velocity = "3.1.0"
 
 # Platform extras
 placeholderapi = "2.10.9"

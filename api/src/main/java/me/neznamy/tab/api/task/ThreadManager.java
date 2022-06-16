@@ -68,4 +68,6 @@ public interface ThreadManager {
      * @return  future allowing to cancel the task
      */
     Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task);
+
+    Future<?> runTaskLater(int delayMilliseconds, Runnable task);
 }
