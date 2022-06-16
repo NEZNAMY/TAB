@@ -38,7 +38,7 @@ public class PetFix extends TabFeature {
      * 200 milliseconds, which is the value we should not go above. Optimal value is
      * therefore between 150 and 200 milliseconds.
      */
-    private final int INTERACT_COOLDOWN = 160;
+    private static final int INTERACT_COOLDOWN = 160;
 
     /**
      * Constructs new instance with given parameter
@@ -80,15 +80,13 @@ public class PetFix extends TabFeature {
      */
     @Override
     public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
-        if (nms.PacketPlayInUseEntity.isInstance(packet)) {
-            if (lastInteractFix.containsKey(sender) && (System.currentTimeMillis() - lastInteractFix.get(sender) < INTERACT_COOLDOWN)) {
+        if (nms.PacketPlayInUseEntity.isInstance(packet) && isInteract(nms.PacketPlayInUseEntity_ACTION.get(packet))) {
+            if (System.currentTimeMillis() - lastInteractFix.getOrDefault(sender, 0L) < INTERACT_COOLDOWN) {
                 //last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
                 return true;
             }
-            if (isInteract(nms.PacketPlayInUseEntity_ACTION.get(packet))) {
-                //this is the first packet, saving player so the next packet can be cancelled
-                lastInteractFix.put(sender, System.currentTimeMillis());
-            }
+            //this is the first packet, saving player so the next packet can be cancelled
+            lastInteractFix.put(sender, System.currentTimeMillis());
         }
         return false;
     }

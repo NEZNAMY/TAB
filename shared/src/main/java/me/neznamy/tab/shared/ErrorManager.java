@@ -108,13 +108,18 @@ public class ErrorManager {
     private synchronized void printError(String message, List<String> error, boolean intoConsoleToo, File file) {
         try {
             if (!file.exists()) Files.createFile(file.toPath());
-            if (file.length() > 1000000) return; //not going over 1 MB
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))){
                 if (message != null) {
-                    write(buf, "&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ", EnumChatFormat.decolor(message), intoConsoleToo);
+                    if (file.length() < 1000000)
+                        buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText("&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ").toRawText() + EnumChatFormat.decolor(message) + System.getProperty("line.separator"));
+                    if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
+                        TAB.getInstance().sendConsoleMessage(EnumChatFormat.color("&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ") + EnumChatFormat.decolor(message), false);
                 }
                 for (String line : error) {
-                    write(buf, "&c", line, intoConsoleToo);
+                    if (file.length() < 1000000)
+                        buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText("&c").toRawText() + line + System.getProperty("line.separator"));
+                    if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
+                        TAB.getInstance().sendConsoleMessage(EnumChatFormat.color("&c") + line, false);
                 }
             }
         } catch (IOException ex) {
@@ -152,23 +157,6 @@ public class ErrorManager {
      */
     public void placeholderError(String message, List<String> t) {
         printError(message, t, false, placeholderErrorLog);
-    }
-
-    /**
-     * Writes message into buffer and console if set
-     *
-     * @param   buf
-     *          writer to write message to
-     * @param   message
-     *          message to write
-     * @param   forceConsole
-     *          whether to send into console even without debug mode
-     * @throws  IOException
-     *          if I/O writer operation fails
-     */
-    private void write(BufferedWriter buf, String prefix, String message, boolean forceConsole) throws IOException {
-        buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText(prefix).toRawText() + message + System.getProperty("line.separator"));
-        if (forceConsole || TAB.getInstance().getConfiguration().isDebugMode()) TAB.getInstance().sendConsoleMessage(EnumChatFormat.color(prefix) + message, false);
     }
 
     /**

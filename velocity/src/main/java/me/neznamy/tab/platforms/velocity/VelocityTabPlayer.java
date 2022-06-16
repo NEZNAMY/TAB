@@ -27,13 +27,13 @@ import net.kyori.adventure.identity.Identity;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
-     * Map of methods executing tasks API calls equal to sending the actual packets
+     * Map of methods executing tasks using API calls equal to sending the actual packets
      */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
-        put(PacketPlayOutBoss.class, (packet) -> handle((PacketPlayOutBoss) packet));
-        put(PacketPlayOutChat.class, (packet) -> handle((PacketPlayOutChat) packet));
-        put(PacketPlayOutPlayerListHeaderFooter.class, (packet) -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
+        put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
+        put(PacketPlayOutChat.class, packet -> handle((PacketPlayOutChat) packet));
+        put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
     }};
 
     /** Player's tablist UUID */
@@ -63,7 +63,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean hasPermission0(String permission) {
-        Preconditions.checkNotNull(permission, "permission");
         long time = System.nanoTime();
         boolean value = getPlayer().hasPermission(permission);
         TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);

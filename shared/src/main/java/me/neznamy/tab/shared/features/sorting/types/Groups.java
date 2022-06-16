@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 import java.util.LinkedHashMap;
 
 import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
@@ -17,7 +18,7 @@ public class Groups extends SortingType {
      * Constructs new instance
      */
     public Groups(Sorting sorting, String options) {
-        super(sorting, "%group%");
+        super(sorting, TabConstants.Placeholder.GROUP);
         sortedGroups = convertSortingElements(options.split(","));
     }
 

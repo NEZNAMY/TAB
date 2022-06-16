@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.config.mysql;
 
 import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.MySQL;
 
 import javax.sql.rowset.CachedRowSet;
@@ -10,7 +11,6 @@ import java.util.*;
 
 public class MySQLGroupConfiguration implements PropertyConfiguration {
 
-    private final String DEFAULT_GROUP = "_DEFAULT_";
     private final MySQL mysql;
 
     private final Map<String, Map<String, Object>> values = new HashMap<>();
@@ -23,7 +23,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
         CachedRowSet crs = mysql.getCRS("select * from tab_groups");
         while (crs.next()) {
             String group = crs.getString("group");
-            if (!group.equals(DEFAULT_GROUP)) group = group.toLowerCase(Locale.US);
+            if (!group.equals(TabConstants.DEFAULT_GROUP)) group = group.toLowerCase(Locale.US);
             String property = crs.getString("property");
             String value = crs.getString("value");
             String world = crs.getString("world");
@@ -34,7 +34,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public void setProperty(String group, String property, String server, String world, String value) {
-        String lowercaseGroup = group.equals(DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
+        String lowercaseGroup = group.equals(TabConstants.DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
         try {
             if (getProperty(lowercaseGroup, property, server, world) != null) {
                 mysql.execute("delete from `tab_groups` where `group` = ? and `property` = ? and world " + querySymbol(world == null) + " ? and server " + querySymbol(server == null) + " ?", lowercaseGroup, property, world, server);
@@ -62,25 +62,25 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
 
     @Override
     public String[] getProperty(String group, String property, String server, String world) {
-        String lowercaseGroup = group.equals(DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
+        String lowercaseGroup = group.equals(TabConstants.DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
         Object value;
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(lowercaseGroup, new HashMap<>()).get(property)) != null) {
             return new String[] {toString(value), String.format("group=%s,world=%s", lowercaseGroup, world)};
         }
-        if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("group=%s,world=%s", DEFAULT_GROUP, world)};
+        if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(TabConstants.DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+            return new String[] {toString(value), String.format("group=%s,world=%s", TabConstants.DEFAULT_GROUP, world)};
         }
         if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(lowercaseGroup, new HashMap<>()).get(property)) != null) {
             return new String[] {toString(value), String.format("group=%s,server=%s", lowercaseGroup, server)};
         }
-        if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("group=%s,server=%s", DEFAULT_GROUP, server)};
+        if ((value = perServer.getOrDefault(server, new HashMap<>()).getOrDefault(TabConstants.DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+            return new String[] {toString(value), String.format("group=%s,server=%s", TabConstants.DEFAULT_GROUP, server)};
         }
         if ((value = values.getOrDefault(lowercaseGroup, new HashMap<>()).get(property)) != null) {
             return new String[] {toString(value), String.format("group=%s", lowercaseGroup)};
         }
-        if ((value = values.getOrDefault(DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
-            return new String[] {toString(value), String.format("group=%s", DEFAULT_GROUP)};
+        if ((value = values.getOrDefault(TabConstants.DEFAULT_GROUP, new HashMap<>()).get(property)) != null) {
+            return new String[] {toString(value), String.format("group=%s", TabConstants.DEFAULT_GROUP)};
         }
         return new String[0];
     }

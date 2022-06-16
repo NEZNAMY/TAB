@@ -78,6 +78,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
                 packet.getNameTagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers() instanceof List ? packet.getPlayers() : new ArrayList<>(packet.getPlayers()));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         List<PlayerInfoData> listData = new ArrayList<>();

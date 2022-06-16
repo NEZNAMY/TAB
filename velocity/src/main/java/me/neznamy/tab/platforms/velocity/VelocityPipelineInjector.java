@@ -84,7 +84,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
             try {
                 super.write(context, packet, channelPromise);
             } catch (Exception e) {
-                TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
+                TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", packet.getClass().getSimpleName(), player.getName()), e);
             }
         }
 

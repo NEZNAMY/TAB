@@ -13,6 +13,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
@@ -232,67 +233,79 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 
     @Override
     public void setPrefix(TabPlayer player, String prefix) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
         updatePlayer(player, true);
     }
 
     @Override
     public void setName(TabPlayer player, String customName) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
         updatePlayer(player, true);
     }
 
     @Override
     public void setSuffix(TabPlayer player, String suffix) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
         updatePlayer(player, true);
     }
 
     @Override
     public void resetPrefix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(null);
         updatePlayer(player, true);
     }
 
     @Override
     public void resetName(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(null);
         updatePlayer(player, true);
     }
 
     @Override
     public void resetSuffix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(null);
         updatePlayer(player, true);
     }
 
     @Override
     public String getCustomPrefix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TABPREFIX).getTemporaryValue();
     }
 
     @Override
     public String getCustomName(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.CUSTOMTABNAME).getTemporaryValue();
     }
 
     @Override
     public String getCustomSuffix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TABSUFFIX).getTemporaryValue();
     }
 
     @Override
     public String getOriginalPrefix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TABPREFIX).getOriginalRawValue();
     }
 
     @Override
     public String getOriginalName(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.CUSTOMTABNAME).getOriginalRawValue();
     }
 
     @Override
     public String getOriginalSuffix(TabPlayer player) {
+        Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
     }
 }

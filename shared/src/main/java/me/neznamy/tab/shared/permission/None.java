@@ -14,7 +14,7 @@ public class None extends PermissionPlugin {
 
     @Override
     public String getPrimaryGroup(TabPlayer p) {
-        return TabConstants.DEFAULT_GROUP;
+        return TabConstants.NO_GROUP;
     }
 
     @Override

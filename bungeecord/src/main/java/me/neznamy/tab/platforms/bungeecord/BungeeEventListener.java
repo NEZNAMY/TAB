@@ -56,7 +56,7 @@ public class BungeeEventListener implements Listener {
     @EventHandler
     public void onChat(ChatEvent e) {
         if (TAB.getInstance().isDisabled()) return;
-        if (e.getMessage().startsWith("/") && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+        if (e.isCommand() && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
     }
 
     /**
@@ -70,8 +70,15 @@ public class BungeeEventListener implements Listener {
         if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);
-            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
-                    ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
+            TAB.getInstance().getCPUManager().getThreadPool().submit(() -> {
+                try {
+                    while (TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId()) == null) {
+                        Thread.sleep(100);
+                    }
+                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
+                            ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
+                } catch (InterruptedException ignored) {}
+            });
         }
     }
 }

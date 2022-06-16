@@ -44,10 +44,10 @@ public abstract class RedisSupport extends TabFeature {
      */
     protected RedisSupport() {
         super("RedisBungee", null);
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%online%", 1000, () ->
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder("%staffonline%", 1000, () ->
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
     }

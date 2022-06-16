@@ -32,10 +32,10 @@ public class LuckPerms extends PermissionPlugin {
             if (getVersion().startsWith("4")) return UPDATE_MESSAGE;
             net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
             User user = api.getUserManager().getUser(p.getUniqueId());
-            if (user == null) return TabConstants.DEFAULT_GROUP; //pretend like nothing is wrong
+            if (user == null) return TabConstants.NO_GROUP; //pretend like nothing is wrong
             return user.getPrimaryGroup();
         } catch (Exception e) {
-            return TabConstants.DEFAULT_GROUP;
+            return TabConstants.NO_GROUP;
         }
     }
 

@@ -137,7 +137,7 @@ scoreboard:
       lines:
         - "%animation:MyAnimation1%"
         - "&6Online:"
-        - "* &eOnline&7: &f%online%&7/&4%maxplayers%"
+        - "* &eOnline&7: &f%online%"
         - "* &eCurrent World&7: &f%worldonline%"
         - "* &eStaff&7: &f%staffonline%"
         - " "

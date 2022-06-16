@@ -124,11 +124,15 @@ public class FeatureManagerImpl implements FeatureManager {
         long millis = System.currentTimeMillis();
         TAB.getInstance().addPlayer(connectedPlayer);
         for (TabFeature f : values) {
-            if (!f.overridesMethod("onJoin")) continue;
-            long time = System.nanoTime();
-            f.onJoin(connectedPlayer);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
-            TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed player join in " + (System.nanoTime()-time)/1000000 + "ms");
+            try {
+                if (!f.overridesMethod("onJoin")) continue;
+                long time = System.nanoTime();
+                f.onJoin(connectedPlayer);
+                TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+                TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed player join in " + (System.nanoTime()-time)/1000000 + "ms");
+            } catch (Throwable e) {
+                TAB.getInstance().getErrorManager().criticalError("Feature " + f.getClass().getSimpleName() + " failed to process player " + connectedPlayer.getName(), e);
+            }
         }
         ((ITabPlayer)connectedPlayer).markAsLoaded(true);
         TAB.getInstance().debug("Player join of " + connectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
@@ -157,7 +161,7 @@ public class FeatureManagerImpl implements FeatureManager {
             f.onWorldChange(changed, from, to);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
         }
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%world%")).updateValue(changed, to);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
     /**
@@ -181,7 +185,7 @@ public class FeatureManagerImpl implements FeatureManager {
             f.onServerChange(changed, from, to);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.SERVER_SWITCH, System.nanoTime()-time);
         }
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%server%")).updateValue(changed, to);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
     }
 
     /**

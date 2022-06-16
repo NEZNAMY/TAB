@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import me.neznamy.tab.api.util.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,7 +22,7 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 public class WitherBossBar extends BossBarManagerImpl implements Listener {
 
     //distance of wither in blocks
-    private final int WITHER_DISTANCE = 60;
+    private static final int WITHER_DISTANCE = 60;
     
     /**
      * Constructs a new instance of the class
@@ -32,7 +31,6 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
      *          plugin instance
      */
     public WitherBossBar(JavaPlugin plugin) {
-        Preconditions.checkNotNull(plugin, "plugin");
         Bukkit.getPluginManager().registerEvents(this, plugin);
         //when MC is on fullscreen, BossBar disappears after 1 second of not being seen
         //when in a small window, it's about 100ms

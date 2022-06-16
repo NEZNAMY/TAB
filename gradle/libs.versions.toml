@@ -53,7 +53,7 @@ event = { group = "net.kyori", name = "event-method", version.ref = "event" }
 
 # Platforms
 bukkit = { group = "org.purpurmc.purpur", name = "purpur-api", version.ref = "bukkit" }
-bungeecord = { group = "net.md-5", name = "bungeecord-proxy", version.ref = "bungeecord" }
+bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
 krypton-api = { group = "org.kryptonmc", name = "krypton-api", version.ref = "krypton" }
 krypton-server = { group = "org.kryptonmc", name = "krypton-server", version.ref = "krypton" }
 krypton-annotationProcessor = { group = "org.kryptonmc", name = "krypton-annotation-processor", version.ref = "krypton" }
