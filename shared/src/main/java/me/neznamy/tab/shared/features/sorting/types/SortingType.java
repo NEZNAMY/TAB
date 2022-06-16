@@ -50,7 +50,7 @@ public abstract class SortingType {
     protected LinkedHashMap<String, String> convertSortingElements(String[] elements) {
         LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<>();
         int index = 1;
-        int charCount = String.valueOf(elements.length).length(); //1 char for <10 values, 2 chars for <100 etc
+        int charCount = String.valueOf(elements.length).length()+1; //1 char for <10 values, 2 chars for <100 etc
         for (String element : elements){
             StringBuilder sb = new StringBuilder();
             sb.append(index);
