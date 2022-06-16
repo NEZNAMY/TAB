@@ -15,8 +15,15 @@ import me.neznamy.tab.shared.TAB;
  */
 public class BukkitEventListener implements Listener {
 
+    /** Platform instance */
     private final BukkitPlatform platform;
-    
+
+    /**
+     * Constructs new instance with given parameter
+     *
+     * @param   platform
+     *          Platform instance
+     */
     public BukkitEventListener(BukkitPlatform platform) {
         this.platform = platform;
     }

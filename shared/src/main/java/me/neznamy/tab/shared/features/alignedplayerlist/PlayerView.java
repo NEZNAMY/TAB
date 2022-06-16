@@ -180,7 +180,7 @@ public class PlayerView {
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == ignoredPlayer) continue;
-            if (all.isVanished() && !canSeeVanished) continue;
+            if (all.isVanished() && !canSeeVanished && all != viewer) continue;
             int localWidth = playerWidths.get(all);
             if (localWidth > newMaxWidth) {
                 newMaxWidth = localWidth;

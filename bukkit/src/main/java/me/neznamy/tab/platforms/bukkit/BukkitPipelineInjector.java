@@ -9,16 +9,18 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Pipeline injection for bukkit
+ */
 public class BukkitPipelineInjector extends PipelineInjector {
 
-    //nms storage
+    /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
 
     /**
@@ -38,7 +40,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
      */
     public class BukkitChannelDuplexHandler extends ChannelDuplexHandler {
 
-        //injected player
+        /** Injected player */
         private final TabPlayer player;
 
         /**
@@ -48,7 +50,6 @@ public class BukkitPipelineInjector extends PipelineInjector {
          *          player to inject
          */
         public BukkitChannelDuplexHandler(TabPlayer player) {
-            Preconditions.checkNotNull(player, "player");
             this.player = player;
         }
 
@@ -126,6 +127,15 @@ public class BukkitPipelineInjector extends PipelineInjector {
             nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
         }
 
+        /**
+         * Returns player with matching game profile name. This is different from
+         * real name when a nick plugin changing names of players is used. If no
+         * player was found, returns {@code null}.
+         *
+         * @param   name
+         *          Game profile name
+         * @return  Player with matching game profile name
+         */
         private TabPlayer getPlayer(String name) {
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (p.getNickname().equals(name)) return p;

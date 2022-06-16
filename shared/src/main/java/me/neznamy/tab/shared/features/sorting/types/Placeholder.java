@@ -20,12 +20,26 @@ public class Placeholder extends SortingType {
      *
      * @param   sorting
      *          sorting feature
-     * @param    options
+     * @param   options
      *          options used by this sorting type
      */
     public Placeholder(Sorting sorting, String options) {
-        super(sorting, options.split(":")[0]);
-        sortingMap = convertSortingElements(options.substring(options.indexOf(":")+1).split(","));
+        super(sorting, getPlaceholder(options));
+        String[] args = options.split(":");
+        sortingMap = convertSortingElements(args[args.length-1].split(","));
+    }
+
+    /**
+     * Returns placeholder identifier used in provided options. This allows
+     * support for placeholders that contain ":", such as conditions or animations.
+     *
+     * @param   options
+     *          Configured sorting options in "%placeholder%:values" format
+     * @return  Placeholder configured in options
+     */
+    private static String getPlaceholder(String options) {
+        String[] args = options.split(":");
+        return options.substring(0, options.length()-args[args.length-1].length()-1);
     }
 
     @Override

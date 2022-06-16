@@ -137,12 +137,12 @@ public class RedisPlayer {
 
     public PacketPlayOutScoreboardTeam getRegisterTeamPacket() {
         if (disabledNameTags) return null;
-        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", Collections.singletonList(nickname), 0);
+        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", Collections.singletonList(nickname), 2);
     }
 
     public PacketPlayOutScoreboardTeam getUpdateTeamPacket() {
         if (disabledNameTags) return null;
-        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", 0);
+        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", 2);
     }
 
     public PacketPlayOutScoreboardTeam getUnregisterTeamPacket() {

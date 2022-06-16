@@ -101,7 +101,7 @@ public abstract class TabFeature {
     protected TabFeature(String featureName, String refreshDisplayName, String configSection) {
         this(featureName, refreshDisplayName);
         List<String> disabledServers = TabAPI.getInstance().getConfig().getStringList(configSection + ".disable-in-servers");
-        List<String> disabledWorlds = TabAPI.getInstance().getConfig().getStringList(configSection + "disable-in-worlds");
+        List<String> disabledWorlds = TabAPI.getInstance().getConfig().getStringList(configSection + ".disable-in-worlds");
         if (disabledServers != null) {
             this.disabledServers = disabledServers.toArray(new String[0]);
             serverWhitelistMode = disabledServers.contains("WHITELIST");

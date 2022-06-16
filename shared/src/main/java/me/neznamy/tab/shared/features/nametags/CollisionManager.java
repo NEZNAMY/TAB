@@ -7,6 +7,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 public class CollisionManager extends TabFeature {
 
@@ -21,15 +22,15 @@ public class CollisionManager extends TabFeature {
         this.collisionRule = collisionRule;
         if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
         if (!collisionRule) return; //no need to refresh disguise status since collision is disabled
-        if (TAB.getInstance().getPlatform().getPluginVersion("LibsDisguises") == null && TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return; //no disguise plugin available
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%collision%", 500, p -> {
+        if (TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.LIBS_DISGUISES) == null && TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return; //no disguise plugin available
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
 
             if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
             boolean newCollision = !p.isDisguised();
             collision.put(p, newCollision);
             return newCollision;
         });
-        addUsedPlaceholders(Collections.singletonList("%collision%"));
+        addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.COLLISION));
     }
     
     public boolean getCollision(TabPlayer p) {

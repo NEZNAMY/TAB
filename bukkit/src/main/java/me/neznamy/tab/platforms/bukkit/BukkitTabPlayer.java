@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import java.util.*;
 
 import com.mojang.authlib.properties.Property;
+import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.Preconditions;
 import org.bukkit.Bukkit;
@@ -95,6 +96,8 @@ public class BukkitTabPlayer extends ITabPlayer {
                 } else {
                     handleVia((PacketPlayOutBoss) nmsPacket);
                 }
+            } else if (nmsPacket instanceof PacketPlayOutChat) {
+                getPlayer().sendMessage(((PacketPlayOutChat) nmsPacket).getMessage().toLegacyText());
             } else {
                 NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
             }

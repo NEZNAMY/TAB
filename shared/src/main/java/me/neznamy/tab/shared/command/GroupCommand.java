@@ -54,7 +54,7 @@ public class GroupCommand extends PropertyCommand {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
                 TAB.getInstance().getConfiguration().getGroups().remove(group);
                 for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-                    if (pl.getGroup().equals(group) || "_DEFAULT_".equals(group)){
+                    if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)){
                         pl.forceRefresh();
                     }
                 }
@@ -123,7 +123,7 @@ public class GroupCommand extends PropertyCommand {
         if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
         TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, server, world, value.length() == 0 ? null : value);
         for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-            if (pl.getGroup().equals(group) || "_DEFAULT_".equals(group)){
+            if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)){
                 pl.forceRefresh();
             }
         }
@@ -133,7 +133,7 @@ public class GroupCommand extends PropertyCommand {
     public List<String> complete(TabPlayer sender, String[] arguments) {
         if (arguments.length == 1) {
             Set<String> groups = new HashSet<>(TAB.getInstance().getConfiguration().getGroups().getAllEntries());
-            groups.add("_DEFAULT_");
+            groups.add(TabConstants.DEFAULT_GROUP);
             return groups.stream().filter(group -> group.toLowerCase().startsWith(arguments[0].toLowerCase())).collect(Collectors.toList());
         }
         return super.complete(sender, arguments);

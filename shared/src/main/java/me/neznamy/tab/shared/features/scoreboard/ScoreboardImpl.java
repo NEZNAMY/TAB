@@ -59,7 +59,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         this(manager, name, title, lines, false);
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
-            manager.addUsedPlaceholders(Collections.singletonList("%condition:" + this.displayCondition.getName() + "%"));
+            manager.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(this.displayCondition.getName())));
         }
     }
 
@@ -102,6 +102,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
      * @return  most optimal line from provided text
      */
     private ScoreboardLine registerLine(int lineNumber, String text) {
+        if (text == null) return new StaticLine(this, lineNumber, "");
         if (text.startsWith("Custom|")) {
             String[] elements = text.split("\\|");
             return new CustomLine(this, lineNumber, elements[1], elements[2], elements[3], Integer.parseInt(elements[4]));
@@ -109,7 +110,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         if (text.startsWith("Long|")) {
             return new LongLine(this, lineNumber, text.substring(5));
         }
-        if (text.contains("%") || (manager.isUsingNumbers() && text.length() <= 26)) {
+        if (text.contains("%")) {
             return new StableDynamicLine(this, lineNumber, text);
         }
         return new StaticLine(this, lineNumber, text);
@@ -235,7 +236,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
                 continue;
             }
             if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0){
-                p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(), score++), this);
+                p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(p), score++), this);
             }
         }
     }

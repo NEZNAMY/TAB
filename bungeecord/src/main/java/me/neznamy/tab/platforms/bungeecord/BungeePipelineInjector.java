@@ -97,7 +97,7 @@ public class BungeePipelineInjector extends PipelineInjector {
             try {
                 super.write(context, packet, channelPromise);
             } catch (Exception e) {
-                TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
+                TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", packet.getClass().getSimpleName(), player.getName()), e);
             }
         }
 
@@ -151,7 +151,7 @@ public class BungeePipelineInjector extends PipelineInjector {
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             long time = System.nanoTime();
             Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
-            TAB.getInstance().getCPUManager().addTime("Packet deserializing", TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
+            TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
             super.write(context, modifiedPacket, channelPromise);
         }
 

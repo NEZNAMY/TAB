@@ -7,7 +7,8 @@ package me.neznamy.tab.shared;
 public class TabConstants {
 
     public static final String PLUGIN_VERSION = "@plugin_version@";
-    public static final String DEFAULT_GROUP = "NONE";
+    public static final String NO_GROUP = "NONE";
+    public static final String DEFAULT_GROUP = "_DEFAULT_";
     public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-2";
     public static final String REDIS_CHANNEL_NAME = "TAB";
 
@@ -49,7 +50,6 @@ public class TabConstants {
         public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
         public static final String GROUP_REFRESHING = "Refreshing groups";
 
-        public static final String V1_8_0_BUG_COMPENSATION = "Compensating for 1.8.0 bugs";
         public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
         public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
         public static final String PROCESSING_PLAYER_MOVEMENT = "Processing player movement";
@@ -283,5 +283,87 @@ public class TabConstants {
         public static String bossBarColorStyle(String name) {
             return "BossBar-color-style-" + name;
         }
+    }
+
+    /**
+     * All internal placeholders offered by the plugin
+     */
+    public static class Placeholder {
+
+        // Universal
+        public static final String DISPLAY_NAME = "%displayname%";
+        public static final String GROUP = "%group%";
+        public static final String VANISHED = "%vanished%";
+        public static final String WORLD = "%world%";
+        public static final String WORLD_ONLINE = "%worldonline%";
+        public static final String SERVER = "%server%";
+        public static final String SERVER_ONLINE = "%serveronline%";
+        public static final String PLAYER = "%player%";
+        public static final String TIME = "%time%";
+        public static final String DATE = "%date%";
+        public static final String PING = "%ping%";
+        public static final String PLAYER_VERSION = "%player-version%";
+        public static final String PLAYER_VERSION_ID = "%player-version-id%";
+        public static final String MEMORY_USED = "%memory-used%";
+        public static final String MEMORY_MAX = "%memory-max%";
+        public static final String MEMORY_USED_GB = "%memory-used-gb%";
+        public static final String MEMORY_MAX_GB = "%memory-max-gb%";
+        public static final String ONLINE = "%online%";
+        public static final String STAFF_ONLINE = "%staffonline%";
+        public static final String NON_STAFF_ONLINE = "%nonstaffonline%";
+        public static final String LUCKPERMS_PREFIX = "%luckperms-prefix%";
+        public static final String LUCKPERMS_SUFFIX = "%luckperms-suffix%";
+        public static final String COUNTDOWN = "%countdown%";
+
+        // Placeholders for internal use
+        public static final String COLLISION = "%collision%";
+        public static final String INVISIBLE = "%invisible%";
+        public static final String VEHICLE = "%vehicle%";
+
+        // Bukkit only
+        public static final String TPS = "%tps%";
+        public static final String MSPT = "%mspt%";
+        public static final String AFK = "%afk%";
+        public static final String ESSENTIALS_NICK = "%essentialsnick%";
+        public static final String VAULT_PREFIX = "%vault-prefix%";
+        public static final String VAULT_SUFFIX = "%vault-suffix%";
+        public static final String HEALTH = "%health%";
+
+        public static String condition(String name) {
+            return "%condition:" + name + "%";
+        }
+
+        public static String animation(String name) {
+            return "%animation:" + name + "%";
+        }
+    }
+
+    /**
+     * All plugins TAB hooks into
+     */
+    public static class Plugin {
+
+        public static final String LUCKPERMS = "LuckPerms";
+        public static final String VAULT = "Vault";
+        public static final String PLACEHOLDER_API = "PlaceholderAPI";
+        public static final String LIBS_DISGUISES = "LibsDisguises";
+        public static final String VIAVERSION = "ViaVersion";
+        public static final String PROTOCOL_SUPPORT = "ProtocolSupport";
+        public static final String ESSENTIALS = "Essentials";
+        public static final String REDIS_BUNGEE = "RedisBungee";
+        public static final String PREMIUM_VANISH = "PremiumVanish";
+    }
+
+    /**
+     * TAB's custom metrics charts
+     */
+    public static class MetricsChart {
+
+        public static final String PERMISSION_SYSTEM = "permission_system";
+        public static final String GLOBAL_PLAYER_LIST_ENABLED = "global_playerlist_enabled";
+        public static final String PLACEHOLDER_API = "placeholderapi";
+        public static final String SERVER_VERSION = "server_version";
+        public static final String UNLIMITED_NAME_TAG_MODE_ENABLED = "unlimited_nametag_mode_enabled";
+
     }
 }

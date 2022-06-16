@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
@@ -39,7 +40,7 @@ public class LongLine extends ScoreboardLine {
                         "", "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
-                String[] values = splitText(getPlayerName(lineNumber), refreshed.getProperty(textProperty).get(), refreshed.getVersion().getMinorVersion() >= 8 ? 40 : 16);
+                String[] values = splitText(getPlayerName(lineNumber), RGBUtils.getInstance().convertRGBtoLegacy(refreshed.getProperty(textProperty).get()), refreshed.getVersion().getMinorVersion() >= 8 ? 40 : 16);
                 addLine(refreshed, values[1], values[0], values[2]);
                 refreshed.setProperty(this, nameProperty, values[1]);
             }
@@ -54,7 +55,7 @@ public class LongLine extends ScoreboardLine {
             addLine(p, playerName, value, "");
             p.setProperty(this, nameProperty, playerName);
         } else {
-            String[] values = splitText(playerName, value, p.getVersion().getMinorVersion() >= 8 ? 40 : 16);
+            String[] values = splitText(playerName, RGBUtils.getInstance().convertRGBtoLegacy(value), p.getVersion().getMinorVersion() >= 8 ? 40 : 16);
             addLine(p, values[1], values[0], values[2]);
             p.setProperty(this, nameProperty, values[1]);
         }

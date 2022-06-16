@@ -22,7 +22,7 @@ public class BelowName extends TabFeature {
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
     public static final int DISPLAY_SLOT = 2;
 
-    private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", "%health%");
+    private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
     private final TabFeature textRefresher = new TextRefresher();
 
@@ -106,6 +106,7 @@ public class BelowName extends TabFeature {
             onJoin(p);
             return;
         }
+        if (disabledNow) return;
         int number = getValue(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()){
             if (sameServerAndWorld(all, p)) {

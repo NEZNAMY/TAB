@@ -35,7 +35,7 @@ public class LayoutManager extends TabFeature {
 
     public LayoutManager() {
         super("Layout", "Switching layouts");
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList("%vanished%"));
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         TAB.getInstance().debug("Loaded Layout feature");
     }
@@ -55,7 +55,7 @@ public class LayoutManager extends TabFeature {
         for (Entry<Object, Object> layout : TAB.getInstance().getConfiguration().getLayout().getConfigurationSection("layouts").entrySet()) {
             Map<String, Object> map = (Map<String, Object>) layout.getValue();
             Condition displayCondition = Condition.getCondition((String) map.get("condition"));
-            if (displayCondition != null) addUsedPlaceholders(Collections.singletonList("%condition:" + displayCondition.getName() + "%"));
+            if (displayCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(displayCondition.getName())));
             Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
             List<Integer> emptySlots = new ArrayList<>();
             List<ParentGroup> parentGroups = new ArrayList<>();

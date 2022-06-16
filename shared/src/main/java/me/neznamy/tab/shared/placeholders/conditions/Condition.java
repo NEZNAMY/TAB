@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.*;
 
@@ -178,7 +179,7 @@ public class Condition {
             return registeredConditions.get(string);
         } else {
             Condition c = new Condition(true, "AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "true", "false");
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%condition:" + c.getName() + "%", c.getRefresh(), c::getText);
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), c::getText);
             return c;
         }
     }

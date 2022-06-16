@@ -35,8 +35,8 @@ public class Main extends Plugin {
         getProxy().getPluginManager().registerCommand(this, new BTABCommand());
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 10535);
-        metrics.addCustomChart(new SimplePie("permission_system", () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
-        metrics.addCustomChart(new SimplePie("global_playerlist_enabled", () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
 
     /**
@@ -61,7 +61,7 @@ public class Main extends Plugin {
     /**
      * TAB command for BungeeCord
      */
-    private class BTABCommand extends Command implements TabExecutor {
+    private static class BTABCommand extends Command implements TabExecutor {
 
         /**
          * Constructs new instance

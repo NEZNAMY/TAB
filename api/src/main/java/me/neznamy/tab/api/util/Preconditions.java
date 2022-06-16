@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.util;
 
+import me.neznamy.tab.api.TabPlayer;
+
 public class Preconditions {
 
     private Preconditions(){}
@@ -16,5 +18,9 @@ public class Preconditions {
     public static void checkRange(Number number, Number min, Number max, String variable){
         if (number.doubleValue() < min.doubleValue() || number.doubleValue() > max.doubleValue())
             throw new IllegalArgumentException(variable + " index out of range (" + min + " - " + max + ")");
+    }
+
+    public static void checkLoaded(TabPlayer player) {
+        if (!player.isLoaded()) throw new IllegalStateException("Player is not loaded yet. Try again later.");
     }
 }

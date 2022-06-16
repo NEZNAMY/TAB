@@ -46,7 +46,7 @@ public class PluginMessageHandler {
                     if ("Vanished".equals(subChannel)) {
                         player.setVanished(in.readBoolean());
                         TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
-                        ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder("%vanished%")).updateValue(player, player.isVanished());
+                        ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.VANISHED)).updateValue(player, player.isVanished());
                     }
                     if ("Disguised".equals(subChannel)) {
                         player.setDisguised(in.readBoolean());

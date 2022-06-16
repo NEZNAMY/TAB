@@ -14,7 +14,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
-import me.neznamy.tab.shared.features.NickCompatibility;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 /**
@@ -77,6 +76,9 @@ public abstract class ITabPlayer implements TabPlayer {
     /** Scoreboard objectives player has registered */
     private final List<String> registeredObjectives = new ArrayList<>();
 
+    /** Player's name as seen in GameProfile, can be altered by nick plugins */
+    private String nickname;
+
     /**
      * Constructs new instance with given parameters
      *
@@ -97,6 +99,7 @@ public abstract class ITabPlayer implements TabPlayer {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
+        this.nickname = name;
         this.server = server;
         this.world = world;
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
@@ -180,7 +183,7 @@ public abstract class ITabPlayer implements TabPlayer {
         Preconditions.checkNotNull(permissionGroup, "permissionGroup");
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder("%group%")).updateValue(this, permissionGroup);
+        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);
         forceRefresh();
     }
 
@@ -263,6 +266,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
     @Override
     public void forceRefresh() {
+        if (!onJoinFinished) return;
         TAB.getInstance().getFeatureManager().refresh(this, true);
     }
 
@@ -400,6 +404,10 @@ public abstract class ITabPlayer implements TabPlayer {
 
     @Override
     public String getNickname() {
-        return ((NickCompatibility) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.NICK_COMPATIBILITY)).getNickname(this);
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

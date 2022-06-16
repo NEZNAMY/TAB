@@ -159,30 +159,6 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     }
 
     /**
-     * Gets armor stand by name
-     *
-     * @param   name
-     *          Name to get armor stand by
-     * @return  Armor stand with given name or null if not found
-     */
-    public ArmorStand getArmorStand(String name) {
-        return armorStands.get(name);
-    }
-
-    /**
-     * Removes armor stand by given name if exists
-     *
-     * @param   name
-     *          Name of line to remove
-     */
-    public void removeArmorStand(String name) {
-        if (!armorStands.containsKey(name)) return;
-        armorStands.get(name).destroy();
-        armorStands.remove(name);
-        armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
-    }
-
-    /**
      * Removes specified player from list of nearby players
      *
      * @param   viewer
