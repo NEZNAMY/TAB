@@ -3,7 +3,7 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.75.Final"
+netty = "4.1.78.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
@@ -24,14 +24,14 @@ krypton = "0.59.2"
 velocity = "1.1.0"
 
 # Platform extras
-placeholderapi = "2.10.9"
+placeholderapi = "2.11.1"
 vault = "1.7"
-via = "4.0.0"
+via = "4.3.1"
 authlib = "1.11"
-bstats = "2.2.1"
-libsDisguises = "10.0.26"
-essentials = "2.19.2"
-premiumVanish = "2.0.3"
+bstats = "3.0.0"
+libsDisguises = "10.0.28"
+essentials = "2.19.4"
+premiumVanish = "2.7.14"
 redisBungee = "0.6.5-SNAPSHOT"
 
 [libraries]
