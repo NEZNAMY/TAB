@@ -31,7 +31,7 @@ authlib = "1.11"
 bstats = "3.0.0"
 libsDisguises = "10.0.28"
 essentials = "2.19.4"
-premiumVanish = "2.7.14"
+premiumVanish = "2.0.3"
 redisBungee = "0.7.2"
 
 [libraries]
