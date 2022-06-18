@@ -11,7 +11,7 @@ dependencyResolutionManagement {
         maven("https://repo.codemc.org/repository/maven-public/") // RedisBungee, BungeeCord
         maven("https://repo.kryptonmc.org/releases") // YamlAssist, LuckPerms
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
-        maven("https://repo.purpurmc.org/snapshots") // Purpur, LibsDisguises, AuthLib, Vault
+        maven("https://repo.purpurmc.org/snapshots") // Purpur, AuthLib, Vault
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }

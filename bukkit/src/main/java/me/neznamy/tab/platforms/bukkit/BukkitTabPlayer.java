@@ -11,6 +11,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -23,7 +24,6 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
 import io.netty.channel.Channel;
-import me.libraryaddict.disguise.DisguiseAPI;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
@@ -243,8 +243,8 @@ public class BukkitTabPlayer extends ITabPlayer {
     public boolean isDisguised() {
         try {
             if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsDisguisesEnabled()) return false;
-            return DisguiseAPI.isDisguised(getPlayer());
-        } catch (LinkageError e) {
+            return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, getPlayer());
+        } catch (LinkageError | ReflectiveOperationException e) {
             //java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
             TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
             ((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsDisguisesEnabled(false);
