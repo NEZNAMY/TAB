@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.neznamy.tab.shared.TabConstants;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TabFeature;
@@ -51,7 +50,7 @@ public class VehicleRefresher extends TabFeature {
             if (vehicle != null) {
                 vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
                 playersInVehicle.put(p, vehicle);
-                if (feature.isDisableOnBoats() && vehicle.getType() == EntityType.BOAT) {
+                if (feature.isDisableOnBoats() && vehicle.getType().toString().contains("BOAT")) {
                     playersOnBoats.add(p);
                 }
             }
@@ -91,7 +90,7 @@ public class VehicleRefresher extends TabFeature {
             vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
             playersInVehicle.put(p, vehicle);
-            if (feature.isDisableOnBoats() && vehicle.getType() == EntityType.BOAT) {
+            if (feature.isDisableOnBoats() && vehicle.getType().toString().contains("BOAT")) {
                 playersOnBoats.add(p);
                 feature.updateTeamData(p);
             }
