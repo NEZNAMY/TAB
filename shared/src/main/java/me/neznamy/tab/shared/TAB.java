@@ -497,6 +497,6 @@ public class TAB extends TabAPI {
 
     @Override
     public void debug(String message) {
-        if (configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
+        if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
     }
 }
