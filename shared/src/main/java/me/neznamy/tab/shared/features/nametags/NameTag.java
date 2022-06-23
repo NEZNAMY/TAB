@@ -92,17 +92,21 @@ public class NameTag extends TabFeature implements TeamManager {
         ((ITabPlayer) connectedPlayer).setTeamName(getSorting().getTeamName(connectedPlayer));
         updateProperties(connectedPlayer);
         hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all == connectedPlayer) continue; //avoiding double registration
-            if (!isDisabledPlayer(all)) {
-                registerTeam(all, connectedPlayer);
-            }
-        }
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
             addDisabledPlayer(connectedPlayer);
             return;
         }
-        registerTeam(connectedPlayer);
+
+        // no need to register a team if we are using armorstands
+        if (!TAB.getInstance().getFeatureManager().isFeatureEnabled("NameTagX")) {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (all == connectedPlayer) continue; //avoiding double registration
+                if (!isDisabledPlayer(all)) {
+                    registerTeam(all, connectedPlayer);
+                }
+            }
+            registerTeam(connectedPlayer);
+        }
     }
 
     @Override
