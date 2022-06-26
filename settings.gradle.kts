@@ -25,7 +25,7 @@ rootProject.name = "TAB"
 include(":api")
 include(":shared")
 //include(":krypton")
-//include(":velocity")
+include(":velocity")
 include(":bukkit")
 include(":bungeecord")
 include(":jar")

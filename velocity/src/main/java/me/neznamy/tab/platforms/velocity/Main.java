@@ -1,11 +1,13 @@
 package me.neznamy.tab.platforms.velocity;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import org.bstats.charts.SimplePie;
@@ -52,6 +54,13 @@ public class Main {
     @Inject
     private Logger logger;
 
+    /**
+     * Data directory where stored plugin data
+     */
+    @Inject
+    @DataDirectory
+    private Path dataDirectory;
+
     /** TAB's plugin message channel */
     private final MinecraftChannelIdentifier mc = MinecraftChannelIdentifier.create(
             TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
@@ -71,17 +80,23 @@ public class Main {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         instance = this;
+
         if (server.getConfiguration().isOnlineMode()) {
             logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
+
+        TAB.setInstance(new TAB(new VelocityPlatform(), ProtocolVersion.PROXY, server.getVersion().getVersion(), this.dataDirectory.toFile(), logger));
+
         server.getChannelRegistrar().register(mc);
-        TAB.setInstance(new TAB(new VelocityPlatform(), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
+
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
         server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
+
         TAB.getInstance().load();
+
         Metrics metrics = metricsFactory.make(this, 10533);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
