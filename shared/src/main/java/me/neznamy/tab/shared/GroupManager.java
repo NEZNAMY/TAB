@@ -1,118 +1,105 @@
 package me.neznamy.tab.shared;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.EventSubscription;
-import net.luckperms.api.event.group.GroupDataRecalculateEvent;
-import net.luckperms.api.event.user.UserDataRecalculateEvent;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Permission group refresher
+ * Permission group manager retrieving groups from permission plugin
  */
 public class GroupManager extends TabFeature {
 
-	public static final String DEFAULT_GROUP = "NONE";
-	
-	private Object luckPermsSub;
-	private Object luckPermsSub2;
-	private final PermissionPlugin plugin;
-	private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
-	private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
-	private PlayerPlaceholder groupPlaceholder;
-	
-	public GroupManager(PermissionPlugin plugin) {
-		super("Permission group refreshing", "Refreshing group");
-		this.plugin = plugin;
-		if (plugin instanceof LuckPerms) {
-			groupPlaceholder = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, TabPlayer::getGroup);
-			groupPlaceholder.enableTriggerMode();
-			registerLuckPermsSub();
-		} else if (plugin instanceof None && !groupsByPermissions){
-			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000000000, p -> DEFAULT_GROUP);
-		} else {
-			TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%group%", 1000, this::detectPermissionGroup);
-			addUsedPlaceholders(Collections.singletonList("%group%"));
-		}
-	}
-	
-	@Override
-	public void refresh(TabPlayer p, boolean force) {
-		((ITabPlayer)p).setGroup(detectPermissionGroup(p), true);
-	}
-	
-	private void registerLuckPermsSub() {
-		luckPermsSub = LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, this::updatePlayer);
-		luckPermsSub2 = LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class, this::updateGroup);
-	}
+    /** Detected permission plugin to take groups from */
+    private final PermissionPlugin plugin;
 
-	private void updatePlayer(UserDataRecalculateEvent event) {
-		TAB.getInstance().getCPUManager().runMeasuredTask("Processing UserDataRecalculateEvent", this, "Processing UserDataRecalculateEvent", () -> {
-			long time = System.nanoTime();
-			TabPlayer p = TAB.getInstance().getPlayer(event.getUser().getUniqueId());
-			if (p == null) return; //server still starting up and users connecting already (LP loading them)
-			refresh(p, false);
-			TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
-			groupPlaceholder.updateValue(p, p.getGroup());
-		});
-	}
+    /** If enabled, groups are assigned via permissions instead of permission plugin */
+    private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 
-	private void updateGroup(GroupDataRecalculateEvent event) {
-		TAB.getInstance().getCPUManager().runTaskLater(50, "Processing GroupDataRecalculateEvent", this, "Processing GroupDataRecalculateEvent", () -> {
-			long time = System.nanoTime();
-			for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-				refresh(player, false);
-				groupPlaceholder.updateValue(player, player.getGroup());
-			}
-			TAB.getInstance().getCPUManager().addTime("Permission group refreshing", TabConstants.CpuUsageCategory.LUCKPERMS_RECALCULATE_EVENT, System.nanoTime()-time);
-		});
-	}
+    /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
+    private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void unload() {
-		if (luckPermsSub != null) ((EventSubscription<UserDataRecalculateEvent>)luckPermsSub).close();
-		if (luckPermsSub2 != null) ((EventSubscription<UserDataRecalculateEvent>)luckPermsSub2).close();
-	}
+    /**
+     * Constructs new instance with given permission plugin, loads
+     * event listeners and registers group placeholder.
+     *
+     * @param   plugin
+     *          Detected permission plugin
+     */
+    public GroupManager(PermissionPlugin plugin) {
+        super("Permission group refreshing", null);
+        this.plugin = plugin;
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, this, TabConstants.CpuUsageCategory.GROUP_REFRESHING, () -> {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                ((ITabPlayer)all).setGroup(detectPermissionGroup(all));
+            }
+        });
+    }
 
-	public String detectPermissionGroup(TabPlayer p) {
-		if (isGroupsByPermissions()) {
-			return getByPermission(p);
-		}
-		return getByPrimary(p);
-	}
+    /**
+     * Detects player's permission group using configured method and returns it
+     *
+     * @param   player
+     *          Player to detect permission group of
+     * @return  Detected permission group
+     */
+    public String detectPermissionGroup(TabPlayer player) {
+        return groupsByPermissions ? getByPermission(player) : getByPrimary(player);
+    }
 
-	private String getByPrimary(TabPlayer p) {
-		try {
-			return plugin.getPrimaryGroup(p);
-		} catch (Exception e) {
-			TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + p.getName() + " using " + plugin.getName() + " v" + plugin.getVersion(), e);
-			return DEFAULT_GROUP;
-		}
-	}
+    /**
+     * Returns player's permission group from detected permission plugin
+     *
+     * @param   player
+     *          Player to get permission group of
+     * @return  Permission group from permission plugin
+     */
+    private String getByPrimary(TabPlayer player) {
+        try {
+            String group = plugin.getPrimaryGroup(player);
+            return group == null ? TabConstants.NO_GROUP : group;
+        } catch (Exception e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + plugin.getName() + " v" + plugin.getVersion(), e);
+            return TabConstants.NO_GROUP;
+        }
+    }
 
-	private String getByPermission(TabPlayer p) {
-		for (Object group : primaryGroupFindingList) {
-			if (p.hasPermission(TabConstants.Permission.GROUP_PREFIX + group)) {
-				return String.valueOf(group);
-			}
-		}
-		return DEFAULT_GROUP;
-	}
+    /**
+     * Returns player's permission group based on highest permission
+     * or {@link TabConstants#NO_GROUP} if player has no permission.
+     *
+     * @param   player
+     *          Player to get permission group of
+     * @return  Highest permission group player has permission for
+     *          or {@link TabConstants#NO_GROUP} if player does not have any
+     */
+    private String getByPermission(TabPlayer player) {
+        for (String group : primaryGroupFindingList) {
+            if (player.hasPermission(TabConstants.Permission.GROUP_PREFIX + group)) {
+                return group;
+            }
+        }
+        return TabConstants.NO_GROUP;
+    }
 
-	public boolean isGroupsByPermissions() {
-		return groupsByPermissions;
-	}
-	
-	public PermissionPlugin getPlugin() {
-		return plugin;
-	}
+    /**
+     * Returns {@code true} if assigning by permissions is configured,
+     * {@code false} if not.
+     *
+     * @return  {@code true} if assigning by permissions, {@code false} if not
+     */
+    public boolean isGroupsByPermissions() {
+        return groupsByPermissions;
+    }
+
+    /**
+     * Returns detected permission plugin
+     *
+     * @return  detected permission plugin
+     */
+    public PermissionPlugin getPlugin() {
+        return plugin;
+    }
 }

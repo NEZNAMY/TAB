@@ -105,7 +105,6 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
             disconnectedPlayer.armorStandManager.destroy()
             TAB.getInstance().cpuManager.runTaskLater(
                 500,
-                "processing onQuit",
                 this,
                 TabConstants.CpuUsageCategory.PLAYER_QUIT,
                 disconnectedPlayer.armorStandManager::destroy
@@ -247,7 +246,6 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
     private fun startVisibilityRefreshTask() {
         TAB.getInstance().cpuManager.startRepeatingMeasuredTask(
             500,
-            "refreshing nametag visibility",
             this,
             TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY
         ) {
@@ -275,7 +273,7 @@ class NameTagX(plugin: Main) : NameTag(), UnlimitedNametagManager {
     }
 
     private fun loadArmorStands(player: TabPlayer) {
-        player.armorStandManager = ArmorStandManager()
+//        player.armorStandManager = ArmorStandManager()
         rebuildNametagLine(player)
         var height = 0.0
         dynamicLines.forEach {

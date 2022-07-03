@@ -11,9 +11,10 @@ dependencies {
     compileOnlyApi(libs.luckperms)
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.floodgate)
+    compileOnlyApi(libs.slf4j)
 }
 
 blossom {
     replaceToken("@plugin_version@", project.version)
-    replaceTokenIn("src/main/java/me/neznamy/tab/shared/TAB.java")
+    replaceTokenIn("src/main/java/me/neznamy/tab/shared/TabConstants.java")
 }

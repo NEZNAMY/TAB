@@ -3,35 +3,35 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.72.Final"
+netty = "4.1.78.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
-gson = "2.8.9"
+gson = "2.9.0"
+slf4j = "1.7.36"
 
 # General
-luckperms = "5.2"
-guava = "30.1.1-jre"
+luckperms = "5.4"
+guava = "31.1-jre"
 floodgate = "2.0-SNAPSHOT"
-kotlin = "1.6.0"
+kotlin = "1.6.10"
 event = "3.0.0"
 
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
-bungeecord = "1.18-R0.1-SNAPSHOT"
+bungeecord = "1.19-R0.1-SNAPSHOT"
 krypton = "0.59.2"
 velocity = "1.1.0"
 
 # Platform extras
-placeholderapi = "2.10.9"
+placeholderapi = "2.11.1"
 vault = "1.7"
-via = "4.0.0"
+via = "4.3.1"
 authlib = "1.11"
-bstats = "2.2.1"
-libsDisguises = "10.0.26"
-essentials = "2.19.2"
+bstats = "3.0.0"
+essentials = "2.19.4"
 premiumVanish = "2.0.3"
-redisBungee = "0.6.5-SNAPSHOT"
+redisBungee = "0.7.2"
 
 [libraries]
 
@@ -41,6 +41,7 @@ jsonSimple = { group = "com.googlecode.json-simple", name = "json-simple", versi
 snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" }
 yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
 
 # General
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
@@ -50,8 +51,8 @@ kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", versio
 event = { group = "net.kyori", name = "event-method", version.ref = "event" }
 
 # Platforms
-bukkit = { group = "com.destroystokyo.paper", name = "paper-api", version.ref = "bukkit" }
-bungeecord = { group = "net.md-5", name = "bungeecord-proxy", version.ref = "bungeecord" }
+bukkit = { group = "org.purpurmc.purpur", name = "purpur-api", version.ref = "bukkit" }
+bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord" }
 krypton-api = { group = "org.kryptonmc", name = "krypton-api", version.ref = "krypton" }
 krypton-server = { group = "org.kryptonmc", name = "krypton-server", version.ref = "krypton" }
 krypton-annotationProcessor = { group = "org.kryptonmc", name = "krypton-annotation-processor", version.ref = "krypton" }
@@ -62,10 +63,9 @@ placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "pl
 vault = { group = "com.github.MilkBowl", name = "VaultAPI", version.ref = "vault" }
 via = { group = "com.viaversion", name = "viaversion-api", version.ref = "via" }
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
-libsDisguises = { group = "LibsDisguises", name = "LibsDisguises", version.ref = "libsDisguises" }
 essentials = { group = "net.essentialsx", name = "EssentialsX", version.ref = "essentials" }
 premiumVanish = { group = "com.github.MyzelYam", name = "PremiumVanishAPI", version.ref = "premiumVanish" }
-redisBungee = { group = "com.imaginarycode.minecraft", name = "RedisBungee", version.ref = "redisBungee" }
+redisBungee = { group = "com.github.limework.redisbungee", name = "RedisBungee-Bungee", version.ref = "redisBungee" }
 
 # Metrics
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }

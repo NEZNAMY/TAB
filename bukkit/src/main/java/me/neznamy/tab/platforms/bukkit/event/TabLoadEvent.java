@@ -12,14 +12,14 @@ import org.bukkit.event.HandlerList;
 @Deprecated
 public class TabLoadEvent extends Event {
 
-	private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
-	@Override
-	public HandlerList getHandlers(){
-		return getHandlerList();
-	}
-	
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers(){
+        return getHandlerList();
+    }
+    
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

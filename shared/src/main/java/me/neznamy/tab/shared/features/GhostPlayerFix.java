@@ -13,20 +13,20 @@ import me.neznamy.tab.shared.TAB;
  */
 public class GhostPlayerFix extends TabFeature {
 
-	public GhostPlayerFix() {
-		super("Ghost player fix", null);
-		TAB.getInstance().debug("Loaded GhostPlayerFix feature");
-	}
-	
-	@Override
-	public void onQuit(TabPlayer disconnectedPlayer) {
-		TAB.getInstance().getCPUManager().runTaskLater(500, "removing players", this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
+    public GhostPlayerFix() {
+        super("Ghost player fix", null);
+        TAB.getInstance().debug("Loaded GhostPlayerFix feature");
+    }
+    
+    @Override
+    public void onQuit(TabPlayer disconnectedPlayer) {
+        TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
 
-			if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
-			for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-				if (all == disconnectedPlayer) continue;
-				all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), this);
-			}
-		});
-	}
+            if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (all == disconnectedPlayer) continue;
+                all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), this);
+            }
+        });
+    }
 }
