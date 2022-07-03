@@ -94,6 +94,11 @@ public class ScoreboardCommand extends SubCommand {
                 sendMessage(sender, getMessages().getNoPermission());
                 return;
             }
+            if (args[2].equals("*")) {
+                for (TabPlayer all : TAB.getInstance().getOnlinePlayers())
+                    scoreboard.showScoreboard(all, sb);
+                return;
+            }
             target = TAB.getInstance().getPlayer(args[2]);
             if (target == null) {
                 sendMessage(sender, getMessages().getPlayerNotFound(args[2]));
