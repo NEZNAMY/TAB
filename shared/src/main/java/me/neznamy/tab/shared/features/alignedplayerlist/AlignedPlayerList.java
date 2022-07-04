@@ -114,8 +114,9 @@ public class AlignedPlayerList extends PlayerList {
 
     @Override
     public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
-        if (!playerViews.containsKey(viewer)) return null;
-        return playerViews.get(viewer).formatName(p);
+        PlayerView view = playerViews.get(viewer);
+        if (view == null) return null;
+        return view.formatName(p);
     }
 
     @Override
