@@ -88,6 +88,10 @@ public class ScoreboardCommand extends SubCommand {
                 sendMessage(sender, getMessages().getNoPermission());
                 return;
             }
+            if (sender == null) {
+                sendMessage(sender, getMessages().getCommandOnlyFromGame());
+                return;
+            }
             target = sender;
         } else {
             if (!hasPermission(sender,TabConstants.Permission.COMMAND_SCOREBOARD_SHOW_OTHER)) {
