@@ -1,16 +1,13 @@
 package me.neznamy.tab.api.chat.rgb;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.TextColor;
-import me.neznamy.tab.api.chat.rgb.format.BukkitFormat;
-import me.neznamy.tab.api.chat.rgb.format.CMIFormat;
-import me.neznamy.tab.api.chat.rgb.format.HtmlFormat;
-import me.neznamy.tab.api.chat.rgb.format.KyoriFormat;
-import me.neznamy.tab.api.chat.rgb.format.RGBFormatter;
-import me.neznamy.tab.api.chat.rgb.format.UnnamedFormat1;
+import me.neznamy.tab.api.chat.rgb.format.*;
 import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
@@ -41,13 +38,18 @@ public class RGBUtils {
      * Constructs new instance and loads all RGB patterns and gradients
      */
     public RGBUtils() {
-        formats = new RGBFormatter[] {
-                new BukkitFormat(),
-                new CMIFormat(),
-                new UnnamedFormat1(),
-                new HtmlFormat(),
-                new KyoriFormat()
-        };
+        List<RGBFormatter> list = new ArrayList<>();
+        list.add(new BukkitFormat());
+        list.add(new CMIFormat());
+        list.add(new UnnamedFormat1());
+        list.add(new HtmlFormat());
+        list.add(new KyoriFormat());
+        try {
+            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+            list.add(new MiniMessageFormat());
+        } catch (ClassNotFoundException ignored) {}
+        formats = list.toArray(new RGBFormatter[0]);
+
         gradients = new GradientPattern[] {
                 //{#RRGGBB>}text{#RRGGBB<}
                 new CMIGradient(),
