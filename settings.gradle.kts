@@ -12,6 +12,7 @@ dependencyResolutionManagement {
         maven("https://repo.kryptonmc.org/releases") // YamlAssist, LuckPerms
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
         maven("https://repo.purpurmc.org/snapshots") // Purpur, Vault
+        maven("https://repo.papermc.io/repository/maven-public/") // Velocity
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -25,7 +26,7 @@ rootProject.name = "TAB"
 include(":api")
 include(":shared")
 //include(":krypton")
-//include(":velocity")
+include(":velocity")
 include(":bukkit")
 include(":bungeecord")
 include(":jar")
