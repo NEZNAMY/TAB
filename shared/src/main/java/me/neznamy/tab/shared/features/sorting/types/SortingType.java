@@ -58,6 +58,8 @@ public abstract class SortingType {
                 sb.insert(0, "0");
             }
             for (String element0 : element.split("\\|")) {
+                while (element0.startsWith(" ")) element0 = element0.substring(1);
+                while (element0.endsWith(" ")) element0 = element0.substring(0, element0.length()-1);
                 sortedGroups.put(EnumChatFormat.color(element0.toLowerCase()), sb.toString());
             }
             index++;
