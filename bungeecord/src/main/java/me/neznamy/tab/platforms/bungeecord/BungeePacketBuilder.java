@@ -53,7 +53,7 @@ public class BungeePacketBuilder extends PacketBuilder {
                     item.setDisplayName(data.getDisplayName().toLegacyText());
                 }
             } else if (clientVersion.getMinorVersion() < 8) {
-                item.setDisplayName(data.getName()); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
+                item.setDisplayName(String.valueOf(data.getName())); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
             }
             if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);
             item.setPing(data.getLatency());
