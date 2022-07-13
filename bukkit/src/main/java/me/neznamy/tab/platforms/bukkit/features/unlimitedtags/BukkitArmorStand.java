@@ -205,20 +205,28 @@ public class BukkitArmorStand implements ArmorStand {
     /**
      * Returns general location where armor stand should be at time of calling
      *
+     * @param   viewer
+     *          Player looking at the armor stand
      * @return  Location where armor stand should be for everyone
      */
-    public Location getLocation() {
+    public Location getLocation(TabPlayer viewer) {
         double x = player.getLocation().getX();
-        double y = getY() + yOffset + 2;
+        double y = getY() + yOffset;
         double z = player.getLocation().getZ();
-        if (player.isSleeping()) {
-            y -= 1.76;
-        } else {
-            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
-                y -= (sneaking ? 0.45 : 0.18);
+        if (!player.isSleeping()) {
+            if (sneaking) {
+                if (viewer.getVersion().getMinorVersion() >= 15) {
+                    y += 1.37;
+                } else if (viewer.getVersion().getMinorVersion() >= 9) {
+                    y += 1.52;
+                } else {
+                    y += 1.7;
+                }
             } else {
-                y -= (sneaking ? 0.30 : 0.18);
+                y += viewer.getVersion().getMinorVersion() >= 9 ? 1.8 : 1.84; // Normal
             }
+        } else {
+            y += viewer.getVersion().getMinorVersion() >= 9 ? 0.2 : 0.26; // Sleeping
         }
         return new Location(null,x,y,z);
     }
@@ -332,7 +340,7 @@ public class BukkitArmorStand implements ArmorStand {
      * @return  location of armor stand
      */
     public Location getArmorStandLocationFor(TabPlayer viewer) {
-        return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
+        return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation(viewer).add(0,-2,0) : getLocation(viewer);
     }
 
     @Override

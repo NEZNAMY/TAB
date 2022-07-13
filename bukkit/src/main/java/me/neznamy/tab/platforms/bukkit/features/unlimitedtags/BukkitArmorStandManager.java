@@ -16,7 +16,6 @@ import java.util.Map;
  */
 public class BukkitArmorStandManager implements ArmorStandManager {
 
-    private final NameTagX nameTagX;
     //map of registered armor stands
     private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
 
@@ -29,14 +28,13 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     private TabPlayer[] nearbyPlayerArray = new TabPlayer[0];
 
     public BukkitArmorStandManager(NameTagX nameTagX, TabPlayer owner) {
-        this.nameTagX = nameTagX;
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
         double height = 0;
         for (String line : nameTagX.getDynamicLines()) {
             addArmorStand(line, new BukkitArmorStand(this, owner, line, height, false));
-            height += nameTagX.getSpaceBetweenLines();
+            height += 0.26;
         }
         for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
             addArmorStand(line.getKey(), new BukkitArmorStand(this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
@@ -134,11 +132,11 @@ public class BukkitArmorStandManager implements ArmorStandManager {
      * Fixes heights of all armor stands due to dynamic lines
      */
     public void fixArmorStandHeights() {
-        double currentY = -nameTagX.getSpaceBetweenLines();
+        double currentY = -0.26;
         for (ArmorStand as : armorStandArray) {
             if (as.hasStaticOffset()) continue;
             if (as.getProperty().get().length() != 0) {
-                currentY += nameTagX.getSpaceBetweenLines();
+                currentY += 0.26;
                 as.setOffset(currentY);
             }
         }
