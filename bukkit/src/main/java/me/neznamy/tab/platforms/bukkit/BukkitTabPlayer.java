@@ -252,7 +252,6 @@ public class BukkitTabPlayer extends ITabPlayer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Skin getSkin() {
         try {

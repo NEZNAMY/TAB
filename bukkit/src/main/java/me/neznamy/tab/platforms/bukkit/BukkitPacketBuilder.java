@@ -362,7 +362,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
             IChatBaseComponent listName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
             Skin skin = null;
             if (!profile.getProperties().get("textures").isEmpty()) {
-                Property pr = (Property) profile.getProperties().get("textures").iterator().next();
+                Property pr = profile.getProperties().get("textures").iterator().next();
                 skin = new Skin(pr.getValue(), pr.getSignature());
             }
             listData.add(new PlayerInfoData(profile.getName(), profile.getId(), skin,
