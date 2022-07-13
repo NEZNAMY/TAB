@@ -188,7 +188,7 @@ public class TAB extends TabAPI {
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
             sendConsoleMessage("&aDisabled in " + (System.currentTimeMillis()-time) + "ms", true);
-        } catch (Exception e) {
+        } catch (Exception | NoClassDefFoundError e) {
             errorManager.criticalError("Failed to disable", e);
         }
         kill();
