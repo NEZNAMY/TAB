@@ -203,7 +203,7 @@ public final class NMSStorage {
         if (minorVersion >= 7) {
             NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
             IChatBaseComponent = getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
-            ChatSerializer_DESERIALIZE = getMethod(getNMSClass("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer"), new String[]{"a", "func_150699_a"}, String.class);
+            ChatSerializer_DESERIALIZE = getMethod(getNMSClass("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer", "IChatBaseComponent$ChatSerializer", "ChatSerializer"), new String[]{"a", "func_150699_a"}, String.class);
         }
         if (minorVersion >= 8) {
             CHANNEL = getFields(NetworkManager, Channel.class).get(0);
