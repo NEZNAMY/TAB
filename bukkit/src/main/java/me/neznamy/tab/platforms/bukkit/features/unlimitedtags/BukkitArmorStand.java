@@ -73,6 +73,7 @@ public class BukkitArmorStand implements ArmorStand {
         this.yOffset = yOffset;
         this.property = owner.getProperty(propertyName);
         visible = getVisibility();
+        sneaking = player.isSneaking();
     }
 
     @Override
