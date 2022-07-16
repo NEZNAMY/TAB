@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.permission;
 
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import org.bukkit.entity.Player;
 
 import me.neznamy.tab.api.TabPlayer;

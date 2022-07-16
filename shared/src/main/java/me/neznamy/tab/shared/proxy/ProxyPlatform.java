@@ -6,7 +6,7 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;

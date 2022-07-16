@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 

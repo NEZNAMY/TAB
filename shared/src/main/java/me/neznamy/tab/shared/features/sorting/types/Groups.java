@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.sorting.types;
 import java.util.LinkedHashMap;
 
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**

@@ -3,10 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.*;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.*;

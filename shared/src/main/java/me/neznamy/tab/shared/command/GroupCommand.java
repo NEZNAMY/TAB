@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * Handler for "/tab group" subcommand

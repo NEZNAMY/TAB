@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.config.MessageFile;
 /**
  * Abstract class representing a subcommand of "/tab" command

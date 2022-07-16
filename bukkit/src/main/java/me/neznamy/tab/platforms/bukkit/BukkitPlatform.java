@@ -15,7 +15,7 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;

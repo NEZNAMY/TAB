@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

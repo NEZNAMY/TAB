@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.api.FeatureManager;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
