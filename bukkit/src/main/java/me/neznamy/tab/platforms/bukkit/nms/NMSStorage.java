@@ -1,22 +1,14 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-
-import org.bukkit.Bukkit;
-
 import com.mojang.authlib.GameProfile;
-
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
-import me.neznamy.tab.shared.TAB;
+import org.bukkit.Bukkit;
+
+import java.lang.reflect.*;
+import java.util.*;
 
 @SuppressWarnings("rawtypes")
 public final class NMSStorage {
@@ -632,7 +624,6 @@ public final class NMSStorage {
             return (Enum[]) enumClass.getMethod("values").invoke(null);
         } catch (ReflectiveOperationException e) {
             //this should never happen
-            TAB.getInstance().getErrorManager().criticalError("Failed to load enum constants of " + enumClass.getName(), e);
             return new Enum[0];
         }
     }

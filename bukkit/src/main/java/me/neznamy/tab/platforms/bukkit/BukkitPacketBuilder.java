@@ -1,30 +1,24 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.lang.reflect.Array;
-import java.util.*;
-
-import com.mojang.authlib.properties.Property;
-import me.neznamy.tab.api.chat.WrappedChatComponent;
-import me.neznamy.tab.api.protocol.*;
-import me.neznamy.tab.shared.TAB;
-import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
-
 import com.mojang.authlib.GameProfile;
-
+import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.chat.WrappedChatComponent;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.*;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+
+import java.lang.reflect.Array;
+import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitPacketBuilder extends PacketBuilder {
@@ -467,7 +461,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
      */
     private Object newScoreboardObjective(String objectiveName) throws ReflectiveOperationException {
         if (nms.getMinorVersion() >= 13) {
-            return nms.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
+            return nms.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TabAPI.getInstance().getServerVersion()), null);
         }
         return nms.newScoreboardObjective.newInstance(null, objectiveName, nms.IScoreboardCriteria_self.get(null));
     }

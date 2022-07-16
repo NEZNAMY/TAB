@@ -338,15 +338,6 @@ public class TAB extends TabAPI {
     }
 
     /**
-     * Returns {@link #disabled}
-     *
-     * @return  {@link #disabled}
-     */
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    /**
      * Returns {@link #command}
      *
      * @return  {@link #command}
@@ -498,5 +489,10 @@ public class TAB extends TabAPI {
     @Override
     public void debug(String message) {
         if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
+    }
+
+    @Override
+    public boolean isPluginDisabled() {
+        return disabled;
     }
 }

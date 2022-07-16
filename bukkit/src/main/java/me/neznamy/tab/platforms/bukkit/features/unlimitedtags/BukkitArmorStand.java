@@ -1,16 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.UUID;
-
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Pose;
-
-import me.neznamy.tab.api.ArmorStand;
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
@@ -19,8 +9,13 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.TAB;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
+
+import java.util.UUID;
 
 /**
  * A class representing an armor stand attached to a player (if the feature is enabled)
@@ -31,7 +26,7 @@ public class BukkitArmorStand implements ArmorStand {
     private static int idCounter = 2000000000;
 
     //NameTag feature
-    private final BukkitNameTagX manager = (BukkitNameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+    private final BukkitNameTagX manager = (BukkitNameTagX) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 
     private final BukkitArmorStandManager asm;
     
@@ -254,15 +249,15 @@ public class BukkitArmorStand implements ArmorStand {
             }
         }
         //1.13+ swimming or 1.9+ flying with elytra
-        if (isSwimming() || (TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
+        if (isSwimming() || (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
             return player.getLocation().getY()-1.22;
         }
         return player.getLocation().getY();
     }
 
     private boolean isSwimming() {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
-        return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+        return TabAPI.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
     }
 
     /**
@@ -320,7 +315,7 @@ public class BukkitArmorStand implements ArmorStand {
     public TabPacket[] getSpawnPackets(TabPlayer viewer) {
         visible = getVisibility();
         DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 15) {
             return new TabPacket[] {
                     new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
                     new PacketPlayOutEntityMetadata(entityId, dataWatcher)

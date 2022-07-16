@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.api.TabAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,9 +29,9 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
     private final JavaPlugin plugin;
 
     //config options
-    private final boolean allowBypass = TAB.getInstance().getConfiguration().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
-    private final List<String> ignoredWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-    private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+    private final boolean allowBypass = TabAPI.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+    private final List<String> ignoredWorlds = TabAPI.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+    private final Map<String, List<String>> sharedWorlds = TabAPI.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
     /**
      * Constructs new instance with given parameters and loads config options
@@ -41,7 +42,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
     public PerWorldPlayerList(JavaPlugin plugin) {
         super("Per world PlayerList", null);
         this.plugin = plugin;
-        TAB.getInstance().debug(String.format("Loaded PerWorldPlayerList feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
+        TabAPI.getInstance().debug(String.format("Loaded PerWorldPlayerList feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 

@@ -1,16 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import org.bstats.charts.SimplePie;
-import org.bstats.velocity.Metrics;
-
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
@@ -19,16 +8,26 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.bstats.charts.SimplePie;
+import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main class for Velocity platform
@@ -60,6 +59,9 @@ public class Main {
 
     /** Component cache for 1.15- players to save CPU when creating components */
     private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
+    
+    /** Platform implementation for velocity */
+    private final VelocityPlatform platform = new VelocityPlatform();
 
     /**
      * Initializes plugin for velocity
@@ -75,14 +77,14 @@ public class Main {
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
         server.getChannelRegistrar().register(mc);
-        TAB.setInstance(new TAB(new VelocityPlatform(), ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
+        TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
         server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
         TAB.getInstance().load();
         Metrics metrics = metricsFactory.make(this, 10533);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TabAPI.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
 
     /**
@@ -92,6 +94,10 @@ public class Main {
      */
     public static Main getInstance() {
         return instance;
+    }
+
+    public VelocityPlatform getPlatform() {
+        return platform;
     }
 
     /**
@@ -166,14 +172,14 @@ public class Main {
         @Override
         public void execute(Invocation invocation) {
             CommandSource sender = invocation.source();
-            if (TAB.getInstance().isDisabled()) {
+            if (TabAPI.getInstance().isPluginDisabled()) {
                 for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                     sender.sendMessage(Identity.nil(), Component.text(EnumChatFormat.color(message)));
                 }
             } else {
                 TabPlayer p = null;
                 if (sender instanceof Player) {
-                    p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+                    p = TabAPI.getInstance().getPlayer(((Player)sender).getUniqueId());
                     if (p == null) return; //player not loaded correctly
                 }
                 TAB.getInstance().getCommand().execute(p, invocation.arguments());
@@ -184,7 +190,7 @@ public class Main {
         public List<String> suggest(Invocation invocation) {
             TabPlayer p = null;
             if (invocation.source() instanceof Player) {
-                p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
+                p = TabAPI.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
                 if (p == null) return new ArrayList<>(); //player not loaded correctly
             }
             return TAB.getInstance().getCommand().complete(p, invocation.arguments());

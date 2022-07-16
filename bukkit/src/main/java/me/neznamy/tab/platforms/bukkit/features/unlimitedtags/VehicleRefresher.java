@@ -1,15 +1,14 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.TabPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VehicleRefresher extends TabFeature {
 
@@ -27,25 +26,25 @@ public class VehicleRefresher extends TabFeature {
     public VehicleRefresher(BukkitNameTagX feature) {
         super(feature.getFeatureName(), "Refreshing vehicles");
         this.feature = feature;
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
+        TabAPI.getInstance().getThreadManager().startRepeatingMeasuredTask(50,
                 this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
                         if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
-                    for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                    for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
                         if (feature.isPreviewingNametag(p)) {
                             feature.getArmorStandManager(p).teleport(p);
                         }
                     }
         });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
+        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
     }
 
     @Override
     public void load() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
             Entity vehicle = ((Player)p.getPlayer()).getVehicle();
             if (vehicle != null) {
                 vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
@@ -114,7 +113,7 @@ public class VehicleRefresher extends TabFeature {
      */
     @SuppressWarnings("deprecation")
     public List<Entity> getPassengers(Entity vehicle){
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 11) {
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 11) {
             return vehicle.getPassengers();
         } else {
             if (vehicle.getPassenger() != null) {
