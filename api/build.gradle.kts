@@ -19,3 +19,7 @@ blossom {
     replaceToken("@plugin_version@", project.version)
     replaceTokenIn("src/main/java/me/neznamy/tab/api/TabConstants.java")
 }
+
+tasks.javadoc {
+    enabled = project.hasProperty("enable-javadoc")
+}
