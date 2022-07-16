@@ -10,7 +10,6 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
-import me.neznamy.tab.shared.features.bossbar.BossBarLine;
 
 /**
  * Handler for "/tab announce bar" subcommand
@@ -48,7 +47,7 @@ public class AnnounceBarCommand extends SubCommand {
             sendMessage(sender, getMessages().getBossBarNotFound(barName));
             return;
         }
-        if (!((BossBarLine)bar).isAnnouncementOnly()) {
+        if (!bar.isAnnouncementBar()) {
             sendMessage(sender, getMessages().getBossBarNotMarkedAsAnnouncement());
             return;
         }
@@ -66,8 +65,9 @@ public class AnnounceBarCommand extends SubCommand {
         if (b == null) return new ArrayList<>();
         List<String> suggestions = new ArrayList<>();
         if (arguments.length == 1) {
-            for (String bar : b.getRegisteredBossBars().keySet()) {
-                if (bar.toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar);
+            for (BossBar bar : b.getRegisteredBossBars().values()) {
+                if (bar.getName().toLowerCase().startsWith(arguments[0].toLowerCase()) &&
+                        bar.isAnnouncementBar()) suggestions.add(bar.getName());
             }
         } else if (arguments.length == 2 && b.getBossBar(arguments[0]) != null){
             for (String time : Arrays.asList("5", "10", "30", "60", "120")) {

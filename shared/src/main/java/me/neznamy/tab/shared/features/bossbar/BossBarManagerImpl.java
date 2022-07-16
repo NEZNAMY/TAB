@@ -51,7 +51,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
         for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
             BossBarLine line = loadFromConfig(bar.toString());
             lines.put(bar.toString(), line);
-            if (!line.isAnnouncementOnly()) defaultBars.add(bar.toString());
+            if (!line.isAnnouncementBar()) defaultBars.add(bar.toString());
         }
         lineValues = lines.values().toArray(new BossBar[0]);
         if (rememberToggleChoice) {

@@ -299,7 +299,8 @@ public class BossBarLine implements BossBar {
         return players.contains(player);
     }
 
-    public boolean isAnnouncementOnly() {
+    @Override
+    public boolean isAnnouncementBar() {
         return announcementOnly;
     }
 }
