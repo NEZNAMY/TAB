@@ -40,6 +40,7 @@ public class ScoreboardCommand extends SubCommand {
             return;
         }
         TabPlayer p = getTarget(sender, args);
+        if (p == null) return;
         if (scoreboard.getOtherPluginScoreboards().containsKey(p)) return; //not overriding other plugins
         boolean silent = args.length >= 3 && args[2].equals("-s");
         switch(args[0]) {
@@ -108,15 +109,20 @@ public class ScoreboardCommand extends SubCommand {
     }
 
     private TabPlayer getTarget(TabPlayer sender, String[] args) {
-        TabPlayer target = sender;
         if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE_OTHER)) {
-                target = TAB.getInstance().getPlayer(args[1]);
+                return TAB.getInstance().getPlayer(args[1]);
+            } else {
+                sendMessage(sender, getMessages().getNoPermission());
+            }
+        } else {
+            if (hasPermission(sender, TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE)) {
+                return sender;
             } else {
                 sendMessage(sender, getMessages().getNoPermission());
             }
         }
-        return target;
+        return null;
     }
 
     private ScoreboardManagerImpl getScoreboardManager() {
