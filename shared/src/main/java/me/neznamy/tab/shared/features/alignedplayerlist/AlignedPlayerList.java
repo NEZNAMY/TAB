@@ -9,9 +9,7 @@ import me.neznamy.tab.shared.features.PlayerList;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -42,9 +40,16 @@ public class AlignedPlayerList extends PlayerList {
             widths[characterId++] = (byte) Float.parseFloat(line);
         }
         Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
+        List<Integer> redundant = new ArrayList<>();
         for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            widths[entry.getKey()] = entry.getValue().byteValue();
+            if (widths[entry.getKey()] == entry.getValue().byteValue()) {
+                redundant.add(entry.getKey());
+            } else {
+                widths[entry.getKey()] = entry.getValue().byteValue();
+            }
         }
+        redundant.forEach(widthOverrides::remove);
+        TAB.getInstance().getConfig().save();
         return widths;
     }
 
