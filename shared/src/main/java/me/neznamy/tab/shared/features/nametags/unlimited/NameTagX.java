@@ -147,6 +147,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
             if (getDisabledUnlimitedPlayers().remove(p)) {
                 updateTeamData(p);
             }
+            getArmorStandManager(p).refresh(true);
         }
     }
 
