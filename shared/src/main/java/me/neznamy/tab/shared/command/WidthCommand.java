@@ -152,7 +152,7 @@ public class WidthCommand extends SubCommand {
 
     public void sendWidth(TabPlayer sender, char character, int amount) {
         List<IChatBaseComponent> messages = new ArrayList<>();
-        IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("&2" + character + " &d|"));
+        IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("|&2" + character + " &d|"));
 
         messages.add(new IChatBaseComponent(EnumChatFormat.color("&b[TAB] Click the line with closest width &7(ID: &f" + (int) character + "&7)")));
 
@@ -188,7 +188,7 @@ public class WidthCommand extends SubCommand {
             pixelsRemaining -= 2;
             text.append('i');
         }
-        IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
+        IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("|&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
         component.getModifier().onClickRunCommand("/tab width set " + c + " " + width);
         component.getModifier().onHoverShowText(new IChatBaseComponent("Click to set width to " + width + " pixels"));
         return component;
