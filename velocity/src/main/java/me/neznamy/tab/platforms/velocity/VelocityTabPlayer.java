@@ -22,7 +22,6 @@ import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -46,9 +45,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }};
 
-    /** Player's tablist UUID */
-    private final UUID tabListId;
-    
     /** BossBars currently displayed to this player */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
@@ -60,9 +56,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     public VelocityTabPlayer(Player p) {
         super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
-                p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol());
-        UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
-        tabListId = TabAPI.getInstance().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
+                p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol(),
+                TabAPI.getInstance().getConfig().getBoolean("use-online-uuid-in-tablist", true));
     }
     
     @Override
@@ -319,11 +314,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public Player getPlayer() {
         return (Player) player;
-    }
-    
-    @Override
-    public UUID getTablistUUID() {
-        return tabListId;
     }
     
     @Override
