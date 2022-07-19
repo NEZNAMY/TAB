@@ -17,7 +17,11 @@ public interface TabExpansion {
     }
 
     default void setNameTagPreview(TabPlayer player, boolean previewing) {
-        setValue(player, "ntpreview", previewing ? "Enabled" : "Disabled");
+        setValue(player, "nametag_preview", previewing ? "Enabled" : "Disabled");
+    }
+
+    default void setNameTagVisibility(TabPlayer player, boolean visible) {
+        setValue(player, "nametag_visibility", visible ? "Enabled" : "Disabled");
     }
 
     default void setPlaceholderValue(TabPlayer player, String placeholder, String value) {

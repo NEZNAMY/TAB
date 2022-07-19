@@ -12,6 +12,7 @@ import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -45,6 +46,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
     @Override
     public void load(){
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             ((ITabPlayer) all).setTeamName(getSorting().getTeamName(all));
             updateProperties(all);
@@ -54,6 +56,7 @@ public class NameTag extends TabFeature implements TeamManager {
                 continue;
             }
             registerTeam(all);
+            if (expansion != null) expansion.setNameTagVisibility(all, true);
         }
     }
 
@@ -97,6 +100,10 @@ public class NameTag extends TabFeature implements TeamManager {
             if (!isDisabledPlayer(all)) {
                 registerTeam(all, connectedPlayer);
             }
+        }
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+        if (expansion != null) {
+            expansion.setNameTagVisibility(connectedPlayer, true);
         }
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
             addDisabledPlayer(connectedPlayer);
@@ -371,6 +378,10 @@ public class NameTag extends TabFeature implements TeamManager {
         } else {
             playersWithInvisibleNameTagView.add(player);
             if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
+        }
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
+        if (expansion != null) {
+            expansion.setNameTagVisibility(player, !playersWithInvisibleNameTagView.contains(player));
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateTeamData(all, player);
