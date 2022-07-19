@@ -49,7 +49,7 @@ public class AlignedPlayerList extends PlayerList {
             }
         }
         redundant.forEach(widthOverrides::remove);
-        TAB.getInstance().getConfig().save();
+        if (!redundant.isEmpty()) TAB.getInstance().getConfig().save();
         return widths;
     }
 
