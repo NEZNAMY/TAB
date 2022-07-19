@@ -7,6 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
@@ -84,7 +85,12 @@ public class PluginMessageHandler {
                                             .updateValue(player, TAB.getInstance().getPlayer(in.readUTF()), in.readUTF());
                                 }
                             } else {
-                                ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).updateValue(player, in.readUTF());
+                                Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
+                                if (pl instanceof PlayerPlaceholder) {
+                                    ((PlayerPlaceholder) pl).updateValue(player, in.readUTF());
+                                } else {
+                                    ((ServerPlaceholder) pl).updateValue(in.readUTF());
+                                }
                             }
                         }
                     }
