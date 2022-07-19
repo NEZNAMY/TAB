@@ -47,7 +47,7 @@ public class CpuManager implements ThreadManager {
     private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
-    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(10,
+    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(20,
             new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
 
     /** Tasks submitted to main thread before plugin was fully enabled */
