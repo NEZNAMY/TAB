@@ -21,14 +21,24 @@ public class DataWatcherRegistry {
     public DataWatcherRegistry(NMSStorage nms) {
         if (nms.getMinorVersion() >= 9) {
             Map<String, Object> fields = nms.getStaticFields(nms.DataWatcherRegistry);
-            registryByte = fields.get("a");
-            registryFloat = fields.get("c");
-            registryString = fields.get("d");
-            if (nms.getMinorVersion() >= 13) {
-                registryOptionalIChatBaseComponent = fields.get("f");
-                registryBoolean = fields.get("i");
+            if (fields.containsKey("a")) {
+                // Bukkit mapping
+                registryByte = fields.get("a");
+                registryFloat = fields.get("c");
+                registryString = fields.get("d");
+                if (nms.getMinorVersion() >= 13) {
+                    registryOptionalIChatBaseComponent = fields.get("f");
+                    registryBoolean = fields.get("i");
+                } else {
+                    registryBoolean = fields.get("h");
+                }
             } else {
-                registryBoolean = fields.get("h");
+                // Mojang mapping
+                registryByte = fields.get("BYTE");
+                registryFloat = fields.get("FLOAT");
+                registryString = fields.get("STRING");
+                registryOptionalIChatBaseComponent = fields.get("OPTIONAL_COMPONENT");
+                registryBoolean = fields.get("BOOLEAN");
             }
         }
     }

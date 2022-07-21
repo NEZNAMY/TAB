@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.platforms.bukkit.nms.*;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -15,7 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +76,16 @@ public class Main extends JavaPlugin {
         String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         try {
             long time = System.currentTimeMillis();
-            NMSStorage.setInstance(new NMSStorage());
+            int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+            if (minorVersion >= 17) {
+                try {
+                    NMSStorage.setInstance(new BukkitModernNMSStorage());
+                } catch (ClassNotFoundException e) {
+                    NMSStorage.setInstance(new MojangModernNMSStorage());
+                }
+            } else {
+                NMSStorage.setInstance(new LegacyNMSStorage());
+            }
             if (supportedVersions.contains(serverPackage)) {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
                 return true;
