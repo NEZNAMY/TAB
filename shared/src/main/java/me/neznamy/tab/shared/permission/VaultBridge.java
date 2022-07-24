@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.permission;
 
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * Class to take groups from Vault on bukkit side

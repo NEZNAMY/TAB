@@ -424,7 +424,7 @@ public class IChatBaseComponent {
         if (text == null) return null;
         if (componentCache.containsKey(text)) return componentCache.get(text);
         IChatBaseComponent component;
-        if (text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x")){
+        if (text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<")){
             //contains RGB colors
             component = IChatBaseComponent.fromColoredText(text);
         } else {

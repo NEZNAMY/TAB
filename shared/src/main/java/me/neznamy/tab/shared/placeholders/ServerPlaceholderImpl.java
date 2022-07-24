@@ -44,6 +44,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     public boolean update() {
         String obj = getReplacements().findReplacement(String.valueOf(request()));
         String newValue = obj == null ? identifier : setPlaceholders(obj, null);
+        newValue = getReplacements().findReplacement(newValue);
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && lastValue == null) {

@@ -11,7 +11,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.DynamicText;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * Handler for "/tab parse <player> <placeholder>" subcommand

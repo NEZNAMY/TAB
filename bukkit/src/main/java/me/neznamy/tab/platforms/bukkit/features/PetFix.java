@@ -1,13 +1,16 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import java.util.*;
-
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
-import me.neznamy.tab.shared.TAB;
+
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Optional;
+import java.util.WeakHashMap;
 
 /**
  * A feature to disable minecraft 1.9+ feature making tamed animals
@@ -45,7 +48,7 @@ public class PetFix extends TabFeature {
      */
     public PetFix() {
         super("Pet name fix", null);
-        TAB.getInstance().debug("Loaded PetFix feature");
+        TabAPI.getInstance().debug("Loaded PetFix feature");
     }
 
     /**

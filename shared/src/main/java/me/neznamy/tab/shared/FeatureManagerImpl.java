@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.neznamy.tab.api.FeatureManager;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
@@ -94,12 +95,7 @@ public class FeatureManagerImpl implements FeatureManager {
         return pack;
     }
 
-    /**
-     * Calls onQuit(TabPlayer) on all features
-     * 
-     * @param   disconnectedPlayer
-     *          player who disconnected
-     */
+    @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         if (disconnectedPlayer == null) return;
         long millis = System.currentTimeMillis();
@@ -113,12 +109,7 @@ public class FeatureManagerImpl implements FeatureManager {
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
     }
 
-    /**
-     * Calls onJoin(TabPlayer) on all features
-     * 
-     * @param   connectedPlayer
-     *          player who connected
-     */
+    @Override
     public void onJoin(TabPlayer connectedPlayer) {
         if (!connectedPlayer.isOnline()) return;
         long millis = System.currentTimeMillis();
@@ -142,14 +133,7 @@ public class FeatureManagerImpl implements FeatureManager {
         }
     }
 
-    /**
-     * Calls onWorldChange(TabPlayer, String, String) on all features
-     * 
-     * @param   playerUUID
-     *          player who switched world
-     * @param   to
-     *          name of the new world
-     */
+    @Override
     public void onWorldChange(UUID playerUUID, String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
@@ -164,14 +148,7 @@ public class FeatureManagerImpl implements FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
-    /**
-     * Calls onServerChange(TabPlayer, String, String) on all features
-     * 
-     * @param   playerUUID
-     *          player who switched server
-     * @param   to
-     *          name of the new server
-     */
+    @Override
     public void onServerChange(UUID playerUUID, String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
@@ -188,15 +165,7 @@ public class FeatureManagerImpl implements FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
     }
 
-    /**
-     * Calls onCommand(TabPlayer, String) on all features
-     * 
-     * @param   sender
-     *          command sender
-     * @param   command
-     *          command line including /
-     * @return  {@code true} if command should be cancelled, {@code false} if not
-     */
+    @Override
     public boolean onCommand(TabPlayer sender, String command) {
         if (sender == null) return false;
         boolean cancel = false;

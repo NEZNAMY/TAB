@@ -56,7 +56,7 @@ public class BukkitTabPlayer extends ITabPlayer {
      *          Player's protocol network id
      */
     public BukkitTabPlayer(Player p, int protocolVersion){
-        super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName(), protocolVersion);
+        super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName(), protocolVersion, true);
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);
             playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -252,7 +252,6 @@ public class BukkitTabPlayer extends ITabPlayer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Skin getSkin() {
         try {

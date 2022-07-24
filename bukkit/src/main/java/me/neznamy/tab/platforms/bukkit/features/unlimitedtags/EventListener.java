@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TAB;
 
 /**
  * The event listener part for securing proper functionality of armor stands
@@ -36,9 +35,9 @@ public class EventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSneak(PlayerToggleSneakEvent e) {
-        TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+        TabPlayer p = TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId());
         if (p == null || feature.isPlayerDisabled(p)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(e.isSneaking()));
+        TabAPI.getInstance().getThreadManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(e.isSneaking()));
     }
 
     /**
@@ -49,8 +48,8 @@ public class EventListener implements Listener {
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
-            TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+        TabAPI.getInstance().getThreadManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
+            TabPlayer respawned = TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId());
             if (feature.isPlayerDisabled(respawned)) return;
             feature.getArmorStandManager(respawned).teleport();
         });

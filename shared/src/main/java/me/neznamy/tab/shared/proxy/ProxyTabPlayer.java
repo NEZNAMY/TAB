@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.proxy;
 import com.google.common.collect.Lists;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.permission.VaultBridge;
 
@@ -47,9 +47,11 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      *          Player's server
      * @param   protocolVersion
      *          Player's protocol network id
+     * @param   useRealId
+     *          Whether tablist uses real uuid or offline
      */
-    protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
-        super(player, uniqueId, name, server, "N/A", protocolVersion);
+    protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion, boolean useRealId) {
+        super(player, uniqueId, name, server, "N/A", protocolVersion, useRealId);
         sendJoinPluginMessage();
     }
 
@@ -74,7 +76,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
         args.add(enabled);
         if (enabled) {
             args.add(nametagx.isMarkerFor18x());
-            args.add(nametagx.getSpaceBetweenLines());
+            args.add(0.26d);
             args.add(nametagx.isDisableOnBoats());
             args.add(nametagx.isArmorStandsAlwaysVisible());
             args.add(nametagx.getDisabledUnlimitedWorlds().size());

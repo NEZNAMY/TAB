@@ -12,7 +12,7 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * Handler for "/tab cpu" subcommand

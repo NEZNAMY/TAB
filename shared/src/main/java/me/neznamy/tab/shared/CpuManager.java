@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.task.RepeatingTask;
 import me.neznamy.tab.api.task.ThreadManager;
 
 /**
@@ -48,7 +47,7 @@ public class CpuManager implements ThreadManager {
     private ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
-    private final ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newCachedThreadPool(
+    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(20,
             new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
 
     /** Tasks submitted to main thread before plugin was fully enabled */
@@ -359,34 +358,22 @@ public class CpuManager implements ThreadManager {
     }
 
     @Override
-    public RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
-        return new TabRepeatingTask(threadPool, task, feature, type, intervalMilliseconds);
+    public Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
+        return threadPool.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public RepeatingTask startRepeatingTask(int intervalMilliseconds, Runnable task) {
-        return new TabRepeatingTask(threadPool, task, null, null, intervalMilliseconds);
+    public Future<?> startRepeatingTask(int intervalMilliseconds, Runnable task) {
+        return threadPool.scheduleAtFixedRate(() -> runTask(task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
-        try {
-            return threadPool.submit(() -> {
-                try {
-                    Thread.sleep(delayMilliseconds);
-                    runMeasuredTask(feature, type, task);
-                } catch (InterruptedException pluginDisabled) {
-                    Thread.currentThread().interrupt();
-                }
-            });
-        } catch (OutOfMemoryError e) {
-            TAB.getInstance().getErrorManager().criticalError("Failed to create new delayed task, active thread count: " +
-                    threadPool.getActiveCount() + " / " + threadPool.getPoolSize(), e);
-            return null;
-        }
+        return threadPool.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public ThreadPoolExecutor getThreadPool() {
-        return threadPool;
+    @Override
+    public Future<?> runTaskLater(int delayMilliseconds, Runnable task) {
+        return threadPool.schedule(() -> submit(task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 }

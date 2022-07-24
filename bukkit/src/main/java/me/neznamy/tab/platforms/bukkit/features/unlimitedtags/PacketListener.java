@@ -1,17 +1,16 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TAB;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The packet listening part for securing proper functionality of armor stands
@@ -41,7 +40,7 @@ public class PacketListener extends TabFeature {
 
     @Override
     public void load() {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
             entityIdMap.put(((Player) all.getPlayer()).getEntityId(), all);
         }
     }
@@ -61,7 +60,7 @@ public class PacketListener extends TabFeature {
         if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
             int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
             TabPlayer attacked = null;
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
                 if (all.isLoaded() && nameTagX.getArmorStandManager(all).hasArmorStandWithID(entityId)) {
                     attacked = all;
                     break;
@@ -114,14 +113,14 @@ public class PacketListener extends TabFeature {
         if (pl != null) {
             //player moved
             if (nameTagX.isPlayerDisabled(pl) || !pl.isLoaded()) return;
-            TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE,
+            TabAPI.getInstance().getThreadManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE,
                     () -> nameTagX.getArmorStandManager(pl).teleport(receiver));
         } else if ((vehicleList = nameTagX.getVehicleManager().getVehicles().get(entityId)) != null){
             //a vehicle carrying something moved
             for (Entity entity : vehicleList) {
                 TabPlayer passenger = entityIdMap.get(entity.getEntityId());
                 if (passenger != null && nameTagX.getArmorStandManager(passenger) != null) {
-                    TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
+                    TabAPI.getInstance().getThreadManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_MOVE_PASSENGER,
                             () -> nameTagX.getArmorStandManager(passenger).teleport(receiver));
                 }
             }
@@ -131,7 +130,7 @@ public class PacketListener extends TabFeature {
     private void onEntitySpawn(TabPlayer receiver, int entityId) {
         TabPlayer spawnedPlayer = entityIdMap.get(entityId);
         if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
-            TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
+            TabAPI.getInstance().getThreadManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
                     () -> nameTagX.getArmorStandManager(spawnedPlayer).spawn(receiver));
         }
     }
@@ -152,7 +151,7 @@ public class PacketListener extends TabFeature {
         TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
         if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
             BukkitArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);
-            TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
+            TabAPI.getInstance().getThreadManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
                     () -> asm.destroy(receiver));
         }
     }

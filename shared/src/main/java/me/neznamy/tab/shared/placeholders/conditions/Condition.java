@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.*;
 
@@ -54,7 +54,7 @@ public class Condition {
      * Refresh interval of placeholder created from this condition.
      * It is calculated based on nested placeholders used in sub-conditions.
      */
-    private int refresh = 10000;
+    private int refresh = -1;
 
     /**
      * Constructs new instance with given parameters and registers
@@ -93,7 +93,7 @@ public class Condition {
         List<String> placeholdersInConditions = new ArrayList<>();
         for (String subCondition : conditions) {
             if (subCondition.startsWith("permission:")) {
-                if (refresh > 1000) refresh = 1000; //permission refreshing will be done every second
+                if (refresh > 1000 || refresh == -1) refresh = 1000; //permission refreshing will be done every second
             } else {
                 placeholdersInConditions.addAll(pm.detectPlaceholders(subCondition));
             }
@@ -101,13 +101,10 @@ public class Condition {
         placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
         placeholdersInConditions.addAll(pm.detectPlaceholders(no));
         for (String placeholder : placeholdersInConditions) {
+            TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(TabConstants.Placeholder.condition(name));
             Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
-            if (pl.getRefresh() < refresh) {
-                if (pl.getRefresh() == -1) {
-                    if (refresh > 500) refresh = 500;
-                } else {
-                    refresh = pl.getRefresh();
-                }
+            if (pl.getRefresh() < refresh && pl.getRefresh() != -1) {
+                refresh = pl.getRefresh();
             }
         }
         pm.addUsedPlaceholders(placeholdersInConditions);

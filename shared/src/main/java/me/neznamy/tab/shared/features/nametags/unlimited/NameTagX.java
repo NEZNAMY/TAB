@@ -5,7 +5,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 
@@ -17,7 +17,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     //config options
     private final boolean markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
     private final boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
-    private final double spaceBetweenLines = TAB.getInstance().getConfiguration().getConfig().getDouble("scoreboard-teams.unlimited-nametag-mode.space-between-lines", 0.22);
     private final List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
     private final List<String> disabledUnlimitedServers = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-servers", new ArrayList<>());
     private final List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
@@ -37,8 +36,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
-        TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, spaceBetweenLines=%s, disabledUnlimitedServers=%s, disabledUnlimitedWorlds=%s",
-                markerFor18x, disableOnBoats, spaceBetweenLines, disabledUnlimitedServers, disabledUnlimitedWorlds));
+        TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, disabledUnlimitedServers=%s, disabledUnlimitedWorlds=%s",
+                markerFor18x, disableOnBoats, disabledUnlimitedServers, disabledUnlimitedWorlds));
     }
 
     public boolean isUnlimitedDisabled(String server, String world) {
@@ -117,10 +116,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         return staticLines;
     }
 
-    public double getSpaceBetweenLines() {
-        return spaceBetweenLines;
-    }
-
     public List<String> getDisabledUnlimitedWorlds() {
         return disabledUnlimitedWorlds;
     }
@@ -152,6 +147,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
             if (getDisabledUnlimitedPlayers().remove(p)) {
                 updateTeamData(p);
             }
+            getArmorStandManager(p).refresh(true);
         }
     }
 

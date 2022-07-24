@@ -15,7 +15,10 @@ import me.neznamy.tab.shared.TAB;
  */
 public class PlaceholderReplacementPattern {
 
-    /** Full replacement map with both keys and values colored */
+    /**
+     * Full replacement map with values colored and keys being duplicated,
+     * once with and once without colors
+     */
     private final Map<String, String> replacements = new HashMap<>();
 
     /**
@@ -41,6 +44,7 @@ public class PlaceholderReplacementPattern {
             String key = String.valueOf(entry.getKey());
             String value = String.valueOf(entry.getValue()).replace(identifier, "%value%");
             replacements.put(EnumChatFormat.color(key), EnumChatFormat.color(value));
+            replacements.put(key, EnumChatFormat.color(value));
             nestedPlaceholders.addAll(TAB.getInstance().getPlaceholderManager().detectPlaceholders(value));
             nestedPlaceholders.remove("%value%"); //not a real placeholder
             //snakeyaml converts yes & no to booleans, making them not work when used without "

@@ -199,4 +199,12 @@ public interface BossBar {
      * @return  {@code true} if contains, {@code false} if not
      */
     boolean containsPlayer(TabPlayer player);
+
+    /**
+     * Returns {@code true} if this bossbar in configured as announcement-only bar,
+     * {@code false} if not.
+     *
+     * @return  {@code true} if bar is announcement only, {@code false} if not
+     */
+    boolean isAnnouncementBar();
 }

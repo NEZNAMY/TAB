@@ -204,4 +204,13 @@ public abstract class TabAPI {
      *          Name of file with syntax error
      */
     public abstract void setBrokenFile(String file);
+
+    /**
+     * Returns {@code true} if the plugin is currently disabled due to an error,
+     * either a yaml syntax error or an internal startup error. Returns {@code false}
+     * if the plugin is properly running.
+     *
+     * @return  {@code true} if disabled, {@code false} if running correctly
+     */
+    public abstract boolean isPluginDisabled();
 }

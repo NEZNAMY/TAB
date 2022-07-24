@@ -9,6 +9,7 @@ snakeyaml = "1.30"
 yamlAssist = "1.0.5"
 gson = "2.9.0"
 slf4j = "1.7.36"
+minimessage = "4.11.0"
 
 # General
 luckperms = "5.4"
@@ -21,7 +22,7 @@ event = "3.0.0"
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.19-R0.1-SNAPSHOT"
 krypton = "0.59.2"
-velocity = "1.1.0"
+velocity = "3.0.1"
 
 # Platform extras
 placeholderapi = "2.11.1"
@@ -42,6 +43,9 @@ snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" 
 yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
+adventureMiniMessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "minimessage" }
+adventureApi = { group = "net.kyori", name = "adventure-api", version.ref = "minimessage" }
+adventureLegacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "minimessage" }
 
 # General
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }

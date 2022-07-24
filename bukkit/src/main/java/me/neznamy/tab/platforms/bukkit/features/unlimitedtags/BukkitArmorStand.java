@@ -1,16 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import java.util.UUID;
-
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Pose;
-
-import me.neznamy.tab.api.ArmorStand;
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
@@ -19,8 +9,13 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TAB;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
+
+import java.util.UUID;
 
 /**
  * A class representing an armor stand attached to a player (if the feature is enabled)
@@ -31,7 +26,7 @@ public class BukkitArmorStand implements ArmorStand {
     private static int idCounter = 2000000000;
 
     //NameTag feature
-    private final BukkitNameTagX manager = (BukkitNameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+    private final BukkitNameTagX manager = (BukkitNameTagX) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 
     private final BukkitArmorStandManager asm;
     
@@ -73,6 +68,7 @@ public class BukkitArmorStand implements ArmorStand {
         this.yOffset = yOffset;
         this.property = owner.getProperty(propertyName);
         visible = getVisibility();
+        sneaking = player.isSneaking();
     }
 
     @Override
@@ -204,20 +200,28 @@ public class BukkitArmorStand implements ArmorStand {
     /**
      * Returns general location where armor stand should be at time of calling
      *
+     * @param   viewer
+     *          Player looking at the armor stand
      * @return  Location where armor stand should be for everyone
      */
-    public Location getLocation() {
+    public Location getLocation(TabPlayer viewer) {
         double x = player.getLocation().getX();
-        double y = getY() + yOffset + 2;
+        double y = getY() + yOffset;
         double z = player.getLocation().getZ();
-        if (player.isSleeping()) {
-            y -= 1.76;
-        } else {
-            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
-                y -= (sneaking ? 0.45 : 0.18);
+        if (!player.isSleeping()) {
+            if (sneaking) {
+                if (viewer.getVersion().getMinorVersion() >= 15) {
+                    y += 1.37;
+                } else if (viewer.getVersion().getMinorVersion() >= 9) {
+                    y += 1.52;
+                } else {
+                    y += 1.7;
+                }
             } else {
-                y -= (sneaking ? 0.30 : 0.18);
+                y += viewer.getVersion().getMinorVersion() >= 9 ? 1.8 : 1.84; // Normal
             }
+        } else {
+            y += viewer.getVersion().getMinorVersion() >= 9 ? 0.2 : 0.26; // Sleeping
         }
         return new Location(null,x,y,z);
     }
@@ -245,15 +249,15 @@ public class BukkitArmorStand implements ArmorStand {
             }
         }
         //1.13+ swimming or 1.9+ flying with elytra
-        if (isSwimming() || (TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
+        if (isSwimming() || (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 && player.isGliding())) {
             return player.getLocation().getY()-1.22;
         }
         return player.getLocation().getY();
     }
 
     private boolean isSwimming() {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
-        return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
+        return TabAPI.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
     }
 
     /**
@@ -311,7 +315,7 @@ public class BukkitArmorStand implements ArmorStand {
     public TabPacket[] getSpawnPackets(TabPlayer viewer) {
         visible = getVisibility();
         DataWatcher dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 15) {
             return new TabPacket[] {
                     new PacketPlayOutSpawnEntityLiving(entityId, uuid, EntityType.ARMOR_STAND, getArmorStandLocationFor(viewer), null),
                     new PacketPlayOutEntityMetadata(entityId, dataWatcher)
@@ -331,7 +335,7 @@ public class BukkitArmorStand implements ArmorStand {
      * @return  location of armor stand
      */
     public Location getArmorStandLocationFor(TabPlayer viewer) {
-        return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation().clone().add(0,-2,0) : getLocation();
+        return viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x() ? getLocation(viewer).add(0,-2,0) : getLocation(viewer);
     }
 
     @Override

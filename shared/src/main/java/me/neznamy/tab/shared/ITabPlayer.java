@@ -1,12 +1,10 @@
 package me.neznamy.tab.shared;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.*;
@@ -30,6 +28,9 @@ public abstract class ITabPlayer implements TabPlayer {
 
     /** Player's unique ID */
     private final UUID uniqueId;
+
+    /** Player's tablist UUID */
+    private final UUID tabListId;
 
     /**
      * World the player is currently in, {@code "N/A"} if TAB is
@@ -94,8 +95,10 @@ public abstract class ITabPlayer implements TabPlayer {
      *          Player's world
      * @param   protocolVersion
      *          Player's game version
+     * @param   useRealId
+     *          Whether tablist uses real uuid or offline
      */
-    protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion) {
+    protected ITabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion, boolean useRealId) {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
@@ -105,6 +108,8 @@ public abstract class ITabPlayer implements TabPlayer {
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
         this.bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
         this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
+        UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        this.tabListId = useRealId ? getUniqueId() : offlineId;
     }
 
     /**
@@ -261,7 +266,7 @@ public abstract class ITabPlayer implements TabPlayer {
 
     @Override
     public UUID getTablistUUID() {
-        return uniqueId;
+        return tabListId;
     }
 
     @Override

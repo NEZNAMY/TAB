@@ -5,7 +5,7 @@ import java.util.List;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * Handler for "/tab playeruuid" subcommand
@@ -38,11 +38,11 @@ public class PlayerUUIDCommand extends PropertyCommand {
         String server = null;
         if (args[args.length-2].equals("-w")) {
             world = args[args.length-1];
-            value = value.substring(0, value.length()-world.length()-4);
+            value = value.startsWith("-w") ? "" : value.substring(0, value.length()-world.length()-4);
         }
         if (args[args.length-2].equals("-s")) {
             server = args[args.length-1];
-            value = value.substring(0, value.length()-server.length()-4);
+            value = value.startsWith("-s") ? "" : value.substring(0, value.length()-server.length()-4);
         }
         if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
             value = value.substring(1, value.length()-1);

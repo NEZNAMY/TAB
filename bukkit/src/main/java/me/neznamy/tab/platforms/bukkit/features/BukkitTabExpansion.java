@@ -2,9 +2,10 @@ package me.neznamy.tab.platforms.bukkit.features;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.TabExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -46,13 +47,13 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
         if (identifier.startsWith("replace_")) {
             String placeholder = "%" + identifier.substring(8) + "%";
             String output = PlaceholderAPI.setPlaceholders(player, placeholder);
-            return TAB.getInstance().getPlaceholderManager().findReplacement(placeholder, output);
+            return TabAPI.getInstance().getPlaceholderManager().findReplacement(placeholder, output);
         }
         if (identifier.startsWith("placeholder_")) {
-            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", TAB.getInstance().getPlaceholderManager());
+            TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", (TabFeature) TabAPI.getInstance().getPlaceholderManager());
         }
         if (player == null) return "<Player cannot be null>";
-        TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
+        TabPlayer p = TabAPI.getInstance().getPlayer(player.getUniqueId());
         if (p == null || !p.isLoaded()) return "<Player is not loaded>";
         return values.get(p).get(identifier);
     }

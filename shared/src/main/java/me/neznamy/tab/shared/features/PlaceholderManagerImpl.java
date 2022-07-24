@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -18,8 +19,7 @@ import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
-import me.neznamy.tab.api.task.RepeatingTask;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
@@ -47,7 +47,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private Placeholder[] usedPlaceholders = new Placeholder[0];
     
     private final AtomicInteger atomic = new AtomicInteger();
-    private final RepeatingTask refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(10000, this, "Refreshing placeholders", this::refresh);
+    private int refreshInterval = 10000;
+    private Future<?> refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(refreshInterval, this, "Refreshing placeholders", this::refresh);
 
     private TabExpansion tabExpansion;
 
@@ -56,7 +57,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
     
     private void refresh() {
-        int loopTime = atomic.addAndGet(refreshTask.getInterval());
+        int loopTime = atomic.addAndGet(refreshInterval);
         int size = TAB.getInstance().getOnlinePlayers().length;
         Map<TabPlayer, Set<TabFeature>> update = new HashMap<>(size);
         Map<TabPlayer, Set<TabFeature>> forceUpdate = new HashMap<>(size);
@@ -251,10 +252,12 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                 }
             }
             if (p.getRefresh() % 50 == 0 && p.getRefresh() > 0) {
-                int refresh = gcd(p.getRefresh(), refreshTask.getInterval());
-                if (refreshTask.getInterval() != refresh) {
+                int refresh = gcd(p.getRefresh(), refreshInterval);
+                if (refreshInterval != refresh) {
                     TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + refresh + "ms due to placeholder " + identifier);
-                    refreshTask.setInterval(refresh);
+                    refreshTask.cancel(true);
+                    refreshInterval = refresh;
+                    refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(refreshInterval, this, "Refreshing placeholders", this::refresh);
                     atomic.set(0);
                 }
             }

@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
