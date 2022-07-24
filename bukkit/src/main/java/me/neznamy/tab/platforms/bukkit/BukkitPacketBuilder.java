@@ -410,6 +410,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         }
         if (packet.getAction() == Action.ADD) {
             w.helper().setEntityFlags((byte) 32);
+            w.helper().setWitherInvulnerableTime(880); // Magic number
             return build(new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w));
         } else {
             return build(new PacketPlayOutEntityMetadata(entityId, w));

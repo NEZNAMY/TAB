@@ -133,4 +133,15 @@ public class DataWatcherHelper {
     public void setArmorStandFlags(byte flags) {
         data.setValue(new DataWatcherObject(armorStandFlagsPosition, registry.getByte()), flags);
     }
+
+    /**
+     * Writes wither invulnerable time
+     * @param   time
+     *          Time, apparently
+     */
+    public void setWitherInvulnerableTime(int time) {
+        if (TAB.getInstance().getServerVersion().getMinorVersion() > 8)
+            throw new UnsupportedOperationException("Not supported on 1.9+");
+        data.setValue(new DataWatcherObject(20, null), time);
+    }
 }
