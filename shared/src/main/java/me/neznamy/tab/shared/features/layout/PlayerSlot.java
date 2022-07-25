@@ -65,4 +65,8 @@ public class PlayerSlot {
             }
         }
     }
+
+    public TabPlayer getPlayer() {
+        return player;
+    }
 }
