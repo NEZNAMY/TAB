@@ -291,7 +291,7 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public synchronized void sendCustomPacket(TabPacket packet) {
+    public void sendCustomPacket(TabPacket packet) {
         if (packet == null) return;
         //avoiding BungeeCord bug kicking all players
         if (packet instanceof PacketPlayOutScoreboardTeam) {
