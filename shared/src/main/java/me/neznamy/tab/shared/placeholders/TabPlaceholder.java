@@ -213,4 +213,9 @@ public abstract class TabPlaceholder implements Placeholder {
         this.onDisable = onDisable;
         if (active && onActivation != null) onActivation.run();
     }
+
+    @Override
+    public boolean isUsed() {
+        return active;
+    }
 }

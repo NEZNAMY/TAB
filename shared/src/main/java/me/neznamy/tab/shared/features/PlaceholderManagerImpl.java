@@ -220,6 +220,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return placeholders;
     }
 
+    @Override
     public TabPlaceholder getPlaceholder(String identifier) {
         TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
         if (p == null) {
