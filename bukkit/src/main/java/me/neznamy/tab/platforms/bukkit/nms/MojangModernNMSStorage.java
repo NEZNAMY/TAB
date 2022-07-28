@@ -34,7 +34,7 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
 
     @Override
     public void loadClasses() throws ClassNotFoundException {
-        IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
+        IChatBaseComponent = Class.forName("net.minecraft.network.chat.ComponentContents");
         ChatSerializer = Class.forName("net.minecraft.network.chat.Component$Serializer");
         World = Class.forName("net.minecraft.world.level.Level");
         EntityArmorStand = Class.forName("net.minecraft.world.entity.decoration.ArmorStand");
