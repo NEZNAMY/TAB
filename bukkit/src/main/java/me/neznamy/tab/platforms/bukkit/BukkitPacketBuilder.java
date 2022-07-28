@@ -69,7 +69,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
     public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         Object component = toNMSComponent(packet.getMessage(), clientVersion);
         if (nms.getMinorVersion() >= 19)
-            return nms.newPacketPlayOutChat.newInstance(component, packet.getType().ordinal());
+            try {
+                return nms.newPacketPlayOutChat.newInstance(component, packet.getType() == PacketPlayOutChat.ChatMessageType.GAME_INFO);
+            } catch (Exception e) {
+                //1.19.0
+                return nms.newPacketPlayOutChat.newInstance(component, packet.getType().ordinal());
+            }
         if (nms.getMinorVersion() >= 16)
             return nms.newPacketPlayOutChat.newInstance(component, nms.ChatMessageType_values[packet.getType().ordinal()], UUID.randomUUID());
         if (nms.getMinorVersion() >= 12)

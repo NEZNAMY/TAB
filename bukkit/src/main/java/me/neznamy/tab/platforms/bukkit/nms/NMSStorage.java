@@ -253,7 +253,12 @@ public abstract class NMSStorage {
             ChatMessageType_values = getEnumValues(ChatMessageType);
         }
         if (minorVersion >= 19) {
-            newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, int.class);
+            try {
+                newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, boolean.class);
+            } catch (NoSuchMethodException e) {
+                //1.19.0
+                newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, int.class);
+            }
         } else if (minorVersion >= 16) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType, UUID.class);
         } else if (minorVersion >= 12) {
