@@ -15,7 +15,7 @@ public class MiniMessageFormat implements RGBFormatter {
         String format = text.replace(EnumChatFormat.RESET.getFormat(), ""); //remove &r from header/footer newline inserts
         try {
             return LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(format));
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
             return text;
         }
     }
