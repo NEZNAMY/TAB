@@ -53,7 +53,6 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (output == null) return false; //bridge placeholders, they are updated using updateValue method
         String obj = getReplacements().findReplacement(String.valueOf(output));
         String newValue = obj == null ? identifier : setPlaceholders(obj, p);
-        newValue = getReplacements().findReplacement(newValue);
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
