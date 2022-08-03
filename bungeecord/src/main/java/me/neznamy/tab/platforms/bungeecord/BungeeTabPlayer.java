@@ -8,7 +8,6 @@ import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
-import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -34,9 +33,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     private static Object directionData;
     private static Method getId;
 
-    /** Rewriting offline tablist uuids coming from backend servers to online uuids on online servers */
-    private static boolean tablistRewriteEnabled = true;
-
     static {
         try {
             Class<?> initialHandler = Class.forName("net.md_5.bungee.connection.InitialHandler");
@@ -60,11 +56,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", e);
         }
-        try {
-            tablistRewriteEnabled = !(boolean) ProxyConfig.class.getMethod("isDisableTabListRewrite").invoke(ProxyServer.getInstance().getConfig());
-        } catch (ReflectiveOperationException e) {
-            // not Waterfall, always true on BungeeCord
-        }
     }
 
     /**
@@ -74,7 +65,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *          BungeeCord player
      */
     public BungeeTabPlayer(ProxiedPlayer p) {
-        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1, tablistRewriteEnabled);
+        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1, true);
         try {
             channel = (Channel) ChannelWrapper_getHandle.invoke(wrapperField.get(getPlayer().getPendingConnection()));
         } catch (IllegalAccessException | InvocationTargetException e) {
