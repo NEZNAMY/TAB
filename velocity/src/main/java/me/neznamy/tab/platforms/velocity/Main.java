@@ -65,7 +65,7 @@ public class Main {
     private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
     /** Platform implementation for velocity */
-    private final VelocityPlatform platform = new VelocityPlatform();
+    private VelocityPlatform platform;
 
     /**
      * Initializes plugin for velocity
@@ -122,6 +122,7 @@ public class Main {
     private boolean isVersionSupported() {
         try {
             long time = System.currentTimeMillis();
+            platform = new VelocityPlatform();
             VelocityPacketStorage.setInstance(new VelocityPacketStorage());
             logger.info(EnumChatFormat.color("&7Loaded packet hook in " + (System.currentTimeMillis() - time) + "ms"));
             return true;
