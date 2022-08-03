@@ -64,9 +64,6 @@ public class Main {
     /** Component cache for 1.15- players to save CPU when creating components */
     private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
 
-    /** Platform implementation for velocity */
-    private VelocityPlatform platform;
-
     /**
      * Initializes plugin for velocity
      *
@@ -78,6 +75,7 @@ public class Main {
         if (!isVersionSupported()) {
             return;
         }
+        VelocityPlatform platform = new VelocityPlatform();
         instance = this;
         if (server.getConfiguration().isOnlineMode()) {
             logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
@@ -85,7 +83,7 @@ public class Main {
         }
         server.getChannelRegistrar().register(mc);
         TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
-        server.getEventManager().register(this, new VelocityEventListener());
+        server.getEventManager().register(this, new VelocityEventListener(platform));
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").aliases("vtab").build(), new VelocityTABCommand());
         TAB.getInstance().load();
         Metrics metrics = metricsFactory.make(this, 10533);
@@ -99,10 +97,6 @@ public class Main {
      */
     public static Main getInstance() {
         return instance;
-    }
-
-    public VelocityPlatform getPlatform() {
-        return platform;
     }
 
     /**
@@ -122,7 +116,6 @@ public class Main {
     private boolean isVersionSupported() {
         try {
             long time = System.currentTimeMillis();
-            platform = new VelocityPlatform();
             VelocityPacketStorage.setInstance(new VelocityPacketStorage());
             logger.info(EnumChatFormat.color("&7Loaded packet hook in " + (System.currentTimeMillis() - time) + "ms"));
             return true;

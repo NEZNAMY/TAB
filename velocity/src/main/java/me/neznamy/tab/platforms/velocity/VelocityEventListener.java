@@ -15,6 +15,11 @@ import me.neznamy.tab.api.TabConstants;
  */
 public class VelocityEventListener {
 
+    private VelocityPlatform platform;
+    public VelocityEventListener(VelocityPlatform velocityPlatform) {
+        this.platform = velocityPlatform;
+    }
+
     /**
      * Disconnect event listener to forward the event to all features
      *
@@ -72,7 +77,7 @@ public class VelocityEventListener {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
-            Main.getInstance().getPlatform().getPluginMessageHandler().onPluginMessage(
+            platform.getPluginMessageHandler().onPluginMessage(
                     ((Player) event.getTarget()).getUniqueId(), event.getData());
         }
     }
