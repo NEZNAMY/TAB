@@ -49,10 +49,20 @@ public interface ThreadManager {
      *          usage type to add cpu usage to
      * @param   task
      *          the task
+     * @return  Future representing the submitted task
      */
-    RepeatingTask startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task);
+    Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task);
 
-    RepeatingTask startRepeatingTask(int intervalMilliseconds, Runnable task);
+    /**
+     * Starts a new task with defined repeat interval
+     *
+     * @param   intervalMilliseconds
+     *          task interval
+     * @param   task
+     *          the task
+     * @return  Future representing the submitted task
+     */
+    Future<?> startRepeatingTask(int intervalMilliseconds, Runnable task);
 
     /**
      * Runs task with a delay and measures how long it took to process
@@ -65,9 +75,18 @@ public interface ThreadManager {
      *          usage type to add cpu usage to
      * @param   task
      *          the task
-     * @return  future allowing to cancel the task
+     * @return  Future representing the submitted task
      */
     Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task);
 
+    /**
+     * Runs task with a delay
+     *
+     * @param   delayMilliseconds
+     *          how long to run the task after
+     * @param   task
+     *          the task
+     * @return  Future representing the submitted task
+     */
     Future<?> runTaskLater(int delayMilliseconds, Runnable task);
 }

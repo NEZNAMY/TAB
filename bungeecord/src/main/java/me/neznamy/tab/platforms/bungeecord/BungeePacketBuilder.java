@@ -10,16 +10,11 @@ import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import net.md_5.bungee.protocol.packet.BossBar;
-import net.md_5.bungee.protocol.packet.Chat;
-import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
-import net.md_5.bungee.protocol.packet.PlayerListItem;
+import net.md_5.bungee.protocol.PlayerPublicKey;
+import net.md_5.bungee.protocol.Property;
+import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
-import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
-import net.md_5.bungee.protocol.packet.ScoreboardScore;
-import net.md_5.bungee.protocol.packet.Team;
 
 /**
  * Packet builder for BungeeCord platform
@@ -40,7 +35,11 @@ public class BungeePacketBuilder extends PacketBuilder {
 
     @Override
     public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
-        return new Chat(packet.getMessage().toString(clientVersion), (byte) packet.getType().ordinal());
+        if (clientVersion.getMinorVersion() >= 19) {
+            return new SystemChat(packet.getMessage().toString(clientVersion), (byte) packet.getType().ordinal());
+        } else {
+            return new Chat(packet.getMessage().toString(clientVersion), (byte) packet.getType().ordinal());
+        }
     }
 
     @Override
@@ -55,17 +54,18 @@ public class BungeePacketBuilder extends PacketBuilder {
                     item.setDisplayName(data.getDisplayName().toLegacyText());
                 }
             } else if (clientVersion.getMinorVersion() < 8) {
-                item.setDisplayName(data.getName()); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
+                item.setDisplayName(String.valueOf(data.getName())); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
             }
             if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);
             item.setPing(data.getLatency());
             if (data.getSkin() != null) {
-                item.setProperties(new String[][]{{"textures", data.getSkin().getValue(), data.getSkin().getSignature()}});
+                item.setProperties(new Property[]{new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())});
             } else {
-                item.setProperties(new String[0][0]);
+                item.setProperties(new Property[0]);
             }
             item.setUsername(data.getName());
             item.setUuid(data.getUniqueId());
+            item.setPublicKey((PlayerPublicKey) data.getProfilePublicKey());
             items.add(item);
         }
         PlayerListItem bungeePacket = new PlayerListItem();
@@ -109,8 +109,8 @@ public class BungeePacketBuilder extends PacketBuilder {
         PlayerListItem item = (PlayerListItem) bungeePacket;
         List<PlayerInfoData> listData = new ArrayList<>();
         for (Item i : item.getItems()) {
-            Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0][1], i.getProperties()[0][2]);
-            listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.VALUES[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
+            Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0].getValue(), i.getProperties()[0].getSignature());
+            listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.VALUES[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName()), i.getPublicKey()));
         }
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
     }

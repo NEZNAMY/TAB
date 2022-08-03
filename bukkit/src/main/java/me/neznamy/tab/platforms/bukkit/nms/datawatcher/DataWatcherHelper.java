@@ -1,12 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import java.util.Optional;
-
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
+
+import java.util.Optional;
 
 /**
  * A class to help to assign DataWatcher items as positions often change per-version
@@ -39,16 +40,16 @@ public class DataWatcherHelper {
      * @return  armor stand flags position based on server version
      */
     private int getArmorStandFlagsPosition() {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 17) {
-            //1.17.x, 1.18.x
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 17) {
+            //1.17.x, 1.18.x, 1.19.x
             return 15;
-        } else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
+        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 15) {
             //1.15.x, 1.16.x
             return 14;
-        } else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14) {
+        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 14) {
             //1.14.x
             return 13;
-        } else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 10) {
+        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 10) {
             //1.10.x - 1.13.x
             return 11;
         } else {
@@ -76,18 +77,18 @@ public class DataWatcherHelper {
      *          client version
      */
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 13) {
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
             try {
                 data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
             } catch (ReflectiveOperationException e) {
                 TAB.getInstance().getErrorManager().printError("Failed to create component", e);
             }
-        } else if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8){
+        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8){
             data.setValue(new DataWatcherObject(2, registry.getString()), customName);
         } else {
             //name length is limited to 64 characters on <1.8
             String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
-            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6){
+            if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 6){
                 data.setValue(new DataWatcherObject(10, null), cutName);
             } else {
                 data.setValue(new DataWatcherObject(5, null), cutName);
@@ -102,7 +103,7 @@ public class DataWatcherHelper {
      *          if visible or not
      */
     public void setCustomNameVisible(boolean visible) {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
             data.setValue(new DataWatcherObject(3, registry.getBoolean()), visible);
         } else {
             data.setValue(new DataWatcherObject(3, null), (byte)(visible?1:0));
@@ -116,7 +117,7 @@ public class DataWatcherHelper {
      *          health of entity
      */
     public void setHealth(float health) {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 6) {
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 6) {
             data.setValue(new DataWatcherObject(6, registry.getFloat()), health);
         } else {
             data.setValue(new DataWatcherObject(16, null), (int)health);
@@ -131,5 +132,16 @@ public class DataWatcherHelper {
      */
     public void setArmorStandFlags(byte flags) {
         data.setValue(new DataWatcherObject(armorStandFlagsPosition, registry.getByte()), flags);
+    }
+
+    /**
+     * Writes wither invulnerable time
+     * @param   time
+     *          Time, apparently
+     */
+    public void setWitherInvulnerableTime(int time) {
+        if (TAB.getInstance().getServerVersion().getMinorVersion() > 8)
+            throw new UnsupportedOperationException("Not supported on 1.9+");
+        data.setValue(new DataWatcherObject(20, null), time);
     }
 }

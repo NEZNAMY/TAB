@@ -16,7 +16,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.YellowNumber;
 
@@ -122,7 +122,7 @@ public class RedisPlayer {
 
     public PacketPlayOutPlayerInfo getAddPacket() {
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(nickname, uniqueId, skin, 0, EnumGamemode.SURVIVAL,
-                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat)));
+                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat), null));
     }
 
     public PacketPlayOutPlayerInfo getUpdatePacket() {

@@ -48,4 +48,6 @@ public interface PlaceholderManager {
     String findReplacement(String placeholder, String output);
 
     List<String> getUsedPlaceholders();
+
+    Placeholder getPlaceholder(String identifier);
 }

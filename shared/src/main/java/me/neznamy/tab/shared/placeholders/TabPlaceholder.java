@@ -159,7 +159,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   parent
      *          parent placeholder using this placeholder in output
      */
-    private void addParent(String parent) {
+    public void addParent(String parent) {
         if (!parents.contains(parent)) parents.add(parent);
     }
 
@@ -212,5 +212,10 @@ public abstract class TabPlaceholder implements Placeholder {
         this.onActivation = onActivation;
         this.onDisable = onDisable;
         if (active && onActivation != null) onActivation.run();
+    }
+
+    @Override
+    public boolean isUsed() {
+        return active;
     }
 }

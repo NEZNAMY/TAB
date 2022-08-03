@@ -1,8 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -16,6 +15,12 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class BungeeEventListener implements Listener {
 
+    private final BungeePlatform platform;
+
+    public BungeeEventListener(BungeePlatform platform) {
+        this.platform = platform;
+    }
+
     /**
      * Disconnect event listener to forward the event to all features
      *
@@ -24,9 +29,9 @@ public class BungeeEventListener implements Listener {
      */
     @EventHandler
     public void onQuit(PlayerDisconnectEvent e){
-        if (TAB.getInstance().isDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+        if (TabAPI.getInstance().isPluginDisabled()) return;
+        TabAPI.getInstance().getThreadManager().runTask(() ->
+                TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
 
     /**
@@ -37,12 +42,12 @@ public class BungeeEventListener implements Listener {
      */
     @EventHandler
     public void onSwitch(ServerSwitchEvent e){
-        if (TAB.getInstance().isDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() -> {
-            if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-                TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
+        if (TabAPI.getInstance().isPluginDisabled()) return;
+        TabAPI.getInstance().getThreadManager().runTask(() -> {
+            if (TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
+                TabAPI.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
             } else {
-                TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
+                TabAPI.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
             }
         });
     }
@@ -55,8 +60,9 @@ public class BungeeEventListener implements Listener {
      */
     @EventHandler
     public void onChat(ChatEvent e) {
-        if (TAB.getInstance().isDisabled()) return;
-        if (e.isCommand() && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
+        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (e.isCommand() && TabAPI.getInstance().getFeatureManager().onCommand(TabAPI.getInstance().getPlayer(
+                ((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
     }
 
     /**
@@ -70,15 +76,8 @@ public class BungeeEventListener implements Listener {
         if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);
-            TAB.getInstance().getCPUManager().getThreadPool().submit(() -> {
-                try {
-                    while (TAB.getInstance().getPlayer(((ProxiedPlayer) event.getReceiver()).getUniqueId()) == null) {
-                        Thread.sleep(100);
-                    }
-                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
-                            ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
-                } catch (InterruptedException ignored) {}
-            });
+            platform.getPluginMessageHandler().onPluginMessage(
+                    ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
         }
     }
 }

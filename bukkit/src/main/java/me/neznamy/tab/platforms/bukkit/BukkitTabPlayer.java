@@ -11,6 +11,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -23,7 +24,6 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 
 import io.netty.channel.Channel;
-import me.libraryaddict.disguise.DisguiseAPI;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
@@ -56,7 +56,7 @@ public class BukkitTabPlayer extends ITabPlayer {
      *          Player's protocol network id
      */
     public BukkitTabPlayer(Player p, int protocolVersion){
-        super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName(), protocolVersion);
+        super(p, p.getUniqueId(), p.getName(), "N/A", p.getWorld().getName(), protocolVersion, true);
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);
             playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -243,8 +243,8 @@ public class BukkitTabPlayer extends ITabPlayer {
     public boolean isDisguised() {
         try {
             if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsDisguisesEnabled()) return false;
-            return DisguiseAPI.isDisguised(getPlayer());
-        } catch (LinkageError e) {
+            return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, getPlayer());
+        } catch (LinkageError | ReflectiveOperationException e) {
             //java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
             TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
             ((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsDisguisesEnabled(false);
@@ -252,7 +252,6 @@ public class BukkitTabPlayer extends ITabPlayer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Skin getSkin() {
         try {
@@ -288,6 +287,19 @@ public class BukkitTabPlayer extends ITabPlayer {
     @Override
     public int getGamemode() {
         return getPlayer().getGameMode().getValue();
+    }
+
+    @Override
+    public Object getProfilePublicKey() {
+        if (NMSStorage.getInstance().getMinorVersion() < 19) return null;
+        try {
+            Object key = NMSStorage.getInstance().EntityHuman_ProfilePublicKey.get(handle);
+            if (key == null) return null;
+            return NMSStorage.getInstance().ProfilePublicKey_getRecord.invoke(key);
+        } catch (ReflectiveOperationException e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get profile key of " + getName(), e);
+            return null;
+        }
     }
 
     @Override

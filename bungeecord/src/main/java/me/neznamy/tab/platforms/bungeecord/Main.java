@@ -9,7 +9,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -26,12 +26,13 @@ public class Main extends Plugin {
     @Override
     public void onEnable(){
         if (!isVersionSupported()) {
-            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1330 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
+            getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1637 and up to work. Get it at https://ci.md-5.net/job/BungeeCord/"));
             return;
         }
+        BungeePlatform platform = new BungeePlatform();
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
-        TAB.setInstance(new TAB(new BungeePlatform(), ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder(), getLogger()));
-        getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
+        TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder(), getLogger()));
+        getProxy().getPluginManager().registerListener(this, new BungeeEventListener(platform));
         getProxy().getPluginManager().registerCommand(this, new BTABCommand());
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 10535);
@@ -46,7 +47,7 @@ public class Main extends Plugin {
      */
     private boolean isVersionSupported() {
         try {
-            Class.forName("net.md_5.bungee.protocol.packet.ScoreboardObjective$HealthDisplay");
+            Class.forName("net.md_5.bungee.protocol.Property");
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -72,7 +73,7 @@ public class Main extends Plugin {
 
         @Override
         public void execute(CommandSender sender, String[] args) {
-            if (TAB.getInstance().isDisabled()) {
+            if (TAB.getInstance().isPluginDisabled()) {
                 for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                     sender.sendMessage(new TextComponent(EnumChatFormat.color(message)));
                 }

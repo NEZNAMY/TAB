@@ -3,12 +3,13 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.75.Final"
+netty = "4.1.78.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
 gson = "2.9.0"
 slf4j = "1.7.36"
+minimessage = "4.11.0"
 
 # General
 luckperms = "5.4"
@@ -19,20 +20,19 @@ event = "3.0.0"
 
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
-bungeecord = "1.18-R0.1-SNAPSHOT"
+bungeecord = "1.19-R0.1-SNAPSHOT"
 krypton = "0.59.2"
-velocity = "3.1.0"
+velocity = "3.1.2-SNAPSHOT"
 
 # Platform extras
-placeholderapi = "2.10.9"
+placeholderapi = "2.11.1"
 vault = "1.7"
-via = "4.0.0"
-authlib = "1.11"
-bstats = "2.2.1"
-libsDisguises = "10.0.26"
-essentials = "2.19.2"
+via = "4.3.1"
+authlib = "1.5.25"
+bstats = "3.0.0"
+essentials = "2.19.4"
 premiumVanish = "2.0.3"
-redisBungee = "0.6.5-SNAPSHOT"
+redisBungee = "0.7.2"
 
 [libraries]
 
@@ -43,6 +43,9 @@ snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "snakeyaml" 
 yamlAssist = { group = "me.neznamy", name = "yamlassist", version.ref = "yamlAssist" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
+adventureMiniMessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "minimessage" }
+adventureApi = { group = "net.kyori", name = "adventure-api", version.ref = "minimessage" }
+adventureLegacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "minimessage" }
 
 # General
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
@@ -64,10 +67,9 @@ placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "pl
 vault = { group = "com.github.MilkBowl", name = "VaultAPI", version.ref = "vault" }
 via = { group = "com.viaversion", name = "viaversion-api", version.ref = "via" }
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
-libsDisguises = { group = "LibsDisguises", name = "LibsDisguises", version.ref = "libsDisguises" }
 essentials = { group = "net.essentialsx", name = "EssentialsX", version.ref = "essentials" }
 premiumVanish = { group = "com.github.MyzelYam", name = "PremiumVanishAPI", version.ref = "premiumVanish" }
-redisBungee = { group = "com.imaginarycode.minecraft", name = "RedisBungee", version.ref = "redisBungee" }
+redisBungee = { group = "com.github.limework.redisbungee", name = "RedisBungee-Bungee", version.ref = "redisBungee" }
 
 # Metrics
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }

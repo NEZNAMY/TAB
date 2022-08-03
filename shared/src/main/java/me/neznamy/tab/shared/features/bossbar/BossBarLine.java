@@ -9,7 +9,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -299,7 +299,8 @@ public class BossBarLine implements BossBar {
         return players.contains(player);
     }
 
-    public boolean isAnnouncementOnly() {
+    @Override
+    public boolean isAnnouncementBar() {
         return announcementOnly;
     }
 }

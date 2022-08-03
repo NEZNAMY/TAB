@@ -1,13 +1,12 @@
 package me.neznamy.tab.platforms.velocity;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Consumer;
-
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
-
-import io.netty.channel.Channel;
+import com.velocitypowered.api.proxy.player.TabListEntry;
+import com.velocitypowered.api.util.GameProfile;
+import com.velocitypowered.api.util.GameProfile.Property;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
@@ -20,6 +19,9 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * TabPlayer implementation for Velocity
@@ -36,9 +38,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
     }};
 
-    /** Player's tablist UUID */
-    private final UUID tabListId;
-    
     /** BossBars currently displayed to this player */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
@@ -50,23 +49,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     public VelocityTabPlayer(Player p) {
         super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
-                p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol());
-        UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes(StandardCharsets.UTF_8));
-        tabListId = TAB.getInstance().getConfiguration().getConfig().getBoolean("use-online-uuid-in-tablist", true) ? getUniqueId() : offlineId;
-        try {
-            Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
-            channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getUsername(), e);
-        }
+                p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol(),
+                TabAPI.getInstance().getConfig().getBoolean("use-online-uuid-in-tablist", true));
     }
 
     @Override
     public boolean hasPermission0(String permission) {
-        long time = System.nanoTime();
-        boolean value = getPlayer().hasPermission(permission);
-        TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
-        return value;
+        return getPlayer().hasPermission(permission);
     }
 
     @Override
@@ -76,14 +65,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPacket(Object packet) {
-        long time = System.nanoTime();
         if (packet == null || !getPlayer().isActive()) return;
-        if (packetMethods.containsKey(packet.getClass())) {
-            packetMethods.get(packet.getClass()).accept((TabPacket) packet);
-        } else if (channel != null) {
-            channel.writeAndFlush(packet, channel.voidPromise());
-        }
-        TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
+        packetMethods.get(packet.getClass()).accept((TabPacket) packet);
     }
 
     /**
@@ -123,8 +106,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         case ADD:
             if (bossBars.containsKey(packet.getId())) return;
             bar = BossBar.bossBar(Main.getInstance().convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
-                    packet.getPct(), 
-                    Color.valueOf(packet.getColor().toString()), 
+                    packet.getPct(),
+                    Color.valueOf(packet.getColor().toString()),
                     Overlay.valueOf(packet.getOverlay().toString()));
             if (packet.isCreateWorldFog()) bar.addFlag(Flag.CREATE_WORLD_FOG);
             if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
@@ -159,6 +142,87 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     /**
+     * Handles PacketPlayOutScoreboardDisplayObjective request by forwarding the task
+     * to Bridge plugin.
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
+    private void handle(PacketPlayOutScoreboardDisplayObjective packet) {
+        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this,
+                "PacketPlayOutScoreboardDisplayObjective", packet.getSlot(), packet.getObjectiveName());
+    }
+
+    /**
+     * Handles PacketPlayOutScoreboardObjective request by forwarding the task
+     * to Bridge plugin.
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
+    private void handle(PacketPlayOutScoreboardObjective packet) {
+        List<Object> args = new ArrayList<>();
+        args.add("PacketPlayOutScoreboardObjective");
+        args.add(packet.getObjectiveName());
+        args.add(packet.getAction());
+        if (packet.getAction() == 0 || packet.getAction() == 2) {
+            args.add(getVersion().getMinorVersion() < 13 ? Main.getInstance().getPlatform().getPacketBuilder()
+                    .cutTo(packet.getDisplayName(), 32) : packet.getDisplayName());
+            args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
+            args.add(packet.getRenderType().ordinal());
+        }
+        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this, args.toArray());
+    }
+
+    /**
+     * Handles PacketPlayOutScoreboardScore request by forwarding the task
+     * to Bridge plugin.
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
+    private void handle(PacketPlayOutScoreboardScore packet) {
+        List<Object> args = new ArrayList<>();
+        args.add("PacketPlayOutScoreboardScore");
+        args.add(packet.getObjectiveName());
+        args.add(packet.getAction().ordinal());
+        args.add(packet.getPlayer());
+        args.add(packet.getScore());
+        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this, args.toArray());
+    }
+
+    /**
+     * Handles PacketPlayOutScoreboardTeam request by forwarding the task
+     * to Bridge plugin.
+     *
+     * @param   packet
+     *          Packet request to handle
+     */
+    private void handle(PacketPlayOutScoreboardTeam packet) {
+        List<Object> args = new ArrayList<>();
+        args.add("PacketPlayOutScoreboardTeam");
+        args.add(packet.getName());
+        args.add(packet.getAction());
+        args.add(packet.getPlayers().size());
+        args.addAll(packet.getPlayers());
+        if (packet.getAction() == 0 || packet.getAction() == 2) {
+            String prefix = getVersion().getMinorVersion() < 13 ? Main.getInstance().getPlatform().getPacketBuilder()
+                    .cutTo(packet.getPlayerPrefix(), 16) : packet.getPlayerPrefix();
+            String suffix = getVersion().getMinorVersion() < 13 ? Main.getInstance().getPlatform().getPacketBuilder()
+                    .cutTo(packet.getPlayerSuffix(), 16) : packet.getPlayerSuffix();
+            args.add(prefix);
+            args.add(IChatBaseComponent.optimizedComponent(prefix).toString(getVersion()));
+            args.add(suffix);
+            args.add(IChatBaseComponent.optimizedComponent(suffix).toString(getVersion()));
+            args.add(packet.getOptions());
+            args.add(packet.getNameTagVisibility());
+            args.add(packet.getCollisionRule());
+            args.add((packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal());
+        }
+        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this, args.toArray());
+    }
+
+    /**
      * Processes bossbar flag by adding or removing it based on provided value.
      *
      * @param   bar
@@ -185,11 +249,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public UUID getTablistUUID() {
-        return tabListId;
-    }
-
-    @Override
     public boolean isOnline() {
         return getPlayer().isActive();
     }
@@ -200,13 +259,23 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
+    public Object getProfilePublicKey() {
+        try {
+            return getPlayer().getIdentifiedKey();
+        } catch (NoSuchMethodError e) {
+            //3.1.1 or lower
+            return null;
+        }
+    }
+
+    @Override
     public void sendPluginMessage(byte[] message) {
         Preconditions.checkNotNull(message, "message");
         try {
             Optional<ServerConnection> server = getPlayer().getCurrentServer();
             if (server.isPresent()) {
                 server.get().sendPluginMessage(Main.getInstance().getMinecraftChannelIdentifier(), message);
-                TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");
+                TAB.getInstance().getThreadManager().packetSent("Plugin Message (" + new String(message) + ")");
             }
         } catch (IllegalStateException e) {
             //java.lang.IllegalStateException: Not connected to server!

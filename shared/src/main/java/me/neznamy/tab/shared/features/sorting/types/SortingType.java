@@ -50,7 +50,7 @@ public abstract class SortingType {
     protected LinkedHashMap<String, String> convertSortingElements(String[] elements) {
         LinkedHashMap<String, String> sortedGroups = new LinkedHashMap<>();
         int index = 1;
-        int charCount = String.valueOf(elements.length).length(); //1 char for <10 values, 2 chars for <100 etc
+        int charCount = String.valueOf(elements.length).length()+1; //1 char for <10 values, 2 chars for <100 etc
         for (String element : elements){
             StringBuilder sb = new StringBuilder();
             sb.append(index);
@@ -58,6 +58,8 @@ public abstract class SortingType {
                 sb.insert(0, "0");
             }
             for (String element0 : element.split("\\|")) {
+                while (element0.startsWith(" ")) element0 = element0.substring(1);
+                while (element0.endsWith(" ")) element0 = element0.substring(0, element0.length()-1);
                 sortedGroups.put(EnumChatFormat.color(element0.toLowerCase()), sb.toString());
             }
             index++;

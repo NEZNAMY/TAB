@@ -11,7 +11,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * The core command handler
@@ -39,6 +39,7 @@ public class TabCommand extends SubCommand {
         registerSubCommand(new SetCollisionCommand());
         registerSubCommand(new ScoreboardCommand());
         registerSubCommand(new WidthCommand());
+        //registerSubCommand(new WidthCheckCommand());
         List<String> properties = Lists.newArrayList(TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
         properties.addAll(((DebugCommand) getSubcommands().get("debug")).getExtraLines());
         SubCommand.setAllProperties(properties.toArray(new String[0]));

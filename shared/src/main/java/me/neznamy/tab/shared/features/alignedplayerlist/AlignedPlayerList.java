@@ -3,15 +3,13 @@ package me.neznamy.tab.shared.features.alignedplayerlist;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -42,9 +40,16 @@ public class AlignedPlayerList extends PlayerList {
             widths[characterId++] = (byte) Float.parseFloat(line);
         }
         Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
+        List<Integer> redundant = new ArrayList<>();
         for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            widths[entry.getKey()] = entry.getValue().byteValue();
+            if (widths[entry.getKey()] == entry.getValue().byteValue()) {
+                redundant.add(entry.getKey());
+            } else {
+                widths[entry.getKey()] = entry.getValue().byteValue();
+            }
         }
+        redundant.forEach(widthOverrides::remove);
+        if (!redundant.isEmpty()) TAB.getInstance().getConfig().save();
         return widths;
     }
 
@@ -114,8 +119,9 @@ public class AlignedPlayerList extends PlayerList {
 
     @Override
     public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
-        if (!playerViews.containsKey(viewer)) return null;
-        return playerViews.get(viewer).formatName(p);
+        PlayerView view = playerViews.get(viewer);
+        if (view == null) return null;
+        return view.formatName(p);
     }
 
     @Override

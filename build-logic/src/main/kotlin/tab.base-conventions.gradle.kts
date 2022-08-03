@@ -13,6 +13,8 @@ tasks {
         ))
     }
     javadoc {
+        // This saves a decent bit of processing power on slow machines
+        enabled = false
         options.encoding = Charsets.UTF_8.name()
         (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
     }

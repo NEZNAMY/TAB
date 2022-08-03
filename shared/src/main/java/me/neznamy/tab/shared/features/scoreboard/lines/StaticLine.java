@@ -8,8 +8,8 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 /**
  * A line with static text (no placeholders)
  * Limitations:
- *   1.5.x - 1.7.x: 48 characters (42 if using same number on all lines)
- *   1.8.x - 1.12.x: 72 characters (66 if using same number on all lines)
+ *   1.5.x - 1.7.x: 42 characters
+ *   1.8.x - 1.12.x: 66 characters
  *   1.13+: unlimited
  */
 public class StaticLine extends ScoreboardLine {
@@ -32,15 +32,14 @@ public class StaticLine extends ScoreboardLine {
 
     private void setValues(String text) {
         super.text = text;
-        String forcedNameStart = parent.getManager().isUsingNumbers() ? "" : getPlayerName(lineNumber);
         String legacy = RGBUtils.getInstance().convertRGBtoLegacy(this.text);
         //1.8+
-        String[] v18 = splitText(forcedNameStart, legacy, 40);
+        String[] v18 = splitText(getPlayerName(lineNumber), legacy, 40);
         prefix = v18[0];
         name = v18[1];
         suffix = v18[2];
         //1.7-
-        String[] v17 = splitText(forcedNameStart, legacy, 16);
+        String[] v17 = splitText(getPlayerName(lineNumber), legacy, 16);
         prefix17 = v17[0];
         name17 = v17[1];
         suffix17 = v17[2];

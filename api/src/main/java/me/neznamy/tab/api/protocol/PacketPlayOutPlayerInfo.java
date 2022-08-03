@@ -97,6 +97,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
         /** Player's skin, null for empty skin */
         private Skin skin;
 
+        /** Player's chat signing key */
+        private Object profilePublicKey;
+
         /**
          * Constructs new instance with given parameters. Suitable for 
          * {@link EnumPlayerInfoAction}.ADD_PLAYER action
@@ -113,8 +116,10 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          *          Player's GameMode
          * @param   displayName
          *          Player's display name
+         * @param   profilePublicKey
+         *          Player's chat signing key
          */
-        public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName) {
+        public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName, Object profilePublicKey) {
             Preconditions.checkNotNull(uniqueId, "uuid");
             this.name = name;
             this.uniqueId = uniqueId;
@@ -122,6 +127,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
             this.latency = latency;
             this.gameMode = gameMode;
             this.displayName = displayName;
+            this.profilePublicKey = profilePublicKey;
         }
 
         /**
@@ -182,8 +188,8 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         @Override
         public String toString() {
-            return String.format("PlayerInfoData{latency=%s,gameMode=%s,displayName=%s,name=%s,uniqueId=%s,skin=%s}",
-                    latency, gameMode, displayName, name, uniqueId, skin);
+            return String.format("PlayerInfoData{latency=%s,gameMode=%s,displayName=%s,name=%s,uniqueId=%s,skin=%s,profilePublicKey=%s}",
+                    latency, gameMode, displayName, name, uniqueId, skin, profilePublicKey);
         }
 
         /**
@@ -298,6 +304,25 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          */
         public void setSkin(Skin skin) {
             this.skin = skin;
+        }
+
+        /**
+         * Returns {@link #profilePublicKey}
+         *
+         * @return  profilePublicKey
+         */
+        public Object getProfilePublicKey() {
+            return profilePublicKey;
+        }
+
+        /**
+         * Sets {@link #profilePublicKey} to specified value
+         *
+         * @param   profilePublicKey
+         *          profilePublicKey to use
+         */
+        public void setProfilePublicKey(Object profilePublicKey) {
+            this.profilePublicKey = profilePublicKey;
         }
     }
 

@@ -1,152 +1,137 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-
-import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
-
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
-import me.neznamy.tab.shared.TAB;
+import org.bukkit.Bukkit;
+
+import java.lang.reflect.*;
+import java.util.*;
 
 @SuppressWarnings("rawtypes")
-public final class NMSStorage {
+public abstract class NMSStorage {
 
     //instance of this class
     private static NMSStorage instance;
 
     //server package, such as "v1_16_R3"
-    private final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+    protected final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
     //server minor version such as "16"
-    private final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+    protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
     //another field due to fabric which uses 1.16 package on 1.17 server
     private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
 
     //base
-    private final Class<?> Packet = getNMSClass("net.minecraft.network.protocol.Packet", "Packet");
-    public final Class<?> EnumChatFormat = getNMSClass("net.minecraft.EnumChatFormat", "EnumChatFormat");
-    public final Class<?> EntityPlayer = getNMSClass("net.minecraft.server.level.EntityPlayer", "EntityPlayer");
-    private final Class<?> Entity = getNMSClass("net.minecraft.world.entity.Entity", "Entity");
-    private final Class<?> EntityLiving = getNMSClass("net.minecraft.world.entity.EntityLiving", "EntityLiving");
-    private final Class<?> PlayerConnection = getNMSClass("net.minecraft.server.network.PlayerConnection", "PlayerConnection");
-    public final Field PING = getField(EntityPlayer, "ping", "latency", "field_71138_i", "field_13967", "e");
-    public final Field PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
+    protected Class<?> Packet;
+    protected Class<?> NetworkManager;
+    protected Class<?> EntityArmorStand;
+    protected Class<?> World;
+    public Class<?> EnumChatFormat;
+    public Class<?> EntityPlayer;
+    protected Class<?> EntityHuman;
+    protected Class<?> Entity;
+    protected Class<?> EntityLiving;
+    protected Class<?> PlayerConnection;
+    public Field PING;
+    public Field PLAYER_CONNECTION;
     public Field NETWORK_MANAGER;
     public Field CHANNEL;
-    public final Method getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-    public final Method sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
+    public Field EntityHuman_ProfilePublicKey;
+    public Method getHandle;
+    public Method sendPacket;
     public Method getProfile;
-    public final Enum[] EnumChatFormat_values = getEnumValues(EnumChatFormat);
+    public Enum[] EnumChatFormat_values;
 
     //chat
-    public Class<?> EnumClickAction;
-    private Class<?> IChatBaseComponent;
-    public Constructor<?> newChatComponentText;
-    public Constructor<?> newChatClickable;
-    public Constructor<?> newChatModifier;
-    public Constructor<?> newChatHoverable;
-    public Field ChatBaseComponent_modifier;
-    public Field ChatModifier_bold;
-    public Field ChatModifier_italic;
-    public Field ChatModifier_underlined;
-    public Field ChatModifier_strikethrough;
-    public Field ChatModifier_obfuscated;
-    public Field ChatModifier_clickEvent;
-    public Field ChatModifier_hoverEvent;
-    public Field ChatModifier_color;
-    public Method ChatComponentText_addSibling;
-    public Method EnumHoverAction_a;
-    public Method ChatHexColor_ofInt;
-    public Method ChatHexColor_ofString;
-    public Method EnumHoverAction_fromJson;
-    public Method EnumHoverAction_fromLegacyComponent;
+    protected Class<?> IChatBaseComponent;
+    protected Class<?> ChatSerializer;
+    public Method ChatSerializer_DESERIALIZE;
 
     //PacketPlayOutChat
+    protected Class<?> PacketPlayOutChat;
     public Class<?> ChatMessageType;
     public Constructor<?> newPacketPlayOutChat;
     public Enum[] ChatMessageType_values;
 
     //DataWatcher
-    private final Class<?> DataWatcher = getNMSClass("net.minecraft.network.syncher.DataWatcher", "DataWatcher");
-    private final Class<?> DataWatcherItem = getNMSClass("net.minecraft.network.syncher.DataWatcher$Item", "DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
+    protected Class<?> DataWatcher;
+    protected Class<?> DataWatcherItem;
+    protected Class<?> DataWatcherObject;
+    protected Class<?> DataWatcherSerializer;
     public Class<?> DataWatcherRegistry;
-    public final Constructor<?> newDataWatcher = DataWatcher.getConstructors()[0];
+    public Constructor<?> newDataWatcher;
     public Constructor<?> newDataWatcherObject;
     public Field DataWatcherItem_TYPE;
-    public final Field DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
+    public Field DataWatcherItem_VALUE;
     public Field DataWatcherObject_SLOT;
     public Field DataWatcherObject_SERIALIZER;
     public Method DataWatcher_REGISTER;
-    private DataWatcherRegistry registry;
+    private final DataWatcherRegistry registry;
 
     //PacketPlayOutSpawnEntityLiving
-    public final Class<?> PacketPlayOutSpawnEntityLiving = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving", "PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
+    public Class<?> PacketPlayOutSpawnEntityLiving;
     public Constructor<?> newPacketPlayOutSpawnEntityLiving;
-    public final Field PacketPlayOutSpawnEntityLiving_ENTITYID = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(0);
-    public final Field PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(1);
-    public final Field PacketPlayOutSpawnEntityLiving_YAW = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
-    public final Field PacketPlayOutSpawnEntityLiving_PITCH = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
+    public Field PacketPlayOutSpawnEntityLiving_ENTITYID;
+    public Field PacketPlayOutSpawnEntityLiving_ENTITYTYPE;
+    public Field PacketPlayOutSpawnEntityLiving_YAW;
+    public Field PacketPlayOutSpawnEntityLiving_PITCH;
     public Field PacketPlayOutSpawnEntityLiving_UUID;
     public Field PacketPlayOutSpawnEntityLiving_X;
     public Field PacketPlayOutSpawnEntityLiving_Y;
     public Field PacketPlayOutSpawnEntityLiving_Z;
     public Field PacketPlayOutSpawnEntityLiving_DATAWATCHER;
+    public Method Registry_a;
+    public Object IRegistry_X;
 
     //PacketPlayOutEntityTeleport
-    public final Class<?> PacketPlayOutEntityTeleport = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport", "PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
+    public Class<?> PacketPlayOutEntityTeleport;
     public Constructor<?> newPacketPlayOutEntityTeleport;
-    public final Field PacketPlayOutEntityTeleport_ENTITYID = getFields(PacketPlayOutEntityTeleport, int.class).get(0);
+    public Field PacketPlayOutEntityTeleport_ENTITYID;
     public Field PacketPlayOutEntityTeleport_X;
     public Field PacketPlayOutEntityTeleport_Y;
     public Field PacketPlayOutEntityTeleport_Z;
-    public final Field PacketPlayOutEntityTeleport_YAW = getFields(PacketPlayOutEntityTeleport, byte.class).get(0);
-    public final Field PacketPlayOutEntityTeleport_PITCH = getFields(PacketPlayOutEntityTeleport, byte.class).get(1);
+    public Field PacketPlayOutEntityTeleport_YAW;
+    public Field PacketPlayOutEntityTeleport_PITCH;
 
     //PacketPlayOutPlayerListHeaderFooter
+    protected Class<?> PacketPlayOutPlayerListHeaderFooter;
     public Constructor<?> newPacketPlayOutPlayerListHeaderFooter;
     public Field PacketPlayOutPlayerListHeaderFooter_HEADER;
     public Field PacketPlayOutPlayerListHeaderFooter_FOOTER;
 
     //other entity packets
-    public final Class<?> PacketPlayInUseEntity = getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity", "PacketPlayInUseEntity", "Packet7UseEntity");
+    public Class<?> PacketPlayInUseEntity;
     public Class<?> PacketPlayInUseEntity$d;
+    protected Class<?> EnumEntityUseAction;
     public Field PacketPlayInUseEntity_ENTITY;
     public Field PacketPlayInUseEntity_ACTION;
 
-    public final Class<?> PacketPlayOutEntity = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntity", "PacketPlayOutEntity", "Packet30Entity");
-    public final Field PacketPlayOutEntity_ENTITYID = getFields(PacketPlayOutEntity, int.class).get(0);
+    public Class<?> PacketPlayOutEntity;
+    public Field PacketPlayOutEntity_ENTITYID;
 
-    public final Class<?> PacketPlayOutEntityDestroy = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy", "PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
+    public Class<?> PacketPlayOutEntityDestroy;
     public Constructor<?> newPacketPlayOutEntityDestroy;
-    public final Field PacketPlayOutEntityDestroy_ENTITIES = setAccessible(PacketPlayOutEntityDestroy.getDeclaredFields()[0]);
+    public Field PacketPlayOutEntityDestroy_ENTITIES;
 
-    public final Class<?> PacketPlayOutEntityLook = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook");
+    public Class<?> PacketPlayOutEntityLook;
 
-    public final Class<?> PacketPlayOutEntityMetadata = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata", "PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
-    public final Constructor<?> newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, DataWatcher, boolean.class);
-    public final Field PacketPlayOutEntityMetadata_LIST = getFields(PacketPlayOutEntityMetadata, List.class).get(0);
+    public Class<?> PacketPlayOutEntityMetadata;
+    public Constructor<?> newPacketPlayOutEntityMetadata;
+    public Field PacketPlayOutEntityMetadata_LIST;
 
-    public final Class<?> PacketPlayOutNamedEntitySpawn = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn", "PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
-    public final Field PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
+    public Class<?> PacketPlayOutNamedEntitySpawn;
+    public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
     //PacketPlayOutPlayerInfo
     public Class<?> PacketPlayOutPlayerInfo;
+    protected Class<?> EnumPlayerInfoAction;
+    protected Class<?> PlayerInfoData;
+    protected Class<?> EnumGamemode;
+    protected Class<?> ProfilePublicKey;
+    protected Class<?> ProfilePublicKey$a;
     public Constructor<?> newPacketPlayOutPlayerInfo;
     public Constructor<?> newPlayerInfoData;
     public Field PacketPlayOutPlayerInfo_ACTION;
@@ -155,39 +140,46 @@ public final class NMSStorage {
     public Method PlayerInfoData_getLatency;
     public Method PlayerInfoData_getGamemode;
     public Method PlayerInfoData_getDisplayName;
+    public Method PlayerInfoData_getProfilePublicKeyRecord;
+    public Method ProfilePublicKey_getRecord;
     public Enum[] EnumPlayerInfoAction_values;
     public Enum[] EnumGamemode_values;
 
     //scoreboard objectives
-    public final Class<?> PacketPlayOutScoreboardDisplayObjective = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective", "PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
-    public final Class<?> PacketPlayOutScoreboardObjective = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective", "PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
-    private final Class<?> Scoreboard = getNMSClass("net.minecraft.world.scores.Scoreboard", "Scoreboard");
-    private final Class<?> PacketPlayOutScoreboardScore = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore", "PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
-    private final Class<?> ScoreboardObjective = getNMSClass("net.minecraft.world.scores.ScoreboardObjective", "ScoreboardObjective");
-    private final Class<?> ScoreboardScore = getNMSClass("net.minecraft.world.scores.ScoreboardScore", "ScoreboardScore");
-    private final Class<?> IScoreboardCriteria = getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria", "IScoreboardCriteria");
+    public Class<?> PacketPlayOutScoreboardDisplayObjective;
+    public Class<?> PacketPlayOutScoreboardObjective;
+    protected Class<?> Scoreboard;
+    protected Class<?> PacketPlayOutScoreboardScore;
+    protected Class<?> ScoreboardObjective;
+    protected Class<?> ScoreboardScore;
+    protected Class<?> IScoreboardCriteria;
     public Class<?> EnumScoreboardHealthDisplay;
-    public final Constructor<?> newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
-    private final Constructor<?> newScoreboard = Scoreboard.getConstructor();
-    public final Constructor<?> newScoreboardScore = ScoreboardScore.getConstructor(Scoreboard, ScoreboardObjective, String.class);
-    public final Constructor<?> newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor(int.class, ScoreboardObjective);
+    protected Class<?> EnumScoreboardAction;
+    public Constructor<?> newScoreboardObjective;
+    protected Constructor<?> newScoreboard;
+    public Constructor<?> newScoreboardScore;
+    public Constructor<?> newPacketPlayOutScoreboardDisplayObjective;
     public Constructor<?> newPacketPlayOutScoreboardObjective;
     public Constructor<?> newPacketPlayOutScoreboardScore_1_13;
     public Constructor<?> newPacketPlayOutScoreboardScore_String;
     public Constructor<?> newPacketPlayOutScoreboardScore;
-    public final Field PacketPlayOutScoreboardDisplayObjective_POSITION = getFields(PacketPlayOutScoreboardDisplayObjective, int.class).get(0);
-    public final Field PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = getFields(PacketPlayOutScoreboardDisplayObjective, String.class).get(0);
-    public final Field PacketPlayOutScoreboardObjective_OBJECTIVENAME = getFields(PacketPlayOutScoreboardObjective, String.class).get(0);
+    public Field PacketPlayOutScoreboardDisplayObjective_POSITION;
+    public Field PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME;
+    public Field PacketPlayOutScoreboardObjective_OBJECTIVENAME;
     public Field PacketPlayOutScoreboardObjective_METHOD;
-    public final Field IScoreboardCriteria_self = getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
+    public Field IScoreboardCriteria_self;
     public Field PacketPlayOutScoreboardObjective_RENDERTYPE;
     public Field PacketPlayOutScoreboardObjective_DISPLAYNAME;
-    public final Method ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "func_96647_c", "method_1128", "b"}, int.class);
+    public Method ScoreboardScore_setScore;
     public Enum[] EnumScoreboardHealthDisplay_values;
     public Enum[] EnumScoreboardAction_values;
 
     //PacketPlayOutScoreboardTeam
     public Class<?> PacketPlayOutScoreboardTeam;
+    protected Class<?> ScoreboardTeam;
+    protected Class<?> EnumNameTagVisibility;
+    protected Class<?> EnumTeamPush;
+    protected Class<?> PacketPlayOutScoreboardTeam_PlayerAction;
     public Constructor<?> newScoreboardTeam;
     public Constructor<?> newPacketPlayOutScoreboardTeam;
     public Field PacketPlayOutScoreboardTeam_NAME;
@@ -209,42 +201,37 @@ public final class NMSStorage {
     public Enum[] PacketPlayOutScoreboardTeam_PlayerAction_values;
 
     //other
-    public final Object emptyScoreboard = newScoreboard.newInstance();
+    public Object emptyScoreboard;
     public Object dummyEntity;
 
-    /**
-     * Creates new instance, initializes required NMS classes and fields
-     *
-     * @throws  ReflectiveOperationException
-     *          If any class, field or method fails to load
-     */
     public NMSStorage() throws ReflectiveOperationException {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
-        Class<?> NetworkManager = getNMSClass("net.minecraft.network.NetworkManager", "NetworkManager");
+        loadClasses();
         if (minorVersion >= 7) {
             NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
         }
         if (minorVersion >= 8) {
             CHANNEL = getFields(NetworkManager, Channel.class).get(0);
-            getProfile = getMethods(getNMSClass("net.minecraft.world.entity.player.EntityHuman", "EntityHuman"), GameProfile.class).get(0);
-            Constructor<?> newEntityArmorStand = getNMSClass("net.minecraft.world.entity.decoration.EntityArmorStand", "EntityArmorStand")
-                    .getConstructor(getNMSClass("net.minecraft.world.level.World", "World"), double.class, double.class, double.class);
+            getProfile = getMethods(EntityHuman, GameProfile.class).get(0);
+            Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
-        initializeChatComponents();
-        initializeChatPacket();
-        initializeDataWatcher();
-        initializeEntityPackets();
-        initializeHeaderFooterPacket();
-        initializePlayerInfoPacket();
-        initializeScoreboardPackets();
-        try {
-            initializeTeamPackets();
-        } catch (ClassNotFoundException e) {
-            Bukkit.getConsoleSender().sendMessage(me.neznamy.tab.api.chat.EnumChatFormat.color("&c[TAB] Failed to load PacketPlayOutScoreboardTeam"));
-            //fabric with missing team packet
-        }
+        PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
+        getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
+        sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
+        EnumChatFormat_values = getEnumValues(EnumChatFormat);
+        registry = new DataWatcherRegistry(this);
+        dataWatcher();
+        entityTeleport();
+        spawnEntityLiving();
+        chat();
+        playerListHeaderFooter();
+        playerInfo();
+        otherEntity();
+        scoreboard();
+        scoreboardTeam();
+        loadNamedFieldsAndMethods();
     }
 
     /**
@@ -266,53 +253,18 @@ public final class NMSStorage {
         return instance;
     }
 
-    private void initializeChatComponents() throws ReflectiveOperationException {
-        if (minorVersion < 7) return;
-        Class<?> ChatBaseComponent = getNMSClass("net.minecraft.network.chat.ChatBaseComponent", "ChatBaseComponent");
-        Class<?> ChatClickable = getNMSClass("net.minecraft.network.chat.ChatClickable", "ChatClickable");
-        Class<?> ChatComponentText = getNMSClass("net.minecraft.network.chat.ChatComponentText", "ChatComponentText");
-        Class<?> ChatHoverable = getNMSClass("net.minecraft.network.chat.ChatHoverable", "ChatHoverable");
-        Class<?> ChatModifier = getNMSClass("net.minecraft.network.chat.ChatModifier", "ChatModifier");
-        EnumClickAction = getNMSClass("net.minecraft.network.chat.ChatClickable$EnumClickAction", "ChatClickable$EnumClickAction", "EnumClickAction");
-        Class<?> EnumHoverAction = getNMSClass("net.minecraft.network.chat.ChatHoverable$EnumHoverAction", "ChatHoverable$EnumHoverAction", "EnumHoverAction");
-        IChatBaseComponent = getNMSClass("net.minecraft.network.chat.IChatBaseComponent", "IChatBaseComponent");
-        newChatComponentText = ChatComponentText.getConstructor(String.class);
-        newChatClickable = ChatClickable.getConstructor(EnumClickAction, String.class);
-        ChatBaseComponent_modifier = getFields(ChatBaseComponent, ChatModifier).get(0);
-        List<Field> booleans = getFields(ChatModifier, Boolean.class);
-        ChatModifier_bold = booleans.get(0);
-        ChatModifier_italic = booleans.get(1);
-        ChatModifier_underlined = booleans.get(2);
-        ChatModifier_strikethrough = booleans.get(3);
-        ChatModifier_obfuscated = booleans.get(4);
-        ChatModifier_clickEvent = getFields(ChatModifier, ChatClickable).get(0);
-        ChatModifier_hoverEvent = getFields(ChatModifier, ChatHoverable).get(0);
-        ChatComponentText_addSibling = getMethod(ChatComponentText, new String[]{"addSibling", "a", "func_150257_a", "method_10852"}, IChatBaseComponent);
-        EnumHoverAction_a = getMethod(EnumHoverAction, new String[]{"a", "func_150684_a", "method_27670"}, String.class);
-        if (minorVersion >= 16) {
-            Class<?> ChatHexColor = getNMSClass("net.minecraft.network.chat.ChatHexColor", "ChatHexColor");
-            Class<?> MinecraftKey = getNMSClass("net.minecraft.resources.MinecraftKey", "MinecraftKey");
-            newChatModifier = setAccessible(ChatModifier.getDeclaredConstructor(ChatHexColor, Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, ChatClickable, ChatHoverable, String.class, MinecraftKey));
-            newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, Object.class);
-            ChatModifier_color = getFields(ChatModifier, ChatHexColor).get(0);
-            ChatHexColor_ofInt = getMethods(ChatHexColor, ChatHexColor, int.class).get(0);
-            ChatHexColor_ofString = getMethods(ChatHexColor, ChatHexColor, String.class).get(0);
-            EnumHoverAction_fromJson = getMethods(EnumHoverAction, ChatHoverable, JsonElement.class).get(0);
-            EnumHoverAction_fromLegacyComponent = getMethods(EnumHoverAction, ChatHoverable, IChatBaseComponent).get(0);
-        } else {
-            newChatModifier = ChatModifier.getConstructor();
-            newChatHoverable = ChatHoverable.getConstructor(EnumHoverAction, IChatBaseComponent);
-            ChatModifier_color = getFields(ChatModifier, EnumChatFormat).get(0);
-        }
-    }
-
-    private void initializeChatPacket() throws ReflectiveOperationException {
-        Class<?> PacketPlayOutChat = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
-        if (minorVersion >= 12) {
-            ChatMessageType = getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
+    protected void chat() throws ReflectiveOperationException {
+        if (minorVersion >= 12 && minorVersion <= 18) {
             ChatMessageType_values = getEnumValues(ChatMessageType);
         }
-        if (minorVersion >= 16) {
+        if (minorVersion >= 19) {
+            try {
+                newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, boolean.class);
+            } catch (NoSuchMethodException e) {
+                //1.19.0
+                newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, int.class);
+            }
+        } else if (minorVersion >= 16) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType, UUID.class);
         } else if (minorVersion >= 12) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType);
@@ -323,84 +275,8 @@ public final class NMSStorage {
         }
     }
 
-    private void initializeDataWatcher() throws ReflectiveOperationException {
-        if (minorVersion >= 9) {
-            Class<?> DataWatcherObject = getNMSClass("net.minecraft.network.syncher.DataWatcherObject", "DataWatcherObject");
-            DataWatcherRegistry = getNMSClass("net.minecraft.network.syncher.DataWatcherRegistry", "DataWatcherRegistry");
-            Class<?> DataWatcherSerializer = getNMSClass("net.minecraft.network.syncher.DataWatcherSerializer", "DataWatcherSerializer");
-            newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
-            DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);
-            DataWatcherObject_SLOT = getFields(DataWatcherObject, int.class).get(0);
-            DataWatcherObject_SERIALIZER = getFields(DataWatcherObject, DataWatcherSerializer).get(0);
-            DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"register", "method_12784", "a"}, DataWatcherObject, Object.class);
-        } else {
-            DataWatcherItem_TYPE = getFields(DataWatcherItem, int.class).get(1);
-            DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"a", "func_75682_a"}, int.class, Object.class);
-        }
-        registry = new DataWatcherRegistry(this);
-    }
-
-    private void initializeEntityPackets() throws ReflectiveOperationException {
-        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
-            newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
-            newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
-        } else {
-            newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
-            newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
-        }
-        if (minorVersion >= 17) {
-            PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d");
-        }
-        try {
-            newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
-        } catch (NoSuchMethodException e) {
-            //1.17.0
-            newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int.class);
-        }
-        if (minorVersion >= 7) {
-            Class<?> EnumEntityUseAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction", "PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction", "net.minecraft.class_2824$class_5906");
-            PacketPlayInUseEntity_ENTITY = getFields(PacketPlayInUseEntity, int.class).get(0);
-            PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
-        }
-        if (minorVersion >= 9) {
-            PacketPlayOutSpawnEntityLiving_UUID = getFields(PacketPlayOutSpawnEntityLiving, UUID.class).get(0);
-            PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(0);
-            PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(1);
-            PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
-            PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, double.class).get(0);
-            PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, double.class).get(1);
-            PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, double.class).get(2);
-        } else {
-            PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(2);
-            PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(3);
-            PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(4);
-            PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, int.class).get(1);
-            PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, int.class).get(2);
-            PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, int.class).get(3);
-        }
-        if (minorVersion <= 14) {
-            PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0);
-        }
-    }
-
-    private void initializeHeaderFooterPacket() throws ReflectiveOperationException {
+    protected void playerInfo() throws ReflectiveOperationException {
         if (minorVersion < 8) return;
-        Class<?> PacketPlayOutPlayerListHeaderFooter = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter", "PacketPlayOutPlayerListHeaderFooter");
-        PacketPlayOutPlayerListHeaderFooter_HEADER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(0);
-        PacketPlayOutPlayerListHeaderFooter_FOOTER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(1);
-        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
-            newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor(IChatBaseComponent, IChatBaseComponent);
-        } else {
-            newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
-        }
-    }
-
-    private void initializePlayerInfoPacket() throws ReflectiveOperationException {
-        if (minorVersion < 8) return;
-        PacketPlayOutPlayerInfo = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo", "PacketPlayOutPlayerInfo");
-        Class<?> EnumPlayerInfoAction = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction", "net.minecraft.class_2703$class_5893");
-        Class<?> PlayerInfoData = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData", "PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-        Class<?> EnumGamemode = getNMSClass("net.minecraft.world.level.EnumGamemode", "EnumGamemode", "WorldSettings$EnumGamemode");
         newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Array.newInstance(EntityPlayer, 0).getClass());
         newPlayerInfoData = PlayerInfoData.getConstructors()[0];
         PacketPlayOutPlayerInfo_ACTION = getFields(PacketPlayOutPlayerInfo, EnumPlayerInfoAction).get(0);
@@ -411,16 +287,122 @@ public final class NMSStorage {
         PlayerInfoData_getDisplayName = getMethods(PlayerInfoData, IChatBaseComponent).get(0);
         EnumPlayerInfoAction_values = getEnumValues(EnumPlayerInfoAction);
         EnumGamemode_values = getEnumValues(EnumGamemode);
+        if (minorVersion >= 19) {
+            EntityHuman_ProfilePublicKey = getFields(EntityHuman, ProfilePublicKey).get(0);
+            ProfilePublicKey_getRecord = getMethods(ProfilePublicKey, ProfilePublicKey$a).get(0);
+            PlayerInfoData_getProfilePublicKeyRecord = getMethods(PlayerInfoData, ProfilePublicKey$a).get(0);
+        }
     }
 
-    private void initializeScoreboardPackets() throws ReflectiveOperationException {
+    protected void spawnEntityLiving() throws ReflectiveOperationException {
+        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
+            newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
+        } else {
+            newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
+        }
+        PacketPlayOutSpawnEntityLiving_ENTITYID = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(0);
+        PacketPlayOutSpawnEntityLiving_YAW = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
+        PacketPlayOutSpawnEntityLiving_PITCH = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
+        if (minorVersion >= 9) {
+            PacketPlayOutSpawnEntityLiving_UUID = getFields(PacketPlayOutSpawnEntityLiving, UUID.class).get(0);
+            if (minorVersion >= 19) {
+                PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
+                PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(3);
+                PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(4);
+            } else {
+                PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(0);
+                PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(1);
+                PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
+            }
+        } else {
+            PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(2);
+            PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(3);
+            PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(4);
+        }
+        if (minorVersion < 19) {
+            PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(1);
+        }
+        if (minorVersion <= 14) {
+            PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0);
+        }
+    }
+
+    protected void entityTeleport() throws ReflectiveOperationException {
+        PacketPlayOutEntityTeleport_ENTITYID = getFields(PacketPlayOutEntityTeleport, int.class).get(0);
+        PacketPlayOutEntityTeleport_YAW = getFields(PacketPlayOutEntityTeleport, byte.class).get(0);
+        PacketPlayOutEntityTeleport_PITCH = getFields(PacketPlayOutEntityTeleport, byte.class).get(1);
+        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
+            newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
+        } else {
+            newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
+        }
+        if (minorVersion >= 9) {
+            PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, double.class).get(0);
+            PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, double.class).get(1);
+            PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, double.class).get(2);
+        } else {
+            PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, int.class).get(1);
+            PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, int.class).get(2);
+            PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, int.class).get(3);
+        }
+    }
+
+    protected void playerListHeaderFooter() throws ReflectiveOperationException {
+        if (minorVersion < 8) return;
+        PacketPlayOutPlayerListHeaderFooter_HEADER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(0);
+        PacketPlayOutPlayerListHeaderFooter_FOOTER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(1);
+        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
+            newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor(IChatBaseComponent, IChatBaseComponent);
+        } else {
+            newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
+        }
+    }
+
+    protected void otherEntity() throws ReflectiveOperationException {
+        PacketPlayOutEntity_ENTITYID = getFields(PacketPlayOutEntity, int.class).get(0);
+        PacketPlayOutEntityDestroy_ENTITIES = setAccessible(PacketPlayOutEntityDestroy.getDeclaredFields()[0]);
+        newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, DataWatcher, boolean.class);
+        PacketPlayOutEntityMetadata_LIST = getFields(PacketPlayOutEntityMetadata, List.class).get(0);
+        PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
+        if (minorVersion >= 7) {
+            PacketPlayInUseEntity_ENTITY = getFields(PacketPlayInUseEntity, int.class).get(0);
+            PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
+        }
+        try {
+            newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
+        } catch (NoSuchMethodException e) {
+            //1.17.0
+            newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int.class);
+        }
+    }
+
+    protected void dataWatcher() throws ReflectiveOperationException {
+        newDataWatcher = DataWatcher.getConstructors()[0];
+        DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
+        if (minorVersion >= 9) {
+            newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
+            DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);
+            DataWatcherObject_SLOT = getFields(DataWatcherObject, int.class).get(0);
+            DataWatcherObject_SERIALIZER = getFields(DataWatcherObject, DataWatcherSerializer).get(0);
+        } else {
+            DataWatcherItem_TYPE = getFields(DataWatcherItem, int.class).get(1);
+        }
+    }
+
+    protected void scoreboard() throws ReflectiveOperationException {
+        newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
+        newScoreboard = Scoreboard.getConstructor();
+        emptyScoreboard = newScoreboard.newInstance();
+        newScoreboardScore = ScoreboardScore.getConstructor(Scoreboard, ScoreboardObjective, String.class);
+        newPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective.getConstructor(int.class, ScoreboardObjective);
+        PacketPlayOutScoreboardDisplayObjective_POSITION = getFields(PacketPlayOutScoreboardDisplayObjective, int.class).get(0);
+        PacketPlayOutScoreboardDisplayObjective_OBJECTIVENAME = getFields(PacketPlayOutScoreboardDisplayObjective, String.class).get(0);
+        PacketPlayOutScoreboardObjective_OBJECTIVENAME = getFields(PacketPlayOutScoreboardObjective, String.class).get(0);
+        IScoreboardCriteria_self = getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
         List<Field> list = getFields(PacketPlayOutScoreboardObjective, int.class);
         PacketPlayOutScoreboardObjective_METHOD = list.get(list.size()-1);
-        Class<?> EnumScoreboardAction = null;
         if (minorVersion >= 8) {
-            EnumScoreboardHealthDisplay = getNMSClass("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay", "IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
             EnumScoreboardHealthDisplay_values = getEnumValues(EnumScoreboardHealthDisplay);
-            EnumScoreboardAction = getNMSClass("net.minecraft.server.ScoreboardServer$Action", "ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
             EnumScoreboardAction_values = getEnumValues(EnumScoreboardAction);
             PacketPlayOutScoreboardObjective_RENDERTYPE = getFields(PacketPlayOutScoreboardObjective, EnumScoreboardHealthDisplay).get(0);
         }
@@ -440,36 +422,23 @@ public final class NMSStorage {
         }
     }
 
-    private void initializeTeamPackets() throws ReflectiveOperationException {
-        PacketPlayOutScoreboardTeam = getNMSClass("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam", "PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
-        Class<?> ScoreboardTeam = getNMSClass("net.minecraft.world.scores.ScoreboardTeam", "ScoreboardTeam");
+    protected void scoreboardTeam() throws ReflectiveOperationException {
         newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
         PacketPlayOutScoreboardTeam_NAME = getFields(PacketPlayOutScoreboardTeam, String.class).get(0);
         PacketPlayOutScoreboardTeam_ACTION = getInstanceFields(PacketPlayOutScoreboardTeam, int.class).get(0);
         PacketPlayOutScoreboardTeam_PLAYERS = getFields(PacketPlayOutScoreboardTeam, Collection.class).get(0);
         ScoreboardTeam_getPlayerNameSet = getMethods(ScoreboardTeam, Collection.class).get(0);
-        ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a", "func_96660_a"}, boolean.class);
-        ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b", "func_98300_b"}, boolean.class);
         if (minorVersion >= 8) {
-            Class<?> EnumNameTagVisibility = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility", "ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
             EnumNameTagVisibility_values = getEnumValues(EnumNameTagVisibility);
-            ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a", "method_1149"}, EnumNameTagVisibility);
         }
         if (minorVersion >= 9) {
-            Class<?> EnumTeamPush = getNMSClass("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush", "ScoreboardTeamBase$EnumTeamPush");
             EnumTeamPush_values = getEnumValues(EnumTeamPush);
             ScoreboardTeam_setCollisionRule = getMethods(ScoreboardTeam, void.class, EnumTeamPush).get(0);
         }
         if (minorVersion >= 13) {
-            ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "method_1138", "b"}, IChatBaseComponent);
-            ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "method_1139", "c"}, IChatBaseComponent);
             ScoreboardTeam_setColor = getMethods(ScoreboardTeam, void.class, EnumChatFormat).get(0);
-        } else {
-            ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "func_96666_b"}, String.class);
-            ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "func_96662_c"}, String.class);
         }
-        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
-            Class<?> PacketPlayOutScoreboardTeam_PlayerAction = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a");
+        if (minorVersion >= 17) {
             PacketPlayOutScoreboardTeam_of = getMethods(PacketPlayOutScoreboardTeam, PacketPlayOutScoreboardTeam, ScoreboardTeam).get(0);
             PacketPlayOutScoreboardTeam_ofBoolean = getMethods(PacketPlayOutScoreboardTeam, PacketPlayOutScoreboardTeam, ScoreboardTeam, boolean.class).get(0);
             PacketPlayOutScoreboardTeam_ofString = getMethods(PacketPlayOutScoreboardTeam, PacketPlayOutScoreboardTeam, ScoreboardTeam, String.class, PacketPlayOutScoreboardTeam_PlayerAction).get(0);
@@ -479,53 +448,9 @@ public final class NMSStorage {
         }
     }
 
-    /**
-     * Returns class with given potential names in same order
-     *
-     * @param   names
-     *          possible class names
-     * @return  class for specified names
-     * @throws  ClassNotFoundException
-     *          if class does not exist
-     */
-    private Class<?> getNMSClass(String fullPath_1_17, String... names) throws ClassNotFoundException {
-        if (minorVersion >= 17) {
-            return Class.forName(fullPath_1_17);
-        }
-        for (String name : names) {
-            try {
-                return getLegacyClass(name);
-            } catch (ClassNotFoundException e) {
-                //not the first class name in array
-            }
-        }
-        throw new ClassNotFoundException("No class found with possible names {modern = " + fullPath_1_17 + ", legacy = " + Arrays.toString(names) + "}");
-    }
+    public abstract void loadClasses() throws ClassNotFoundException;
 
-    /**
-     * Returns class from given name
-     *
-     * @param   name
-     *          class name
-     * @return  class from given name
-     * @throws  ClassNotFoundException
-     *          if class was not found
-     */
-    private Class<?> getLegacyClass(String name) throws ClassNotFoundException {
-        try {
-            return Class.forName("net.minecraft.server." + serverPackage + "." + name);
-        } catch (ClassNotFoundException | NullPointerException e) {
-            try {
-                //modded server?
-                Class<?> clazz = Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
-                if (clazz != null) return clazz;
-                throw new ClassNotFoundException(name);
-            } catch (ClassNotFoundException | NullPointerException e1) {
-                //maybe fabric?
-                return Class.forName(name);
-            }
-        }
-    }
+    public abstract void loadNamedFieldsAndMethods() throws ReflectiveOperationException;
 
     /**
      * Returns method with specified possible names and parameters. Throws exception if no such method was found
@@ -540,7 +465,7 @@ public final class NMSStorage {
      * @throws  NoSuchMethodException
      *          if no such method exists
      */
-    private Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
         for (String name : names) {
             try {
                 return getMethod(clazz, name, parameterTypes);
@@ -565,7 +490,7 @@ public final class NMSStorage {
                 Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
     }
 
-    private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
             if (!m.getName().equals(name) || m.getParameterCount() != parameterTypes.length) continue;
@@ -583,7 +508,7 @@ public final class NMSStorage {
         throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
     }
 
-    private List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes){
+    protected List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes){
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
             if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
@@ -609,7 +534,7 @@ public final class NMSStorage {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
-    private List<Field> getFields(Class<?> clazz, Class<?> type){
+    protected List<Field> getFields(Class<?> clazz, Class<?> type){
         if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
@@ -651,7 +576,7 @@ public final class NMSStorage {
      * @throws  NoSuchFieldException
      *          if field was not found
      */
-    private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+    protected Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         for (Field f : clazz.getDeclaredFields()) {
             if (f.getName().equals(name) || (f.getName().split("_").length == 3 && f.getName().split("_")[2].equals(name))) {
                 return setAccessible(f);
@@ -660,7 +585,7 @@ public final class NMSStorage {
         throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
     }
 
-    private Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
+    protected Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
         for (String name : potentialNames) {
             try {
                 return getField(clazz, name);
@@ -671,14 +596,13 @@ public final class NMSStorage {
         throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
     }
 
-    private Enum[] getEnumValues(Class<?> enumClass) {
+    protected Enum[] getEnumValues(Class<?> enumClass) {
         if (enumClass == null) throw new IllegalArgumentException("Class cannot be null");
         if (!enumClass.isEnum()) throw new IllegalArgumentException(enumClass.getName() + " is not an enum class");
         try {
             return (Enum[]) enumClass.getMethod("values").invoke(null);
         } catch (ReflectiveOperationException e) {
             //this should never happen
-            TAB.getInstance().getErrorManager().criticalError("Failed to load enum constants of " + enumClass.getName(), e);
             return new Enum[0];
         }
     }
@@ -698,5 +622,27 @@ public final class NMSStorage {
     public <T extends AccessibleObject> T setAccessible(T o) {
         o.setAccessible(true);
         return o;
+    }
+
+    /**
+     * Gets values of all static fields in a class
+     *
+     * @param   clazz
+     *          class to return field values from
+     * @return  map of values
+     */
+    public Map<String, Object> getStaticFields(Class<?> clazz){
+        Map<String, Object> fields = new HashMap<>();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                setAccessible(field);
+                try {
+                    fields.put(field.getName(), field.get(null));
+                } catch (IllegalAccessException e) {
+                    //this will never happen
+                }
+            }
+        }
+        return fields;
     }
 }

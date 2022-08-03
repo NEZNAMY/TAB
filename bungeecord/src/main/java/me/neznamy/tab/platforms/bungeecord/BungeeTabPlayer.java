@@ -3,15 +3,16 @@ package me.neznamy.tab.platforms.bungeecord;
 import de.myzelyam.api.vanish.BungeeVanishAPI;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +25,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Inaccessible bungee internals */
     private static Method InitialHandler_getLoginProfile;
+    private static Method InitialHandler_getLoginRequest;
     private static Method ChannelWrapper_getHandle;
     private static Method LoginResult_Property_getValue;
     private static Method LoginResult_Property_getSignature;
@@ -37,10 +39,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         try {
             Class<?> initialHandler = Class.forName("net.md_5.bungee.connection.InitialHandler");
             InitialHandler_getLoginProfile = initialHandler.getMethod("getLoginProfile");
+            InitialHandler_getLoginRequest = initialHandler.getMethod("getLoginRequest");
             Class<?> channelWrapper = Class.forName("net.md_5.bungee.netty.ChannelWrapper");
             ChannelWrapper_getHandle = channelWrapper.getMethod("getHandle");
             Class<?> loginResult = Class.forName("net.md_5.bungee.connection.LoginResult");
-            Class<?> loginResult_Property = Class.forName("net.md_5.bungee.connection.LoginResult$Property");
+            Class<?> loginResult_Property = Class.forName("net.md_5.bungee.protocol.Property");
             LoginResult_Property_getValue = loginResult_Property.getMethod("getValue");
             LoginResult_Property_getSignature = loginResult_Property.getMethod("getSignature");
             LoginResult_getProperties = loginResult.getMethod("getProperties");
@@ -65,7 +68,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *          BungeeCord player
      */
     public BungeeTabPlayer(ProxiedPlayer p) {
-        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
+        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1, true);
         try {
             channel = (Channel) ChannelWrapper_getHandle.invoke(wrapperField.get(getPlayer().getPendingConnection()));
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -159,6 +162,16 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().printError("Failed to get gamemode of " + getPlayer().getName(), e);
             return 0;
+        }
+    }
+
+    @Override
+    public Object getProfilePublicKey() {
+        try {
+            return ((LoginRequest) InitialHandler_getLoginRequest.invoke(getPlayer().getPendingConnection())).getPublicKey();
+        } catch (ReflectiveOperationException e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get profile key of " + getPlayer().getName(), e);
+            return null;
         }
     }
 

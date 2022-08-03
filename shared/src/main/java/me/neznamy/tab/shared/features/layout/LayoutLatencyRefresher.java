@@ -4,7 +4,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 public class LayoutLatencyRefresher extends TabFeature {
 
@@ -19,6 +19,7 @@ public class LayoutLatencyRefresher extends TabFeature {
     @Override
     public void refresh(TabPlayer p, boolean force) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all.getVersion().getMinorVersion() < 8) continue;
             Layout layout = manager.getPlayerViews().get(all);
             if (layout == null) continue;
             PlayerSlot slot = layout.getSlot(p);

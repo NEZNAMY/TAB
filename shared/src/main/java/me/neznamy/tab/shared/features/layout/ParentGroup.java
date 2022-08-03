@@ -4,7 +4,7 @@ import java.util.*;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -58,5 +58,9 @@ public class ParentGroup {
     
     public Map<TabPlayer, PlayerSlot> getPlayers() {
         return players;
+    }
+
+    public Map<Integer, PlayerSlot> getPlayerSlots() {
+        return playerSlots;
     }
 }

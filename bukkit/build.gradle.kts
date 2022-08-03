@@ -6,7 +6,6 @@ dependencies {
     compileOnly(libs.vault)
     compileOnly(libs.via)
     compileOnly(libs.authlib)
-    compileOnly(libs.libsDisguises)
     compileOnly(libs.essentials) {
         exclude("org.spigotmc", "spigot-api")
     }

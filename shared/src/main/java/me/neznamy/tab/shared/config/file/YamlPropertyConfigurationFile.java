@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.api.PropertyConfiguration;

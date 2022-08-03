@@ -4,7 +4,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.api.TabConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,7 +152,7 @@ public class WidthCommand extends SubCommand {
 
     public void sendWidth(TabPlayer sender, char character, int amount) {
         List<IChatBaseComponent> messages = new ArrayList<>();
-        IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("&2" + character + " &d|"));
+        IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("|&2" + character + " &d|"));
 
         messages.add(new IChatBaseComponent(EnumChatFormat.color("&b[TAB] Click the line with closest width &7(ID: &f" + (int) character + "&7)")));
 
@@ -188,7 +188,7 @@ public class WidthCommand extends SubCommand {
             pixelsRemaining -= 2;
             text.append('i');
         }
-        IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
+        IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("|&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
         component.getModifier().onClickRunCommand("/tab width set " + c + " " + width);
         component.getModifier().onHoverShowText(new IChatBaseComponent("Click to set width to " + width + " pixels"));
         return component;

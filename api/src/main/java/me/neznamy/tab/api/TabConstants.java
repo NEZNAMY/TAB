@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.api;
 
 /**
  * A class containing various constants used everywhere in the plugin

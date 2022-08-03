@@ -224,7 +224,7 @@ public abstract class ConfigurationFile {
         }
         List<String> fixedList = new ArrayList<>();
         for (Object key : (List<Object>)value) {
-            fixedList.add(key.toString());
+            fixedList.add(String.valueOf(key));
         }
         return fixedList;
     }

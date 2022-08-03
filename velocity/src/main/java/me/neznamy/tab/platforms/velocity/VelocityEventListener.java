@@ -7,10 +7,8 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
-
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
 
 /**
  * The core for velocity forwarding events into all enabled features
@@ -25,9 +23,9 @@ public class VelocityEventListener {
      */
     @Subscribe
     public void onQuit(DisconnectEvent e){
-        if (TAB.getInstance().isDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+        if (TabAPI.getInstance().isPluginDisabled()) return;
+        TabAPI.getInstance().getThreadManager().runTask(() ->
+                TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
     
     /**
@@ -38,13 +36,13 @@ public class VelocityEventListener {
      */
     @Subscribe
     public void onConnect(ServerPostConnectEvent e){
+        if (TabAPI.getInstance().isPluginDisabled()) return;
         Player p = e.getPlayer();
-        if (TAB.getInstance().isDisabled()) return;
-        TAB.getInstance().getCPUManager().runTaskLater(200, () -> {
-            if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
-                TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p)));
+        TabAPI.getInstance().getThreadManager().runTaskLater(200, () -> {
+            if (TabAPI.getInstance().getPlayer(p.getUniqueId()) == null) {
+                TabAPI.getInstance().getThreadManager().runTask(() -> TabAPI.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p)));
             } else {
-                TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null");
+                TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null");
             }
         });
     }
@@ -57,8 +55,10 @@ public class VelocityEventListener {
      */
     @Subscribe
     public void onCommand(CommandExecuteEvent e) {
-        if (TAB.getInstance().isDisabled()) return;
-        if (e.getCommandSource() instanceof Player && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand())) e.setResult(CommandResult.denied());
+        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (e.getCommandSource() instanceof Player && TabAPI.getInstance().getFeatureManager().onCommand(
+                TabAPI.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand()))
+            e.setResult(CommandResult.denied());
     }
 
     /**
@@ -72,7 +72,7 @@ public class VelocityEventListener {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
-            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
+            Main.getInstance().getPlatform().getPluginMessageHandler().onPluginMessage(
                     ((Player) event.getTarget()).getUniqueId(), event.getData());
         }
     }
