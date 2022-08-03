@@ -122,7 +122,7 @@ public class RedisPlayer {
 
     public PacketPlayOutPlayerInfo getAddPacket() {
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(nickname, uniqueId, skin, 0, EnumGamemode.SURVIVAL,
-                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat)));
+                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat), null));
     }
 
     public PacketPlayOutPlayerInfo getUpdatePacket() {

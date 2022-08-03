@@ -39,6 +39,7 @@ public abstract class NMSStorage {
     public Field PLAYER_CONNECTION;
     public Field NETWORK_MANAGER;
     public Field CHANNEL;
+    public Field EntityHuman_ProfilePublicKey;
     public Method getHandle;
     public Method sendPacket;
     public Method getProfile;
@@ -129,6 +130,8 @@ public abstract class NMSStorage {
     protected Class<?> EnumPlayerInfoAction;
     protected Class<?> PlayerInfoData;
     protected Class<?> EnumGamemode;
+    protected Class<?> ProfilePublicKey;
+    protected Class<?> ProfilePublicKey$a;
     public Constructor<?> newPacketPlayOutPlayerInfo;
     public Constructor<?> newPlayerInfoData;
     public Field PacketPlayOutPlayerInfo_ACTION;
@@ -137,6 +140,8 @@ public abstract class NMSStorage {
     public Method PlayerInfoData_getLatency;
     public Method PlayerInfoData_getGamemode;
     public Method PlayerInfoData_getDisplayName;
+    public Method PlayerInfoData_getProfilePublicKeyRecord;
+    public Method ProfilePublicKey_getRecord;
     public Enum[] EnumPlayerInfoAction_values;
     public Enum[] EnumGamemode_values;
 
@@ -282,6 +287,11 @@ public abstract class NMSStorage {
         PlayerInfoData_getDisplayName = getMethods(PlayerInfoData, IChatBaseComponent).get(0);
         EnumPlayerInfoAction_values = getEnumValues(EnumPlayerInfoAction);
         EnumGamemode_values = getEnumValues(EnumGamemode);
+        if (minorVersion >= 19) {
+            EntityHuman_ProfilePublicKey = getFields(EntityHuman, ProfilePublicKey).get(0);
+            ProfilePublicKey_getRecord = getMethods(ProfilePublicKey, ProfilePublicKey$a).get(0);
+            PlayerInfoData_getProfilePublicKeyRecord = getMethods(PlayerInfoData, ProfilePublicKey$a).get(0);
+        }
     }
 
     protected void spawnEntityLiving() throws ReflectiveOperationException {

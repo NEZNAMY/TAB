@@ -75,6 +75,8 @@ public class BukkitModernNMSStorage extends ModernNMSStorage {
         if (minorVersion >= 19) {
             Registry = Class.forName("net.minecraft.core.Registry");
             IRegistry = Class.forName("net.minecraft.core.IRegistry");
+            ProfilePublicKey = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey");
+            ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$a");
         }
 
         // Player Info

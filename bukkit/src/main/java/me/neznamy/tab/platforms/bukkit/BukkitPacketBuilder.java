@@ -102,7 +102,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
             parameters.add(data.getLatency());
             parameters.add(data.getGameMode() == null ? null : nms.EnumGamemode_values[nms.EnumGamemode_values.length-EnumGamemode.VALUES.length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
             parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
-            if (nms.getMinorVersion() >= 19) parameters.add(null);
+            if (nms.getMinorVersion() >= 19) parameters.add(data.getProfilePublicKey());
             items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
         }
         nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
@@ -364,8 +364,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
                 Property pr = profile.getProperties().get("textures").iterator().next();
                 skin = new Skin(pr.getValue(), pr.getSignature());
             }
+            Object profilePublicKey = nms.getMinorVersion() >= 19 ? nms.PlayerInfoData_getProfilePublicKeyRecord.invoke(nmsData) : null;
             listData.add(new PlayerInfoData(profile.getName(), profile.getId(), skin,
-                    (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName));
+                    (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName, profilePublicKey));
         }
         return new PacketPlayOutPlayerInfo(action, listData);
     }

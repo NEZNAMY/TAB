@@ -327,6 +327,16 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
+    public Object getProfilePublicKey() {
+        try {
+            return getPlayer().getIdentifiedKey();
+        } catch (NoSuchMethodError e) {
+            //3.1.1 or lower
+            return null;
+        }
+    }
+
+    @Override
     public void sendPluginMessage(byte[] message) {
         Preconditions.checkNotNull(message, "message");
         try {

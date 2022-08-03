@@ -290,6 +290,19 @@ public class BukkitTabPlayer extends ITabPlayer {
     }
 
     @Override
+    public Object getProfilePublicKey() {
+        if (NMSStorage.getInstance().getMinorVersion() < 19) return null;
+        try {
+            Object key = NMSStorage.getInstance().EntityHuman_ProfilePublicKey.get(handle);
+            if (key == null) return null;
+            return NMSStorage.getInstance().ProfilePublicKey_getRecord.invoke(key);
+        } catch (ReflectiveOperationException e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get profile key of " + getName(), e);
+            return null;
+        }
+    }
+
+    @Override
     public Channel getChannel() {
         try {
             if (NMSStorage.getInstance().CHANNEL != null)

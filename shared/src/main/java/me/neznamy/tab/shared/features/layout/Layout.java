@@ -41,10 +41,10 @@ public class Layout extends TabFeature {
         groups.forEach(g -> list.addAll(g.getSlots(p)));
         for (FixedSlot slot : fixedSlots.values()) {
             p.setProperty(slot, slot.getPropertyName(), slot.getText());
-            list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), slot.getPing(), EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).updateAndGet())));
+            list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), slot.getPing(), EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).updateAndGet()), null));
         }
         for (int slot : emptySlots) {
-            list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent("")));
+            list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent(""), null));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
