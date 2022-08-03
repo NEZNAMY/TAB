@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
 import java.util.Locale;

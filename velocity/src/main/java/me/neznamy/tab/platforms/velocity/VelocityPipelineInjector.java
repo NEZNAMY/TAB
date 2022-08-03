@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.velocity.storage.VelocityPacketStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PipelineInjector;
 
 import java.util.List;
@@ -90,7 +89,7 @@ public class VelocityPipelineInjector extends PipelineInjector {
 
         /**
          * Removes all real players from packet if the packet doesn't come from TAB
-         * @param packet - packet to modify
+         * @param packetScoreboardTeam - packet to modify
          */
         private void modifyPlayers(Object packetScoreboardTeam) throws ReflectiveOperationException {
             final byte mode = (byte) vps.ScoreboardTeam_getMode.invoke(packetScoreboardTeam);

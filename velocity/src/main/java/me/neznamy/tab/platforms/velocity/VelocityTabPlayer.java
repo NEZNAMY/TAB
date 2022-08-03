@@ -2,9 +2,6 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.player.TabListEntry;
-import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.api.util.GameProfile.Property;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
