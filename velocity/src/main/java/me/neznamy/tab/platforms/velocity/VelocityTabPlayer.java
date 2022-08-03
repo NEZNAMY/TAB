@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import io.netty.channel.Channel;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -48,6 +49,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
                 p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol(),
                 TabAPI.getInstance().getConfig().getBoolean("use-online-uuid-in-tablist", true));
+
+        try {
+            Object minecraftConnection = player.getClass().getMethod("getConnection").invoke(player);
+            channel = (Channel) minecraftConnection.getClass().getMethod("getChannel").invoke(minecraftConnection);
+        } catch (ReflectiveOperationException e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get channel of " + p.getUsername(), e);
+        }
     }
 
     @Override
@@ -60,10 +68,19 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         return (int) getPlayer().getPing();
     }
 
+    /**
+     * This method needs reverting back once PlayerListItem fixed
+     * @param packet
+     *          an instance of packet depending on platform
+     */
     @Override
     public void sendPacket(Object packet) {
         if (packet == null || !getPlayer().isActive()) return;
-        packetMethods.get(packet.getClass()).accept((TabPacket) packet);
+        if (packetMethods.containsKey(packet.getClass())) {
+            packetMethods.get(packet.getClass()).accept((TabPacket) packet);
+        } else if (channel != null) {
+            channel.writeAndFlush(packet, channel.voidPromise());
+        }
     }
 
     /**

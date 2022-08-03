@@ -32,8 +32,8 @@ public final class VelocityPacketStorage {
     public Method Item_setLatency;
     public Method Item_getDisplayName;
     public Method Item_setDisplayName;
-    public Method Item_setPublicKey;
-    public Method Item_getPublicKey;
+    public Method Item_setPlayerKey;
+    public Method Item_getPlayerKey;
 
     //ScoreboardDisplay
     public Class<?> ScoreboardDisplay;
@@ -107,8 +107,8 @@ public final class VelocityPacketStorage {
         Item_setLatency = Item.getMethod("setLatency", int.class);
         Item_getDisplayName = Item.getMethod("getDisplayName");
         Item_setDisplayName = Item.getMethod("setDisplayName", Component.class);
-        Item_setPublicKey = Item.getMethod("setPlayerKey", IdentifiedKey.class);
-        Item_getPublicKey = Item.getMethod("getPlayerKey");
+        Item_setPlayerKey = Item.getMethod("setPlayerKey", IdentifiedKey.class);
+        Item_getPlayerKey = Item.getMethod("getPlayerKey");
     }
 
     private void initializeScoreboardPackets() throws ReflectiveOperationException {

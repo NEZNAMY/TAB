@@ -75,13 +75,13 @@ public class Main {
         if (!isVersionSupported()) {
             return;
         }
-        VelocityPlatform platform = new VelocityPlatform();
         instance = this;
         if (server.getConfiguration().isOnlineMode()) {
             logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
         server.getChannelRegistrar().register(mc);
+        VelocityPlatform platform = new VelocityPlatform();
         TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener(platform));
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").aliases("vtab").build(), new VelocityTABCommand());
