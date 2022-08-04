@@ -94,4 +94,6 @@ public interface FeatureManager {
     void markObjective();
 
     void markDisplayObjective();
+
+    TabFeature[] getValues();
 }

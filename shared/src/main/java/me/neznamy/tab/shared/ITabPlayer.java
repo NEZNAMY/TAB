@@ -415,4 +415,8 @@ public abstract class ITabPlayer implements TabPlayer {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
 }

@@ -327,4 +327,9 @@ public class FeatureManagerImpl implements FeatureManager {
     public TabFeature getFeature(String name) {
         return features.get(name);
     }
+
+    @Override
+    public TabFeature[] getValues() {
+        return values;
+    }
 }
