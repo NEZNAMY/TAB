@@ -93,6 +93,9 @@ public class VelocityPacketBuilder extends PacketBuilder {
             String displayName = displayNameComponent == null ? null : GsonComponentSerializer.gson().serialize(displayNameComponent);
             List<GameProfile.Property> properties = vps.Item_getProperties.invoke(i) == null ? null : (List<GameProfile.Property>) vps.Item_getProperties.invoke(i);
             Skin skin = properties == null || properties.size() == 0 ? null : new Skin(properties.get(0).getValue(), properties.get(0).getSignature());
+
+            System.out.println(vps.Item_getUuid.invoke(i) + " " + vps.Item_getPlayerKey.invoke(i));
+
             listData.add(new PlayerInfoData((String) vps.Item_getName.invoke(i), (UUID) vps.Item_getUuid.invoke(i), skin, (int) vps.Item_getLatency.invoke(i),
                     EnumGamemode.VALUES[(int) vps.Item_getGameMode.invoke(i)+1], displayName == null ? null : IChatBaseComponent.deserialize(displayName), vps.Item_getPlayerKey.invoke(i)));
         }
