@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -196,7 +197,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         try {
             return getPlayer().getIdentifiedKey();
         } catch (NoSuchMethodError e) {
-            //3.1.1 or lower
             return null;
         }
     }
