@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import com.velocitypowered.api.util.GameProfile;
 import me.neznamy.tab.api.ProtocolVersion;
@@ -50,7 +51,7 @@ public class VelocityPacketBuilder extends PacketBuilder {
             }
             vps.Item_setName.invoke(item, data.getName());
 
-            if(clientVersion.getMinorVersion() >= 19 && data.getProfilePublicKey() != null) {
+            if(clientVersion.getMinorVersion() >= 19) {
                 vps.Item_setPlayerKey.invoke(item, data.getProfilePublicKey());
             }
 
@@ -95,9 +96,6 @@ public class VelocityPacketBuilder extends PacketBuilder {
             Skin skin = properties == null || properties.size() == 0 ? null : new Skin(properties.get(0).getValue(), properties.get(0).getSignature());
 
             IdentifiedKey identifiedKey = (IdentifiedKey) vps.Item_getPlayerKey.invoke(i);
-            if(identifiedKey != null && identifiedKey.hasExpired()) {
-                System.out.println("!!!!!!!!!!!!!!!!!! ERROR KEY !!!!!!!!!!!!!!!!!!!" + identifiedKey.getExpiryTemporal());
-            }
 
             listData.add(new PlayerInfoData((String) vps.Item_getName.invoke(i), (UUID) vps.Item_getUuid.invoke(i), skin, (int) vps.Item_getLatency.invoke(i),
                     EnumGamemode.VALUES[(int) vps.Item_getGameMode.invoke(i) + 1], displayName == null ? null : IChatBaseComponent.deserialize(displayName), identifiedKey));
