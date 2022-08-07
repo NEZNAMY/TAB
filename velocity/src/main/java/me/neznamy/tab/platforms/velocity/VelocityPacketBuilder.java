@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import com.velocitypowered.api.util.GameProfile;
 import me.neznamy.tab.api.ProtocolVersion;

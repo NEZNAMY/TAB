@@ -2,10 +2,8 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
@@ -19,7 +17,10 @@ import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.identity.Identity;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
