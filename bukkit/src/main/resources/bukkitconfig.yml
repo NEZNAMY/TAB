@@ -48,6 +48,7 @@ scoreboard-teams:
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
     - "PLACEHOLDER_A_TO_Z:%player%"
   case-sensitive-sorting: true
+  can-see-friendly-invisibles: false
   disable-in-worlds:
     - disabledworld
   # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Unlimited-nametag-mode
