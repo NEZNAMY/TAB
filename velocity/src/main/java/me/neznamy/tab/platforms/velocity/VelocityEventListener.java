@@ -43,11 +43,12 @@ public class VelocityEventListener {
     public void onConnect(ServerPostConnectEvent e){
         if (TabAPI.getInstance().isPluginDisabled()) return;
         Player p = e.getPlayer();
-        TabAPI.getInstance().getThreadManager().runTaskLater(200, () -> {
+        TabAPI.getInstance().getThreadManager().runTask(() -> {
             if (TabAPI.getInstance().getPlayer(p.getUniqueId()) == null) {
-                TabAPI.getInstance().getThreadManager().runTask(() -> TabAPI.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p)));
+                TabAPI.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
             } else {
-                TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null");
+                String server = p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null";
+                TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), server);
             }
         });
     }

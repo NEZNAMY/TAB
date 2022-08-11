@@ -86,7 +86,12 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         lastValues.put(player, s);
         if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
-        if (!player.isLoaded()) return;
+        if (!player.isLoaded()) {
+            if (player.isOnline()) {
+                TAB.getInstance().getCPUManager().runTask(() -> updateValue(player, value, force));
+            }
+            return;
+        }
         Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
         for (TabFeature f : usage) {
