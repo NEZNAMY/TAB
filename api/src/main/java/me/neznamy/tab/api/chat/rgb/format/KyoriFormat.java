@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Formatter for &lt;#RRGGBB>
+ * Formatter for &lt;#RRGGBB&gt;
  */
 public class KyoriFormat implements RGBFormatter {
 

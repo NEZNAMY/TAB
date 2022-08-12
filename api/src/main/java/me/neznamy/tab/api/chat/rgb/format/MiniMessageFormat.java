@@ -5,7 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 /**
- * Formatter for &lt;#RRGGBB>
+ * Formatter for &lt;#RRGGBB&gt;
  */
 public class MiniMessageFormat implements RGBFormatter {
 

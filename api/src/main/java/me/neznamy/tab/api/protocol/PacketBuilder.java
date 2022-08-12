@@ -202,7 +202,7 @@ public class PacketBuilder {
     }
 
     /**
-     * If {@code clientVersion} is >= 1.13, creates a component from given text and returns
+     * If {@code clientVersion} is &gt;= 1.13, creates a component from given text and returns
      * it as a serialized component, which BungeeCord uses.
      * <p>
      * If {@code clientVersion} is &lt; 1.12, the text is cut to {@code length} characters if
