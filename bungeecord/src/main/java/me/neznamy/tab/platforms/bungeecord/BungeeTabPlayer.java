@@ -1,21 +1,23 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import de.myzelyam.api.vanish.BungeeVanishAPI;
-import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.LoginResult;
+import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -24,37 +26,18 @@ import java.lang.reflect.Method;
 public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Inaccessible bungee internals */
-    private static Method InitialHandler_getLoginProfile;
-    private static Method InitialHandler_getLoginRequest;
-    private static Method ChannelWrapper_getHandle;
-    private static Method LoginResult_Property_getValue;
-    private static Method LoginResult_Property_getSignature;
-    private static Method LoginResult_getProperties;
-    private static Method UserConnection_getGamemode;
     private static Field wrapperField;
     private static Object directionData;
     private static Method getId;
 
     static {
         try {
-            Class<?> initialHandler = Class.forName("net.md_5.bungee.connection.InitialHandler");
-            InitialHandler_getLoginProfile = initialHandler.getMethod("getLoginProfile");
-            InitialHandler_getLoginRequest = initialHandler.getMethod("getLoginRequest");
-            Class<?> channelWrapper = Class.forName("net.md_5.bungee.netty.ChannelWrapper");
-            ChannelWrapper_getHandle = channelWrapper.getMethod("getHandle");
-            Class<?> loginResult = Class.forName("net.md_5.bungee.connection.LoginResult");
-            Class<?> loginResult_Property = Class.forName("net.md_5.bungee.protocol.Property");
-            LoginResult_Property_getValue = loginResult_Property.getMethod("getValue");
-            LoginResult_Property_getSignature = loginResult_Property.getMethod("getSignature");
-            LoginResult_getProperties = loginResult.getMethod("getProperties");
-            Class<?> userConnection = Class.forName("net.md_5.bungee.UserConnection");
-            UserConnection_getGamemode = userConnection.getMethod("getGamemode");
             Field f = Protocol.class.getDeclaredField("TO_CLIENT");
             f.setAccessible(true);
             directionData = f.get(Protocol.GAME);
             getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class);
             getId.setAccessible(true);
-            wrapperField = initialHandler.getDeclaredField("ch");
+            wrapperField = InitialHandler.class.getDeclaredField("ch");
             wrapperField.setAccessible(true);
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", e);
@@ -70,8 +53,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public BungeeTabPlayer(ProxiedPlayer p) {
         super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1, true);
         try {
-            channel = (Channel) ChannelWrapper_getHandle.invoke(wrapperField.get(getPlayer().getPendingConnection()));
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            channel = ((ChannelWrapper)wrapperField.get(getPlayer().getPendingConnection())).getHandle();
+        } catch (IllegalAccessException e) {
             TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + getPlayer().getName(), e);
         }
     }
@@ -99,17 +82,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public Skin getSkin() {
-        try {
-            Object loginResult = InitialHandler_getLoginProfile.invoke(getPlayer().getPendingConnection());
-            if (loginResult == null) return null;
-            Object[] properties = (Object[]) LoginResult_getProperties.invoke(loginResult);
-            if (properties == null || properties.length == 0) return null;
-            return new Skin((String) LoginResult_Property_getValue.invoke(properties[0]),
-                    (String) LoginResult_Property_getSignature.invoke(properties[0]));
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
-            return null;
-        }
+        LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
+        if (loginResult == null) return null;
+        Property[] properties = loginResult.getProperties();
+        if (properties == null || properties.length == 0) return null;
+        return new Skin(properties[0].getValue(), properties[0].getSignature());
     }
 
     @Override
@@ -157,22 +134,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public int getGamemode() {
-        try {
-            return (int) UserConnection_getGamemode.invoke(player);
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get gamemode of " + getPlayer().getName(), e);
-            return 0;
-        }
+        return ((UserConnection)player).getGamemode();
     }
 
     @Override
     public Object getProfilePublicKey() {
-        try {
-            return ((LoginRequest) InitialHandler_getLoginRequest.invoke(getPlayer().getPendingConnection())).getPublicKey();
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get profile key of " + getPlayer().getName(), e);
-            return null;
-        }
+        return ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest().getPublicKey();
     }
 
     @Override
