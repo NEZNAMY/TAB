@@ -81,7 +81,6 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
     @SuppressWarnings("deprecation")
     @Override
     public void registerPlaceholders(PlaceholderManager manager) {
-        super.registerPlaceholders(manager);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500, p -> ((Player) p.getPlayer()).getDisplayName());
         if (paperTps != null) {
             manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000, () -> formatTPS(Bukkit.getTPS()[0]));
@@ -132,6 +131,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             manager.registerServerPlaceholder(TabConstants.Placeholder.VAULT_SUFFIX, -1, () -> "");
         }
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+        super.registerPlaceholders(manager);
     }
 
     /**
