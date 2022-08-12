@@ -55,7 +55,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //null check due to L34 return making L37 not run
+        //null check due to compatibility check making instance not get set on unsupported versions
         if (TAB.getInstance() != null) TAB.getInstance().unload();
     }
     

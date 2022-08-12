@@ -15,8 +15,15 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class BungeeEventListener implements Listener {
 
+    /** Reference to BungeeCord platform implementation */
     private final BungeePlatform platform;
 
+    /**
+     * Constructs new instance with given parameter
+     *
+     * @param   platform
+     *          BungeeCord implementation of platform
+     */
     public BungeeEventListener(BungeePlatform platform) {
         this.platform = platform;
     }

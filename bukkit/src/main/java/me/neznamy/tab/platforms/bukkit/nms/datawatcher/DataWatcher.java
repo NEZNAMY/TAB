@@ -12,10 +12,10 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
  */
 public class DataWatcher {
 
-    //DataWatcher data
+    /** Watched data */
     private final Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
 
-    //a helper for easier data write
+    /** Helper for easier data write */
     private final DataWatcherHelper helper = new DataWatcherHelper(this);
 
     /**
@@ -73,15 +73,14 @@ public class DataWatcher {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsWatcher;
         if (nms.newDataWatcher.getParameterCount() == 1) { //1.7+
-            Object[] args = new Object[] {null};
-            nmsWatcher = nms.newDataWatcher.newInstance(args);
+            nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
         } else {
             nmsWatcher = nms.newDataWatcher.newInstance();
         }
         for (DataWatcherItem item : dataValues.values()) {
             Object position;
             if (nms.getMinorVersion() >= 9) {
-                position = nms.newDataWatcherObject.newInstance(item.getType().getPosition(), item.getType().getClassType());
+                position = nms.newDataWatcherObject.newInstance(item.getType().getPosition(), item.getType().getSerializer());
             } else {
                 position = item.getType().getPosition();
             }

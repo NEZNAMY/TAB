@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
-     * Map of methods executing tasks using API calls equal to sending the actual packets
+     * Map of methods executing tasks using Velocity API calls equal to sending the actual packets
      */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
@@ -188,7 +188,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
      * Handles PacketPlayOutScoreboardDisplayObjective request by forwarding the task
-     * to Bridge plugin.
+     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
      *
      * @param   packet
      *          Packet request to handle
@@ -200,7 +200,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
      * Handles PacketPlayOutScoreboardObjective request by forwarding the task
-     * to Bridge plugin.
+     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
      *
      * @param   packet
      *          Packet request to handle
@@ -221,7 +221,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
      * Handles PacketPlayOutScoreboardScore request by forwarding the task
-     * to Bridge plugin.
+     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
      *
      * @param   packet
      *          Packet request to handle
@@ -238,7 +238,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
      * Handles PacketPlayOutScoreboardTeam request by forwarding the task
-     * to Bridge plugin.
+     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
      *
      * @param   packet
      *          Packet request to handle
@@ -268,10 +268,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     /**
-     * Processes bossbar flag by adding or removing it based on provided value.
+     * Processes BossBar flag by adding or removing it based on provided value.
      *
      * @param   bar
-     *          Bossbar to process flag of
+     *          BossBar to process flag of
      * @param   targetValue
      *          Flag value
      * @param   flag
@@ -283,12 +283,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     /**
-     * Returns tablist entry with specified UUID. If no such entry was found,
+     * Returns TabList entry with specified UUID. If no such entry was found,
      * a new, dummy entry is returned to avoid NPE.
      *
      * @param   id
      *          UUID to get entry by
-     * @return  Tablist entry with specified UUID
+     * @return  TabList entry with specified UUID
      */
     private TabListEntry getEntry(UUID id) {
         for (TabListEntry entry : getPlayer().getTabList().getEntries()) {

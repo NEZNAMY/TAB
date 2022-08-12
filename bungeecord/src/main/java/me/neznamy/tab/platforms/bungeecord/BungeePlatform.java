@@ -14,7 +14,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class BungeePlatform extends ProxyPlatform {
 
     /**
-     * Constructs new instance
+     * Constructs new instance with BungeeCord packet builder
      */
     public BungeePlatform() {
         super(new BungeePacketBuilder());
