@@ -2,11 +2,16 @@ plugins {
     `kotlin-dsl`
 }
 
-repositories {
-    gradlePluginPortal()
-    mavenCentral()
+dependencies {
+    implementation(libs.plugin.indra)
+    implementation(libs.plugin.shadow)
 }
 
 dependencies {
-    implementation("gradle.plugin.com.github.johnrengelman", "shadow", "7.1.0")
+    compileOnly(files(libs::class.java.protectionDomain.codeSource.location))
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

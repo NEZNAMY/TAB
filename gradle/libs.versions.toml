@@ -34,6 +34,10 @@ essentials = "2.19.4"
 premiumVanish = "2.0.3"
 redisBungee = "0.7.2"
 
+# Plugins
+indra = "2.1.1"
+shadow = "7.1.0"
+
 [libraries]
 
 # API
@@ -75,3 +79,7 @@ redisBungee = { group = "com.github.limework.redisbungee", name = "RedisBungee-B
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
 bstats-bungeecord = { group = "org.bstats", name = "bstats-bungeecord", version.ref = "bstats" }
 bstats-velocity = { group = "org.bstats", name = "bstats-velocity", version.ref = "bstats" }
+
+# Plugins
+plugin-indra = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
+plugin-shadow = { group = "gradle.plugin.com.github.johnrengelman", name = "shadow", version.ref = "shadow" }

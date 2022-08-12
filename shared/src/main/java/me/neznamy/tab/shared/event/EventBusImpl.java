@@ -25,7 +25,7 @@ public final class EventBusImpl implements EventBus {
         this.bus = new SimpleEventBus<TabEvent>(TabEvent.class) {
 
             @Override
-            protected boolean shouldPost(@NonNull TabEvent event, @NonNull EventSubscriber subscriber) {
+            protected boolean shouldPost(@NonNull TabEvent event, @NonNull EventSubscriber<?> subscriber) {
                 return true;
             }
         };
