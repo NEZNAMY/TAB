@@ -104,6 +104,12 @@ public class LayoutManager extends TabFeature {
         if (highest != null) highest.sendTo(p);
         playerViews.put(p, highest);
         layouts.values().forEach(Layout::tick);
+
+        List<PlayerInfoData> data = new ArrayList<>();
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            data.add(new PlayerInfoData(all.getTablistUUID()));
+        }
+        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, data), this);
     }
 
     @Override

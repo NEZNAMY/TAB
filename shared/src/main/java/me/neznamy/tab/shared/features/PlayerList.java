@@ -5,16 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.TablistFormatManager;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
@@ -221,7 +217,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (disabling || !antiOverrideTabList) return;
+        if (disabling || !antiOverrideTabList || TabAPI.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)) return;
         if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
         for (PlayerInfoData playerInfoData : info.getEntries()) {
             TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
