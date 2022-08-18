@@ -111,8 +111,8 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             Listener nickListener = new Listener() {
                 @EventHandler
                 public void onNickChange(NickChangeEvent e) {
-                    String name = e.getValue() == null ? e.getAffected().getName() : e.getValue();
-                    TabPlayer player = TAB.getInstance().getPlayer(e.getAffected().getUUID());
+                    String name = e.getValue() == null ? e.getController().getName() : e.getValue();
+                    TabPlayer player = TAB.getInstance().getPlayer(e.getController().getUUID());
                     if (player == null) return;
                     nick.updateValue(player, name);
                 }
