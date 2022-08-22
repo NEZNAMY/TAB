@@ -214,8 +214,8 @@ public class MessageFile extends YamlConfigurationFile {
 
     public List<String> getNameTagHelpMenu() {
         return getStringList("nametag-help-menu", Arrays.asList(
-                "/tab nametag preview - toggles armor stand preview mode",
-                "/tab nametag toggle - toggles nametags on all players for command sender"
+                "/tab nametag preview [player] - toggles armor stand preview mode",
+                "/tab nametag toggle [player] - toggles nametags on all players for command sender"
         ));
     }
 
