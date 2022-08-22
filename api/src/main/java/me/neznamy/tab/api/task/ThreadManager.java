@@ -4,6 +4,10 @@ import java.util.concurrent.Future;
 
 import me.neznamy.tab.api.TabFeature;
 
+/**
+ * Manager for scheduling and executing tasks in TAB's
+ * main thread to avoid concurrency issues.
+ */
 public interface ThreadManager {
 
     /**
