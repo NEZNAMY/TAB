@@ -19,6 +19,13 @@ public abstract class TabAPI {
     private static TabAPI instance;
 
     /**
+     * Constructs new instance and sets it as new API instance
+     */
+    public TabAPI() {
+        instance = this;
+    }
+
+    /**
      * Returns API instance. If instance was not set by the plugin, throws
      * {@code IllegalStateException}. This is usually caused by shading the API
      * into own project, which is not allowed. Another option is calling the method
@@ -32,16 +39,6 @@ public abstract class TabAPI {
         if (instance == null) throw new IllegalStateException("API instance is null. This likely means you shaded TAB's API into your project" +
                 " instead of only using it, which is not allowed.");
         return instance;
-    }
-
-    /**
-     * Instance setter for internal use by the plugin only.
-     *
-     * @param   instance
-     *          API instance
-     */
-    public static void setInstance(TabAPI instance) {
-        TabAPI.instance = instance;
     }
 
     /**
