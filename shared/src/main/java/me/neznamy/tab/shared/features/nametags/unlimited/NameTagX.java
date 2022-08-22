@@ -120,14 +120,14 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         return disabledUnlimitedWorlds;
     }
 
-    public void toggleNametagPreview(TabPlayer player) {
+    public void toggleNametagPreview(TabPlayer player, boolean sendToggleMessage) {
         if (playersPreviewingNametag.contains(player)) {
             setNameTagPreview(player, false);
-            player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
+            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
             playersPreviewingNametag.remove(player);
         } else {
             setNameTagPreview(player, true);
-            player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
+            if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
             playersPreviewingNametag.add(player);
         }
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
