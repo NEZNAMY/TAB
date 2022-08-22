@@ -64,12 +64,16 @@ public abstract class TabFeature {
                 methodOverrides.add("onWorldChange");
             if (getClass().getMethod("onServerChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onServerChange");
-            if (getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class)
+            if (getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class) {
                 methodOverrides.add("onDisplayObjective");
+                TabAPI.getInstance().getFeatureManager().markDisplayObjective();
+            }
             if (getClass().getMethod("onLoginPacket", TabPlayer.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onLoginPacket");
-            if (getClass().getMethod("onObjective", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class)
+            if (getClass().getMethod("onObjective", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class) {
                 methodOverrides.add("onObjective");
+                TabAPI.getInstance().getFeatureManager().markObjective();
+            }
             if (getClass().getMethod("onPlayerInfo", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onPlayerInfo");
             if (getClass().getMethod("onPacketReceive", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class)

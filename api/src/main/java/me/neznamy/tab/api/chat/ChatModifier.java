@@ -249,17 +249,7 @@ public class ChatModifier {
     public void onHoverShowEntity(String type, UUID id, String name) {
         Preconditions.checkNotNull(type, "type");
         Preconditions.checkNotNull(id, "id");
-        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
-            hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new ChatComponentEntity(type, id, name));
-        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
-            hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{type:\"%s\",id:\"%s\",name:\"{\\\"text\\\":\\\"%s\\\"}\"}", type, id, name)));
-        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() == 12) {
-            hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{type:\"%s\",id:\"%s\",name:\"%s\"}", type, id, name)));
-        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) {
-            hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new IChatBaseComponent(String.format("{type:%s,id:%s,name:%s}", type, id, name)));
-        } else {
-            throw new IllegalStateException("show_entity hover action is not supported on <1.8");
-        }
+        hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new ChatComponentEntity(type, id, name));
     }
 
     public void onHover(EnumHoverAction action, IChatBaseComponent value) {
@@ -295,7 +285,7 @@ public class ChatModifier {
             JSONObject hover = new JSONObject();
             hover.put("action", hoverEvent.getAction().toString().toLowerCase());
             if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
-                hover.put("contents", hoverEvent.getValue());
+                hover.put(hoverEvent.getAction().getPreferredKey(), hoverEvent.getValue());
             } else {
                 hover.put("value", TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 ?
                         hoverEvent.getValue() : hoverEvent.getValue().toRawText());

@@ -9,22 +9,22 @@ import org.bukkit.Bukkit;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * Class holding all NMS classes, methods, fields and constructors used by TAB.
+ */
 @SuppressWarnings("rawtypes")
 public abstract class NMSStorage {
 
-    //instance of this class
+    /** Instance of this class */
     private static NMSStorage instance;
 
-    //server package, such as "v1_16_R3"
+    /** Server's NMS/CraftBukkit package */
     protected final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
-    //server minor version such as "16"
+    /** Server's minor version */
     protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
-    //another field due to fabric which uses 1.16 package on 1.17 server
-    private final ProtocolVersion serverVersion = ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
-
-    //base
+    /** Basic universal values */
     protected Class<?> Packet;
     protected Class<?> NetworkManager;
     protected Class<?> EntityArmorStand;
@@ -39,23 +39,24 @@ public abstract class NMSStorage {
     public Field PLAYER_CONNECTION;
     public Field NETWORK_MANAGER;
     public Field CHANNEL;
+    public Field EntityHuman_ProfilePublicKey;
     public Method getHandle;
     public Method sendPacket;
     public Method getProfile;
     public Enum[] EnumChatFormat_values;
 
-    //chat
+    /** Chat components */
     protected Class<?> IChatBaseComponent;
     protected Class<?> ChatSerializer;
     public Method ChatSerializer_DESERIALIZE;
 
-    //PacketPlayOutChat
+    /** PacketPlayOutChat */
     protected Class<?> PacketPlayOutChat;
     public Class<?> ChatMessageType;
     public Constructor<?> newPacketPlayOutChat;
     public Enum[] ChatMessageType_values;
 
-    //DataWatcher
+    /** DataWatcher */
     protected Class<?> DataWatcher;
     protected Class<?> DataWatcherItem;
     protected Class<?> DataWatcherObject;
@@ -70,7 +71,7 @@ public abstract class NMSStorage {
     public Method DataWatcher_REGISTER;
     private final DataWatcherRegistry registry;
 
-    //PacketPlayOutSpawnEntityLiving
+    /** PacketPlayOutSpawnEntityLiving */
     public Class<?> PacketPlayOutSpawnEntityLiving;
     public Constructor<?> newPacketPlayOutSpawnEntityLiving;
     public Field PacketPlayOutSpawnEntityLiving_ENTITYID;
@@ -85,7 +86,7 @@ public abstract class NMSStorage {
     public Method Registry_a;
     public Object IRegistry_X;
 
-    //PacketPlayOutEntityTeleport
+    /** PacketPlayOutEntityTeleport */
     public Class<?> PacketPlayOutEntityTeleport;
     public Constructor<?> newPacketPlayOutEntityTeleport;
     public Field PacketPlayOutEntityTeleport_ENTITYID;
@@ -95,13 +96,13 @@ public abstract class NMSStorage {
     public Field PacketPlayOutEntityTeleport_YAW;
     public Field PacketPlayOutEntityTeleport_PITCH;
 
-    //PacketPlayOutPlayerListHeaderFooter
+    /** PacketPlayOutPlayerListHeaderFooter */
     protected Class<?> PacketPlayOutPlayerListHeaderFooter;
     public Constructor<?> newPacketPlayOutPlayerListHeaderFooter;
     public Field PacketPlayOutPlayerListHeaderFooter_HEADER;
     public Field PacketPlayOutPlayerListHeaderFooter_FOOTER;
 
-    //other entity packets
+    /** Other entity packets */
     public Class<?> PacketPlayInUseEntity;
     public Class<?> PacketPlayInUseEntity$d;
     protected Class<?> EnumEntityUseAction;
@@ -124,11 +125,13 @@ public abstract class NMSStorage {
     public Class<?> PacketPlayOutNamedEntitySpawn;
     public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
-    //PacketPlayOutPlayerInfo
+    /** PacketPlayOutPlayerInfo */
     public Class<?> PacketPlayOutPlayerInfo;
     protected Class<?> EnumPlayerInfoAction;
     protected Class<?> PlayerInfoData;
     protected Class<?> EnumGamemode;
+    protected Class<?> ProfilePublicKey;
+    protected Class<?> ProfilePublicKey$a;
     public Constructor<?> newPacketPlayOutPlayerInfo;
     public Constructor<?> newPlayerInfoData;
     public Field PacketPlayOutPlayerInfo_ACTION;
@@ -137,10 +140,12 @@ public abstract class NMSStorage {
     public Method PlayerInfoData_getLatency;
     public Method PlayerInfoData_getGamemode;
     public Method PlayerInfoData_getDisplayName;
+    public Method PlayerInfoData_getProfilePublicKeyRecord;
+    public Method ProfilePublicKey_getRecord;
     public Enum[] EnumPlayerInfoAction_values;
     public Enum[] EnumGamemode_values;
 
-    //scoreboard objectives
+    /** Scoreboard objectives */
     public Class<?> PacketPlayOutScoreboardDisplayObjective;
     public Class<?> PacketPlayOutScoreboardObjective;
     protected Class<?> Scoreboard;
@@ -169,7 +174,7 @@ public abstract class NMSStorage {
     public Enum[] EnumScoreboardHealthDisplay_values;
     public Enum[] EnumScoreboardAction_values;
 
-    //PacketPlayOutScoreboardTeam
+    /** PacketPlayOutScoreboardTeam */
     public Class<?> PacketPlayOutScoreboardTeam;
     protected Class<?> ScoreboardTeam;
     protected Class<?> EnumNameTagVisibility;
@@ -195,10 +200,16 @@ public abstract class NMSStorage {
     public Enum[] EnumTeamPush_values;
     public Enum[] PacketPlayOutScoreboardTeam_PlayerAction_values;
 
-    //other
+    /** Other */
     public Object emptyScoreboard;
     public Object dummyEntity;
 
+    /**
+     * Constructs new instance and attempts to load all fields, methods and constructors.
+     *
+     * @throws  ReflectiveOperationException
+     *          If some field, constructor or method was not found
+     */
     public NMSStorage() throws ReflectiveOperationException {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
@@ -248,12 +259,23 @@ public abstract class NMSStorage {
         return instance;
     }
 
+    /**
+     * Loads PacketPlayOutChat's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void chat() throws ReflectiveOperationException {
         if (minorVersion >= 12 && minorVersion <= 18) {
             ChatMessageType_values = getEnumValues(ChatMessageType);
         }
         if (minorVersion >= 19) {
-            newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, int.class);
+            try {
+                newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, boolean.class);
+            } catch (NoSuchMethodException e) {
+                //1.19.0
+                newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, int.class);
+            }
         } else if (minorVersion >= 16) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType, UUID.class);
         } else if (minorVersion >= 12) {
@@ -265,6 +287,12 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads PacketPlayOutPlayerInfo's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void playerInfo() throws ReflectiveOperationException {
         if (minorVersion < 8) return;
         newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Array.newInstance(EntityPlayer, 0).getClass());
@@ -277,10 +305,21 @@ public abstract class NMSStorage {
         PlayerInfoData_getDisplayName = getMethods(PlayerInfoData, IChatBaseComponent).get(0);
         EnumPlayerInfoAction_values = getEnumValues(EnumPlayerInfoAction);
         EnumGamemode_values = getEnumValues(EnumGamemode);
+        if (minorVersion >= 19) {
+            EntityHuman_ProfilePublicKey = getFields(EntityHuman, ProfilePublicKey).get(0);
+            ProfilePublicKey_getRecord = getMethods(ProfilePublicKey, ProfilePublicKey$a).get(0);
+            PlayerInfoData_getProfilePublicKeyRecord = getMethods(PlayerInfoData, ProfilePublicKey$a).get(0);
+        }
     }
 
+    /**
+     * Loads PacketPlayOutSpawnEntityLiving's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void spawnEntityLiving() throws ReflectiveOperationException {
-        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
+        if (minorVersion >= 17) {
             newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
         } else {
             newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
@@ -312,11 +351,17 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads PacketPlayOutEntityTeleport's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void entityTeleport() throws ReflectiveOperationException {
         PacketPlayOutEntityTeleport_ENTITYID = getFields(PacketPlayOutEntityTeleport, int.class).get(0);
         PacketPlayOutEntityTeleport_YAW = getFields(PacketPlayOutEntityTeleport, byte.class).get(0);
         PacketPlayOutEntityTeleport_PITCH = getFields(PacketPlayOutEntityTeleport, byte.class).get(1);
-        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
+        if (minorVersion >= 17) {
             newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
         } else {
             newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
@@ -332,17 +377,29 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads PacketPlayOutPlayerListHeaderFooter's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void playerListHeaderFooter() throws ReflectiveOperationException {
         if (minorVersion < 8) return;
         PacketPlayOutPlayerListHeaderFooter_HEADER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(0);
         PacketPlayOutPlayerListHeaderFooter_FOOTER = getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(1);
-        if (minorVersion >= 17 || serverVersion.getMinorVersion() >= 17) {
+        if (minorVersion >= 17) {
             newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor(IChatBaseComponent, IChatBaseComponent);
         } else {
             newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooter.getConstructor();
         }
     }
 
+    /**
+     * Loads methods, fields and constructors for other entity packets
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void otherEntity() throws ReflectiveOperationException {
         PacketPlayOutEntity_ENTITYID = getFields(PacketPlayOutEntity, int.class).get(0);
         PacketPlayOutEntityDestroy_ENTITIES = setAccessible(PacketPlayOutEntityDestroy.getDeclaredFields()[0]);
@@ -361,6 +418,12 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads DataWatcher's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void dataWatcher() throws ReflectiveOperationException {
         newDataWatcher = DataWatcher.getConstructors()[0];
         DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
@@ -374,6 +437,12 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads Scoreboard methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void scoreboard() throws ReflectiveOperationException {
         newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
         newScoreboard = Scoreboard.getConstructor();
@@ -407,6 +476,12 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads PacketPlayOutScoreboardTeam's methods, fields and constructors
+     *
+     * @throws  ReflectiveOperationException
+     *          If some method, field or constructor was not found
+     */
     protected void scoreboardTeam() throws ReflectiveOperationException {
         newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
         PacketPlayOutScoreboardTeam_NAME = getFields(PacketPlayOutScoreboardTeam, String.class).get(0);
@@ -433,8 +508,21 @@ public abstract class NMSStorage {
         }
     }
 
+    /**
+     * Loads all classes used by the plugin
+     *
+     * @throws  ClassNotFoundException
+     *          If a class was not found
+     */
     public abstract void loadClasses() throws ClassNotFoundException;
 
+    /**
+     * Loads all fields and methods which must be loaded by their name due to
+     * lack of other methods of reliably retrieving them.
+     *
+     * @throws  ReflectiveOperationException
+     *          If a field or method was not found
+     */
     public abstract void loadNamedFieldsAndMethods() throws ReflectiveOperationException;
 
     /**
@@ -475,6 +563,21 @@ public abstract class NMSStorage {
                 Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
     }
 
+    /**
+     * Returns Method from class with given name and parameter types. This should be equal to
+     * simply calling Class#getMethod, which however does not work with a few specific methods on
+     * CatServer fork. This workaround works for them.
+     *
+     * @param   clazz
+     *          Class to get method from
+     * @param   name
+     *          Name of the method
+     * @param   parameterTypes
+     *          Parameter types of the method
+     * @return  Method with specified name and parameter types
+     * @throws  NoSuchMethodException
+     *          If no such method was found
+     */
     protected Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
@@ -493,7 +596,18 @@ public abstract class NMSStorage {
         throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
     }
 
-    protected List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes){
+    /**
+     * Returns all methods from class which return specified class type and have specified parameter types.
+     *
+     * @param   clazz
+     *          Class to get methods from
+     * @param   returnType
+     *          Return type of methods
+     * @param   parameterTypes
+     *          Parameter types of methods
+     * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
+     */
+    protected List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
             if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
@@ -519,8 +633,7 @@ public abstract class NMSStorage {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
-    protected List<Field> getFields(Class<?> clazz, Class<?> type){
-        if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
+    protected List<Field> getFields(Class<?> clazz, Class<?> type) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type) {
@@ -539,8 +652,7 @@ public abstract class NMSStorage {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
-    public List<Field> getInstanceFields(Class<?> clazz, Class<?> type){
-        if (clazz == null) throw new IllegalArgumentException("Source class cannot be null");
+    public List<Field> getInstanceFields(Class<?> clazz, Class<?> type) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type && !Modifier.isStatic(field.getModifiers())) {
@@ -570,6 +682,19 @@ public abstract class NMSStorage {
         throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
     }
 
+    /**
+     * Returns field from class with specified possible names of the field.
+     * Names are checked in specified order and first match is returned.
+     * If no match is found, {@link NoSuchFieldException} is thrown.
+     *
+     * @param   clazz
+     *          Class to get field from
+     * @param   potentialNames
+     *          Potential names of the field
+     * @return  Field with specified name
+     * @throws  NoSuchFieldException
+     *          If no match is found
+     */
     protected Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
         for (String name : potentialNames) {
             try {
@@ -581,29 +706,61 @@ public abstract class NMSStorage {
         throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
     }
 
+    /**
+     * Returns all Enum values of specified class
+     *
+     * @param   enumClass
+     *          Class to get values of
+     * @return  Array of all values of the enum class
+     */
     protected Enum[] getEnumValues(Class<?> enumClass) {
-        if (enumClass == null) throw new IllegalArgumentException("Class cannot be null");
         if (!enumClass.isEnum()) throw new IllegalArgumentException(enumClass.getName() + " is not an enum class");
         try {
             return (Enum[]) enumClass.getMethod("values").invoke(null);
-        } catch (ReflectiveOperationException e) {
-            //this should never happen
-            return new Enum[0];
+        } catch (ReflectiveOperationException ignored) {
+            return new Enum[0]; // this will never happen
         }
     }
 
+    /**
+     * Returns server's minor version
+     * @return  server's minor version
+     */
     public int getMinorVersion() {
         return minorVersion;
     }
 
+    /**
+     * Sets value of a field in object
+     *
+     * @param   obj
+     *          Instance of object where field should be set
+     * @param   field
+     *          Field to set value of
+     * @param   value
+     *          Value to set field to
+     * @throws  IllegalAccessException
+     *          If thrown by reflective operation
+     */
     public void setField(Object obj, Field field, Object value) throws IllegalAccessException {
         field.set(obj, value);
     }
 
+    /**
+     * Returns data watcher registry
+     * @return  data watcher registry
+     */
     public DataWatcherRegistry getDataWatcherRegistry() {
         return registry;
     }
 
+    /**
+     * Makes object accessible and returns it for chaining.
+     *
+     * @param   o
+     *          Object to make accessible
+     * @return  Entered object, for chaining
+     */
     public <T extends AccessibleObject> T setAccessible(T o) {
         o.setAccessible(true);
         return o;

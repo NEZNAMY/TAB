@@ -16,17 +16,26 @@ import java.util.Map;
  */
 public class BukkitArmorStandManager implements ArmorStandManager {
 
-    //map of registered armor stands
+    /** Map of registered armor stands by name */
     private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
 
-    //players in entity tracking range
-    private final List<TabPlayer> nearbyPlayers = new ArrayList<>();
-
-    //array to iterate over to avoid concurrent modification and slightly boost performance & memory
+    /** Armor stands in an array for speed while iterating */
     private ArmorStand[] armorStandArray = new ArmorStand[0];
 
+    /** Players in entity tracking range of owner */
+    private final List<TabPlayer> nearbyPlayers = new ArrayList<>();
+
+    /** Nearby players in an array for speed while iterating */
     private TabPlayer[] nearbyPlayerArray = new TabPlayer[0];
 
+    /**
+     * Constructs new instance with given parameters and loads armor stands.
+     *
+     * @param   nameTagX
+     *          Main feature
+     * @param   owner
+     *          Owner of this armor stand manager
+     */
     public BukkitArmorStandManager(NameTagX nameTagX, TabPlayer owner) {
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
@@ -61,7 +70,7 @@ public class BukkitArmorStandManager implements ArmorStandManager {
 
     /**
      * Returns array of nearby players
-     * @return array of nearby players
+     * @return  array of nearby players
      */
     public TabPlayer[] getNearbyPlayers(){
         return nearbyPlayerArray;
@@ -79,11 +88,11 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     }
 
     /**
-     * Returns true if manager contains armor stand with specified entity id, false if not
+     * Returns {@code true} if manager contains armor stand with specified entity id, {@code false} if not
      *
      * @param   entityId
      *          entity id
-     * @return  true if armor stand with specified entity id exists, false if not
+     * @return  {@code true} if armor stand with specified entity id exists, {@code false} if not
      */
     public boolean hasArmorStandWithID(int entityId) {
         for (ArmorStand a : armorStandArray) {

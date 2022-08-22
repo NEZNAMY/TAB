@@ -53,7 +53,6 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (output == null) return false; //bridge placeholders, they are updated using updateValue method
         String obj = getReplacements().findReplacement(String.valueOf(output));
         String newValue = obj == null ? identifier : setPlaceholders(obj, p);
-        newValue = getReplacements().findReplacement(newValue);
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
@@ -87,7 +86,12 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         lastValues.put(player, s);
         if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
-        if (!player.isLoaded()) return;
+        if (!player.isLoaded()) {
+            if (player.isOnline()) {
+                TAB.getInstance().getCPUManager().runTask(() -> updateValue(player, value, force));
+            }
+            return;
+        }
         Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
         for (TabFeature f : usage) {

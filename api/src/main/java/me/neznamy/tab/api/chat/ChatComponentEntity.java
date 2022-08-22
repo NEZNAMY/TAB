@@ -2,21 +2,23 @@ package me.neznamy.tab.api.chat;
 
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.util.Preconditions;
 
 public class ChatComponentEntity extends IChatBaseComponent {
 
-    private final String type;
-    private final UUID id;
-    private final String name;
-    
+    private final String CONTENTS;
+    private final String VALUE_1_13;
+    private final String VALUE_1_12;
+    private final String VALUE_1_8;
+
     public ChatComponentEntity(String type, UUID id, String name) {
         Preconditions.checkNotNull(type, "type");
         Preconditions.checkNotNull(id, "id");
-        this.type = type;
-        this.id = id;
-        this.name = name;
+        this.CONTENTS = String.format("{\"type\":\"%s\",\"id\":\"%s\",\"name\":{\"text\":\"%s\"}}", type, id, name);
+        this.VALUE_1_13 = String.format("{type:\"%s\",id:\"%s\",name:\"{\\\"text\\\":\\\"%s\\\"}\"}", type, id, name);
+        this.VALUE_1_12 = String.format("{type:\"%s\",id:\"%s\",name:\"%s\"}", type, id, name);
+        this.VALUE_1_8 = String.format("{type:%s,id:%s,name:%s}", type, id, name);
     }
 
     @Override
@@ -26,16 +28,10 @@ public class ChatComponentEntity extends IChatBaseComponent {
     
     @Override
     public String toString() {
-        return String.format("{\"type\":\"%s\",\"id\":\"%s\",\"name\":{\"text\":\"%s\"}}", type, id, name);
-    }
-    
-    public JsonObject toJson() {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", type);
-        json.addProperty("id", id.toString());
-        JsonObject json2 = new JsonObject();
-        json2.addProperty("text", name);
-        json.add("name", json2);
-        return json;
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) return CONTENTS;
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) return VALUE_1_13;
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() == 12) return VALUE_1_12;
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) return VALUE_1_8;
+        throw new IllegalStateException("show_entity hover action is not supported on <1.8");
     }
 }

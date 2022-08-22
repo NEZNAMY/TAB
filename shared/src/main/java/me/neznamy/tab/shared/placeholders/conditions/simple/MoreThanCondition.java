@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.placeholders.conditions.simple;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
- * "leftSide>rightSide" condition
+ * "leftSide&gt;rightSide" condition
  */
 public class MoreThanCondition extends NumericCondition {
 

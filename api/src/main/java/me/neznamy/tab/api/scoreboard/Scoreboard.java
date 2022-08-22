@@ -74,7 +74,7 @@ public interface Scoreboard {
      * @param   index
      *          Index of line to remove, starting at 0
      * @throws  IndexOutOfBoundsException
-     *          if the index is out of range (index &lt; 0 || index >= {@link #getLines()}.size())
+     *          if the index is out of range (index &lt; 0 || index &gt;= {@link #getLines()}.size())
      * @see     #getLines()
      * @see     #addLine(String)
      */

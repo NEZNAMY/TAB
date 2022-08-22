@@ -9,4 +9,6 @@ public interface Placeholder {
     void enableTriggerMode(Runnable onActivation, Runnable onDisable);
 
     void unload();
+
+    boolean isUsed();
 }

@@ -291,7 +291,7 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public synchronized void sendCustomPacket(TabPacket packet) {
+    public void sendCustomPacket(TabPacket packet) {
         if (packet == null) return;
         //avoiding BungeeCord bug kicking all players
         if (packet instanceof PacketPlayOutScoreboardTeam) {
@@ -414,5 +414,9 @@ public abstract class ITabPlayer implements TabPlayer {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 }

@@ -75,6 +75,8 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         if (minorVersion >= 19) {
             Registry = Class.forName("net.minecraft.core.IdMap");
             IRegistry = Class.forName("net.minecraft.core.Registry");
+            ProfilePublicKey = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey");
+            ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$Data");
         }
 
         // Player Info

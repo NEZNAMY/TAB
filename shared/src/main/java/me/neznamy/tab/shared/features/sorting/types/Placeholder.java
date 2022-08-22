@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
-import java.util.LinkedHashMap;
-import java.util.Locale;
-
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+
+import java.util.LinkedHashMap;
+import java.util.Locale;
 
 /**
  * Sorting by a placeholder by values defined in list
@@ -26,7 +26,11 @@ public class Placeholder extends SortingType {
     public Placeholder(Sorting sorting, String options) {
         super(sorting, getPlaceholder(options));
         String[] args = options.split(":");
-        sortingMap = convertSortingElements(args[args.length-1].split(","));
+        if (args.length > 1)
+            sortingMap = convertSortingElements(args[args.length-1].split(","));
+        else
+            // Invalid configuration
+            sortingMap = new LinkedHashMap<>();
     }
 
     /**
@@ -39,6 +43,7 @@ public class Placeholder extends SortingType {
      */
     private static String getPlaceholder(String options) {
         String[] args = options.split(":");
+        if (args.length == 1) return args[0]; // Missing predefined values
         return options.substring(0, options.length()-args[args.length-1].length()-1);
     }
 

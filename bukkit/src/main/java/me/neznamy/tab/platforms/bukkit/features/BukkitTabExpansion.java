@@ -19,7 +19,7 @@ import java.util.WeakHashMap;
  */
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
 
-    /** Map holding all placeholder values for all players */
+    /** Map holding all values for all players for easy and high-performance access */
     private final Map<TabPlayer, Map<String, String>> values = new WeakHashMap<>();
 
     @Override

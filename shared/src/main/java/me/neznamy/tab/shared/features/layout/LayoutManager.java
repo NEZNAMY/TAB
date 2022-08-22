@@ -22,6 +22,7 @@ public class LayoutManager extends TabFeature {
     private final boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
     private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more"));
     private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
+    private final boolean hideVanishedPlayers = TAB.getInstance().getConfiguration().getLayout().getBoolean("hide-vanished-players", true);
     private final SkinManager skinManager = new SkinManager(defaultSkin);
 
     private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>(){{
@@ -104,6 +105,12 @@ public class LayoutManager extends TabFeature {
         if (highest != null) highest.sendTo(p);
         playerViews.put(p, highest);
         layouts.values().forEach(Layout::tick);
+
+        List<PlayerInfoData> data = new ArrayList<>();
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            data.add(new PlayerInfoData(all.getTablistUUID()));
+        }
+        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, data), this);
     }
 
     @Override
@@ -203,6 +210,10 @@ public class LayoutManager extends TabFeature {
 
     public String getDefaultSkin() {
         return defaultSkin;
+    }
+
+    public boolean isHideVanishedPlayers() {
+        return hideVanishedPlayers;
     }
 
     public enum Direction {

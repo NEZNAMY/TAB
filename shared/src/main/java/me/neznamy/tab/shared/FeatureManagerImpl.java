@@ -29,6 +29,10 @@ public class FeatureManagerImpl implements FeatureManager {
     /** All registered features in an array to avoid memory allocations on iteration */
     private TabFeature[] values = new TabFeature[0];
 
+    private boolean objectiveListeners = false;
+
+    private boolean displayObjectiveListeners = false;
+
     /**
      * Calls load() on all features.
      * This function is called on plugin startup.
@@ -178,6 +182,16 @@ public class FeatureManagerImpl implements FeatureManager {
         return cancel;
     }
 
+    @Override
+    public void markObjective() {
+        objectiveListeners = true;
+    }
+
+    @Override
+    public void markDisplayObjective() {
+        displayObjectiveListeners = true;
+    }
+
     /**
      * Calls onPacketReceive(TabPlayer, Object) on all features
      * 
@@ -250,6 +264,7 @@ public class FeatureManagerImpl implements FeatureManager {
      *          if reflective operation fails
      */
     public void onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
+        if (!displayObjectiveListeners) return;
         long time = System.nanoTime();
         PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet);
         TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
@@ -270,6 +285,7 @@ public class FeatureManagerImpl implements FeatureManager {
      *          if reflective operation fails
      */
     public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
+        if (!objectiveListeners) return;
         long time = System.nanoTime();
         PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet);
         TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);
@@ -310,5 +326,10 @@ public class FeatureManagerImpl implements FeatureManager {
     @Override
     public TabFeature getFeature(String name) {
         return features.get(name);
+    }
+
+    @Override
+    public TabFeature[] getValues() {
+        return values;
     }
 }

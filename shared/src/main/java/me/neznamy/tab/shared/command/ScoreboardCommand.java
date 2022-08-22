@@ -13,7 +13,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
 /**
  * Handler for "/tab scoreboard [on/off/toggle] [player] [options]" subcommand
- * and "/tab scoreboard show <name> [player]"
+ * and "/tab scoreboard show &lt;name&gt; [player]"
  */
 public class ScoreboardCommand extends SubCommand {
 

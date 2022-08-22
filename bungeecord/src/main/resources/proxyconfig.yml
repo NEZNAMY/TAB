@@ -52,6 +52,7 @@ scoreboard-teams:
     - "GROUPS:owner,admin,mod,helper,builder,vip,default"
     - "PLACEHOLDER_A_TO_Z:%player%"
   case-sensitive-sorting: true
+  can-see-friendly-invisibles: false
   disable-in-worlds:
     - disabledworld
   disable-in-servers:
@@ -89,6 +90,7 @@ global-playerlist:
   display-vanished-players-as-spectators: true
   isolate-unlisted-servers: false
   update-latency: false
+  fill-profile-key: false
   spy-servers:
     - spyserver1
     - spyserver2

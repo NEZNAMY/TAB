@@ -24,6 +24,7 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
+    private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
 
     public GlobalPlayerList() {
         super("Global PlayerList", null);
@@ -125,8 +126,17 @@ public class GlobalPlayerList extends TabFeature {
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(p.getName(), p.getTablistUUID(), p.getSkin(),
-                p.getPing(), vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE, format));
+        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER,
+                new PlayerInfoData(
+                        p.getName(),
+                        p.getTablistUUID(),
+                        p.getSkin(),
+                        p.getPing(),
+                        vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
+                        format,
+                        fillProfileKey ? p.getProfilePublicKey() : null
+                )
+        );
     }
 
     @Override

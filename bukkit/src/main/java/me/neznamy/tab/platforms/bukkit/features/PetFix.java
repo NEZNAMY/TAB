@@ -22,13 +22,13 @@ import java.util.WeakHashMap;
  */
 public class PetFix extends TabFeature {
 
-    //nms storage
+    /** NMS Storage reference for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();
 
-    //DataWatcher position of pet owner field
+    /** DataWatcher position of pet owner field */
     private final int petOwnerPosition = getPetOwnerPosition();
 
-    //logger of last interacts to prevent feature not working on 1.16
+    /** Logger of last interacts to prevent feature not working on 1.16 */
     private final WeakHashMap<TabPlayer, Long> lastInteractFix = new WeakHashMap<>();
 
     /**
@@ -94,6 +94,13 @@ public class PetFix extends TabFeature {
         return false;
     }
 
+    /**
+     * Checks if the provided entity use action is INTERACT or not.
+     *
+     * @param   action
+     *          Action to check
+     * @return {@code true} if action is INTERACT, {@code false} if not.
+     */
     private boolean isInteract(Object action) {
         if (nms.getMinorVersion() >= 17) {
             return nms.PacketPlayInUseEntity$d.isInstance(action);

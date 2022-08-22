@@ -59,4 +59,8 @@ public class ParentGroup {
     public Map<TabPlayer, PlayerSlot> getPlayers() {
         return players;
     }
+
+    public Map<Integer, PlayerSlot> getPlayerSlots() {
+        return playerSlots;
+    }
 }

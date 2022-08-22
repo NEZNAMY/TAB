@@ -90,4 +90,10 @@ public interface FeatureManager {
      * @return  {@code true} if some feature marked the command for cancel, {@code false} if not
      */
     boolean onCommand(TabPlayer sender, String command);
+
+    void markObjective();
+
+    void markDisplayObjective();
+
+    TabFeature[] getValues();
 }

@@ -10,6 +10,7 @@ import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import net.md_5.bungee.protocol.PlayerPublicKey;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -64,6 +65,7 @@ public class BungeePacketBuilder extends PacketBuilder {
             }
             item.setUsername(data.getName());
             item.setUuid(data.getUniqueId());
+            item.setPublicKey((PlayerPublicKey) data.getProfilePublicKey());
             items.add(item);
         }
         PlayerListItem bungeePacket = new PlayerListItem();
@@ -108,7 +110,7 @@ public class BungeePacketBuilder extends PacketBuilder {
         List<PlayerInfoData> listData = new ArrayList<>();
         for (Item i : item.getItems()) {
             Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0].getValue(), i.getProperties()[0].getSignature());
-            listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.VALUES[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName())));
+            listData.add(new PlayerInfoData(i.getUsername(), i.getUuid(), skin, i.getPing(), EnumGamemode.VALUES[i.getGamemode()+1], IChatBaseComponent.deserialize(i.getDisplayName()), i.getPublicKey()));
         }
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
     }

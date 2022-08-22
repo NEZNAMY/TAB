@@ -69,7 +69,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
     public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         Object component = toNMSComponent(packet.getMessage(), clientVersion);
         if (nms.getMinorVersion() >= 19)
-            return nms.newPacketPlayOutChat.newInstance(component, packet.getType().ordinal());
+            try {
+                return nms.newPacketPlayOutChat.newInstance(component, packet.getType() == PacketPlayOutChat.ChatMessageType.GAME_INFO);
+            } catch (Exception e) {
+                //1.19.0
+                return nms.newPacketPlayOutChat.newInstance(component, packet.getType().ordinal());
+            }
         if (nms.getMinorVersion() >= 16)
             return nms.newPacketPlayOutChat.newInstance(component, nms.ChatMessageType_values[packet.getType().ordinal()], UUID.randomUUID());
         if (nms.getMinorVersion() >= 12)
@@ -97,7 +102,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
             parameters.add(data.getLatency());
             parameters.add(data.getGameMode() == null ? null : nms.EnumGamemode_values[nms.EnumGamemode_values.length-EnumGamemode.VALUES.length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
             parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
-            if (nms.getMinorVersion() >= 19) parameters.add(null);
+            if (nms.getMinorVersion() >= 19) parameters.add(data.getProfilePublicKey());
             items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
         }
         nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
@@ -359,8 +364,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
                 Property pr = profile.getProperties().get("textures").iterator().next();
                 skin = new Skin(pr.getValue(), pr.getSignature());
             }
+            Object profilePublicKey = nms.getMinorVersion() >= 19 ? nms.PlayerInfoData_getProfilePublicKeyRecord.invoke(nmsData) : null;
             listData.add(new PlayerInfoData(profile.getName(), profile.getId(), skin,
-                    (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName));
+                    (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName, profilePublicKey));
         }
         return new PacketPlayOutPlayerInfo(action, listData);
     }
@@ -382,7 +388,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Builds entity BossBar packet
+     * Builds entity packet representing requested BossBar packet using Wither on 1.8- clients.
      *
      * @param   packet
      *          packet to build
@@ -410,6 +416,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         }
         if (packet.getAction() == Action.ADD) {
             w.helper().setEntityFlags((byte) 32);
+            w.helper().setWitherInvulnerableTime(880); // Magic number
             return build(new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w));
         } else {
             return build(new PacketPlayOutEntityMetadata(entityId, w));
@@ -429,13 +436,15 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Converts TAB's IChatBaseComponent into minecraft's component.
+     * Converts TAB's IChatBaseComponent into minecraft's component using String deserialization.
+     * If the requested component is found in cache, it is returned. If not, it is created, added into cache and returned.
+     * If {@code component} is {@code null}, returns {@code null}
      *
      * @param   component
      *          component to convert
      * @param   clientVersion
      *          client version used to decide RGB conversion
-     * @return  converted component
+     * @return  converted component or {@code null} if {@code component} is {@code null}
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
