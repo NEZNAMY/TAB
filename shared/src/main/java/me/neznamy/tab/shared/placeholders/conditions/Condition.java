@@ -27,6 +27,8 @@ public class Condition {
             new LinkedHashMap<String, Function<String, SimpleCondition>>(){{
         put("permission:", PermissionCondition::new);
         put("<-", ContainsCondition::new);
+        put("|-", StartsWithCondition::new);
+        put("-|", EndsWithCondition::new);
         put(">=", MoreThanOrEqualsCondition::new);
         put(">", MoreThanCondition::new);
         put("<=", LessThanOrEqualsCondition::new);
