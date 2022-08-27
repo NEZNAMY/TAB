@@ -97,7 +97,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          Packet request to handle
      */
     private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-        getPlayer().getTabList().setHeaderAndFooter(Main.getInstance().convertComponent(packet.getHeader(), getVersion()),
+        getPlayer().sendPlayerListHeaderAndFooter(Main.getInstance().convertComponent(packet.getHeader(), getVersion()),
                 Main.getInstance().convertComponent(packet.getFooter(), getVersion()));
     }
 
