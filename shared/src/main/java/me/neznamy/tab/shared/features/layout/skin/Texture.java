@@ -32,7 +32,7 @@ public class Texture extends SkinSource {
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestMethod("POST");
             con.setDoOutput(true);
-            String jsonInputString = "{\"variant\":\"classic\",\"name\":\"string\",\"visibility\":0,\"url\":\"http://textures.minecraft.net/texture/" + texture + "\"}";
+            String jsonInputString = "{\"variant\":\"classic\",\"name\":\"string\",\"visibility\":0,\"url\":\"https://textures.minecraft.net/texture/" + texture + "\"}";
             try (OutputStream os = con.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
