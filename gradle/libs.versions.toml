@@ -14,7 +14,7 @@ minimessage = "4.11.0"
 # General
 luckperms = "5.4"
 guava = "31.1-jre"
-floodgate = "2.0-SNAPSHOT"
+floodgate = "2.2.0-SNAPSHOT"
 kotlin = "1.6.10"
 event = "3.0.0"
 
@@ -25,14 +25,14 @@ krypton = "0.59.2"
 velocity = "3.1.2-SNAPSHOT"
 
 # Platform extras
-placeholderapi = "2.11.1"
+placeholderapi = "2.11.2"
 vault = "1.7"
-via = "4.3.1"
+via = "4.4.2"
 authlib = "1.5.25"
 bstats = "3.0.0"
-essentials = "2.19.4"
+essentials = "2.19.7"
 premiumVanish = "2.0.3"
-redisBungee = "0.7.2"
+redisBungee = "0.7.23"
 
 # Plugins
 indra = "2.1.1"

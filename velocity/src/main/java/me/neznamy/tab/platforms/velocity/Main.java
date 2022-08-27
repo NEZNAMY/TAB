@@ -35,7 +35,7 @@ import java.util.Map;
  * requires manual compilation. This avoids unnecessary complications
  * and bug reports from an unsupported platform.
  */
-//@com.velocitypowered.api.plugin.Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@com.velocitypowered.api.plugin.Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
 public class Main {
 
     /** Plugin instance */
