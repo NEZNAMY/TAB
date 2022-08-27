@@ -3,11 +3,11 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.78.Final"
+netty = "4.1.80.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.30"
 yamlAssist = "1.0.5"
-gson = "2.9.0"
+gson = "2.9.1"
 slf4j = "1.7.36"
 minimessage = "4.11.0"
 
@@ -31,8 +31,8 @@ via = "4.4.2"
 authlib = "1.5.25"
 bstats = "3.0.0"
 essentials = "2.19.7"
-premiumVanish = "2.7.18"
-redisBungee = "0.7.22"
+premiumVanish = "2.7.11-2"
+redisBungee = "0.7.3"
 
 # Plugins
 indra = "2.1.1"
