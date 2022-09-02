@@ -116,7 +116,11 @@ public class TabConstants {
         public static final String COMMAND_MYSQL_DOWNLOAD = "tab.mysql.download";
         public static final String COMMAND_MYSQL_UPLOAD = "tab.mysql.upload";
         public static final String COMMAND_NAMETAG_TOGGLE = "tab.nametag.toggle";
+
+        public static final String COMMAND_NAMETAG_TOGGLE_OTHER = "tab.nametag.toggle.other";
         public static final String COMMAND_NAMETAG_PREVIEW = "tab.nametag.preview";
+
+        public static final String COMMAND_NAMETAG_PREVIEW_OTHER = "tab.nametag.preview.other";
         public static final String COMMAND_PARSE = "tab.parse";
         public static final String COMMAND_SCOREBOARD_ANNOUNCE = "tab.announce.scoreboard";
         public static final String COMMAND_SCOREBOARD_TOGGLE = "tab.scoreboard.toggle";

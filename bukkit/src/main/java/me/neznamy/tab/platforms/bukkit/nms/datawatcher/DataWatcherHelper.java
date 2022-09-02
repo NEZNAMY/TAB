@@ -14,13 +14,13 @@ import java.util.Optional;
  */
 public class DataWatcherHelper {
 
-    //position of armor stand flags
+    /** Position of armor stand flags */
     private final int armorStandFlagsPosition = getArmorStandFlagsPosition();
 
-    //original DataWatcher to write to
+    /** DataWatcher to write to */
     private final DataWatcher data;
 
-    //data watcher registry
+    /** Data Watcher registry reference */
     private final DataWatcherRegistry registry;
 
     /**

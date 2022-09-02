@@ -91,9 +91,26 @@ public interface FeatureManager {
      */
     boolean onCommand(TabPlayer sender, String command);
 
+    /**
+     * Internal function that marks objective packet deserialization
+     * when at least 1 feature uses it.
+     * <p>
+     * Internal use only.
+     */
     void markObjective();
 
+    /**
+     * Internal function that marks display objective packet deserialization
+     * when at least 1 feature uses it.
+     * <p>
+     * Internal use only.
+     */
     void markDisplayObjective();
 
+    /**
+     * Returns array of all currently enabled features
+     *
+     * @return  array of all currently enabled features
+     */
     TabFeature[] getValues();
 }

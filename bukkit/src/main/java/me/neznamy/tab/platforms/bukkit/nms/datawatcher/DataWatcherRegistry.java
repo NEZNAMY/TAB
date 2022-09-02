@@ -9,10 +9,19 @@ import java.util.Map;
  */
 public class DataWatcherRegistry {
 
+    /** Byte encoder */
     private Object registryByte;
+
+    /** Float encoder */
     private Object registryFloat;
+
+    /** String encoder */
     private Object registryString;
+
+    /** Encoder for optional component */
     private Object registryOptionalIChatBaseComponent;
+
+    /** Boolean encoder */
     private Object registryBoolean;
 
     /**
@@ -43,22 +52,42 @@ public class DataWatcherRegistry {
         }
     }
 
+    /**
+     * Returns {@link #registryByte}
+     * @return  {@link #registryByte}
+     */
     public Object getByte() {
         return registryByte;
     }
 
+    /**
+     * Returns {@link #registryFloat}
+     * @return  {@link #registryFloat}
+     */
     public Object getFloat() {
         return registryFloat;
     }
 
+    /**
+     * Returns {@link #registryString}
+     * @return  {@link #registryString}
+     */
     public Object getString() {
         return registryString;
     }
 
+    /**
+     * Returns {@link #registryOptionalIChatBaseComponent}
+     * @return  {@link #registryOptionalIChatBaseComponent}
+     */
     public Object getOptionalComponent() {
         return registryOptionalIChatBaseComponent;
     }
 
+    /**
+     * Returns {@link #registryBoolean}
+     * @return  {@link #registryBoolean}
+     */
     public Object getBoolean() {
         return registryBoolean;
     }

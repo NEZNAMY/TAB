@@ -4,12 +4,15 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 
+/**
+ * Class representing NMS Data Watcher Item
+ */
 public class DataWatcherItem {
     
-    //type of value (position + data type (1.9+))
+    /** Value type */
     private final DataWatcherObject type;
     
-    //actual data value
+    /** Data value */
     private final Object value;
     
     /**
@@ -46,10 +49,18 @@ public class DataWatcherItem {
         }
     }
 
+    /**
+     * Returns {@link #type}
+     * @return  {@link #type}
+     */
     public DataWatcherObject getType() {
         return type;
     }
 
+    /**
+     * Returns {@link #value}
+     * @return  {@link #value}
+     */
     public Object getValue() {
         return value;
     }

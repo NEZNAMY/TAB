@@ -1,5 +1,9 @@
 package me.neznamy.tab.api;
 
+/**
+ * Interface representing an armor stand attached to player
+ * for displaying text in game.
+ */
 public interface ArmorStand {
 
     /**
@@ -92,6 +96,13 @@ public interface ArmorStand {
      *          player to spawn for
      */
     void spawn(TabPlayer viewer);
-    
+
+    /**
+     * Sends respawn packets to specified player to make position
+     * change instant instead of teleport animation
+     *
+     * @param   viewer
+     *          Player to send armor stand respawn packets to
+     */
     void respawn(TabPlayer viewer);
 }

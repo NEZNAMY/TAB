@@ -13,22 +13,25 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The packet listening part for securing proper functionality of armor stands
+ * The packet listening part for securing proper functionality of armor stands.
  * Bukkit events are too unreliable and delayed/ahead which causes de-sync
+ * if trying to listen to move event.
+ * For entering/leaving tracking range there are no events and
+ * periodic / move-triggered distance checks would cause high CPU usage.
  */
 public class PacketListener extends TabFeature {
 
-    //main feature
+    /** Reference to the main feature */
     private final BukkitNameTagX nameTagX;
 
-    //player data by entityId, used for better performance
+    /** A player map by entity id, used for better performance */
     private final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
     
-    //nms storage
+    /** Reference to NMS storage for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();
 
     /**
-     * Constructs new instance with given parameters and loads config options
+     * Constructs new instance with given parameter
      *
      * @param   nameTagX
      *          main feature
@@ -100,7 +103,10 @@ public class PacketListener extends TabFeature {
     }
 
     /**
-     * Processes entity move packet
+     * Processes entity move packet. If entity ID belongs to a player,
+     * armor stands of that player are teleported to player who received the packet.
+     * If it belongs to a vehicle carrying a player, that player's armor stands are
+     * teleported as well.
      *
      * @param   receiver
      *          packet receiver
@@ -126,7 +132,16 @@ public class PacketListener extends TabFeature {
             }
         }
     }
-    
+
+    /**
+     * Processes named entity spawn packet and spawns armor stands if
+     * entity ID belongs to an online player.
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entityId
+     *          spawned entity
+     */
     private void onEntitySpawn(TabPlayer receiver, int entityId) {
         TabPlayer spawnedPlayer = entityIdMap.get(entityId);
         if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
@@ -135,18 +150,45 @@ public class PacketListener extends TabFeature {
         }
     }
 
+    /**
+     * Processes entity destroy packet and destroys armor stands if
+     * entity ID belongs to an online player.
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entities
+     *          de-spawned entities
+     */
     private void onEntityDestroy(TabPlayer receiver, List<Integer> entities) {
         for (int entity : entities) {
             onEntityDestroy(receiver, entity);
         }
     }
-    
+
+    /**
+     * Processes entity destroy packet and destroys armor stands if
+     * entity ID belongs to an online player.
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entities
+     *          de-spawned entities
+     */
     private void onEntityDestroy(TabPlayer receiver, int... entities) {
         for (int entity : entities) {
             onEntityDestroy(receiver, entity);
         }
     }
-    
+
+    /**
+     * Processes entity destroy packet and destroys armor stands if
+     * entity ID belongs to an online player.
+     *
+     * @param   receiver
+     *          packet receiver
+     * @param   entity
+     *          de-spawned entity
+     */
     private void onEntityDestroy(TabPlayer receiver, int entity) {
         TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
         if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {

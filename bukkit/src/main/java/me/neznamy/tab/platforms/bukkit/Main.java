@@ -55,7 +55,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //null check due to L34 return making L37 not run
+        //null check due to compatibility check making instance not get set on unsupported versions
         if (TAB.getInstance() != null) TAB.getInstance().unload();
     }
     
@@ -90,14 +90,14 @@ public class Main extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
                 return true;
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.x - 1.19. Disabling just to stay safe."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.x - 1.19.2. Disabling just to stay safe."));
             }
         } catch (Exception ex) {
             if (supportedVersions.contains(serverPackage)) {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"));
                 getLogger().log(Level.SEVERE, "", ex);
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.19. Disabling."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.x - 1.19.2. Disabling."));
             }
         }
         return false;

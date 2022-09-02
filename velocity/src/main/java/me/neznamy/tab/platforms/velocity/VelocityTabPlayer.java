@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /**
-     * Map of methods executing tasks using API calls equal to sending the actual packets
+     * Map of methods executing tasks using Velocity API calls equal to sending the actual packets
      */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
@@ -161,7 +161,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      * Processes bossbar flag by adding or removing it based on provided value.
      *
      * @param   bar
-     *          Bossbar to process flag of
+     *          BossBar to process flag of
      * @param   targetValue
      *          Flag value
      * @param   flag

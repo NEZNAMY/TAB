@@ -10,15 +10,16 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 /**
- * The event listener part for securing proper functionality of armor stands
+ * Class listening to Bukkit events which the feature requires and are
+ * sufficient, without packets being requires.
  */
 public class EventListener implements Listener {
 
-    //the NameTag feature handler
+    /** Reference to the main feature */
     private final BukkitNameTagX feature;
 
     /**
-     * Constructs new instance with given parameters
+     * Constructs new instance with given parameter
      *
      * @param   feature
      *          NameTag feature handler

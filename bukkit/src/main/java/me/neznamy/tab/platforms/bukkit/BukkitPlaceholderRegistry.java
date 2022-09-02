@@ -33,15 +33,33 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
     /** Number formatter for 2 decimal places */
     private final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
+    /** JavaPlugin reference for registering events */
     private final JavaPlugin plugin;
+
+    /** Vault Chat hook */
     private Chat chat;
-    private final Plugin essentials = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.ESSENTIALS);
+
+    /** NMS server to get TPS from on spigot */
     private Object server;
+
+    /** TPS field*/
     private Field recentTps;
+
+    /** Detection for presence of Paper's TPS getter */
     private Method paperTps;
+
+    /** Detection for presence of Paper's MSPT getter */
     private Method paperMspt;
+
+    /** Detection for presence of Purpur's AFK getter */
     private Method purpurIsAfk;
 
+    /**
+     * Constructs new instance with given parameter and loads hooks
+     *
+     * @param   plugin
+     *          reference to the plugin's main class
+     */
     public BukkitPlaceholderRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
         numberFormat.setMaximumFractionDigits(2);
@@ -63,7 +81,6 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
     @SuppressWarnings("deprecation")
     @Override
     public void registerPlaceholders(PlaceholderManager manager) {
-        super.registerPlaceholders(manager);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500, p -> ((Player) p.getPlayer()).getDisplayName());
         if (paperTps != null) {
             manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000, () -> formatTPS(Bukkit.getTPS()[0]));
@@ -81,6 +98,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
         if (paperMspt != null) {
             manager.registerServerPlaceholder(TabConstants.Placeholder.MSPT, 1000, () -> numberFormat.format(Bukkit.getAverageTickTime()));
         }
+        Plugin essentials = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.ESSENTIALS);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.AFK, 500, p -> {
             if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
             return purpurIsAfk != null && ((Player)p.getPlayer()).isAfk();
@@ -93,8 +111,8 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             Listener nickListener = new Listener() {
                 @EventHandler
                 public void onNickChange(NickChangeEvent e) {
-                    String name = e.getValue() == null ? e.getAffected().getName() : e.getValue();
-                    TabPlayer player = TAB.getInstance().getPlayer(e.getAffected().getUUID());
+                    String name = e.getValue() == null ? e.getController().getName() : e.getValue();
+                    TabPlayer player = TAB.getInstance().getPlayer(e.getController().getUUID());
                     if (player == null) return;
                     nick.updateValue(player, name);
                 }
@@ -113,8 +131,16 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             manager.registerServerPlaceholder(TabConstants.Placeholder.VAULT_SUFFIX, -1, () -> "");
         }
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
+        super.registerPlaceholders(manager);
     }
 
+    /**
+     * Formats TPS using number formatter with 2 decimal places.
+     *
+     * @param   tps
+     *          TPS to format
+     * @return  Formatted TPS as a String
+     */
     private String formatTPS(double tps) {
         return numberFormat.format(Math.min(20, tps));
     }

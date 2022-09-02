@@ -10,19 +10,35 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Sub-feature for unlimited name tag mode to secure
+ * proper functionality when using vehicles.
+ * A config option allows to disable the feature on boats,
+ * where it would cause a massive de-sync due to boat movement
+ * animation.
+ * Additionally, when entering a vehicle, no move packet is sent
+ * and therefore manual teleporting of armor stands is required.
+ */
 public class VehicleRefresher extends TabFeature {
 
-    //map of players currently in a vehicle
+    /** Map of players currently in a vehicle */
     private final WeakHashMap<TabPlayer, Entity> playersInVehicle = new WeakHashMap<>();
     
-    //map of vehicles carrying players
+    /** Map of vehicles carrying players */
     private final Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
     
-    //set of players currently on boats
+    /** set of players currently on boats */
     private final Set<TabPlayer> playersOnBoats = Collections.newSetFromMap(new WeakHashMap<>());
-    
+
+    /** Reference to the main feature */
     private final BukkitNameTagX feature;
-        
+
+    /**
+     * Constructs new instance with given parameter and starts tasks.
+     *
+     * @param   feature
+     *          Main feature
+     */
     public VehicleRefresher(BukkitNameTagX feature) {
         super(feature.getFeatureName(), "Refreshing vehicles");
         this.feature = feature;
@@ -96,10 +112,22 @@ public class VehicleRefresher extends TabFeature {
         }
     }
 
+    /**
+     * Returns {@code true} if the player is in a boat, {@code false} if not
+     *
+     * @param   p
+     *          Player to check
+     * @return  {@code true} if in a boat, {@code false} if not
+     */
     public boolean isOnBoat(TabPlayer p) {
         return playersOnBoats.contains(p);
     }
-    
+
+    /**
+     * Returns vehicle map
+     *
+     * @return  vehicle map
+     */
     public Map<Integer, List<Entity>> getVehicles() {
         return vehicles;
     }
@@ -119,7 +147,7 @@ public class VehicleRefresher extends TabFeature {
             if (vehicle.getPassenger() != null) {
                 return Collections.singletonList(vehicle.getPassenger());
             } else {
-                return new ArrayList<>();
+                return Collections.emptyList();
             }
         }
     }

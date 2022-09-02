@@ -388,7 +388,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Builds entity BossBar packet
+     * Builds entity packet representing requested BossBar packet using Wither on 1.8- clients.
      *
      * @param   packet
      *          packet to build
@@ -436,13 +436,15 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Converts TAB's IChatBaseComponent into minecraft's component.
+     * Converts TAB's IChatBaseComponent into minecraft's component using String deserialization.
+     * If the requested component is found in cache, it is returned. If not, it is created, added into cache and returned.
+     * If {@code component} is {@code null}, returns {@code null}
      *
      * @param   component
      *          component to convert
      * @param   clientVersion
      *          client version used to decide RGB conversion
-     * @return  converted component
+     * @return  converted component or {@code null} if {@code component} is {@code null}
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */

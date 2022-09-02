@@ -114,7 +114,6 @@ public class TAB extends TabAPI {
         this.serverVersionString = serverVersionString;
         this.dataFolder = dataFolder;
         this.logger = logger;
-        TabAPI.setInstance(this);
         try {
             Class.forName("org.geysermc.floodgate.api.FloodgateApi");
             floodgate = true;

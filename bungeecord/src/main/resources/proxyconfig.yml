@@ -90,6 +90,7 @@ global-playerlist:
   display-vanished-players-as-spectators: true
   isolate-unlisted-servers: false
   update-latency: false
+  fill-profile-key: false
   spy-servers:
     - spyserver1
     - spyserver2

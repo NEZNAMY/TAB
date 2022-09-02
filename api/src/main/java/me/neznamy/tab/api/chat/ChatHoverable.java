@@ -53,8 +53,18 @@ public class ChatHoverable {
      */
     public enum EnumHoverAction {
 
-        SHOW_TEXT,
-        SHOW_ITEM,
-        SHOW_ENTITY
+        SHOW_TEXT("contents"),
+        SHOW_ITEM("value"),
+        SHOW_ENTITY("contents");
+
+        private final String preferredKey;
+
+        EnumHoverAction(String preferredKey) {
+            this.preferredKey = preferredKey;
+        }
+
+        public String getPreferredKey() {
+            return preferredKey;
+        }
     }
 }

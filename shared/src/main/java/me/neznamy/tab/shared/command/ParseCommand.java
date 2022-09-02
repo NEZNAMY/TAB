@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 
 /**
- * Handler for "/tab parse <player> <placeholder>" subcommand
+ * Handler for "/tab parse &lt;player&gt; &lt;placeholder&gt;" subcommand
  */
 public class ParseCommand extends SubCommand {
 

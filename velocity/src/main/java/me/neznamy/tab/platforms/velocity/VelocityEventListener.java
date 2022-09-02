@@ -68,7 +68,7 @@ public class VelocityEventListener {
     }
 
     /**
-     * Listener to plugin message event
+     * Listener to plugin message event to process messages coming from bridge
      *
      * @param   event
      *          plugin message event

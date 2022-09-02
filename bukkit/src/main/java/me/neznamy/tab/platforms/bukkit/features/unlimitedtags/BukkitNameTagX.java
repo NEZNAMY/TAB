@@ -11,17 +11,19 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * The core class for unlimited NameTag mode
+ * The core class for unlimited NameTag mode on Bukkit
  */
 public class BukkitNameTagX extends NameTagX {
 
-    //bukkit event listener
+    /** Bukkit event listener */
     private final EventListener eventListener = new EventListener(this);
 
+    /** Vehicle manager reference */
     private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
     /**
-     * Constructs new instance with given parameters and loads config options
+     * Constructs new instance with given parameter, loads config options, registers events
+     * and registers sub-features.
      *
      * @param   plugin
      *          plugin instance
@@ -45,6 +47,9 @@ public class BukkitNameTagX extends NameTagX {
         startVisibilityRefreshTask();
     }
 
+    /**
+     * Starts task checking for player visibility to hide armor stands of invisible players.
+     */
     private void startVisibilityRefreshTask() {
         TabAPI.getInstance().getThreadManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
@@ -76,6 +81,16 @@ public class BukkitNameTagX extends NameTagX {
         return vehicleManager != null && vehicleManager.isOnBoat(player);
     }
 
+    /**
+     * Spawns armor stands of target player to viewer if all requirements are met.
+     * These include players being in the same world, distance being less than 48 blocks
+     * and target player being visible to viewer.
+     *
+     * @param   viewer
+     *          Player viewing armor stands
+     * @param   target
+     *          Target player with armor stands
+     */
     private void spawnArmorStands(TabPlayer viewer, TabPlayer target) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (target == viewer || isPlayerDisabled(target)) return;
@@ -163,6 +178,10 @@ public class BukkitNameTagX extends NameTagX {
         return (BukkitArmorStandManager) armorStandManagerMap.get(player);
     }
 
+    /**
+     * Returns {@link #vehicleManager}
+     * @return  {@link #vehicleManager}
+     */
     public VehicleRefresher getVehicleManager() {
         return vehicleManager;
     }

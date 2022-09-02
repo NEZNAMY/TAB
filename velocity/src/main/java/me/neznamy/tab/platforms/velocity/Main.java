@@ -33,7 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main class for Velocity platform
+ * Main class for Velocity platform.
+ * The velocity-plugin.json file creation is disabled by default and
+ * requires manual compilation. This avoids unnecessary complications
+ * and bug reports from an unsupported platform.
  */
 @Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works",
         authors = {"NEZNAMY"}, dependencies = {@Dependency(id = "velocitypacketinjector")})
@@ -135,7 +138,8 @@ public class Main {
     }
 
     /**
-     * Unloads the plugin
+     * Shutdown event listener that properly disables all features
+     * and makes them send unload packets to players.
      *
      * @param   event
      *          proxy disable event
@@ -148,12 +152,14 @@ public class Main {
     /**
      * Converts TAB's component class into adventure component.
      * Currently, the only way of conversion is string serialization / deserialization.
+     * Manual conversion for better performance might be added in the future.
+     * If the entered component is {@code null}, returns {@code null}
      *
      * @param   component
      *          Component to convert
      * @param   clientVersion
      *          Version of player to convert for
-     * @return  Converted component
+     * @return  Converted component or {@code null} if {@code component} is {@code null}
      */
     public Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (component == null) return null;
@@ -165,7 +171,7 @@ public class Main {
      * inserted into cache and returned.
      *
      * @param   map
-     *          Cache to load / save component
+     *          Cache to load component from / save component into
      * @param   component
      *          Component to convert
      * @param   clientVersion
@@ -181,7 +187,7 @@ public class Main {
     }
 
     /**
-     * TAB's command
+     * TAB's main command for operating with the plugin
      */
     private static class VelocityTABCommand implements SimpleCommand {
 

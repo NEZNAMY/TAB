@@ -20,10 +20,10 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
      */
     private final String name;
 
-    /** Team prefix, limited to 16 characters, on <1.13 */
+    /** Team prefix, limited to 16 characters, on &lt;1.13 */
     private String playerPrefix;
 
-    /** Team suffix, limited to 16 characters, on <1.13 */
+    /** Team suffix, limited to 16 characters, on &lt;1.13 */
     private String playerSuffix;
 
     /** 
@@ -46,7 +46,7 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
 
     /** 
      * Affected entities. For players, it is their name, for other entities their UUID
-     * Player name length is limited to 16 characters for <1.8, 40 characters since 1.8.
+     * Player name length is limited to 16 characters for &lt;1.8, 40 characters since 1.8.
      * Entity UUID option was added in 1.8.
      */
     private Collection<String> players = Collections.emptyList();

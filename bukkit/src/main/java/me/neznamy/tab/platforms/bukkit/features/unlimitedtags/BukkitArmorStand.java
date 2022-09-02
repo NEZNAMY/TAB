@@ -18,48 +18,63 @@ import org.bukkit.entity.Pose;
 import java.util.UUID;
 
 /**
- * A class representing an armor stand attached to a player (if the feature is enabled)
+ * A class representing an armor stand attached to a player
  */
 public class BukkitArmorStand implements ArmorStand {
 
-    //entity id counter to pick unique entity IDs
+    /** Entity id counter to pick unique entity ID for each armor stand */
     private static int idCounter = 2000000000;
 
-    //NameTag feature
+    /** NameTag feature */
     private final BukkitNameTagX manager = (BukkitNameTagX) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
 
+    /** Armor stand manager which this armor stand belongs to */
     private final BukkitArmorStandManager asm;
     
-    //owner of the armor stand
+    /** Owner of the armor stand */
     private final TabPlayer owner;
 
-    //instance of Bukkit player
+    /** Owner as a Bukkit player */
     private final Player player;
 
-    //offset in blocks, 0 for original height
+    /** Offset in blocks, 0 for original height */
     private double yOffset;
 
-    //entity ID of this armor stand
-    private final int entityId = idCounter++;
-
-    //unique ID of this armor stand
-    private final UUID uuid = UUID.randomUUID();
-
-    //sneaking flag of armor stands
-    private boolean sneaking;
-
-    //armor stand visibility
-    private boolean visible;
-
-    //property dedicated to this armor stand
-    private final Property property;
-
-    //if offset is static or dynamic based on other armor stands
+    /** If offset is static, or dynamic based on other armor stands */
     private final boolean staticOffset;
 
-    //entity destroy packet
+    /** Entity ID of this armor stand */
+    private final int entityId = idCounter++;
+
+    /** Unique ID of this armor stand */
+    private final UUID uuid = UUID.randomUUID();
+
+    /** Sneaking flag of armor stands */
+    private boolean sneaking;
+
+    /** Armor stand visibility */
+    private boolean visible;
+
+    /** Refresh property dedicated to this armor stand */
+    private final Property property;
+
+    /** Entity destroy packet */
     private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   asm
+     *          Armor stand manager which this armor stand belongs to
+     * @param   owner
+     *          Owner of the armor stand
+     * @param   propertyName
+     *          Name of refresh property to use
+     * @param   yOffset
+     *          Offset in blocks
+     * @param   staticOffset
+     *          {@code true} if offset is static, {@code false} if not
+     */
     public BukkitArmorStand(BukkitArmorStandManager asm, TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
         this.asm = asm;
         this.owner = owner;
@@ -189,7 +204,7 @@ public class BukkitArmorStand implements ArmorStand {
     /**
      * Returns general visibility rule for everyone with limited info
      *
-     * @return  true if armor stand should be visible, false if not
+     * @return  {@code true} if armor stand should be visible, {@code false} if not
      */
     public boolean getVisibility() {
         if (manager.isArmorStandsAlwaysVisible()) return true;
@@ -198,11 +213,13 @@ public class BukkitArmorStand implements ArmorStand {
     }
 
     /**
-     * Returns general location where armor stand should be at time of calling
+     * Returns location where armor stand should be at time of calling.
+     * This takes into account everything that affects height, including
+     * viewer's game version.
      *
      * @param   viewer
      *          Player looking at the armor stand
-     * @return  Location where armor stand should be for everyone
+     * @return  Location where armor stand should be for specified viewer
      */
     public Location getLocation(TabPlayer viewer) {
         double x = player.getLocation().getX();
@@ -255,6 +272,10 @@ public class BukkitArmorStand implements ArmorStand {
         return player.getLocation().getY();
     }
 
+    /**
+     * Returns {@code true} if owner is swimming, {@code false} if not
+     * @return  {@code true} if owner is swimming, {@code false} if not
+     */
     private boolean isSwimming() {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 14 && player.getPose() == Pose.SWIMMING) return true;
         return TabAPI.getInstance().getServerVersion().getMinorVersion() == 13 && player.isSwimming();
@@ -291,11 +312,12 @@ public class BukkitArmorStand implements ArmorStand {
     }
 
     /**
-     * Returns true if display name is in fact empty, for example only containing color codes
+     * Returns {@code true} if display name is in fact empty,
+     * for example only containing color codes, {@code false} if not.
      *
      * @param   displayName
      *          string to check
-     * @return  true if it's empty, false if not
+     * @return  {@code true} if it's empty, {@code false} if not
      */
     private boolean isNameVisiblyEmpty(String displayName) {
         if (displayName.length() == 0) return true;
