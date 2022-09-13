@@ -266,7 +266,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             activeScoreboard.remove(player);
         }
         forcedScoreboard.put(player, (ScoreboardImpl) scoreboard);
-        ((ScoreboardImpl) scoreboard).addPlayer(player);
+        if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer(player);
     }
 
     @Override
