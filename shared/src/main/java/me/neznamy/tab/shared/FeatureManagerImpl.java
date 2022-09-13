@@ -159,7 +159,8 @@ public class FeatureManagerImpl implements FeatureManager {
         String from = changed.getServer();
         ((ITabPlayer)changed).setServer(to);
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
-        if (!isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) onLoginPacket(changed);
+        if (!isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION) || changed.getVersion().getMinorVersion() < 8)
+            onLoginPacket(changed);
         for (TabFeature f : values) {
             if (!f.overridesMethod("onServerChange")) continue;
             long time = System.nanoTime();
