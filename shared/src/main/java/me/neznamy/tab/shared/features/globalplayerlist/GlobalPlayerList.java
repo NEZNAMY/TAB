@@ -140,7 +140,7 @@ public class GlobalPlayerList extends TabFeature {
                         p.getSkin(),
                         p.getPing(),
                         vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
-                        format,
+                        viewer.getVersion().getMinorVersion() >= 8 ? format : null,
                         fillProfileKey ? p.getProfilePublicKey() : null
                 )
         );
