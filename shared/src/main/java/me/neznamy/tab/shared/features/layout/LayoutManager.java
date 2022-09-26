@@ -106,6 +106,8 @@ public class LayoutManager extends TabFeature {
         playerViews.put(p, highest);
         layouts.values().forEach(Layout::tick);
 
+        // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
+        if (highest == null) return;
         List<PlayerInfoData> data = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             data.add(new PlayerInfoData(all.getTablistUUID()));
