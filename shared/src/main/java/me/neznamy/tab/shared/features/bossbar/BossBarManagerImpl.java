@@ -273,6 +273,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
         BossBar line = lines.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         TAB.getInstance().getCPUManager().runTask(() -> {
+            TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.COUNTDOWN).markAsUsed();
             announcements.add(line);
             announceEndTime = System.currentTimeMillis() + duration* 1000L;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
