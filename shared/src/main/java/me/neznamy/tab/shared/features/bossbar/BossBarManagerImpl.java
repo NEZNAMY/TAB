@@ -106,6 +106,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
             line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
         }
         showBossBars(p, defaultBars);
+        showBossBars(p, announcements.stream().map(BossBar::getName).collect(Collectors.toList()));
     }
 
     @Override
@@ -173,7 +174,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
      *          list of BossBars to check
      */
     private void showBossBars(TabPlayer p, List<String> bars) {
-        if (bars == null) return;
         for (String defaultBar : bars) {
             BossBarLine bar = (BossBarLine) lines.get(defaultBar);
             if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {
