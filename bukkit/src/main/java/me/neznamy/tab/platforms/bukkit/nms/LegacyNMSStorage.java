@@ -72,7 +72,7 @@ public class LegacyNMSStorage extends NMSStorage {
             ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, new String[]{"a", "func_150699_a"}, String.class); // {Bukkit, Thermos}
         }
         if (minorVersion >= 8) {
-            ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, "setNameTagVisibility", EnumNameTagVisibility);
+            ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8}
         }
         if (minorVersion >= 9) {
             DataWatcher_REGISTER = getMethod(DataWatcher, "register", DataWatcherObject, Object.class);
