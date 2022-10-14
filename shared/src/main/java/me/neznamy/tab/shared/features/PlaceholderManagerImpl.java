@@ -72,23 +72,18 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
     
     private void refresh(Map<TabPlayer, Set<TabFeature>> forceUpdate, Map<TabPlayer, Set<TabFeature>> update) {
-        for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
-            if (forceUpdate.containsKey(entry.getKey())) {
-                entry.getValue().removeAll(forceUpdate.get(entry.getKey()));
-            }
-        }
         long startRefreshTime = System.nanoTime();
-        for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
-            for (TabFeature r : entry.getValue()) {
-                long startTime = System.nanoTime();
-                r.refresh(entry.getKey(), true);
-                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
-            }
-        }
         for (Entry<TabPlayer, Set<TabFeature>> entry : update.entrySet()) {
             for (TabFeature r : entry.getValue()) {
                 long startTime = System.nanoTime();
                 r.refresh(entry.getKey(), false);
+                TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+            }
+        }
+        for (Entry<TabPlayer, Set<TabFeature>> entry : forceUpdate.entrySet()) {
+            for (TabFeature r : entry.getValue()) {
+                long startTime = System.nanoTime();
+                r.refresh(entry.getKey(), true);
                 TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
             }
         }
