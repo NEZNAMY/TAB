@@ -1,9 +1,6 @@
-Owner:
-  tabprefix: "&0&l[&a&lOwner&0&l] &a"
-  tagprefix: "&2&lOwner &a"
-Admin:
-  tabprefix: "&0&l[&4&lAdmin&0&l] &1"
-  tagprefix: "&4&lAdmin &a"
+#Owner:
+#  tabprefix: "&0&l[&a&lOwner&0&l] &a"
+#  tagprefix: "&2&lOwner &a"
 Player:
   tabprefix: "&0&l[&7&lPlayer&0&l] &3"
   tagprefix: "&2&lPlayer &3"
