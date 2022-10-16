@@ -4,6 +4,9 @@ plugins {
 }
 
 indra {
-    publishReleasesTo("krypton-repo", "https://repo.kryptonmc.org/releases")
-    publishSnapshotsTo("krypton-repo", "https://repo.kryptonmc.org/snapshots")
+    publishReleasesTo("krypton", "https://repo.kryptonmc.org/releases")
+    publishSnapshotsTo("krypton", "https://repo.kryptonmc.org/snapshots")
+    configurePublications {
+        artifactId = "tab-$artifactId"
+    }
 }
