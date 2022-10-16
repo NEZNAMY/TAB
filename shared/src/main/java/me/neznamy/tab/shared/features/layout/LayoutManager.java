@@ -83,7 +83,7 @@ public class LayoutManager extends TabFeature {
                     for (String line : (List<String>) group.getValue().get("slots")) {
                         String[] arr = line.split("-");
                         int from = Integer.parseInt(arr[0]);
-                        int to = Integer.parseInt(arr[1]);
+                        int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
                         for (int i = from; i<= to; i++) {
                             positions.add(i);
                         }
