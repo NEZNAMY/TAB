@@ -17,10 +17,10 @@ Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.
 # Links
 The precompiled JAR can be downloaded for free from:  
 * GitHub releases: https://github.com/NEZNAMY/TAB/releases
-* MC-Market: https://www.mc-market.org/resources/20631/
+* BuiltByBit: https://builtbybit.com/resources/20631/
 
-Supporting my work:  
-* MC-Market: https://www.mc-market.org/resources/14009/
+Support my work & receive official assistance with configuration:  
+* BuiltByBit: https://builtbybit.com/resources/14009/
 * Polymart: https://polymart.org/resource/484
 
 Other links:
@@ -44,4 +44,4 @@ is in quality of the report (typically providing correct steps to reproduce that
 for problems of any kind including bugs. This way you will help make the actual releases more stable / help get stable releases sooner.
 * Help improve the wiki by opening a [Wiki change issue](https://github.com/NEZNAMY/TAB/issues/new?assignees=&labels=Wiki&template=wiki_change.yml), 
 where you can improve existing descriptions, add information you found missing, fix typos / grammar mistakes or add more examples of usage of functions.
-* [Buy a copy](https://www.mc-market.org/resources/14009/) of the plugin or [send a donation](https://paypal.me/neznamy1) to keep the plugin active.
+* [Buy a copy](https://builtbybit.com/resources/14009/) of the plugin or [send a donation](https://paypal.me/neznamy1) to keep the plugin active.
