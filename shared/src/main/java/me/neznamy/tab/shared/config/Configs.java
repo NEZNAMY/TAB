@@ -64,12 +64,18 @@ public class Configs {
         converter.convertAnimationFile(animation);
         if (config.getBoolean("mysql.enabled", false)) {
             try {
+                // Initialization to try to avoid java.sql.SQLException: No suitable driver found
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                } catch (ClassNotFoundException e) {
+                    Class.forName("com.mysql.jdbc.Driver");
+                }
                 mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
                         config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
                 groupFile = new MySQLGroupConfiguration(mysql);
                 userFile = new MySQLUserConfiguration(mysql);
                 return;
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
             }
         }
