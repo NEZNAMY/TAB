@@ -9,10 +9,10 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class LayoutManager extends TabFeature {
@@ -24,7 +24,6 @@ public class LayoutManager extends TabFeature {
     private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
     private final boolean hideVanishedPlayers = TAB.getInstance().getConfiguration().getLayout().getBoolean("hide-vanished-players", true);
     private final SkinManager skinManager = new SkinManager(defaultSkin);
-
     private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>(){{
         for (int slot=1; slot<=80; slot++) {
             put(slot, new UUID(0, translateSlot(slot)));
@@ -32,7 +31,9 @@ public class LayoutManager extends TabFeature {
     }};
     private final Map<String, Layout> layouts = loadLayouts();
     private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
-    private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(TabPlayer::getTeamName)));
+    private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
+    private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
+    private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
     public LayoutManager() {
         super("Layout", "Switching layouts");
@@ -100,7 +101,8 @@ public class LayoutManager extends TabFeature {
 
     @Override
     public void onJoin(TabPlayer p) {
-        sortedPlayers.put(p, p.getTeamName());
+        teamNames.put(p, sorting.getFullTeamName(p));
+        sortedPlayers.put(p, sorting.getFullTeamName(p));
         Layout highest = getHighestLayout(p);
         if (highest != null) highest.sendTo(p);
         playerViews.put(p, highest);
@@ -118,6 +120,7 @@ public class LayoutManager extends TabFeature {
     @Override
     public void onQuit(TabPlayer p) {
         sortedPlayers.remove(p);
+        teamNames.remove(p);
         layouts.values().forEach(Layout::tick);
     }
 
@@ -181,7 +184,7 @@ public class LayoutManager extends TabFeature {
 
     public void updateTeamName(TabPlayer p, String teamName) {
         sortedPlayers.remove(p);
-        ((ITabPlayer) p).setTeamName(teamName);
+        teamNames.put(p, teamName);
         sortedPlayers.put(p, teamName);
         layouts.values().forEach(Layout::tick);
     }

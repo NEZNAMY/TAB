@@ -63,10 +63,10 @@ public class NickCompatibility extends TabFeature {
 
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName()), this);
+                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player)), this);
                     String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(player.getTeamName(), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
+                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
                             nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(player.getNickname()), nameTags.getTeamOptions()), this);
                 }
             }

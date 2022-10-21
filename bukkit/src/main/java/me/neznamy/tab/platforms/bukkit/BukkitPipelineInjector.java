@@ -13,6 +13,7 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -117,9 +118,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
                     newList.add(entry);
                     continue;
                 }
+                Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
                 if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(p.getTeamName())) {
-                    logTeamOverride(teamName, p.getName(), p.getTeamName());
+                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(sorting.getShortTeamName(p))) {
+                    logTeamOverride(teamName, p.getName(), sorting.getShortTeamName(p));
                 } else {
                     newList.add(entry);
                 }

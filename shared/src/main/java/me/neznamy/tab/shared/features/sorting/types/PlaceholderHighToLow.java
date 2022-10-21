@@ -22,7 +22,7 @@ public class PlaceholderHighToLow extends SortingType {
     @Override
     public String getChars(ITabPlayer p) {
         String output = setPlaceholders(p);
-        p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\". &r");
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + sortingPlaceholder + " returned \"" + output + "\". &r");
         double doubleValue = TAB.getInstance().getErrorManager().parseDouble(output, 0);
         String string = String.valueOf(DEFAULT_NUMBER - doubleValue);
         return string.length() > 10 ? string.substring(0, 10) : string;

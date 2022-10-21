@@ -17,7 +17,10 @@ public abstract class SortingType {
     //placeholder to sort by, if sorting type uses it
     protected String sortingPlaceholder;
 
-    protected SortingType(){
+    protected Sorting sorting;
+
+    protected SortingType(Sorting sorting) {
+        this.sorting = sorting;
     }
     
     /**
@@ -27,6 +30,7 @@ public abstract class SortingType {
      *          placeholder to sort by
      */
     protected SortingType(Sorting sorting, String sortingPlaceholder){
+        this.sorting = sorting;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
             TAB.getInstance().getErrorManager().startupWarn("\"" + sortingPlaceholder + "\" is not a valid placeholder for " + this + " sorting type");
         } else {

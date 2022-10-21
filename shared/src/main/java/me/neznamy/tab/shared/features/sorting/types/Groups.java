@@ -28,9 +28,9 @@ public class Groups extends SortingType {
         String chars = sortedGroups.get(group.toLowerCase());
         if (chars == null) {
             chars = String.valueOf(sortedGroups.size()+1);
-            p.setTeamNameNote(p.getTeamNameNote() + "&cPlayer's primary group is not in sorting list. &r");
+            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&cPlayer's primary group is not in sorting list. &r");
         } else {
-            p.setTeamNameNote(p.getTeamNameNote() + String.format("Primary group is #%s in sorting list", Integer.parseInt(chars)) + ". &r");
+            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + String.format("Primary group is #%s in sorting list", Integer.parseInt(chars)) + ". &r");
         }
         return chars;
     }

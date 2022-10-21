@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
@@ -111,9 +112,10 @@ public class BungeePipelineInjector extends PipelineInjector {
             if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
             Collection<String> col = Lists.newArrayList(packet.getPlayers());
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+                Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
                 if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(p.getTeamName())) {
-                    logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(sorting.getShortTeamName(p))) {
+                    logTeamOverride(packet.getName(), p.getName(), sorting.getShortTeamName(p));
                     col.remove(p.getNickname());
                 }
             }

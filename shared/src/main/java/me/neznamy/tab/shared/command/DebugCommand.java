@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -141,16 +142,17 @@ public class DebugCommand extends SubCommand {
      * @return  team name of specified player
      */
     private String getTeamName(TabPlayer analyzed) {
+        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (TAB.getInstance().getTeamManager() != null) {
             if (((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
                 return "&eTeam name: &cSorting is disabled in player's world/server";
             } else {
-                return "&eTeam name: &a" + analyzed.getTeamName();
+                return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
+                    ? sorting.getFullTeamName(analyzed) : sorting.getShortTeamName(analyzed));
             }
         }
         return "";
     }
-
 
     /**
      * Returns team name note of specified player
@@ -160,10 +162,11 @@ public class DebugCommand extends SubCommand {
      * @return  team name note of specified player
      */
     private String getTeamNameNote(TabPlayer analyzed) {
+        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (TAB.getInstance().getTeamManager() != null &&
             !((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld()) &&
-            analyzed.getTeamNameNote() != null)
-                return "&eTeam name note: &r" + analyzed.getTeamNameNote();
+                sorting.getTeamNameNote(analyzed) != null)
+                return "&eTeam name note: &r" + sorting.getTeamNameNote(analyzed);
         return "";
     }
 

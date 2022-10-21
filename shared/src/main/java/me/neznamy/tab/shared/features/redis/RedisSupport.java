@@ -10,6 +10,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -38,6 +39,9 @@ public abstract class RedisSupport extends TabFeature {
 
     /** NameTag feature */
     private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
+
+    /** Sorting feature */
+    private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
     /**
      * Constructs new instance
@@ -439,5 +443,9 @@ public abstract class RedisSupport extends TabFeature {
                 all.sendCustomPacket(p.getRegisterTeamPacket());
             }
         }
+    }
+
+    public Sorting getSorting() {
+        return sorting;
     }
 }

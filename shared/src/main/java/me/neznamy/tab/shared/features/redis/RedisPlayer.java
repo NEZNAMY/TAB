@@ -73,7 +73,7 @@ public class RedisPlayer {
     private static String checkTeamName(RedisSupport redis, String currentName15, int id) {
         String potentialTeamName = currentName15 + (char)id;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
+            if (redis.getSorting() != null && redis.getSorting().getShortTeamName(all).equals(potentialTeamName)) {
                 return checkTeamName(redis, currentName15, id+1);
             }
         }
@@ -110,7 +110,7 @@ public class RedisPlayer {
         if (p.getProperty(TabConstants.Property.YELLOW_NUMBER) != null) {
             json.put("yellow-number", p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
         }
-        json.put("teamname", p.getTeamName());
+        json.put("teamname", redis.getSorting() == null ? null : redis.getSorting().getShortTeamName(p));
         json.put("vanished", p.isVanished());
         json.put("staff", p.hasPermission(TabConstants.Permission.STAFF));
         if (p.getSkin() != null) {

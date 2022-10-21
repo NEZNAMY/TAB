@@ -10,7 +10,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -49,7 +48,7 @@ public class NameTag extends TabFeature implements TeamManager {
     public void load(){
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            ((ITabPlayer) all).setTeamName(getSorting().getTeamName(all));
+            sorting.constructTeamNames(all);
             updateProperties(all);
             hiddenNameTagFor.put(all, new ArrayList<>());
             if (isDisabled(all.getServer(), all.getWorld())) {
@@ -93,7 +92,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        ((ITabPlayer) connectedPlayer).setTeamName(getSorting().getTeamName(connectedPlayer));
+        sorting.constructTeamNames(connectedPlayer);
         updateProperties(connectedPlayer);
         hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -116,7 +115,7 @@ public class NameTag extends TabFeature implements TeamManager {
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         if (!isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
-            PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(disconnectedPlayer.getTeamName());
+            PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(disconnectedPlayer));
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
                 viewer.sendCustomPacket(packet, TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
@@ -218,9 +217,9 @@ public class NameTag extends TabFeature implements TeamManager {
         unregisterTeam(player);
         forcedTeamName.put(player, name);
         registerTeam(player);
-        if (name != null) ((ITabPlayer)player).setTeamNameNote("Set using API");
+        if (name != null) sorting.setTeamNameNote(player, "Set using API");
         RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        if (redis != null) redis.updateTeamName(player, player.getTeamName());
+        if (redis != null) redis.updateTeamName(player, sorting.getShortTeamName(player));
     }
 
     @Override
@@ -246,7 +245,7 @@ public class NameTag extends TabFeature implements TeamManager {
             String currentPrefix = tagPrefix.getFormat(viewer);
             String currentSuffix = tagSuffix.getFormat(viewer);
             boolean visible = getTeamVisibility(p, viewer);
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
         }
         RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) redis.updateNameTag(p, p.getProperty(TabConstants.Property.TAGPREFIX).get(), p.getProperty(TabConstants.Property.TAGSUFFIX).get());
@@ -256,13 +255,13 @@ public class NameTag extends TabFeature implements TeamManager {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
     }
 
     public void unregisterTeam(TabPlayer p) {
-        if (hasTeamHandlingPaused(p) || p.getTeamName() == null) return;
+        if (hasTeamHandlingPaused(p) || sorting.getShortTeamName(p) == null) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName()), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p)), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
         }
     }
 
@@ -276,23 +275,23 @@ public class NameTag extends TabFeature implements TeamManager {
         if (hasTeamHandlingPaused(p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(p.getTeamName(), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)), 
+        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
                 translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
     }
 
     private void updateTeam(TabPlayer p) {
-        if (p.getTeamName() == null) return; //player not loaded yet
-        String newName = getSorting().getTeamName(p);
-        if (p.getTeamName().equals(newName)) {
+        if (sorting.getShortTeamName(p) == null) return; //player not loaded yet
+        String oldName = getSorting().getShortTeamName(p);
+        getSorting().constructTeamNames(p);
+        if (oldName.equals(sorting.getShortTeamName(p))) {
             updateTeamData(p);
         } else {
             unregisterTeam(p);
             LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
-            if (layout != null) layout.updateTeamName(p, newName);
-            ((ITabPlayer) p).setTeamName(newName);
+            if (layout != null) layout.updateTeamName(p, sorting.getFullTeamName(p));
             registerTeam(p);
             RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-            if (redis != null) redis.updateTeamName(p, p.getTeamName());
+            if (redis != null) redis.updateTeamName(p, sorting.getShortTeamName(p));
         }
     }
 

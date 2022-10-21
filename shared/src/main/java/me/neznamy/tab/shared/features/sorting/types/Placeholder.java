@@ -50,13 +50,13 @@ public class Placeholder extends SortingType {
     @Override
     public String getChars(ITabPlayer p) {
         String output = EnumChatFormat.color(setPlaceholders(p));
-        p.setTeamNameNote(p.getTeamNameNote() + sortingPlaceholder + " returned \"" + output + "\"");
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + sortingPlaceholder + " returned \"" + output + "\"");
         String sortingValue = sortingMap.get(output.toLowerCase(Locale.US));
         if (sortingValue == null) {
             sortingValue = String.valueOf(sortingMap.size()+1);
-            p.setTeamNameNote(p.getTeamNameNote() + "&c (not in list)&r. ");
+            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&c (not in list)&r. ");
         } else {
-            p.setTeamNameNote(p.getTeamNameNote() + "&r (#" + Integer.parseInt(sortingValue) + " in list). &r");
+            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&r (#" + Integer.parseInt(sortingValue) + " in list). &r");
         }
         return sortingValue;
     }
