@@ -11,6 +11,7 @@ import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 /**
@@ -366,6 +367,13 @@ public abstract class ITabPlayer implements TabPlayer {
     @Override
     public boolean isBedrockPlayer() {
         return bedrockPlayer;
+    }
+
+    @Override
+    public String getTeamName() {
+        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+        if (sorting == null) return null;
+        return sorting.getShortTeamName(this);
     }
 
     @Override

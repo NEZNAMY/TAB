@@ -206,6 +206,13 @@ public interface TabPlayer {
     boolean loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet);
 
     /**
+     * Returns name of player's scoreboard team or {@code null} if NameTag feature is disabled
+     *
+     * @return  name of player's team
+     */
+    String getTeamName();
+
+    /**
      * Returns {@code true} if player is disguised using LibsDisguises, {@code false} if not
      *
      * @return  {@code true} if player is disguised, {@code false} if not
