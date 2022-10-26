@@ -146,12 +146,14 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     public void onServerChange(TabPlayer p, String from, String to) {
         onWorldChange(p, null, null);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p))), this);
-            if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all))), this);
-        }
+        TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+                        new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p))), this);
+                if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
+                        new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all))), this);
+            }
+        });
     }
 
     @Override
