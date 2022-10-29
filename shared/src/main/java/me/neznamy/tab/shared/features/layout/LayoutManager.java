@@ -67,14 +67,18 @@ public class LayoutManager extends TabFeature {
             }
             for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
                 String[] array = fixedSlot.split("\\|");
-                int slot = Integer.parseInt(array[0]);
-                String text = array[1];
-                String skin = array.length > 2 ? array[2] : "";
-                int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], emptySlotPing) : emptySlotPing;
-                FixedSlot f = new FixedSlot(l, slot, text, skin, ping);
-                fixedSlots.put(slot, f);
-                emptySlots.remove((Integer)slot);
-                if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
+                try {
+                    int slot = Integer.parseInt(array[0]);
+                    String text = array[1];
+                    String skin = array.length > 2 ? array[2] : "";
+                    int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], emptySlotPing) : emptySlotPing;
+                    FixedSlot f = new FixedSlot(l, slot, text, skin, ping);
+                    fixedSlots.put(slot, f);
+                    emptySlots.remove((Integer)slot);
+                    if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
+                } catch (NumberFormatException e) {
+                    TAB.getInstance().getErrorManager().startupWarn("Layout \"" + layout.getKey() + "\"'s fixed slot line \"" + fixedSlot + "&c\" has invalid number as slot.");
+                }
             }
             Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.get("groups");
             if (groups != null) {
