@@ -57,5 +57,7 @@ body:
           required: true
         - label: I have read the wiki to make sure it's not an issue with configuration
           required: true
+        - label: I ticked all of the boxes without actually reading them
+          required: false
         - label: I have read the Compatibility wiki page and am not trying to run the plugin on an unsupported server version / platform
           required: true
