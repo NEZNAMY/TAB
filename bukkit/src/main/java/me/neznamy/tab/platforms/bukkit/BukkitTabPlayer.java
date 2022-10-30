@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
-import com.earth2me.essentials.Essentials;
 import com.mojang.authlib.GameProfile;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
@@ -277,10 +276,11 @@ public class BukkitTabPlayer extends ITabPlayer {
 
     @Override
     public boolean isVanished() {
-        Essentials essentials = ((BukkitPlatform)TAB.getInstance().getPlatform()).getEssentials();
-        if (essentials != null && essentials.getUser(getUniqueId()).isVanished()) return true;
         List<MetadataValue> metadata = getPlayer().getMetadata("vanished");
-        return !metadata.isEmpty() && metadata.get(0).asBoolean();
+        for (MetadataValue meta : metadata) {
+            if (meta.asBoolean()) return true;
+        }
+        return false;
     }
 
     @SuppressWarnings("deprecation")
