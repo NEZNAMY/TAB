@@ -276,11 +276,7 @@ public class BukkitTabPlayer extends ITabPlayer {
 
     @Override
     public boolean isVanished() {
-        List<MetadataValue> metadata = getPlayer().getMetadata("vanished");
-        for (MetadataValue meta : metadata) {
-            if (meta.asBoolean()) return true;
-        }
-        return false;
+        return getPlayer().getMetadata("vanished").stream().anyMatch(MetadataValue::asBoolean);
     }
 
     @SuppressWarnings("deprecation")
