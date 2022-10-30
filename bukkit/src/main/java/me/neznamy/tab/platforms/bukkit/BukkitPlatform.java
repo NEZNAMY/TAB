@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import com.earth2me.essentials.Essentials;
 import com.viaversion.viaversion.api.Via;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
@@ -15,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -43,7 +42,6 @@ public class BukkitPlatform extends Platform {
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
     private boolean libsDisguises = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
-    private final Plugin essentials = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.ESSENTIALS);
     private Plugin viaVersion;
     private final boolean protocolSupport = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
 
@@ -211,15 +209,6 @@ public class BukkitPlatform extends Platform {
      */
     public void setLibsDisguisesEnabled(boolean enabled) {
         libsDisguises = enabled;
-    }
-
-    /**
-     * Returns Essentials' main class if the plugin is installed, {@code null} if not
-     *
-     * @return  Essentials instance or {@code null} if plugin is not installed
-     */
-    public Essentials getEssentials() {
-        return (Essentials) essentials;
     }
 
     @Override
