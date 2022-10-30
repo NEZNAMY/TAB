@@ -36,6 +36,11 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
+        if (invisibleNameTags) {
+            TAB.getInstance().getErrorManager().startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.");
+            TAB.getInstance().getErrorManager().startupWarn("If you want nametags to be invisible, you don't need unlimited nametag mode at all.");
+            TAB.getInstance().getErrorManager().startupWarn("If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
+        }
         TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, disabledUnlimitedServers=%s, disabledUnlimitedWorlds=%s",
                 markerFor18x, disableOnBoats, disabledUnlimitedServers, disabledUnlimitedWorlds));
     }
