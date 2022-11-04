@@ -89,7 +89,7 @@ public class CpuManager implements ThreadManager {
      */
     public void enable() {
         enabled = true;
-        taskQueue.forEach(this::submit);
+        new ArrayList<>(taskQueue).forEach(this::submit);
         taskQueue.clear();
     }
 
