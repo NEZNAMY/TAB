@@ -240,4 +240,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
             }
         }
     }
+
+    public void removePlayerFromSet(TabPlayer player) {
+        players.remove(player);
+    }
 }
