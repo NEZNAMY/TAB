@@ -279,6 +279,11 @@ public abstract class ITabPlayer implements TabPlayer {
                 registeredTeams.add(team);
             } else if (method == 1) {
                 registeredTeams.remove(team);
+            } else if (method == 2) {
+                if (!registeredTeams.contains(team)) {
+                    TAB.getInstance().getErrorManager().printError("Tried to modify non-existing team " + team + " for player " + getName());
+                    return;
+                }
             }
         }
         //avoiding BungeeCord bug kicking all players
