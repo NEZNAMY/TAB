@@ -45,9 +45,12 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String identifier){
         if (identifier.startsWith("replace_")) {
-            String placeholder = "%" + identifier.substring(8) + "%";
-            String output = PlaceholderAPI.setPlaceholders(player, placeholder);
-            return TabAPI.getInstance().getPlaceholderManager().findReplacement(placeholder, output);
+            String replaced = "%" + identifier.substring(8) + "%";
+            String output;
+            while (!(output = PlaceholderAPI.setPlaceholders(player, replaced)).equals(replaced)) {
+                replaced = TabAPI.getInstance().getPlaceholderManager().findReplacement(replaced, output);
+            }
+            return replaced;
         }
         if (identifier.startsWith("placeholder_")) {
             TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", (TabFeature) TabAPI.getInstance().getPlaceholderManager());
