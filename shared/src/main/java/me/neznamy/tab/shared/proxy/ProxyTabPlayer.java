@@ -60,10 +60,11 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * joined, containing all plugin configuration data.
      */
     public void sendJoinPluginMessage() {
+        ProxyTabExpansion expansion = (ProxyTabExpansion) TAB.getInstance().getPlaceholderManager().getTabExpansion();
         List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge && !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX),
-                TAB.getInstance().getPlaceholderManager().getTabExpansion() != null);
+                expansion != null);
         ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
         Map<String, Integer> placeholders = platform.getBridgePlaceholders();
         args.add(placeholders.size());
@@ -90,6 +91,9 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
             }
         }
         ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+        if (expansion != null) {
+            expansion.resendAllValues(this);
+        }
     }
 
     /**
