@@ -123,9 +123,4 @@ public abstract class ProxyPlatform extends Platform {
             tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion());
         }
     }
-
-    @Override
-    public String getConfigName() {
-        return "proxyconfig.yml";
-    }
 }

@@ -89,12 +89,4 @@ public abstract class Platform {
      * @return  Version string if plugin is installed, {@code null} if not
      */
     public abstract String getPluginVersion(String plugin);
-
-    /**
-     * Returns name of default config file for this platform
-     * as it appears in the final jar in root directory.
-     *
-     * @return  name of default config file for this platform
-     */
-    public abstract String getConfigName();
 }

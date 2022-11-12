@@ -107,11 +107,6 @@ time:
   - '&7> Date &b%date% &7<'
   - '&7>> Date &b%date% &7<<'
   - '&7>>> Date &b%date% &7<<<'
-ping-tps:
-  change-interval: 5000
-  texts:
-  - '&aPing: &2&n%ping%&r &ams'
-  - '&bServer TPS: &8%tps%'
 barcolors:
   change-interval: 1000
   texts:

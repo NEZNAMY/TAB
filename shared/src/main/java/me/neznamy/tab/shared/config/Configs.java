@@ -21,7 +21,7 @@ import java.util.List;
 public class Configs {
 
     //config.yml file
-    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream(TAB.getInstance().getPlatform().getConfigName()),
+    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config.yml"),
             new File(TAB.getInstance().getDataFolder(), "config.yml"));
 
     private final boolean bukkitPermissions = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY && config.getBoolean("use-bukkit-permissions-manager", false);

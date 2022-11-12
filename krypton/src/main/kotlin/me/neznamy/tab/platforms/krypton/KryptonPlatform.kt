@@ -95,8 +95,6 @@ class KryptonPlatform(
 
     override fun isPluginEnabled(plugin: String): Boolean = server.pluginManager.isLoaded(plugin)
 
-    override fun getConfigName(): String = "kryptonconfig.yml"
-
     private fun loadNametagFeature() {
         if (!TAB.getInstance().config.getBoolean("scoreboard-teams.enabled", true)) return
         if (TAB.getInstance().config.getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {

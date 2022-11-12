@@ -211,11 +211,6 @@ public class BukkitPlatform extends Platform {
         libsDisguises = enabled;
     }
 
-    @Override
-    public String getConfigName() {
-        return "bukkitconfig.yml";
-    }
-
     /**
      * Gets protocol version of requested player and returns it.
      *
