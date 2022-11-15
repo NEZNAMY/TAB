@@ -66,10 +66,10 @@ public abstract class ITabPlayer implements TabPlayer {
     private boolean onJoinFinished;
 
     /** Scoreboard teams player has registered */
-    private final List<String> registeredTeams = new ArrayList<>();
+    private final Set<String> registeredTeams = new HashSet<>();
 
     /** Scoreboard objectives player has registered */
-    private final List<String> registeredObjectives = new ArrayList<>();
+    private final Set<String> registeredObjectives = new HashSet<>();
 
     /** Player's name as seen in GameProfile, can be altered by nick plugins */
     private String nickname;
@@ -272,13 +272,15 @@ public abstract class ITabPlayer implements TabPlayer {
             String team = ((PacketPlayOutScoreboardTeam) packet).getName();
             int method = ((PacketPlayOutScoreboardTeam) packet).getAction();
             if (method == 0) {
-                if (registeredTeams.contains(team)) {
+                if (!registeredTeams.add(team)) {
                     TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + team + " to player " + getName());
                     return;
                 }
-                registeredTeams.add(team);
             } else if (method == 1) {
-                registeredTeams.remove(team);
+                if (!registeredTeams.remove(team)) {
+                    TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing team " + team + " for player " + getName());
+                    return;
+                }
             } else if (method == 2) {
                 if (!registeredTeams.contains(team)) {
                     TAB.getInstance().getErrorManager().printError("Tried to modify non-existing team " + team + " for player " + getName());
@@ -291,13 +293,20 @@ public abstract class ITabPlayer implements TabPlayer {
             String objective = ((PacketPlayOutScoreboardObjective) packet).getObjectiveName();
             int method = ((PacketPlayOutScoreboardObjective) packet).getAction();
             if (method == 0) {
-                if (registeredObjectives.contains(objective)) {
+                if (!registeredObjectives.add(objective)) {
                     TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objective + " to player " + getName());
                     return;
                 }
-                registeredObjectives.add(objective);
             } else if (method == 1) {
-                registeredObjectives.remove(objective);
+                if (!registeredObjectives.remove(objective)) {
+                    TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing objective " + objective + " for player " + getName());
+                    return;
+                }
+            } else if (method == 2) {
+                if (!registeredObjectives.contains(objective)) {
+                    TAB.getInstance().getErrorManager().printError("Tried to modify non-existing objective " + objective + " for player " + getName());
+                    return;
+                }
             }
         }
         //avoiding console spam from geyser
