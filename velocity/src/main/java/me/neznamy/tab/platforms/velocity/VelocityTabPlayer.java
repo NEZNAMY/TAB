@@ -323,7 +323,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public int getGamemode() {
-        return 0; //shrug
+        return getEntry(getTablistUUID()).getGameMode();
     }
 
     @Override
