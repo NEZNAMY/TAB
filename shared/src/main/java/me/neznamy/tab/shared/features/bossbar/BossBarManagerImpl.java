@@ -272,19 +272,19 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
     public void announceBossBar(String bossBar, int duration) {
         BossBar line = lines.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
+        List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
+                p -> !isDisabledPlayer(p) && hasBossBarVisible(p)).collect(Collectors.toList());
         TAB.getInstance().getCPUManager().runTask(() -> {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.COUNTDOWN).markAsUsed();
             announcements.add(line);
             announceEndTime = System.currentTimeMillis() + duration* 1000L;
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (!hasBossBarVisible(all)) continue;
+            for (TabPlayer all : players) {
                 if (((BossBarLine)line).isConditionMet(all)) line.addPlayer(all);
             }
         });
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
                 this, "Removing announced BossBar", () -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (!hasBossBarVisible(all)) continue;
+            for (TabPlayer all : players) {
                 line.removePlayer(all);
             }
             announcements.remove(line);
