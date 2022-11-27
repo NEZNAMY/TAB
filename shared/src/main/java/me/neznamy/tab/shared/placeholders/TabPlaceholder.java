@@ -56,7 +56,8 @@ public abstract class TabPlaceholder implements Placeholder {
      */
     protected TabPlaceholder(String identifier, int refresh) {
         if (refresh % 50 != 0 && refresh != -1) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
-        if (!identifier.startsWith("%") || !identifier.endsWith("%")) throw new IllegalArgumentException("Identifier must start and end with %");
+        if (!identifier.startsWith("%") || !identifier.endsWith("%"))
+            throw new IllegalArgumentException("Identifier must start and end with % (attempted to use \"" + identifier + "\")");
         this.identifier = identifier;
         this.refresh = refresh;
         replacements = new PlaceholderReplacementPattern(identifier, TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier));
