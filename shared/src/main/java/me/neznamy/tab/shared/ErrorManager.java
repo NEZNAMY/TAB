@@ -227,7 +227,8 @@ public class ErrorManager {
     }
 
     /**
-     * Makes interval divisible by 50 and sends error message if it was not already or was 0 or less
+     * Makes interval divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     * and sends error message if it was not already or was 0 or less
      *
      * @param   name
      *          name of animation used in error message
@@ -244,10 +245,10 @@ public class ErrorManager {
             startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s. Refresh cannot be negative! &bUsing 1000.", name, interval));
             return 1000;
         }
-        if (interval % 50 != 0) {
-            int newInterval = interval - interval%50;
-            if (newInterval == 0) newInterval = 50;
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s which is not divisible by 50! &bUsing %s.", name, interval, newInterval));
+        if (interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
+            int newInterval = interval - interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
+            if (newInterval == 0) newInterval = TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
+            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s which is not divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL + "! &bUsing %s.", name, interval, newInterval));
             return newInterval;
         }
         return interval;

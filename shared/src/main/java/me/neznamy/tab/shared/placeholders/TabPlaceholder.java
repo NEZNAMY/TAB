@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.placeholders;
 
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
@@ -52,10 +53,12 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   identifier
      *          placeholder's identifier, must start and end with %
      * @param   refresh
-     *          refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
+     *          refresh interval in milliseconds, must be divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     *          or equal to -1 to disable automatic refreshing
      */
     protected TabPlaceholder(String identifier, int refresh) {
-        if (refresh % 50 != 0 && refresh != -1) throw new IllegalArgumentException("Refresh interval must be divisible by 50");
+        if (refresh % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0 && refresh != -1)
+            throw new IllegalArgumentException("Refresh interval must be divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
         if (!identifier.startsWith("%") || !identifier.endsWith("%"))
             throw new IllegalArgumentException("Identifier must start and end with % (attempted to use \"" + identifier + "\")");
         this.identifier = identifier;

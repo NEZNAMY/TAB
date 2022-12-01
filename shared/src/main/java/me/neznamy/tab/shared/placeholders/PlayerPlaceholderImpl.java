@@ -31,7 +31,8 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * @param   identifier
      *          placeholder's identifier, must start and end with %
      * @param   refresh
-     *          refresh interval in milliseconds, must be divisible by 50 or equal to -1 for trigger placeholders
+     *          refresh interval in milliseconds, must be divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     *          or equal to -1 to disable automatic refreshing
      * @param   function
      *          refresh function which returns new up-to-date output on request
      */

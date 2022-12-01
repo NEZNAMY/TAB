@@ -37,7 +37,7 @@ public class Animation {
     
     /**
      * Constructs new instance with given arguments which are fixed if necessary, such as when
-     * refresh is not divisible by 50
+     * refresh is not divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *
      * @param   name
      *          animation's name

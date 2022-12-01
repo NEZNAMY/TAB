@@ -333,6 +333,9 @@ public class TabConstants {
         public static final String VAULT_SUFFIX = "%vault-suffix%";
         public static final String HEALTH = "%health%";
 
+        public static final int MINIMUM_REFRESH_INTERVAL = 50;
+
+
         public static String condition(String name) {
             return "%condition:" + name + "%";
         }
