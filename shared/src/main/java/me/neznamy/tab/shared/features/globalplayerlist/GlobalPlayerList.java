@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -25,12 +26,17 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
+    private final List<ServerPlaceholder> placeholders = new ArrayList<>();
 
     public GlobalPlayerList() {
         super("Global PlayerList", null);
         boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
         if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
+        for (Entry<String, List<String>> entry : sharedServers.entrySet()) {
+            placeholders.add(TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), -1,
+                    () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count()));
+        }
         TAB.getInstance().debug(String.format("Loaded GlobalPlayerList feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",
                 spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers, updateLatency));
     }
@@ -43,6 +49,7 @@ public class GlobalPlayerList extends TabFeature {
                 if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), this);
             }
         }
+        placeholders.forEach(pl -> pl.updateValue(pl.request()));
     }
 
     public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
@@ -80,6 +87,7 @@ public class GlobalPlayerList extends TabFeature {
                 connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), this);
             }
         }
+        placeholders.forEach(pl -> pl.updateValue(pl.request()));
     }
 
     @Override
@@ -93,6 +101,8 @@ public class GlobalPlayerList extends TabFeature {
                 if (all == disconnectedPlayer) continue;
                 all.sendCustomPacket(remove, this);
             }
+            //update after player is removed
+            placeholders.forEach(pl -> pl.updateValue(pl.request()));
         });
     }
 
@@ -119,6 +129,7 @@ public class GlobalPlayerList extends TabFeature {
         } else {
             r.run();
         }
+        placeholders.forEach(pl -> pl.updateValue(pl.request()));
     }
 
     public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {

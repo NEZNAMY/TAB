@@ -340,6 +340,10 @@ public class TabConstants {
         public static String animation(String name) {
             return "%animation:" + name + "%";
         }
+
+        public static String globalPlayerListGroup(String group) {
+            return "%playerlist-group_" + group + "%";
+        }
     }
 
     /**
