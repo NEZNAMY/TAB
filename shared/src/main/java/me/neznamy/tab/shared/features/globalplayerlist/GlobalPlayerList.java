@@ -55,13 +55,13 @@ public class GlobalPlayerList extends TabFeature {
     public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
         if (displayed == viewer) return true;
         if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
-        if (spyServers.contains(viewer.getServer())) return true;
+        if (isSpyServer(viewer.getServer())) return true;
         return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
     }
 
     public String getServerGroup(String serverName) {
         for (Entry<String, List<String>> group : sharedServers.entrySet()) {
-            if (group.getValue().contains(serverName)) return group.getKey();
+            if (group.getValue().stream().anyMatch(serverName::equalsIgnoreCase)) return group.getKey();
         }
         return isolateUnlistedServers ? "isolated:" + serverName : "DEFAULT";
     }
@@ -200,7 +200,7 @@ public class GlobalPlayerList extends TabFeature {
         }
     }
 
-    public List<String> getSpyServers() {
-        return spyServers;
+    public boolean isSpyServer(String server) {
+        return spyServers.stream().anyMatch(server::equalsIgnoreCase);
     }
 }

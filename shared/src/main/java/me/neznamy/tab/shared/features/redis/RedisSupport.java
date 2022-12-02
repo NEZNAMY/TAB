@@ -335,7 +335,7 @@ public abstract class RedisSupport extends TabFeature {
 
     private boolean shouldSee(TabPlayer viewer, String viewerServer, String server, boolean targetVanished) {
         if (targetVanished && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
-        if (global.getSpyServers().contains(viewerServer)) return true;
+        if (global.isSpyServer(viewerServer)) return true;
         return global.getServerGroup(viewerServer).equals(global.getServerGroup(server));
     }
 
