@@ -12,7 +12,6 @@ import me.neznamy.tab.shared.DynamicText;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
@@ -112,9 +111,9 @@ public class DebugCommand extends SubCommand {
      * @return  sorting type
      */
     private String getSortingType() {
-        NameTag nametag = (NameTag) TAB.getInstance().getTeamManager();
-        if (nametag != null) {
-            return nametag.getSorting().typesToString();
+        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+        if (sorting != null) {
+            return sorting.typesToString();
         } else {
             return "&cDISABLED";
         }
@@ -143,15 +142,13 @@ public class DebugCommand extends SubCommand {
      */
     private String getTeamName(TabPlayer analyzed) {
         Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-        if (TAB.getInstance().getTeamManager() != null) {
-            if (((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
-                return "&eTeam name: &cSorting is disabled in player's world/server";
-            } else {
-                return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
-                    ? sorting.getFullTeamName(analyzed) : sorting.getShortTeamName(analyzed));
-            }
+        if (sorting == null) return "";
+        if (TAB.getInstance().getTeamManager() != null &&
+                ((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
+            return "&eTeam name: &cSorting is disabled in player's world/server";
         }
-        return "";
+        return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
+                ? sorting.getFullTeamName(analyzed) : sorting.getShortTeamName(analyzed));
     }
 
     /**
@@ -163,11 +160,12 @@ public class DebugCommand extends SubCommand {
      */
     private String getTeamNameNote(TabPlayer analyzed) {
         Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+        if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
-            !((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld()) &&
-                sorting.getTeamNameNote(analyzed) != null)
-                return "&eSorting note: &r" + sorting.getTeamNameNote(analyzed);
-        return "";
+                ((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
+            return "";
+        }
+        return "&eSorting note: &r" + sorting.getTeamNameNote(analyzed);
     }
 
     /**
