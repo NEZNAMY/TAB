@@ -83,6 +83,8 @@ public class TabConstants {
         public static final String NAMETAGS_TEAM_UNREGISTER = "NameTags (Team unregister)";
         public static final String NAMETAGS_TEAM_UPDATE = "NameTags (Team update)";
 
+        public static final String SORTING_CHANGING_TEAM_NAME = "Sorting (Changing team name)";
+
         public static final String SCOREBOARD_TITLE = "Scoreboard (Title)";
         public static final String SCOREBOARD_LINES = "Scoreboard (Lines)";
 

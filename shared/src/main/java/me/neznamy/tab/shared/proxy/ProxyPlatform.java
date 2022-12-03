@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.nametags.unlimited.ProxyNameTagX;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
@@ -106,6 +107,7 @@ public abstract class ProxyPlatform extends Platform {
         TAB tab = TAB.getInstance();
         new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
         if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
+            tab.getFeatureManager().registerFeature(TabConstants.Feature.SORTING, new Sorting());
             if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
                 tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX());
             } else {

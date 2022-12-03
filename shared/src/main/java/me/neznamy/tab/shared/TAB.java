@@ -232,7 +232,7 @@ public class TAB extends TabAPI {
         if (serverVersion.getMinorVersion() >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
             if (getTeamManager() == null) {
                 //sorting is disabled, but layout needs team names
-                featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting(null));
+                featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
             }
             featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
         }

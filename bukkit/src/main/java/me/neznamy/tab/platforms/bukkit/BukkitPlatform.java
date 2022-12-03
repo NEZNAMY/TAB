@@ -18,6 +18,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -86,6 +87,7 @@ public class BukkitPlatform extends Platform {
             tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BukkitPipelineInjector());
         new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
         if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
+            tab.getFeatureManager().registerFeature(TabConstants.Feature.SORTING, new Sorting());
             if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
                 tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new BukkitNameTagX(plugin));
             } else {

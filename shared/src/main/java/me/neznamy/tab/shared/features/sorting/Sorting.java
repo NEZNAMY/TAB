@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -28,7 +29,8 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  */
 public class Sorting extends TabFeature {
 
-    private final NameTag nameTags;
+    private NameTag nameTags;
+    private LayoutManager layout;
     
     //map of all registered sorting types
     private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
@@ -45,14 +47,10 @@ public class Sorting extends TabFeature {
     private final WeakHashMap<TabPlayer, String> teamNameNotes = new WeakHashMap<>();
     
     /**
-     * Constructs new instance, loads data from configuration and starts repeating task
-     *
-     * @param   nameTags
-     *          NameTag feature
+     * Constructs new instance and loads config options
      */
-    public Sorting(NameTag nameTags) {
+    public Sorting() {
         super("Team name refreshing", "Refreshing team name");
-        this.nameTags = nameTags;
         types.put("GROUPS", Groups::new);
         types.put("PERMISSIONS", Permissions::new);
         types.put("PLACEHOLDER", Placeholder::new);
@@ -60,25 +58,28 @@ public class Sorting extends TabFeature {
         types.put("PLACEHOLDER_Z_TO_A", PlaceholderZtoA::new);
         types.put("PLACEHOLDER_LOW_TO_HIGH", PlaceholderLowToHigh::new);
         types.put("PLACEHOLDER_HIGH_TO_LOW", PlaceholderHighToLow::new);
-        usedSortingTypes = compile(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
+        usedSortingTypes = compile(TAB.getInstance().getConfig().getStringList("scoreboard-teams.sorting-types", new ArrayList<>()));
     }
     
     @Override
     public void refresh(TabPlayer p, boolean force) {
-        if (nameTags != null && (nameTags.getForcedTeamName(p) != null || nameTags.hasTeamHandlingPaused(p))) return;
         String previousShortName = shortTeamNames.get(p);
         constructTeamNames(p);
         if (!shortTeamNames.get(p).equals(previousShortName)) {
-            if (nameTags != null) nameTags.unregisterTeam(p);
-            LayoutManager layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+            if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p)) {
+                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(previousShortName), TabConstants.PacketCategory.SORTING_CHANGING_TEAM_NAME);
+                }
+                nameTags.registerTeam(p);
+            }
             if (layout != null) layout.updateTeamName(p, fullTeamNames.get(p));
-            if (nameTags != null) nameTags.registerTeam(p);
         }
     }
     
     @Override
-    public void load(){
-        if (nameTags != null) return; //handled by NameTag feature
+    public void load() {
+        nameTags = (NameTag) TAB.getInstance().getTeamManager();
+        layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             constructTeamNames(all);
         }
@@ -86,7 +87,6 @@ public class Sorting extends TabFeature {
     
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        if (nameTags != null) return; //handled by NameTag feature
         constructTeamNames(connectedPlayer);
     }
     
@@ -95,7 +95,7 @@ public class Sorting extends TabFeature {
      *
      * @return  list of compiled sorting types
      */
-    private SortingType[] compile(List<String> options){
+    private SortingType[] compile(List<String> options) {
         List<SortingType> list = new ArrayList<>();
         for (String element : options) {
             String[] arr = element.split(":");
