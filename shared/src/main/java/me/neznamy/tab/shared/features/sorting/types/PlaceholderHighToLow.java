@@ -16,20 +16,15 @@ public class PlaceholderHighToLow extends SortingType {
      *          placeholder to sort by
      */
     public PlaceholderHighToLow(Sorting sorting, String sortingPlaceholder) {
-        super(sorting, sortingPlaceholder);
+        super(sorting, "PLACEHOLDER_HIGH_TO_LOW", sortingPlaceholder);
     }
 
     @Override
     public String getChars(ITabPlayer p) {
         String output = setPlaceholders(p);
-        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + sortingPlaceholder + " returned \"" + output + "\". &r");
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r");
         double doubleValue = TAB.getInstance().getErrorManager().parseDouble(output, 0);
         String string = String.valueOf(DEFAULT_NUMBER - doubleValue);
         return string.length() > 10 ? string.substring(0, 10) : string;
-    }
-
-    @Override
-    public String toString() {
-        return "PLACEHOLDER_HIGH_TO_LOW";
     }
 }

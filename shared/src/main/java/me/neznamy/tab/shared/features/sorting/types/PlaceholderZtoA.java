@@ -15,13 +15,13 @@ public class PlaceholderZtoA extends SortingType {
      *          placeholder to sort by
      */
     public PlaceholderZtoA(Sorting sorting, String sortingPlaceholder) {
-        super(sorting, sortingPlaceholder);
+        super(sorting, "PLACEHOLDER_Z_TO_A", sortingPlaceholder);
     }
 
     @Override
     public String getChars(ITabPlayer p) {
         char[] chars = setPlaceholders(p).toCharArray();
-        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + sortingPlaceholder + " returned \"" + new String(chars) + "\". &r");
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + new String(chars) + "&r\". &r");
         for (int i=0; i<chars.length; i++) {
             char c = chars[i];
             if (c >= 65 && c <= 90) {
@@ -32,10 +32,5 @@ public class PlaceholderZtoA extends SortingType {
             }
         }
         return new String(chars);
-    }
-
-    @Override
-    public String toString() {
-        return "PLACEHOLDER_Z_TO_A";
     }
 }

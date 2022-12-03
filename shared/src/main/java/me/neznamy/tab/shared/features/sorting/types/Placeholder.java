@@ -13,7 +13,7 @@ import java.util.Locale;
 public class Placeholder extends SortingType {
 
     //map Value-Number where number is used in team name based on value
-    private final LinkedHashMap<String, String> sortingMap;
+    private final LinkedHashMap<String, Integer> sortingMap;
 
     /**
      * Constructs new instance with given parameters
@@ -24,7 +24,7 @@ public class Placeholder extends SortingType {
      *          options used by this sorting type
      */
     public Placeholder(Sorting sorting, String options) {
-        super(sorting, getPlaceholder(options));
+        super(sorting, "PLACEHOLDER", getPlaceholder(options));
         String[] args = options.split(":");
         if (args.length > 1)
             sortingMap = convertSortingElements(args[args.length-1].split(","));
@@ -50,19 +50,15 @@ public class Placeholder extends SortingType {
     @Override
     public String getChars(ITabPlayer p) {
         String output = EnumChatFormat.color(setPlaceholders(p));
-        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + sortingPlaceholder + " returned \"" + output + "\"");
-        String sortingValue = sortingMap.get(output.toLowerCase(Locale.US));
-        if (sortingValue == null) {
-            sortingValue = String.valueOf(sortingMap.size()+1);
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\"");
+        int position;
+        if (!sortingMap.containsKey(output.toLowerCase(Locale.US))) {
+            position = sortingMap.size()+1;
             sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&c (not in list)&r. ");
         } else {
-            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&r (#" + Integer.parseInt(sortingValue) + " in list). &r");
+            position = sortingMap.get(output.toLowerCase(Locale.US));
+            sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "&r &a(#" + position + " in list). &r");
         }
-        return sortingValue;
-    }
-
-    @Override
-    public String toString() {
-        return "PLACEHOLDER";
+        return String.valueOf((char) (position + 47));
     }
 }

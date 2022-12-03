@@ -15,18 +15,13 @@ public class PlaceholderAtoZ extends SortingType {
      *          placeholder to sort by
      */
     public PlaceholderAtoZ(Sorting sorting, String sortingPlaceholder) {
-        super(sorting, sortingPlaceholder);
+        super(sorting, "PLACEHOLDER_A_TO_Z", sortingPlaceholder);
     }
 
     @Override
     public String getChars(ITabPlayer p) {
         String output = setPlaceholders(p);
-        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + sortingPlaceholder + " returned \"" + output + "\". &r");
+        sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r");
         return output;
-    }
-
-    @Override
-    public String toString() {
-        return "PLACEHOLDER_A_TO_Z";
     }
 }

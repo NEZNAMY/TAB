@@ -173,7 +173,7 @@ public class Sorting extends TabFeature {
      * @return  user-friendly representation of sorting types
      */
     public String typesToString() {
-        return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" then "));
+        return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" -> "));
     }
 
     public String getShortTeamName(TabPlayer p) {
