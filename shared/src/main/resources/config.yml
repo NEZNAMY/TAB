@@ -189,10 +189,6 @@ placeholder-output-replacements:
     true: " &o[AFK]&r"
     false: ""
     "%afk%": "" # if attempting to use bukkit-only placeholder on bungeecord
-  "%vault-prefix%":
-    "%vault-prefix%" : ""
-  "%vault-suffix%":
-    "%vault-suffix%" : ""
   "%essentials_nickname%":
     "%essentials_nickname%": "%player%" # placeholder did not parse correctly, show real name instead
 

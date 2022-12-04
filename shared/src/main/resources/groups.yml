@@ -12,12 +12,12 @@ example_group:
 
  # default settings for all groups, all groups will take properties from this section unless player's primary group overrides a specific setting
 _DEFAULT_:
-  tabprefix: "%vault-prefix%"
-  tagprefix: "%vault-prefix%"
+  tabprefix: "%luckperms-prefix%"
+  tagprefix: "%luckperms-prefix%"
   customtabname: "%essentials_nickname%"
   customtagname: "%essentials_nickname%" # don't forget to enable unlimited nametag mode to make this one work
-  tabsuffix: "%vault-suffix%%afk%"
-  tagsuffix: "%vault-suffix%%afk%"
+  tabsuffix: "%luckperms-suffix%%afk%"
+  tagsuffix: "%luckperms-suffix%%afk%"
 
 per-world:
   world1:
