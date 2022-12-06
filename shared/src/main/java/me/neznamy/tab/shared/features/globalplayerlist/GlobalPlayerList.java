@@ -27,6 +27,7 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
     private final List<ServerPlaceholder> placeholders = new ArrayList<>();
+    private final Map<TabPlayer, Long> lastServerSwitch = new WeakHashMap<>();
 
     public GlobalPlayerList() {
         super("Global PlayerList", null);
@@ -108,6 +109,7 @@ public class GlobalPlayerList extends TabFeature {
 
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
+        lastServerSwitch.put(p, System.currentTimeMillis());
         Runnable r = () -> {
             PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -163,7 +165,8 @@ public class GlobalPlayerList extends TabFeature {
             for (PlayerInfoData playerInfoData : info.getEntries()) {
                 TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
                     //not preventing NPC removals
-                if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {
+                if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished() &&
+                        (System.currentTimeMillis()-lastServerSwitch.getOrDefault(packetPlayer, 0L) < 500) ) {
                     //remove packet not coming from tab
                     //changing to random non-existing player, the easiest way to cancel the removal
                     playerInfoData.setUniqueId(UUID.randomUUID());
