@@ -3,8 +3,6 @@ package me.neznamy.tab.shared.placeholders.conditions;
 import java.util.*;
 import java.util.function.Function;
 
-import com.google.common.collect.Lists;
-
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
@@ -65,6 +63,8 @@ public class Condition {
      * Constructs new instance with given parameters and registers
      * this condition to list as well as the placeholder.
      *
+     * @param   type
+     *          type of condition, {@code true} for AND type and {@code false} for OR type
      * @param   name
      *          name of condition
      * @param   conditions
@@ -184,7 +184,16 @@ public class Condition {
         if (registeredConditions.containsKey(string)) {
             return registeredConditions.get(string);
         } else {
-            Condition c = new Condition(true, "AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "true", "false");
+            boolean type;
+            List<String> conditions;
+            if (string.contains(";")) {
+                type = true;
+                conditions = Arrays.asList(string.split(";"));
+            } else {
+                type = false;
+                conditions = Arrays.asList(string.split("\\|"));
+            }
+            Condition c = new Condition(type, "AnonymousCondition[" + string + "]", conditions, "true", "false");
             c.finishSetup();
             TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), c::getText);
             return c;
