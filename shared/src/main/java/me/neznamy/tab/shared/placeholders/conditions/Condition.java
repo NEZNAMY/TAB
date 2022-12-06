@@ -185,6 +185,7 @@ public class Condition {
             return registeredConditions.get(string);
         } else {
             Condition c = new Condition(true, "AnonymousCondition[" + string + "]", Lists.newArrayList(string.split(";")), "true", "false");
+            c.finishSetup();
             TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), c::getText);
             return c;
         }
