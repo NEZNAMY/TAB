@@ -58,6 +58,9 @@ public class Condition {
      */
     private int refresh = -1;
 
+    /** List of all placeholders used inside this condition */
+    private final List<String> placeholdersInConditions = new ArrayList<>();
+
     /**
      * Constructs new instance with given parameters and registers
      * this condition to list as well as the placeholder.
@@ -90,9 +93,7 @@ public class Condition {
             }
         }
         subConditions = list.toArray(new SimpleCondition[0]);
-        //adding placeholders in conditions to the map, so they are actually refreshed if not used anywhere else
         PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
-        List<String> placeholdersInConditions = new ArrayList<>();
         for (String subCondition : conditions) {
             if (subCondition.startsWith("permission:")) {
                 if (refresh > 1000 || refresh == -1) refresh = 1000; //permission refreshing will be done every second
@@ -102,6 +103,13 @@ public class Condition {
         }
         placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
         placeholdersInConditions.addAll(pm.detectPlaceholders(no));
+        registeredConditions.put(name, this);
+    }
+
+    /**
+     * Configures refresh interval and registers nested placeholders
+     */
+    public void finishSetup() {
         for (String placeholder : placeholdersInConditions) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder).addParent(TabConstants.Placeholder.condition(name));
             Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholder);
@@ -109,8 +117,7 @@ public class Condition {
                 refresh = pl.getRefresh();
             }
         }
-        pm.addUsedPlaceholders(placeholdersInConditions);
-        registeredConditions.put(name, this);
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(placeholdersInConditions);
     }
 
     /**
@@ -197,5 +204,14 @@ public class Condition {
      */
     public static Map<String, Function<String, SimpleCondition>> getConditionTypes() {
         return conditionTypes;
+    }
+
+    /**
+     * Marks all placeholders used in the condition as used and registers them.
+     * Using a separate method to avoid premature registration of nested conditional placeholders
+     * before they are registered properly.
+     */
+    public static void finishSetups() {
+        registeredConditions.values().forEach(Condition::finishSetup);
     }
 }

@@ -79,6 +79,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
             Condition c = new Condition(!"OR".equals(type), condition.getKey(), list, yes, no);
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), c::getText);
         }
+        Condition.finishSetups();
     }
     
     /**
