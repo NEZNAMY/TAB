@@ -147,9 +147,7 @@ public class Sorting extends TabFeature {
      * @return  first available full team name
      */
     private String checkTeamName(TabPlayer p, StringBuilder currentName, int id) {
-        String potentialTeamName = currentName.toString();
-        if (!caseSensitiveSorting) potentialTeamName = potentialTeamName.toLowerCase();
-        potentialTeamName += (char)id;
+        String potentialTeamName = currentName.toString() + (char)id;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == p) continue;
             if (shortTeamNames.get(all) != null && shortTeamNames.get(all).equals(potentialTeamName)) {
@@ -192,5 +190,9 @@ public class Sorting extends TabFeature {
 
     public void setTeamNameNote(TabPlayer p, String note) {
         teamNameNotes.put(p, note);
+    }
+
+    public boolean isCaseSensitiveSorting() {
+        return caseSensitiveSorting;
     }
 }

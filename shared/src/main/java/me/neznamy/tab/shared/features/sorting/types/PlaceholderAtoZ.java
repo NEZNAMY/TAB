@@ -22,6 +22,6 @@ public class PlaceholderAtoZ extends SortingType {
     public String getChars(ITabPlayer p) {
         String output = setPlaceholders(p);
         sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r");
-        return output;
+        return sorting.isCaseSensitiveSorting() ? output : output.toLowerCase();
     }
 }
