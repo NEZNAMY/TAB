@@ -160,7 +160,6 @@ public class TAB extends TabAPI {
             for (TabPlayer p : players) ((ITabPlayer)p).markAsLoaded(false);
             cpu.enable();
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
-            platform.callLoadEvent();
             disabled = false;
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
             return configuration.getMessages().getReloadSuccess();

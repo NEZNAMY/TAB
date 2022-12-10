@@ -149,7 +149,6 @@ public abstract class ITabPlayer implements TabPlayer {
     public void markAsLoaded(boolean join) {
         onJoinFinished = true;
         if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(new PlayerLoadEventImpl(this, join));
-        TAB.getInstance().getPlatform().callLoadEvent(this);
     }
 
     /**

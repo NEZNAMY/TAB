@@ -5,8 +5,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.bukkit.event.TabLoadEvent;
-import me.neznamy.tab.platforms.bukkit.event.TabPlayerLoadEvent;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
@@ -180,16 +178,6 @@ public class BukkitPlatform extends Platform {
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
             }
         }
-    }
-
-    @Override
-    public void callLoadEvent() {
-        Bukkit.getPluginManager().callEvent(new TabLoadEvent());
-    }
-
-    @Override
-    public void callLoadEvent(TabPlayer player) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> Bukkit.getPluginManager().callEvent(new TabPlayerLoadEvent(player)));
     }
 
     /**
