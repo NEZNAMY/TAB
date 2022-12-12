@@ -14,12 +14,10 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
-import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 
 import java.util.*;
@@ -83,10 +81,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          Packet request to handle
      */
     private void handle(PacketPlayOutChat packet) {
+        Component message = Main.getInstance().convertComponent(packet.getMessage(), getVersion());
         if (packet.getType() == ChatMessageType.GAME_INFO) {
-            getPlayer().sendActionBar(Main.getInstance().convertComponent(packet.getMessage(), getVersion()));
+            getPlayer().sendActionBar(message);
         } else {
-            getPlayer().sendMessage(Identity.nil(), Main.getInstance().convertComponent(packet.getMessage(), getVersion()), MessageType.valueOf(packet.getType().name()));
+            getPlayer().sendMessage(message);
         }
     }
 
@@ -109,32 +108,38 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     private void handle(PacketPlayOutPlayerInfo packet) {
         for (PlayerInfoData data : packet.getEntries()) {
-            switch (packet.getAction()) {
-            case ADD_PLAYER:
-                if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
-                getPlayer().getTabList().addEntry(TabListEntry.builder()
-                        .tabList(getPlayer().getTabList())
-                        .displayName(Main.getInstance().convertComponent(data.getDisplayName(), getVersion()))
-                        .gameMode(data.getGameMode().ordinal()-1)
-                        .profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() :
-                                Collections.singletonList(new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()))))
-                        .latency(data.getLatency())
-                        .build());
-                break;
-            case REMOVE_PLAYER:
-                getPlayer().getTabList().removeEntry(data.getUniqueId());
-                break;
-            case UPDATE_DISPLAY_NAME:
-                getEntry(data.getUniqueId()).setDisplayName(Main.getInstance().convertComponent(data.getDisplayName(), getVersion()));
-                break;
-            case UPDATE_LATENCY:
-                getEntry(data.getUniqueId()).setLatency(data.getLatency());
-                break;
-            case UPDATE_GAME_MODE:
-                getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
-                break;
-            default:
-                break;
+            for (PacketPlayOutPlayerInfo.EnumPlayerInfoAction action : packet.getActions()) {
+                switch (action) {
+                    case ADD_PLAYER:
+                        if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
+                        getPlayer().getTabList().addEntry(TabListEntry.builder()
+                                .tabList(getPlayer().getTabList())
+                                .displayName(Main.getInstance().convertComponent(data.getDisplayName(), getVersion()))
+                                .gameMode(data.getGameMode().ordinal()-1)
+                                .profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() :
+                                        Collections.singletonList(new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()))))
+                                .latency(data.getLatency())
+                                .build());
+                        break;
+                    case REMOVE_PLAYER:
+                        getPlayer().getTabList().removeEntry(data.getUniqueId());
+                        break;
+                    case UPDATE_DISPLAY_NAME:
+                        getEntry(data.getUniqueId()).setDisplayName(Main.getInstance().convertComponent(data.getDisplayName(), getVersion()));
+                        break;
+                    case UPDATE_LATENCY:
+                        getEntry(data.getUniqueId()).setLatency(data.getLatency());
+                        break;
+                    case UPDATE_GAME_MODE:
+                        getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
+                        break;
+                    case UPDATE_LISTED:
+                        getEntry(data.getUniqueId()).setListed(data.isListed());
+                        break;
+                    case INITIALIZE_CHAT: // not supported yet //TODO
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -328,12 +333,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public Object getProfilePublicKey() {
-        try {
-            return getPlayer().getIdentifiedKey();
-        } catch (NoSuchMethodError e) {
-            //3.1.1 or lower
-            return null;
-        }
+        return getPlayer().getIdentifiedKey();
+    }
+
+    @Override
+    public UUID getChatSessionId() {
+        return null; // not supported on velocity
     }
 
     @Override

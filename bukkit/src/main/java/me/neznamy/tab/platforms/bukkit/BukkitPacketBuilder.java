@@ -14,11 +14,13 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.platforms.bukkit.nms.*;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitPacketBuilder extends PacketBuilder {
@@ -76,9 +78,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
                 return nms.newPacketPlayOutChat.newInstance(component, packet.getType().ordinal());
             }
         if (nms.getMinorVersion() >= 16)
-            return nms.newPacketPlayOutChat.newInstance(component, nms.ChatMessageType_values[packet.getType().ordinal()], UUID.randomUUID());
+            return nms.newPacketPlayOutChat.newInstance(component, Enum.valueOf(nms.ChatMessageType, packet.getType().toString()), UUID.randomUUID());
         if (nms.getMinorVersion() >= 12)
-            return nms.newPacketPlayOutChat.newInstance(component, Enum.valueOf((Class<Enum>) nms.ChatMessageType, packet.getType().toString()));
+            return nms.newPacketPlayOutChat.newInstance(component, Enum.valueOf(nms.ChatMessageType, packet.getType().toString()));
         if (nms.getMinorVersion() >= 8)
             return nms.newPacketPlayOutChat.newInstance(component, (byte) packet.getType().ordinal());
         if (nms.getMinorVersion() == 7)
@@ -89,24 +91,56 @@ public class BukkitPacketBuilder extends PacketBuilder {
     @Override
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (nms.getMinorVersion() < 8) return null;
-        Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance(nms.EnumPlayerInfoAction_values[packet.getAction().ordinal()], Array.newInstance(nms.EntityPlayer, 0));
-        List<Object> items = new ArrayList<>();
-        for (PlayerInfoData data : packet.getEntries()) {
-            GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
-            if (data.getSkin() != null) profile.getProperties().put("textures", new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()));
-            List<Object> parameters = new ArrayList<>();
-            if (nms.newPlayerInfoData.getParameterTypes()[0] == nms.PacketPlayOutPlayerInfo) {
-                parameters.add(nmsPacket);
+        if (nms.ClientboundPlayerInfoRemovePacket != null) {
+            //1.19.3+
+            if (packet.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
+                return nms.newClientboundPlayerInfoRemovePacket.newInstance(
+                        packet.getEntries().stream().map(PlayerInfoData::getUniqueId).collect(Collectors.toList())
+                );
             }
-            parameters.add(profile);
-            parameters.add(data.getLatency());
-            parameters.add(data.getGameMode() == null ? null : nms.EnumGamemode_values[nms.EnumGamemode_values.length-EnumGamemode.VALUES.length+data.getGameMode().ordinal()]); //not_set was removed in 1.17
-            parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
-            if (nms.getMinorVersion() >= 19) parameters.add(data.getProfilePublicKey());
-            items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
+            Enum[] array = packet.getActions().stream().map(action -> Enum.valueOf(nms.EnumPlayerInfoAction, action.toString())).toArray(Enum[]::new);
+            Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance(array[0], nms.getHandle.invoke(Bukkit.getOnlinePlayers().iterator().next()));
+            List<Object> items = new ArrayList<>();
+            for (PlayerInfoData data : packet.getEntries()) {
+                GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
+                if (data.getSkin() != null) profile.getProperties().put("textures",
+                        new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()));
+                Object obj = nms.newPlayerInfoData.newInstance(
+                        data.getUniqueId(),
+                        profile,
+                        data.isListed(),
+                        data.getLatency(),
+                        data.getGameMode() == null ? null : Enum.valueOf(nms.EnumGamemode, data.getGameMode().toString()),
+                        data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion),
+                        data.getProfilePublicKey() == null ? null : nms.newRemoteChatSession$Data.newInstance(data.getChatSessionId(), data.getProfilePublicKey()));
+                items.add(obj);
+            }
+            nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_ACTION, EnumSet.of(array[0], array));
+            nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
+            return nmsPacket;
+        } else {
+            //1.19.2-
+            EnumPlayerInfoAction action = packet.getActions().contains(EnumPlayerInfoAction.ADD_PLAYER) ?
+                    EnumPlayerInfoAction.ADD_PLAYER : packet.getActions().iterator().next();
+            Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance(Enum.valueOf(nms.EnumPlayerInfoAction, action.toString()), Array.newInstance(nms.EntityPlayer, 0));
+            List<Object> items = new ArrayList<>();
+            for (PlayerInfoData data : packet.getEntries()) {
+                GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
+                if (data.getSkin() != null) profile.getProperties().put("textures", new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()));
+                List<Object> parameters = new ArrayList<>();
+                if (nms.newPlayerInfoData.getParameterTypes()[0] == nms.PacketPlayOutPlayerInfo) {
+                    parameters.add(nmsPacket);
+                }
+                parameters.add(profile);
+                parameters.add(data.getLatency());
+                parameters.add(data.getGameMode() == null ? null : Enum.valueOf(nms.EnumGamemode, data.getGameMode().toString()));
+                parameters.add(data.getDisplayName() == null ? null : toNMSComponent(data.getDisplayName(), clientVersion));
+                if (nms.getMinorVersion() >= 19) parameters.add(data.getProfilePublicKey());
+                items.add(nms.newPlayerInfoData.newInstance(parameters.toArray()));
+            }
+            nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
+            return nmsPacket;
         }
-        nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
-        return nmsPacket;
     }
 
     @Override
@@ -132,7 +166,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (nms.getMinorVersion() >= 13) {
             return nms.newPacketPlayOutScoreboardObjective.newInstance(nms.newScoreboardObjective.newInstance(null, packet.getObjectiveName(), null, 
                     toNMSComponent(IChatBaseComponent.optimizedComponent(displayName), clientVersion), 
-                    packet.getRenderType() == null ? null : nms.EnumScoreboardHealthDisplay_values[packet.getRenderType().ordinal()]), 
+                    packet.getRenderType() == null ? null : Enum.valueOf(nms.EnumScoreboardHealthDisplay, packet.getRenderType().toString())),
                     packet.getAction());
         }
 
@@ -140,7 +174,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_OBJECTIVENAME, packet.getObjectiveName());
         nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_DISPLAYNAME, displayName);
         if (nms.getMinorVersion() >= 8 && packet.getRenderType() != null) {
-            nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_RENDERTYPE, Enum.valueOf((Class<Enum>) nms.EnumScoreboardHealthDisplay, packet.getRenderType().toString()));
+            nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_RENDERTYPE, Enum.valueOf(nms.EnumScoreboardHealthDisplay, packet.getRenderType().toString()));
         }
         nms.setField(nmsPacket, nms.PacketPlayOutScoreboardObjective_METHOD, packet.getAction());
         return nmsPacket;
@@ -149,7 +183,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
     @Override
     public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (nms.getMinorVersion() >= 13) {
-            return nms.newPacketPlayOutScoreboardScore_1_13.newInstance(nms.EnumScoreboardAction_values[packet.getAction().ordinal()], packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
+            return nms.newPacketPlayOutScoreboardScore_1_13.newInstance(Enum.valueOf(nms.EnumScoreboardAction, packet.getAction().toString()), packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
         }
         if (packet.getAction() == PacketPlayOutScoreboardScore.Action.REMOVE) {
             return nms.newPacketPlayOutScoreboardScore_String.newInstance(packet.getPlayer());
@@ -189,9 +223,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
             case 2:
                 return nms.PacketPlayOutScoreboardTeam_ofBoolean.invoke(null, team, false);
             case 3:
-                return nms.PacketPlayOutScoreboardTeam_ofString.invoke(null, team, packet.getPlayers().toArray(new String[0])[0], nms.PacketPlayOutScoreboardTeam_PlayerAction_values[0]);
+                return nms.PacketPlayOutScoreboardTeam_ofString.invoke(null, team, packet.getPlayers().iterator().next(), Enum.valueOf(nms.PacketPlayOutScoreboardTeam_PlayerAction, "ADD"));
             case 4:
-                return nms.PacketPlayOutScoreboardTeam_ofString.invoke(null, team, packet.getPlayers().toArray(new String[0])[0], nms.PacketPlayOutScoreboardTeam_PlayerAction_values[1]);
+                return nms.PacketPlayOutScoreboardTeam_ofString.invoke(null, team, packet.getPlayers().iterator().next(), Enum.valueOf(nms.PacketPlayOutScoreboardTeam_PlayerAction, "REMOVE"));
             default:
                 throw new IllegalArgumentException("Invalid action: " + packet.getAction());
             }
@@ -227,7 +261,12 @@ public class BukkitPacketBuilder extends PacketBuilder {
      *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutEntityMetadata packet) throws ReflectiveOperationException {
-        return nms.newPacketPlayOutEntityMetadata.newInstance(packet.getEntityId(), packet.getDataWatcher().toNMS(), true);
+        if (nms.newPacketPlayOutEntityMetadata.getParameterCount() == 2) {
+            //1.19.3+
+            return nms.newPacketPlayOutEntityMetadata.newInstance(packet.getEntityId(), nms.DataWatcher_b.invoke(packet.getDataWatcher().toNMS()));
+        } else {
+            return nms.newPacketPlayOutEntityMetadata.newInstance(packet.getEntityId(), packet.getDataWatcher().toNMS(), true);
+        }
     }
 
     /**
@@ -264,7 +303,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         }
         int id = entityIds.get(packet.getEntityType());
         if (nms.getMinorVersion() >= 19) {
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, nms.Registry_a.invoke(nms.IRegistry_X, id));
+            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, nms.EntityTypes_ARMOR_STAND); // :(
         } else {
             nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, id);
         }
@@ -322,9 +361,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
         if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
         EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
-        nms.ScoreboardTeam_setColor.invoke(team, nms.EnumChatFormat_values[format.ordinal()]);
-        nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNameTagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
-        nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+        nms.ScoreboardTeam_setColor.invoke(team, Enum.valueOf(nms.EnumChatFormat, format.toString()));
+        nms.ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(nms.EnumNameTagVisibility, String.valueOf(packet.getNameTagVisibility()).equals("always") ? "ALWAYS" : "NEVER"));
+        nms.ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(nms.EnumTeamPush, String.valueOf(packet.getCollisionRule()).equals("always") ? "ALWAYS" : "NEVER"));
     }
 
     /**
@@ -344,31 +383,71 @@ public class BukkitPacketBuilder extends PacketBuilder {
     private void createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix) throws ReflectiveOperationException {
         if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
         if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
-        if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, String.valueOf(packet.getNameTagVisibility()).equals("always") ? nms.EnumNameTagVisibility_values[0] : nms.EnumNameTagVisibility_values[1]);
-        if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, String.valueOf(packet.getCollisionRule()).equals("always") ? nms.EnumTeamPush_values[0] : nms.EnumTeamPush_values[1]);
+        if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(nms.EnumNameTagVisibility, packet.getNameTagVisibility().equals("always") ? "ALWAYS" : "NEVER"));
+        if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(nms.EnumTeamPush, packet.getCollisionRule().equals("always") ? "ALWAYS" : "NEVER"));
     }
     
     @Override
     public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws ReflectiveOperationException {
         if (nms.getMinorVersion() < 8) return null;
-        EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
-        List<PlayerInfoData> listData = new ArrayList<>();
-        for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
-            Object nmsGameMode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
-            EnumGamemode gameMode = (nmsGameMode == null) ? null : EnumGamemode.valueOf(nmsGameMode.toString());
-            GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
-            Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
-            IChatBaseComponent listName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
-            Skin skin = null;
-            if (!profile.getProperties().get("textures").isEmpty()) {
-                Property pr = profile.getProperties().get("textures").iterator().next();
-                skin = new Skin(pr.getValue(), pr.getSignature());
+        if (nms.ClientboundPlayerInfoRemovePacket != null) {
+            //1.19.3+
+            if (nms.ClientboundPlayerInfoRemovePacket.isInstance(nmsPacket)) {
+                List<UUID> entries = (List<UUID>) nms.ClientboundPlayerInfoRemovePacket_getEntries.invoke(nmsPacket);
+                return new PacketPlayOutPlayerInfo(
+                        EnumPlayerInfoAction.REMOVE_PLAYER,
+                        entries.stream().map(PlayerInfoData::new).collect(Collectors.toList())
+                );
             }
-            Object profilePublicKey = nms.getMinorVersion() >= 19 ? nms.PlayerInfoData_getProfilePublicKeyRecord.invoke(nmsData) : null;
-            listData.add(new PlayerInfoData(profile.getName(), profile.getId(), skin,
-                    (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName, profilePublicKey));
+            EnumSet<?> set = (EnumSet<?>) nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket);
+            EnumPlayerInfoAction[] array = set.stream().map(action -> EnumPlayerInfoAction.valueOf(action.toString())).toArray(EnumPlayerInfoAction[]::new);
+            EnumSet<EnumPlayerInfoAction> actions = EnumSet.of(array[0], array);
+            List<PlayerInfoData> listData = new ArrayList<>();
+            for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
+                Object nmsGameMode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
+                EnumGamemode gameMode = (nmsGameMode == null) ? null : EnumGamemode.valueOf(nmsGameMode.toString());
+                GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
+                Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
+                Skin skin = null;
+                if (!profile.getProperties().get("textures").isEmpty()) {
+                    Property pr = profile.getProperties().get("textures").iterator().next();
+                    skin = new Skin(pr.getValue(), pr.getSignature());
+                }
+                Object remoteChatSession = nms.PlayerInfoData_getProfilePublicKeyRecord.invoke(nmsData);
+                listData.add(
+                        new PlayerInfoData(
+                                profile.getName(),
+                                profile.getId(),
+                                skin,
+                                (boolean) nms.PlayerInfoData_isListed.invoke(nmsData),
+                                (int) nms.PlayerInfoData_getLatency.invoke(nmsData),
+                                gameMode,
+                                nmsComponent == null ? null : new WrappedChatComponent(nmsComponent),
+                                remoteChatSession == null ? null : (UUID) nms.RemoteChatSession$Data_getSessionId.invoke(remoteChatSession),
+                                remoteChatSession == null ? null : nms.RemoteChatSession$Data_getProfilePublicKey.invoke(remoteChatSession)));
+            }
+            return new PacketPlayOutPlayerInfo(actions, listData);
+        } else {
+            //1.19.2-
+            EnumPlayerInfoAction action = EnumPlayerInfoAction.valueOf(nms.PacketPlayOutPlayerInfo_ACTION.get(nmsPacket).toString());
+            List<PlayerInfoData> listData = new ArrayList<>();
+            for (Object nmsData : (List<?>) nms.PacketPlayOutPlayerInfo_PLAYERS.get(nmsPacket)) {
+                Object nmsGameMode = nms.PlayerInfoData_getGamemode.invoke(nmsData);
+                EnumGamemode gameMode = (nmsGameMode == null) ? null : EnumGamemode.valueOf(nmsGameMode.toString());
+                GameProfile profile = (GameProfile) nms.PlayerInfoData_getProfile.invoke(nmsData);
+                Object nmsComponent = nms.PlayerInfoData_getDisplayName.invoke(nmsData);
+                IChatBaseComponent listName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
+                Skin skin = null;
+                if (!profile.getProperties().get("textures").isEmpty()) {
+                    Property pr = profile.getProperties().get("textures").iterator().next();
+                    skin = new Skin(pr.getValue(), pr.getSignature());
+                }
+                Object profilePublicKey = nms.getMinorVersion() >= 19 ? nms.PlayerInfoData_getProfilePublicKeyRecord.invoke(nmsData) : null;
+                listData.add(new PlayerInfoData(profile.getName(), profile.getId(), skin, true,
+                        (int) nms.PlayerInfoData_getLatency.invoke(nmsData), gameMode, listName, null, profilePublicKey));
+            }
+            return new PacketPlayOutPlayerInfo(action, listData);
         }
-        return new PacketPlayOutPlayerInfo(action, listData);
     }
 
     @Override

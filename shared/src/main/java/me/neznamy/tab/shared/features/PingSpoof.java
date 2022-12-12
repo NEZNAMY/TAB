@@ -36,7 +36,7 @@ public class PingSpoof extends TabFeature {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (info.getAction() != EnumPlayerInfoAction.UPDATE_LATENCY && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+        if (!info.getActions().contains(EnumPlayerInfoAction.UPDATE_LATENCY)) return;
         for (PlayerInfoData playerInfoData : info.getEntries()) {
             if (TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId()) != null) playerInfoData.setLatency(value);
             if (layoutManager != null) {

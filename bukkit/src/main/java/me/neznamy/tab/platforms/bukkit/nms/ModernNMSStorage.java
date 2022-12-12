@@ -7,10 +7,6 @@ import java.util.Arrays;
  */
 public abstract class ModernNMSStorage extends NMSStorage {
 
-    /** Additional classes used in 1.19+ */
-    protected Class<?> IRegistry;
-    protected Class<?> Registry;
-
     /**
      * Creates new instance, initializes required NMS classes and fields
      *

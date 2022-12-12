@@ -67,7 +67,8 @@ public class BukkitPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
-                if (nms.PacketPlayOutPlayerInfo.isInstance(packet)) {
+                if (nms.PacketPlayOutPlayerInfo.isInstance(packet) ||
+                        (nms.ClientboundPlayerInfoRemovePacket != null && nms.ClientboundPlayerInfoRemovePacket.isInstance(packet))) {
                     super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
                     return;
                 }

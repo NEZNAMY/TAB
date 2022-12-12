@@ -7,6 +7,7 @@ import java.util.Arrays;
 /**
  * NMS loader for Minecraft 1.16.5 and lower using old NMS class structure.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class LegacyNMSStorage extends NMSStorage {
 
     /**
@@ -93,7 +94,7 @@ public class LegacyNMSStorage extends NMSStorage {
         EntityHuman = getLegacyClass("EntityHuman");
         World = getLegacyClass("World");
         Packet = getLegacyClass("Packet");
-        EnumChatFormat = getLegacyClass("EnumChatFormat");
+        EnumChatFormat = (Class<Enum>) getLegacyClass("EnumChatFormat");
         EntityPlayer = getLegacyClass("EntityPlayer");
         Entity = getLegacyClass("Entity");
         EntityLiving = getLegacyClass("EntityLiving");
@@ -109,7 +110,7 @@ public class LegacyNMSStorage extends NMSStorage {
             EntityArmorStand = getLegacyClass("EntityArmorStand");
         }
         if (minorVersion >= 12) {
-            ChatMessageType = getLegacyClass("ChatMessageType");
+            ChatMessageType = (Class<Enum>) getLegacyClass("ChatMessageType");
         }
 
         // DataWatcher
@@ -131,15 +132,15 @@ public class LegacyNMSStorage extends NMSStorage {
         PacketPlayOutEntityMetadata = getLegacyClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
         PacketPlayOutNamedEntitySpawn = getLegacyClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
         if (minorVersion >= 7) {
-            EnumEntityUseAction = getLegacyClass("PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction");
+            EnumEntityUseAction = (Class<Enum>) getLegacyClass("PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction");
         }
 
         // Player Info
         if (minorVersion >= 8) {
             PacketPlayOutPlayerInfo = getLegacyClass("PacketPlayOutPlayerInfo");
-            EnumPlayerInfoAction = getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            EnumPlayerInfoAction = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
             PlayerInfoData = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-            EnumGamemode = getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
+            EnumGamemode = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
         }
 
         // Scoreboard
@@ -153,12 +154,12 @@ public class LegacyNMSStorage extends NMSStorage {
         IScoreboardCriteria = getLegacyClass("IScoreboardCriteria");
         ScoreboardTeam = getLegacyClass("ScoreboardTeam");
         if (minorVersion >= 8) {
-            EnumScoreboardHealthDisplay = getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
-            EnumScoreboardAction = getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
-            EnumNameTagVisibility = getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
+            EnumScoreboardHealthDisplay = (Class<Enum>) getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
+            EnumScoreboardAction = (Class<Enum>) getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
+            EnumNameTagVisibility = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
         }
         if (minorVersion >= 9) {
-            EnumTeamPush = getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
+            EnumTeamPush = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
         }
     }
 }

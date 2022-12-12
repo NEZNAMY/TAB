@@ -28,6 +28,7 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
     private final List<ServerPlaceholder> placeholders = new ArrayList<>();
     private final Map<TabPlayer, Long> lastServerSwitch = new WeakHashMap<>();
+    private final UUID EMPTY_ID = new UUID(0, 0);
 
     public GlobalPlayerList() {
         super("Global PlayerList", null);
@@ -135,9 +136,8 @@ public class GlobalPlayerList extends TabFeature {
     }
 
     public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
-        PlayerInfoData data = new PlayerInfoData(p.getTablistUUID());
-        data.setName(p.getName());
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
+        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
+                new PlayerInfoData(p.getTablistUUID()), new PlayerInfoData(EMPTY_ID));
     }
 
     public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
@@ -151,9 +151,11 @@ public class GlobalPlayerList extends TabFeature {
                         p.getName(),
                         p.getTablistUUID(),
                         p.getSkin(),
+                        true,
                         p.getPing(),
                         vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
                         viewer.getVersion().getMinorVersion() >= 8 ? format : null,
+                        fillProfileKey ? p.getChatSessionId() : null,
                         fillProfileKey ? p.getProfilePublicKey() : null
                 )
         );
@@ -161,12 +163,13 @@ public class GlobalPlayerList extends TabFeature {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (info.getAction() == EnumPlayerInfoAction.REMOVE_PLAYER) {
+        if (info.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
+            boolean packetFromTAB = info.getEntries().stream().anyMatch(data -> data.getUniqueId().equals(EMPTY_ID));
             for (PlayerInfoData playerInfoData : info.getEntries()) {
                 TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
                     //not preventing NPC removals
-                if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished() &&
-                        (System.currentTimeMillis()-lastServerSwitch.getOrDefault(packetPlayer, 0L) < 500) ) {
+                if (packetPlayer != null && !packetFromTAB && !packetPlayer.isVanished() &&
+                        (System.currentTimeMillis()-lastServerSwitch.getOrDefault(packetPlayer, 0L) < 500)) {
                     //remove packet not coming from tab
                     //changing to random non-existing player, the easiest way to cancel the removal
                     playerInfoData.setUniqueId(UUID.randomUUID());
@@ -174,7 +177,7 @@ public class GlobalPlayerList extends TabFeature {
             }
         }
         if (!displayAsSpectators) return;
-        if (info.getAction() == EnumPlayerInfoAction.ADD_PLAYER || info.getAction() == EnumPlayerInfoAction.UPDATE_GAME_MODE) {
+        if (info.getActions().contains(EnumPlayerInfoAction.UPDATE_GAME_MODE)) {
             for (PlayerInfoData playerInfoData : info.getEntries()) {
                 TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
                 if (packetPlayer != null && !receiver.getServer().equals(packetPlayer.getServer())) {

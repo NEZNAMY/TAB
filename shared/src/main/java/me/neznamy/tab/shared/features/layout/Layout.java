@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -42,13 +43,17 @@ public class Layout extends TabFeature {
         groups.forEach(g -> list.addAll(g.getSlots(p)));
         for (FixedSlot slot : fixedSlots.values()) {
             p.setProperty(slot, slot.getPropertyName(), slot.getText());
-            list.add(new PlayerInfoData("", slot.getId(), slot.getSkin(), slot.getPing(), EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).updateAndGet()), null));
+            list.add(new PlayerInfoData(getEntryName(p, slot.getId().getLeastSignificantBits()), slot.getId(), slot.getSkin(), true, slot.getPing(), EnumGamemode.CREATIVE, IChatBaseComponent.optimizedComponent(p.getProperty(slot.getPropertyName()).updateAndGet()), null, null));
         }
         for (int slot : emptySlots) {
-            list.add(new PlayerInfoData("", manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent(""), null));
+            list.add(new PlayerInfoData(getEntryName(p, slot), manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent(""), null, null));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
+    }
+
+    public String getEntryName(TabPlayer viewer, long slot) {
+        return viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ? "|slot_" + (10+slot) : "";
     }
 
     public void removeFrom(TabPlayer p) {

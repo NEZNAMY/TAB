@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 /**
  * NMS loader for minecraft 1.17+ using Mojang packaging and names.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class MojangModernNMSStorage extends ModernNMSStorage {
 
     /**
@@ -26,8 +27,7 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, "setPlayerSuffix", IChatBaseComponent);
         ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, "setNameTagVisibility", EnumNameTagVisibility);
         if (minorVersion >= 19) {
-            Registry_a = Registry.getMethod("byId", int.class);
-            IRegistry_X = IRegistry.getDeclaredField("ENTITY_TYPE").get(null);
+            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
             PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "type");
         }
     }
@@ -41,7 +41,7 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         EntityHuman = Class.forName("net.minecraft.world.entity.player.Player");
         NetworkManager = Class.forName("net.minecraft.network.Connection");
         Packet = Class.forName("net.minecraft.network.protocol.Packet");
-        EnumChatFormat = Class.forName("net.minecraft.ChatFormatting");
+        EnumChatFormat = (Class<Enum>) Class.forName("net.minecraft.ChatFormatting");
         EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
         Entity = Class.forName("net.minecraft.world.entity.Entity");
         EntityLiving = Class.forName("net.minecraft.world.entity.LivingEntity");
@@ -50,7 +50,7 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         PacketPlayOutChat = getModernClass("net.minecraft.network.protocol.game.ClientboundSystemChatPacket",
                 "net.minecraft.network.protocol.game.ClientboundChatPacket");
         if (minorVersion < 19) {
-            ChatMessageType = Class.forName("net.minecraft.network.chat.ChatType");
+            ChatMessageType = (Class<Enum>) Class.forName("net.minecraft.network.chat.ChatType");
         }
 
         // DataWatcher
@@ -59,6 +59,9 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         DataWatcherObject = Class.forName("net.minecraft.network.syncher.EntityDataAccessor");
         DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.EntityDataSerializers");
         DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.EntityDataSerializer");
+        if (is1_19_3Plus()) {
+            DataWatcher$DataValue = Class.forName("net.minecraft.network.syncher.SynchedEntityData$DataValue");
+        }
 
         // Entities
         PacketPlayOutSpawnEntityLiving = getModernClass("net.minecraft.network.protocol.game.ClientboundAddMobPacket",
@@ -71,19 +74,29 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         PacketPlayOutEntityLook = Class.forName("net.minecraft.network.protocol.game.ClientboundMoveEntityPacket$Rot");
         PacketPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket");
         PacketPlayOutNamedEntitySpawn = Class.forName("net.minecraft.network.protocol.game.ClientboundAddPlayerPacket");
-        EnumEntityUseAction = Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket$Action");
+        EnumEntityUseAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket$Action");
         if (minorVersion >= 19) {
-            Registry = Class.forName("net.minecraft.core.IdMap");
-            IRegistry = Class.forName("net.minecraft.core.Registry");
-            ProfilePublicKey = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey");
-            ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$Data");
+            EntityTypes = Class.forName("net.minecraft.world.entity.EntityType");
         }
 
         // Player Info
-        PacketPlayOutPlayerInfo = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
-        EnumPlayerInfoAction = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
-        PlayerInfoData = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate");
-        EnumGamemode = Class.forName("net.minecraft.world.level.GameType");
+        if (minorVersion >= 19) {
+            ProfilePublicKey = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey");
+            ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$Data");
+        }
+        if (is1_19_3Plus()) {
+            ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
+            PacketPlayOutPlayerInfo = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+            EnumPlayerInfoAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
+            PlayerInfoData = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry");
+            RemoteChatSession = Class.forName("net.minecraft.network.chat.RemoteChatSession");
+            RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$Data");
+        } else {
+            PacketPlayOutPlayerInfo = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
+            EnumPlayerInfoAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
+            PlayerInfoData = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate");
+        }
+        EnumGamemode = (Class<Enum>) Class.forName("net.minecraft.world.level.GameType");
 
         // Scoreboard
         PacketPlayOutScoreboardDisplayObjective = Class.forName("net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket");
@@ -93,12 +106,12 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         ScoreboardObjective = Class.forName("net.minecraft.world.scores.Objective");
         ScoreboardScore = Class.forName("net.minecraft.world.scores.Score");
         IScoreboardCriteria = Class.forName("net.minecraft.world.scores.criteria.ObjectiveCriteria");
-        EnumScoreboardHealthDisplay = Class.forName("net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType");
-        EnumScoreboardAction = Class.forName("net.minecraft.server.ServerScoreboard$Method");
+        EnumScoreboardHealthDisplay = (Class<Enum>) Class.forName("net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType");
+        EnumScoreboardAction = (Class<Enum>) Class.forName("net.minecraft.server.ServerScoreboard$Method");
         PacketPlayOutScoreboardTeam = Class.forName("net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket");
         ScoreboardTeam = Class.forName("net.minecraft.world.scores.PlayerTeam");
-        EnumNameTagVisibility = Class.forName("net.minecraft.world.scores.Team$Visibility");
-        EnumTeamPush = Class.forName("net.minecraft.world.scores.Team$CollisionRule");
-        PacketPlayOutScoreboardTeam_PlayerAction = Class.forName("net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket$Action");
+        EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.Team$Visibility");
+        EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.Team$CollisionRule");
+        PacketPlayOutScoreboardTeam_PlayerAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket$Action");
     }
 }

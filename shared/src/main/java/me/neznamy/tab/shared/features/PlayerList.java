@@ -220,7 +220,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
         if (disabling || !antiOverrideTabList) return;
-        if (info.getAction() != EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+        if (!info.getActions().contains(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
         for (PlayerInfoData playerInfoData : info.getEntries()) {
             TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
             if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistUUID() == getTablistUUID(packetPlayer, receiver)) {

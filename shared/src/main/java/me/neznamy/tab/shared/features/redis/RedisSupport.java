@@ -43,6 +43,10 @@ public abstract class RedisSupport extends TabFeature {
     /** Sorting feature */
     private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
+    private final UUID EMPTY_ID = new UUID(0, 0);
+
+    private final Map<RedisPlayer, Long> lastServerSwitch = new WeakHashMap<>();
+
     /**
      * Constructs new instance
      */
@@ -230,6 +234,7 @@ public abstract class RedisSupport extends TabFeature {
                         target.setServer(server);
                         return;
                     }
+                    lastServerSwitch.put(target, System.currentTimeMillis());
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                         if (viewer.getVersion().getMinorVersion() < 8) continue;
                         boolean before = shouldSee(viewer, target.getServer(), target.isVanished());
@@ -417,21 +422,24 @@ public abstract class RedisSupport extends TabFeature {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (info.getAction() == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER && global != null) {
+        if (info.getActions().contains(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) && global != null) {
+            boolean packetFromTAB = info.getEntries().stream().anyMatch(data -> data.getUniqueId().equals(EMPTY_ID));
             for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
                 RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
-                if (packetPlayer != null && (playerInfoData.getName() == null || playerInfoData.getName().length() == 0) && !packetPlayer.isVanished()) {
+                if (packetPlayer != null && !packetFromTAB && !packetPlayer.isVanished() &&
+                        (System.currentTimeMillis()-lastServerSwitch.getOrDefault(packetPlayer, 0L) < 500)) {
                     //remove packet not coming from tab
                     //changing to random non-existing player, the easiest way to cancel the removal
                     playerInfoData.setUniqueId(UUID.randomUUID());
                 }
             }
         }
-        if (info.getAction() != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME && info.getAction() != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) return;
-        for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
-            RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
-            if (packetPlayer != null && !packetPlayer.hasDisabledPlayerlist()) {
-                playerInfoData.setDisplayName(IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat()));
+        if (info.getActions().contains(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE)) {
+            for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
+                RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
+                if (packetPlayer != null && !packetPlayer.hasDisabledPlayerlist()) {
+                    playerInfoData.setDisplayName(IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat()));
+                }
             }
         }
     }

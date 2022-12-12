@@ -38,7 +38,7 @@ public class NickCompatibility extends TabFeature {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
-        if (packet.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+        if (!packet.getActions().contains(EnumPlayerInfoAction.ADD_PLAYER)) return;
         for (PlayerInfoData data : packet.getEntries()) {
             TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(data.getUniqueId());
             if (packetPlayer != null && packetPlayer != receiver && !packetPlayer.getNickname().equals(data.getName())) {

@@ -85,6 +85,7 @@ public class DataWatcher {
                 position = item.getType().getPosition();
             }
             nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.getValue());
+            if (nms.is1_19_3Plus()) nms.DataWatcher_markDirty.invoke(nmsWatcher, position);
         }
         return nmsWatcher;
     }

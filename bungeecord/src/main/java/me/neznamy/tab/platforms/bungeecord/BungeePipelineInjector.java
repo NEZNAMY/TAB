@@ -69,6 +69,8 @@ public class BungeePipelineInjector extends PipelineInjector {
             try {
                 switch(packet.getClass().getSimpleName()) {
                 case "PlayerListItem":
+                case "PlayerListItemUpdate":
+                case "PlayerListItemRemove":
                     super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
                     return;
                 case "Team":
@@ -92,7 +94,7 @@ public class BungeePipelineInjector extends PipelineInjector {
                 default:
                     break;
                 }
-            } catch (Exception e){
+            } catch (Exception | NoSuchMethodError e){
                 TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
             }
             try {

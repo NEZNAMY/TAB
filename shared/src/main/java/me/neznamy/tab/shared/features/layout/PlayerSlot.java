@@ -45,9 +45,9 @@ public class PlayerSlot {
         PlayerInfoData data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
-            data = new PlayerInfoData("", id, player.getSkin(), player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p), null);
+            data = new PlayerInfoData(layout.getEntryName(p, id.getLeastSignificantBits()), id, player.getSkin(), true, player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p), null, null);
         } else {
-            data = new PlayerInfoData("", id, layout.getManager().getSkinManager().getDefaultSkin(), layout.getManager().getEmptySlotPing(), EnumGamemode.SURVIVAL, new IChatBaseComponent(text), null);
+            data = new PlayerInfoData(layout.getEntryName(p, id.getLeastSignificantBits()), id, layout.getManager().getSkinManager().getDefaultSkin(), true, layout.getManager().getEmptySlotPing(), EnumGamemode.SURVIVAL, new IChatBaseComponent(text), null, null);
         }
         return data;
     }

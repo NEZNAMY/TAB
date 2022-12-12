@@ -19,6 +19,7 @@ import net.md_5.bungee.protocol.Protocol;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 /**
  * TabPlayer implementation for BungeeCord
@@ -140,6 +141,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public Object getProfilePublicKey() {
         return ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest().getPublicKey();
+    }
+
+    @Override
+    public UUID getChatSessionId() {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override

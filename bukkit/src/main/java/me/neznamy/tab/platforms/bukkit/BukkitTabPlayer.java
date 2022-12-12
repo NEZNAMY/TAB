@@ -289,11 +289,32 @@ public class BukkitTabPlayer extends ITabPlayer {
     public Object getProfilePublicKey() {
         if (NMSStorage.getInstance().getMinorVersion() < 19) return null;
         try {
-            Object key = NMSStorage.getInstance().EntityHuman_ProfilePublicKey.get(handle);
-            if (key == null) return null;
-            return NMSStorage.getInstance().ProfilePublicKey_getRecord.invoke(key);
+            if (NMSStorage.getInstance().RemoteChatSession != null) {
+                //1.19.3+
+                Object session = NMSStorage.getInstance().EntityPlayer_RemoteChatSession.get(handle);
+                if (session == null) return null;
+                Object key = NMSStorage.getInstance().RemoteChatSession_getProfilePublicKey.invoke(session);
+                return NMSStorage.getInstance().ProfilePublicKey_getRecord.invoke(key);
+            } else {
+                Object key = NMSStorage.getInstance().EntityHuman_ProfilePublicKey.get(handle);
+                if (key == null) return null;
+                return NMSStorage.getInstance().ProfilePublicKey_getRecord.invoke(key);
+            }
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().printError("Failed to get profile key of " + getName(), e);
+            return null;
+        }
+    }
+
+    @Override
+    public UUID getChatSessionId() {
+        if (NMSStorage.getInstance().RemoteChatSession != null) return null;
+        try {
+            Object session = NMSStorage.getInstance().EntityPlayer_RemoteChatSession.get(handle);
+            if (session == null) return null;
+            return (UUID) NMSStorage.getInstance().RemoteChatSession_getSessionId.invoke(session);
+        } catch (ReflectiveOperationException e) {
+            TAB.getInstance().getErrorManager().printError("Failed to get chat session of " + getName(), e);
             return null;
         }
     }

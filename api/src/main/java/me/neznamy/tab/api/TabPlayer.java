@@ -311,4 +311,10 @@ public interface TabPlayer {
      * @return  Player's direct chat message signing key
      */
     Object getProfilePublicKey();
+
+    /**
+     * Return player's chat session ID
+     * @return  player's chat session ID
+     */
+    UUID getChatSessionId();
 }

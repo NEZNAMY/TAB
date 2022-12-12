@@ -1,6 +1,7 @@
 package me.neznamy.tab.api.protocol;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,8 +13,8 @@ import me.neznamy.tab.api.util.Preconditions;
  */
 public class PacketPlayOutPlayerInfo implements TabPacket {
 
-    /** Packet action */
-    private final EnumPlayerInfoAction action;
+    /** Packet actions */
+    private final EnumSet<EnumPlayerInfoAction> actions;
 
     /** List of affected entries */
     private final List<PlayerInfoData> entries;
@@ -27,10 +28,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
      *          Affected entries
      */
     public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, PlayerInfoData... entries) {
-        Preconditions.checkNotNull(action, "action");
-        Preconditions.checkNotNull(entries, "entries");
-        this.action = action;
-        this.entries = Arrays.asList(entries);
+        this(action, Arrays.asList(entries));
     }
 
     /**
@@ -44,22 +42,61 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
     public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
         Preconditions.checkNotNull(action, "action");
         Preconditions.checkNotNull(entries, "entries");
-        this.action = action;
+        if (action == EnumPlayerInfoAction.ADD_PLAYER) {
+            actions = EnumSet.of(EnumPlayerInfoAction.ADD_PLAYER,
+                    EnumPlayerInfoAction.INITIALIZE_CHAT,
+                    EnumPlayerInfoAction.UPDATE_GAME_MODE,
+                    EnumPlayerInfoAction.UPDATE_LISTED,
+                    EnumPlayerInfoAction.UPDATE_LATENCY,
+                    EnumPlayerInfoAction.UPDATE_DISPLAY_NAME);
+        } else {
+            this.actions = EnumSet.of(action);
+        }
+        this.entries = entries;
+    }
+
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   actions
+     *          Packet actions
+     * @param   entries
+     *          Affected entries
+     */
+    public PacketPlayOutPlayerInfo(EnumSet<EnumPlayerInfoAction> actions, PlayerInfoData... entries) {
+        Preconditions.checkNotNull(actions, "action");
+        Preconditions.checkNotNull(entries, "entries");
+        this.actions = actions;
+        this.entries = Arrays.asList(entries);
+    }
+
+    /**
+     * Constructs new instance with given parameters.
+     *
+     * @param   actions
+     *          Packet actions
+     * @param   entries
+     *          Affected entries
+     */
+    public PacketPlayOutPlayerInfo(EnumSet<EnumPlayerInfoAction> actions, List<PlayerInfoData> entries) {
+        Preconditions.checkNotNull(actions, "action");
+        Preconditions.checkNotNull(entries, "entries");
+        this.actions = actions;
         this.entries = entries;
     }
 
     @Override
     public String toString() {
-        return String.format("PacketPlayOutPlayerInfo{action=%s,entries=%s}", action, entries);
+        return String.format("PacketPlayOutPlayerInfo{actions=%s,entries=%s}", actions, entries);
     }
 
     /**
-     * Returns {@link #action}
+     * Returns {@link #actions}
      *
      * @return  packet action
      */
-    public EnumPlayerInfoAction getAction() {
-        return action;
+    public EnumSet<EnumPlayerInfoAction> getActions() {
+        return actions;
     }
 
     /**
@@ -79,6 +116,9 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
         /** Latency */
         private int latency;
 
+        /** I have no idea what this is */
+        private boolean listed;
+
         /** GameMode */
         private EnumGamemode gameMode = EnumGamemode.SURVIVAL; //ProtocolLib causes NPE even when action does not use GameMode
 
@@ -97,12 +137,15 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
         /** Player's skin, null for empty skin */
         private Skin skin;
 
+        /** Chat session ID */
+        private UUID chatSessionId;
+
         /** Player's chat signing key */
         private Object profilePublicKey;
 
         /**
          * Constructs new instance with given parameters. Suitable for 
-         * {@link EnumPlayerInfoAction}.ADD_PLAYER action
+         * {@link EnumPlayerInfoAction#ADD_PLAYER} action
          * 
          * @param   name
          *          Player's name
@@ -119,20 +162,22 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * @param   profilePublicKey
          *          Player's chat signing key
          */
-        public PlayerInfoData(String name, UUID uniqueId, Skin skin, int latency, EnumGamemode gameMode, IChatBaseComponent displayName, Object profilePublicKey) {
+        public PlayerInfoData(String name, UUID uniqueId, Skin skin, boolean listed, int latency, EnumGamemode gameMode, IChatBaseComponent displayName, UUID chatSessionId, Object profilePublicKey) {
             Preconditions.checkNotNull(uniqueId, "uuid");
             this.name = name;
             this.uniqueId = uniqueId;
             this.skin = skin;
+            this.listed = listed;
             this.latency = latency;
             this.gameMode = gameMode;
             this.displayName = displayName;
+            this.chatSessionId = chatSessionId;
             this.profilePublicKey = profilePublicKey;
         }
 
         /**
          * Constructs new instance with given parameters. Suitable for 
-         * {@link EnumPlayerInfoAction}.UPDATE_GAME_MODE action
+         * {@link EnumPlayerInfoAction#UPDATE_GAME_MODE} action
          * 
          * @param   uniqueId
          *          Player's uuid
@@ -147,7 +192,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Constructs new instance with given parameters. Suitable for 
-         * {@link EnumPlayerInfoAction}.UPDATE_LATENCY action
+         * {@link EnumPlayerInfoAction#UPDATE_LATENCY} action
          * 
          * @param   uniqueId
          *          Player's uuid
@@ -162,7 +207,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Constructs new instance with given parameters. Suitable for 
-         * {@link EnumPlayerInfoAction}.UPDATE_DISPLAY_NAME action
+         * {@link EnumPlayerInfoAction#UPDATE_DISPLAY_NAME} action
          * 
          * @param   uniqueId
          *          Player's uuid
@@ -177,7 +222,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
         /**
          * Constructs new instance with given parameter. Suitable for 
-         * {@link EnumPlayerInfoAction}.REMOVE_PLAYER action
+         * {@link EnumPlayerInfoAction#REMOVE_PLAYER} action
          * 
          * @param   uniqueId
          *          Player's uuid
@@ -209,6 +254,25 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          */
         public void setLatency(int latency) {
             this.latency = latency;
+        }
+
+        /**
+         * Returns {@link #listed}
+         *
+         * @return  listed
+         */
+        public boolean isListed() {
+            return listed;
+        }
+
+        /**
+         * Sets {@link #listed} to specified value
+         *
+         * @param   listed
+         *          Listed flag
+         */
+        public void setListed(boolean listed) {
+            this.listed = listed;
         }
 
         /**
@@ -307,6 +371,25 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
         }
 
         /**
+         * Returns {@link #chatSessionId}
+         *
+         * @return  chatSessionId
+         */
+        public UUID getChatSessionId() {
+            return chatSessionId;
+        }
+
+        /**
+         * Sets {@link #chatSessionId} to specified value
+         *
+         * @param   chatSessionId
+         *          chatSessionId to use
+         */
+        public void setChatSessionId(UUID chatSessionId) {
+            this.chatSessionId = chatSessionId;
+        }
+
+        /**
          * Returns {@link #profilePublicKey}
          *
          * @return  profilePublicKey
@@ -328,12 +411,13 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
 
     /**
      * En enum representing packet action
-     * Calling ordinal() will return action's network ID.
      */
     public enum EnumPlayerInfoAction {
 
         ADD_PLAYER,
+        INITIALIZE_CHAT,
         UPDATE_GAME_MODE,
+        UPDATE_LISTED,
         UPDATE_LATENCY,
         UPDATE_DISPLAY_NAME,
         REMOVE_PLAYER

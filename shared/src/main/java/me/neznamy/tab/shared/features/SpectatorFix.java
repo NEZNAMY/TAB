@@ -48,7 +48,7 @@ public class SpectatorFix extends TabFeature {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (info.getAction() != EnumPlayerInfoAction.UPDATE_GAME_MODE && info.getAction() != EnumPlayerInfoAction.ADD_PLAYER) return;
+        if (!info.getActions().contains(EnumPlayerInfoAction.UPDATE_GAME_MODE)) return;
         for (PlayerInfoData playerInfoData : info.getEntries()) {
             if (playerInfoData.getGameMode() != EnumGamemode.SPECTATOR) continue;
             if (receiver.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
