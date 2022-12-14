@@ -383,8 +383,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
     private void createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix) throws ReflectiveOperationException {
         if (prefix != null) nms.ScoreboardTeam_setPrefix.invoke(team, prefix);
         if (suffix != null) nms.ScoreboardTeam_setSuffix.invoke(team, suffix);
-        if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(nms.EnumNameTagVisibility, packet.getNameTagVisibility().equals("always") ? "ALWAYS" : "NEVER"));
-        if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(nms.EnumTeamPush, packet.getCollisionRule().equals("always") ? "ALWAYS" : "NEVER"));
+        if (nms.getMinorVersion() >= 8) nms.ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(nms.EnumNameTagVisibility, String.valueOf(packet.getNameTagVisibility()).equals("always") ? "ALWAYS" : "NEVER"));
+        if (nms.getMinorVersion() >= 9) nms.ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(nms.EnumTeamPush, String.valueOf(packet.getCollisionRule()).equals("always") ? "ALWAYS" : "NEVER"));
     }
     
     @Override
