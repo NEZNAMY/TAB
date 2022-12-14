@@ -24,6 +24,9 @@ public abstract class NMSStorage {
     /** Server's minor version */
     protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
+    /** Flag determining whether the server version is at least 1.19.3 or not */
+    private boolean is1_19_3Plus;
+
     /** Basic universal values */
     protected Class<?> Packet;
     protected Class<?> NetworkManager;
@@ -223,6 +226,10 @@ public abstract class NMSStorage {
      *          If some field, constructor or method was not found
      */
     public NMSStorage() throws ReflectiveOperationException {
+        try {
+            Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+            is1_19_3Plus = true;
+        } catch (ClassNotFoundException ignored) {}
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
@@ -804,11 +811,6 @@ public abstract class NMSStorage {
     }
 
     public boolean is1_19_3Plus() {
-        try {
-            Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return is1_19_3Plus;
     }
 }
