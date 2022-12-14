@@ -81,7 +81,6 @@ public class Main extends JavaPlugin {
                 try {
                     NMSStorage.setInstance(new BukkitModernNMSStorage());
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
                     NMSStorage.setInstance(new MojangModernNMSStorage());
                 }
             } else {
