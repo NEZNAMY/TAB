@@ -279,7 +279,6 @@ public class NameTag extends TabFeature implements TeamManager {
     }
 
     private void updateTeam(TabPlayer p) {
-        if (sorting.getShortTeamName(p) == null) return; //player not loaded yet
         String oldName = getSorting().getShortTeamName(p);
         getSorting().constructTeamNames(p);
         if (oldName.equals(sorting.getShortTeamName(p))) {
