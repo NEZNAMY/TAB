@@ -1,23 +1,17 @@
 package me.neznamy.tab.api.config;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.util.Preconditions;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * Abstract class for configuration file
@@ -53,18 +47,9 @@ public abstract class ConfigurationFile {
         Preconditions.checkNotNull(destination, "destination");
         this.file = destination;
         if (file.getParentFile() != null && !file.getParentFile().exists()) Files.createDirectories(file.getParentFile().toPath());
-        if (!file.exists() && source == null) throw new IllegalStateException("File does not exist and source is null");
-        if (file.createNewFile()) {
-//            Files.copy(source, file.toPath());
-            //avoiding MalformedInputException thrown on fabric due to file not having UTF8 encoding by default
-            //also automatically using the encoding so users don't have to worry about it anymore
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8));
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))){
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line + "\n");
-                }
-            }
+        if (!file.exists()) {
+            if (source == null) throw new IllegalStateException("File does not exist and source is null");
+            Files.copy(source, file.toPath());
         }
         detectHeader();
     }
