@@ -150,8 +150,8 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             errorManager = new ErrorManager();
             cpu = new CpuManager();
-            featureManager = new FeatureManagerImpl();
             configuration = new Configs();
+            featureManager = new FeatureManagerImpl();
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
             platform.loadFeatures();
