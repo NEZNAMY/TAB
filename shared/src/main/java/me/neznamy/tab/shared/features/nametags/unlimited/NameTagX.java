@@ -355,7 +355,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     public void pauseTeamHandling(TabPlayer player) {
         Preconditions.checkLoaded(player);
         if (teamHandlingPaused.contains(player)) return;
-        if (!isDisabledPlayer(player)) unregisterTeam(player);
+        if (!isDisabledPlayer(player)) unregisterTeam(player, getSorting().getShortTeamName(player));
         teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
         pauseArmorStands(player);
     }
