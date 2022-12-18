@@ -170,7 +170,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     @Override
     public void refresh(TabPlayer refreshed, boolean force) {
-        if (refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE) == null) return;
+        if (!players.contains(refreshed)) return;
         refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
                 refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
     }
