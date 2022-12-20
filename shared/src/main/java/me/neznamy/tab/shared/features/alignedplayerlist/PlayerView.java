@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
+import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -72,9 +73,12 @@ public class PlayerView {
     public synchronized IChatBaseComponent formatName(TabPlayer target) {
         Integer width = playerWidths.get(target);
         if (width == null) return null; //in packet reader, not loaded yet, will send packet after loading player
-        String prefixAndName = target.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) +
-                target.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer);
-        String suffix = target.getProperty(TabConstants.Property.TABSUFFIX).getFormat(viewer);
+        Property prefixPr = target.getProperty(TabConstants.Property.TABPREFIX);
+        Property namePr = target.getProperty(TabConstants.Property.CUSTOMTABNAME);
+        Property suffixPr = target.getProperty(TabConstants.Property.TABSUFFIX);
+        if (prefixPr == null || namePr == null || suffixPr == null) return null; // no idea why is another check needed
+        String prefixAndName = prefixPr.getFormat(viewer) + namePr.getFormat(viewer);
+        String suffix = suffixPr.getFormat(viewer);
         if (suffix.length() == 0) return IChatBaseComponent.optimizedComponent(prefixAndName);
         if ((target.isVanished() && !canSeeVanished) || width > maxWidth) {
             //tab sending packets for vanished players or player just unvanished
