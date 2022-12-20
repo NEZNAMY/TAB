@@ -112,4 +112,9 @@ public class DataWatcher {
         }
         return watcher;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DataWatcher{values=%s}", dataValues);
+    }
 }

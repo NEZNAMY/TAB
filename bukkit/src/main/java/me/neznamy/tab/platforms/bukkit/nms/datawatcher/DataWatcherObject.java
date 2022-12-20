@@ -39,4 +39,9 @@ public class DataWatcherObject {
     public Object getSerializer() {
         return serializer;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DataWatcherObject{position=%d,serializer=%s}", position, serializer);
+    }
 }

@@ -67,4 +67,9 @@ public class DataWatcherItem {
     public Object getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DataWatcherItem{type=%s,value=%s}", type, value);
+    }
 }
