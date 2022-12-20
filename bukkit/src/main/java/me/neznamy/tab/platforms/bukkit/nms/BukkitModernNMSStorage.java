@@ -29,6 +29,7 @@ public class BukkitModernNMSStorage extends ModernNMSStorage {
         if (minorVersion >= 19) {
             EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
             PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "e");
+            DataWatcher_b = DataWatcher.getMethod("b");
         }
     }
 

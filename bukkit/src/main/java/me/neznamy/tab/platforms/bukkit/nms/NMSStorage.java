@@ -71,13 +71,13 @@ public abstract class NMSStorage {
     public Field DataWatcherObject_SLOT;
     public Field DataWatcherObject_SERIALIZER;
     public Method DataWatcher_REGISTER;
-    public Method DataWatcher_b;
     private final DataWatcherRegistry registry;
     //1.19.3+
     protected Class<?> DataWatcher$DataValue;
     public Field DataWatcher$DataValue_POSITION;
     public Field DataWatcher$DataValue_VALUE;
     public Method DataWatcher_markDirty;
+    public Method DataWatcher_b;
 
     /** PacketPlayOutSpawnEntityLiving */
     public Class<?> PacketPlayOutSpawnEntityLiving;
@@ -466,7 +466,6 @@ public abstract class NMSStorage {
     protected void dataWatcher() throws ReflectiveOperationException {
         newDataWatcher = DataWatcher.getConstructors()[0];
         DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
-        DataWatcher_b = getMethods(DataWatcher, List.class).get(0);
         if (minorVersion >= 9) {
             newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
             DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);

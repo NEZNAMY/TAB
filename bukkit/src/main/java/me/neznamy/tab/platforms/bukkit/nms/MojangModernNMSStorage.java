@@ -29,6 +29,7 @@ public class MojangModernNMSStorage extends ModernNMSStorage {
         if (minorVersion >= 19) {
             EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
             PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "type");
+            DataWatcher_b = DataWatcher.getMethod("packDirty");
         }
     }
 
