@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -93,6 +94,9 @@ public class PlayerCommand extends PropertyCommand {
         if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
         TAB.getInstance().getConfiguration().getUsers().setProperty(player, type, server, world, value.length() == 0 ? null : value);
         TabPlayer pl = TAB.getInstance().getPlayer(player);
+        try {
+            if (pl == null) pl = TAB.getInstance().getPlayer(UUID.fromString(player));
+        } catch (IllegalArgumentException ignored){} // not an uuid string
         if (pl != null) {
             pl.forceRefresh();
         }
