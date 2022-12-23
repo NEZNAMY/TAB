@@ -1,23 +1,21 @@
 package me.neznamy.tab.shared.placeholders;
 
-import java.util.*;
-import java.util.function.Function;
-
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
+
 /**
  * Implementation of the PlayerPlaceholder interface
  */
 public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlaceholder {
-
-    /**
-     * Internal constant used to detect if placeholder threw an error.
-     * If so, placeholder's last known value is displayed.
-     */
-    private final String ERROR_VALUE = "ERROR";
 
     /** Placeholder function returning fresh output on request */
     private final Function<TabPlayer, Object> function;
@@ -59,8 +57,8 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
             lastValues.put(p, identifier);
         }
-        if (!lastValues.containsKey(p) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p).equals(newValue))) {
-            lastValues.put(p, ERROR_VALUE.equals(newValue) ? identifier : newValue);
+        if (!lastValues.containsKey(p) || (!TabConstants.Placeholder.ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p).equals(newValue))) {
+            lastValues.put(p, TabConstants.Placeholder.ERROR_VALUE.equals(newValue) ? identifier : newValue);
             updateParents(p);
             if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
                 TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
@@ -127,10 +125,14 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     @Override
     public Object request(TabPlayer p) {
         try {
-            return function.apply(p);
+            return placeholderFutureThreadPool.submit(() -> function.apply(p)).get(
+                    TabConstants.Placeholder.PLACEHOLDER_RETRIEVE_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            TAB.getInstance().getErrorManager().criticalError("Placeholder " + identifier + " took longer than " +
+                    TabConstants.Placeholder.PLACEHOLDER_RETRIEVE_TIMEOUT + "ms to retrieve value for player " + p.getName() + ", aborting.", null);
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().placeholderError("Player placeholder " + identifier + " generated an error when setting for player " + p.getName(), t);
-            return ERROR_VALUE;
         }
+        return TabConstants.Placeholder.ERROR_VALUE;
     }
 }

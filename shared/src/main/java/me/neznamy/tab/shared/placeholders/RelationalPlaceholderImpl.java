@@ -2,8 +2,11 @@ package me.neznamy.tab.shared.placeholders;
 
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -116,10 +119,14 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     @Override
     public Object request(TabPlayer viewer, TabPlayer target) {
         try {
-            return function.apply(viewer, target);
+            return placeholderFutureThreadPool.submit(() -> function.apply(viewer, target)).get(
+                    TabConstants.Placeholder.PLACEHOLDER_RETRIEVE_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            TAB.getInstance().getErrorManager().criticalError("Placeholder " + identifier + " took longer than " +
+                    TabConstants.Placeholder.PLACEHOLDER_RETRIEVE_TIMEOUT + "ms to retrieve value for viewer " + viewer.getName() + " and target " + target.getName() + ", aborting.", null);
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().placeholderError("Relational placeholder " + identifier + " generated an error when setting for players " + viewer.getName() + " and " + target.getName(), t);
-            return "ERROR";
         }
+        return TabConstants.Placeholder.ERROR_VALUE;
     }
 }

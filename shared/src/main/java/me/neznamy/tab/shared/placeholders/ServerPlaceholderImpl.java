@@ -1,8 +1,11 @@
 package me.neznamy.tab.shared.placeholders;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
@@ -50,7 +53,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         if (identifier.equals(newValue) && lastValue == null) {
             lastValue = identifier;
         }
-        if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
+        if (!TabConstants.Placeholder.ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
@@ -113,10 +116,14 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     public Object request() {
         try {
-            return supplier.get();
+            return placeholderFutureThreadPool.submit(supplier::get).get(
+                    TabConstants.Placeholder.PLACEHOLDER_RETRIEVE_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            TAB.getInstance().getErrorManager().criticalError("Placeholder " + identifier + " took longer than " +
+                    TabConstants.Placeholder.PLACEHOLDER_RETRIEVE_TIMEOUT + "ms to retrieve value, aborting.", null);
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().placeholderError("Server placeholder " + identifier + " generated an error", t);
-            return "ERROR";
         }
+        return TabConstants.Placeholder.ERROR_VALUE;
     }
 }
