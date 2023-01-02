@@ -60,9 +60,7 @@ public abstract class SortingType {
         int index = 1;
         for (String element : elements){
             for (String element0 : element.split("\\|")) {
-                while (element0.startsWith(" ")) element0 = element0.substring(1);
-                while (element0.endsWith(" ")) element0 = element0.substring(0, element0.length()-1);
-                sortedGroups.put(EnumChatFormat.color(element0.toLowerCase()), index++);
+                sortedGroups.put(EnumChatFormat.color(element0.trim().toLowerCase()), index++);
             }
         }
         return sortedGroups;
