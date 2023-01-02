@@ -26,7 +26,7 @@ public class Groups extends SortingType {
     public String getChars(ITabPlayer p) {
         String group = p.getGroup().toLowerCase();
         int position;
-        if (!sortedGroups.containsKey(group.toLowerCase())) {
+        if (!sortedGroups.containsKey(group)) {
             position = sortedGroups.size() + 1;
             sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> &cPrimary group (&e" + p.getGroup() + "&c) is not in sorting list. &r");
         } else {
