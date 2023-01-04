@@ -53,9 +53,9 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         PING = getField(EntityPlayer, "ping");
-        ScoreboardScore_setScore = getMethod(ScoreboardScore, "setScore", int.class);
-        ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, "setAllowFriendlyFire", boolean.class);
-        ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, "setCanSeeFriendlyInvisibles", boolean.class);
+        ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
+        ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
+        ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
         if (minorVersion >= 7) {
             ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, "a", String.class);
         }
@@ -71,8 +71,8 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
             ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, "setPrefix", IChatBaseComponent);
             ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, "setSuffix", IChatBaseComponent);
         } else {
-            ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, "setPrefix", String.class);
-            ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, "setSuffix", String.class);
+            ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
+            ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
         }
     }
 
@@ -138,7 +138,7 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         Scoreboard = getLegacyClass("Scoreboard");
         ScoreboardObjective = getLegacyClass("ScoreboardObjective");
         ScoreboardScore = getLegacyClass("ScoreboardScore");
-        IScoreboardCriteria = getLegacyClass("IScoreboardCriteria");
+        IScoreboardCriteria = getLegacyClass("IScoreboardCriteria", "IObjective"); // 1.5.1+, 1.5
         ScoreboardTeam = getLegacyClass("ScoreboardTeam");
         if (minorVersion >= 8) {
             EnumScoreboardHealthDisplay = (Class<Enum>) getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
