@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
 import java.util.Map;
 

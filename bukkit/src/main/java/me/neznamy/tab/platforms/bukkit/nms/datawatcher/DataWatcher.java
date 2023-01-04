@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
 /**
  * A class representing the n.m.s.DataWatcher class to make work with it much easier

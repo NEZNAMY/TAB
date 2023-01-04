@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.storage;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
@@ -229,7 +229,7 @@ public abstract class NMSStorage {
         try {
             Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
             is1_19_3Plus = true;
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException | NullPointerException ignored) {}
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
@@ -807,6 +807,25 @@ public abstract class NMSStorage {
             }
         }
         return fields;
+    }
+
+
+    /**
+     * Returns class with given potential full class names in same order
+     *
+     * @param   names
+     *          possible full class names
+     * @return  Class with first match
+     * @throws  ClassNotFoundException
+     *          if class does not exist
+     */
+    public Class<?> getClass(String... names) throws ClassNotFoundException {
+        for (String name : names) {
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException ignored) {}
+        }
+        throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
     }
 
     public boolean is1_19_3Plus() {

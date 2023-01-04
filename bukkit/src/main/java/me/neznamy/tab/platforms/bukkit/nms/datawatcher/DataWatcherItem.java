@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
 /**
  * Class representing NMS Data Watcher Item

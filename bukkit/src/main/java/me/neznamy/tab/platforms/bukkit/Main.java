@@ -1,24 +1,24 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.platforms.bukkit.nms.*;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.util.SupplierWithException;
+import me.neznamy.tab.platforms.bukkit.nms.storage.*;
+import me.neznamy.tab.shared.TAB;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Main class for Bukkit platform
@@ -77,30 +77,35 @@ public class Main extends JavaPlugin {
         try {
             long time = System.currentTimeMillis();
             int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
-            if (minorVersion >= 17) {
-                try {
-                    NMSStorage.setInstance(new BukkitModernNMSStorage());
-                } catch (ClassNotFoundException e) {
-                    NMSStorage.setInstance(new MojangModernNMSStorage());
-                }
-            } else {
-                NMSStorage.setInstance(new LegacyNMSStorage());
-            }
+            NMSStorage.setInstance(getNMSLoader());
             if (supportedVersions.contains(serverPackage)) {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
                 return true;
             } else {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.2 - 1.19.3. Disabling just to stay safe."));
             }
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
             if (supportedVersions.contains(serverPackage)) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report the error below (include your server version & fork too)"));
-                getLogger().log(Level.SEVERE, "", ex);
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report this issue (include your server version & fork too)"));
             } else {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.2 - 1.19.3. Disabling."));
             }
         }
         return false;
+    }
+
+    private NMSStorage getNMSLoader() {
+        List<SupplierWithException<NMSStorage>> loaders = new ArrayList<>();
+        loaders.add(BukkitLegacyNMSStorage::new);
+        loaders.add(BukkitModernNMSStorage::new);
+        loaders.add(MojangModernNMSStorage::new);
+        loaders.add(ThermosNMSStorage::new);
+        for (SupplierWithException<NMSStorage> loader : loaders) {
+            try {
+                return loader.get();
+            } catch (Exception ignored){}
+        }
+        throw new IllegalStateException("Unsupported server version");
     }
 
     /**

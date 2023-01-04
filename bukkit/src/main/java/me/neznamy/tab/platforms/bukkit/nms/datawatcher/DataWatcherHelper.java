@@ -4,7 +4,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 
 import java.util.Optional;

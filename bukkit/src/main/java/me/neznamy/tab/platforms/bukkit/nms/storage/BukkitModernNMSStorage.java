@@ -1,10 +1,10 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.storage;
 
 /**
  * NMS loader for minecraft 1.17+ using Mojang packaging and bukkit names.
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class BukkitModernNMSStorage extends ModernNMSStorage {
+public class BukkitModernNMSStorage extends NMSStorage {
 
     /**
      * Creates new instance, initializes required NMS classes and fields
@@ -49,7 +49,7 @@ public class BukkitModernNMSStorage extends ModernNMSStorage {
         PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
 
         PacketPlayOutPlayerListHeaderFooter = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
-        PacketPlayOutChat = getModernClass("net.minecraft.network.protocol.game.ClientboundSystemChatPacket",
+        PacketPlayOutChat = getClass("net.minecraft.network.protocol.game.ClientboundSystemChatPacket",
                 "net.minecraft.network.protocol.game.PacketPlayOutChat");
         if (minorVersion < 19) {
             ChatMessageType = (Class<Enum>) Class.forName("net.minecraft.network.chat.ChatMessageType");
@@ -66,7 +66,7 @@ public class BukkitModernNMSStorage extends ModernNMSStorage {
         }
 
         // Entities
-        PacketPlayOutSpawnEntityLiving = getModernClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving",
+        PacketPlayOutSpawnEntityLiving = getClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving",
                 "net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
         PacketPlayOutEntityTeleport = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport");
         PacketPlayInUseEntity = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity");

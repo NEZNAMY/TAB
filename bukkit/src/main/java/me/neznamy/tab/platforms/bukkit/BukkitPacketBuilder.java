@@ -14,6 +14,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.platforms.bukkit.nms.*;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
