@@ -251,7 +251,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
                 int refresh = gcd(p.getRefresh(), refreshInterval);
                 if (refreshInterval != refresh) {
                     TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + refresh + "ms due to placeholder " + identifier);
-                    refreshTask.cancel(true);
+                    if (refreshTask != null) refreshTask.cancel(true);
                     refreshInterval = refresh;
                     refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(refreshInterval, this, "Refreshing placeholders", this::refresh);
                     atomic.set(0);
