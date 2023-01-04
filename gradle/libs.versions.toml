@@ -3,19 +3,19 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.80.Final"
+netty = "4.1.86.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.33"
 yamlAssist = "1.0.5"
-gson = "2.9.1"
-slf4j = "1.7.36"
-minimessage = "4.11.0"
+gson = "2.10"
+slf4j = "2.0.6"
+minimessage = "4.12.0"
 
 # General
 luckperms = "5.4"
 guava = "31.1-jre"
 floodgate = "2.2.0-SNAPSHOT"
-kotlin = "1.7.10"
+kotlin = "1.8.0"
 event = "3.0.0"
 
 # Platforms
@@ -27,12 +27,12 @@ velocity = "3.1.2-SNAPSHOT"
 # Platform extras
 placeholderapi = "2.11.2"
 vault = "1.7"
-via = "4.4.2"
+via = "4.5.1"
 authlib = "1.5.25"
 bstats = "3.0.0"
 essentials = "2.19.7"
 premiumVanish = "2.7.11-2"
-redisBungee = "0.7.3"
+redisBungee = "0.10.1"
 
 # Plugins
 indra = "2.1.1"
