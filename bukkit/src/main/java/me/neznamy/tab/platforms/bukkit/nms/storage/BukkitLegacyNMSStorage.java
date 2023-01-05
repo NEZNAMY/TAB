@@ -57,19 +57,19 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
         ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
         if (minorVersion >= 7) {
-            ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, "a", String.class);
+            ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
         }
         if (minorVersion >= 8) {
             ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8}
         }
         if (minorVersion >= 9) {
-            DataWatcher_REGISTER = getMethod(DataWatcher, "register", DataWatcherObject, Object.class);
+            DataWatcher_REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
         } else {
-            DataWatcher_REGISTER = getMethod(DataWatcher, "a", int.class, Object.class);
+            DataWatcher_REGISTER = DataWatcher.getMethod("a", int.class, Object.class);
         }
         if (minorVersion >= 13) {
-            ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, "setPrefix", IChatBaseComponent);
-            ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, "setSuffix", IChatBaseComponent);
+            ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
+            ScoreboardTeam_setSuffix = ScoreboardTeam.getMethod("setSuffix", IChatBaseComponent);
         } else {
             ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
             ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5

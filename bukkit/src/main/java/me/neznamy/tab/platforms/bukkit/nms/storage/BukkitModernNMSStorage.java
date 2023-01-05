@@ -18,7 +18,7 @@ public class BukkitModernNMSStorage extends NMSStorage {
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         PING = getField(EntityPlayer, "e");
-        ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, "a", String.class);
+        ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
         DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"register", "a"}, DataWatcherObject, Object.class); // {Bukkit, Bukkit 1.18+}
         ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
@@ -49,9 +49,10 @@ public class BukkitModernNMSStorage extends NMSStorage {
         PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
 
         PacketPlayOutPlayerListHeaderFooter = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
-        PacketPlayOutChat = getClass("net.minecraft.network.protocol.game.ClientboundSystemChatPacket",
-                "net.minecraft.network.protocol.game.PacketPlayOutChat");
-        if (minorVersion < 19) {
+        if (minorVersion >= 19) {
+            PacketPlayOutChat = Class.forName("net.minecraft.network.protocol.game.ClientboundSystemChatPacket");
+        } else {
+            PacketPlayOutChat = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutChat");
             ChatMessageType = (Class<Enum>) Class.forName("net.minecraft.network.chat.ChatMessageType");
         }
 
@@ -66,8 +67,11 @@ public class BukkitModernNMSStorage extends NMSStorage {
         }
 
         // Entities
-        PacketPlayOutSpawnEntityLiving = getClass("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving",
-                "net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
+        if (minorVersion >= 19) {
+            PacketPlayOutSpawnEntityLiving = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
+        } else {
+            PacketPlayOutSpawnEntityLiving = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
+        }
         PacketPlayOutEntityTeleport = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport");
         PacketPlayInUseEntity = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity");
         PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d");

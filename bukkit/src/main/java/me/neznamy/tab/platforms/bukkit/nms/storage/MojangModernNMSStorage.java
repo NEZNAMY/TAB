@@ -18,14 +18,14 @@ public class MojangModernNMSStorage extends NMSStorage {
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         PING = getField(EntityPlayer, "latency");
-        ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, "fromJson", String.class);
-        DataWatcher_REGISTER = getMethod(DataWatcher, "define", DataWatcherObject, Object.class);
-        ScoreboardScore_setScore = getMethod(ScoreboardScore, "setScore", int.class);
-        ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, "setAllowFriendlyFire", boolean.class);
-        ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, "setSeeFriendlyInvisibles", boolean.class);
-        ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, "setPlayerPrefix", IChatBaseComponent);
-        ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, "setPlayerSuffix", IChatBaseComponent);
-        ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, "setNameTagVisibility", EnumNameTagVisibility);
+        ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("fromJson", String.class);
+        DataWatcher_REGISTER = DataWatcher.getMethod("define", DataWatcherObject, Object.class);
+        ScoreboardScore_setScore = ScoreboardScore.getMethod("setScore", int.class);
+        ScoreboardTeam_setAllowFriendlyFire = ScoreboardTeam.getMethod("setAllowFriendlyFire", boolean.class);
+        ScoreboardTeam_setCanSeeFriendlyInvisibles = ScoreboardTeam.getMethod("setSeeFriendlyInvisibles", boolean.class);
+        ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("setPlayerPrefix", IChatBaseComponent);
+        ScoreboardTeam_setSuffix = ScoreboardTeam.getMethod("setPlayerSuffix", IChatBaseComponent);
+        ScoreboardTeam_setNameTagVisibility = ScoreboardTeam.getMethod("setNameTagVisibility", EnumNameTagVisibility);
         if (minorVersion >= 19) {
             EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
             PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "type");
@@ -48,9 +48,10 @@ public class MojangModernNMSStorage extends NMSStorage {
         EntityLiving = Class.forName("net.minecraft.world.entity.LivingEntity");
         PlayerConnection = Class.forName("net.minecraft.server.network.ServerGamePacketListenerImpl");
         PacketPlayOutPlayerListHeaderFooter = Class.forName("net.minecraft.network.protocol.game.ClientboundTabListPacket");
-        PacketPlayOutChat = getClass("net.minecraft.network.protocol.game.ClientboundSystemChatPacket",
-                "net.minecraft.network.protocol.game.ClientboundChatPacket");
-        if (minorVersion < 19) {
+        if (minorVersion >= 19) {
+            PacketPlayOutChat = Class.forName("net.minecraft.network.protocol.game.ClientboundSystemChatPacket");
+        } else {
+            PacketPlayOutChat = Class.forName("net.minecraft.network.protocol.game.ClientboundChatPacket");
             ChatMessageType = (Class<Enum>) Class.forName("net.minecraft.network.chat.ChatType");
         }
 
@@ -65,8 +66,11 @@ public class MojangModernNMSStorage extends NMSStorage {
         }
 
         // Entities
-        PacketPlayOutSpawnEntityLiving = getClass("net.minecraft.network.protocol.game.ClientboundAddMobPacket",
-                "net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
+        if (minorVersion >= 19) {
+            PacketPlayOutSpawnEntityLiving = Class.forName("net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
+        } else {
+            PacketPlayOutSpawnEntityLiving = Class.forName("net.minecraft.network.protocol.game.ClientboundAddMobPacket");
+        }
         PacketPlayOutEntityTeleport = Class.forName("net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket");
         PacketPlayInUseEntity = Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket");
         PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket$InteractionAction");

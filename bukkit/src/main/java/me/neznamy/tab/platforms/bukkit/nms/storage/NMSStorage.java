@@ -578,7 +578,7 @@ public abstract class NMSStorage {
     protected Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
         for (String name : names) {
             try {
-                return getMethod(clazz, name, parameterTypes);
+                return clazz.getMethod(name, parameterTypes);
             } catch (NoSuchMethodException e) {
                 //not the first method in array
             }
@@ -598,39 +598,6 @@ public abstract class NMSStorage {
         }
         throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " +
                 Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
-    }
-
-    /**
-     * Returns Method from class with given name and parameter types. This should be equal to
-     * simply calling Class#getMethod, which however does not work with a few specific methods on
-     * CatServer fork. This workaround works for them.
-     *
-     * @param   clazz
-     *          Class to get method from
-     * @param   name
-     *          Name of the method
-     * @param   parameterTypes
-     *          Parameter types of the method
-     * @return  Method with specified name and parameter types
-     * @throws  NoSuchMethodException
-     *          If no such method was found
-     */
-    protected Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
-        List<Method> list = new ArrayList<>();
-        for (Method m : clazz.getMethods()) {
-            if (!m.getName().equals(name) || m.getParameterCount() != parameterTypes.length) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) list.add(m);
-        }
-        if (!list.isEmpty()) return list.get(0);
-        throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
     }
 
     /**
@@ -720,30 +687,6 @@ public abstract class NMSStorage {
     }
 
     /**
-     * Returns field from class with specified possible names of the field.
-     * Names are checked in specified order and first match is returned.
-     * If no match is found, {@link NoSuchFieldException} is thrown.
-     *
-     * @param   clazz
-     *          Class to get field from
-     * @param   potentialNames
-     *          Potential names of the field
-     * @return  Field with specified name
-     * @throws  NoSuchFieldException
-     *          If no match is found
-     */
-    protected Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
-        for (String name : potentialNames) {
-            try {
-                return getField(clazz, name);
-            } catch (NoSuchFieldException e) {
-                //not the first field name from array
-            }
-        }
-        throw new NoSuchFieldException("No field found in class " + clazz.getName() + " with potential names " + Arrays.toString(potentialNames));
-    }
-
-    /**
      * Returns server's minor version
      * @return  server's minor version
      */
@@ -807,25 +750,6 @@ public abstract class NMSStorage {
             }
         }
         return fields;
-    }
-
-
-    /**
-     * Returns class with given potential full class names in same order
-     *
-     * @param   names
-     *          possible full class names
-     * @return  Class with first match
-     * @throws  ClassNotFoundException
-     *          if class does not exist
-     */
-    public Class<?> getClass(String... names) throws ClassNotFoundException {
-        for (String name : names) {
-            try {
-                return Class.forName(name);
-            } catch (ClassNotFoundException ignored) {}
-        }
-        throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
     }
 
     public boolean is1_19_3Plus() {

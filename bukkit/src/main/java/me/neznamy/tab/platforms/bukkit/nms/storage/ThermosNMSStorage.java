@@ -38,12 +38,12 @@ public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         PING = getField(EntityPlayer, "field_71138_i");
-        ScoreboardScore_setScore = getMethod(ScoreboardScore, "func_96647_c", int.class);
-        ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, "func_96660_a", boolean.class);
-        ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, "func_98300_b", boolean.class);
-        ChatSerializer_DESERIALIZE = getMethod(ChatSerializer, "func_150699_a", String.class);
-        DataWatcher_REGISTER = getMethod(DataWatcher, "func_75682_a", int.class, Object.class);
-        ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, "func_96666_b", String.class);
-        ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, "func_96662_c", String.class);
+        ScoreboardScore_setScore = ScoreboardScore.getMethod("func_96647_c", int.class);
+        ScoreboardTeam_setAllowFriendlyFire = ScoreboardTeam.getMethod("func_96660_a", boolean.class);
+        ScoreboardTeam_setCanSeeFriendlyInvisibles = ScoreboardTeam.getMethod("func_98300_b", boolean.class);
+        ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("func_150699_a", String.class);
+        DataWatcher_REGISTER = DataWatcher.getMethod("func_75682_a", int.class, Object.class);
+        ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("func_96666_b", String.class);
+        ScoreboardTeam_setSuffix = ScoreboardTeam.getMethod("func_96662_c", String.class);
     }
 }
