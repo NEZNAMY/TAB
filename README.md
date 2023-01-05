@@ -6,8 +6,8 @@ More information can be found at [Why TAB?](https://github.com/NEZNAMY/TAB/wiki/
 # Distribution
 As of TAB 3.0.0, released with MC 1.18 (November 30th, 2021), there is no free / premium
 version anymore. Only one version of the plugin exists now, which contains all implemented features
-and is available to everyone for free. However, official support on discord is only provided to 
-those who have purchased the plugin.  
+and is available to everyone for free. However, customer support is only provided to 
+customers who have purchased the plugin.  
 
 # Compiling
 Compilation requires JDK 8 and up.  
@@ -15,17 +15,10 @@ To compile the plugin, run `./gradlew build` from the terminal.
 Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.
 
 # Links
-The precompiled JAR can be downloaded for free from:  
-* GitHub releases: https://github.com/NEZNAMY/TAB/releases
-* BuiltByBit: https://builtbybit.com/resources/20631/
-
-Support my work & receive official assistance with configuration:  
-* BuiltByBit: https://builtbybit.com/resources/14009/
-* Polymart: https://polymart.org/resource/484
-
-Other links:
-* Discord support for buyers: https://discord.gg/EaSvdk6  
-* Wiki: https://github.com/NEZNAMY/TAB/wiki  
+Download the plugin for free: [GitHub releases](https://github.com/NEZNAMY/TAB/releases), 
+[BuiltByBit](https://builtbybit.com/resources/20631/), [Modrinth](https://modrinth.com/plugin/tab-was-taken)  
+Support my work & receive customer support: [BuiltByBit](https://builtbybit.com/resources/14009/), [Polymart](https://polymart.org/resource/484)  
+Other links: [Discord support for customers](https://discord.gg/EaSvdk6), [Wiki](https://github.com/NEZNAMY/TAB/wiki)  
 
 # Issues
 The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** available for cases included in templates.
@@ -40,8 +33,8 @@ to make the plugin even better, there is a lot of ways to contribute:
 * Open a **pull request** containing a new feature or a bug fix, which you believe many users will benefit from.
 * Make detailed high-quality **bug reports**. The difference between a bug getting fixed in 1 week vs 1 hour 
 is in quality of the report (typically providing correct steps to reproduce that actually work).
-* Test **experimental builds**, which can be found in [Github Actions](https://github.com/NEZNAMY/TAB/actions) or in a form of pre-releases on discord
-for problems of any kind including bugs. This way you will help make the actual releases more stable / help get stable releases sooner.
+* Test **experimental builds**, which can be found in [Github Actions](https://github.com/NEZNAMY/TAB/actions) for problems of any kind including bugs. 
+This way you will help make the actual releases more stable / help get stable releases sooner.
 * Help improve the wiki by opening a [Wiki change issue](https://github.com/NEZNAMY/TAB/issues/new?assignees=&labels=Wiki&template=wiki_change.yml), 
 where you can improve existing descriptions, add information you found missing, fix typos / grammar mistakes or add more examples of usage of functions.
 * [Buy a copy](https://builtbybit.com/resources/14009/) of the plugin or [send a donation](https://paypal.me/neznamy1) to keep the plugin active.
