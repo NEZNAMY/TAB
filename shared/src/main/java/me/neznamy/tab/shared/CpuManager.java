@@ -47,7 +47,7 @@ public class CpuManager implements ThreadManager {
     private final ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
-    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(20,
+    private final ScheduledThreadPoolExecutor threadPool = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(20,
             new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
 
     /** Tasks submitted to main thread before plugin was fully enabled */
@@ -105,13 +105,19 @@ public class CpuManager implements ThreadManager {
             return null;
         }
         if (thread.isShutdown()) return null;
-        return (Future<Void>) thread.submit(() -> {
-            try {
-                task.run();
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
-            }
-        });
+        try {
+            return (Future<Void>) thread.submit(() -> {
+                try {
+                    task.run();
+                } catch (Exception | LinkageError | StackOverflowError e) {
+                    TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
+                }
+            });
+        } catch (OutOfMemoryError e) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to schedule task due to " + e.getClass().getName() +
+                    ": " + e.getMessage() + ". Threads created by TAB: " + (threadPool.getActiveCount()+1), null);
+            return null;
+        }
     }
 
     /**
