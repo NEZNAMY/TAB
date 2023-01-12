@@ -39,15 +39,15 @@ public class RGBUtils {
      */
     public RGBUtils() {
         List<RGBFormatter> list = new ArrayList<>();
+        try {
+            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+            list.add(new MiniMessageFormat());
+        } catch (ClassNotFoundException ignored) {}
         list.add(new BukkitFormat());
         list.add(new CMIFormat());
         list.add(new UnnamedFormat1());
         list.add(new HtmlFormat());
         list.add(new KyoriFormat());
-        try {
-            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
-            list.add(new MiniMessageFormat());
-        } catch (ClassNotFoundException ignored) {}
         formats = list.toArray(new RGBFormatter[0]);
 
         gradients = new GradientPattern[] {
