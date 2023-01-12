@@ -1,16 +1,15 @@
 package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.api.HeaderFooterManager;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.shared.TAB;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import me.neznamy.tab.api.HeaderFooterManager;
-import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 
 /**
  * Feature handler for header and footer
@@ -90,7 +89,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 
     private String getProperty(TabPlayer p, String property) {
         String append = getFromConfig(p, property + "append");
-        if (append.length() > 0) append = "\n" + EnumChatFormat.COLOR_CHAR + "r" + append;
+        if (append.length() > 0) append = "\n" + append;
         return getFromConfig(p, property) + append;
     }
 
@@ -115,7 +114,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
              lines = TAB.getInstance().getConfiguration().getConfig().getStringList("header-footer." + property);
         }
         if (lines == null) lines = new ArrayList<>();
-        return String.join("\n" + EnumChatFormat.COLOR_CHAR + "r", lines);
+        return String.join("\n", lines);
     }
 
     @Override
