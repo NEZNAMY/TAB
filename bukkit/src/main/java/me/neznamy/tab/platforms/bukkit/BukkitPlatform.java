@@ -5,6 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
@@ -272,6 +273,7 @@ public class BukkitPlatform extends Platform {
     /**
      * Sends console message using ConsoleCommandSender, due to
      * Paper not translating colors correctly in Logger messages
+     * and to allow RGB (at least on Paper, doesn't work on spigot)
      *
      * @param   message
      *          Message to send
@@ -280,6 +282,9 @@ public class BukkitPlatform extends Platform {
      */
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + (translateColors ? EnumChatFormat.color(message) : message));
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + (translateColors ?
+                EnumChatFormat.color(RGBUtils.getInstance().convertToBukkitFormat(message,
+                        TAB.getInstance().getServerVersion().getMinorVersion() >= 16))
+                : message));
     }
 }
