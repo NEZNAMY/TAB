@@ -26,6 +26,9 @@ In other words, they **are not available for**:
 * **Support** - support is provided on discord for buyers, where roles are given to verified users
 allowing us to know who bought it and who didn't. It also serves as a much faster way of communication.
 * **Feature requests** - closed indefinitely.
+  
+**If you're a customer, please use discord for reporting bugs, especially if you aren't good at making bug reports. 
+You will be provided with a much faster and higher quality service.**
 
 # Contributing
 If this plugin has helped you in any way, and you would like to return something back 
