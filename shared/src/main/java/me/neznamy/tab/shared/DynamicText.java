@@ -225,6 +225,6 @@ public class DynamicText implements Property {
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
             format = format.replace(pl.getIdentifier(), viewer == null ? "" : pl.getLastValue(viewer, owner));
         }
-        return format;
+        return EnumChatFormat.color(format);
     }
 }
