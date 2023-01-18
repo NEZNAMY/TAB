@@ -14,6 +14,7 @@ dependencyResolutionManagement {
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
         maven("https://repo.purpurmc.org/snapshots") // Purpur, Vault
         maven("https://repo.papermc.io/repository/maven-public/") // Velocity
+        maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
@@ -34,4 +35,5 @@ include(":krypton")
 include(":velocity")
 include(":bukkit")
 include(":bungeecord")
+include(":sponge")
 include(":jar")
