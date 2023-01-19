@@ -335,22 +335,7 @@ public class TabConstants {
         public static final String VAULT_SUFFIX = "%vault-suffix%";
         public static final String HEALTH = "%health%";
 
-        /**
-         * Minimum refresh interval of a placeholder in milliseconds, used to set refresh interval of the main task
-         */
         public static final int MINIMUM_REFRESH_INTERVAL = 50;
-
-        /**
-         * Timeout in milliseconds for a placeholder to return value
-         * to prevent SQL tasks by PlaceholderAPI placeholders from freezing TAB
-         */
-        public static final int PLACEHOLDER_RETRIEVE_TIMEOUT = 50;
-
-        /**
-         * Internal constant used to detect if placeholder threw an error.
-         * If so, placeholder's last known value is displayed instead.
-         */
-        public static final String ERROR_VALUE = "ERROR";
 
 
         public static String condition(String name) {

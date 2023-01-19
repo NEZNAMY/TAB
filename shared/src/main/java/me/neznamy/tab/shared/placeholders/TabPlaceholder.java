@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.placeholders;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -9,16 +8,11 @@ import me.neznamy.tab.shared.TAB;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * General collection of variables and functions shared between all placeholder types
  */
 public abstract class TabPlaceholder implements Placeholder {
-
-    /** Thread pool for submitting placeholder requests with a timeout */
-    protected static ExecutorService placeholderFutureThreadPool = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB Placeholder retrieving thread %d").build());
 
     /** Refresh interval of the placeholder */
     private final int refresh;
