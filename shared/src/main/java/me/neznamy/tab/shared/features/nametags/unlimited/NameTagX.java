@@ -97,7 +97,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     public void unload() {
         super.unload();
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (getArmorStandManager(p) != null) getArmorStandManager(p).destroy();
+            getArmorStandManager(p).destroy();
         }
     }
 
