@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 public abstract class TabPlaceholder implements Placeholder {
 
     /** Thread pool for submitting placeholder requests with a timeout */
-    protected static ExecutorService placeholderFutureThreadPool = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Placeholder retrieving thread %d").build());
+    protected static ExecutorService placeholderFutureThreadPool = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("TAB Placeholder retrieving thread %d").build());
 
     /** Refresh interval of the placeholder */
     private final int refresh;
