@@ -344,7 +344,7 @@ public class TabConstants {
          * Timeout in milliseconds for a placeholder to return value
          * to prevent SQL tasks by PlaceholderAPI placeholders from freezing TAB
          */
-        public static final int PLACEHOLDER_RETRIEVE_TIMEOUT = 500;
+        public static final int PLACEHOLDER_RETRIEVE_TIMEOUT = 50;
 
         /**
          * Internal constant used to detect if placeholder threw an error.
