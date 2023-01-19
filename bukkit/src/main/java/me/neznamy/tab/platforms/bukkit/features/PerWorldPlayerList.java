@@ -25,9 +25,6 @@ import me.neznamy.tab.shared.TAB;
 @SuppressWarnings("deprecation")
 public class PerWorldPlayerList extends TabFeature implements Listener {
 
-    /** Reference to main class */
-    private final JavaPlugin plugin;
-
     /** Config options */
     private final boolean allowBypass = TabAPI.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
     private final List<String> ignoredWorlds = TabAPI.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
@@ -41,14 +38,13 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
      */
     public PerWorldPlayerList(JavaPlugin plugin) {
         super("Per world PlayerList", null);
-        this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
         TabAPI.getInstance().debug(String.format("Loaded PerWorldPlayerList feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
     }
 
     @Override
     public void load(){
-        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getOnlinePlayers().forEach(this::checkPlayer));
+        Bukkit.getOnlinePlayers().forEach(this::checkPlayer);
     }
 
     @Override
