@@ -170,7 +170,10 @@ public class BossBarLine implements BossBar {
      * @return  parsed progress
      */
     public float parseProgress(String progress) {
-        return TAB.getInstance().getErrorManager().parseFloat(progress, 100);
+        float value = TAB.getInstance().getErrorManager().parseFloat(progress, 100);
+        if (value < 0) value = 0;
+        if (value > 100) value = 100;
+        return value;
     }
 
     @Override
