@@ -23,7 +23,7 @@ bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.19-R0.1-SNAPSHOT"
 krypton = "98fe09edf8" # Krypton uses commit-based versioning
 velocity = "3.1.2-SNAPSHOT"
-sponge = "7.0.0"
+sponge = "7.4.0"
 
 # Platform extras
 placeholderapi = "2.11.2"
@@ -64,7 +64,7 @@ krypton-api = { group = "org.kryptonmc", name = "krypton-api", version.ref = "kr
 krypton-server = { group = "org.kryptonmc", name = "krypton-server", version.ref = "krypton" }
 krypton-annotationProcessor = { group = "org.kryptonmc", name = "krypton-annotation-processor", version.ref = "krypton" }
 velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
-sponge = { group = "org.spongepowered", name = "sponge-api", version.ref = "sponge" }
+sponge = { group = "org.spongepowered", name = "spongeapi", version.ref = "sponge" }
 
 # Platform extras
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
