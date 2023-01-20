@@ -312,7 +312,7 @@ public abstract class NMSStorage {
         if (minorVersion < 8) return;
         if (is1_19_3Plus()) {
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
-            newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, EntityPlayer);
+            newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumSet.class, Collection.class);
             ClientboundPlayerInfoRemovePacket_getEntries = getMethods(ClientboundPlayerInfoRemovePacket, List.class).get(0);
             PacketPlayOutPlayerInfo_ACTION = getFields(PacketPlayOutPlayerInfo, EnumSet.class).get(0);
             newRemoteChatSession$Data = RemoteChatSession$Data.getConstructor(UUID.class, ProfilePublicKey$a);

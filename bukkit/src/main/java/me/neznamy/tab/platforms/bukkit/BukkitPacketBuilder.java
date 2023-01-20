@@ -12,10 +12,12 @@ import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.platforms.bukkit.nms.*;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
@@ -100,7 +102,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
                 );
             }
             Enum[] array = packet.getActions().stream().map(action -> Enum.valueOf(nms.EnumPlayerInfoAction, action.toString())).toArray(Enum[]::new);
-            Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance(array[0], nms.getHandle.invoke(Bukkit.getOnlinePlayers().iterator().next()));
+            Object nmsPacket = nms.newPacketPlayOutPlayerInfo.newInstance(EnumSet.of(array[0], array), Collections.emptyList());
             List<Object> items = new ArrayList<>();
             for (PlayerInfoData data : packet.getEntries()) {
                 GameProfile profile = new GameProfile(data.getUniqueId(), data.getName());
@@ -116,7 +118,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
                         data.getProfilePublicKey() == null ? null : nms.newRemoteChatSession$Data.newInstance(data.getChatSessionId(), data.getProfilePublicKey()));
                 items.add(obj);
             }
-            nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_ACTION, EnumSet.of(array[0], array));
             nms.setField(nmsPacket, nms.PacketPlayOutPlayerInfo_PLAYERS, items);
             return nmsPacket;
         } else {
