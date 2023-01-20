@@ -9,6 +9,7 @@ dependencyResolutionManagement {
         maven("https://repo.viaversion.com/") // ViaVersion
         maven("https://repo.essentialsx.net/releases/") // Essentials
         maven("https://repo.codemc.org/repository/maven-public/") // RedisBungee
+        maven("https://repo.codemc.io/repository/maven-snapshots/") // Fixing compilation
         maven("https://repo.kryptonmc.org/releases") // YamlAssist, LuckPerms
         maven("https://repo.kryptonmc.org/snapshots") // BungeeCord
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate
