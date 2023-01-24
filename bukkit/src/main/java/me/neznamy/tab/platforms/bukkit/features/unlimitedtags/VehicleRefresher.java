@@ -55,7 +55,11 @@ public class VehicleRefresher extends TabFeature {
                     }
         });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
-        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> ((Player)p.getPlayer()).getVehicle() == null ? "" : ((Player)p.getPlayer()).getVehicle());
+        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
+            Entity v = ((Player)p.getPlayer()).getVehicle();
+            //There's a bug in Bukkit 1.19.3 throwing NPE on .toString(), use default toString implementation
+            return v == null ? "" : v.getClass().getName() + "@" + Integer.toHexString(v.hashCode());
+        });
     }
 
     @Override
