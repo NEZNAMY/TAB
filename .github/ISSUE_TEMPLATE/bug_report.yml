@@ -1,6 +1,6 @@
 name: Bug Report
-description: Unwanted behavior that does not match configuration.
-labels: ["Bug"]
+description: Plugin does not work as described.
+labels: ["Type: Bug"]
 body:
   - type: input
     attributes:
@@ -45,7 +45,7 @@ body:
   - type: textarea
     attributes:
       label: Additional info
-      description: Any other info you want to provide, such as screenshots.
+      description: Anything else you want to provide that will help in resolving the issue faster, such as screenshots or videos.
     validations:
       required: false
   - type: checkboxes

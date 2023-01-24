@@ -1,6 +1,6 @@
 name: Error
 description: Error message with a stack trace in console or error file.
-labels: ["Error"]
+labels: ["Type: Error"]
 body:
   - type: input
     attributes:

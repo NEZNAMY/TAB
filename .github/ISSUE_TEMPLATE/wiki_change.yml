@@ -1,6 +1,6 @@
 name: Wiki change
 description: Change to text on a wiki page or adding a new section.
-labels: ["Wiki"]
+labels: ["Type: Wiki change"]
 body:
   - type: input
     attributes:
