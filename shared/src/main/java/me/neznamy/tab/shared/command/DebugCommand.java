@@ -201,7 +201,7 @@ public class DebugCommand extends SubCommand {
         } else {
             DynamicText pr = (DynamicText) analyzed.getProperty(property);
             String rawValue = EnumChatFormat.decolor(pr.getCurrentRawValue());
-            String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(%s) &7(Source: %s)")), property, rawValue, rawValue.length(), pr.getSource());
+            String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), property, rawValue, pr.getSource());
             sendRawMessage(sender, value);
         }
     }
