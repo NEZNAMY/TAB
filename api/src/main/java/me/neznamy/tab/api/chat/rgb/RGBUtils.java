@@ -13,6 +13,7 @@ import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
 import me.neznamy.tab.api.util.Preconditions;
+import me.neznamy.tab.api.util.ReflectionUtils;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -39,10 +40,9 @@ public class RGBUtils {
      */
     public RGBUtils() {
         List<RGBFormatter> list = new ArrayList<>();
-        try {
-            Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+        if (ReflectionUtils.classExists("net.kyori.adventure.text.minimessage.MiniMessage")) {
             list.add(new MiniMessageFormat());
-        } catch (ClassNotFoundException ignored) {}
+        }
         list.add(new BukkitFormat());
         list.add(new CMIFormat());
         list.add(new UnnamedFormat1());

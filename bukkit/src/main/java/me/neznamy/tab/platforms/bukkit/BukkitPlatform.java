@@ -6,6 +6,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
@@ -72,10 +73,9 @@ public class BukkitPlatform extends Platform {
     @Override
     public void loadFeatures() {
         if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VIAVERSION)) {
-            try {
-                Class.forName("com.viaversion.viaversion.api.Via");
+            if (ReflectionUtils.classExists("com.viaversion.viaversion.api.Via")) {
                 viaVersion = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.VIAVERSION);
-            } catch (ClassNotFoundException e) {
+            } else {
                 TAB.getInstance().sendConsoleMessage("&cAn outdated version of ViaVersion (" + getPluginVersion(TabConstants.Plugin.VIAVERSION) + ") was detected.", true);
                 TAB.getInstance().sendConsoleMessage("&cTAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
                 TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);

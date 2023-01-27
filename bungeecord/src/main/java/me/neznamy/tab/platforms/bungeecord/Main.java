@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import java.util.ArrayList;
 
+import me.neznamy.tab.api.util.ReflectionUtils;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
 
@@ -25,7 +26,7 @@ public class Main extends Plugin {
 
     @Override
     public void onEnable(){
-        if (!isVersionSupported()) {
+        if (!ReflectionUtils.classExists("net.md_5.bungee.protocol.packet.PlayerListItemUpdate")) {
             getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1671 and up (or an equivalent fork) to work."));
             return;
         }
@@ -38,20 +39,6 @@ public class Main extends Plugin {
         Metrics metrics = new Metrics(this, 10535);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
-    }
-
-    /**
-     * Checks for compatibility and returns {@code true} if version is supported, {@code false} if not
-     *
-     * @return  {@code true} if version is compatible, {@code false} if not
-     */
-    private boolean isVersionSupported() {
-        try {
-            Class.forName("net.md_5.bungee.protocol.packet.PlayerListItemUpdate");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 
     @Override

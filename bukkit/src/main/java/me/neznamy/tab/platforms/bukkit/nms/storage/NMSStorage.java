@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.storage;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 import org.bukkit.Bukkit;
 
@@ -25,7 +26,7 @@ public abstract class NMSStorage {
     protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
     /** Flag determining whether the server version is at least 1.19.3 or not */
-    private boolean is1_19_3Plus;
+    private final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
 
     /** Basic universal values */
     protected Class<?> Packet;
@@ -226,10 +227,6 @@ public abstract class NMSStorage {
      *          If some field, constructor or method was not found
      */
     public NMSStorage() throws ReflectiveOperationException {
-        try {
-            Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-            is1_19_3Plus = true;
-        } catch (ClassNotFoundException | NullPointerException ignored) {}
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {

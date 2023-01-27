@@ -5,6 +5,7 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -85,7 +86,7 @@ public class TAB extends TabAPI {
     private final ProtocolVersion serverVersion;
 
     /** Boolean checking floodgate plugin presence for hook */
-    private boolean floodgate;
+    private final boolean floodgate = ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi");
 
     /** Version string defined by the server */
     private final String serverVersionString;
@@ -114,12 +115,6 @@ public class TAB extends TabAPI {
         this.serverVersionString = serverVersionString;
         this.dataFolder = dataFolder;
         this.logger = logger;
-        try {
-            Class.forName("org.geysermc.floodgate.api.FloodgateApi");
-            floodgate = true;
-        } catch (ClassNotFoundException | IllegalStateException e) {
-            //plugin not installed
-        }
         try {
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {
