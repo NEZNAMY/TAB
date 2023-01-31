@@ -1,29 +1,21 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.placeholder.PlaceholderManager;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import net.milkbowl.vault.chat.Chat;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.shared.TAB;
-import net.ess3.api.events.NickChangeEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-
-import com.earth2me.essentials.Essentials;
-
-import me.neznamy.tab.api.placeholder.PlaceholderManager;
-import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
-import net.milkbowl.vault.chat.Chat;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.UUID;
 
 /**
  * Bukkit registry to register bukkit-only and universal placeholders
@@ -32,9 +24,6 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
 
     /** Number formatter for 2 decimal places */
     private final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
-
-    /** JavaPlugin reference for registering events */
-    private final JavaPlugin plugin;
 
     /** Vault Chat hook */
     private Chat chat;
@@ -55,13 +44,9 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
     private Method purpurIsAfk;
 
     /**
-     * Constructs new instance with given parameter and loads hooks
-     *
-     * @param   plugin
-     *          reference to the plugin's main class
+     * Constructs new instance and loads hooks
      */
-    public BukkitPlaceholderRegistry(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public BukkitPlaceholderRegistry() {
         numberFormat.setMaximumFractionDigits(2);
         if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VAULT)) {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
@@ -100,28 +85,18 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
         }
         Plugin essentials = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.ESSENTIALS);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.AFK, 500, p -> {
-            if (essentials != null && ((Essentials)essentials).getUser(p.getUniqueId()).isAfk()) return true;
+            if (essentials != null) {
+                try {
+                    Object user = essentials.getClass().getMethod("getUser", UUID.class).invoke(essentials, p.getUniqueId());
+                    if ((boolean) user.getClass().getMethod("isAfk").invoke(user)) return true;
+                } catch (ReflectiveOperationException e) {
+                    TAB.getInstance().getErrorManager().printError("Failed to get AFK status of " + p.getName() + " using Essentials", e);
+                }
+            }
             return purpurIsAfk != null && ((Player)p.getPlayer()).isAfk();
         });
-        if (essentials != null) {
-            PlayerPlaceholder nick = manager.registerPlayerPlaceholder(TabConstants.Placeholder.ESSENTIALS_NICK, -1, p -> {
-                String nickname = ((Essentials)essentials).getUser(p.getUniqueId()).getNickname();
-                return nickname == null ? p.getName() : nickname;
-            });
-            Listener nickListener = new Listener() {
-                @EventHandler
-                public void onNickChange(NickChangeEvent e) {
-                    String name = e.getValue() == null ? e.getController().getName() : e.getValue();
-                    TabPlayer player = TAB.getInstance().getPlayer(e.getController().getUUID());
-                    if (player == null) return;
-                    nick.updateValue(player, name);
-                }
-            };
-            nick.enableTriggerMode(() -> Bukkit.getPluginManager().registerEvents(nickListener, plugin),
-                    () -> HandlerList.unregisterAll(nickListener));
-        } else {
-            manager.registerPlayerPlaceholder(TabConstants.Placeholder.ESSENTIALS_NICK, -1, TabPlayer::getName);
-        }
+        // Removed placeholder, keeping the implementation to avoid placeholder breaking for users on update
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.ESSENTIALS_NICK, -1, TabPlayer::getName);
 
         if (chat != null) {
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.VAULT_PREFIX, 1000, p -> chat.getPlayerPrefix((Player) p.getPlayer()));

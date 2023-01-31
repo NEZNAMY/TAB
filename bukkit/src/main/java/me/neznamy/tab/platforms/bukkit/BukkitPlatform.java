@@ -84,7 +84,7 @@ public class BukkitPlatform extends Platform {
         TAB tab = TAB.getInstance();
         if (tab.getConfiguration().isPipelineInjection())
             tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BukkitPipelineInjector());
-        new BukkitPlaceholderRegistry(plugin).registerPlaceholders(tab.getPlaceholderManager());
+        new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
         if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
             tab.getFeatureManager().registerFeature(TabConstants.Feature.SORTING, new Sorting());
             if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
