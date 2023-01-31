@@ -90,7 +90,7 @@ public class ScoreboardCommand extends SubCommand {
                 return;
             }
             if (sender == null) {
-                sendMessage(sender, getMessages().getCommandOnlyFromGame());
+                TAB.getInstance().sendConsoleMessage(getMessages().getCommandOnlyFromGame(), true);
                 return;
             }
             target = sender;
