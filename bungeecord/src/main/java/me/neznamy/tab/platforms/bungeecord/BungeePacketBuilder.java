@@ -44,36 +44,11 @@ public class BungeePacketBuilder extends PacketBuilder {
 
     @Override
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) {
-        if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
-            if (packet.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
-                PlayerListItemRemove remove = new PlayerListItemRemove();
-                remove.setUuids(packet.getEntries().stream().map(PlayerInfoData::getUniqueId).toArray(UUID[]::new));
-                return remove;
-            }
-            List<Item> items = new ArrayList<>();
-            for (PlayerInfoData data : packet.getEntries()) {
-                Item item = new Item();
-                if (data.getDisplayName() != null) item.setDisplayName(data.getDisplayName().toString(clientVersion));
-                if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);
-                item.setListed(data.isListed());
-                item.setPing(data.getLatency());
-                if (data.getSkin() != null) {
-                    item.setProperties(new Property[]{new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())});
-                } else {
-                    item.setProperties(new Property[0]);
-                }
-                item.setUsername(data.getName());
-                item.setUuid(data.getUniqueId());
-                item.setChatSessionId(data.getChatSessionId());
-                item.setPublicKey((PlayerPublicKey) data.getProfilePublicKey());
-                items.add(item);
-            }
-            PlayerListItemUpdate bungeePacket = new PlayerListItemUpdate();
-            PlayerListItemUpdate.Action[] array = packet.getActions().stream().map(action -> PlayerListItemUpdate.Action.valueOf(
-                    action.toString().replace("GAME_MODE", "GAMEMODE"))).toArray(PlayerListItemUpdate.Action[]::new);
-            bungeePacket.setActions(EnumSet.of(array[0], array));
-            bungeePacket.setItems(items.toArray(new Item[0]));
-            return bungeePacket;
+        if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() &&
+                packet.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
+            PlayerListItemRemove remove = new PlayerListItemRemove();
+            remove.setUuids(packet.getEntries().stream().map(PlayerInfoData::getUniqueId).toArray(UUID[]::new));
+            return remove;
         }
         List<Item> items = new ArrayList<>();
         for (PlayerInfoData data : packet.getEntries()) {
@@ -87,7 +62,8 @@ public class BungeePacketBuilder extends PacketBuilder {
             } else if (clientVersion.getMinorVersion() < 8) {
                 item.setDisplayName(String.valueOf(data.getName())); //avoiding NPE, 1.7 client requires this, 1.8 added a leading boolean
             }
-            if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal()-1);
+            if (data.getGameMode() != null) item.setGamemode(data.getGameMode().ordinal() - 1);
+            item.setListed(data.isListed());
             item.setPing(data.getLatency());
             if (data.getSkin() != null) {
                 item.setProperties(new Property[]{new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())});
@@ -96,15 +72,25 @@ public class BungeePacketBuilder extends PacketBuilder {
             }
             item.setUsername(data.getName());
             item.setUuid(data.getUniqueId());
+            item.setChatSessionId(data.getChatSessionId());
             item.setPublicKey((PlayerPublicKey) data.getProfilePublicKey());
             items.add(item);
         }
-        PlayerListItem bungeePacket = new PlayerListItem();
-        EnumPlayerInfoAction action = packet.getActions().contains(EnumPlayerInfoAction.ADD_PLAYER) ?
-                EnumPlayerInfoAction.ADD_PLAYER : packet.getActions().iterator().next();
-        bungeePacket.setAction(PlayerListItem.Action.valueOf(action.toString().replace("GAME_MODE", "GAMEMODE")));
-        bungeePacket.setItems(items.toArray(new Item[0]));
-        return bungeePacket;
+        if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
+            PlayerListItemUpdate bungeePacket = new PlayerListItemUpdate();
+            PlayerListItemUpdate.Action[] array = packet.getActions().stream().map(action -> PlayerListItemUpdate.Action.valueOf(
+                    action.toString().replace("GAME_MODE", "GAMEMODE"))).toArray(PlayerListItemUpdate.Action[]::new);
+            bungeePacket.setActions(EnumSet.of(array[0], array));
+            bungeePacket.setItems(items.toArray(new Item[0]));
+            return bungeePacket;
+        } else {
+            PlayerListItem bungeePacket = new PlayerListItem();
+            EnumPlayerInfoAction action = packet.getActions().contains(EnumPlayerInfoAction.ADD_PLAYER) ?
+                    EnumPlayerInfoAction.ADD_PLAYER : packet.getActions().iterator().next();
+            bungeePacket.setAction(PlayerListItem.Action.valueOf(action.toString().replace("GAME_MODE", "GAMEMODE")));
+            bungeePacket.setItems(items.toArray(new Item[0]));
+            return bungeePacket;
+        }
     }
 
     @Override
@@ -139,50 +125,37 @@ public class BungeePacketBuilder extends PacketBuilder {
     
     @Override
     public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) {
-        if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
-            if (bungeePacket instanceof PlayerListItemRemove) {
-                return new PacketPlayOutPlayerInfo(
-                        EnumPlayerInfoAction.REMOVE_PLAYER,
-                        Arrays.stream(((PlayerListItemRemove) bungeePacket).getUuids()).map(PlayerInfoData::new).collect(Collectors.toList())
-                );
-            }
-            PlayerListItemUpdate item = (PlayerListItemUpdate) bungeePacket;
-            List<PlayerInfoData> listData = new ArrayList<>();
-            for (Item i : item.getItems()) {
-                Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0].getValue(), i.getProperties()[0].getSignature());
-                listData.add(new PlayerInfoData(
-                        i.getUsername(),
-                        i.getUuid(),
-                        skin,
-                        Boolean.TRUE.equals(i.getListed()),
-                        i.getPing() == null ? 0 : i.getPing(),
-                        i.getGamemode() == null ? null : EnumGamemode.VALUES[i.getGamemode()+1],
-                        IChatBaseComponent.deserialize(i.getDisplayName()),
-                        i.getChatSessionId(),
-                        i.getPublicKey()));
-            }
-            EnumPlayerInfoAction[] array = item.getActions().stream().map(action ->
-                    EnumPlayerInfoAction.valueOf(action.toString().replace("GAMEMODE", "GAME_MODE"))).toArray(EnumPlayerInfoAction[]::new);
-            EnumSet<EnumPlayerInfoAction> actions = EnumSet.of(array[0], array);
-            return new PacketPlayOutPlayerInfo(actions, listData);
-        } else {
-            PlayerListItem item = (PlayerListItem) bungeePacket;
-            List<PlayerInfoData> listData = new ArrayList<>();
-            for (Item i : item.getItems()) {
-                Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0].getValue(), i.getProperties()[0].getSignature());
-                listData.add(new PlayerInfoData(
-                        i.getUsername(),
-                        i.getUuid(),
-                        skin,
-                        true,
-                        i.getPing() == null ? 0 : i.getPing(),
-                        i.getGamemode() == null ? null : EnumGamemode.VALUES[i.getGamemode()+1],
-                        IChatBaseComponent.deserialize(i.getDisplayName()),
-                        null,
-                        i.getPublicKey()));
-            }
-            return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.valueOf(item.getAction().toString().replace("GAMEMODE", "GAME_MODE")), listData);
+        if (bungeePacket instanceof PlayerListItemRemove) {
+            return new PacketPlayOutPlayerInfo(
+                    EnumPlayerInfoAction.REMOVE_PLAYER,
+                    Arrays.stream(((PlayerListItemRemove) bungeePacket).getUuids()).map(PlayerInfoData::new).collect(Collectors.toList())
+            );
         }
+        Item[] items = bungeePacket instanceof PlayerListItemUpdate ? ((PlayerListItemUpdate) bungeePacket).getItems() : ((PlayerListItem) bungeePacket).getItems();
+        List<PlayerInfoData> listData = new ArrayList<>();
+        for (Item i : items) {
+            Skin skin = i.getProperties() == null || i.getProperties().length == 0 ? null : new Skin(i.getProperties()[0].getValue(), i.getProperties()[0].getSignature());
+            listData.add(new PlayerInfoData(
+                    i.getUsername(),
+                    i.getUuid(),
+                    skin,
+                    Boolean.TRUE.equals(i.getListed()),
+                    i.getPing() == null ? 0 : i.getPing(),
+                    i.getGamemode() == null ? null : EnumGamemode.VALUES[i.getGamemode()+1],
+                    IChatBaseComponent.deserialize(i.getDisplayName()),
+                    i.getChatSessionId(),
+                    i.getPublicKey()));
+        }
+        if (bungeePacket instanceof PlayerListItemUpdate) {
+            EnumPlayerInfoAction[] array = ((PlayerListItemUpdate) bungeePacket).getActions().stream().map(this::toCustomAction).toArray(EnumPlayerInfoAction[]::new);
+            return new PacketPlayOutPlayerInfo(EnumSet.of(array[0], array), listData);
+        } else {
+            return new PacketPlayOutPlayerInfo(toCustomAction(((PlayerListItem) bungeePacket).getAction()), listData);
+        }
+    }
+
+    private EnumPlayerInfoAction toCustomAction(Object action) {
+        return EnumPlayerInfoAction.valueOf(action.toString().replace("GAMEMODE", "GAME_MODE"));
     }
 
     @Override
