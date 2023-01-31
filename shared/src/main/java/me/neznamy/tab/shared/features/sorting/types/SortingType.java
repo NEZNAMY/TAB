@@ -19,7 +19,7 @@ public abstract class SortingType {
     //placeholder to sort by, if sorting type uses it
     protected String sortingPlaceholder;
 
-    protected Sorting sorting;
+    protected final Sorting sorting;
 
     protected SortingType(Sorting sorting, String displayName) {
         this.sorting = sorting;
