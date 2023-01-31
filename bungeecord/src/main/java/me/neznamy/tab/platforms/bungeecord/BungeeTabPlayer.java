@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import de.myzelyam.api.vanish.BungeeVanishAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.protocol.Skin;
@@ -120,7 +119,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public boolean isVanished() {
         try {
-            if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.PREMIUM_VANISH) != null && BungeeVanishAPI.isInvisible(getPlayer())) return true;
+            if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.PREMIUM_VANISH) != null &&
+                    (boolean) Class.forName("de.myzelyam.api.vanish.BungeeVanishAPI").getMethod("isInvisible", ProxiedPlayer.class).invoke(null, getPlayer())) return true;
         } catch (Exception e) {
             TAB.getInstance().getErrorManager().printError("PremiumVanish v" + TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.PREMIUM_VANISH) +
                     " generated an error when retrieving vanish status of " + getName(), e);
