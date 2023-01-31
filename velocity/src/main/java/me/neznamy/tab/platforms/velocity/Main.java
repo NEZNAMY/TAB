@@ -16,7 +16,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bstats.charts.SimplePie;
@@ -185,7 +184,7 @@ public class Main {
             CommandSource sender = invocation.source();
             if (TabAPI.getInstance().isPluginDisabled()) {
                 for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                    sender.sendMessage(Identity.nil(), Component.text(EnumChatFormat.color(message)));
+                    sender.sendMessage(Component.text(EnumChatFormat.color(message)));
                 }
             } else {
                 TabPlayer p = null;
