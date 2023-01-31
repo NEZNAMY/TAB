@@ -305,7 +305,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                 .tabList(getPlayer().getTabList())
                 .displayName(Component.text(""))
                 .gameMode(0)
-                .profile(new GameProfile(UUID.randomUUID(), "empty", new ArrayList<>()))
+                .profile(new GameProfile(id, "empty", new ArrayList<>()))
                 .latency(0)
                 .build();
     }
