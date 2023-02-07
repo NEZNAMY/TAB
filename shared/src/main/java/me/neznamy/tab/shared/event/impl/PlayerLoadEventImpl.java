@@ -1,8 +1,6 @@
 package me.neznamy.tab.shared.event.impl;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.player.PlayerLoadEvent;
 

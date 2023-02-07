@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
+import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
 import java.util.Map;
@@ -10,19 +11,19 @@ import java.util.Map;
 public class DataWatcherRegistry {
 
     /** Byte encoder */
-    private Object registryByte;
+    @Getter private Object typeByte;
 
     /** Float encoder */
-    private Object registryFloat;
+    @Getter private Object typeFloat;
 
     /** String encoder */
-    private Object registryString;
+    @Getter private Object typeString;
 
     /** Encoder for optional component */
-    private Object registryOptionalIChatBaseComponent;
+    @Getter private Object typeOptionalComponent;
 
     /** Boolean encoder */
-    private Object registryBoolean;
+    @Getter private Object typeBoolean;
 
     /**
      * Initializes required NMS classes and fields
@@ -32,68 +33,28 @@ public class DataWatcherRegistry {
             Map<String, Object> fields = nms.getStaticFields(nms.DataWatcherRegistry);
             if (fields.containsKey("a")) {
                 // Bukkit mapping
-                registryByte = fields.get("a");
-                registryFloat = fields.get("c");
-                registryString = fields.get("d");
+                typeByte = fields.get("a");
+                typeFloat = fields.get("c");
+                typeString = fields.get("d");
                 if (nms.getMinorVersion() >= 13) {
                     if (nms.is1_19_3Plus()) {
-                        registryOptionalIChatBaseComponent = fields.get("g");
-                        registryBoolean = fields.get("j");
+                        typeOptionalComponent = fields.get("g");
+                        typeBoolean = fields.get("j");
                     } else {
-                        registryOptionalIChatBaseComponent = fields.get("f");
-                        registryBoolean = fields.get("i");
+                        typeOptionalComponent = fields.get("f");
+                        typeBoolean = fields.get("i");
                     }
                 } else {
-                    registryBoolean = fields.get("h");
+                    typeBoolean = fields.get("h");
                 }
             } else {
                 // Mojang mapping
-                registryByte = fields.get("BYTE");
-                registryFloat = fields.get("FLOAT");
-                registryString = fields.get("STRING");
-                registryOptionalIChatBaseComponent = fields.get("OPTIONAL_COMPONENT");
-                registryBoolean = fields.get("BOOLEAN");
+                typeByte = fields.get("BYTE");
+                typeFloat = fields.get("FLOAT");
+                typeString = fields.get("STRING");
+                typeOptionalComponent = fields.get("OPTIONAL_COMPONENT");
+                typeBoolean = fields.get("BOOLEAN");
             }
         }
-    }
-
-    /**
-     * Returns {@link #registryByte}
-     * @return  {@link #registryByte}
-     */
-    public Object getByte() {
-        return registryByte;
-    }
-
-    /**
-     * Returns {@link #registryFloat}
-     * @return  {@link #registryFloat}
-     */
-    public Object getFloat() {
-        return registryFloat;
-    }
-
-    /**
-     * Returns {@link #registryString}
-     * @return  {@link #registryString}
-     */
-    public Object getString() {
-        return registryString;
-    }
-
-    /**
-     * Returns {@link #registryOptionalIChatBaseComponent}
-     * @return  {@link #registryOptionalIChatBaseComponent}
-     */
-    public Object getOptionalComponent() {
-        return registryOptionalIChatBaseComponent;
-    }
-
-    /**
-     * Returns {@link #registryBoolean}
-     * @return  {@link #registryBoolean}
-     */
-    public Object getBoolean() {
-        return registryBoolean;
     }
 }

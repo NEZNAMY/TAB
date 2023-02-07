@@ -2,6 +2,7 @@ package me.neznamy.tab.api;
 
 import java.util.*;
 
+import lombok.Getter;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
@@ -14,10 +15,10 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 public abstract class TabFeature {
 
     /** Feature's name displayed in /tab cpu */
-    private final String featureName;
+    @Getter private final String featureName;
 
     /** Feature's function name displayed in place of refreshing in /tab cpu */
-    private final String refreshDisplayName;
+    @Getter private final String refreshDisplayName;
 
     /** Servers where the feature is disabled (or enabled if using whitelist mode) */
     protected String[] disabledServers = new String[0];
@@ -338,24 +339,6 @@ public abstract class TabFeature {
             }
         }
         return false;
-    }
-
-    /**
-     * Returns name of the feature displayed in /tab cpu.
-     *
-     * @return  name of the feature displayed in /tab cpu
-     */
-    public String getFeatureName() {
-        return featureName;
-    }
-
-    /**
-     * Returns text to display in /tab cpu of this feature refreshing visuals
-     *
-     * @return  Text to display as refreshing of this feature
-     */
-    public String getRefreshDisplayName() {
-        return refreshDisplayName;
     }
 
     /**

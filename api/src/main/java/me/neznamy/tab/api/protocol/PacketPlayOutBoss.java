@@ -1,11 +1,11 @@
 package me.neznamy.tab.api.protocol;
 
-import java.util.UUID;
-
 import lombok.Data;
+import lombok.NonNull;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.api.util.Preconditions;
+
+import java.util.UUID;
 
 /**
  * A class representing platform specific packet class
@@ -55,11 +55,7 @@ public class PacketPlayOutBoss implements TabPacket {
      * @param   overlay
      *          BossBar style
      */
-    public PacketPlayOutBoss(UUID id, String name, float pct, BarColor color, BarStyle overlay) {
-        Preconditions.checkNotNull(id, "uuid");
-        Preconditions.checkNotNull(name, "title");
-        Preconditions.checkNotNull(color, "color");
-        Preconditions.checkNotNull(overlay, "style");
+    public PacketPlayOutBoss(@NonNull UUID id, @NonNull String name, float pct, @NonNull BarColor color, @NonNull BarStyle overlay) {
         this.action = Action.ADD;
         this.id = id;
         this.name = name;
@@ -70,28 +66,26 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Constructs new instance with given parameters and
-     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.REMOVE action
+     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action#REMOVE} action
      *
      * @param   id
      *          BossBar uuid
      */
-    public PacketPlayOutBoss(UUID id) {
-        Preconditions.checkNotNull(id, "uuid");
+    public PacketPlayOutBoss(@NonNull UUID id) {
         this.action = Action.REMOVE;
         this.id = id;
     }
 
     /**
      * Constructs new instance with given parameters and
-     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PCT action
+     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action#UPDATE_PCT} action
      *
      * @param   id
      *          BossBar uuid
      * @param   pct
      *          BossBar progress
      */
-    public PacketPlayOutBoss(UUID id, float pct) {
-        Preconditions.checkNotNull(id, "uuid");
+    public PacketPlayOutBoss(@NonNull UUID id, float pct) {
         this.action = Action.UPDATE_PCT;
         this.id = id;
         this.pct = pct;
@@ -99,16 +93,14 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Constructs new instance with given parameters and
-     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_NAME action
+     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action#UPDATE_NAME} action
      *
      * @param   id
      *          BossBar uuid
      * @param   name
      *          BossBar title
      */
-    public PacketPlayOutBoss(UUID id, String name) {
-        Preconditions.checkNotNull(id, "uuid");
-        Preconditions.checkNotNull(name, "title");
+    public PacketPlayOutBoss(@NonNull UUID id, @NonNull String name) {
         this.action = Action.UPDATE_NAME;
         this.id = id;
         this.name = name;
@@ -116,7 +108,7 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Constructs new instance with given parameters and
-     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_STYLE action
+     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action#UPDATE_STYLE} action
      *
      * @param   id
      *          BossBar uuid
@@ -125,10 +117,7 @@ public class PacketPlayOutBoss implements TabPacket {
      * @param   overlay
      *          BossBar style
      */
-    public PacketPlayOutBoss(UUID id, BarColor color, BarStyle overlay) {
-        Preconditions.checkNotNull(id, "uuid");
-        Preconditions.checkNotNull(color, "color");
-        Preconditions.checkNotNull(overlay, "style");
+    public PacketPlayOutBoss(@NonNull UUID id, @NonNull BarColor color, @NonNull BarStyle overlay) {
         this.action = Action.UPDATE_STYLE;
         this.id = id;
         this.color = color;
@@ -137,7 +126,7 @@ public class PacketPlayOutBoss implements TabPacket {
 
     /**
      * Constructs new instance with given parameters and
-     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action}.UPDATE_PROPERTIES action
+     * {@link me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action#UPDATE_PROPERTIES} action
      *
      * @param   darkenScreen
      *          Darken screen flag
@@ -146,8 +135,7 @@ public class PacketPlayOutBoss implements TabPacket {
      * @param   createWorldFog
      *          Create fog flag
      */
-    public PacketPlayOutBoss(UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
-        Preconditions.checkNotNull(id, "uuid");
+    public PacketPlayOutBoss(@NonNull UUID id, boolean darkenScreen, boolean playMusic, boolean createWorldFog) {
         this.action = Action.UPDATE_PROPERTIES;
         this.id = id;
         this.darkenScreen = darkenScreen;

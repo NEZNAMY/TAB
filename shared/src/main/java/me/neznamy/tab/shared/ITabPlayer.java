@@ -1,20 +1,20 @@
 package me.neznamy.tab.shared;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
 import io.netty.channel.Channel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.geysermc.floodgate.api.FloodgateApi;
+
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * Abstract class storing common variables and functions for player,
@@ -159,8 +159,7 @@ public abstract class ITabPlayer implements TabPlayer {
      * @param   permissionGroup
      *          New permission group
      */
-    public void setGroup(String permissionGroup) {
-        Preconditions.checkNotNull(permissionGroup, "permissionGroup");
+    public void setGroup(@NonNull String permissionGroup) {
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);

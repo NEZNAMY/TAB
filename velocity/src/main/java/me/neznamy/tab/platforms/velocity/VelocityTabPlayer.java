@@ -11,7 +11,6 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
@@ -343,7 +342,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        Preconditions.checkNotNull(message, "message");
         try {
             Optional<ServerConnection> server = getPlayer().getCurrentServer();
             if (server.isPresent()) {

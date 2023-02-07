@@ -1,22 +1,15 @@
 package me.neznamy.tab.api.protocol;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
  */
-@Data
+@Data @AllArgsConstructor
 public class PacketPlayOutScoreboardObjective implements TabPacket {
-
-    /** Up to 16 characters long objective name */
-    private final String objectiveName;
-
-    /** Display name */
-    private final String displayName;
-
-    /** Display type, only takes effect in PlayerList */
-    private final EnumScoreboardHealthDisplay renderType;
 
     /**
      * Packet action.
@@ -26,30 +19,14 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
      */
     private final int action;
 
-    /**
-     * Constructs new instance with given parameters.
-     *
-     * @param   action
-     *          Packet action (0 = add, 1 = remove, 2 = update title)
-     * @param   objectiveName
-     *          objective name, up to 16 characters long
-     * @param   displayName
-     *          title
-     * @param   renderType
-     *          display type
-     * @throws  IllegalArgumentException
-     *          if {@code objectiveName} is null or longer than 16 characters
-     */
-    public PacketPlayOutScoreboardObjective(int action, String objectiveName, String displayName, EnumScoreboardHealthDisplay renderType) {
-        Preconditions.checkRange(action, 0, 2, "action");
-        Preconditions.checkNotNull(objectiveName, "objective name");
-        Preconditions.checkMaxLength(objectiveName, 16, "objective name");
-        Preconditions.checkNotNull(renderType, "render type");
-        this.objectiveName = objectiveName;
-        this.displayName = displayName;
-        this.renderType = renderType;
-        this.action = action;
-    }
+    /** Up to 16 characters long objective name */
+    @NonNull private final String objectiveName;
+
+    /** Display name */
+    private final String displayName;
+
+    /** Display type, only takes effect in PlayerList */
+    private final EnumScoreboardHealthDisplay renderType;
 
     /**
      * Constructs new packet with given objective name and 1 (unregister) action.
@@ -59,8 +36,7 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
      * @throws  IllegalArgumentException
      *          if {@code objectiveName} is null or longer than 16 characters
      */
-    public PacketPlayOutScoreboardObjective(String objectiveName) {
-        Preconditions.checkNotNull(objectiveName, "objective name");
+    public PacketPlayOutScoreboardObjective(@NonNull String objectiveName) {
         Preconditions.checkMaxLength(objectiveName, 16, "objective name");
         this.objectiveName = objectiveName;
         this.displayName = ""; //avoiding NPE on <1.7

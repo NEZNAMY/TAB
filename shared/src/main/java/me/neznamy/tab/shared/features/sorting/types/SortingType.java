@@ -3,13 +3,17 @@ package me.neznamy.tab.shared.features.sorting.types;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
+@RequiredArgsConstructor
 public abstract class SortingType {
+
+    protected final Sorting sorting;
 
     private final String displayName;
 
@@ -19,20 +23,13 @@ public abstract class SortingType {
     //placeholder to sort by, if sorting type uses it
     protected String sortingPlaceholder;
 
-    protected final Sorting sorting;
-
-    protected SortingType(Sorting sorting, String displayName) {
-        this.sorting = sorting;
-        this.displayName = displayName;
-    }
-    
     /**
      * Constructs new instance with given parameter
      *
      * @param   sortingPlaceholder
      *          placeholder to sort by
      */
-    protected SortingType(Sorting sorting, String displayName, String sortingPlaceholder){
+    protected SortingType(Sorting sorting, String displayName, String sortingPlaceholder) {
         this.sorting = sorting;
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {

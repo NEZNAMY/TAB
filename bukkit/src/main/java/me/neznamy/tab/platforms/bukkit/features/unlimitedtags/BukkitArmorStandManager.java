@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import lombok.Getter;
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
@@ -23,10 +24,10 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     private ArmorStand[] armorStandArray = new ArmorStand[0];
 
     /** Players in entity tracking range of owner */
-    private final List<TabPlayer> nearbyPlayers = new ArrayList<>();
+    private final List<TabPlayer> nearbyPlayerList = new ArrayList<>();
 
     /** Nearby players in an array for speed while iterating */
-    private TabPlayer[] nearbyPlayerArray = new TabPlayer[0];
+    @Getter private TabPlayer[] nearbyPlayers = new TabPlayer[0];
 
     /**
      * Constructs new instance with given parameters and loads armor stands.
@@ -69,14 +70,6 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     }
 
     /**
-     * Returns array of nearby players
-     * @return  array of nearby players
-     */
-    public TabPlayer[] getNearbyPlayers(){
-        return nearbyPlayerArray;
-    }
-
-    /**
      * Returns {@code true} if requested player is nearby, {@code false} if not
      *
      * @param   viewer
@@ -84,7 +77,7 @@ public class BukkitArmorStandManager implements ArmorStandManager {
      * @return  {@code true} if player nearby, {@code false} if not
      */
     public boolean isNearby(TabPlayer viewer) {
-        return nearbyPlayers.contains(viewer);
+        return nearbyPlayerList.contains(viewer);
     }
 
     /**
@@ -118,7 +111,7 @@ public class BukkitArmorStandManager implements ArmorStandManager {
      */
     public void respawn() {
         for (ArmorStand a : armorStandArray) {
-            for (TabPlayer viewer : nearbyPlayerArray) {
+            for (TabPlayer viewer : nearbyPlayers) {
                 a.respawn(viewer);
             }
         }
@@ -131,8 +124,8 @@ public class BukkitArmorStandManager implements ArmorStandManager {
      *          player to spawn armor stands for
      */
     public void spawn(TabPlayer viewer) {
-        nearbyPlayers.add(viewer);
-        nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+        nearbyPlayerList.add(viewer);
+        nearbyPlayers = nearbyPlayerList.toArray(new TabPlayer[0]);
         if (viewer.getVersion().getMinorVersion() < 8) return;
         for (ArmorStand a : armorStandArray) a.spawn(viewer);
     }
@@ -162,7 +155,7 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     public void addArmorStand(String name, ArmorStand as) {
         armorStands.put(name, as);
         armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
-        for (TabPlayer p : nearbyPlayerArray) as.spawn(p);
+        for (TabPlayer p : nearbyPlayers) as.spawn(p);
     }
 
     /**
@@ -172,7 +165,7 @@ public class BukkitArmorStandManager implements ArmorStandManager {
      *          player to remove
      */
     public void unregisterPlayer(TabPlayer viewer) {
-        if (nearbyPlayers.remove(viewer)) nearbyPlayerArray = nearbyPlayers.toArray(new TabPlayer[0]);
+        if (nearbyPlayerList.remove(viewer)) nearbyPlayers = nearbyPlayerList.toArray(new TabPlayer[0]);
     }
 
     public void updateVisibility(boolean force) {
@@ -193,8 +186,8 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     @Override
     public void destroy() {
         for (ArmorStand a : armorStandArray) a.destroy();
-        nearbyPlayers.clear();
-        nearbyPlayerArray = new TabPlayer[0];
+        nearbyPlayerList.clear();
+        nearbyPlayers = new TabPlayer[0];
     }
 
     @Override

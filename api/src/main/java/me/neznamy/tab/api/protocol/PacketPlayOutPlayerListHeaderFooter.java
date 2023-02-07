@@ -1,8 +1,9 @@
 package me.neznamy.tab.api.protocol;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
@@ -25,9 +26,7 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
      * @param   footer
      *          TabList footer
      */
-    public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
-        Preconditions.checkNotNull(header, "header");
-        Preconditions.checkNotNull(footer, "footer");
+    public PacketPlayOutPlayerListHeaderFooter(@NonNull String header, @NonNull String footer) {
         this.header = IChatBaseComponent.optimizedComponent(header);
         this.footer = IChatBaseComponent.optimizedComponent(footer);
     }

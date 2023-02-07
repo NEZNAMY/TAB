@@ -36,19 +36,10 @@ public abstract class ProxyPlatform extends Platform {
     @Getter protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();
 
     /** Placeholders which are refreshed on backend server */
-    private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+    @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
     protected ProxyPlatform(PacketBuilder packetBuilder) {
         super(packetBuilder);
-    }
-
-    /**
-     * Returns bridge placeholders, which are refreshed on backend server
-     *
-     * @return  bridge placeholders, which are refreshed on backend server
-     */
-    public Map<String, Integer> getBridgePlaceholders() {
-        return bridgePlaceholders;
     }
 
     @Override

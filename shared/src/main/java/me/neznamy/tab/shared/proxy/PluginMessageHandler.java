@@ -3,18 +3,21 @@ package me.neznamy.tab.shared.proxy;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import lombok.NonNull;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Universal interface for proxy to manage plugin messages
@@ -135,8 +138,7 @@ public class PluginMessageHandler {
      * @param   value
      *          Value to write
      */
-    private void writeObject(ByteArrayDataOutput out, Object value) {
-        Preconditions.checkNotNull(value, "value to write");
+    private void writeObject(@NonNull ByteArrayDataOutput out, @NonNull Object value) {
         if (value instanceof String) {
             out.writeUTF((String) value);
         } else if (value instanceof Boolean) {

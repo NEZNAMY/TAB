@@ -1,11 +1,20 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import java.util.*;
-
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
+import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
+import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
+import io.netty.channel.Channel;
+import lombok.NonNull;
+import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.Skin;
-import me.neznamy.tab.api.util.Preconditions;
+import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -16,18 +25,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
-import com.mojang.authlib.GameProfile;
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
-import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
-import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
-
-import io.netty.channel.Channel;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
-import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.shared.TAB;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * TabPlayer implementation for Bukkit platform
@@ -65,8 +66,7 @@ public class BukkitTabPlayer extends ITabPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
-        Preconditions.checkNotNull(permission, "permission");
+    public boolean hasPermission(@NonNull String permission) {
         long time = System.nanoTime();
         boolean value = getPlayer().hasPermission(permission);
         TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);

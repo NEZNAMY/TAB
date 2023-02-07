@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -49,20 +50,11 @@ public class BungeePipelineInjector extends PipelineInjector {
     /**
      * Custom channel duplex handler override
      */
+    @AllArgsConstructor
     public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
 
         /** Injected player */
         protected final TabPlayer player;
-
-        /**
-         * Constructs new instance with given player
-         *
-         * @param   player
-         *          player to inject
-         */
-        public BungeeChannelDuplexHandler(TabPlayer player) {
-            this.player = player;
-        }
 
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {

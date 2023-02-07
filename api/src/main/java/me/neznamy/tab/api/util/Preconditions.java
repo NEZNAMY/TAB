@@ -1,5 +1,6 @@
 package me.neznamy.tab.api.util;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
@@ -11,20 +12,6 @@ public class Preconditions {
      * Private constructor preventing the class from being instantiated
      */
     private Preconditions() {}
-
-    /**
-     * Checks object and throws {@code IllegalArgumentException} if it is {@code null}.
-     *
-     * @param   obj
-     *          Object to check
-     * @param   name
-     *          Name of the variable to use in exception message
-     * @throws  IllegalArgumentException
-     *          if {@code obj} is {@code null}
-     */
-    public static void checkNotNull(Object obj, String name) {
-        if (obj == null) throw new IllegalArgumentException(name + " cannot be null");
-    }
 
     /**
      * Checks length of String and throws {@code IllegalArgumentException} if it is
@@ -39,8 +26,7 @@ public class Preconditions {
      * @throws  IllegalArgumentException
      *          if {@code string} is {@code null} or longer than {@code maxLength} characters
      */
-    public static void checkMaxLength(String string, int maxLength, String name) {
-        checkNotNull(string, name);
+    public static void checkMaxLength(@NonNull String string, int maxLength, String name) {
         if (string.length() > maxLength) throw new IllegalArgumentException(name + " is longer than " + maxLength + " characters (" + string.length() + ")");
     }
 

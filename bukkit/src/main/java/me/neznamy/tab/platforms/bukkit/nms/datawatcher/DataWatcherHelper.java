@@ -65,7 +65,7 @@ public class DataWatcherHelper {
      *          flags to write
      */
     public void setEntityFlags(byte flags) {
-        data.setValue(new DataWatcherObject(0, registry.getByte()), flags);
+        data.setValue(new DataWatcherObject(0, registry.getTypeByte()), flags);
     }
 
     /**
@@ -79,12 +79,12 @@ public class DataWatcherHelper {
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
             try {
-                data.setValue(new DataWatcherObject(2, registry.getOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
+                data.setValue(new DataWatcherObject(2, registry.getTypeOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
             } catch (ReflectiveOperationException e) {
                 TAB.getInstance().getErrorManager().printError("Failed to create component", e);
             }
         } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8){
-            data.setValue(new DataWatcherObject(2, registry.getString()), customName);
+            data.setValue(new DataWatcherObject(2, registry.getTypeString()), customName);
         } else {
             //name length is limited to 64 characters on <1.8
             String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
@@ -104,7 +104,7 @@ public class DataWatcherHelper {
      */
     public void setCustomNameVisible(boolean visible) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
-            data.setValue(new DataWatcherObject(3, registry.getBoolean()), visible);
+            data.setValue(new DataWatcherObject(3, registry.getTypeBoolean()), visible);
         } else {
             data.setValue(new DataWatcherObject(3, null), (byte)(visible?1:0));
         }
@@ -118,7 +118,7 @@ public class DataWatcherHelper {
      */
     public void setHealth(float health) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 6) {
-            data.setValue(new DataWatcherObject(6, registry.getFloat()), health);
+            data.setValue(new DataWatcherObject(6, registry.getTypeFloat()), health);
         } else {
             data.setValue(new DataWatcherObject(16, null), (int)health);
         }
@@ -131,7 +131,7 @@ public class DataWatcherHelper {
      *          flags to write
      */
     public void setArmorStandFlags(byte flags) {
-        data.setValue(new DataWatcherObject(armorStandFlagsPosition, registry.getByte()), flags);
+        data.setValue(new DataWatcherObject(armorStandFlagsPosition, registry.getTypeByte()), flags);
     }
 
     /**

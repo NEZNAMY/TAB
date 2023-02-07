@@ -1,6 +1,9 @@
 package me.neznamy.tab.api.chat;
 
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -10,20 +13,11 @@ import java.util.List;
  * slows down the performance, as well as makes code more complicated
  * and open to problems.
  */
+@AllArgsConstructor
 public class WrappedChatComponent extends IChatBaseComponent {
 
     /** Original NMS component */
     private final Object originalComponent;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   originalComponent
-     *          Original NMS component
-     */
-    public WrappedChatComponent(Object originalComponent) {
-        this.originalComponent = originalComponent;
-    }
 
     /**
      * Returns the original NMS component
@@ -54,7 +48,7 @@ public class WrappedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public ChatModifier getModifier() {
+    public @NotNull ChatModifier getModifier() {
         throw new UnsupportedOperationException("Not supported for " + getClass().getSimpleName());
     }
 
@@ -64,12 +58,12 @@ public class WrappedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public void addExtra(IChatBaseComponent child) {
+    public void addExtra(@NonNull IChatBaseComponent child) {
         throw new UnsupportedOperationException("Not supported for " + getClass().getSimpleName());
     }
 
     @Override
-    public void setModifier(ChatModifier modifier) {
+    public void setModifier(@NotNull ChatModifier modifier) {
         throw new UnsupportedOperationException("Not supported for " + getClass().getSimpleName());
     }
 }

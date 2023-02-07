@@ -1,7 +1,9 @@
 package me.neznamy.tab.api.config;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.util.Preconditions;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +25,10 @@ public abstract class ConfigurationFile {
     protected List<String> header;
 
     /** Configuration file content */
-    protected Map<String, Object> values;
+    @Getter @Setter protected Map<String, Object> values;
 
     /** File to use */
-    protected final File file;
+    @Getter protected final File file;
 
     /**
      * Constructs new instance and attempts to load specified configuration file.
@@ -43,8 +45,7 @@ public abstract class ConfigurationFile {
      * @throws  IOException
      *          if I/O operation with the file unexpectedly fails
      */
-    protected ConfigurationFile(InputStream source, File destination) throws IOException {
-        Preconditions.checkNotNull(destination, "destination");
+    protected ConfigurationFile(InputStream source, @NonNull File destination) throws IOException {
         this.file = destination;
         if (file.getParentFile() != null && !file.getParentFile().exists()) Files.createDirectories(file.getParentFile().toPath());
         if (!file.exists()) {
@@ -66,19 +67,6 @@ public abstract class ConfigurationFile {
      */
     public String getName() {
         return file.getName();
-    }
-
-    /**
-     * Returns the root value map
-     *
-     * @return  the root value map
-     */
-    public Map<String, Object> getValues(){
-        return values;
-    }
-
-    public void setValues(Map<String, Object> values) {
-        this.values = values;
     }
 
     /**
@@ -407,9 +395,5 @@ public abstract class ConfigurationFile {
         if (file.createNewFile()) {
             Files.write(file.toPath(), content);
         }
-    }
-
-    public File getFile() {
-        return file;
     }
 }

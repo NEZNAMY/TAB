@@ -7,7 +7,6 @@ import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.util.Preconditions;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -185,8 +184,7 @@ public class IChatBaseComponent {
      *          text to convert
      * @return  organized component from colored text
      */
-    public static IChatBaseComponent fromColoredText(String originalText){
-        Preconditions.checkNotNull(originalText, "text");
+    public static IChatBaseComponent fromColoredText(@NonNull String originalText){
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
         List<IChatBaseComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();

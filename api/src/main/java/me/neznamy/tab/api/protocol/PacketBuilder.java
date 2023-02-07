@@ -1,14 +1,14 @@
 package me.neznamy.tab.api.protocol;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.util.BiFunctionWithException;
-import me.neznamy.tab.api.util.Preconditions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class for packet building, methods are overridden in
@@ -48,9 +48,7 @@ public class PacketBuilder {
      * @throws  ReflectiveOperationException
      *          if reflection fails
      */
-    public Object build(TabPacket packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        Preconditions.checkNotNull(packet, "packet");
-        Preconditions.checkNotNull(clientVersion, "clientVersion");
+    public Object build(@NonNull TabPacket packet, @NonNull ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return buildMap.get(packet.getClass()).apply(packet, clientVersion);
     }
 

@@ -82,13 +82,13 @@ public class TAB extends TabAPI {
      * Boolean tracking whether this plugin is enabled or not,
      * which is due to either internal error on load or yaml syntax error
      */
-    private boolean disabled;
+    @Getter private boolean pluginDisabled;
 
     /** Minecraft version the server is running on, always using the latest on proxies */
     @Getter private final ProtocolVersion serverVersion;
 
     /** Boolean checking floodgate plugin presence for hook */
-    private final boolean floodgate = ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi");
+    @Getter private final boolean floodgateInstalled = ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi");
 
     /** Version string defined by the server */
     @Getter private final String serverVersionString;
@@ -157,7 +157,7 @@ public class TAB extends TabAPI {
             for (TabPlayer p : onlinePlayers) ((ITabPlayer)p).markAsLoaded(false);
             cpu.enable();
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
-            disabled = false;
+            pluginDisabled = false;
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
@@ -177,7 +177,7 @@ public class TAB extends TabAPI {
      * and cancels all tasks.
      */
     public void unload() {
-        if (disabled) return;
+        if (pluginDisabled) return;
         try {
             long time = System.currentTimeMillis();
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
@@ -193,7 +193,7 @@ public class TAB extends TabAPI {
      * Clears online player maps and arrays and cancels all tasks
      */
     private void kill() {
-        disabled = true;
+        pluginDisabled = true;
         data.clear();
         playersByTabListId.clear();
         onlinePlayers = new TabPlayer[0];
@@ -257,15 +257,6 @@ public class TAB extends TabAPI {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistUUID());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
-    }
-
-    /**
-     * Returns {@code true} if floodgate plugin is installed, {@code false} if not
-     *
-     * @return  {@code true} if floodgate plugin is installed, {@code false} if not
-     */
-    public boolean isFloodgateInstalled() {
-        return floodgate;
     }
 
     /**
@@ -368,10 +359,5 @@ public class TAB extends TabAPI {
     @Override
     public void debug(String message) {
         if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
-    }
-
-    @Override
-    public boolean isPluginDisabled() {
-        return disabled;
     }
 }

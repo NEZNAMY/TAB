@@ -53,7 +53,7 @@ public class Main {
     private Logger logger;
 
     /** TAB's plugin message channel */
-    private final MinecraftChannelIdentifier mc = MinecraftChannelIdentifier.create(
+    @Getter private final MinecraftChannelIdentifier minecraftChannelIdentifier = MinecraftChannelIdentifier.create(
             TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
 
     /** Component cache for 1.16+ players to save CPU when creating components */
@@ -78,7 +78,7 @@ public class Main {
             logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
-        server.getChannelRegistrar().register(mc);
+        server.getChannelRegistrar().register(minecraftChannelIdentifier);
         TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
@@ -87,15 +87,6 @@ public class Main {
         TAB.getInstance().load();
         Metrics metrics = metricsFactory.make(this, 10533);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TabAPI.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
-    }
-
-    /**
-     * Returns TAB's plugin message channel
-     *
-     * @return  TAB's plugin message channel
-     */
-    public MinecraftChannelIdentifier getMinecraftChannelIdentifier() {
-        return mc;
     }
     
     /**

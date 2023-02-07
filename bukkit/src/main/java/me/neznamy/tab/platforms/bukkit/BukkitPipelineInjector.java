@@ -7,6 +7,7 @@ import java.util.function.Function;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
@@ -39,20 +40,11 @@ public class BukkitPipelineInjector extends PipelineInjector {
     /**
      * Custom channel duplex handler override
      */
+    @AllArgsConstructor
     public class BukkitChannelDuplexHandler extends ChannelDuplexHandler {
 
         /** Injected player */
         private final TabPlayer player;
-
-        /**
-         * Constructs new instance with given player
-         *
-         * @param   player
-         *          player to inject
-         */
-        public BukkitChannelDuplexHandler(TabPlayer player) {
-            this.player = player;
-        }
 
         @Override
         public void channelRead(@NotNull ChannelHandlerContext context, @NotNull Object packet) {

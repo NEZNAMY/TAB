@@ -1,10 +1,14 @@
 package me.neznamy.tab.api.bossbar;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * An enum representing all available BossBar styles.
  * Calling ordinal() will return style's network ID.
  * Style names are equal to NMS names.
  */
+@AllArgsConstructor
 public enum BarStyle {
 
     PROGRESS("SOLID"),
@@ -14,23 +18,5 @@ public enum BarStyle {
     NOTCHED_20("SEGMENTED_20");
 
     /** Style's name used in Bukkit API */
-    private final String bukkitName;
-
-    /**
-     * Initializes enum constant with given bukkit name
-     *
-     * @param   bukkitName
-     *          Name of color to be returned in {@code getBukkitName()}
-     */
-    BarStyle(String bukkitName){
-        this.bukkitName = bukkitName;
-    }
-
-    /**
-     * Returns name of this style in Bukkit API
-     * @return  name of this style in Bukkit API
-     */
-    public String getBukkitName() {
-        return bukkitName;
-    }
+    @Getter private final String bukkitName;
 }

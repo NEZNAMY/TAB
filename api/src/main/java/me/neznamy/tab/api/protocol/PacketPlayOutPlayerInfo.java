@@ -1,9 +1,9 @@
 package me.neznamy.tab.api.protocol;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.util.Preconditions;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -42,9 +42,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
      * @param   entries
      *          Affected entries
      */
-    public PacketPlayOutPlayerInfo(EnumPlayerInfoAction action, List<PlayerInfoData> entries) {
-        Preconditions.checkNotNull(action, "action");
-        Preconditions.checkNotNull(entries, "entries");
+    public PacketPlayOutPlayerInfo(@NonNull EnumPlayerInfoAction action, @NonNull List<PlayerInfoData> entries) {
         if (action == EnumPlayerInfoAction.ADD_PLAYER) {
             actions = EnumSet.of(EnumPlayerInfoAction.ADD_PLAYER,
                     EnumPlayerInfoAction.INITIALIZE_CHAT,
@@ -66,9 +64,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
      * @param   entries
      *          Affected entries
      */
-    public PacketPlayOutPlayerInfo(EnumSet<EnumPlayerInfoAction> actions, PlayerInfoData... entries) {
-        Preconditions.checkNotNull(actions, "action");
-        Preconditions.checkNotNull(entries, "entries");
+    public PacketPlayOutPlayerInfo(@NonNull EnumSet<EnumPlayerInfoAction> actions, @NonNull PlayerInfoData... entries) {
         this.actions = actions;
         this.entries = Arrays.asList(entries);
     }
@@ -118,8 +114,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * @param   gameMode
          *          Player's GameMode
          */
-        public PlayerInfoData(@NotNull UUID uniqueId, EnumGamemode gameMode) {
-            Preconditions.checkNotNull(uniqueId, "uuid");
+        public PlayerInfoData(@NonNull UUID uniqueId, EnumGamemode gameMode) {
             this.uniqueId = uniqueId;
             this.gameMode = gameMode;
         }
@@ -133,8 +128,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * @param   latency
          *          Player's ping
          */
-        public PlayerInfoData(@NotNull UUID uniqueId, int latency) {
-            Preconditions.checkNotNull(uniqueId, "uuid");
+        public PlayerInfoData(@NonNull UUID uniqueId, int latency) {
             this.uniqueId = uniqueId;
             this.latency = latency;
         }
@@ -148,8 +142,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * @param   displayName
          *          Player's display name
          */
-        public PlayerInfoData(@NotNull UUID uniqueId, IChatBaseComponent displayName) {
-            Preconditions.checkNotNull(uniqueId, "uuid");
+        public PlayerInfoData(@NonNull UUID uniqueId, IChatBaseComponent displayName) {
             this.uniqueId = uniqueId;
             this.displayName = displayName;
         }
@@ -161,7 +154,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
          * @param   uniqueId
          *          Player's uuid
          */
-        public PlayerInfoData(@NotNull UUID uniqueId) {
+        public PlayerInfoData(@NonNull UUID uniqueId) {
             this.uniqueId = uniqueId;
         }
     }

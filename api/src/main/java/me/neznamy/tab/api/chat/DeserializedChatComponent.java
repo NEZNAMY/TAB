@@ -1,8 +1,10 @@
 package me.neznamy.tab.api.chat;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.util.Preconditions;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -23,10 +25,11 @@ import java.util.List;
  * will act like a normal chat component.
  */
 @SuppressWarnings("unchecked")
+@RequiredArgsConstructor
 public class DeserializedChatComponent extends IChatBaseComponent {
 
     /** The original serialized component string */
-    private final String json;
+    @NonNull private final String json;
 
     /**
      * Flag tracking whether this component was fully deserialized
@@ -40,17 +43,6 @@ public class DeserializedChatComponent extends IChatBaseComponent {
      * a new string has to be created instead of returning the input one.
      */
     private boolean modified;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   json
-     *          serialized component as string
-     */
-    public DeserializedChatComponent(String json) {
-        Preconditions.checkNotNull(json, "json");
-        this.json = json;
-    }
 
     @Override
     public String toString() {
@@ -77,7 +69,7 @@ public class DeserializedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public ChatModifier getModifier() {
+    public @NotNull ChatModifier getModifier() {
         if (!deserialized) deserialize();
         return super.getModifier();
     }
@@ -90,14 +82,14 @@ public class DeserializedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public void addExtra(IChatBaseComponent child) {
+    public void addExtra(@NotNull IChatBaseComponent child) {
         if (!deserialized) deserialize();
         modified = true;
         super.addExtra(child);
     }
 
     @Override
-    public void setModifier(ChatModifier modifier) {
+    public void setModifier(@NotNull ChatModifier modifier) {
         if (!deserialized) deserialize();
         modified = true;
         super.setModifier(modifier);
@@ -162,9 +154,7 @@ public class DeserializedChatComponent extends IChatBaseComponent {
      *          name of key
      * @return  value from json object or null if not present
      */
-    private static Boolean getBoolean(JSONObject jsonObject, String key) {
-        Preconditions.checkNotNull(jsonObject, "json object");
-        Preconditions.checkNotNull(key, "key");
+    private static Boolean getBoolean(@NonNull JSONObject jsonObject, @NonNull String key) {
         String value = String.valueOf(jsonObject.getOrDefault(key, null));
         return "null".equals(value) ? null : Boolean.parseBoolean(value);
     }

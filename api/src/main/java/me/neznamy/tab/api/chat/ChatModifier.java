@@ -7,7 +7,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
-import me.neznamy.tab.api.util.Preconditions;
 import org.json.simple.JSONObject;
 
 import java.util.UUID;
@@ -91,8 +90,7 @@ public class ChatModifier {
      * @param   url
      *          url to open
      */
-    public void onClickOpenUrl(String url) {
-        Preconditions.checkNotNull(url, "url");
+    public void onClickOpenUrl(@NonNull String url) {
         clickEvent = new ChatClickable(EnumClickAction.OPEN_URL, url);
     }
 
@@ -102,8 +100,7 @@ public class ChatModifier {
      * @param   command
      *          command to perform, might be without / to send a chat message
      */
-    public void onClickRunCommand(String command) {
-        Preconditions.checkNotNull(command, "command");
+    public void onClickRunCommand(@NonNull String command) {
         clickEvent = new ChatClickable(EnumClickAction.RUN_COMMAND, command);
     }
 
@@ -113,8 +110,7 @@ public class ChatModifier {
      * @param   command
      *          command to suggest
      */
-    public void onClickSuggestCommand(String command) {
-        Preconditions.checkNotNull(command, "command");
+    public void onClickSuggestCommand(@NonNull String command) {
         clickEvent = new ChatClickable(EnumClickAction.SUGGEST_COMMAND, command);
     }
 
@@ -135,14 +131,11 @@ public class ChatModifier {
      * @param   text
      *          text to copy to clipboard on click
      */
-    public void onClickCopyToClipBoard(String text) {
-        Preconditions.checkNotNull(text, "text");
+    public void onClickCopyToClipBoard(@NonNull String text) {
         clickEvent = new ChatClickable(EnumClickAction.COPY_TO_CLIPBOARD, text);
     }
 
-    public void onClick(EnumClickAction action, String value) {
-        Preconditions.checkNotNull(action, "action");
-        Preconditions.checkNotNull(value, "value");
+    public void onClick(@NonNull EnumClickAction action, @NonNull String value) {
         clickEvent = new ChatClickable(action, value);
     }
 
@@ -152,8 +145,7 @@ public class ChatModifier {
      * @param   text
      *          text to show
      */
-    public void onHoverShowText(IChatBaseComponent text) {
-        Preconditions.checkNotNull(text, "text");
+    public void onHoverShowText(@NonNull IChatBaseComponent text) {
         hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_TEXT, text);
     }
 
@@ -163,8 +155,7 @@ public class ChatModifier {
      * @param   serializedItem
      *          item to show
      */
-    public void onHoverShowItem(String serializedItem) {
-        Preconditions.checkNotNull(serializedItem, "item");
+    public void onHoverShowItem(@NonNull String serializedItem) {
         hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ITEM, new IChatBaseComponent(serializedItem));
     }
 
@@ -178,15 +169,11 @@ public class ChatModifier {
      * @param   name
      *          entity custom name
      */
-    public void onHoverShowEntity(String type, UUID id, String name) {
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(id, "id");
+    public void onHoverShowEntity(@NonNull String type, @NonNull UUID id, String name) {
         hoverEvent = new ChatHoverable(EnumHoverAction.SHOW_ENTITY, new ChatComponentEntity(type, id, name));
     }
 
-    public void onHover(EnumHoverAction action, IChatBaseComponent value) {
-        Preconditions.checkNotNull(action, "action");
-        Preconditions.checkNotNull(value, "value");
+    public void onHover(@NonNull EnumHoverAction action, @NonNull IChatBaseComponent value) {
         hoverEvent = new ChatHoverable(action, value);
     }
 

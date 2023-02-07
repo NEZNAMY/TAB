@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.protocol.Skin;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -60,8 +60,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public boolean hasPermission0(String permission) {
-        Preconditions.checkNotNull(permission, "permission");
+    public boolean hasPermission0(@NonNull String permission) {
         long time = System.nanoTime();
         boolean value = getPlayer().hasPermission(permission);
         TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
@@ -101,8 +100,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *          packet class
      * @return  packet ID
      */
-    public int getPacketId(Class<? extends DefinedPacket> clazz) {
-        Preconditions.checkNotNull(clazz, "class");
+    public int getPacketId(@NonNull Class<? extends DefinedPacket> clazz) {
         try {
             return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());
         } catch (ReflectiveOperationException e) {
@@ -145,12 +143,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public UUID getChatSessionId() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest().getUuid();
     }
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        Preconditions.checkNotNull(message, "message");
         if (getPlayer().getServer() == null) return;
         getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
         TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");

@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class representing the n.m.s.DataWatcher class to make work with it much easier
@@ -93,8 +92,7 @@ public class DataWatcher {
      *          if thrown by reflective operation
      */
     @SuppressWarnings("unchecked")
-    public static DataWatcher fromNMS(Object nmsWatcher) throws ReflectiveOperationException {
-        Preconditions.checkNotNull(nmsWatcher, "nmsWatcher");
+    public static DataWatcher fromNMS(@NonNull Object nmsWatcher) throws ReflectiveOperationException {
         DataWatcher watcher = new DataWatcher();
         List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
         if (items != null) {

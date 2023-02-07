@@ -1,9 +1,9 @@
 package me.neznamy.tab.api.chat;
 
-import java.util.UUID;
-
+import lombok.NonNull;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.util.Preconditions;
+
+import java.util.UUID;
 
 public class ChatComponentEntity extends IChatBaseComponent {
 
@@ -12,9 +12,7 @@ public class ChatComponentEntity extends IChatBaseComponent {
     private final String VALUE_1_12;
     private final String VALUE_1_8;
 
-    public ChatComponentEntity(String type, UUID id, String name) {
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(id, "id");
+    public ChatComponentEntity(@NonNull String type, @NonNull UUID id, String name) {
         this.CONTENTS = String.format("{\"type\":\"%s\",\"id\":\"%s\",\"name\":{\"text\":\"%s\"}}", type, id, name);
         this.VALUE_1_13 = String.format("{type:\"%s\",id:\"%s\",name:\"{\\\"text\\\":\\\"%s\\\"}\"}", type, id, name);
         this.VALUE_1_12 = String.format("{type:\"%s\",id:\"%s\",name:\"%s\"}", type, id, name);

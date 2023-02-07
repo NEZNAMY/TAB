@@ -45,7 +45,7 @@ public class BukkitArmorStand implements ArmorStand {
     private final boolean staticOffset;
 
     /** Entity ID of this armor stand */
-    private final int entityId = idCounter++;
+    @Getter private final int entityId = idCounter++;
 
     /** Unique ID of this armor stand */
     private final UUID uuid = UUID.randomUUID();
@@ -165,11 +165,6 @@ public class BukkitArmorStand implements ArmorStand {
         if (visible != visibility || force) {
             refresh();
         }
-    }
-
-    @Override
-    public int getEntityId() {
-        return entityId;
     }
 
     /**

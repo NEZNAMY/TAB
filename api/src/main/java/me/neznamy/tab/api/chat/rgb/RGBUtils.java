@@ -1,10 +1,7 @@
 package me.neznamy.tab.api.chat.rgb;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.TextColor;
 import me.neznamy.tab.api.chat.rgb.format.*;
@@ -12,8 +9,12 @@ import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
 import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.api.util.ReflectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -21,7 +22,7 @@ import me.neznamy.tab.api.util.ReflectionUtils;
 public class RGBUtils {
 
     /** Instance of the class */
-    private static final RGBUtils instance = new RGBUtils();
+    @Getter private static final RGBUtils instance = new RGBUtils();
 
     /** Registered RGB formatters */
     private final RGBFormatter[] formats;
@@ -66,23 +67,13 @@ public class RGBUtils {
     }
 
     /**
-     * Returns instance of this class
-     *
-     * @return  instance
-     */
-    public static RGBUtils getInstance() {
-        return instance;
-    }
-
-    /**
      * Applies all RGB formats and gradients to text and returns it.
      *
      * @param   text
      *          original text
      * @return  text where everything is converted to #RRGGBB
      */
-    public String applyFormats(String text) {
-        Preconditions.checkNotNull(text, "text");
+    public String applyFormats(@NonNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, false);
@@ -101,8 +92,7 @@ public class RGBUtils {
      *          original text
      * @return  text where all gradients with static text are converted to #RRGGBB
      */
-    public String applyCleanGradients(String text) {
-        Preconditions.checkNotNull(text, "text");
+    public String applyCleanGradients(@NonNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, true);
@@ -183,8 +173,7 @@ public class RGBUtils {
      *          string to check
      * @return  {@code true} if valid, {@code false} if not
      */
-    public boolean isHexCode(String string) {
-        Preconditions.checkNotNull(string, "string");
+    public boolean isHexCode(@NonNull String string) {
         if (string.length() != 6) return false;
         for (int i=0; i<6; i++) {
             char c = string.charAt(i);
