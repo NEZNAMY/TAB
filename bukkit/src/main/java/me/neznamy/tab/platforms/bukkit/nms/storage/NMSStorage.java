@@ -43,8 +43,6 @@ public abstract class NMSStorage {
     public Field PLAYER_CONNECTION;
     public Field NETWORK_MANAGER;
     public Field CHANNEL;
-    public Field EntityHuman_ProfilePublicKey;
-    public Field EntityPlayer_RemoteChatSession;
     public Method getHandle;
     public Method sendPacket;
     public Method getProfile;
@@ -151,17 +149,13 @@ public abstract class NMSStorage {
     public Method PlayerInfoData_getGamemode;
     public Method PlayerInfoData_getDisplayName;
     public Method PlayerInfoData_getProfilePublicKeyRecord;
-    public Method ProfilePublicKey_getRecord;
     //1.19.3+
     public Class<?> ClientboundPlayerInfoRemovePacket;
     public Class<?> RemoteChatSession;
     public Class<?> RemoteChatSession$Data;
     public Constructor<?> newClientboundPlayerInfoRemovePacket;
-    public Constructor<?> newRemoteChatSession;
     public Constructor<?> newRemoteChatSession$Data;
     public Method ClientboundPlayerInfoRemovePacket_getEntries;
-    public Method RemoteChatSession_getSessionId;
-    public Method RemoteChatSession_getProfilePublicKey;
     public Method RemoteChatSession$Data_getSessionId;
     public Method RemoteChatSession$Data_getProfilePublicKey;
 
@@ -316,14 +310,12 @@ public abstract class NMSStorage {
             RemoteChatSession$Data_getSessionId = getMethods(RemoteChatSession$Data, UUID.class).get(0);
             RemoteChatSession$Data_getProfilePublicKey = getMethods(RemoteChatSession$Data, ProfilePublicKey$a).get(0);
             PlayerInfoData_getProfilePublicKeyRecord = getMethods(PlayerInfoData, RemoteChatSession$Data).get(0);
-            EntityPlayer_RemoteChatSession = getFields(EntityPlayer, RemoteChatSession).get(0);
             PlayerInfoData_isListed = getMethods(PlayerInfoData, boolean.class).get(0);
         } else {
             newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfo.getConstructor(EnumPlayerInfoAction, Array.newInstance(EntityPlayer, 0).getClass());
             PacketPlayOutPlayerInfo_ACTION = getFields(PacketPlayOutPlayerInfo, EnumPlayerInfoAction).get(0);
             if (minorVersion >= 19) {
                 PlayerInfoData_getProfilePublicKeyRecord = getMethods(PlayerInfoData, ProfilePublicKey$a).get(0);
-                EntityHuman_ProfilePublicKey = getFields(EntityHuman, ProfilePublicKey).get(0);
             }
         }
         newPlayerInfoData = PlayerInfoData.getConstructors()[0];
@@ -335,9 +327,6 @@ public abstract class NMSStorage {
         }
         PlayerInfoData_getGamemode = getMethods(PlayerInfoData, EnumGamemode).get(0);
         PlayerInfoData_getDisplayName = getMethods(PlayerInfoData, IChatBaseComponent).get(0);
-        if (minorVersion >= 19) {
-            ProfilePublicKey_getRecord = getMethods(ProfilePublicKey, ProfilePublicKey$a).get(0);
-        }
     }
 
     /**
