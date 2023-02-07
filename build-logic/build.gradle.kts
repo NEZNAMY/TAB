@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     implementation(libs.plugin.shadow)
+    implementation(libs.plugin.lombok)
 }
 
 dependencies {

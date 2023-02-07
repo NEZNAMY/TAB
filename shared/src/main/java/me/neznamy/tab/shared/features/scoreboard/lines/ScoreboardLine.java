@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import java.util.Collections;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -22,16 +23,16 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     protected final int lineNumber;
     
     //text to display
-    protected String text;
+    @Getter protected String text;
     
     //scoreboard this line belongs to
     protected final ScoreboardImpl parent;
     
     //scoreboard team name of player in this line
-    protected final String teamName;
+    @Getter protected final String teamName;
     
     //forced player name start to make lines unique & sort them by names
-    protected final String playerName;
+    @Getter protected final String playerName;
     
     /**
      * Constructs new instance with given parameters
@@ -71,15 +72,6 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @return  forced name start of this line to specified viewer
      */
     public String getPlayerName(TabPlayer viewer) {
-        return playerName;
-    }
-
-    /**
-     * Returns forced name start of this line
-     *
-     * @return  forced name start of this line
-     */
-    public String getPlayerName() {
         return playerName;
     }
 
@@ -141,12 +133,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
         p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
         p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabConstants.PacketCategory.SCOREBOARD_LINES);
     }
-    
-    @Override
-    public String getText() {
-        return text;
-    }
-    
+
     /**
      * Returns number that should be displayed as score for specified player
      *
@@ -160,10 +147,6 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
         } else {
             return parent.getManager().getStaticNumber();
         }
-    }
-
-    public String getTeamName() {
-        return teamName;
     }
 
     /**

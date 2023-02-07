@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.chat;
 
+import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.util.Preconditions;
 
 /**
@@ -24,7 +26,7 @@ public class TextColor {
      * Boolean value whether the legacy color was forced with constructor or should be
      * automatically assigned as closest color.
      * This value is used in gradients when converting text for legacy players. */
-    private boolean legacyColorForced;
+    @Getter private boolean legacyColorForced;
 
     /**
      * Constructs new instance as a clone of the provided color.
@@ -34,8 +36,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if color is {@code null}
      */
-    public TextColor(TextColor color) {
-        Preconditions.checkNotNull(color, "color");
+    public TextColor(@NonNull TextColor color) {
         rgb = color.rgb;
         legacyColor = color.legacyColor;
         hexCode = color.hexCode;
@@ -50,8 +51,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if hexCode is {@code null}
      */
-    public TextColor(String hexCode) {
-        Preconditions.checkNotNull(hexCode, "hex code");
+    public TextColor(@NonNull String hexCode) {
         this.hexCode = hexCode;
     }
 
@@ -65,9 +65,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if {@code hexCode} is {@code null} or {@code legacyColor} is {@code null}
      */
-    public TextColor(String hexCode, EnumChatFormat legacyColor) {
-        Preconditions.checkNotNull(hexCode, "hex code");
-        Preconditions.checkNotNull(legacyColor, "legacy color");
+    public TextColor(@NonNull String hexCode, EnumChatFormat legacyColor) {
         this.hexCode = hexCode;
         this.legacyColorForced = true;
         this.legacyColor = legacyColor;
@@ -81,8 +79,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if {@code legacyColor} is {@code null}
      */
-    public TextColor(EnumChatFormat legacyColor) {
-        Preconditions.checkNotNull(legacyColor, "legacy color");
+    public TextColor(@NonNull EnumChatFormat legacyColor) {
         this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
         this.hexCode = legacyColor.getHexCode();
     }
@@ -193,15 +190,6 @@ public class TextColor {
             return legacyEquivalent.toString().toLowerCase();
         }
         return "#" + getHexCode();
-    }
-
-    /**
-     * Returns true if legacy color was forced with a constructor, false if not
-     *
-     * @return  true if forced, false if not
-     */
-    public boolean isLegacyColorForced() {
-        return legacyColorForced;
     }
 
     /**

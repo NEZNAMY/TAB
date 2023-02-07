@@ -53,7 +53,7 @@ public class PluginMessageHandler {
                         player.setDisguised(in.readBoolean());
                     }
                     if ("Invisible".equals(subChannel)) {
-                        player.setInvisible(in.readBoolean());
+                        player.setInvisibilityPotion(in.readBoolean());
                     }
                     if ("World".equals(subChannel)) {
                         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
@@ -74,7 +74,7 @@ public class PluginMessageHandler {
                         // reset attributes from previous server to default false values, new server will send separate update packets if needed
                         player.setVanished(false);
                         player.setDisguised(false);
-                        player.setInvisible(false);
+                        player.setInvisibilityPotion(false);
                         int placeholderCount = in.readInt();
                         for (int i=0; i<placeholderCount; i++) {
                             String identifier = in.readUTF();

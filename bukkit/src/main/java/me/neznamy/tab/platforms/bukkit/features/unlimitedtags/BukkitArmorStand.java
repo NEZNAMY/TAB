@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import lombok.Getter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -38,7 +39,7 @@ public class BukkitArmorStand implements ArmorStand {
     private final Player player;
 
     /** Offset in blocks, 0 for original height */
-    private double yOffset;
+    @Getter private double offset;
 
     /** If offset is static, or dynamic based on other armor stands */
     private final boolean staticOffset;
@@ -56,7 +57,7 @@ public class BukkitArmorStand implements ArmorStand {
     private boolean visible;
 
     /** Refresh property dedicated to this armor stand */
-    private final Property property;
+    @Getter private final Property property;
 
     /** Entity destroy packet */
     private final PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(entityId);
@@ -80,7 +81,7 @@ public class BukkitArmorStand implements ArmorStand {
         this.owner = owner;
         this.staticOffset = staticOffset;
         player = (Player) owner.getPlayer();
-        this.yOffset = yOffset;
+        this.offset = yOffset;
         this.property = owner.getProperty(propertyName);
         visible = getVisibility();
         sneaking = player.isSneaking();
@@ -93,24 +94,14 @@ public class BukkitArmorStand implements ArmorStand {
     }
 
     @Override
-    public Property getProperty() {
-        return property;
-    }
-
-    @Override
     public boolean hasStaticOffset() {
         return staticOffset;
     }
 
     @Override
-    public double getOffset() {
-        return yOffset;
-    }
-
-    @Override
     public void setOffset(double offset) {
-        if (yOffset == offset) return;
-        yOffset = offset;
+        if (this.offset == offset) return;
+        this.offset = offset;
         for (TabPlayer all : asm.getNearbyPlayers()) {
             all.sendCustomPacket(getTeleportPacket(all), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_OFFSET_CHANGE);
         }
@@ -223,7 +214,7 @@ public class BukkitArmorStand implements ArmorStand {
      */
     public Location getLocation(TabPlayer viewer) {
         double x = player.getLocation().getX();
-        double y = getY() + yOffset;
+        double y = getY() + offset;
         double z = player.getLocation().getZ();
         if (!player.isSleeping()) {
             if (sneaking) {
@@ -295,8 +286,8 @@ public class BukkitArmorStand implements ArmorStand {
 
         byte flag = 32; //invisible
         if (sneaking) flag += (byte)2;
-        datawatcher.helper().setEntityFlags(flag);
-        datawatcher.helper().setCustomName(displayName, viewer.getVersion());
+        datawatcher.getHelper().setEntityFlags(flag);
+        datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());
 
         boolean visibility;
         if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) ||
@@ -305,9 +296,9 @@ public class BukkitArmorStand implements ArmorStand {
         } else {
             visibility = visible;
         }
-        datawatcher.helper().setCustomNameVisible(visibility);
+        datawatcher.getHelper().setCustomNameVisible(visibility);
 
-        if (viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x()) datawatcher.helper().setArmorStandFlags((byte)16);
+        if (viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x()) datawatcher.getHelper().setArmorStandFlags((byte)16);
         return datawatcher;
     }
 

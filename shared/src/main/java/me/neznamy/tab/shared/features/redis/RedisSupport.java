@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.redis;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -35,13 +36,13 @@ public abstract class RedisSupport extends TabFeature {
     protected final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
 
     /** PlayerList feature */
-    private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+    @Getter private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
     /** NameTag feature */
-    private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
+    @Getter private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
 
     /** Sorting feature */
-    private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    @Getter  private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
     private final UUID EMPTY_ID = new UUID(0, 0);
 
@@ -67,24 +68,6 @@ public abstract class RedisSupport extends TabFeature {
      */
     public Map<String, RedisPlayer> getRedisPlayers(){
         return redisPlayers;
-    }
-
-    /**
-     * Returns PlayerList feature if it's enabled, {@code null} if disabled
-     *
-     * @return  PlayerList feature instance
-     */
-    public PlayerList getPlayerList() {
-        return playerList;
-    }
-
-    /**
-     * Returns NameTag feature if it's enabled, {@code null} if disabled
-     *
-     * @return  NameTag feature instance
-     */
-    public NameTag getNameTags() {
-        return nameTags;
     }
 
     /**
@@ -357,7 +340,6 @@ public abstract class RedisSupport extends TabFeature {
      */
     public abstract void unregister();
 
-
     @Override
     public void load() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
@@ -437,7 +419,7 @@ public abstract class RedisSupport extends TabFeature {
         if (info.getActions().contains(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE)) {
             for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
                 RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
-                if (packetPlayer != null && !packetPlayer.hasDisabledPlayerlist()) {
+                if (packetPlayer != null && !packetPlayer.isDisabledPlayerList()) {
                     playerInfoData.setDisplayName(IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat()));
                 }
             }
@@ -451,9 +433,5 @@ public abstract class RedisSupport extends TabFeature {
                 all.sendCustomPacket(p.getRegisterTeamPacket());
             }
         }
-    }
-
-    public Sorting getSorting() {
-        return sorting;
     }
 }

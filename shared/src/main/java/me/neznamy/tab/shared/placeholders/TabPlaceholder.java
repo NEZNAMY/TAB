@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -15,16 +16,16 @@ import java.util.List;
 public abstract class TabPlaceholder implements Placeholder {
 
     /** Refresh interval of the placeholder */
-    private final int refresh;
+    @Getter private final int refresh;
 
     /** Placeholder's identifier including % */
-    protected final String identifier;
+    @Getter protected final String identifier;
 
     /** Configured placeholder output replacements */
-    protected final PlaceholderReplacementPattern replacements;
+    @Getter protected final PlaceholderReplacementPattern replacements;
 
     /** Boolean tracking whether this placeholder is actually used or not */
-    private boolean active;
+    @Getter private boolean used;
 
     /**
      * Runnable to run when this placeholder becomes used and this is a trigger placeholder.
@@ -138,21 +139,12 @@ public abstract class TabPlaceholder implements Placeholder {
     }
 
     /**
-     * Returns placeholder output replacement pattern
-     *
-     * @return  placeholder output replacement pattern
-     */
-    public PlaceholderReplacementPattern getReplacements() {
-        return replacements;
-    }
-
-    /**
-     * Marks this placeholder as used, which sets {@link #active} to true and if
+     * Marks this placeholder as used, which sets {@link #used} to true and if
      * {@link #onActivation} is not null, runs it.
      */
     public void markAsUsed() {
-        if (active) return;
-        active = true;
+        if (used) return;
+        used = true;
         if (onActivation != null) onActivation.run();
     }
 
@@ -197,29 +189,14 @@ public abstract class TabPlaceholder implements Placeholder {
     public abstract String getLastValue(TabPlayer player);
 
     @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public int getRefresh() {
-        return refresh;
-    }
-
-    @Override
     public void unload() {
-        if (onDisable != null && active) onDisable.run();
+        if (onDisable != null && used) onDisable.run();
     }
 
     @Override
     public void enableTriggerMode(Runnable onActivation, Runnable onDisable) {
         this.onActivation = onActivation;
         this.onDisable = onDisable;
-        if (active && onActivation != null) onActivation.run();
-    }
-
-    @Override
-    public boolean isUsed() {
-        return active;
+        if (used && onActivation != null) onActivation.run();
     }
 }

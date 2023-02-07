@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -13,20 +14,11 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * The core for BungeeCord forwarding events into all enabled features
  */
+@AllArgsConstructor
 public class BungeeEventListener implements Listener {
 
     /** Reference to BungeeCord platform implementation */
     private final BungeePlatform platform;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   platform
-     *          BungeeCord implementation of platform
-     */
-    public BungeeEventListener(BungeePlatform platform) {
-        this.platform = platform;
-    }
 
     /**
      * Disconnect event listener to forward the event to all features

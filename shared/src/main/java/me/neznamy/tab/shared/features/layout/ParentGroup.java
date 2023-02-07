@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.*;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.TabConstants;
@@ -12,8 +13,8 @@ public class ParentGroup {
     private final Layout layout;
     private final Condition condition;
     private final int[] slots;
-    private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
-    private final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
+    @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
+    @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
     public ParentGroup(Layout layout, Condition condition, int[] slots) {
         this.layout = layout;
@@ -54,13 +55,5 @@ public class ParentGroup {
         List<PlayerInfoData> data = new ArrayList<>();
         playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
         return data;
-    }
-    
-    public Map<TabPlayer, PlayerSlot> getPlayers() {
-        return players;
-    }
-
-    public Map<Integer, PlayerSlot> getPlayerSlots() {
-        return playerSlots;
     }
 }

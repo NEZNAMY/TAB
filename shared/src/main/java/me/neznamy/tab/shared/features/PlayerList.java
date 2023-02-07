@@ -59,7 +59,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
             if (layout != null) {
                 PlayerSlot slot = layout.getSlot(p);
                 if (slot != null) {
-                    return slot.getUUID();
+                    return slot.getUniqueId();
                 }
             }
         }

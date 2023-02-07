@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.nametags;
 
 import java.util.*;
 
+import lombok.Getter;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
@@ -21,7 +22,7 @@ public class NameTag extends TabFeature implements TeamManager {
     protected final boolean invisibleNameTags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
     private final boolean canSeeFriendlyInvisibles = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
-    private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
 
     private final Set<TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
@@ -306,10 +307,6 @@ public class NameTag extends TabFeature implements TeamManager {
     public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
         return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNameTags
                 && (!accepting18x || !p.hasInvisibilityPotion()) && !playersWithInvisibleNameTagView.contains(viewer);
-    }
-
-    public Sorting getSorting() {
-        return sorting;
     }
 
     public CollisionManager getCollisionManager() {

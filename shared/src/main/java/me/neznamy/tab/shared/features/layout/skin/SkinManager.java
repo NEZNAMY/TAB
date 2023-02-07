@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.Getter;
 import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.api.protocol.Skin;
@@ -16,7 +17,7 @@ import me.neznamy.tab.shared.TAB;
 public class SkinManager {
 
     private final List<String> invalidSkins = new ArrayList<>();
-    private Skin defaultSkin;
+    @Getter private Skin defaultSkin;
     private final Map<String, SkinSource> sources = new HashMap<>();
 
     public SkinManager(String defaultSkin) {
@@ -50,9 +51,5 @@ public class SkinManager {
         }
         TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
         return null;
-    }
-
-    public Skin getDefaultSkin() {
-        return defaultSkin;
     }
 }

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -14,10 +15,10 @@ import java.util.List;
 public class GroupManager extends TabFeature {
 
     /** Detected permission plugin to take groups from */
-    private final PermissionPlugin plugin;
+    @Getter private final PermissionPlugin plugin;
 
     /** If enabled, groups are assigned via permissions instead of permission plugin */
-    private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
+    @Getter private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 
     /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
     private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
@@ -83,24 +84,5 @@ public class GroupManager extends TabFeature {
             }
         }
         return TabConstants.NO_GROUP;
-    }
-
-    /**
-     * Returns {@code true} if assigning by permissions is configured,
-     * {@code false} if not.
-     *
-     * @return  {@code true} if assigning by permissions, {@code false} if not
-     */
-    public boolean isGroupsByPermissions() {
-        return groupsByPermissions;
-    }
-
-    /**
-     * Returns detected permission plugin
-     *
-     * @return  detected permission plugin
-     */
-    public PermissionPlugin getPlugin() {
-        return plugin;
     }
 }

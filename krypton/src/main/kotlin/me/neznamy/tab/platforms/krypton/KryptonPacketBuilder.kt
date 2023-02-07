@@ -90,27 +90,25 @@ object KryptonPacketBuilder : PacketBuilder() {
     override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): Any {
         val action = PacketOutUpdateTeams.Action.fromId(packet.action)!!
         val players = packet.players.map(Component::text)
+        return PacketOutUpdateTeams(packet.name, action, createParameters(packet, clientVersion), players)
+    }
 
+    private fun createParameters(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): PacketOutUpdateTeams.Parameters? {
+        if (packet.action != 0 && packet.action != 2) return null
         var prefix = packet.playerPrefix
         var suffix = packet.playerSuffix
         if (clientVersion.minorVersion < 13) {
             prefix = cutTo(prefix, 16)
             suffix = cutTo(suffix, 16)
         }
-
-        return PacketOutUpdateTeams(packet.name, action, createParameters(packet, clientVersion), players)
-    }
-
-    private fun createParameters(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): PacketOutUpdateTeams.Parameters? {
-        if (packet.action != 0 && packet.action != 2) return null
         return PacketOutUpdateTeams.Parameters(
             Component.text(packet.name),
             packet.options,
             packet.nameTagVisibility,
             packet.collisionRule,
             KryptonAdventure.getColorFromId(packet.color?.ordinal ?: EnumChatFormat.lastColorsOf(packet.playerPrefix).ordinal),
-            toComponent(packet.playerPrefix, clientVersion),
-            toComponent(packet.playerSuffix, clientVersion)
+            toComponent(prefix, clientVersion),
+            toComponent(suffix, clientVersion)
         )
     }
 

@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -13,20 +14,11 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
  * Class listening to Bukkit events which the feature requires and are
  * sufficient, without packets being requires.
  */
+@RequiredArgsConstructor
 public class EventListener implements Listener {
 
     /** Reference to the main feature */
     private final BukkitNameTagX feature;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   feature
-     *          NameTag feature handler
-     */
-    public EventListener(BukkitNameTagX feature) {
-        this.feature = feature;
-    }
 
     /**
      * Sneak event listener to de-spawn and spawn armor stands to skip animation

@@ -49,8 +49,8 @@ public class NickCompatibility extends TabFeature {
             if (redis != null) {
                 RedisPlayer redisPlayer = redis.getRedisPlayers().get(data.getUniqueId().toString());
                 if (redisPlayer == null) continue;
-                if (!redisPlayer.getNickName().equals(data.getName())) {
-                    redisPlayer.setNickName(data.getName());
+                if (!redisPlayer.getNickname().equals(data.getName())) {
+                    redisPlayer.setNickname(data.getName());
                     TAB.getInstance().debug("Processing name change of redis player " + redisPlayer.getName() + " to " + data.getName());
                     processNameChange(redisPlayer);
                 }

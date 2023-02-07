@@ -1,12 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
+import lombok.Data;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
 /**
  * Class representing NMS Data Watcher Item
  */
+@Data
 public class DataWatcherItem {
     
     /** Value type */
@@ -14,22 +15,7 @@ public class DataWatcherItem {
     
     /** Data value */
     private final Object value;
-    
-    /**
-     * Constructs new instance of the object with given parameters
-     *
-     * @param   type
-     *          value type
-     * @param   value
-     *          value
-     */
-    public DataWatcherItem(DataWatcherObject type, Object value){
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(value, "value");
-        this.type = type;
-        this.value = value;
-    }
-    
+
     /**
      * Returns and instance of this class from given NMS item
      *
@@ -50,26 +36,5 @@ public class DataWatcherItem {
             object = new DataWatcherObject(nms.DataWatcherItem_TYPE.getInt(nmsItem), null);
         }
         return new DataWatcherItem(object, value);
-    }
-
-    /**
-     * Returns {@link #type}
-     * @return  {@link #type}
-     */
-    public DataWatcherObject getType() {
-        return type;
-    }
-
-    /**
-     * Returns {@link #value}
-     * @return  {@link #value}
-     */
-    public Object getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("DataWatcherItem{type=%s,value=%s}", type, value);
     }
 }

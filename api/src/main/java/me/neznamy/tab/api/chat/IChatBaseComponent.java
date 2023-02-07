@@ -1,5 +1,9 @@
 package me.neznamy.tab.api.chat;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
@@ -12,6 +16,7 @@ import java.util.*;
  * A class representing the n.m.s.IChatBaseComponent class to make work with it much easier
  */
 @SuppressWarnings("unchecked")
+@NoArgsConstructor
 public class IChatBaseComponent {
 
     /**
@@ -23,28 +28,21 @@ public class IChatBaseComponent {
     private static final Map<IChatBaseComponent, String> serializeCacheLegacy = new HashMap<>();
 
     /** Text of the component */
-    private String text;
+    @Getter @Setter private String text;
 
     /** Chat modifier containing color, magic codes, hover and click event */
-    private ChatModifier modifier = new ChatModifier();
+    @Getter @Setter @NonNull private ChatModifier modifier = new ChatModifier();
 
     /** Extra components used in "extra" field */
     private List<IChatBaseComponent> extra;
 
-    /**
-     * Constructs a new empty component
-     */
-    public IChatBaseComponent() {
-    }
-    
     /**
      * Constructs a new component which is a clone of provided component
      *
      * @param   component
      *          component to clone
      */
-    public IChatBaseComponent(IChatBaseComponent component) {
-        Preconditions.checkNotNull(component, "component");
+    public IChatBaseComponent(@NonNull IChatBaseComponent component) {
         this.text = component.text;
         this.modifier = new ChatModifier(component.modifier);
         for (IChatBaseComponent child : component.getExtra()) {
@@ -93,51 +91,9 @@ public class IChatBaseComponent {
      * @param   child
      *          component to append
      */
-    public void addExtra(IChatBaseComponent child) {
-        Preconditions.checkNotNull(child, "extra");
+    public void addExtra(@NonNull IChatBaseComponent child) {
         if (extra == null) extra = new ArrayList<>();
         extra.add(child);
-    }
-
-    /**
-     * Returns text of this component
-     *
-     * @return  text of this component
-     */
-    public String getText() {
-        return text;
-    }
-
-    /**
-     * Returns chat modifier of this component
-     *
-     * @return  chat modifier of this component
-     */
-    public ChatModifier getModifier() {
-        return modifier;
-    }
-
-    /**
-     * Sets modifier to provided value
-     *
-     * @param   modifier
-     *          modifier to set value to
-     * @throws  IllegalArgumentException
-     *          if {@code modifier} is null
-     */
-    public void setModifier(ChatModifier modifier) {
-        Preconditions.checkNotNull(modifier, "modifier");
-        this.modifier = modifier;
-    }
-
-    /**
-     * Changes text of this component
-     *
-     * @param   text
-     *          text to show
-     */
-    public void setText(String text) {
-        this.text = text;
     }
 
     /**

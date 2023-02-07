@@ -1,18 +1,20 @@
 package me.neznamy.tab.api.protocol;
 
+import lombok.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
  */
+@Data @AllArgsConstructor
 public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
 
     /** TabList header */
-    private final IChatBaseComponent header;
+    @NonNull private final IChatBaseComponent header;
 
     /** TabList footer */
-    private final IChatBaseComponent footer;
+    @NonNull private final IChatBaseComponent footer;
 
     /**
      * Constructs new instance with given parameters. They are converted to {@link IChatBaseComponent}
@@ -28,43 +30,5 @@ public class PacketPlayOutPlayerListHeaderFooter implements TabPacket {
         Preconditions.checkNotNull(footer, "footer");
         this.header = IChatBaseComponent.optimizedComponent(header);
         this.footer = IChatBaseComponent.optimizedComponent(footer);
-    }
-
-    /**
-     * Constructs new instance with given parameters.
-     * 
-     * @param   header
-     *          TabList header
-     * @param   footer
-     *          TabList footer
-     */
-    public PacketPlayOutPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
-        Preconditions.checkNotNull(header, "header");
-        Preconditions.checkNotNull(footer, "footer");
-        this.header = header;
-        this.footer = footer;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("PacketPlayOutPlayerListHeaderFooter{header=%s,footer=%s}", header, footer);
-    }
-
-    /**
-     * Returns {@link #header}
-     *
-     * @return  header
-     */
-    public IChatBaseComponent getHeader() {
-        return header;
-    }
-
-    /**
-     * Returns {@link #footer}
-     *
-     * @return  footer
-     */
-    public IChatBaseComponent getFooter() {
-        return footer;
     }
 }

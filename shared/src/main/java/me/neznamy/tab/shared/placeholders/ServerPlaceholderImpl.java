@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
@@ -17,7 +18,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     private final Supplier<Object> supplier;
 
     /** Last known output of the placeholder */
-    private String lastValue;
+    @Getter private String lastValue;
 
     /**
      * Constructs new instance with given parameters
@@ -102,11 +103,6 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
     @Override
     public String getLastValue(TabPlayer p) {
-        return lastValue;
-    }
-
-    @Override
-    public String getLastValue() {
         return lastValue;
     }
 

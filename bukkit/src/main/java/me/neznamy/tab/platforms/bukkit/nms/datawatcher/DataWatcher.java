@@ -4,19 +4,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
 /**
  * A class representing the n.m.s.DataWatcher class to make work with it much easier
  */
+@ToString
 public class DataWatcher {
 
     /** Watched data */
     private final Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
 
     /** Helper for easier data write */
-    private final DataWatcherHelper helper = new DataWatcherHelper(this);
+    @Getter private final DataWatcherHelper helper = new DataWatcherHelper(this);
 
     /**
      * Sets value into data values
@@ -26,9 +30,7 @@ public class DataWatcher {
      * @param   value
      *          value
      */
-    public void setValue(DataWatcherObject type, Object value){
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(value, "value");
+    public void setValue(@NonNull DataWatcherObject type, @NonNull Object value){
         dataValues.put(type.getPosition(), new DataWatcherItem(type, value));
     }
 
@@ -51,15 +53,6 @@ public class DataWatcher {
      */
     public DataWatcherItem getItem(int position) {
         return dataValues.get(position);
-    }
-
-    /**
-     * Returns helper created by this instance
-     *
-     * @return  data write helper
-     */
-    public DataWatcherHelper helper() {
-        return helper;
     }
 
     /**
@@ -111,10 +104,5 @@ public class DataWatcher {
             }
         }
         return watcher;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("DataWatcher{values=%s}", dataValues);
     }
 }

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.nametags.unlimited;
 
+import lombok.Getter;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
@@ -15,16 +16,16 @@ import java.util.function.BiFunction;
 public abstract class NameTagX extends NameTag implements UnlimitedNametagManager {
 
     //config options
-    private final boolean markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
-    private final boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
-    private final List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
-    private final List<String> disabledUnlimitedServers = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-servers", new ArrayList<>());
-    private final List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
-    private final Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
-    private final boolean armorStandsAlwaysVisible = TAB.getInstance().getConfiguration().getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
+    @Getter private final boolean markerFor18x = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", false);
+    @Getter private final boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
+    @Getter private final List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
+    @Getter private final List<String> disabledUnlimitedServers = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-servers", new ArrayList<>());
+    @Getter private final List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
+    @Getter private final Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
+    @Getter private final boolean armorStandsAlwaysVisible = TAB.getInstance().getConfiguration().getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
 
     private final Set<TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
-    private final Set<TabPlayer> disabledUnlimitedPlayers = Collections.newSetFromMap(new WeakHashMap<>());
+    @Getter private final Set<TabPlayer> disabledUnlimitedPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Map<TabPlayer, ArmorStandManager> armorStandManagerMap = new WeakHashMap<>();
     private final String[] disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
     private final boolean unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
@@ -101,30 +102,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         }
     }
 
-    public boolean isMarkerFor18x() {
-        return markerFor18x;
-    }
-
-    public Set<TabPlayer> getDisabledUnlimitedPlayers() {
-        return disabledUnlimitedPlayers;
-    }
-
-    public boolean isDisableOnBoats() {
-        return disableOnBoats;
-    }
-
-    public List<String> getDynamicLines() {
-        return dynamicLines;
-    }
-
-    public Map<String, Object> getStaticLines() {
-        return staticLines;
-    }
-
-    public List<String> getDisabledUnlimitedWorlds() {
-        return disabledUnlimitedWorlds;
-    }
-
     public void toggleNametagPreview(TabPlayer player, boolean sendToggleMessage) {
         if (playersPreviewingNametag.contains(player)) {
             setNameTagPreview(player, false);
@@ -187,14 +164,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     @Override
     public String getFeatureName() {
         return "Unlimited NameTags";
-    }
-
-    public List<String> getDisabledUnlimitedServers() {
-        return disabledUnlimitedServers;
-    }
-
-    public boolean isArmorStandsAlwaysVisible() {
-        return armorStandsAlwaysVisible;
     }
 
     public abstract boolean isOnBoat(TabPlayer player);

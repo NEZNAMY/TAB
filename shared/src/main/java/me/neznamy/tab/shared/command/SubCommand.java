@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
@@ -18,19 +20,19 @@ import me.neznamy.tab.shared.config.MessageFile;
 public abstract class SubCommand {
 
     //all properties assignable with a command
-    private static String[] allProperties = {TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME};
+    @Getter @Setter private static String[] allProperties = {TabConstants.Property.TABPREFIX, TabConstants.Property.TABSUFFIX, TabConstants.Property.TAGPREFIX, TabConstants.Property.TAGSUFFIX, TabConstants.Property.CUSTOMTABNAME, TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME};
 
     //properties that require unlimited NameTag mode
     protected final List<String> extraProperties = Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 
     //name of this subcommand
-    private final String name;
+    @Getter private final String name;
 
     //permission required to run this command
     private final String permission;
 
     //subcommands of this command
-    private final Map<String, SubCommand> subcommands = new HashMap<>();
+    @Getter private final Map<String, SubCommand> subcommands = new HashMap<>();
 
     /**
      * Constructs new instance with given parameters
@@ -53,15 +55,6 @@ public abstract class SubCommand {
      */
     public void registerSubCommand(SubCommand subcommand) {
         getSubcommands().put(subcommand.getName(), subcommand);
-    }
-
-    /**
-     * Returns name of this command
-     *
-     * @return  name of this command
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -199,16 +192,4 @@ public abstract class SubCommand {
      *          arguments of the command
      */
     public abstract void execute(TabPlayer sender, String[] args);
-
-    public static String[] getAllProperties() {
-        return allProperties;
-    }
-
-    public static void setAllProperties(String[] allProperties) {
-        SubCommand.allProperties = allProperties;
-    }
-
-    public Map<String, SubCommand> getSubcommands() {
-        return subcommands;
-    }
 }

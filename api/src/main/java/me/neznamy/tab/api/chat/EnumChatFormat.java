@@ -1,5 +1,6 @@
 package me.neznamy.tab.api.chat;
 
+import lombok.Getter;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 
 /**
@@ -40,22 +41,22 @@ public enum EnumChatFormat {
     public static final String COLOR_STRING = String.valueOf(COLOR_CHAR);
 
     /** Character representing the color or magic code */
-    private final char character;
+    @Getter private final char character;
 
     /** Red value of this constant, 0 for magic codes */
-    private final short red;
+    @Getter private final short red;
 
     /** Green value of this constant, 0 for magic codes */
-    private final short green;
+    @Getter private final short green;
 
     /** Blue value of this constant, 0 for magic codes */
-    private final short blue;
+    @Getter private final short blue;
 
     /** Color as 6-digit hex code, null for magic codes */
-    private final String hexCode;
+    @Getter private final String hexCode;
 
     /** Color symbol followed by constant's character */
-    private final String chatFormat;
+    @Getter private final String format;
 
     /**
      * Constructs new color instance with given character and hex code
@@ -67,7 +68,7 @@ public enum EnumChatFormat {
      */
     EnumChatFormat(char character, String hexCode) {
         this.character = character;
-        this.chatFormat = String.valueOf(COLOR_CHAR) + character;
+        this.format = String.valueOf(COLOR_CHAR) + character;
         this.hexCode = hexCode;
         int hexColor = Integer.parseInt(hexCode, 16);
         red = (short) ((hexColor >> 16) & 0xFF);
@@ -83,38 +84,11 @@ public enum EnumChatFormat {
      */
     EnumChatFormat(char character) {
         this.character = character;
-        this.chatFormat = String.valueOf(COLOR_CHAR) + character;
+        this.format = String.valueOf(COLOR_CHAR) + character;
         red = 0;
         green = 0;
         blue = 0;
         hexCode = null;
-    }
-
-    /**
-     * Returns red value of this color code
-     *
-     * @return  red value
-     */
-    public short getRed() {
-        return red;
-    }
-
-    /**
-     * Returns green value of this color code
-     *
-     * @return  green value
-     */
-    public short getGreen() {
-        return green;
-    }
-
-    /**
-     * Returns blue value of this color code
-     *
-     * @return  blue value
-     */
-    public short getBlue() {
-        return blue;
     }
 
     /**
@@ -150,33 +124,6 @@ public enum EnumChatFormat {
             }
         }
         return EnumChatFormat.WHITE;
-    }
-
-    /**
-     * Returns color char followed by color's character
-     *
-     * @return  color char followed by color's character
-     */
-    public String getFormat() {
-        return chatFormat;
-    }
-
-    /**
-     * Returns character representing this color
-     *
-     * @return  character representing this color
-     */
-    public char getCharacter() {
-        return character;
-    }
-
-    /**
-     * Returns hex code of this format, null if this is a magic code
-     *
-     * @return  hex code of this format
-     */
-    public String getHexCode() {
-        return hexCode;
     }
 
     /**

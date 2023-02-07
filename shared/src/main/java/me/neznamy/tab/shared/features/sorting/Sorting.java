@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
@@ -36,7 +37,7 @@ public class Sorting extends TabFeature {
     private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
     
     //if sorting is case-sensitive or not
-    private final boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
+    @Getter private final boolean caseSensitiveSorting = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.case-sensitive-sorting", true);
     
     //active sorting types
     private final SortingType[] usedSortingTypes;
@@ -190,9 +191,5 @@ public class Sorting extends TabFeature {
 
     public void setTeamNameNote(TabPlayer p, String note) {
         teamNameNotes.put(p, note);
-    }
-
-    public boolean isCaseSensitiveSorting() {
-        return caseSensitiveSorting;
     }
 }

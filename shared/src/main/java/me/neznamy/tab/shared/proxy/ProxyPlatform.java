@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.proxy;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -32,22 +33,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class ProxyPlatform extends Platform {
 
     /** Plugin message handler for sending and receiving plugin messages */
-    protected final PluginMessageHandler plm = new PluginMessageHandler();
+    @Getter protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();
 
     /** Placeholders which are refreshed on backend server */
     private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
     protected ProxyPlatform(PacketBuilder packetBuilder) {
         super(packetBuilder);
-    }
-
-    /**
-     * Returns plugin message handler
-     *
-     * @return  plugin message handler
-     */
-    public PluginMessageHandler getPluginMessageHandler() {
-        return plm;
     }
 
     /**
@@ -93,7 +85,7 @@ public abstract class ProxyPlatform extends Platform {
         }
         bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            plm.sendMessage(all, "Placeholder", placeholder.getIdentifier(), refresh);
+            pluginMessageHandler.sendMessage(all, "Placeholder", placeholder.getIdentifier(), refresh);
         }
     }
 

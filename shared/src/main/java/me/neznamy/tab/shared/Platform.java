@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -9,29 +11,11 @@ import org.slf4j.Logger;
  * An interface with methods that are called in universal code,
  * but require platform-specific API calls
  */
+@AllArgsConstructor
 public abstract class Platform {
 
     /** Platform's packet builder implementation */
-    private final PacketBuilder packetBuilder;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   packetBuilder
-     *          Platform's packet builder
-     */
-    protected Platform(PacketBuilder packetBuilder) {
-        this.packetBuilder = packetBuilder;
-    }
-
-    /**
-     * Returns platform-specific packet builder implementation
-     *
-     * @return  platform-specific packet builder
-     */
-    public PacketBuilder getPacketBuilder(){
-        return packetBuilder;
-    }
+    @Getter private final PacketBuilder packetBuilder;
 
     public void sendConsoleMessage(String message, boolean translateColors) {
         Object logger = TAB.getInstance().getLogger();

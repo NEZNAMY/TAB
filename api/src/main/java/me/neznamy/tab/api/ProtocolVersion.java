@@ -1,5 +1,8 @@
 package me.neznamy.tab.api;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Enum class representing all possibly used protocol versions
  */
@@ -70,13 +73,16 @@ public enum ProtocolVersion {
     public static final ProtocolVersion[] VALUES = values();
 
     /** Version's network id found at https://wiki.vg/Protocol_version_numbers */
-    private final int networkId;
+    @Getter private final int networkId;
 
-    /** Version's minor version, such as 16 for 1.16.x */
-    private int minorVersion;
+    /** Version's minor version, such as 16 for 1.16.x. Allowing override to
+     * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
+     * with server forks that set bukkit version field value to "Unknown".
+     */
+    @Getter @Setter private int minorVersion;
 
     /** Version's friendly name displayed in %player-version% placeholder */
-    private final String friendlyName;
+    @Getter private final String friendlyName;
 
     /**
      * Constructs new instance with given network id
@@ -100,45 +106,6 @@ public enum ProtocolVersion {
         this.networkId = 999;
         this.minorVersion = 18;
         this.friendlyName = friendlyName;
-    }
-
-    /**
-     * Returns the version's network id
-     *
-     * @return  version's network id
-     */
-    public int getNetworkId() {
-        return networkId;
-    }
-
-    /**
-     * Returns user-friendly name of the version (such as 1.16.2 instead of V1_16_2)
-     *
-     * @return  user-friendly name of the version
-     */
-    public String getFriendlyName() {
-        return friendlyName;
-    }
-
-    /**
-     * Returns minor version of this release, such as 8 for 1.8.x or 13 for 1.13.x
-     *
-     * @return  version's minor version
-     */
-    public int getMinorVersion() {
-        return minorVersion;
-    }
-
-    /**
-     * Overrides minor version of the version instance. This is used internally to
-     * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
-     * with server forks that set bukkit version field value to "Unknown".
-     *
-     * @param   minorVersion
-     *          minor version to change value to
-     */
-    public void setMinorVersion(int minorVersion) {
-        this.minorVersion = minorVersion;
     }
 
     /**

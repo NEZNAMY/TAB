@@ -2,6 +2,7 @@ package me.neznamy.tab.api.protocol;
 
 import java.util.UUID;
 
+import lombok.Data;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.util.Preconditions;
@@ -9,13 +10,14 @@ import me.neznamy.tab.api.util.Preconditions;
 /**
  * A class representing platform specific packet class
  */
+@Data
 public class PacketPlayOutBoss implements TabPacket {
 
     /** UUID of the BossBar */
     private final UUID id;
 
     /** Action of this packet */
-    private final Action action;
+    private Action action;
 
     /** BossBar title */
     private String name;
@@ -167,123 +169,6 @@ public class PacketPlayOutBoss implements TabPacket {
         if (playMusic) value += 2;
         if (createWorldFog) value += 4;
         return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("PacketPlayOutBoss{id=%s,operation=%s,name=%s,pct=%s,color=%s,overlay=%s,darkenScreen=%s,playMusic=%s,createWorldFog=%s}",
-                id, action, name, pct, color, overlay, darkenScreen, playMusic, createWorldFog);
-    }
-
-    /**
-     * Returns {@link #color}
-     *
-     * @return  color
-     */
-    public BarColor getColor() {
-        return color;
-    }
-
-    /**
-     * Returns {@link #overlay}
-     *
-     * @return  style
-     */
-    public BarStyle getOverlay() {
-        return overlay;
-    }
-
-    /**
-     * Returns {@link #name}
-     *
-     * @return  name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns {@link #id}
-     *
-     * @return  id
-     */
-    public UUID getId() {
-        return id;
-    }
-
-    /**
-     * Returns {@link #pct}
-     *
-     * @return  progress
-     */
-    public float getPct() {
-        return pct;
-    }
-
-    /**
-     * Returns {@link #action}
-     *
-     * @return  packet action
-     */
-    public Action getAction() {
-        return action;
-    }
-
-    /**
-     * Returns {@link #darkenScreen}
-     *
-     * @return  darkenScreen
-     */
-    public boolean isDarkenScreen() {
-        return darkenScreen;
-    }
-
-    /**
-     * Returns {@link #createWorldFog}
-     *
-     * @return  createWorldFog
-     */
-    public boolean isCreateWorldFog() {
-        return createWorldFog;
-    }
-
-    /**
-     * Returns {@link #playMusic}
-     *
-     * @return  playMusic
-     */
-    public boolean isPlayMusic() {
-        return playMusic;
-    }
-
-    /**
-     * Sets {@link #darkenScreen} to specified value
-     *
-     * @param   darkenScreen
-     *          Darken screen flag
-     */
-    public void setDarkenScreen(boolean darkenScreen) {
-        this.darkenScreen = darkenScreen;
-    }
-
-    /**
-     * Sets {@link #createWorldFog} to specified value
-     *
-     * @param   createWorldFog
-     *          Create fog flag
-     */
-    public void setCreateWorldFog(boolean createWorldFog) {
-        this.createWorldFog = createWorldFog;
-    }
-
-    /**
-     * Sets {@link #playMusic} to specified value
-     *
-     * @param   playMusic
-     *          Play music flag
-     */
-    public void setPlayMusic(boolean playMusic) {
-        this.playMusic = playMusic;
     }
 
     /**

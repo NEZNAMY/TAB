@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
@@ -24,10 +26,10 @@ public abstract class ITabPlayer implements TabPlayer {
     protected final Object player;
 
     /** Player's real name */
-    private final String name;
+    @Getter private final String name;
 
     /** Player's unique ID */
-    private final UUID uniqueId;
+    @Getter private final UUID uniqueId;
 
     /** Player's tablist UUID */
     private final UUID tabListId;
@@ -36,10 +38,10 @@ public abstract class ITabPlayer implements TabPlayer {
      * World the player is currently in, {@code "N/A"} if TAB is
      * installed on proxy and bukkit bridge is not installed
      */
-    private String world;
+    @Getter @Setter private String world;
 
     /** Server the player is currently in, {@code "N/A"} if TAB is installed on Bukkit */
-    private String server;
+    @Getter @Setter private String server;
 
     /** Player's permission group defined in permission plugin or with permission nodes */
     private String permissionGroup;
@@ -54,16 +56,16 @@ public abstract class ITabPlayer implements TabPlayer {
     private final Map<String, Property> properties = new HashMap<>();
 
     /** Player's game version */
-    protected final ProtocolVersion version;
+    @Getter protected final ProtocolVersion version;
 
     /** Player's network channel */
-    protected Channel channel;
+    @Getter @Setter protected Channel channel;
 
     /**
      * Player's load status, {@code true} when player is fully loaded,
      * {@code false} if not yet
      */
-    private boolean onJoinFinished;
+    @Getter private boolean loaded;
 
     /** Scoreboard teams player has registered */
     private final Set<String> registeredTeams = new HashSet<>();
@@ -72,7 +74,7 @@ public abstract class ITabPlayer implements TabPlayer {
     private final Set<String> registeredObjectives = new HashSet<>();
 
     /** Player's name as seen in GameProfile, can be altered by nick plugins */
-    private String nickname;
+    @Getter @Setter private String nickname;
 
     /**
      * Constructs new instance with given parameters
@@ -147,7 +149,7 @@ public abstract class ITabPlayer implements TabPlayer {
      *          {@code true} if this is a player join, {@code false} if reload
      */
     public void markAsLoaded(boolean join) {
-        onJoinFinished = true;
+        loaded = true;
         if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(new PlayerLoadEventImpl(this, join));
     }
 
@@ -163,26 +165,6 @@ public abstract class ITabPlayer implements TabPlayer {
         this.permissionGroup = permissionGroup;
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);
         forceRefresh();
-    }
-
-    /**
-     * Sets player's world to given value
-     *
-     * @param   name
-     *          Name of the new world
-     */
-    public void setWorld(String name) {
-        world = name;
-    }
-
-    /**
-     * Sets player's server to given value
-     *
-     * @param   name
-     *          Name of the new server
-     */
-    public void setServer(String name) {
-        server = name;
     }
 
     /**
@@ -228,39 +210,14 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public UUID getUniqueId() {
-        return uniqueId;
-    }
-
-    @Override
     public UUID getTablistUUID() {
         return tabListId;
     }
 
     @Override
     public void forceRefresh() {
-        if (!onJoinFinished) return;
+        if (!loaded) return;
         TAB.getInstance().getFeatureManager().refresh(this, true);
-    }
-
-    @Override
-    public ProtocolVersion getVersion() {
-        return version;
-    }
-
-    @Override
-    public String getWorld() {
-        return world;
-    }
-    
-    @Override
-    public String getServer() {
-        return server;
     }
 
     @Override
@@ -348,16 +305,6 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public Channel getChannel() {
-        return channel;
-    }
-
-    @Override
-    public boolean isLoaded() {
-        return onJoinFinished;
-    }
-
-    @Override
     public boolean loadPropertyFromConfig(TabFeature feature, String property) {
         return loadPropertyFromConfig(feature, property, "");
     }
@@ -387,18 +334,5 @@ public abstract class ITabPlayer implements TabPlayer {
         Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return null;
         return sorting.getShortTeamName(this);
-    }
-
-    @Override
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 }

@@ -4,7 +4,6 @@ enableFeaturePreview("VERSION_CATALOGS")
 dependencyResolutionManagement {
     repositories {
         mavenCentral() // Netty, SnakeYaml, json-simple, Gson, slf4j, Guava, Kyori event, bStats, AuthLib
-        maven("https://jitpack.io") // PremiumVanish
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
         maven("https://repo.viaversion.com/") // ViaVersion
         maven("https://repo.essentialsx.net/releases/") // Essentials

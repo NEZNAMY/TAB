@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
@@ -13,7 +14,7 @@ import me.neznamy.tab.shared.TAB;
 public class Animation {
     
     /** Animation's name defined in configuration */
-    private final String name;
+    @Getter private final String name;
     
     /** All defined frames of the animation */
     private final String[] messages;
@@ -27,13 +28,13 @@ public class Animation {
      * which may need to refresh faster for any reason,
      * such as this being a slow animation with a fast nested animation.
      */
-    private final int refresh;
+    @Getter private final int refresh;
     
     /** All nested placeholders used in all frames, preloading for
      * better performance since they can be detected immediately and
      * don't change at runtime.
      */
-    private final String[] nestedPlaceholders;
+    @Getter private final String[] nestedPlaceholders;
     
     /**
      * Constructs new instance with given arguments which are fixed if necessary, such as when
@@ -83,33 +84,5 @@ public class Animation {
      */
     public String getMessage(){
         return messages[(((TAB.getInstance().getPlaceholderManager().getLoopTime().get())%(messages.length*interval))/interval)];
-    }
-    
-    /**
-     * Returns animation's name
-     *
-     * @return  animation's name
-     */
-    public String getName(){
-        return name;
-    }
-    
-    /**
-     * Returns refresh interval how often should the placeholder created
-     * from this animation refresh including nested placeholders
-     *
-     * @return  refresh interval
-     */
-    public int getRefresh() {
-        return refresh;
-    }
-
-    /**
-     * Returns array of all nested placeholders used in all frames
-     *
-     * @return  all nested placeholders in all frames
-     */
-    public String[] getNestedPlaceholders() {
-        return nestedPlaceholders;
     }
 }

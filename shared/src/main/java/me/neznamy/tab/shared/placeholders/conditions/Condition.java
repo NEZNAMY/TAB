@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders.conditions;
 import java.util.*;
 import java.util.function.Function;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
@@ -36,7 +37,7 @@ public class Condition {
     }};
 
     /** Name of this condition defined in configuration */
-    private final String name;
+    @Getter private final String name;
 
     /** All defined sub-conditions inside this conditions */
     protected SimpleCondition[] subConditions;
@@ -54,7 +55,7 @@ public class Condition {
      * Refresh interval of placeholder created from this condition.
      * It is calculated based on nested placeholders used in sub-conditions.
      */
-    private int refresh = -1;
+    @Getter private int refresh = -1;
 
     /** List of all placeholders used inside this condition */
     private final List<String> placeholdersInConditions = new ArrayList<>();
@@ -118,24 +119,6 @@ public class Condition {
             }
         }
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(placeholdersInConditions);
-    }
-
-    /**
-     * Returns refresh interval of placeholder made from this condition
-     *
-     * @return  refresh interval of placeholder made from this condition
-     */
-    public int getRefresh() {
-        return refresh;
-    }
-
-    /**
-     * Returns name of this condition
-     *
-     * @return  name of this condition
-     */
-    public String getName() {
-        return name;
     }
 
     /**

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public class AlignedPlayerList extends PlayerList {
 
     private final Map<TabPlayer, PlayerView> playerViews = new HashMap<>();
-    private final byte[] widths = loadWidths();
+    @Getter private final byte[] widths = loadWidths();
 
     public AlignedPlayerList() {
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
@@ -127,9 +128,5 @@ public class AlignedPlayerList extends PlayerList {
     @Override
     public void onVanishStatusChange(TabPlayer player) {
         playerViews.values().forEach(v -> v.onVanishChange(player));
-    }
-
-    public byte[] getWidths() {
-        return widths;
     }
 }

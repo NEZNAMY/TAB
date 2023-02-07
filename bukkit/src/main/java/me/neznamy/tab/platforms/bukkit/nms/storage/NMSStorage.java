@@ -2,6 +2,8 @@ package me.neznamy.tab.platforms.bukkit.nms.storage;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
@@ -17,16 +19,16 @@ import java.util.*;
 public abstract class NMSStorage {
 
     /** Instance of this class */
-    private static NMSStorage instance;
+    @Getter @Setter private static NMSStorage instance;
 
     /** Server's NMS/CraftBukkit package */
     protected final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
     /** Server's minor version */
-    protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+    @Getter protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
     /** Flag determining whether the server version is at least 1.19.3 or not */
-    private final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+    @Getter private final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
 
     /** Basic universal values */
     protected Class<?> Packet;
@@ -70,7 +72,7 @@ public abstract class NMSStorage {
     public Field DataWatcherObject_SLOT;
     public Field DataWatcherObject_SERIALIZER;
     public Method DataWatcher_REGISTER;
-    private final DataWatcherRegistry registry;
+    @Getter private final DataWatcherRegistry dataWatcherRegistry;
     //1.19.3+
     protected Class<?> DataWatcher$DataValue;
     public Field DataWatcher$DataValue_POSITION;
@@ -236,7 +238,7 @@ public abstract class NMSStorage {
         PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
         sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
-        registry = new DataWatcherRegistry(this);
+        dataWatcherRegistry = new DataWatcherRegistry(this);
         dataWatcher();
         entityTeleport();
         spawnEntityLiving();
@@ -247,25 +249,6 @@ public abstract class NMSStorage {
         scoreboard();
         scoreboardTeam();
         loadNamedFieldsAndMethods();
-    }
-
-    /**
-     * Sets new instance
-     *
-     * @param   instance
-     *          new instance
-     */
-    public static void setInstance(NMSStorage instance) {
-        NMSStorage.instance = instance;
-    }
-
-    /**
-     * Returns instance
-     *
-     * @return  instance
-     */
-    public static NMSStorage getInstance() {
-        return instance;
     }
 
     /**
@@ -673,14 +656,6 @@ public abstract class NMSStorage {
     }
 
     /**
-     * Returns server's minor version
-     * @return  server's minor version
-     */
-    public int getMinorVersion() {
-        return minorVersion;
-    }
-
-    /**
      * Sets value of a field in object
      *
      * @param   obj
@@ -694,14 +669,6 @@ public abstract class NMSStorage {
      */
     public void setField(Object obj, Field field, Object value) throws IllegalAccessException {
         field.set(obj, value);
-    }
-
-    /**
-     * Returns data watcher registry
-     * @return  data watcher registry
-     */
-    public DataWatcherRegistry getDataWatcherRegistry() {
-        return registry;
     }
 
     /**
@@ -736,9 +703,5 @@ public abstract class NMSStorage {
             }
         }
         return fields;
-    }
-
-    public boolean is1_19_3Plus() {
-        return is1_19_3Plus;
     }
 }

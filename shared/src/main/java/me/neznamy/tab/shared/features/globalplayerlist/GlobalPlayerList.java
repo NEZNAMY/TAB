@@ -21,12 +21,14 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
  */
 public class GlobalPlayerList extends TabFeature {
 
+    // config options
     private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
     private final Map<String, List<String>> sharedServers = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
     private final boolean displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
+
     private final List<ServerPlaceholder> placeholders = new ArrayList<>();
     private final Map<TabPlayer, Long> lastServerSwitch = new WeakHashMap<>();
     private final UUID EMPTY_ID = new UUID(0, 0);

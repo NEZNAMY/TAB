@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -26,7 +27,7 @@ public class ErrorManager {
     private final File errorLog = new File(TAB.getInstance().getDataFolder(), "errors.log");
 
     /** anti-override.log file when some plugin or server itself attempts to override the plugin */
-    private final File antiOverrideLog = new File(TAB.getInstance().getDataFolder(), "anti-override.log");
+    @Getter private final File antiOverrideLog = new File(TAB.getInstance().getDataFolder(), "anti-override.log");
 
     /** placeholder-errors.log file for errors thrown by placeholders */
     private final File placeholderErrorLog = new File(TAB.getInstance().getDataFolder(), "placeholder-errors.log");
@@ -293,14 +294,5 @@ public class ErrorManager {
      */
     public void missingAttribute(String objectType, Object objectName, String attribute) {
         startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
-    }
-
-    /**
-     * Returns anti-override.log file
-     *
-     * @return  anti-override.log file
-     */
-    public File getAntiOverrideLog() {
-        return antiOverrideLog;
     }
 }

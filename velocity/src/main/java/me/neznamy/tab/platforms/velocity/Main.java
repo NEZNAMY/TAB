@@ -9,6 +9,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
@@ -38,11 +39,10 @@ import java.util.Map;
 public class Main {
 
     /** Plugin instance */
-    private static Main instance;
+    @Getter private static Main instance;
 
     /** ProxyServer instance */
-    @Inject
-    private ProxyServer server;
+    @Inject @Getter private ProxyServer server;
     
     /** Metrics factory for bStats */
     @Inject
@@ -63,7 +63,7 @@ public class Main {
     private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
     
     /** Platform implementation for velocity */
-    private final VelocityPlatform platform = new VelocityPlatform();
+    @Getter private final VelocityPlatform platform = new VelocityPlatform();
 
     /**
      * Initializes plugin for velocity
@@ -87,33 +87,6 @@ public class Main {
         TAB.getInstance().load();
         Metrics metrics = metricsFactory.make(this, 10533);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TabAPI.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
-    }
-
-    /**
-     * Returns instance of the plugin
-     *
-     * @return  instance of the plugin
-     */
-    public static Main getInstance() {
-        return instance;
-    }
-
-    /**
-     * Returns platform implementation for Velocity
-     *
-     * @return  platform implementation for Velocity
-     */
-    public VelocityPlatform getPlatform() {
-        return platform;
-    }
-
-    /**
-     * Returns instance of the proxy server
-     *
-     * @return  ProxyServer instance
-     */
-    public ProxyServer getServer() {
-        return server;
     }
 
     /**

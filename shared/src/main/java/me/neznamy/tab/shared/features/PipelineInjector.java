@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import io.netty.channel.ChannelDuplexHandler;
+import lombok.Setter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -33,7 +34,7 @@ public abstract class PipelineInjector extends TabFeature {
     protected final boolean antiOverrideTeams = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true) &&
             TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.anti-override", true);
 
-    protected boolean byteBufDeserialization;
+    @Setter protected boolean byteBufDeserialization;
 
     /**
      * Constructs new instance with given parameter
@@ -103,10 +104,6 @@ public abstract class PipelineInjector extends TabFeature {
             lastTeamOverrideMessage = message;
             TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
         }
-    }
-
-    public void setByteBufDeserialization(boolean byteBufDeserialization) {
-        this.byteBufDeserialization = byteBufDeserialization;
     }
 
     public abstract Function<TabPlayer, ChannelDuplexHandler> getChannelFunction();

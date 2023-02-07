@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import lombok.Getter;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 
@@ -29,7 +30,7 @@ public class PlaceholderReplacementPattern {
     private final Map<float[], String> numberIntervals = new HashMap<>();
 
     /** Set of all used placeholders in replacement values */
-    private final Set<String> nestedPlaceholders = new HashSet<>();
+    @Getter private final Set<String> nestedPlaceholders = new HashSet<>();
 
     /**
      * Constructs new instance from given replacement map from config
@@ -61,16 +62,6 @@ public class PlaceholderReplacementPattern {
                 } catch (NumberFormatException ignored) {}
             }
         }
-    }
-
-    /**
-     * Returns set of all nested placeholders used inside placeholder output
-     * replacement values in all lines.
-     *
-     * @return  All used nested placeholders in values.
-     */
-    public Set<String> getNestedPlaceholders() {
-        return nestedPlaceholders;
     }
 
     /**

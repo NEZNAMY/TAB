@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 import java.util.Map.Entry;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
@@ -18,21 +19,21 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 public class LayoutManager extends TabFeature {
 
     private final Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
-    private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
-    private final boolean enableRemainingPlayersText = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
-    private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more"));
-    private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
-    private final boolean hideVanishedPlayers = TAB.getInstance().getConfiguration().getLayout().getBoolean("hide-vanished-players", true);
-    private final SkinManager skinManager = new SkinManager(defaultSkin);
-    private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>(){{
+    @Getter private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
+    @Getter private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
+    @Getter private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more"));
+    @Getter private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
+    @Getter private final boolean hideVanishedPlayers = TAB.getInstance().getConfiguration().getLayout().getBoolean("hide-vanished-players", true);
+    @Getter private final SkinManager skinManager = new SkinManager(defaultSkin);
+    @Getter private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>(){{
         for (int slot=1; slot<=80; slot++) {
             put(slot, new UUID(0, translateSlot(slot)));
         }
     }};
     private final Map<String, Layout> layouts = loadLayouts();
-    private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
+    @Getter private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
-    private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
+    @Getter private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
     private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
     public LayoutManager() {
@@ -182,47 +183,11 @@ public class LayoutManager extends TabFeature {
         return uuids.get(slot);
     }
 
-    public SkinManager getSkinManager() {
-        return skinManager;
-    }
-
     public void updateTeamName(TabPlayer p, String teamName) {
         sortedPlayers.remove(p);
         teamNames.put(p, teamName);
         sortedPlayers.put(p, teamName);
         layouts.values().forEach(Layout::tick);
-    }
-
-    public boolean isRemainingPlayersTextEnabled() {
-        return enableRemainingPlayersText;
-    }
-
-    public String getRemainingPlayersText() {
-        return remainingPlayersText;
-    }
-
-    public Map<TabPlayer, String> getSortedPlayers() {
-        return sortedPlayers;
-    }
-
-    public Map<Integer, UUID> getUuids() {
-        return uuids;
-    }
-
-    public Map<TabPlayer, Layout> getPlayerViews() {
-        return playerViews;
-    }
-
-    public int getEmptySlotPing() {
-        return emptySlotPing;
-    }
-
-    public String getDefaultSkin() {
-        return defaultSkin;
-    }
-
-    public boolean isHideVanishedPlayers() {
-        return hideVanishedPlayers;
     }
 
     public enum Direction {

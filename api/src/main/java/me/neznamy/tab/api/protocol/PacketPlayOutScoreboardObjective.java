@@ -1,10 +1,12 @@
 package me.neznamy.tab.api.protocol;
 
+import lombok.Data;
 import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing platform specific packet class
  */
+@Data
 public class PacketPlayOutScoreboardObjective implements TabPacket {
 
     /** Up to 16 characters long objective name */
@@ -64,48 +66,6 @@ public class PacketPlayOutScoreboardObjective implements TabPacket {
         this.displayName = ""; //avoiding NPE on <1.7
         this.action = 1;
         this.renderType = null;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("PacketPlayOutScoreboardObjective{objectiveName=%s,displayName=%s,renderType=%s,method=%s}",
-                objectiveName, displayName, renderType, action);
-    }
-
-    /**
-     * Returns {@link #displayName}
-     *
-     * @return  displayName
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Returns {@link #objectiveName}
-     *
-     * @return  objectiveName
-     */
-    public String getObjectiveName() {
-        return objectiveName;
-    }
-
-    /**
-     * Returns {@link #renderType}
-     *
-     * @return  renderType
-     */
-    public EnumScoreboardHealthDisplay getRenderType() {
-        return renderType;
-    }
-
-    /**
-     * Returns {@link #action}
-     *
-     * @return  packet action
-     */
-    public int getAction() {
-        return action;
     }
 
     /**

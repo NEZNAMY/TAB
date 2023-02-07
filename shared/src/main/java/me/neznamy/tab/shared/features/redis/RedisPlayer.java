@@ -3,6 +3,8 @@ package me.neznamy.tab.shared.features.redis;
 import java.util.Collections;
 import java.util.UUID;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.tab.api.protocol.Skin;
 import org.json.simple.JSONObject;
 
@@ -23,23 +25,23 @@ import me.neznamy.tab.shared.features.YellowNumber;
 public class RedisPlayer {
 
     private RedisSupport redis;
-    private boolean disabledPlayerList;
+    @Getter private boolean disabledPlayerList;
     private boolean disabledNameTags;
 
-    private UUID uniqueId;
-    private String name;
-    private String nickname;
-    private String server;
-    private String tabFormat;
-    private String teamName;
-    private boolean vanished;
+    @Getter private UUID uniqueId;
+    @Getter private String name;
+    @Getter @Setter private String nickname;
+    @Getter private String server;
+    @Getter @Setter private String tabFormat;
+    @Getter private String teamName;
+    @Getter private boolean vanished;
     private Skin skin;
-    private String tagPrefix;
-    private String tagSuffix;
+    @Setter private String tagPrefix;
+    @Setter private String tagSuffix;
     private boolean nameVisibility;
-    private String belowName;
-    private String yellowNumber;
-    private boolean staff;
+    @Setter private String belowName;
+    @Setter private String yellowNumber;
+    @Getter private boolean staff;
 
     private RedisPlayer() {
     }
@@ -160,10 +162,6 @@ public class RedisPlayer {
         return new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, nickname, TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0));
     }
 
-    public String getServer() {
-        return server;
-    }
-
     public void setServer(String server) {
         this.server = server;
         if (redis.getPlayerList() != null) {
@@ -202,62 +200,6 @@ public class RedisPlayer {
                 }
             }
         }
-    }
-
-    public boolean isVanished() {
-        return vanished;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getNickName() {
-        return nickname;
-    }
-
-    public void setNickName(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getTabFormat() {
-        return tabFormat;
-    }
-
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTabFormat(String format) {
-        this.tabFormat = format;
-    }
-
-    public void setTagPrefix(String tagprefix) {
-        this.tagPrefix = tagprefix;
-    }
-
-    public void setTagSuffix(String tagsuffix) {
-        this.tagSuffix = tagsuffix;
-    }
-
-    public void setBelowName(String belowname) {
-        this.belowName = belowname;
-    }
-
-    public UUID getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setYellowNumber(String yellowNumber) {
-        this.yellowNumber = yellowNumber;
-    }
-
-    public boolean isStaff() {
-        return staff;
-    }
-
-    public boolean hasDisabledPlayerlist() {
-        return disabledPlayerList;
     }
 
     public void setTeamName(String teamName) {

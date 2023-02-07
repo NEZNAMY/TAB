@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.proxy;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.Setter;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
@@ -19,16 +21,16 @@ import java.util.UUID;
 public abstract class ProxyTabPlayer extends ITabPlayer {
 
     /** Player's vanish status from backend server */
-    private boolean vanished;
+    @Getter @Setter private boolean vanished;
 
     /** Player's disguise status from backend server */
-    private boolean disguised;
+    @Getter @Setter private boolean disguised;
 
     /** Player's invisibility potion status from backend server */
-    private boolean invisible;
+    @Setter private boolean invisibilityPotion;
 
     /** Player's boat vehicle status for unlimited NameTags */
-    private boolean onBoat;
+    @Getter @Setter private boolean onBoat;
 
     /** Map of player's requested permissions */
     private final Map<String, Boolean> permissions = new HashMap<>();
@@ -97,46 +99,6 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     }
 
     /**
-     * Sets vanish status to provided value
-     *
-     * @param   vanished
-     *          new vanish status
-     */
-    public void setVanished(boolean vanished) {
-        this.vanished = vanished;
-    }
-
-    /**
-     * Sets disguise status to provided value
-     *
-     * @param   disguised
-     *          new disguise status
-     */
-    public void setDisguised(boolean disguised) {
-        this.disguised = disguised;
-    }
-
-    /**
-     * Sets invisibility status to provided value
-     *
-     * @param   invisible
-     *          new invisibility status
-     */
-    public void setInvisible(boolean invisible) {
-        this.invisible = invisible;
-    }
-
-    /**
-     * Sets boat status to provided value
-     *
-     * @param   onBoat
-     *          new boat status
-     */
-    public void setOnBoat(boolean onBoat) {
-        this.onBoat = onBoat;
-    }
-
-    /**
      * Sets permission presence status to provided value
      *
      * @param   permission
@@ -146,16 +108,6 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      */
     public void setHasPermission(String permission, boolean value) {
         permissions.put(permission, value);
-    }
-
-    /**
-     * Returns {@code true} if player is on boat, {@code false} if not.
-     * This requires bridge installed to forward the data.
-     *
-     * @return  {@code true} if on boat, {@code false} if not
-     */
-    public boolean isOnBoat() {
-        return onBoat;
     }
 
     /**
@@ -190,18 +142,8 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     public abstract UUID getChatSessionId();
 
     @Override
-    public boolean isVanished() {
-        return vanished;
-    }
-
-    @Override
-    public boolean isDisguised() {
-        return disguised;
-    }
-
-    @Override
     public boolean hasInvisibilityPotion() {
-        return invisible;
+        return invisibilityPotion;
     }
 
     @Override

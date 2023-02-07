@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -34,7 +35,7 @@ public class DynamicText implements Property {
     private String rawValue;
 
     /** Raw value assigned via API, null if not set */
-    private String temporaryValue;
+    @Getter private String temporaryValue;
 
     /**
      * Raw value using %s for each placeholder ready to be inserted
@@ -168,12 +169,7 @@ public class DynamicText implements Property {
     public String getCurrentRawValue() {
         return temporaryValue != null ? temporaryValue : rawValue;
     }
-    
-    @Override
-    public String getTemporaryValue() {
-        return temporaryValue;
-    }
-    
+
     @Override
     public String getOriginalRawValue() {
         return rawValue;

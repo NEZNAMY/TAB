@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import com.viaversion.viaversion.api.Via;
+import lombok.Getter;
+import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -42,7 +44,7 @@ public class BukkitPlatform extends Platform {
 
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
-    private boolean libsDisguises = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
+    @Getter @Setter private boolean libsDisguisesEnabled = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
     private Plugin viaVersion;
     private final boolean protocolSupport = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
 
@@ -179,27 +181,6 @@ public class BukkitPlatform extends Platform {
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
             }
         }
-    }
-
-    /**
-     * Returns status of LibsDisguises plugin presence
-     *
-     * @return  {@code true} if plugin is enabled, {@code false} if not
-     */
-    public boolean isLibsDisguisesEnabled() {
-        return libsDisguises;
-    }
-
-    /**
-     * Sets LibsDisguises presence status to provided value. This is used
-     * to disable LibsDisguises hook in case the plugin is not correctly loaded
-     * for any reason to avoid error spam in the hook.
-     *
-     * @param   enabled
-     *          New status of LibsDisguises presence
-     */
-    public void setLibsDisguisesEnabled(boolean enabled) {
-        libsDisguises = enabled;
     }
 
     /**

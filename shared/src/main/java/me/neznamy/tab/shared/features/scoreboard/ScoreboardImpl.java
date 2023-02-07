@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import java.util.*;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
@@ -24,22 +25,22 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     //scoreboard manager
-    private final ScoreboardManagerImpl manager;
+    @Getter private final ScoreboardManagerImpl manager;
 
     //name of this scoreboard
-    private final String name;
+    @Getter private final String name;
 
     //scoreboard title
-    private String title;
+    @Getter private String title;
 
     //display condition
     private Condition displayCondition;
 
     //lines of scoreboard
-    private final List<Line> lines = new ArrayList<>();
+    @Getter private final List<Line> lines = new ArrayList<>();
 
     //players currently seeing this scoreboard
-    private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
+    @Getter private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 
     /**
      * Constructs new instance with given parameters and registers lines to feature manager
@@ -116,11 +117,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         return new StaticLine(this, lineNumber, text);
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
     /**
      * Returns true if condition is null or is met, false otherwise
      *
@@ -173,24 +169,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         if (!players.contains(refreshed)) return;
         refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
                 refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
-    }
-
-    @Override
-    public List<Line> getLines() {
-        return lines;
-    }
-
-    public Set<TabPlayer> getPlayers() {
-        return players;
-    }
-
-    public ScoreboardManagerImpl getManager() {
-        return manager;
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
     }
 
     @Override

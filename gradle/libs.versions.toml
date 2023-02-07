@@ -34,6 +34,7 @@ redisBungee = "0.10.1"
 
 # Plugins
 shadow = "7.1.2"
+lombok = "6.6.1"
 
 [libraries]
 
@@ -77,3 +78,4 @@ bstats-velocity = { group = "org.bstats", name = "bstats-velocity", version.ref 
 
 # Plugins
 plugin-shadow = { group = "gradle.plugin.com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+plugin-lombok = { group = "io.freefair.gradle", name = "lombok-plugin", version.ref = "lombok"}

@@ -490,14 +490,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (packet.getAction() == Action.UPDATE_PCT || packet.getAction() == Action.ADD) {
             float health = 300*packet.getPct();
             if (health == 0) health = 1;
-            w.helper().setHealth(health);
+            w.getHelper().setHealth(health);
         }
         if (packet.getAction() == Action.UPDATE_NAME || packet.getAction() == Action.ADD) {
-            w.helper().setCustomName(packet.getName(), clientVersion);
+            w.getHelper().setCustomName(packet.getName(), clientVersion);
         }
         if (packet.getAction() == Action.ADD) {
-            w.helper().setEntityFlags((byte) 32);
-            w.helper().setWitherInvulnerableTime(880); // Magic number
+            w.getHelper().setEntityFlags((byte) 32);
+            w.getHelper().setWitherInvulnerableTime(880); // Magic number
             return build(new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w));
         } else {
             return build(new PacketPlayOutEntityMetadata(entityId, w));

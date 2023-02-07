@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,20 +13,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  * The core for bukkit forwarding events into all enabled features
  */
+@RequiredArgsConstructor
 public class BukkitEventListener implements Listener {
 
     /** Platform instance */
     private final BukkitPlatform platform;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   platform
-     *          Platform instance
-     */
-    public BukkitEventListener(BukkitPlatform platform) {
-        this.platform = platform;
-    }
     
     /**
      * Listener to PlayerQuitEvent to remove player data and forward the event to features

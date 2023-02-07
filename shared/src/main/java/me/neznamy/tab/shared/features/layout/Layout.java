@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -18,13 +19,13 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class Layout extends TabFeature {
 
-    private final String name;
-    private final LayoutManager manager;
+    @Getter private final String name;
+    @Getter private final LayoutManager manager;
     private final Condition displayCondition;
     private final Map<Integer, FixedSlot> fixedSlots;
     private final List<Integer> emptySlots;
     private final List<ParentGroup> groups;
-    private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
+    @Getter private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
 
     public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
         super(manager.getFeatureName(), "Updating player groups");
@@ -91,16 +92,8 @@ public class Layout extends TabFeature {
         tick();
     }
 
-    public Set<TabPlayer> getViewers() {
-        return viewers;
-    }
-    
     public boolean containsViewer(TabPlayer viewer) {
         return viewers.contains(viewer);
-    }
-
-    public LayoutManager getManager() {
-        return manager;
     }
 
     public PlayerSlot getSlot(TabPlayer p) {
@@ -110,10 +103,6 @@ public class Layout extends TabFeature {
             }
         }
         return null;
-    }
-    
-    public String getName() {
-        return name;
     }
 
     @Override

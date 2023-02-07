@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -25,7 +26,7 @@ public class VehicleRefresher extends TabFeature {
     private final WeakHashMap<TabPlayer, Entity> playersInVehicle = new WeakHashMap<>();
     
     /** Map of vehicles carrying players */
-    private final Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
+    @Getter private final Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
     
     /** set of players currently on boats */
     private final Set<TabPlayer> playersOnBoats = Collections.newSetFromMap(new WeakHashMap<>());
@@ -125,15 +126,6 @@ public class VehicleRefresher extends TabFeature {
      */
     public boolean isOnBoat(TabPlayer p) {
         return playersOnBoats.contains(p);
-    }
-
-    /**
-     * Returns vehicle map
-     *
-     * @return  vehicle map
-     */
-    public Map<Integer, List<Entity>> getVehicles() {
-        return vehicles;
     }
     
     /**

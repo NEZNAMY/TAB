@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.UUID;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -16,24 +17,20 @@ public class PlayerSlot {
 
     private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
     private final Layout layout;
-    private final UUID id;
-    private TabPlayer player;
+    @Getter private final UUID uniqueId;
+    @Getter private TabPlayer player;
     private String text = "";
 
     public PlayerSlot(Layout layout, UUID id) {
         this.layout = layout;
-        this.id = id;
-    }
-
-    public UUID getUUID() {
-        return id;
+        this.uniqueId = id;
     }
 
     public void setPlayer(TabPlayer newPlayer) {
         if (player == newPlayer) return;
         this.player = newPlayer;
         if (player != null) text = "";
-        PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(id));
+        PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(uniqueId));
         for (TabPlayer viewer : layout.getViewers()) {
             if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
             viewer.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
@@ -45,9 +42,9 @@ public class PlayerSlot {
         PlayerInfoData data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
-            data = new PlayerInfoData(layout.getEntryName(p, id.getLeastSignificantBits()), id, player.getSkin(), true, player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p), null, null);
+            data = new PlayerInfoData(layout.getEntryName(p, uniqueId.getLeastSignificantBits()), uniqueId, player.getSkin(), true, player.getPing(), EnumGamemode.SURVIVAL, playerlist == null ? new IChatBaseComponent(player.getName()) : playerlist.getTabFormat(player, p), null, null);
         } else {
-            data = new PlayerInfoData(layout.getEntryName(p, id.getLeastSignificantBits()), id, layout.getManager().getSkinManager().getDefaultSkin(), true, layout.getManager().getEmptySlotPing(), EnumGamemode.SURVIVAL, new IChatBaseComponent(text), null, null);
+            data = new PlayerInfoData(layout.getEntryName(p, uniqueId.getLeastSignificantBits()), uniqueId, layout.getManager().getSkinManager().getDefaultSkin(), true, layout.getManager().getEmptySlotPing(), EnumGamemode.SURVIVAL, new IChatBaseComponent(text), null, null);
         }
         return data;
     }
@@ -58,15 +55,11 @@ public class PlayerSlot {
         if (player != null) {
             setPlayer(null);
         } else {
-            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(id, IChatBaseComponent.optimizedComponent(text)));
+            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(uniqueId, IChatBaseComponent.optimizedComponent(text)));
             for (TabPlayer all : layout.getViewers()) {
                 if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
                 all.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
             }
         }
-    }
-
-    public TabPlayer getPlayer() {
-        return player;
     }
 }

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.config;
 
+import lombok.Getter;
 import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.config.ConfigurationFile;
@@ -21,33 +22,33 @@ import java.util.List;
 public class Configs {
 
     //config.yml file
-    private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config.yml"),
+    @Getter private final ConfigurationFile config = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("config.yml"),
             new File(TAB.getInstance().getDataFolder(), "config.yml"));
 
-    private final boolean bukkitPermissions = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY && config.getBoolean("use-bukkit-permissions-manager", false);
-    private final boolean debugMode = config.getBoolean("debug", false);
-    private final boolean removeGhostPlayers = getSecretOption("remove-ghost-players", false);
-    private final boolean pipelineInjection = getSecretOption("pipeline-injection", true) && TAB.getInstance().getServerVersion().getMinorVersion() >= 8;
-    private final String serverName = getSecretOption("server-name", "N/A");
+    @Getter private final boolean bukkitPermissions = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY && config.getBoolean("use-bukkit-permissions-manager", false);
+    @Getter private final boolean debugMode = config.getBoolean("debug", false);
+    @Getter private final boolean removeGhostPlayers = getSecretOption("remove-ghost-players", false);
+    @Getter private final boolean pipelineInjection = getSecretOption("pipeline-injection", true) && TAB.getInstance().getServerVersion().getMinorVersion() >= 8;
+    @Getter private final String serverName = getSecretOption("server-name", "N/A");
 
     //animations.yml file
-    private final ConfigurationFile animation = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("animations.yml"),
+    @Getter private final ConfigurationFile animationFile = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("animations.yml"),
             new File(TAB.getInstance().getDataFolder(), "animations.yml"));
 
     //messages.yml file
-    private final MessageFile messages = new MessageFile();
+    @Getter private final MessageFile messages = new MessageFile();
 
     //playerdata.yml, used for bossbar & scoreboard toggle saving
     private ConfigurationFile playerdata;
 
-    private final ConfigurationFile layout = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout.yml"),
+    @Getter private final ConfigurationFile layout = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout.yml"),
             new File(TAB.getInstance().getDataFolder(), "layout.yml"));
 
-    private PropertyConfiguration groupFile;
+    @Getter private PropertyConfiguration groups;
 
-    private PropertyConfiguration userFile;
+    @Getter private PropertyConfiguration users;
 
-    private MySQL mysql;
+    @Getter private MySQL mysql;
 
     /**
      * Constructs new instance and loads configuration files.
@@ -62,7 +63,7 @@ public class Configs {
         Converter converter = new Converter();
         converter.convertToV3(config);
         converter.removeOldOptions(config);
-        converter.convertAnimationFile(animation);
+        converter.convertAnimationFile(animationFile);
         if (config.getBoolean("mysql.enabled", false)) {
             try {
                 // Initialization to try to avoid java.sql.SQLException: No suitable driver found
@@ -73,15 +74,15 @@ public class Configs {
                 }
                 mysql = new MySQL(config.getString("mysql.host", "127.0.0.1"), config.getInt("mysql.port", 3306),
                         config.getString("mysql.database", "tab"), config.getString("mysql.username", "user"), config.getString("mysql.password", "password"));
-                groupFile = new MySQLGroupConfiguration(mysql);
-                userFile = new MySQLUserConfiguration(mysql);
+                groups = new MySQLGroupConfiguration(mysql);
+                users = new MySQLUserConfiguration(mysql);
                 return;
             } catch (SQLException | ClassNotFoundException e) {
                 TAB.getInstance().getErrorManager().criticalError("Failed to connect to MySQL", e);
             }
         }
-        groupFile = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
-        userFile = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
+        groups = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("groups.yml"), new File(TAB.getInstance().getDataFolder(), "groups.yml"));
+        users = new YamlPropertyConfigurationFile(getClass().getClassLoader().getResourceAsStream("users.yml"), new File(TAB.getInstance().getDataFolder(), "users.yml"));
     }
 
     /**
@@ -99,34 +100,6 @@ public class Configs {
         return value == null ? defaultValue : (T) value;
     }
 
-    public MessageFile getMessages() {
-        return messages;
-    }
-
-    public ConfigurationFile getConfig() {
-        return config;
-    }
-
-    public boolean isRemoveGhostPlayers() {
-        return removeGhostPlayers;
-    }
-
-    public ConfigurationFile getLayout() {
-        return layout;
-    }
-
-    public ConfigurationFile getAnimationFile() {
-        return animation;
-    }
-
-    public boolean isBukkitPermissions() {
-        return bukkitPermissions;
-    }
-
-    public boolean isPipelineInjection() {
-        return pipelineInjection;
-    }
-
     public ConfigurationFile getPlayerDataFile() {
         if (playerdata == null) {
             File file = new File(TAB.getInstance().getDataFolder(), "playerdata.yml");
@@ -141,18 +114,6 @@ public class Configs {
         return playerdata;
     }
 
-    public PropertyConfiguration getGroups() {
-        return groupFile;
-    }
-
-    public PropertyConfiguration getUsers() {
-        return userFile;
-    }
-
-    public MySQL getMysql() {
-        return mysql;
-    }
-
     public String getGroup(List<Object> serverGroups, String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
@@ -165,13 +126,5 @@ public class Configs {
             }
         }
         return element;
-    }
-
-    public boolean isDebugMode() {
-        return debugMode;
-    }
-
-    public String getServerName() {
-        return serverName;
     }
 }

@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -19,7 +20,7 @@ public class BukkitNameTagX extends NameTagX {
     private final EventListener eventListener = new EventListener(this);
 
     /** Vehicle manager reference */
-    private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
+    @Getter private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
 
     /**
      * Constructs new instance with given parameter, loads config options, registers events
@@ -176,13 +177,5 @@ public class BukkitNameTagX extends NameTagX {
     @Override
     public BukkitArmorStandManager getArmorStandManager(TabPlayer player) {
         return (BukkitArmorStandManager) armorStandManagerMap.get(player);
-    }
-
-    /**
-     * Returns {@link #vehicleManager}
-     * @return  {@link #vehicleManager}
-     */
-    public VehicleRefresher getVehicleManager() {
-        return vehicleManager;
     }
 }

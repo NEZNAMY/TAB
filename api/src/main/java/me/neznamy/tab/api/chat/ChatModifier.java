@@ -1,37 +1,32 @@
 package me.neznamy.tab.api.chat;
 
-import java.util.UUID;
-
-import me.neznamy.tab.api.util.Preconditions;
-import org.json.simple.JSONObject;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
 import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
+import me.neznamy.tab.api.util.Preconditions;
+import org.json.simple.JSONObject;
 
+import java.util.UUID;
+
+@Data @NoArgsConstructor
 public class ChatModifier {
 
     private TextColor color;
-
     private Boolean bold;
     private Boolean italic;
     private Boolean underlined;
     private Boolean strikethrough;
     private Boolean obfuscated;
-
     private ChatClickable clickEvent;
     private ChatHoverable hoverEvent;
-
     private String font;
-
     private ProtocolVersion targetVersion;
 
-    public ChatModifier() {
-    }
-
-    public ChatModifier(ChatModifier modifier) {
-        Preconditions.checkNotNull(modifier, "modifier");
+    public ChatModifier(@NonNull ChatModifier modifier) {
         this.color = modifier.color == null ? null : new TextColor(modifier.color);
         this.bold = modifier.bold;
         this.italic = modifier.italic;
@@ -44,53 +39,6 @@ public class ChatModifier {
         this.targetVersion = modifier.targetVersion;
     }
 
-    public TextColor getColor() {
-        return color;
-    }
-
-    public void setColor(TextColor color) {
-        this.color = color;
-    }
-
-    public Boolean getBold() {
-        return bold;
-    }
-
-    public void setBold(Boolean bold) {
-        this.bold = bold;
-    }
-
-    public Boolean getItalic() {
-        return italic;
-    }
-
-    public void setItalic(Boolean italic) {
-        this.italic = italic;
-    }
-
-    public Boolean getUnderlined() {
-        return underlined;
-    }
-
-    public void setUnderlined(Boolean underlined) {
-        this.underlined = underlined;
-    }
-
-    public Boolean getStrikethrough() {
-        return strikethrough;
-    }
-
-    public void setStrikethrough(Boolean strikethrough) {
-        this.strikethrough = strikethrough;
-    }
-
-    public Boolean getObfuscated() {
-        return obfuscated;
-    }
-
-    public void setObfuscated(Boolean obfuscated) {
-        this.obfuscated = obfuscated;
-    }
 
     /**
      * Returns true if bold is defined and set to true, false otherwise
@@ -135,22 +83,6 @@ public class ChatModifier {
      */
     public boolean isObfuscated(){
         return Boolean.TRUE.equals(obfuscated);
-    }
-
-    public ChatClickable getClickEvent() {
-        return clickEvent;
-    }
-
-    public void setClickEvent(ChatClickable clickEvent) {
-        this.clickEvent = clickEvent;
-    }
-
-    public ChatHoverable getHoverEvent() {
-        return hoverEvent;
-    }
-
-    public void setHoverEvent(ChatHoverable hoverEvent) {
-        this.hoverEvent = hoverEvent;
     }
 
     /**
@@ -258,14 +190,6 @@ public class ChatModifier {
         hoverEvent = new ChatHoverable(action, value);
     }
 
-    public String getFont() {
-        return font;
-    }
-
-    public void setFont(String font) {
-        this.font = font;
-    }
-
     @SuppressWarnings("unchecked")
     public JSONObject serialize() {
         JSONObject json = new JSONObject();
@@ -304,13 +228,5 @@ public class ChatModifier {
         if (isStrikethrough()) builder.append(EnumChatFormat.STRIKETHROUGH.getFormat());
         if (isObfuscated()) builder.append(EnumChatFormat.OBFUSCATED.getFormat());
         return builder.toString();
-    }
-
-    public void setTargetVersion(ProtocolVersion targetVersion) {
-        this.targetVersion = targetVersion;
-    }
-
-    public ProtocolVersion getTargetVersion() {
-        return targetVersion;
     }
 }
