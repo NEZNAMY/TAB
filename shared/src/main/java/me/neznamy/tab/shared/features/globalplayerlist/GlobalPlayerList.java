@@ -14,6 +14,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Feature handler for global PlayerList feature
@@ -155,8 +156,8 @@ public class GlobalPlayerList extends TabFeature {
                         p.getPing(),
                         vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
                         viewer.getVersion().getMinorVersion() >= 8 ? format : null,
-                        fillProfileKey ? p.getChatSessionId() : null,
-                        fillProfileKey ? p.getProfilePublicKey() : null
+                        fillProfileKey ? ((ProxyTabPlayer)p).getChatSessionId() : null,
+                        fillProfileKey ? ((ProxyTabPlayer)p).getProfilePublicKey() : null
                 )
         );
     }

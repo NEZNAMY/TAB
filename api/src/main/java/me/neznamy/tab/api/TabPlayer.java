@@ -303,18 +303,4 @@ public interface TabPlayer {
      * @return  player's game profile name as seen by other players
      */
     String getNickname();
-
-    /**
-     * Returns player's chat message signing key. Returned object is a direct
-     * object from the server, which is different per platform.
-     *
-     * @return  Player's direct chat message signing key
-     */
-    Object getProfilePublicKey();
-
-    /**
-     * Return player's chat session ID
-     * @return  player's chat session ID
-     */
-    UUID getChatSessionId();
 }

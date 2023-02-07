@@ -286,12 +286,6 @@ public class BukkitTabPlayer extends ITabPlayer {
     }
 
     @Override
-    public Object getProfilePublicKey() { return null; } //only used on proxy
-
-    @Override
-    public UUID getChatSessionId() { return null; } //only used on proxy
-
-    @Override
     public Channel getChannel() {
         try {
             if (NMSStorage.getInstance().CHANNEL != null)
