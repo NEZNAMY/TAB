@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.plugin.indra)
     implementation(libs.plugin.shadow)
 }
 

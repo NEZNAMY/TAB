@@ -6,14 +6,13 @@ import io.netty.channel.ChannelPromise
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.features.PipelineInjector
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfo
+import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoRemove
+import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoUpdate
 import java.util.function.Function
 
 class KryptonPipelineInjector : PipelineInjector("handler") {
 
-    init {
-        channelFunction = Function(::KryptonChannelDuplexHandler)
-    }
+    override fun getChannelFunction(): Function<TabPlayer, ChannelDuplexHandler> = Function(::KryptonChannelDuplexHandler)
 
     inner class KryptonChannelDuplexHandler(private val player: TabPlayer) : ChannelDuplexHandler() {
 
@@ -28,7 +27,7 @@ class KryptonPipelineInjector : PipelineInjector("handler") {
 
         override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
             try {
-                if (msg is PacketOutPlayerInfo) {
+                if (msg is PacketOutPlayerInfoUpdate || msg is PacketOutPlayerInfoRemove) {
                     super.write(ctx, TAB.getInstance().featureManager.onPacketPlayOutPlayerInfo(player, msg), promise)
                     return
                 }

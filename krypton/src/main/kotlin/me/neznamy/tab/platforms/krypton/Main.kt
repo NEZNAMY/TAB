@@ -3,16 +3,19 @@ package me.neznamy.tab.platforms.krypton
 import com.google.inject.Inject
 import com.viaversion.viaversion.api.Via
 import me.neznamy.tab.api.ProtocolVersion
+import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
-import me.neznamy.tab.shared.TabConstants
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.kryptonmc.api.Server
+import org.kryptonmc.api.command.CommandMeta
 import org.kryptonmc.api.command.Sender
 import org.kryptonmc.api.command.SimpleCommand
-import org.kryptonmc.api.command.meta.SimpleCommandMeta
 import org.kryptonmc.api.entity.player.Player
+import org.kryptonmc.api.event.Event
+import org.kryptonmc.api.event.EventFilter
+import org.kryptonmc.api.event.EventNode
 import org.kryptonmc.api.event.Listener
 import org.kryptonmc.api.event.server.ServerStartEvent
 import org.kryptonmc.api.event.server.ServerStopEvent
@@ -34,20 +37,34 @@ import java.nio.file.Path
 )
 class Main @Inject constructor(
     val server: Server,
+    private val pluginEventNode: EventNode<Event>,
     @DataFolder val folder: Path
 ) {
 
+    val eventNode: EventNode<Event> = EventNode.filteredForEvent("tab_events", EventFilter.ALL) { !TAB.getInstance().isPluginDisabled }
+
     @Listener
     fun onStart(event: ServerStartEvent) {
-        TAB.setInstance(TAB(KryptonPlatform(this, folder.toFile()), ProtocolVersion.fromNetworkId(server.platform.protocolVersion)))
-        if (TAB.getInstance().serverVersion == ProtocolVersion.UNKNOWN) {
+        pluginEventNode.addChild(eventNode)
+
+        val tab = TAB(
+            KryptonPlatform(this),
+            ProtocolVersion.fromNetworkId(server.platform.protocolVersion),
+            server.platform.version,
+            folder.toFile(),
+            null
+        )
+        TAB.setInstance(tab)
+
+        if (TAB.getInstance().serverVersion == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             server.console.sendMessage(Component.text(
                 "[TAB] Unknown server version: ${server.platform.version}! Plugin may not work correctly",
                 NamedTextColor.RED
             ))
         }
-        server.eventManager.register(this, KryptonEventListener(this))
-        server.commandManager.register(KryptonTABCommand(), SimpleCommandMeta.builder("tab").build())
+
+        eventNode.registerListeners(KryptonEventListener(this))
+        server.commandManager.register(KryptonTABCommand(), CommandMeta.builder("tab").build())
         TAB.getInstance().load()
     }
 
@@ -56,12 +73,12 @@ class Main @Inject constructor(
         TAB.getInstance()?.unload()
     }
 
-    fun protocolVersion(player: Player): Int {
-        if (server.pluginManager.isLoaded("viaversion")) return viaProtocolVersion(player)
+    fun getProtocolVersion(player: Player): Int {
+        if (server.pluginManager.isLoaded("viaversion")) return getViaProtocolVersion(player)
         return TAB.getInstance().serverVersion.networkId
     }
 
-    private fun viaProtocolVersion(player: Player, retryLevel: Int = 0): Int {
+    private fun getViaProtocolVersion(player: Player, retryLevel: Int = 0): Int {
         try {
             if (retryLevel == 10) {
                 TAB.getInstance().debug("Failed to get protocol version of ${player.profile.name} after 10 retries")
@@ -70,7 +87,7 @@ class Main @Inject constructor(
             val version = Via.getAPI().getPlayerVersion(player)
             if (version == -1) {
                 Thread.sleep(5)
-                return viaProtocolVersion(player, retryLevel + 1)
+                return getViaProtocolVersion(player, retryLevel + 1)
             }
             TAB.getInstance().debug("ViaVersion returned protocol version $version for ${player.profile.name}")
             return version
@@ -79,7 +96,7 @@ class Main @Inject constructor(
             return -1
         } catch (exception: Throwable) {
             TAB.getInstance().errorManager.printError("Failed to get protocol version of ${player.profile.name} using ViaVersion " +
-                "v${server.pluginManager.plugin("viaversion")?.description?.version}")
+                "v${server.pluginManager.getPlugin("viaversion")?.description?.version}")
             return TAB.getInstance().serverVersion.networkId
         }
     }
@@ -87,7 +104,7 @@ class Main @Inject constructor(
     class KryptonTABCommand : SimpleCommand {
 
         override fun execute(sender: Sender, args: Array<String>) {
-            if (TAB.getInstance().isDisabled) {
+            if (TAB.getInstance().isPluginDisabled) {
                 val canReload = sender.hasPermission("tab.reload")
                 val isAdmin = sender.hasPermission("tab.admin")
                 TAB.getInstance().disabledCommand.execute(args, canReload, isAdmin).forEach { sender.sendMessage(Component.text(it)) }

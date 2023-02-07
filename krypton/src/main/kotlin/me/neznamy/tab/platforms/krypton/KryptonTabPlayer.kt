@@ -1,41 +1,45 @@
 package me.neznamy.tab.platforms.krypton
 
+import io.netty.channel.Channel
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
 import me.neznamy.tab.api.protocol.PacketPlayOutChat
+import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter
 import me.neznamy.tab.api.protocol.Skin
 import me.neznamy.tab.shared.ITabPlayer
 import me.neznamy.tab.shared.TAB
-import net.kyori.adventure.audience.MessageType
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.bossbar.BossBar.Color
 import net.kyori.adventure.bossbar.BossBar.Flag
 import net.kyori.adventure.bossbar.BossBar.Overlay
+import net.kyori.adventure.chat.ChatType
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
+import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
 import java.util.UUID
 
 class KryptonTabPlayer(
     delegate: Player,
     protocolVersion: Int
-) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion) {
+) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion, true) {
 
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
 
     init {
-        channel = this.delegate.session.channel
+        val connection = this.delegate.connection
+        channel = NettyConnection::class.java.getDeclaredField("channel").apply { isAccessible = true }.get(connection) as Channel
     }
 
     override fun hasPermission(permission: String): Boolean = delegate.hasPermission(permission)
 
     override fun getPing(): Int {
-        val latency = delegate.session.latency
+        val latency = delegate.connection.latency()
         if (latency > 10000 || latency < 0) return -1
         return latency
     }
@@ -44,7 +48,7 @@ class KryptonTabPlayer(
         if (packet == null) return
         try {
             if (packet is Packet) {
-                delegate.session.send(packet)
+                delegate.connection.send(packet)
                 return
             }
             when (packet) {
@@ -71,12 +75,12 @@ class KryptonTabPlayer(
 
     override fun isOnline(): Boolean = delegate.isOnline
 
-    override fun isVanished(): Boolean = delegate.isVanished
+    override fun isVanished(): Boolean = false
 
     override fun getGamemode(): Int = delegate.gameMode.ordinal
 
     private fun handle(packet: PacketPlayOutBoss) {
-        when (packet.operation) {
+        when (packet.action) {
             Action.ADD -> {
                 if (bossBars.containsKey(packet.id)) return
                 val bar = BossBar.bossBar(
@@ -88,22 +92,22 @@ class KryptonTabPlayer(
                 if (packet.isCreateWorldFog) bar.addFlag(Flag.CREATE_WORLD_FOG)
                 if (packet.isDarkenScreen) bar.addFlag(Flag.DARKEN_SCREEN)
                 if (packet.isPlayMusic) bar.addFlag(Flag.PLAY_BOSS_MUSIC)
-                bossBars[packet.id] = bar
+                bossBars.put(packet.id, bar)
                 delegate.showBossBar(bar)
             }
             Action.REMOVE -> {
-                delegate.hideBossBar(bossBars[packet.id] ?: return)
+                delegate.hideBossBar(bossBars.get(packet.id) ?: return)
                 bossBars.remove(packet.id)
             }
-            Action.UPDATE_PCT -> bossBars[packet.id]?.progress(packet.pct)
-            Action.UPDATE_NAME -> bossBars[packet.id]?.name(LegacyComponentSerializer.legacySection().deserialize(packet.name))
+            Action.UPDATE_PCT -> bossBars.get(packet.id)?.progress(packet.pct)
+            Action.UPDATE_NAME -> bossBars.get(packet.id)?.name(LegacyComponentSerializer.legacySection().deserialize(packet.name))
             Action.UPDATE_STYLE -> {
-                val bar = bossBars[packet.id] ?: return
+                val bar = bossBars.get(packet.id) ?: return
                 bar.overlay(Overlay.valueOf(packet.overlay.toString()))
                 bar.color(Color.valueOf(packet.color.toString()))
             }
             Action.UPDATE_PROPERTIES -> {
-                val bar = bossBars[packet.id] ?: return
+                val bar = bossBars.get(packet.id) ?: return
                 processFlag(bar, packet.isCreateWorldFog, Flag.CREATE_WORLD_FOG)
                 processFlag(bar, packet.isDarkenScreen, Flag.DARKEN_SCREEN)
                 processFlag(bar, packet.isPlayMusic, Flag.PLAY_BOSS_MUSIC)
@@ -114,12 +118,11 @@ class KryptonTabPlayer(
 
     private fun handle(packet: PacketPlayOutChat) {
         val message = GsonComponentSerializer.gson().deserialize(packet.message.toString(version))
-        if (packet.type === PacketPlayOutChat.ChatMessageType.GAME_INFO) {
-            // Adventure recommends that we send action bars for GAME_INFO, which is why GAME_INFO isn't in MessageType
-            delegate.sendActionBar(message)
-            return
+        when (packet.type) {
+            ChatMessageType.CHAT -> delegate.sendMessage(message, ChatType.CHAT.bind(getPlayer().displayName))
+            ChatMessageType.SYSTEM -> delegate.sendMessage(message)
+            ChatMessageType.GAME_INFO -> delegate.sendActionBar(message)
         }
-        delegate.sendMessage(message, MessageType.valueOf(packet.type.name))
     }
 
     private fun handle(packet: PacketPlayOutPlayerListHeaderFooter) {
