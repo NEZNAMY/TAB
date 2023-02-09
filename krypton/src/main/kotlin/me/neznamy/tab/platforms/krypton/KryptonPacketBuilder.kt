@@ -56,7 +56,7 @@ object KryptonPacketBuilder : PacketBuilder() {
 
             PacketOutPlayerInfoUpdate.Entry(
                 data.uniqueId,
-                GameProfile.of(data.name, data.uniqueId, skin),
+                GameProfile.of(data.name ?: "", data.uniqueId, skin),
                 data.isListed,
                 data.latency,
                 GAME_MODES[data.gameMode.ordinal - 1],
