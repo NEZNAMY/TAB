@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
@@ -15,12 +16,13 @@ import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
-import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -31,13 +33,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
 /**
  * Implementation of Platform interface for Bukkit platform
  */
-public class BukkitPlatform extends Platform {
+public class BukkitPlatform extends BackendPlatform {
 
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
@@ -57,6 +60,15 @@ public class BukkitPlatform extends Platform {
     public BukkitPlatform(JavaPlugin plugin) {
         super(new BukkitPacketBuilder());
         this.plugin = plugin;
+        if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VIAVERSION)) {
+            if (ReflectionUtils.classExists("com.viaversion.viaversion.api.Via")) {
+                viaVersion = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.VIAVERSION);
+            } else {
+                TAB.getInstance().sendConsoleMessage("&cAn outdated version of ViaVersion (" + getPluginVersion(TabConstants.Plugin.VIAVERSION) + ") was detected.", true);
+                TAB.getInstance().sendConsoleMessage("&cTAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
+                TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
+            }
+        }
     }
 
     @Override
@@ -72,55 +84,56 @@ public class BukkitPlatform extends Platform {
         }
     }
 
-    @Override
-    public void loadFeatures() {
-        if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VIAVERSION)) {
-            if (ReflectionUtils.classExists("com.viaversion.viaversion.api.Via")) {
-                viaVersion = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.VIAVERSION);
-            } else {
-                TAB.getInstance().sendConsoleMessage("&cAn outdated version of ViaVersion (" + getPluginVersion(TabConstants.Plugin.VIAVERSION) + ") was detected.", true);
-                TAB.getInstance().sendConsoleMessage("&cTAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
-                TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
-            }
-        }
-        TAB tab = TAB.getInstance();
-        if (tab.getConfiguration().isPipelineInjection())
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.PIPELINE_INJECTION, new BukkitPipelineInjector());
-        new BukkitPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-        if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.SORTING, new Sorting());
-            if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && tab.getServerVersion().getMinorVersion() >= 8) {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new BukkitNameTagX(plugin));
-            } else {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
-            }
-        }
-        tab.loadUniversalFeatures();
-        if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false)) {
-            if (tab.getServerVersion().getMinorVersion() < 9) {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new WitherBossBar(plugin));
-            } else {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
-            }
-        }
-        if (tab.getServerVersion().getMinorVersion() >= 9 && tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new PetFix());
-        if (tab.getConfiguration().getConfig().getBoolean("per-world-playerlist.enabled", false))
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, new PerWorldPlayerList(plugin));
-        if (placeholderAPI && tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", true)) {
-            BukkitTabExpansion expansion = new BukkitTabExpansion();
-            expansion.register();
-            TAB.getInstance().getPlaceholderManager().setTabExpansion(expansion);
-        }
-        for (Player p : getOnlinePlayers()) {
-            tab.addPlayer(new BukkitTabPlayer(p, getProtocolVersion(p)));
-        }
+    public BossBarManagerImpl getLegacyBossBar() {
+        return new WitherBossBar(plugin);
     }
 
     @Override
     public String getPluginVersion(String plugin) {
         Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
         return pl == null ? null : pl.getDescription().getVersion();
+    }
+
+    @Override
+    public void loadPlayers() {
+        for (Player p : getOnlinePlayers()) {
+            TAB.getInstance().addPlayer(new BukkitTabPlayer(p, getProtocolVersion(p)));
+        }
+    }
+
+    @Override
+    public void registerPlaceholders() {
+        new BukkitPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+    }
+
+    @Override
+    public @Nullable PipelineInjector getPipelineInjector() {
+        return new BukkitPipelineInjector();
+    }
+
+    @Override
+    public NameTag getUnlimitedNametags() {
+        return new BukkitNameTagX(plugin);
+    }
+
+    @Override
+    public TabExpansion getTabExpansion() {
+        if (placeholderAPI) {
+            BukkitTabExpansion expansion = new BukkitTabExpansion();
+            expansion.register();
+            return expansion;
+        }
+        return null;
+    }
+
+    @Override
+    public TabFeature getPetFix() {
+        return new PetFix();
+    }
+
+    @Override
+    public @Nullable TabFeature getPerWorldPlayerlist() {
+        return new PerWorldPlayerList(plugin);
     }
 
     /**

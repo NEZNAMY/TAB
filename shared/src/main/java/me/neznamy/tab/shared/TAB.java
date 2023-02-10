@@ -13,12 +13,8 @@ import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
-import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
-import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -152,6 +148,7 @@ public class TAB extends TabAPI {
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
             platform.loadFeatures();
+            platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
             for (TabPlayer p : onlinePlayers) ((ITabPlayer)p).markAsLoaded(false);
@@ -198,41 +195,6 @@ public class TAB extends TabAPI {
         playersByTabListId.clear();
         onlinePlayers = new TabPlayer[0];
         cpu.cancelAllTasks();
-    }
-
-    /**
-     * Loads universal features present on all platforms with the same configuration
-     */
-    public void loadUniversalFeatures() {
-        if (configuration.getConfig().getBoolean("header-footer.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
-        if (configuration.isRemoveGhostPlayers())
-            featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, new GhostPlayerFix());
-        if (serverVersion.getMinorVersion() >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
-            if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new AlignedPlayerList());
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
-            }
-        }
-        if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
-        if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
-        if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
-        if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
-        if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
-        if (serverVersion.getMinorVersion() >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
-            if (getTeamManager() == null) {
-                //sorting is disabled, but layout needs team names
-                featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
-            }
-            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
-        }
-        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
     }
 
     /**

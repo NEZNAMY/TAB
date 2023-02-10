@@ -11,7 +11,7 @@ public interface ArmorStand {
      *
      * @return  true if static, false if dynamic
      */
-    boolean hasStaticOffset();
+    boolean isStaticOffset();
     
     /**
      * Changes offset of the armor stand

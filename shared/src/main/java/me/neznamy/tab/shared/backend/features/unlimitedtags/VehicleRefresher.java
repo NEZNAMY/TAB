@@ -1,12 +1,10 @@
-package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
+package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,16 +21,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class VehicleRefresher extends TabFeature {
 
     /** Map of players currently in a vehicle */
-    private final WeakHashMap<TabPlayer, Entity> playersInVehicle = new WeakHashMap<>();
-    
+    private final WeakHashMap<TabPlayer, Object> playersInVehicle = new WeakHashMap<>();
+
     /** Map of vehicles carrying players */
-    @Getter private final Map<Integer, List<Entity>> vehicles = new ConcurrentHashMap<>();
-    
+    @Getter
+    private final Map<Integer, List<Integer>> vehicles = new ConcurrentHashMap<>();
+
     /** set of players currently on boats */
     private final Set<TabPlayer> playersOnBoats = Collections.newSetFromMap(new WeakHashMap<>());
 
     /** Reference to the main feature */
-    private final BukkitNameTagX feature;
+    private final BackendNameTagX feature;
 
     /**
      * Constructs new instance with given parameter and starts tasks.
@@ -40,7 +39,7 @@ public class VehicleRefresher extends TabFeature {
      * @param   feature
      *          Main feature
      */
-    public VehicleRefresher(BukkitNameTagX feature) {
+    public VehicleRefresher(BackendNameTagX feature) {
         super(feature.getFeatureName(), "Refreshing vehicles");
         this.feature = feature;
         TabAPI.getInstance().getThreadManager().startRepeatingMeasuredTask(50,
@@ -54,23 +53,19 @@ public class VehicleRefresher extends TabFeature {
                             feature.getArmorStandManager(p).teleport(p);
                         }
                     }
-        });
+                });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
-        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
-            Entity v = ((Player)p.getPlayer()).getVehicle();
-            //There's a bug in Bukkit 1.19.3 throwing NPE on .toString(), use default toString implementation
-            return v == null ? "" : v.getClass().getName() + "@" + Integer.toHexString(v.hashCode());
-        });
+        feature.registerVehiclePlaceholder();
     }
 
     @Override
     public void load() {
         for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
-            Entity vehicle = ((Player)p.getPlayer()).getVehicle();
+            Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
-                vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+                vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
                 playersInVehicle.put(p, vehicle);
-                if (feature.isDisableOnBoats() && vehicle.getType().toString().contains("BOAT")) {
+                if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("BOAT")) {
                     playersOnBoats.add(p);
                 }
             }
@@ -79,25 +74,25 @@ public class VehicleRefresher extends TabFeature {
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        Entity vehicle = ((Entity) connectedPlayer.getPlayer()).getVehicle();
-        if (vehicle != null) vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+        Object vehicle = feature.getVehicle(connectedPlayer);
+        if (vehicle != null) vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
     }
 
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
-        if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(playersInVehicle.get(disconnectedPlayer).getEntityId());
-        for (List<Entity> entities : vehicles.values()) {
-            entities.remove((Player) disconnectedPlayer.getPlayer());
+        if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.get(disconnectedPlayer)));
+        for (List<Integer> entities : vehicles.values()) {
+            entities.remove(feature.getEntityId(disconnectedPlayer));
         }
     }
 
     @Override
     public void refresh(TabPlayer p, boolean force) {
         if (feature.isPlayerDisabled(p)) return;
-        Entity vehicle = ((Player)p.getPlayer()).getVehicle();
+        Object vehicle = feature.getVehicle(p);
         if (playersInVehicle.containsKey(p) && vehicle == null) {
             //vehicle exit
-            vehicles.remove(playersInVehicle.get(p).getEntityId());
+            vehicles.remove(feature.getEntityId(playersInVehicle.get(p)));
             feature.getArmorStandManager(p).teleport();
             playersInVehicle.remove(p);
             if (feature.isDisableOnBoats() && playersOnBoats.contains(p)) {
@@ -107,10 +102,10 @@ public class VehicleRefresher extends TabFeature {
         }
         if (!playersInVehicle.containsKey(p) && vehicle != null) {
             //vehicle enter
-            vehicles.put(vehicle.getEntityId(), getPassengers(vehicle));
+            vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
             playersInVehicle.put(p, vehicle);
-            if (feature.isDisableOnBoats() && vehicle.getType().toString().contains("BOAT")) {
+            if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("BOAT")) {
                 playersOnBoats.add(p);
                 feature.updateTeamData(p);
             }
@@ -126,25 +121,5 @@ public class VehicleRefresher extends TabFeature {
      */
     public boolean isOnBoat(TabPlayer p) {
         return playersOnBoats.contains(p);
-    }
-    
-    /**
-     * Returns list of all passengers on specified vehicle
-     *
-     * @param   vehicle
-     *          vehicle to check passengers of
-     * @return  list of passengers
-     */
-    @SuppressWarnings("deprecation")
-    public List<Entity> getPassengers(Entity vehicle){
-        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 11) {
-            return vehicle.getPassengers();
-        } else {
-            if (vehicle.getPassenger() != null) {
-                return Collections.singletonList(vehicle.getPassenger());
-            } else {
-                return Collections.emptyList();
-            }
-        }
     }
 }

@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.krypton
 
-import me.neznamy.tab.api.TabConstants
+import me.neznamy.tab.api.TabFeature
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
-import me.neznamy.tab.shared.Platform
 import me.neznamy.tab.shared.TAB
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl
+import me.neznamy.tab.shared.backend.BackendPlatform
+import me.neznamy.tab.shared.features.PipelineInjector
+import me.neznamy.tab.shared.features.TabExpansion
 import me.neznamy.tab.shared.features.nametags.NameTag
-import me.neznamy.tab.shared.features.sorting.Sorting
 import me.neznamy.tab.shared.permission.LuckPerms
 import me.neznamy.tab.shared.permission.None
 import me.neznamy.tab.shared.permission.PermissionPlugin
@@ -14,40 +14,13 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
-class KryptonPlatform(private val plugin: Main) : Platform(KryptonPacketBuilder) {
+class KryptonPlatform(private val plugin: Main) : BackendPlatform(KryptonPacketBuilder) {
 
     private val server = plugin.server
 
     override fun detectPermissionPlugin(): PermissionPlugin {
         if (server.pluginManager.isLoaded("luckperms")) return LuckPerms(getPluginVersion("luckperms"))
         return None()
-    }
-
-    override fun loadFeatures() {
-        val tab = TAB.getInstance()
-        if (tab.configuration.isPipelineInjection) {
-            tab.featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, KryptonPipelineInjector())
-        }
-
-        // Placeholders
-        KryptonPlaceholderRegistry(plugin).registerPlaceholders(tab.placeholderManager)
-        UniversalPlaceholderRegistry().registerPlaceholders(tab.placeholderManager)
-
-        if (tab.configuration.config.getBoolean("scoreboard-teams.enabled", true)) {
-            tab.featureManager.registerFeature(TabConstants.Feature.SORTING, Sorting())
-            if (tab.config.getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
-                tab.featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, KryptonNameTagX(plugin))
-            } else {
-                tab.featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, NameTag())
-            }
-        }
-
-        // Load features
-        tab.loadUniversalFeatures()
-        if (TAB.getInstance().config.getBoolean("bossbar.enabled", false)) {
-            TAB.getInstance().featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, BossBarManagerImpl())
-        }
-        server.players.forEach { TAB.getInstance().addPlayer(KryptonTabPlayer(it, plugin.getProtocolVersion(it))) }
     }
 
     override fun sendConsoleMessage(message: String, translateColors: Boolean) {
@@ -76,4 +49,33 @@ class KryptonPlatform(private val plugin: Main) : Platform(KryptonPacketBuilder)
     }
 
     override fun getPluginVersion(plugin: String): String? = server.pluginManager.getPlugin(plugin)?.description?.version
+
+    override fun loadPlayers() {
+        server.players.forEach { TAB.getInstance().addPlayer(KryptonTabPlayer(it, plugin.getProtocolVersion(it))) }
+    }
+
+    override fun registerPlaceholders() {
+        KryptonPlaceholderRegistry(plugin).registerPlaceholders(TAB.getInstance().placeholderManager)
+        UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().placeholderManager)
+    }
+
+    override fun getPipelineInjector(): PipelineInjector {
+        return KryptonPipelineInjector()
+    }
+
+    override fun getUnlimitedNametags(): NameTag {
+        return KryptonNameTagX(plugin)
+    }
+
+    override fun getTabExpansion(): TabExpansion? {
+        return null
+    }
+
+    override fun getPetFix(): TabFeature? {
+        return null
+    }
+
+    override fun getPerWorldPlayerlist(): TabFeature? {
+        return null
+    }
 }

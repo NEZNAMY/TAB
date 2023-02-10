@@ -1,10 +1,10 @@
-package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
+package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.ArmorStandManager;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
 import java.util.ArrayList;
@@ -12,10 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A helper class for easy management of armor stands of a player
- */
-public class BukkitArmorStandManager implements ArmorStandManager {
+public class BackendArmorStandManager implements ArmorStandManager {
 
     /** Map of registered armor stands by name */
     private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
@@ -27,7 +24,8 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     private final List<TabPlayer> nearbyPlayerList = new ArrayList<>();
 
     /** Nearby players in an array for speed while iterating */
-    @Getter private TabPlayer[] nearbyPlayers = new TabPlayer[0];
+    @Getter
+    private TabPlayer[] nearbyPlayers = new TabPlayer[0];
 
     /**
      * Constructs new instance with given parameters and loads armor stands.
@@ -37,17 +35,17 @@ public class BukkitArmorStandManager implements ArmorStandManager {
      * @param   owner
      *          Owner of this armor stand manager
      */
-    public BukkitArmorStandManager(NameTagX nameTagX, TabPlayer owner) {
+    public BackendArmorStandManager(NameTagX nameTagX, TabPlayer owner) {
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
         double height = 0;
         for (String line : nameTagX.getDynamicLines()) {
-            addArmorStand(line, new BukkitArmorStand(this, owner, line, height, false));
+            addArmorStand(line, ((BackendNameTagX)nameTagX).createArmorStand(this, owner, line, height, false));
             height += 0.26;
         }
         for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
-            addArmorStand(line.getKey(), new BukkitArmorStand(this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
+            addArmorStand(line.getKey(), ((BackendNameTagX)nameTagX).createArmorStand(this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
         }
         fixArmorStandHeights();
     }
@@ -136,7 +134,7 @@ public class BukkitArmorStandManager implements ArmorStandManager {
     public void fixArmorStandHeights() {
         double currentY = -0.26;
         for (ArmorStand as : armorStandArray) {
-            if (as.hasStaticOffset()) continue;
+            if (as.isStaticOffset()) continue;
             if (as.getProperty().get().length() != 0) {
                 currentY += 0.26;
                 as.setOffset(currentY);

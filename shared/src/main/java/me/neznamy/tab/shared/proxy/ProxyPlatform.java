@@ -1,25 +1,25 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.nametags.unlimited.ProxyNameTagX;
+import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -86,26 +86,32 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public void loadFeatures() {
-        TAB tab = TAB.getInstance();
-        new UniversalPlaceholderRegistry().registerPlaceholders(tab.getPlaceholderManager());
-        if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.SORTING, new Sorting());
-            if (tab.getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)) {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, new ProxyNameTagX());
-            } else {
-                tab.getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
-            }
-        }
-        tab.loadUniversalFeatures();
-        if (tab.getConfiguration().getConfig().getBoolean("bossbar.enabled", false))
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
-        if (tab.getConfiguration().getConfig().getBoolean("global-playerlist.enabled", false))
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
-        if (tab.getConfiguration().getConfig().getBoolean("fix-pet-names.enabled", false))
-            tab.getFeatureManager().registerFeature(TabConstants.Feature.PET_FIX, new TabFeature("", "") {});
-        if (tab.getConfiguration().getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
-            tab.getPlaceholderManager().setTabExpansion(new ProxyTabExpansion());
-        }
+    public void registerPlaceholders() {
+        new UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+    }
+
+    @Override
+    public NameTag getUnlimitedNametags() {
+        return new ProxyNameTagX();
+    }
+
+    @Override
+    public TabExpansion getTabExpansion() {
+        return new ProxyTabExpansion();
+    }
+
+    @Override
+    public TabFeature getPetFix() {
+        return new TabFeature("", "") {};
+    }
+
+    @Override
+    public @Nullable TabFeature getGlobalPlayerlist() {
+        return new GlobalPlayerList();
+    }
+
+    @Override
+    public @Nullable TabFeature getPerWorldPlayerlist() {
+        return null;
     }
 }
