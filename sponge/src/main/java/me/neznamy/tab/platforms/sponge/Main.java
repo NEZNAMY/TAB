@@ -43,7 +43,7 @@ public final class Main {
         final ConsoleSource console = game.getServer().getConsole();
         console.sendMessage(Text.of("[TAB] Server version: " + version));
 
-        final SpongePlatform platform = new SpongePlatform(this);
+        final SpongePlatform platform = new SpongePlatform();
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             console.sendMessage(Text.builder("[TAB] Unknown server version: " + version + "! Plugin may not work correctly.").color(TextColors.RED).build());
