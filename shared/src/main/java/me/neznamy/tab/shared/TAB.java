@@ -147,6 +147,7 @@ public class TAB extends TabAPI {
             featureManager = new FeatureManagerImpl();
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
+            platform.registerPlaceholders();
             platform.loadFeatures();
             platform.loadPlayers();
             command = new TabCommand();
