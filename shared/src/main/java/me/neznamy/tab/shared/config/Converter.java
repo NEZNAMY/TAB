@@ -48,7 +48,7 @@ public class Converter {
      *          if an I/O operation with the files fails
      */
     public void convertToV3(ConfigurationFile currentConfig) throws IOException {
-        if (currentConfig.hasConfigOption("mysql")) return;
+        if (!currentConfig.hasConfigOption("change-nametag-prefix-suffix")) return;
         TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
         TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.9.2 to 3.0.0",true);
         TAB.getInstance().sendConsoleMessage("&ePlease note that this may not be 100% accurate",true);
@@ -333,13 +333,14 @@ public class Converter {
         newConfig.set("mysql.username", "user");
         newConfig.set("mysql.password", "password");
 
+        newConfig.set("fix-pet-names.enabled", oldConfig.getBoolean("fix-pet-names", false));
+
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
             newConfig.set("global-playerlist", oldConfig.getConfigurationSection("global-playerlist"));
             newConfig.set("global-playerlist.update-latency", false);
             newConfig.set("use-bukkit-permissions-manager", false);
         } else {
             newConfig.set("per-world-playerlist", oldConfig.getConfigurationSection("per-world-playerlist"));
-            newConfig.set("fix-pet-names.enabled", oldConfig.getBoolean("fix-pet-names", false));
         }
     }
 
