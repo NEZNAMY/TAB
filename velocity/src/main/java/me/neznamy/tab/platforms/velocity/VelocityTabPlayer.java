@@ -11,6 +11,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
@@ -18,6 +19,7 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -27,6 +29,10 @@ import java.util.function.Consumer;
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
+    /** Component cache to save CPU when creating components */
+    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
+    
     /**
      * Map of methods executing tasks using Velocity API calls equal to sending the actual packets
      */
@@ -80,7 +86,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          Packet request to handle
      */
     private void handle(PacketPlayOutChat packet) {
-        Component message = Main.getInstance().convertComponent(packet.getMessage(), getVersion());
+        Component message = componentCache.get(packet.getMessage(), getVersion());
         if (packet.getType() == ChatMessageType.GAME_INFO) {
             getPlayer().sendActionBar(message);
         } else {
@@ -95,8 +101,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          Packet request to handle
      */
     private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-        getPlayer().sendPlayerListHeaderAndFooter(Main.getInstance().convertComponent(packet.getHeader(), getVersion()),
-                Main.getInstance().convertComponent(packet.getFooter(), getVersion()));
+        getPlayer().sendPlayerListHeaderAndFooter(componentCache.get(packet.getHeader(), getVersion()),
+                componentCache.get(packet.getFooter(), getVersion()));
     }
 
     /**
@@ -113,7 +119,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                         if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
                         getPlayer().getTabList().addEntry(TabListEntry.builder()
                                 .tabList(getPlayer().getTabList())
-                                .displayName(Main.getInstance().convertComponent(data.getDisplayName(), getVersion()))
+                                .displayName(componentCache.get(data.getDisplayName(), getVersion()))
                                 .gameMode(data.getGameMode().ordinal()-1)
                                 .profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() :
                                         Collections.singletonList(new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()))))
@@ -124,7 +130,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                         getPlayer().getTabList().removeEntry(data.getUniqueId());
                         break;
                     case UPDATE_DISPLAY_NAME:
-                        getEntry(data.getUniqueId()).setDisplayName(Main.getInstance().convertComponent(data.getDisplayName(), getVersion()));
+                        getEntry(data.getUniqueId()).setDisplayName(componentCache.get(data.getDisplayName(), getVersion()));
                         break;
                     case UPDATE_LATENCY:
                         getEntry(data.getUniqueId()).setLatency(data.getLatency());
@@ -154,7 +160,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         switch (packet.getAction()) {
         case ADD:
             if (bossBars.containsKey(packet.getId())) return;
-            bar = BossBar.bossBar(Main.getInstance().convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
+            bar = BossBar.bossBar(componentCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
                     packet.getPct(), 
                     Color.valueOf(packet.getColor().toString()), 
                     Overlay.valueOf(packet.getOverlay().toString()));
@@ -172,7 +178,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             bossBars.get(packet.getId()).progress(packet.getPct());
             break;
         case UPDATE_NAME:
-            bossBars.get(packet.getId()).name(Main.getInstance().convertComponent(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
+            bossBars.get(packet.getId()).name(componentCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
             break;
         case UPDATE_STYLE:
             bar = bossBars.get(packet.getId());

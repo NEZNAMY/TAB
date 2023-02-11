@@ -15,19 +15,15 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Main class for Velocity platform.
@@ -56,12 +52,6 @@ public class Main {
     @Getter private final MinecraftChannelIdentifier minecraftChannelIdentifier = MinecraftChannelIdentifier.create(
             TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
 
-    /** Component cache for 1.16+ players to save CPU when creating components */
-    private final Map<IChatBaseComponent, Component> componentCacheModern = new HashMap<>();
-
-    /** Component cache for 1.15- players to save CPU when creating components */
-    private final Map<IChatBaseComponent, Component> componentCacheLegacy = new HashMap<>();
-    
     /** Platform implementation for velocity */
     @Getter private final VelocityPlatform platform = new VelocityPlatform();
 
@@ -99,43 +89,6 @@ public class Main {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         TAB.getInstance().unload();
-    }
-
-    /**
-     * Converts TAB's component class into adventure component.
-     * Currently, the only way of conversion is string serialization / deserialization.
-     * Manual conversion for better performance might be added in the future.
-     * If the entered component is {@code null}, returns {@code null}
-     *
-     * @param   component
-     *          Component to convert
-     * @param   clientVersion
-     *          Version of player to convert for
-     * @return  Converted component or {@code null} if {@code component} is {@code null}
-     */
-    public Component convertComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
-        if (component == null) return null;
-        return clientVersion.getMinorVersion() >= 16 ? fromCache(componentCacheModern, component, clientVersion) : fromCache(componentCacheLegacy, component, clientVersion);
-    }
-
-    /**
-     * Loads component's adventure version from cache if present. If not, it is created,
-     * inserted into cache and returned.
-     *
-     * @param   map
-     *          Cache to load component from / save component into
-     * @param   component
-     *          Component to convert
-     * @param   clientVersion
-     *          Player version to convert component for
-     * @return  Converted component
-     */
-    private Component fromCache(Map<IChatBaseComponent, Component> map, IChatBaseComponent component, ProtocolVersion clientVersion) {
-        if (map.containsKey(component)) return map.get(component);
-        Component obj = GsonComponentSerializer.gson().deserialize(component.toString(clientVersion));
-        if (map.size() > 10000) map.clear();
-        map.put(component, obj);
-        return obj;
     }
 
     /**
