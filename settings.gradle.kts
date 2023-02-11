@@ -16,12 +16,12 @@ dependencyResolutionManagement {
         maven("https://repo.papermc.io/repository/maven-public/") // Velocity
         maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
     }
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 }
 
 pluginManagement {
     includeBuild("build-logic")
     repositories {
+        maven("https://repo.spongepowered.org/repository/maven-public/")
         gradlePluginPortal()
         mavenCentral()
     }

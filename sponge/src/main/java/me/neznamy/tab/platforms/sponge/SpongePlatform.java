@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.plugin.PluginContainer;
 
 public final class SpongePlatform extends Platform {
 
@@ -24,7 +23,7 @@ public final class SpongePlatform extends Platform {
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
-        if (Sponge.getPluginManager().isLoaded("luckperms")) {
+        if (Sponge.pluginManager().plugin("luckperms").isPresent()) {
             return new LuckPerms(getPluginVersion("luckperms"));
         }
         return new None();
@@ -32,7 +31,7 @@ public final class SpongePlatform extends Platform {
 
     @Override
     public String getPluginVersion(final String plugin) {
-        return Sponge.getPluginManager().getPlugin(plugin).flatMap(PluginContainer::getVersion).orElse(null);
+        return Sponge.pluginManager().plugin(plugin).map(container -> container.metadata().version().toString()).orElse(null);
     }
 
     @Override
@@ -42,7 +41,7 @@ public final class SpongePlatform extends Platform {
 
     @Override
     public void loadPlayers() {
-        for (final Player player : Sponge.getServer().getOnlinePlayers()) {
+        for (final Player player : Sponge.server().onlinePlayers()) {
             TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
         }
     }
