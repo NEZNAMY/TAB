@@ -12,6 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
@@ -35,10 +36,14 @@ public class BukkitPacketBuilder extends PacketBuilder {
     private final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
 
     /** Component cache for better performance (1.16+ players) */
-    private final Map<IChatBaseComponent, Object> componentCacheModern = new HashMap<>();
+
+    private final ComponentCache<IChatBaseComponent, Object> componentCacheModern = new ComponentCache<>(10000,
+            (component, clientVersion) -> nms.ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
     /** Component cache for better performance (1.15- players) */
-    private final Map<IChatBaseComponent, Object> componentCacheLegacy = new HashMap<>();
+    private final ComponentCache<IChatBaseComponent, Object> componentCacheLegacy = new ComponentCache<>(10000,
+            (component, clientVersion) -> nms.ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
+
 
     /**
      * Constructs new instance
@@ -530,14 +535,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
      *          if thrown by reflective operation
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        if (component == null) return null;
         if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).get();
-        Map<IChatBaseComponent, Object> cache = clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy;
-        if (cache.containsKey(component)) return cache.get(component);
-        if (cache.size() > 10000) cache.clear();
-        Object chat = nms.ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion));
-        cache.put(component, chat);
-        return chat;
+        return (clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy).get(component, clientVersion);
     }
 
     /**

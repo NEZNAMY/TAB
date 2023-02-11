@@ -7,6 +7,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.util.ComponentCache;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -22,9 +23,13 @@ public class IChatBaseComponent {
      * Component cache maps to avoid large memory allocations as well as
      * higher CPU usage when using animations which send the same text on repeat.
      */
-    private static final Map<String, IChatBaseComponent> componentCache = new HashMap<>();
-    private static final Map<IChatBaseComponent, String> serializeCacheModern = new HashMap<>();
-    private static final Map<IChatBaseComponent, String> serializeCacheLegacy = new HashMap<>();
+    private static final ComponentCache<String, IChatBaseComponent> stringCache = new ComponentCache<>(10000, (text, clientVersion) -> {
+                return text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<") ?
+                    IChatBaseComponent.fromColoredText(text) : //contains RGB colors
+                    new IChatBaseComponent(text); //no RGB
+            });
+    private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> component.toString());
 
     /** Text of the component */
     @Getter @Setter private String text;
@@ -162,19 +167,7 @@ public class IChatBaseComponent {
         for (IChatBaseComponent child : getExtra()) {
             child.modifier.setTargetVersion(clientVersion);
         }
-        String string;
-        if (clientVersion.getMinorVersion() >= 16) {
-            if (serializeCacheModern.containsKey(this)) return serializeCacheModern.get(this);
-            string = toString();
-            if (serializeCacheModern.size() > 10000) serializeCacheModern.clear();
-            serializeCacheModern.put(this, string);
-        } else {
-            if (serializeCacheLegacy.containsKey(this)) return serializeCacheLegacy.get(this);
-            string = toString();
-            if (serializeCacheLegacy.size() > 10000) serializeCacheLegacy.clear();
-            serializeCacheLegacy.put(this, string);
-        }
-        return string;
+        return serializeCache.get(this, clientVersion);
     }
 
     /**
@@ -375,18 +368,6 @@ public class IChatBaseComponent {
      * @return  The most performance-optimized component based on text
      */
     public static IChatBaseComponent optimizedComponent(String text){
-        if (text == null) return null;
-        if (componentCache.containsKey(text)) return componentCache.get(text);
-        IChatBaseComponent component;
-        if (text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<")){
-            //contains RGB colors
-            component = IChatBaseComponent.fromColoredText(text);
-        } else {
-            //no RGB
-            component = new IChatBaseComponent(text);
-        }
-        if (componentCache.size() > 10000) componentCache.clear();
-        componentCache.put(text, component);
-        return component;
+        return stringCache.get(text, null);
     }
 }
