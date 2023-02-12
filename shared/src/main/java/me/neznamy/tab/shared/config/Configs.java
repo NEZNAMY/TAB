@@ -120,7 +120,9 @@ public class Configs {
             for (String definedWorld : worldGroup.toString().split(";")) {
                 if (definedWorld.endsWith("*")) {
                     if (element.toLowerCase().startsWith(definedWorld.substring(0, definedWorld.length()-1).toLowerCase())) return worldGroup.toString();
-                } else {
+                } else if (definedWorld.startsWith("*")) {
+                    if (element.toLowerCase().endsWith(definedWorld.substring(1).toLowerCase())) return worldGroup.toString();
+                }  else {
                     if (element.equalsIgnoreCase(definedWorld)) return worldGroup.toString();
                 }
             }
