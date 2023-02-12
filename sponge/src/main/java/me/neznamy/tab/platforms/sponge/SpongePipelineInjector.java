@@ -1,26 +1,30 @@
-package me.neznamy.tab.platforms.bukkit;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.function.Function;
+package me.neznamy.tab.platforms.sponge;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.AllArgsConstructor;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
+import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Function;
+
 /**
- * Pipeline injection for bukkit
+ * Pipeline injection for sponge
  */
-public class BukkitPipelineInjector extends PipelineInjector {
+public class SpongePipelineInjector extends PipelineInjector {
 
     /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
@@ -28,20 +32,20 @@ public class BukkitPipelineInjector extends PipelineInjector {
     /**
      * Constructs new instance
      */
-    public BukkitPipelineInjector(){
-        super("packet_handler");
+    public SpongePipelineInjector(){
+        super(null); //TODO find name
     }
 
     @Override
     public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
-        return BukkitChannelDuplexHandler::new;
+        return SpongeChannelDuplexHandler::new;
     }
 
     /**
      * Custom channel duplex handler override
      */
     @AllArgsConstructor
-    public class BukkitChannelDuplexHandler extends ChannelDuplexHandler {
+    public class SpongeChannelDuplexHandler extends ChannelDuplexHandler {
 
         /** Injected player */
         private final TabPlayer player;
@@ -59,22 +63,21 @@ public class BukkitPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
-                if (nms.PacketPlayOutPlayerInfo.isInstance(packet) ||
-                        (nms.ClientboundPlayerInfoRemovePacket != null && nms.ClientboundPlayerInfoRemovePacket.isInstance(packet))) {
+                if (packet instanceof ClientboundPlayerInfoPacket) {
                     super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
                     return;
                 }
-                if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+                if (antiOverrideTeams && packet instanceof ClientboundSetPlayerTeamPacket) {
                     long time = System.nanoTime();
                     modifyPlayers(packet);
                     TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                     super.write(context, packet, channelPromise);
                     return;
                 }
-                if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet)){
+                if (packet instanceof ClientboundSetDisplayObjectivePacket){
                     TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
                 }
-                if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
+                if (packet instanceof ClientboundSetObjectivePacket) {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
@@ -98,10 +101,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
          */
         @SuppressWarnings("unchecked")
         private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
-            int action = nms.PacketPlayOutScoreboardTeam_ACTION.getInt(packetPlayOutScoreboardTeam);
+            int action = nms.ClientboundSetPlayerTeamPacket_ACTION.getInt(packetPlayOutScoreboardTeam);
             if (action == 1 || action == 2 || action == 4) return;
-            Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
-            String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
+            Collection<String> players = (Collection<String>) nms.ClientboundSetPlayerTeamPacket_PLAYERS.get(packetPlayOutScoreboardTeam);
+            String teamName = (String) nms.ClientboundSetPlayerTeamPacket_NAME.get(packetPlayOutScoreboardTeam);
             if (players == null) return;
             //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
             Collection<String> newList = new ArrayList<>();
@@ -119,7 +122,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
                     newList.add(entry);
                 }
             }
-            nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
+            nms.ClientboundSetPlayerTeamPacket_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
         }
 
         /**

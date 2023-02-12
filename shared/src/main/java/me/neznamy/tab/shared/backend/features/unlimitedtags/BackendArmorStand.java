@@ -6,7 +6,6 @@ import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
 import java.util.UUID;
 
@@ -16,7 +15,7 @@ public abstract class BackendArmorStand implements ArmorStand {
     private static int idCounter = 2000000000;
 
     /** NameTag feature */
-    protected final NameTagX manager;
+    protected final BackendNameTagX manager;
 
     /** Armor stand manager which this armor stand belongs to */
     protected final BackendArmorStandManager asm;
@@ -59,7 +58,7 @@ public abstract class BackendArmorStand implements ArmorStand {
      * @param   staticOffset
      *          {@code true} if offset is static, {@code false} if not
      */
-    public BackendArmorStand(NameTagX feature, BackendArmorStandManager asm, TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
+    public BackendArmorStand(BackendNameTagX feature, BackendArmorStandManager asm, TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
         this.manager = feature;
         this.asm = asm;
         this.owner = owner;

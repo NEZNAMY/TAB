@@ -52,7 +52,7 @@ public class BukkitNameTagX extends BackendNameTagX {
                 }
             }
             if (attacked != null && attacked != sender) {
-                nms.setField(packet, nms.PacketPlayInUseEntity_ENTITY, ((Player) attacked.getPlayer()).getEntityId());
+                nms.setField(packet, nms.PacketPlayInUseEntity_ENTITY, getEntityId(attacked));
             }
         }
         return false;

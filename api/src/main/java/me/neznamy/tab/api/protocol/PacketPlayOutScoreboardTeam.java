@@ -24,10 +24,10 @@ public class PacketPlayOutScoreboardTeam implements TabPacket {
     @NonNull private final String name;
 
     /** Team prefix, limited to 16 characters, on &lt;1.13 */
-    @NonNull private String playerPrefix;
+    private String playerPrefix;
 
     /** Team suffix, limited to 16 characters, on &lt;1.13 */
-    @NonNull private String playerSuffix;
+    private String playerSuffix;
 
     /** 
      * NameTag visibility rule since 1.8. Possible options are:

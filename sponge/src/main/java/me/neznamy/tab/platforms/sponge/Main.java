@@ -1,11 +1,6 @@
 package me.neznamy.tab.platforms.sponge;
 
 import com.google.inject.Inject;
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
@@ -13,7 +8,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -23,7 +17,6 @@ import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,31 +28,27 @@ import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Plugin("tab")
 public final class Main {
 
-    @Inject
-    private Game game;
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    private File configDir;
-    @Inject
-    private Logger logger;
-    @Inject
-    private PluginContainer container;
+    @Inject private Game game;
+    @Inject @ConfigDir(sharedRoot = false) private File configDir;
+    @Inject private Logger logger;
+    @Inject private PluginContainer container;
 
     @Listener
     public void onServerStart(final StartingEngineEvent<Server> event) {
         final SystemSubject console = event.game().systemSubject();
         final String version = game.platform().minecraftVersion().name();
         console.sendMessage(Component.text("[TAB] Server version: " + version));
-
         final SpongePlatform platform = new SpongePlatform();
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
-            console.sendMessage(Component.text("[TAB] Unknown server version: " + version + "! Plugin may not work correctly.", NamedTextColor.RED));
-        }
-
         game.eventManager().registerListeners(container, new SpongeEventListener());
         TAB.getInstance().load();
     }
@@ -77,7 +66,7 @@ public final class Main {
     private static final class TABCommand implements Command.Raw {
 
         @Override
-        public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) throws CommandException {
+        public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) {
             final String[] args = arguments.input().split(" ");
 
             if (TabAPI.getInstance().isPluginDisabled()) {
@@ -102,7 +91,7 @@ public final class Main {
         }
 
         @Override
-        public List<CommandCompletion> complete(CommandCause cause, ArgumentReader.Mutable arguments) throws CommandException {
+        public List<CommandCompletion> complete(CommandCause cause, ArgumentReader.Mutable arguments) {
             TabPlayer player = null;
             final Player source = cause.context().get(EventContextKeys.PLAYER).orElse(null);
             if (source != null) {

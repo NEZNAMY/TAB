@@ -11,7 +11,7 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
-import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -43,7 +43,7 @@ public class BukkitArmorStand extends BackendArmorStand {
      * @param   staticOffset
      *          {@code true} if offset is static, {@code false} if not
      */
-    public BukkitArmorStand(NameTagX feature, BackendArmorStandManager asm, TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
+    public BukkitArmorStand(BackendNameTagX feature, BackendArmorStandManager asm, TabPlayer owner, String propertyName, double yOffset, boolean staticOffset) {
         super(feature, asm, owner, propertyName, yOffset, staticOffset);
         player = (Player) owner.getPlayer();
         sneaking = player.isSneaking();

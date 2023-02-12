@@ -1,7 +1,10 @@
 package me.neznamy.tab.platforms.sponge;
 
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.platforms.sponge.features.PetFix;
+import me.neznamy.tab.platforms.sponge.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
@@ -13,7 +16,7 @@ import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 public final class SpongePlatform extends Platform {
 
@@ -23,8 +26,8 @@ public final class SpongePlatform extends Platform {
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
-        if (Sponge.pluginManager().plugin("luckperms").isPresent()) {
-            return new LuckPerms(getPluginVersion("luckperms"));
+        if (Sponge.pluginManager().plugin(TabConstants.Plugin.LUCKPERMS.toLowerCase()).isPresent()) {
+            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS.toLowerCase()));
         }
         return new None();
     }
@@ -41,7 +44,7 @@ public final class SpongePlatform extends Platform {
 
     @Override
     public void loadPlayers() {
-        for (final Player player : Sponge.server().onlinePlayers()) {
+        for (ServerPlayer player : Sponge.server().onlinePlayers()) {
             TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
         }
     }
@@ -52,13 +55,13 @@ public final class SpongePlatform extends Platform {
     }
 
     @Override
-    public @Nullable PipelineInjector getPipelineInjector() {
-        return null;
+    public PipelineInjector getPipelineInjector() {
+        return new SpongePipelineInjector();
     }
 
     @Override
     public NameTag getUnlimitedNametags() {
-        return new NameTag();
+        return new SpongeNameTagX();
     }
 
     @Override
@@ -67,8 +70,8 @@ public final class SpongePlatform extends Platform {
     }
 
     @Override
-    public @Nullable TabFeature getPetFix() {
-        return null;
+    public TabFeature getPetFix() {
+        return new PetFix();
     }
 
     @Override
