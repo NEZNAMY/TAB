@@ -17,7 +17,7 @@ public class ComponentCache<K, V> {
     public V get(K key, ProtocolVersion clientVersion) {
         try {
             if (key == null) return null;
-            Map<K, V> cache = clientVersion.getMinorVersion() >= 16 ? cacheModern : cacheLegacy;
+            Map<K, V> cache = clientVersion == null || clientVersion.getMinorVersion() >= 16 ? cacheModern : cacheLegacy;
             if (cache.containsKey(key)) return cache.get(key);
             V value = function.apply(key, clientVersion);
             if (cache.size() > cacheSize) cache.clear();
