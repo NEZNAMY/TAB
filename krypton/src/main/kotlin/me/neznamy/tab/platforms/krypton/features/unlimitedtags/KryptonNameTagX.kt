@@ -98,10 +98,6 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         return (entity as Entity).id
     }
 
-    override fun getEntityId(player: TabPlayer): Int {
-        return (player.player as Player).id
-    }
-
     override fun getEntityType(entity: Any): String {
         return (entity as Entity).type.toString()
     }

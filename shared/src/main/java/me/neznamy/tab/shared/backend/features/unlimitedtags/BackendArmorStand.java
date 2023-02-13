@@ -38,8 +38,11 @@ public abstract class BackendArmorStand implements ArmorStand {
     /** Sneaking flag of armor stands */
     protected boolean sneaking;
 
-    /** Armor stand visibility */
+    /** Armor stand visibility to use in metadata */
     protected boolean visible;
+
+    /** Visibility flag to compare against for previous value, including invisibility potion compensation */
+    private boolean visibleWPotion;
 
     /** Refresh property dedicated to this armor stand */
     @Getter protected final Property property;
@@ -66,6 +69,7 @@ public abstract class BackendArmorStand implements ArmorStand {
         this.offset = yOffset;
         this.property = owner.getProperty(propertyName);
         visible = calculateVisibility();
+        visibleWPotion = visible && !owner.hasInvisibilityPotion();
     }
 
     @Override
@@ -80,13 +84,14 @@ public abstract class BackendArmorStand implements ArmorStand {
     @Override
     public void refresh() {
         visible = calculateVisibility();
+        visibleWPotion = visible && !owner.hasInvisibilityPotion();
         updateMetadata();
     }
 
     @Override
     public void updateVisibility(boolean force) {
-        boolean visibility = calculateVisibility();
-        if (visible != visibility || force) {
+        boolean visibility = calculateVisibility() && !owner.hasInvisibilityPotion(); //trigger packet send but don't save, so it can be reverted if viewer is spectator
+        if (visibleWPotion != visibility || force) {
             refresh();
         }
     }
@@ -205,6 +210,12 @@ public abstract class BackendArmorStand implements ArmorStand {
         for (TabPlayer viewer : asm.getNearbyPlayers()) {
             updateMetadata(viewer);
         }
+    }
+
+    public boolean shouldBeInvisibleFor(TabPlayer viewer, String displayName) {
+        return isNameVisiblyEmpty(displayName) || !manager.canSee(viewer, owner) ||
+                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
+                (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3);
     }
 
     /**

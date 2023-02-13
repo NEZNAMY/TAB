@@ -141,11 +141,6 @@ public class BukkitNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public int getEntityId(TabPlayer player) {
-        return ((Player) player.getPlayer()).getEntityId();
-    }
-
-    @Override
     public String getEntityType(Object entity) {
         return ((Entity)entity).getType().toString();
     }

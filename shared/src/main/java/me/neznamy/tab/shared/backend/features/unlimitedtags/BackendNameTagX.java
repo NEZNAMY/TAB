@@ -163,6 +163,10 @@ public abstract class BackendNameTagX extends NameTagX {
         }
     }
 
+    public int getEntityId(TabPlayer player) {
+        return getEntityId(player.getPlayer());
+    }
+
     /**
      * Returns flat distance between two players ignoring Y value
      *
@@ -187,8 +191,6 @@ public abstract class BackendNameTagX extends NameTagX {
     public abstract Object getVehicle(TabPlayer player);
 
     public abstract int getEntityId(Object entity);
-
-    public abstract int getEntityId(TabPlayer player);
 
     public abstract String getEntityType(Object entity);
 

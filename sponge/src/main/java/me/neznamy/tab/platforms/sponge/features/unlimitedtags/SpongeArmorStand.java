@@ -18,7 +18,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 import java.util.Optional;
@@ -144,24 +143,11 @@ public class SpongeArmorStand extends BackendArmorStand {
      */
     public SynchedEntityData createDataWatcher(String displayName, TabPlayer viewer) {
         SynchedEntityData dataWatcher = new SynchedEntityData(null);
-
-        byte flag = 32; //invisible
-        if (sneaking) flag += (byte)2;
-        dataWatcher.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flag);
+        dataWatcher.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), (byte) (sneaking ? 34 : 32));
         dataWatcher.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT),
                 Optional.ofNullable(SpongePacketBuilder.getComponentCache().get(
                         IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion())));
-
-        boolean visibility;
-        if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) ||
-                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
-                (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3)) {
-            visibility = false;
-        } else {
-            visibility = visible;
-        }
-        dataWatcher.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), visibility);
-
+        dataWatcher.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), !shouldBeInvisibleFor(viewer, displayName) && visible);
         if (viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x())
             dataWatcher.define(new EntityDataAccessor<>(14, EntityDataSerializers.BYTE), (byte)16);
         return dataWatcher;

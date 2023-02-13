@@ -66,19 +66,9 @@ class KryptonArmorStand(
             define(MetadataKeys.Entity.CUSTOM_NAME, null)
             define(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, false)
         }
-
-        var flags = 32 // invisible
-        if (sneaking) flags += 2
-        holder.set(MetadataKeys.Entity.FLAGS, flags.toByte())
+        holder.set(MetadataKeys.Entity.FLAGS, (if (sneaking) 34 else 32).toByte())
         holder.set(MetadataKeys.Entity.CUSTOM_NAME, KryptonPacketBuilder.toComponent(displayName, viewer.version))
-
-        if (isNameVisiblyEmpty(displayName) || manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
-            (owner.hasInvisibilityPotion() && viewer.gamemode != 3)) {
-            holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, false)
-        } else {
-            holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, visible)
-        }
-
+        holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, !shouldBeInvisibleFor(viewer, displayName) && visible)
         if (viewer.version.minorVersion > 8 || manager.isMarkerFor18x) {
             holder.define(MetadataKeys.ArmorStand.FLAGS, 16.toByte())
         }

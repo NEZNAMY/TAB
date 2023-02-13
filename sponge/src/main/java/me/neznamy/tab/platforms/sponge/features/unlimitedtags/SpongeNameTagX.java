@@ -25,7 +25,7 @@ public class SpongeNameTagX extends BackendNameTagX {
     private final EventListener eventListener = new EventListener();
 
     public SpongeNameTagX() {
-        //TODO register events to eventListener
+        throw new UnsupportedOperationException("Not implemented yet"); //register events
     }
 
     @Override
@@ -101,11 +101,6 @@ public class SpongeNameTagX extends BackendNameTagX {
 
     @Override
     public int getEntityId(Object entity) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    @Override
-    public int getEntityId(TabPlayer player) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

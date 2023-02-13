@@ -145,23 +145,11 @@ public class BukkitArmorStand extends BackendArmorStand {
      */
     public DataWatcher createDataWatcher(String displayName, TabPlayer viewer) {
         DataWatcher datawatcher = new DataWatcher();
-
-        byte flag = 32; //invisible
-        if (sneaking) flag += (byte)2;
-        datawatcher.getHelper().setEntityFlags(flag);
+        datawatcher.getHelper().setEntityFlags((byte) (sneaking ? 34 : 32));
         datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());
-
-        boolean visibility;
-        if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) ||
-                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
-                (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3)) {
-            visibility = false;
-        } else {
-            visibility = visible;
-        }
-        datawatcher.getHelper().setCustomNameVisible(visibility);
-
-        if (viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x()) datawatcher.getHelper().setArmorStandFlags((byte)16);
+        datawatcher.getHelper().setCustomNameVisible(!shouldBeInvisibleFor(viewer, displayName) && visible);
+        if (viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x())
+            datawatcher.getHelper().setArmorStandFlags((byte)16);
         return datawatcher;
     }
 }
