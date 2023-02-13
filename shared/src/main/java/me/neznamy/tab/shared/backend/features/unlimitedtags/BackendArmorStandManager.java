@@ -15,10 +15,10 @@ import java.util.Map;
 public class BackendArmorStandManager implements ArmorStandManager {
 
     /** Map of registered armor stands by name */
-    private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
+    private final Map<String, BackendArmorStand> armorStands = new LinkedHashMap<>();
 
     /** Armor stands in an array for speed while iterating */
-    private ArmorStand[] armorStandArray = new ArmorStand[0];
+    private BackendArmorStand[] armorStandArray = new BackendArmorStand[0];
 
     /** Players in entity tracking range of owner */
     private final List<TabPlayer> nearbyPlayerList = new ArrayList<>();
@@ -150,9 +150,9 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   as
      *          Armor stand to add
      */
-    public void addArmorStand(String name, ArmorStand as) {
+    public void addArmorStand(String name, BackendArmorStand as) {
         armorStands.put(name, as);
-        armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
+        armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
         for (TabPlayer p : nearbyPlayers) as.spawn(p);
     }
 
@@ -198,5 +198,9 @@ public class BackendArmorStandManager implements ArmorStandManager {
             }
         }
         if (fix) fixArmorStandHeights();
+    }
+
+    public void updateMetadata(TabPlayer viewer) {
+        for (BackendArmorStand a : armorStandArray) a.updateMetadata(viewer);
     }
 }

@@ -100,10 +100,8 @@ public class BukkitArmorStand extends BackendArmorStand {
     }
 
     @Override
-    public void updateMetadata() {
-        for (TabPlayer viewer : asm.getNearbyPlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
-        }
+    public void updateMetadata(TabPlayer viewer) {
+        viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
     }
 
     @Override
@@ -155,7 +153,8 @@ public class BukkitArmorStand extends BackendArmorStand {
 
         boolean visibility;
         if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) ||
-                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer)) {
+                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
+                (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3)) {
             visibility = false;
         } else {
             visibility = visible;

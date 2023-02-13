@@ -101,10 +101,8 @@ public class SpongeArmorStand extends BackendArmorStand {
     }
 
     @Override
-    public void updateMetadata() {
-        for (TabPlayer viewer : asm.getNearbyPlayers()) {
-            viewer.sendPacket(new ClientboundSetEntityDataPacket(entityId, createDataWatcher(property.getFormat(viewer), viewer), true));
-        }
+    public void updateMetadata(TabPlayer viewer) {
+        viewer.sendPacket(new ClientboundSetEntityDataPacket(entityId, createDataWatcher(property.getFormat(viewer), viewer), true));
     }
 
     @Override
@@ -156,7 +154,8 @@ public class SpongeArmorStand extends BackendArmorStand {
 
         boolean visibility;
         if (isNameVisiblyEmpty(displayName) || !((Player) viewer.getPlayer()).canSee(player) ||
-                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer)) {
+                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
+                (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3)) {
             visibility = false;
         } else {
             visibility = visible;

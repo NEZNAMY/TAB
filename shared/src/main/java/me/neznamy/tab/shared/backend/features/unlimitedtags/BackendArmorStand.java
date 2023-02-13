@@ -140,7 +140,7 @@ public abstract class BackendArmorStand implements ArmorStand {
     public boolean calculateVisibility() {
         if (manager.isArmorStandsAlwaysVisible()) return true;
         if (owner.isDisguised() || manager.isOnBoat(owner)) return false;
-        return !owner.hasInvisibilityPotion() && owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
+        return owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
     }
 
     /**
@@ -201,7 +201,16 @@ public abstract class BackendArmorStand implements ArmorStand {
     /**
      * Updates armor stand's metadata for everyone
      */
-    public abstract void updateMetadata();
+    public void updateMetadata() {
+        for (TabPlayer viewer : asm.getNearbyPlayers()) {
+            updateMetadata(viewer);
+        }
+    }
+
+    /**
+     * Updates armor stand's metadata for specified viewer
+     */
+    public abstract void updateMetadata(TabPlayer viewer);
 
     public abstract void sendTeleportPacket(TabPlayer viewer);
 }

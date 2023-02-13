@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
-import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import org.bukkit.Bukkit;
@@ -151,7 +151,7 @@ public class BukkitNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public ArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset) {
+    public BackendArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset) {
         return new BukkitArmorStand(this, feature, owner, lineName, yOffset, staticOffset);
     }
 }

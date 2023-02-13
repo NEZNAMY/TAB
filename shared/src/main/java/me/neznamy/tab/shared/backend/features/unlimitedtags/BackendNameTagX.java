@@ -1,12 +1,10 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.ArmorStand;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class BackendNameTagX extends NameTagX {
@@ -21,6 +19,20 @@ public abstract class BackendNameTagX extends NameTagX {
         super(BackendArmorStandManager::new);
         TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
         TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
+        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, TabPlayer::getGamemode);
+        TabFeature gamemode = new TabFeature("Unlimited NameTags", "Gamemode listener") {
+            {
+                addUsedPlaceholders(Collections.singletonList("%gamemode%"));
+            }
+
+            @Override
+            public void refresh(TabPlayer viewer, boolean force) {
+                for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
+                    getArmorStandManager(target).updateMetadata(viewer);
+                }
+            }
+        };
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, gamemode);
     }
 
     /**
@@ -180,5 +192,5 @@ public abstract class BackendNameTagX extends NameTagX {
 
     public abstract String getEntityType(Object entity);
 
-    public abstract ArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset);
+    public abstract BackendArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset);
 }

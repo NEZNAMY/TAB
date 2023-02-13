@@ -41,10 +41,8 @@ class KryptonArmorStand(
         return y
     }
 
-    override fun updateMetadata() {
-        asm.nearbyPlayers.forEach { viewer ->
-            viewer.sendPacket(PacketOutSetEntityMetadata(entityId, createMetadata(property.getFormat(viewer), viewer).collectAll()))
-        }
+    override fun updateMetadata(viewer: TabPlayer) {
+        viewer.sendPacket(PacketOutSetEntityMetadata(entityId, createMetadata(property.getFormat(viewer), viewer).collectAll()))
     }
 
     override fun sendTeleportPacket(viewer: TabPlayer) {
@@ -74,7 +72,8 @@ class KryptonArmorStand(
         holder.set(MetadataKeys.Entity.FLAGS, flags.toByte())
         holder.set(MetadataKeys.Entity.CUSTOM_NAME, KryptonPacketBuilder.toComponent(displayName, viewer.version))
 
-        if (isNameVisiblyEmpty(displayName) || manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer)) {
+        if (isNameVisiblyEmpty(displayName) || manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
+            (owner.hasInvisibilityPotion() && viewer.gamemode != 3)) {
             holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, false)
         } else {
             holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, visible)

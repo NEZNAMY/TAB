@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 
-import me.neznamy.tab.api.ArmorStand
 import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.platforms.krypton.Main
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX
 import org.kryptonmc.api.entity.Entity
@@ -106,7 +106,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         return (entity as Entity).type.toString()
     }
 
-    override fun createArmorStand(asm: BackendArmorStandManager, owner: TabPlayer, lineName: String, yOffset: Double, staticOffset: Boolean): ArmorStand {
+    override fun createArmorStand(asm: BackendArmorStandManager, owner: TabPlayer, lineName: String, yOffset: Double, staticOffset: Boolean): BackendArmorStand {
         return KryptonArmorStand(asm, this, owner, lineName, yOffset, staticOffset)
     }
 

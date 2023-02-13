@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.sponge.features.unlimitedtags;
 
-import me.neznamy.tab.api.ArmorStand;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
+import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import net.minecraft.network.protocol.game.*;
@@ -115,7 +115,7 @@ public class SpongeNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public ArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset) {
+    public BackendArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset) {
         return new SpongeArmorStand(this, feature, owner, lineName, yOffset, staticOffset);
     }
 }
