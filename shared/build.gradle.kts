@@ -8,4 +8,5 @@ dependencies {
     compileOnlyApi(libs.guava)
     compileOnlyApi(libs.floodgate)
     compileOnlyApi(libs.slf4j)
+    compileOnlyApi(libs.via)
 }

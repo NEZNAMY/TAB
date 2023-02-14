@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -215,7 +214,7 @@ public class BukkitPlatform extends BackendPlatform {
             if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
         }
         if (viaVersion != null) {
-            return getProtocolVersionVia(player, 0);
+            return getProtocolVersionVia(player.getUniqueId(), player.getName(), 0);
         }
         return TAB.getInstance().getServerVersion().getNetworkId();
     }
@@ -235,36 +234,6 @@ public class BukkitPlatform extends BackendPlatform {
             return version;
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ProtocolSupport", player.getName()), e);
-            return TAB.getInstance().getServerVersion().getNetworkId();
-        }
-    }
-
-    /**
-     * Returns protocol version of requested player using ViaVersion
-     *
-     * @param   player
-     *          Player to get protocol version of
-     * @return  protocol version of the player using ViaVersion
-     */
-    private int getProtocolVersionVia(Player player, int retryLevel){
-        try {
-            if (retryLevel == 10) {
-                TAB.getInstance().debug("Failed to get protocol version of " + player.getName() + " after 10 retries");
-                return TAB.getInstance().getServerVersion().getNetworkId();
-            }
-            int version = Via.getAPI().getPlayerVersion(player.getUniqueId());
-            if (version == -1) {
-                if (!player.isOnline()) return TAB.getInstance().getServerVersion().getNetworkId();
-                Thread.sleep(5);
-                return getProtocolVersionVia(player, retryLevel + 1);
-            }
-            TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + player.getName() + " (online=" + player.isOnline() + ")");
-            return version;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return -1;
-        } catch (Exception | LinkageError e) {
-            TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s", player.getName(), viaVersion.getDescription().getVersion()), e);
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
     }

@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
 import com.google.inject.Inject
-import com.viaversion.viaversion.api.Via
 import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabPlayer
@@ -78,31 +77,9 @@ class Main @Inject constructor(
     }
 
     fun getProtocolVersion(player: Player): Int {
-        if (server.pluginManager.isLoaded(TabConstants.Plugin.VIAVERSION.lowercase(Locale.getDefault()))) return getViaProtocolVersion(player)
+        if (server.pluginManager.isLoaded(TabConstants.Plugin.VIAVERSION.lowercase(Locale.getDefault())))
+            return TAB.getInstance().platform.getProtocolVersionVia(player.uuid, player.profile.name, 0)
         return TAB.getInstance().serverVersion.networkId
-    }
-
-    private fun getViaProtocolVersion(player: Player, retryLevel: Int = 0): Int {
-        try {
-            if (retryLevel == 10) {
-                TAB.getInstance().debug("Failed to get protocol version of ${player.profile.name} after 10 retries")
-                return TAB.getInstance().serverVersion.networkId
-            }
-            val version = Via.getAPI().getPlayerVersion(player)
-            if (version == -1) {
-                Thread.sleep(5)
-                return getViaProtocolVersion(player, retryLevel + 1)
-            }
-            TAB.getInstance().debug("ViaVersion returned protocol version $version for ${player.profile.name}")
-            return version
-        } catch (exception: InterruptedException) {
-            Thread.currentThread().interrupt()
-            return -1
-        } catch (exception: Throwable) {
-            TAB.getInstance().errorManager.printError("Failed to get protocol version of ${player.profile.name} using ViaVersion " +
-                "v${server.pluginManager.getPlugin(TabConstants.Plugin.VIAVERSION.lowercase(Locale.getDefault()))?.description?.version}")
-            return TAB.getInstance().serverVersion.networkId
-        }
     }
 
     class KryptonTABCommand : SimpleCommand {

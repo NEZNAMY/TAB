@@ -1,11 +1,8 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import io.netty.channel.Channel;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
@@ -18,6 +15,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -25,8 +23,8 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public final class SpongeTabPlayer extends ITabPlayer {
 
@@ -41,7 +39,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
                 player.world().key().value(),
-                ProtocolVersion.V1_16_5.getNetworkId(), true);
+                getProtocolVersion(player), true);
 
         try {
             final Field channelField = Connection.class.getDeclaredField("channel");
@@ -50,6 +48,13 @@ public final class SpongeTabPlayer extends ITabPlayer {
         } catch (final ReflectiveOperationException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    private static int getProtocolVersion(ServerPlayer player) {
+        if (Sponge.pluginManager().plugin(TabConstants.Plugin.VIAVERSION.toLowerCase()).isPresent()) {
+            return TAB.getInstance().getPlatform().getProtocolVersionVia(player.uniqueId(), player.name(), 0);
+        }
+        return ProtocolVersion.V1_16_5.getNetworkId();
     }
 
     @Override

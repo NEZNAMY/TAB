@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabConstants;
@@ -18,6 +19,8 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+
+import java.util.UUID;
 
 /**
  * An interface with methods that are called in universal code,
@@ -139,6 +142,38 @@ public abstract class Platform {
 
     public BossBarManagerImpl getLegacyBossBar() {
         return new BossBarManagerImpl();
+    }
+
+    /**
+     * Returns protocol version of requested player using ViaVersion
+     *
+     * @param   player
+     *          UUID of player to get protocol version of
+     * @param   playerName
+     *          Name of the player
+     * @return  protocol version of the player using ViaVersion
+     */
+    public int getProtocolVersionVia(UUID player, String playerName, int retryLevel){
+        try {
+            if (retryLevel == 10) {
+                TAB.getInstance().debug("Failed to get protocol version of " + playerName + " after 10 retries");
+                return TAB.getInstance().getServerVersion().getNetworkId();
+            }
+            int version = Via.getAPI().getPlayerVersion(player);
+            if (version == -1) {
+                Thread.sleep(5);
+                return getProtocolVersionVia(player, playerName, retryLevel + 1);
+            }
+            TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
+            return version;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return -1;
+        } catch (Exception | LinkageError e) {
+            TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ViaVersion v%s",
+                    playerName, getPluginVersion(TabConstants.Plugin.VIAVERSION)), e);
+            return TAB.getInstance().getServerVersion().getNetworkId();
+        }
     }
 
     /**

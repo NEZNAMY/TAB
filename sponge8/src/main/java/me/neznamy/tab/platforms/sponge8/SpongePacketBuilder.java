@@ -81,12 +81,13 @@ public final class SpongePacketBuilder extends PacketBuilder {
 
     @Override
     public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
+        String displayName = clientVersion.getMinorVersion() < 13 ? cutTo(packet.getDisplayName(), 32) : packet.getDisplayName();
         return new ClientboundSetObjectivePacket(
                 new Objective(
                         dummyScoreboard,
                         packet.getObjectiveName(),
                         null,
-                        componentCache.get(IChatBaseComponent.optimizedComponent(packet.getDisplayName()), clientVersion),
+                        componentCache.get(IChatBaseComponent.optimizedComponent(displayName), clientVersion),
                         packet.getRenderType() == null ? null : ObjectiveCriteria.RenderType.valueOf(packet.getRenderType().name())
                 ),
                 packet.getAction()
