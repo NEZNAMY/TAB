@@ -9,7 +9,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 public class NMSStorage {
 
@@ -38,15 +37,6 @@ public class NMSStorage {
     public final Field ClientboundTeleportEntityPacket_Z = getFields(ClientboundTeleportEntityPacket.class, double.class).get(2);
     public final Field ClientboundTeleportEntityPacket_YAW = getFields(ClientboundTeleportEntityPacket.class, byte.class).get(0);
     public final Field ClientboundTeleportEntityPacket_PITCH = getFields(ClientboundTeleportEntityPacket.class, byte.class).get(1);
-
-    public final Field ClientboundAddEntityPacket_ENTITYID = getFields(ClientboundAddEntityPacket.class, int.class).get(0);
-    public final Field ClientboundAddEntityPacket_ENTITYTYPE = getFields(ClientboundAddEntityPacket.class, int.class).get(1);
-    public final Field ClientboundAddEntityPacket_YAW = getFields(ClientboundAddEntityPacket.class, byte.class).get(0);
-    public final Field ClientboundAddEntityPacket_PITCH = getFields(ClientboundAddEntityPacket.class, byte.class).get(0);
-    public final Field ClientboundAddEntityPacket_UUID = getFields(ClientboundAddEntityPacket.class, UUID.class).get(0);
-    public final Field ClientboundAddEntityPacket_X = getFields(ClientboundAddEntityPacket.class, double.class).get(0);
-    public final Field ClientboundAddEntityPacket_Y = getFields(ClientboundAddEntityPacket.class, double.class).get(1);
-    public final Field ClientboundAddEntityPacket_Z = getFields(ClientboundAddEntityPacket.class, double.class).get(2);
 
     public final Field ClientboundSetPlayerTeamPacket_NAME = getFields(ClientboundSetPlayerTeamPacket.class, String.class).get(0);
     public final Field ClientboundSetPlayerTeamPacket_ACTION = getInstanceFields(ClientboundSetPlayerTeamPacket.class, int.class).get(0);

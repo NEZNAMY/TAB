@@ -99,7 +99,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
     }
 
     override fun getEntityType(entity: Any): String {
-        return (entity as Entity).type.toString()
+        return (entity as Entity).type.key().value()
     }
 
     override fun createArmorStand(asm: BackendArmorStandManager, owner: TabPlayer, lineName: String, yOffset: Double, staticOffset: Boolean): BackendArmorStand {

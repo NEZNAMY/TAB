@@ -14,11 +14,14 @@ import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
@@ -44,6 +47,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
     {
         buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport) packet));
         buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata) packet));
+        buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving) packet));
     }
 
     @Override
@@ -71,7 +75,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
     public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
         return new ClientboundSetDisplayObjectivePacket(
                 packet.getSlot(),
-                new Objective(dummyScoreboard, packet.getObjectiveName(), null, null, null)
+                new Objective(dummyScoreboard, packet.getObjectiveName(), null, TextComponent.EMPTY, null)
         );
     }
 
@@ -83,7 +87,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
                         packet.getObjectiveName(),
                         null,
                         componentCache.get(IChatBaseComponent.optimizedComponent(packet.getDisplayName()), clientVersion),
-                        ObjectiveCriteria.RenderType.valueOf(packet.getRenderType().name())
+                        packet.getRenderType() == null ? null : ObjectiveCriteria.RenderType.valueOf(packet.getRenderType().name())
                 ),
                 packet.getAction()
         );
@@ -201,15 +205,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
      *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
-        ClientboundAddEntityPacket nmsPacket = new ClientboundAddEntityPacket();
-        nms.ClientboundAddEntityPacket_ENTITYID.set(nmsPacket, packet.getEntityId());
-        nms.ClientboundAddEntityPacket_UUID.set(nmsPacket, packet.getUniqueId());
-        nms.ClientboundAddEntityPacket_X.set(nmsPacket, packet.getX());
-        nms.ClientboundAddEntityPacket_Y.set(nmsPacket, packet.getY());
-        nms.ClientboundAddEntityPacket_Z.set(nmsPacket, packet.getZ());
-        nms.ClientboundAddEntityPacket_YAW.set(nmsPacket, (byte)(packet.getYaw() * 256.0f / 360.0f));
-        nms.ClientboundAddEntityPacket_PITCH.set(nmsPacket, (byte)(packet.getPitch() * 256.0f / 360.0f));
-        nms.ClientboundAddEntityPacket_ENTITYTYPE.set(nmsPacket, packet.getEntityType());
-        return nmsPacket;
+        return new ClientboundAddEntityPacket(packet.getEntityId(), packet.getUniqueId(), packet.getX(), packet.getY(), packet.getZ(),
+                packet.getYaw(), packet.getPitch(), Registry.ENTITY_TYPE.byId(packet.getEntityType()), 0, Vec3.ZERO);
     }
 }

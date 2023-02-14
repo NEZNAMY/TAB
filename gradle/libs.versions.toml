@@ -77,6 +77,7 @@ redisBungee = { group = "com.github.limework.redisbungee", name = "RedisBungee-B
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
 bstats-bungeecord = { group = "org.bstats", name = "bstats-bungeecord", version.ref = "bstats" }
 bstats-velocity = { group = "org.bstats", name = "bstats-velocity", version.ref = "bstats" }
+bstats-sponge = { group = "org.bstats", name = "bstats-sponge", version.ref = "bstats" }
 
 # Plugins
 plugin-shadow = { group = "gradle.plugin.com.github.johnrengelman", name = "shadow", version.ref = "shadow" }

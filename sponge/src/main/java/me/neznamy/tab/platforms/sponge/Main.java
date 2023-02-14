@@ -1,15 +1,20 @@
 package me.neznamy.tab.platforms.sponge;
 
 import com.google.inject.Inject;
+import java.nio.file.Path;
+import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.bstats.charts.SimplePie;
+import org.bstats.sponge.Metrics;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.SystemSubject;
@@ -26,31 +31,45 @@ import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
-import org.spongepowered.plugin.builtin.jvm.Plugin;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Plugin("tab")
 public final class Main {
 
-    @Inject private Game game;
-    @Inject @ConfigDir(sharedRoot = false) private File configDir;
-    @Inject private Logger logger;
-    @Inject private PluginContainer container;
+    private final Game game;
+    private final Path configDir;
+    private final Logger logger;
+    @Getter
+    private final PluginContainer container;
+    private final Metrics metrics;
+
+    @Inject
+    public Main(Game game, @ConfigDir(sharedRoot = false) Path configDir, Logger logger, PluginContainer container, Metrics.Factory metricsFactory) {
+        this.game = game;
+        this.configDir = configDir;
+        this.logger = logger;
+        this.container = container;
+        this.metrics = metricsFactory.make(17732);
+    }
 
     @Listener
     public void onServerStart(final StartingEngineEvent<Server> event) {
         final SystemSubject console = event.game().systemSubject();
         final String version = game.platform().minecraftVersion().name();
         console.sendMessage(Component.text("[TAB] Server version: " + version));
-        final SpongePlatform platform = new SpongePlatform();
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
+        final SpongePlatform platform = new SpongePlatform(this);
+        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
         game.eventManager().registerListeners(container, new SpongeEventListener());
         TAB.getInstance().load();
+        setupMetrics();
+    }
+
+    private void setupMetrics() {
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> TAB.getInstance().getServerVersion().getFriendlyName()));
     }
 
     @Listener
@@ -81,9 +100,9 @@ public final class Main {
             }
 
             TabPlayer player = null;
-            final Player source = cause.context().get(EventContextKeys.PLAYER).orElse(null);
-            if (source != null) {
-                player = TAB.getInstance().getPlayer(source.uniqueId());
+            final Audience audience = cause.audience();
+            if (audience instanceof Player) {
+                player = TAB.getInstance().getPlayer(((Player) audience).uniqueId());
                 if (player == null) return CommandResult.success(); // Player not loaded correctly
             }
             TAB.getInstance().getCommand().execute(player, args);

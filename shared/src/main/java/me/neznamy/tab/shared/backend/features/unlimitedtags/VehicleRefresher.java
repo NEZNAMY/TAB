@@ -65,7 +65,7 @@ public class VehicleRefresher extends TabFeature {
             if (vehicle != null) {
                 vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
                 playersInVehicle.put(p, vehicle);
-                if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("BOAT")) {
+                if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                     playersOnBoats.add(p);
                 }
             }
@@ -105,7 +105,7 @@ public class VehicleRefresher extends TabFeature {
             vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
             playersInVehicle.put(p, vehicle);
-            if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("BOAT")) {
+            if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                 playersOnBoats.add(p);
                 feature.updateTeamData(p);
             }

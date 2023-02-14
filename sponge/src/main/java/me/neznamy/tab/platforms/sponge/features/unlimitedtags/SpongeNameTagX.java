@@ -3,11 +3,14 @@ package me.neznamy.tab.platforms.sponge.features.unlimitedtags;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.sponge.Main;
 import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
+import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.*;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.value.Value;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,10 +25,10 @@ public class SpongeNameTagX extends BackendNameTagX {
     private final NMSStorage nms = NMSStorage.getInstance();
 
     /** Event listener */
-    private final EventListener eventListener = new EventListener();
+    private final EventListener eventListener = new EventListener(this);
 
-    public SpongeNameTagX() {
-        throw new UnsupportedOperationException("Not implemented yet"); //register events
+    public SpongeNameTagX(final Main plugin) {
+        Sponge.eventManager().registerListeners(plugin.getContainer(), eventListener);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class SpongeNameTagX extends BackendNameTagX {
 
     @Override
     public void unregisterListener() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Sponge.eventManager().unregisterListeners(eventListener);
     }
 
     @Override
@@ -101,12 +104,12 @@ public class SpongeNameTagX extends BackendNameTagX {
 
     @Override
     public int getEntityId(Object entity) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return ((net.minecraft.world.entity.Entity) entity).getId();
     }
 
     @Override
     public String getEntityType(Object entity) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return Registry.ENTITY_TYPE.getKey(((net.minecraft.world.entity.Entity) entity).getType()).getPath();
     }
 
     @Override

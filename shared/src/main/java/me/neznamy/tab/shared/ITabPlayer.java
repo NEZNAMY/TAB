@@ -23,7 +23,7 @@ import java.util.*;
 public abstract class ITabPlayer implements TabPlayer {
 
     /** Platform-specific player object instance */
-    protected final Object player;
+    protected Object player;
 
     /** Player's real name */
     @Getter private final String name;

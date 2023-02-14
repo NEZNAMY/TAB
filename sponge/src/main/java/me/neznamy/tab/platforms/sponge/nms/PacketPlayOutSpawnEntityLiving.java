@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.sponge.nms;
 import lombok.Data;
 import lombok.NonNull;
 import me.neznamy.tab.api.protocol.TabPacket;
-import net.minecraft.network.syncher.SynchedEntityData;
 
 import java.util.UUID;
 

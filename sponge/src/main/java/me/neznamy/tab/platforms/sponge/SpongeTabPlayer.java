@@ -1,5 +1,10 @@
 package me.neznamy.tab.platforms.sponge;
 
+import io.netty.channel.Channel;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
@@ -8,8 +13,11 @@ import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -28,11 +36,20 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private static final ComponentCache<IChatBaseComponent, net.kyori.adventure.text.Component> adventureCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
+    private final Map<UUID, BossBar> bossBars = new HashMap<>();
+
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
                 player.world().key().value(),
                 ProtocolVersion.V1_16_5.getNetworkId(), true);
-        //TODO initialize channel
+
+        try {
+            final Field channelField = Connection.class.getDeclaredField("channel");
+            channelField.setAccessible(true);
+            channel = (Channel) channelField.get(((net.minecraft.server.level.ServerPlayer) player).connection.connection);
+        } catch (final ReflectiveOperationException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override
@@ -48,17 +65,66 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void sendPacket(Object packet) {
         if (packet == null) return;
+        if (packet instanceof Packet<?>) {
+            ((net.minecraft.server.level.ServerPlayer) getPlayer()).connection.send((Packet<?>) packet);
+            return;
+        }
         if (packet instanceof PacketPlayOutBoss) {
             handle((PacketPlayOutBoss) packet);
         } else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
             handle((PacketPlayOutPlayerListHeaderFooter)packet);
-        } else {
-            throw new UnsupportedOperationException("Not implemented yet"); // send packet
         }
     }
 
     private void handle(PacketPlayOutBoss packet) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        BossBar bar;
+        switch (packet.getAction()) {
+            case ADD:
+                if (bossBars.containsKey(packet.getId())) return;
+                bar = BossBar.bossBar(adventureCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()), packet.getPct(),
+                        BossBar.Color.valueOf(packet.getColor().toString()), BossBar.Overlay.valueOf(packet.getOverlay().toString()));
+                if (packet.isCreateWorldFog()) bar.addFlag(BossBar.Flag.CREATE_WORLD_FOG);
+                if (packet.isDarkenScreen()) bar.addFlag(BossBar.Flag.DARKEN_SCREEN);
+                if (packet.isPlayMusic()) bar.addFlag(BossBar.Flag.PLAY_BOSS_MUSIC);
+                bossBars.put(packet.getId(), bar);
+                getPlayer().showBossBar(bar);
+                break;
+            case REMOVE:
+                bar = bossBars.remove(packet.getId());
+                if (bar != null) getPlayer().hideBossBar(bar);
+                break;
+            case UPDATE_PCT:
+                bar = bossBars.get(packet.getId());
+                if (bar != null) bar.progress(packet.getPct());
+                break;
+            case UPDATE_NAME:
+                bar = bossBars.get(packet.getId());
+                if (bar != null) bar.name(adventureCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
+                break;
+            case UPDATE_STYLE:
+                bar = bossBars.get(packet.getId());
+                if (bar != null) {
+                    bar.color(BossBar.Color.valueOf(packet.getColor().toString()));
+                    bar.overlay(BossBar.Overlay.valueOf(packet.getOverlay().toString()));
+                }
+                break;
+            case UPDATE_PROPERTIES:
+                bar = bossBars.get(packet.getId());
+                if (bar != null) {
+                    processFlag(bar, packet.isCreateWorldFog(), BossBar.Flag.CREATE_WORLD_FOG);
+                    processFlag(bar, packet.isDarkenScreen(), BossBar.Flag.DARKEN_SCREEN);
+                    processFlag(bar, packet.isPlayMusic(), BossBar.Flag.PLAY_BOSS_MUSIC);
+                }
+                break;
+        }
+    }
+
+    private void processFlag(final BossBar bar, final boolean targetValue, final BossBar.Flag flag) {
+        if (targetValue) {
+            if (!bar.hasFlag(flag)) bar.addFlag(flag);
+        } else {
+            if (bar.hasFlag(flag)) bar.removeFlag(flag);
+        }
     }
 
     private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
@@ -109,5 +175,9 @@ public final class SpongeTabPlayer extends ITabPlayer {
         if (getPlayer().gameMode().get() == GameModes.ADVENTURE.get()) return 2;
         if (getPlayer().gameMode().get() == GameModes.SPECTATOR.get()) return 3;
         return 0;
+    }
+
+    public void setPlayer(final ServerPlayer player) {
+        this.player = player;
     }
 }

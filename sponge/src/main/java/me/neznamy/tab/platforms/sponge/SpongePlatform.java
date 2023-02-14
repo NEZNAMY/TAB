@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.sponge;
 
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.sponge.features.PetFix;
 import me.neznamy.tab.platforms.sponge.features.unlimitedtags.SpongeNameTagX;
@@ -14,14 +15,19 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 public final class SpongePlatform extends Platform {
 
-    public SpongePlatform() {
-        super(new PacketBuilder());
+    private final Main plugin;
+
+    public SpongePlatform(final Main plugin) {
+        super(new SpongePacketBuilder());
+        this.plugin = plugin;
     }
 
     @Override
@@ -61,7 +67,7 @@ public final class SpongePlatform extends Platform {
 
     @Override
     public NameTag getUnlimitedNametags() {
-        return new SpongeNameTagX();
+        return new SpongeNameTagX(plugin);
     }
 
     @Override
@@ -87,5 +93,15 @@ public final class SpongePlatform extends Platform {
     @Override
     public @Nullable TabFeature getPerWorldPlayerlist() {
         return null;
+    }
+
+    @Override
+    public void sendConsoleMessage(String message, boolean translateColors) {
+        if (translateColors) message = EnumChatFormat.color(message);
+        final Component actualMessage = Component.text()
+                .append(Component.text("[TAB] "))
+                .append(LegacyComponentSerializer.legacySection().deserialize(message))
+                .build();
+        Sponge.systemSubject().sendMessage(actualMessage);
     }
 }

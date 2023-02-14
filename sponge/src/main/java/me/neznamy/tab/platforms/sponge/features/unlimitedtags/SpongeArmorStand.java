@@ -11,7 +11,6 @@ import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -28,7 +27,7 @@ public class SpongeArmorStand extends BackendArmorStand {
     private final ServerPlayer player;
 
     /** Entity destroy packet */
-    protected Packet<ClientGamePacketListener> destroyPacket = new ClientboundRemoveEntitiesPacket(entityId);
+    protected Packet<?> destroyPacket = new ClientboundRemoveEntitiesPacket(entityId);
 
     /**
      * Constructs new instance with given parameters.
@@ -53,7 +52,7 @@ public class SpongeArmorStand extends BackendArmorStand {
     @Override
     public void spawn(TabPlayer viewer) {
         for (TabPacket packet : getSpawnPackets(viewer)) {
-            viewer.sendPacket(packet);
+            viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
         }
     }
 
@@ -77,16 +76,16 @@ public class SpongeArmorStand extends BackendArmorStand {
         Entity vehicle = (Entity) manager.getVehicle(owner);
         if (vehicle != null) {
             String type = manager.getEntityType(vehicle);
-            if (type.contains("HORSE")) { //covering all 3 horse types
+            if (type.contains("horse")) { //covering all 3 horse types
                 y = vehicle.location().y() + 0.85;
             }
-            if (type.equals("DONKEY")) { //1.11+
+            if (type.equals("donkey")) { //1.11+
                 y = vehicle.location().y() + 0.525;
             }
-            if (type.equals("PIG")) {
+            if (type.equals("pig")) {
                 y = vehicle.location().y() + 0.325;
             }
-            if (type.equals("STRIDER")) { //1.16+
+            if (type.equals("strider")) { //1.16+
                 y = vehicle.location().y() + 1.15;
             }
         } else {
@@ -116,11 +115,11 @@ public class SpongeArmorStand extends BackendArmorStand {
      * @return  {@code true} if owner is swimming, {@code false} if not
      */
     private boolean isSwimming() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return ((net.minecraft.server.level.ServerPlayer) player).isSwimming();
     }
 
     private boolean isGliding() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return player.elytraFlying().get();
     }
 
     private TabPacket[] getSpawnPackets(TabPlayer viewer) {

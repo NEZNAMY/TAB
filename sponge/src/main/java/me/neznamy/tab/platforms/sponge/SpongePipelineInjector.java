@@ -33,7 +33,7 @@ public class SpongePipelineInjector extends PipelineInjector {
      * Constructs new instance
      */
     public SpongePipelineInjector(){
-        super(null); //TODO find name
+        super("packet_handler");
     }
 
     @Override
