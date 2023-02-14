@@ -142,7 +142,7 @@ public class BukkitNameTagX extends BackendNameTagX {
 
     @Override
     public String getEntityType(Object entity) {
-        return ((Entity) entity).getType().getKey().getKey();
+        return ((Entity) entity).getType().toString().toLowerCase();
     }
 
     @Override
