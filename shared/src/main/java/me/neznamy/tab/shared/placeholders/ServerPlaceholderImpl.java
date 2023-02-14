@@ -80,6 +80,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
         for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+            if (!player.isLoaded()) continue;
             for (TabFeature f : usage) {
                 long time = System.nanoTime();
                 f.refresh(player, false);
