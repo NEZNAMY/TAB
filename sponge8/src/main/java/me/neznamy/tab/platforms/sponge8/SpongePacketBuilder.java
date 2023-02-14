@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge;
+package me.neznamy.tab.platforms.sponge8;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -9,10 +9,10 @@ import me.neznamy.tab.api.chat.WrappedChatComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.util.ComponentCache;
-import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
-import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
+import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ChatType;

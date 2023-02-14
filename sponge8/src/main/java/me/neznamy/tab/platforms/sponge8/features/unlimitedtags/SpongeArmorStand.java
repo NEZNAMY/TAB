@@ -1,13 +1,13 @@
-package me.neznamy.tab.platforms.sponge.features.unlimitedtags;
+package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.platforms.sponge.SpongePacketBuilder;
-import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.sponge.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.sponge8.SpongePacketBuilder;
+import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import net.minecraft.network.protocol.Packet;

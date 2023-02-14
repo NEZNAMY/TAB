@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge.features.unlimitedtags;
+package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;

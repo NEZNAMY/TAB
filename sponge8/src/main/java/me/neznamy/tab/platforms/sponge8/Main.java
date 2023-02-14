@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge;
+package me.neznamy.tab.platforms.sponge8;
 
 import com.google.inject.Inject;
 import java.nio.file.Path;

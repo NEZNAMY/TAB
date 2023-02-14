@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge;
+package me.neznamy.tab.platforms.sponge8;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
+import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;

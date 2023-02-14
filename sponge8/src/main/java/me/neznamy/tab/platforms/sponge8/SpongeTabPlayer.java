@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge;
+package me.neznamy.tab.platforms.sponge8;
 
 import io.netty.channel.Channel;
 import java.lang.reflect.Field;

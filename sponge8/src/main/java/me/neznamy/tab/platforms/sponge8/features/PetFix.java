@@ -1,9 +1,9 @@
-package me.neznamy.tab.platforms.sponge.features;
+package me.neznamy.tab.platforms.sponge8.features;
 
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
+import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.syncher.SynchedEntityData;

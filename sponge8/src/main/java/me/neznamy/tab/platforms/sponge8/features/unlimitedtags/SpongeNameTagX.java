@@ -1,10 +1,10 @@
-package me.neznamy.tab.platforms.sponge.features.unlimitedtags;
+package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.sponge.Main;
-import me.neznamy.tab.platforms.sponge.nms.NMSStorage;
+import me.neznamy.tab.platforms.sponge8.Main;
+import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;

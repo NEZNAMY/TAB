@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge;
+package me.neznamy.tab.platforms.sponge8;
 
 import me.neznamy.tab.api.TabAPI;
 import org.spongepowered.api.entity.living.player.Player;

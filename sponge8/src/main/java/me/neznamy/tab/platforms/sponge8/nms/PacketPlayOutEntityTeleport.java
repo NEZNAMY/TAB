@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge.nms;
+package me.neznamy.tab.platforms.sponge8.nms;
 
 import lombok.Data;
 import me.neznamy.tab.api.protocol.TabPacket;

@@ -34,7 +34,7 @@ sponge {
         displayName("TAB")
         version(project.version.toString())
         description(project.description)
-        entrypoint("me.neznamy.tab.platforms.sponge.Main")
+        entrypoint("me.neznamy.tab.platforms.sponge8.Main")
     }
 }
 
