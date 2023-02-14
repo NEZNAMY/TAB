@@ -7,6 +7,8 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.scoreboard.Team;
 import org.spongepowered.api.world.World;
 
 public final class SpongeEventListener {
@@ -21,6 +23,12 @@ public final class SpongeEventListener {
     @Listener
     public void onJoin(final ClientConnectionEvent.Join event) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
+
+        // Remove teams & objectives because they get saved into the world when using APIs
+        Scoreboard sb = event.getTargetEntity().getScoreboard();
+        sb.getTeams().forEach(Team::unregister);
+        sb.getObjectives().forEach(sb::removeObjective);
+
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onJoin(new SpongeTabPlayer(event.getTargetEntity())));
     }

@@ -1,34 +1,16 @@
 package me.neznamy.tab.platforms.sponge7;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.api.protocol.Skin;
-import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import org.spongepowered.api.boss.BossBarColor;
-import org.spongepowered.api.boss.BossBarColors;
-import org.spongepowered.api.boss.BossBarOverlay;
-import org.spongepowered.api.boss.BossBarOverlays;
-import org.spongepowered.api.boss.ServerBossBar;
+import org.spongepowered.api.boss.*;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -39,13 +21,7 @@ import org.spongepowered.api.entity.living.player.tab.TabList;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
-import org.spongepowered.api.scoreboard.CollisionRule;
-import org.spongepowered.api.scoreboard.CollisionRules;
-import org.spongepowered.api.scoreboard.Score;
-import org.spongepowered.api.scoreboard.Scoreboard;
-import org.spongepowered.api.scoreboard.Team;
-import org.spongepowered.api.scoreboard.Visibilities;
-import org.spongepowered.api.scoreboard.Visibility;
+import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlot;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
@@ -56,6 +32,12 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.serializer.TextSerializers;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public final class SpongeTabPlayer extends ITabPlayer {
 
@@ -78,7 +60,8 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private final Map<String, Objective> objectives = new HashMap<>();
 
     public SpongeTabPlayer(final Player player) {
-        super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(), player.getWorld().getName(), ProtocolVersion.V1_12_2.getNetworkId(), true);
+        super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
+                player.getWorld().getName(), ProtocolVersion.V1_12_2.getNetworkId(), true);
     }
 
     @Override
@@ -296,13 +279,16 @@ public final class SpongeTabPlayer extends ITabPlayer {
                         .build();
                 objectives.put(packet.getObjectiveName(), objective);
                 scoreboard.addObjective(objective);
+                break;
             case 1:
                 scoreboard.removeObjective(objectives.get(packet.getObjectiveName()));
+                break;
             case 2:
                 displayName = cutToLength(packet.getDisplayName(), 32);
                 final Objective obj = objectives.get(packet.getObjectiveName());
                 obj.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()));
                 if (packet.getRenderType() != null) obj.setDisplayMode(convertDisplayMode(packet.getRenderType()));
+                break;
         }
     }
 
@@ -320,14 +306,11 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private void handle(final PacketPlayOutScoreboardScore packet) {
         switch (packet.getAction()) {
             case CHANGE:
-                final Objective objective = objectives.get(packet.getObjectiveName());
-                final Text scoreName = textCache.get(IChatBaseComponent.optimizedComponent(packet.getPlayer()), getVersion());
-                final Score score = objective.getOrCreateScore(scoreName);
-                score.setScore(packet.getScore());
+                objectives.get(packet.getObjectiveName()).getOrCreateScore(textCache.get(IChatBaseComponent.optimizedComponent(packet.getPlayer()), getVersion())).setScore(packet.getScore());
+                break;
             case REMOVE:
-                final Objective objective1 = objectives.get(packet.getObjectiveName());
-                final Text name = textCache.get(IChatBaseComponent.optimizedComponent(packet.getPlayer()), getVersion());
-                objective1.removeScore(name);
+                objectives.get(packet.getObjectiveName()).removeScore(textCache.get(IChatBaseComponent.optimizedComponent(packet.getPlayer()), getVersion()));
+                break;
         }
     }
 
@@ -350,9 +333,14 @@ public final class SpongeTabPlayer extends ITabPlayer {
                         .collisionRule(convertCollisionRule(packet.getCollisionRule()))
                         .nameTagVisibility(convertVisibility(packet.getNameTagVisibility()))
                         .build();
+                for (final String member : packet.getPlayers()) {
+                    team.addMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
+                }
                 scoreboard.registerTeam(team);
+                break;
             case 1:
                 scoreboard.getTeam(packet.getName()).ifPresent(Team::unregister);
+                break;
             case 2:
                 team = scoreboard.getTeam(packet.getName()).orElse(null);
                 if (team == null) return;
@@ -366,6 +354,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 team.setCanSeeFriendlyInvisibles((packet.getOptions() & 0x02) != 0);
                 team.setCollisionRule(convertCollisionRule(packet.getCollisionRule()));
                 team.setNameTagVisibility(convertVisibility(packet.getNameTagVisibility()));
+                break;
             case 3:
                 team = scoreboard.getTeam(packet.getName()).orElse(null);
                 if (team == null) return;
@@ -373,6 +362,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 for (final String member : packet.getPlayers()) {
                     team.addMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
                 }
+                break;
             case 4:
                 team = scoreboard.getTeam(packet.getName()).orElse(null);
                 if (team == null) return;
@@ -380,6 +370,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 for (final String member : packet.getPlayers()) {
                     team.removeMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
                 }
+                break;
         }
     }
 
