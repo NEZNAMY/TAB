@@ -13,7 +13,7 @@ val platforms = setOf(
     projects.bungeecord,
     projects.krypton,
     projects.velocity,
-    projects.sponge
+    projects.sponge8
 ).map { it.dependencyProject }
 
 val special = setOf(
