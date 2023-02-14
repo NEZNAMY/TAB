@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabFeature
+import me.neznamy.tab.api.protocol.PacketBuilder
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.backend.BackendPlatform
@@ -16,7 +17,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.util.*
 
-class KryptonPlatform(private val plugin: Main) : BackendPlatform(KryptonPacketBuilder) {
+class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
 
     private val server = plugin.server
 
@@ -80,5 +81,9 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform(KryptonPacketB
 
     override fun getPerWorldPlayerlist(): TabFeature? {
         return null
+    }
+
+    override fun createPacketBuilder(): PacketBuilder {
+        return KryptonPacketBuilder
     }
 }

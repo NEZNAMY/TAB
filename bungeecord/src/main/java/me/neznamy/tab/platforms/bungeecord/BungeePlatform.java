@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import me.neznamy.tab.shared.TAB;
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -14,14 +16,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * BungeeCord implementation of Platform
  */
+@AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
 
-    /**
-     * Constructs new instance with BungeeCord packet builder
-     */
-    public BungeePlatform() {
-        super(new BungeePacketBuilder());
-    }
+    private final Plugin plugin;
 
     @Override
     public @Nullable PipelineInjector getPipelineInjector() {
@@ -32,12 +30,17 @@ public class BungeePlatform extends ProxyPlatform {
     public @Nullable RedisSupport getRedisSupport() {
         if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.REDIS_BUNGEE) != null) {
             if (RedisBungeeAPI.getRedisBungeeApi() != null) {
-                return new RedisBungeeSupport();
+                return new RedisBungeeSupport(plugin);
             } else {
                 TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
             }
         }
         return null;
+    }
+
+    @Override
+    public PacketBuilder createPacketBuilder() {
+        return new BungeePacketBuilder();
     }
 
     @Override

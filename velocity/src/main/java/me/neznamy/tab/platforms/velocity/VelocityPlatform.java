@@ -15,13 +15,6 @@ import java.util.Locale;
  */
 public class VelocityPlatform extends ProxyPlatform {
 
-    /**
-     * Constructs new instance with default packet builder
-     */
-    public VelocityPlatform() {
-        super(new PacketBuilder());
-    }
-
     @Override
     public String getPluginVersion(String plugin) {
         return Main.getInstance().getServer().getPluginManager().getPlugin(plugin.toLowerCase(Locale.US))
@@ -43,5 +36,10 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     public @Nullable RedisSupport getRedisSupport() {
         return null;
+    }
+
+    @Override
+    public PacketBuilder createPacketBuilder() {
+        return new PacketBuilder();
     }
 }

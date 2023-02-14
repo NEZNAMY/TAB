@@ -9,6 +9,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
@@ -58,7 +59,6 @@ public class BukkitPlatform extends BackendPlatform {
      *          plugin instance
      */
     public BukkitPlatform(JavaPlugin plugin) {
-        super(new BukkitPacketBuilder());
         this.plugin = plugin;
         if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VIAVERSION)) {
             if (ReflectionUtils.classExists("com.viaversion.viaversion.api.Via")) {
@@ -134,6 +134,11 @@ public class BukkitPlatform extends BackendPlatform {
     @Override
     public @Nullable TabFeature getPerWorldPlayerlist() {
         return new PerWorldPlayerList(plugin);
+    }
+
+    @Override
+    public PacketBuilder createPacketBuilder() {
+        return new BukkitPacketBuilder();
     }
 
     /**

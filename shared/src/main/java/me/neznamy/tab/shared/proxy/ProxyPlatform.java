@@ -5,20 +5,19 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -37,10 +36,6 @@ public abstract class ProxyPlatform extends Platform {
 
     /** Placeholders which are refreshed on backend server */
     @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
-
-    protected ProxyPlatform(PacketBuilder packetBuilder) {
-        super(packetBuilder);
-    }
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {

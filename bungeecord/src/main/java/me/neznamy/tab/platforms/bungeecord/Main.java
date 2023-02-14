@@ -30,7 +30,7 @@ public class Main extends Plugin {
             getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1671 and up (or an equivalent fork) to work."));
             return;
         }
-        BungeePlatform platform = new BungeePlatform();
+        BungeePlatform platform = new BungeePlatform(this);
         ProxyServer.getInstance().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
         TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder(), getLogger()));
         getProxy().getPluginManager().registerListener(this, new BungeeEventListener(platform));

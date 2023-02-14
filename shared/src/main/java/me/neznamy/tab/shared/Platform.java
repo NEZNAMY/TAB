@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabConstants;
@@ -24,11 +23,10 @@ import org.slf4j.Logger;
  * An interface with methods that are called in universal code,
  * but require platform-specific API calls
  */
-@AllArgsConstructor
 public abstract class Platform {
 
     /** Platform's packet builder implementation */
-    @Getter private final PacketBuilder packetBuilder;
+    @Getter private final PacketBuilder packetBuilder = createPacketBuilder();
 
     public void sendConsoleMessage(String message, boolean translateColors) {
         Object logger = TAB.getInstance().getLogger();
@@ -185,5 +183,7 @@ public abstract class Platform {
     public abstract @Nullable RedisSupport getRedisSupport();
 
     public abstract @Nullable TabFeature getPerWorldPlayerlist();
+
+    public abstract PacketBuilder createPacketBuilder();
 
 }

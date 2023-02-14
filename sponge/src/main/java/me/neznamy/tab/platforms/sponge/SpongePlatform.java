@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.sponge;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.sponge.features.PetFix;
 import me.neznamy.tab.platforms.sponge.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.Platform;
@@ -20,14 +22,10 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
+@RequiredArgsConstructor
 public final class SpongePlatform extends Platform {
 
     private final Main plugin;
-
-    public SpongePlatform(final Main plugin) {
-        super(new SpongePacketBuilder());
-        this.plugin = plugin;
-    }
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
@@ -92,6 +90,11 @@ public final class SpongePlatform extends Platform {
     @Override
     public @Nullable TabFeature getPerWorldPlayerlist() {
         return null;
+    }
+
+    @Override
+    public PacketBuilder createPacketBuilder() {
+        return new SpongePacketBuilder();
     }
 
     @Override
