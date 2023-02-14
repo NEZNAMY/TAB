@@ -27,7 +27,7 @@ public class SpongeArmorStand extends BackendArmorStand {
     private final ServerPlayer player;
 
     /** Entity destroy packet */
-    protected Packet<?> destroyPacket = new ClientboundRemoveEntitiesPacket(entityId);
+    protected final Packet<?> destroyPacket = new ClientboundRemoveEntitiesPacket(entityId);
 
     /**
      * Constructs new instance with given parameters.

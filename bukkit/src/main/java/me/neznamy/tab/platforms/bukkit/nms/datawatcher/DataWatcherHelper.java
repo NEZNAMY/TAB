@@ -78,11 +78,7 @@ public class DataWatcherHelper {
      */
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
-            try {
-                data.setValue(new DataWatcherObject(2, registry.getTypeOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
-            } catch (ReflectiveOperationException e) {
-                TAB.getInstance().getErrorManager().printError("Failed to create component", e);
-            }
+            data.setValue(new DataWatcherObject(2, registry.getTypeOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
         } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8){
             data.setValue(new DataWatcherObject(2, registry.getTypeString()), customName);
         } else {

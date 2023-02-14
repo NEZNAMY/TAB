@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.sponge;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.sponge.features.PetFix;
 import me.neznamy.tab.platforms.sponge.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.Platform;

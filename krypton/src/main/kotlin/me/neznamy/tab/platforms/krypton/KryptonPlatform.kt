@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
+import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabFeature
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
 import me.neznamy.tab.shared.TAB
@@ -13,13 +14,15 @@ import me.neznamy.tab.shared.permission.PermissionPlugin
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import java.util.*
 
 class KryptonPlatform(private val plugin: Main) : BackendPlatform(KryptonPacketBuilder) {
 
     private val server = plugin.server
 
     override fun detectPermissionPlugin(): PermissionPlugin {
-        if (server.pluginManager.isLoaded("luckperms")) return LuckPerms(getPluginVersion("luckperms"))
+        if (server.pluginManager.isLoaded(TabConstants.Plugin.LUCKPERMS.lowercase(Locale.getDefault())))
+            return LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS.lowercase(Locale.getDefault())))
         return None()
     }
 

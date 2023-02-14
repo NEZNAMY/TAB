@@ -201,10 +201,8 @@ public final class SpongePacketBuilder extends PacketBuilder {
      * @param   packet
      *          Spawn packet
      * @return  NMS spawn packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutSpawnEntityLiving packet) {
         return new ClientboundAddEntityPacket(packet.getEntityId(), packet.getUniqueId(), packet.getX(), packet.getY(), packet.getZ(),
                 packet.getYaw(), packet.getPitch(), Registry.ENTITY_TYPE.byId(packet.getEntityType()), 0, Vec3.ZERO);
     }

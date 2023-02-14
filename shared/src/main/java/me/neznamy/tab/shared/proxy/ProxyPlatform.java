@@ -46,8 +46,8 @@ public abstract class ProxyPlatform extends Platform {
     public PermissionPlugin detectPermissionPlugin() {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             return new VaultBridge();
-        } else if (getPluginVersion("LuckPerms") != null) {
-            return new LuckPerms(getPluginVersion("LuckPerms"));
+        } else if (getPluginVersion(TabConstants.Plugin.LUCKPERMS) != null) {
+            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS));
         } else {
             return new VaultBridge();
         }

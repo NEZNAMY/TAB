@@ -531,10 +531,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
      * @param   clientVersion
      *          client version used to decide RGB conversion
      * @return  converted component or {@code null} if {@code component} is {@code null}
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).get();
         return (clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy).get(component, clientVersion);
     }

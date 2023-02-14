@@ -33,7 +33,7 @@ public class NameTag extends TabFeature implements TeamManager {
 
     private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
             TAB.getInstance().getPlatform().getPluginVersion("ViaRewind") != null ||
-            TAB.getInstance().getPlatform().getPluginVersion("ProtocolSupport") != null ||
+            TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.PROTOCOL_SUPPORT) != null ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {

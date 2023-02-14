@@ -23,6 +23,7 @@ import org.kryptonmc.api.plugin.annotation.DataFolder
 import org.kryptonmc.api.plugin.annotation.Dependency
 import org.kryptonmc.api.plugin.annotation.Plugin
 import java.nio.file.Path
+import java.util.*
 
 /**
  * Main class for Krypton platform
@@ -33,7 +34,10 @@ import java.nio.file.Path
     TabConstants.PLUGIN_VERSION,
     "An all-in-one solution that works",
     ["NEZNAMY", "BomBardyGamer"],
-    [Dependency("luckperms", true), Dependency("viaversion", true)]
+    [
+        Dependency("luckperms", true),
+        Dependency("viaversion", true)
+    ]
 )
 class Main @Inject constructor(
     val server: Server,
@@ -74,7 +78,7 @@ class Main @Inject constructor(
     }
 
     fun getProtocolVersion(player: Player): Int {
-        if (server.pluginManager.isLoaded("viaversion")) return getViaProtocolVersion(player)
+        if (server.pluginManager.isLoaded(TabConstants.Plugin.VIAVERSION.lowercase(Locale.getDefault()))) return getViaProtocolVersion(player)
         return TAB.getInstance().serverVersion.networkId
     }
 
@@ -96,7 +100,7 @@ class Main @Inject constructor(
             return -1
         } catch (exception: Throwable) {
             TAB.getInstance().errorManager.printError("Failed to get protocol version of ${player.profile.name} using ViaVersion " +
-                "v${server.pluginManager.getPlugin("viaversion")?.description?.version}")
+                "v${server.pluginManager.getPlugin(TabConstants.Plugin.VIAVERSION.lowercase(Locale.getDefault()))?.description?.version}")
             return TAB.getInstance().serverVersion.networkId
         }
     }

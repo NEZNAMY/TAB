@@ -27,7 +27,7 @@ public class BukkitArmorStand extends BackendArmorStand {
     private final Player player;
 
     /** Entity destroy packet */
-    protected TabPacket destroyPacket = new PacketPlayOutEntityDestroy(entityId);
+    protected final TabPacket destroyPacket = new PacketPlayOutEntityDestroy(entityId);
 
     /**
      * Constructs new instance with given parameters.
