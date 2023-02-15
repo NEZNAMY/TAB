@@ -37,7 +37,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      * Map of methods executing tasks using Velocity API calls equal to sending the actual packets
      */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
-            = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>(){{
+            = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
         put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
         put(PacketPlayOutChat.class, packet -> handle((PacketPlayOutChat) packet));
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));

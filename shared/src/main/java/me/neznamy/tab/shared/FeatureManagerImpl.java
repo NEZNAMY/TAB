@@ -203,7 +203,7 @@ public class FeatureManagerImpl implements FeatureManager {
      *          IN packet coming from player
      * @return  {@code true} if packet should be cancelled, {@code false} if not
      */
-    public boolean onPacketReceive(TabPlayer sender, Object packet){
+    public boolean onPacketReceive(TabPlayer sender, Object packet) {
         boolean cancel = false;
         for (TabFeature f : values) {
             if (!f.overridesMethod("onPacketReceive")) continue;
@@ -226,7 +226,7 @@ public class FeatureManagerImpl implements FeatureManager {
      * @param   packet
      *          OUT packet coming from the server
      */
-    public void onPacketSend(TabPlayer receiver, Object packet){
+    public void onPacketSend(TabPlayer receiver, Object packet) {
         for (TabFeature f : values) {
             if (!f.overridesMethod("onPacketSend")) continue;
             long time = System.nanoTime();

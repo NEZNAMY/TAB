@@ -165,7 +165,7 @@ public class BungeePacketBuilder extends PacketBuilder {
     }
 
     @Override
-    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket){
+    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket) {
         return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).getPosition(), ((ScoreboardDisplay) bungeePacket).getName());
     }
 }

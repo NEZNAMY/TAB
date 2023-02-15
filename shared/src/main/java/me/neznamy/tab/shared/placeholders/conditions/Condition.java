@@ -23,7 +23,7 @@ public class Condition {
 
     /** All supported sub-condition types */
     @Getter private static final Map<String, Function<String, SimpleCondition>> conditionTypes =
-            new LinkedHashMap<String, Function<String, SimpleCondition>>(){{
+            new LinkedHashMap<String, Function<String, SimpleCondition>>() {{
         put("permission:", PermissionCondition::new);
         put("<-", ContainsCondition::new);
         put("|-", StartsWithCondition::new);

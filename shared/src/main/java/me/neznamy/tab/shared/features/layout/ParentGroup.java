@@ -28,7 +28,7 @@ public class ParentGroup {
         }
     }
 
-    public void tick(List<TabPlayer> remainingPlayers){
+    public void tick(List<TabPlayer> remainingPlayers) {
         players.clear();
         List<TabPlayer> meetingCondition = new ArrayList<>();
         for (TabPlayer p : remainingPlayers) {

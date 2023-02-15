@@ -57,7 +57,7 @@ public class DeserializedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public List<IChatBaseComponent> getExtra(){
+    public List<IChatBaseComponent> getExtra() {
         if (!deserialized) deserialize();
         return super.getExtra();
     }
@@ -75,7 +75,7 @@ public class DeserializedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
+    public IChatBaseComponent setExtra(List<IChatBaseComponent> components) {
         if (!deserialized) deserialize();
         modified = true;
         return super.setExtra(components);

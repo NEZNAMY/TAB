@@ -136,7 +136,7 @@ public class Converter {
         } else {
             newConfig.set("scoreboard-teams.case-sensitive-sorting", true);
             newConfig.set("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList("abovename","nametag","belowname","another"));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.static-lines", new HashMap<String, Object>(){{put("myCustomLine", 0.66);}});
+            newConfig.set("scoreboard-teams.unlimited-nametag-mode.static-lines", new HashMap<String, Object>() {{put("myCustomLine", 0.66);}});
             sortingType = oldConfig.getBoolean("sort-players-by-permissions", false) ? "GROUP_PERMISSIONS" : "GROUPS";
             sortingPlaceholder = "";
         }
@@ -210,7 +210,7 @@ public class Converter {
                 for (Object bar : entry.getValue()) {
                     if (!bars.containsKey(bar)) continue;
                     activeBossBars.add(bar);
-                    if (bars.get(bar).containsKey("display-condition")){
+                    if (bars.get(bar).containsKey("display-condition")) {
                         bars.get(bar).put("display-condition", bars.get(bar).get("display-condition") + ";%" + separator + "%=" + entry.getKey());
                     } else {
                         bars.get(bar).put("display-condition", "%" + separator + "%=" + entry.getKey());

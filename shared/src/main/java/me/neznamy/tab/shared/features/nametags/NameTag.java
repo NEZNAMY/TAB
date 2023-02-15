@@ -47,7 +47,7 @@ public class NameTag extends TabFeature implements TeamManager {
     }
 
     @Override
-    public void load(){
+    public void load() {
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);

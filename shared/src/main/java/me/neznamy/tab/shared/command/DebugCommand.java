@@ -173,7 +173,7 @@ public class DebugCommand extends SubCommand {
      *
      * @return  list of extra properties
      */
-    public List<String> getExtraLines(){
+    public List<String> getExtraLines() {
         if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) return new ArrayList<>();
         List<String> lines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
         Map<String, Number> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");

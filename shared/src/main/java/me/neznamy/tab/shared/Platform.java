@@ -149,7 +149,7 @@ public abstract class Platform {
      *          Name of the player
      * @return  protocol version of the player using ViaVersion
      */
-    public int getProtocolVersionVia(UUID player, String playerName, int retryLevel){
+    public int getProtocolVersionVia(UUID player, String playerName, int retryLevel) {
         try {
             if (retryLevel == 10) {
                 TAB.getInstance().debug("Failed to get protocol version of " + playerName + " after 10 retries");

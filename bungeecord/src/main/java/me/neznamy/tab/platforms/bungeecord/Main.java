@@ -25,7 +25,7 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 public class Main extends Plugin {
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         if (!ReflectionUtils.classExists("net.md_5.bungee.protocol.packet.PlayerListItemUpdate")) {
             getLogger().info(EnumChatFormat.color("&cThe plugin requires BungeeCord build #1671 and up (or an equivalent fork) to work."));
             return;

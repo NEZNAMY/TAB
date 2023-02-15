@@ -294,7 +294,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
                 } else {
                     sbOffPlayers.remove(player.getName());
                 }
-                synchronized (sbOffPlayers){
+                synchronized (sbOffPlayers) {
                     TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(sbOffPlayers));
                 }
             }
@@ -310,7 +310,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
                 } else {
                     if (!sbOffPlayers.contains(player.getName())) sbOffPlayers.add(player.getName());
                 }
-                synchronized (sbOffPlayers){
+                synchronized (sbOffPlayers) {
                     TAB.getInstance().getConfiguration().getPlayerDataFile().set("scoreboard-off", new ArrayList<>(sbOffPlayers));
                 }
             }

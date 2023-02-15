@@ -26,11 +26,11 @@ import java.util.List;
 public class Main extends JavaPlugin {
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         String version = Bukkit.getBukkitVersion().split("-")[0];
         String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Server version: " + version + " (" + serverPackage + ")"));
-        if (!isVersionSupported()){
+        if (!isVersionSupported()) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -66,7 +66,7 @@ public class Main extends JavaPlugin {
      *
      * @return  {@code true} if server version is compatible, {@code false} if not
      */
-    private boolean isVersionSupported(){
+    private boolean isVersionSupported() {
         List<String> supportedVersions = Arrays.asList(
                 "v1_5_R1", "v1_5_R2", "v1_5_R3", "v1_6_R1", "v1_6_R2", "v1_6_R3",
                 "v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4", "v1_8_R1", "v1_8_R2", "v1_8_R3",
@@ -103,7 +103,7 @@ public class Main extends JavaPlugin {
         for (SupplierWithException<NMSStorage> loader : loaders) {
             try {
                 return loader.get();
-            } catch (Exception ignored){}
+            } catch (Exception ignored) {}
         }
         throw new IllegalStateException("Unsupported server version");
     }

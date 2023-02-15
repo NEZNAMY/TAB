@@ -59,7 +59,7 @@ public class AnnounceScoreboardCommand extends SubCommand {
             for (String bar : s.getRegisteredScoreboards().keySet()) {
                 if (bar.toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar);
             }
-        } else if (arguments.length == 2 && s.getRegisteredScoreboards().get(arguments[0]) != null){
+        } else if (arguments.length == 2 && s.getRegisteredScoreboards().get(arguments[0]) != null) {
             for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
                 if (time.startsWith(arguments[1])) suggestions.add(time);
             }

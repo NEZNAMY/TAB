@@ -69,7 +69,7 @@ public class IChatBaseComponent {
      *
      * @return  list of extra components
      */
-    public List<IChatBaseComponent> getExtra(){
+    public List<IChatBaseComponent> getExtra() {
         if (extra == null) return Collections.emptyList();
         return extra;
     }
@@ -83,7 +83,7 @@ public class IChatBaseComponent {
      * @throws  IllegalArgumentException
      *          if {@code components} is an empty list
      */
-    public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
+    public IChatBaseComponent setExtra(List<IChatBaseComponent> components) {
         if (components.isEmpty()) throw new IllegalArgumentException("Unexpected empty array of components"); //exception taken from minecraft
         this.extra = components;
         return this;
@@ -177,14 +177,14 @@ public class IChatBaseComponent {
      *          text to convert
      * @return  organized component from colored text
      */
-    public static IChatBaseComponent fromColoredText(@NonNull String originalText){
+    public static IChatBaseComponent fromColoredText(@NonNull String originalText) {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
         List<IChatBaseComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         IChatBaseComponent component = new IChatBaseComponent();
-        for (int i = 0; i < text.length(); i++){
+        for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (c == EnumChatFormat.COLOR_CHAR){
+            if (c == EnumChatFormat.COLOR_CHAR) {
                 i++;
                 if (i >= text.length()) {
                     break;
@@ -194,7 +194,7 @@ public class IChatBaseComponent {
                     c = (char)(c + ' ');
                 }
                 EnumChatFormat format = EnumChatFormat.getByChar(c);
-                if (format != null){
+                if (format != null) {
                     if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
@@ -202,7 +202,7 @@ public class IChatBaseComponent {
                         component.text = null;
                         builder = new StringBuilder();
                     }
-                    switch (format){
+                    switch (format) {
                     case BOLD: 
                         component.modifier.setBold(true);
                         break;
@@ -228,7 +228,7 @@ public class IChatBaseComponent {
                         break;
                     }
                 }
-            } else if (c == '#' && text.length() > i+6){
+            } else if (c == '#' && text.length() > i+6) {
                 String hex = text.substring(i+1, i+7);
                 if (RGBUtils.getInstance().isHexCode(hex)) {
                     TextColor color;
@@ -239,7 +239,7 @@ public class IChatBaseComponent {
                         color = new TextColor(hex);
                         i += 6;
                     }
-                    if (builder.length() > 0){
+                    if (builder.length() > 0) {
                         component.setText(builder.toString());
                         components.add(component);
                         builder = new StringBuilder();
@@ -367,7 +367,7 @@ public class IChatBaseComponent {
      *          text to create component from
      * @return  The most performance-optimized component based on text
      */
-    public static IChatBaseComponent optimizedComponent(String text){
+    public static IChatBaseComponent optimizedComponent(String text) {
         return stringCache.get(text, null);
     }
 }

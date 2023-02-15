@@ -37,7 +37,7 @@ public class MySQL {
     }
 
     public void execute(String query, Object... vars) throws SQLException {
-        try (PreparedStatement ps = prepareStatement(query, vars)){
+        try (PreparedStatement ps = prepareStatement(query, vars)) {
             ps.execute();
         }
     }

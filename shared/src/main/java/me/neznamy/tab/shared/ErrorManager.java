@@ -110,7 +110,7 @@ public class ErrorManager {
     private synchronized void printError(String message, List<String> error, boolean intoConsoleToo, File file) {
         try {
             if (!file.exists()) Files.createFile(file.toPath());
-            try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))){
+            try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
                 if (message != null) {
                     if (file.length() < 1000000)
                         buf.write(dateFormat.format(new Date()) + IChatBaseComponent.fromColoredText("&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ").toRawText() + EnumChatFormat.decolor(message) + System.getProperty("line.separator"));

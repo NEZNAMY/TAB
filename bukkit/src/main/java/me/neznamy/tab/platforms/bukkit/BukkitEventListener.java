@@ -26,7 +26,7 @@ public class BukkitEventListener implements Listener {
      *          quit event
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onQuit(PlayerQuitEvent e){
+    public void onQuit(PlayerQuitEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() -> TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
@@ -51,7 +51,7 @@ public class BukkitEventListener implements Listener {
      *          world changed event
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onWorldChange(PlayerChangedWorldEvent e){
+    public void onWorldChange(PlayerChangedWorldEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));

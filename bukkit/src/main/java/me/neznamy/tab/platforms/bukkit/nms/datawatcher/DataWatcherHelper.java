@@ -70,12 +70,12 @@ public class DataWatcherHelper {
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
             data.setValue(new DataWatcherObject(2, registry.getTypeOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
-        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8){
+        } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) {
             data.setValue(new DataWatcherObject(2, registry.getTypeString()), customName);
         } else {
             //name length is limited to 64 characters on <1.8
             String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
-            if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 6){
+            if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 6) {
                 data.setValue(new DataWatcherObject(10, null), cutName);
             } else {
                 data.setValue(new DataWatcherObject(5, null), cutName);

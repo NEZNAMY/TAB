@@ -84,7 +84,7 @@ public class BungeePipelineInjector extends PipelineInjector {
                 default:
                     break;
                 }
-            } catch (Exception | NoSuchMethodError e){
+            } catch (Exception | NoSuchMethodError e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
             }
             try {
@@ -100,7 +100,7 @@ public class BungeePipelineInjector extends PipelineInjector {
          * @param   packet
          *          packet to modify
          */
-        private void modifyPlayers(Team packet){
+        private void modifyPlayers(Team packet) {
             if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
             Collection<String> col = Lists.newArrayList(packet.getPlayers());
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {

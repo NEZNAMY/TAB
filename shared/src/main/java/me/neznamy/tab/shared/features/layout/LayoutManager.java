@@ -25,7 +25,7 @@ public class LayoutManager extends TabFeature {
     @Getter private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
     @Getter private final boolean hideVanishedPlayers = TAB.getInstance().getConfiguration().getLayout().getBoolean("hide-vanished-players", true);
     @Getter private final SkinManager skinManager = new SkinManager(defaultSkin);
-    @Getter private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>(){{
+    @Getter private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
         for (int slot=1; slot<=80; slot++) {
             put(slot, new UUID(0, translateSlot(slot)));
         }

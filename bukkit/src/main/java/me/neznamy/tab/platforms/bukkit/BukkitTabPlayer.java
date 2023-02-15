@@ -55,7 +55,7 @@ public class BukkitTabPlayer extends ITabPlayer {
      * @param   protocolVersion
      *          Player's protocol network id
      */
-    public BukkitTabPlayer(Player p, int protocolVersion){
+    public BukkitTabPlayer(Player p, int protocolVersion) {
         super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(), p.getWorld().getName(), protocolVersion, true);
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);

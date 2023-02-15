@@ -54,7 +54,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     @Getter @Setter private TabExpansion tabExpansion;
 
-    public PlaceholderManagerImpl(){
+    public PlaceholderManagerImpl() {
         super("Refreshing placeholders", "Updating placeholders");
     }
     
@@ -143,7 +143,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return relationalPlaceholderRefreshIntervals.getOrDefault(identifier, defaultRefresh);
     }
 
-    public Collection<Placeholder> getAllPlaceholders(){
+    public Collection<Placeholder> getAllPlaceholders() {
         return new ArrayList<>(registeredPlaceholders.values());
     }
 
@@ -195,7 +195,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
 
     @Override
-    public List<String> detectPlaceholders(String text){
+    public List<String> detectPlaceholders(String text) {
         if (text == null || !text.contains("%")) return Collections.emptyList();
         List<String> placeholders = new ArrayList<>();
         Matcher m = placeholderPattern.matcher(text);

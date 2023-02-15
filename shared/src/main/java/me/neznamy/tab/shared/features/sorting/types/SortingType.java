@@ -55,7 +55,7 @@ public abstract class SortingType {
     protected LinkedHashMap<String, Integer> convertSortingElements(String[] elements) {
         LinkedHashMap<String, Integer> sortedGroups = new LinkedHashMap<>();
         int index = 1;
-        for (String element : elements){
+        for (String element : elements) {
             for (String element0 : element.split("\\|")) {
                 sortedGroups.put(EnumChatFormat.color(element0.trim().toLowerCase()), index++);
             }

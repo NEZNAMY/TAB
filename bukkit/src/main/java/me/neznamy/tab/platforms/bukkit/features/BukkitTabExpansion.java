@@ -29,12 +29,12 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     @Getter private final String version = TabConstants.PLUGIN_VERSION;
 
     @Override
-    public boolean persist(){
+    public boolean persist() {
         return true;
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, @NotNull String identifier){
+    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (identifier.startsWith("replace_")) {
             String text = "%" + identifier.substring(8) + "%";
             String textBefore;

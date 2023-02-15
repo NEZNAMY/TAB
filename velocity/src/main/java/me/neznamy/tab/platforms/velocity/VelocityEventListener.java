@@ -22,7 +22,7 @@ public class VelocityEventListener {
      *          disconnect event
      */
     @Subscribe
-    public void onQuit(DisconnectEvent e){
+    public void onQuit(DisconnectEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
@@ -35,7 +35,7 @@ public class VelocityEventListener {
      *          connect event
      */
     @Subscribe
-    public void onConnect(ServerPostConnectEvent e){
+    public void onConnect(ServerPostConnectEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         Player p = e.getPlayer();
         TabAPI.getInstance().getThreadManager().runTask(() -> {
@@ -69,7 +69,7 @@ public class VelocityEventListener {
      *          plugin message event
      */
     @Subscribe
-    public void onPluginMessageEvent(PluginMessageEvent event){
+    public void onPluginMessageEvent(PluginMessageEvent event) {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());

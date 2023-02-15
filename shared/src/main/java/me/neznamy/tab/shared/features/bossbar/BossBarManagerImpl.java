@@ -49,7 +49,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
      */
     public BossBarManagerImpl() {
         super("BossBar", "Processing display conditions", "bossbar");
-        for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()){
+        for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()) {
             BossBarLine line = loadFromConfig(bar.toString());
             registeredBossBars.put(bar.toString(), line);
             if (!line.isAnnouncementBar()) defaultBars.add(bar.toString());

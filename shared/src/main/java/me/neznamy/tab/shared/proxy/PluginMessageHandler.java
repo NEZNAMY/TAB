@@ -39,7 +39,7 @@ public class PluginMessageHandler {
                     if (player == null) return;
                     ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
                     String subChannel = in.readUTF();
-                    if ("Placeholder".equals(subChannel)){
+                    if ("Placeholder".equals(subChannel)) {
                         Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(in.readUTF());
                         if (placeholder instanceof RelationalPlaceholder) {
                             ((RelationalPlaceholder)placeholder).updateValue(player, TAB.getInstance().getPlayer(in.readUTF()), in.readUTF());

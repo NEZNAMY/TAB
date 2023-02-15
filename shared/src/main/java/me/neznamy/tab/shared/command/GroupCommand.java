@@ -54,7 +54,7 @@ public class GroupCommand extends PropertyCommand {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
                 TAB.getInstance().getConfiguration().getGroups().remove(group);
                 for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-                    if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)){
+                    if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
                         pl.forceRefresh();
                     }
                 }
@@ -113,8 +113,8 @@ public class GroupCommand extends PropertyCommand {
      * @param   value
      *          new value
      */
-    private void saveGroup(TabPlayer sender, String group, String type, String value, String server, String world){
-        if (value.length() > 0){
+    private void saveGroup(TabPlayer sender, String group, String type, String value, String server, String world) {
+        if (value.length() > 0) {
             sendMessage(sender, getMessages().getGroupValueAssigned(type, value, group));
         } else {
             sendMessage(sender, getMessages().getGroupValueRemoved(type, group));
@@ -123,7 +123,7 @@ public class GroupCommand extends PropertyCommand {
         if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;
         TAB.getInstance().getConfiguration().getGroups().setProperty(group, type, server, world, value.length() == 0 ? null : value);
         for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-            if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)){
+            if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
                 pl.forceRefresh();
             }
         }

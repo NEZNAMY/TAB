@@ -35,7 +35,7 @@ public class SpongePipelineInjector extends PipelineInjector {
     /**
      * Constructs new instance
      */
-    public SpongePipelineInjector(){
+    public SpongePipelineInjector() {
         super("packet_handler");
     }
 
@@ -53,7 +53,7 @@ public class SpongePipelineInjector extends PipelineInjector {
             try {
                 if (TAB.getInstance().getFeatureManager().onPacketReceive(player, packet)) return;
                 super.channelRead(context, packet);
-            } catch (Exception e){
+            } catch (Exception e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
         }
@@ -72,14 +72,14 @@ public class SpongePipelineInjector extends PipelineInjector {
                     super.write(context, packet, channelPromise);
                     return;
                 }
-                if (packet instanceof ClientboundSetDisplayObjectivePacket){
+                if (packet instanceof ClientboundSetDisplayObjectivePacket) {
                     TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
                 }
                 if (packet instanceof ClientboundSetObjectivePacket) {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
-            } catch (Exception e){
+            } catch (Exception e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
             try {

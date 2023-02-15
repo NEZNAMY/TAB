@@ -199,7 +199,7 @@ public class BukkitPlatform extends BackendPlatform {
      * @return  protocol version of the player
      */
     public int getProtocolVersion(Player player) {
-        if (protocolSupport){
+        if (protocolSupport) {
             int version = getProtocolVersionPS(player);
             //some PS versions return -1 on unsupported server versions instead of throwing exception
             if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
@@ -217,7 +217,7 @@ public class BukkitPlatform extends BackendPlatform {
      *          Player to get protocol version of
      * @return  protocol version of the player using ProtocolSupport
      */
-    private int getProtocolVersionPS(Player player){
+    private int getProtocolVersionPS(Player player) {
         try {
             Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
             int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);

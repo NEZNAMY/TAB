@@ -85,8 +85,8 @@ public class PlayerUUIDCommand extends PropertyCommand {
      * @param   value
      *          new value
      */
-    public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value, String server, String world){
-        if (value.length() > 0){
+    public void savePlayer(TabPlayer sender, TabPlayer player, String type, String value, String server, String world) {
+        if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player.getName() + "(" + player.getUniqueId().toString() + ")"));
         } else {
             sendMessage(sender, getMessages().getPlayerValueRemoved(type, player.getName() + "(" + player.getUniqueId().toString() + ")"));

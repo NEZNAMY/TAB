@@ -43,12 +43,12 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
     }
 
     @Override
-    public void load(){
+    public void load() {
         Bukkit.getOnlinePlayers().forEach(this::checkPlayer);
     }
 
     @Override
-    public void unload(){
+    public void unload() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             for (Player pl : Bukkit.getOnlinePlayers()) {
                 p.showPlayer(pl);
@@ -80,7 +80,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
      *          Player to update
      */
     private void checkPlayer(Player p) {
-        for (Player all : Bukkit.getOnlinePlayers()){
+        for (Player all : Bukkit.getOnlinePlayers()) {
             if (all == p) continue;
             if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
             if (shouldSee(p, all) && !p.canSee(all)) p.showPlayer(all);

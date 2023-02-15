@@ -125,7 +125,7 @@ public class CpuManager implements ThreadManager {
      *
      * @return  cpu usage map of placeholders
      */
-    public Map<String, Float> getPlaceholderUsage(){
+    public Map<String, Float> getPlaceholderUsage() {
         return getUsage(placeholderUsagePrevious);
     }
 
@@ -134,7 +134,7 @@ public class CpuManager implements ThreadManager {
      *
      * @return  cpu usage map of methods
      */
-    public Map<String, Float> getMethodUsage(){
+    public Map<String, Float> getMethodUsage() {
         return getUsage(methodUsagePrevious);
     }
 
@@ -143,7 +143,7 @@ public class CpuManager implements ThreadManager {
      *
      * @return  map of sent packets per feature
      */
-    public Map<String, AtomicInteger> getSentPackets(){
+    public Map<String, AtomicInteger> getSentPackets() {
         return sortByValue1(packetsPrevious);
     }
 
@@ -154,7 +154,7 @@ public class CpuManager implements ThreadManager {
      *          map to convert
      * @return  converted and sorted map
      */
-    private Map<String, Float> getUsage(Map<String, AtomicLong> map){
+    private Map<String, Float> getUsage(Map<String, AtomicLong> map) {
         Map<String, Long> nanoMap = new HashMap<>();
         String key;
         for (Entry<String, AtomicLong> nanos : map.entrySet()) {
@@ -174,7 +174,7 @@ public class CpuManager implements ThreadManager {
      *
      * @return  map of CPU usage per feature and type
      */
-    public Map<String, Map<String, Float>> getFeatureUsage(){
+    public Map<String, Map<String, Float>> getFeatureUsage() {
         Map<String, Map<String, Long>> total = new HashMap<>();
         for (Entry<String, Map<String, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
             String key = nanos.getKey();
@@ -258,7 +258,7 @@ public class CpuManager implements ThreadManager {
      *          map to sort
      * @return  list of keys sorted from the highest map value to lowest
      */
-    private <K> List<K> sortKeys(Map<K, Map<String, Long>> map){
+    private <K> List<K> sortKeys(Map<K, Map<String, Long>> map) {
         Map<K, Long> simplified = new LinkedHashMap<>();
         for (Entry<K, Map<String, Long>> entry : map.entrySet()) {
             simplified.put(entry.getKey(), entry.getValue().values().stream().mapToLong(Long::longValue).sum());

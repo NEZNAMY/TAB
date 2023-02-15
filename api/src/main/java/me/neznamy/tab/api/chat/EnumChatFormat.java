@@ -137,7 +137,7 @@ public enum EnumChatFormat {
      *          exact blue value
      * @return  enum value or null if no such combination exists
      */
-    public static EnumChatFormat fromRGBExact(int red, int green, int blue){
+    public static EnumChatFormat fromRGBExact(int red, int green, int blue) {
         for (EnumChatFormat format : VALUES) {
             if (format.red == red && format.green == green && format.blue == blue) return format;
         }
@@ -152,12 +152,12 @@ public enum EnumChatFormat {
      *          text to replace color symbol in
      * @return  colorized string from provided text
      */
-    public static String color(String textToTranslate){
+    public static String color(String textToTranslate) {
         if (textToTranslate == null) return null;
         if (!textToTranslate.contains("&")) return textToTranslate;
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
-            if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[(i + 1)]) > -1)){
+            if ((b[i] == '&') && ("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx".indexOf(b[(i + 1)]) > -1)) {
                 b[i] = COLOR_CHAR;
                 b[(i + 1)] = Character.toLowerCase(b[(i + 1)]);
             }
@@ -189,9 +189,9 @@ public enum EnumChatFormat {
         if (input == null) return "";
         StringBuilder result = new StringBuilder();
         int length = input.length();
-        for (int index = length - 1; index > -1; index--){
+        for (int index = length - 1; index > -1; index--) {
             char section = input.charAt(index);
-            if ((section == COLOR_CHAR || section == '&') && (index < length - 1)){
+            if ((section == COLOR_CHAR || section == '&') && (index < length - 1)) {
                 char c = input.charAt(index + 1);
                 if ("0123456789AaBbCcDdEeFfKkLlMmNnOoRr".contains(String.valueOf(c))) {
                     result.insert(0, COLOR_CHAR);

@@ -47,7 +47,7 @@ public class Animation {
      * @param   interval
      *          change interval to next frame
      */
-    public Animation(String name, List<String> list, int interval){
+    public Animation(String name, List<String> list, int interval) {
         this.name = name;
         this.messages = TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
         this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);
@@ -82,7 +82,7 @@ public class Animation {
      *
      * @return  current message
      */
-    public String getMessage(){
+    public String getMessage() {
         return messages[(((TAB.getInstance().getPlaceholderManager().getLoopTime().get())%(messages.length*interval))/interval)];
     }
 }

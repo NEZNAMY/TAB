@@ -90,7 +90,7 @@ public enum ProtocolVersion {
      * @param   networkId
      *          network id of this version
      */
-    ProtocolVersion(int networkId){
+    ProtocolVersion(int networkId) {
         this.networkId = networkId;
         this.minorVersion = Integer.parseInt(toString().split("_")[1]);
         this.friendlyName = toString().substring(1).replace("_", ".");
@@ -102,7 +102,7 @@ public enum ProtocolVersion {
      * @param   friendlyName
      *          friendly name to display
      */
-    ProtocolVersion(String friendlyName){
+    ProtocolVersion(String friendlyName) {
         this.networkId = 999;
         this.minorVersion = 18;
         this.friendlyName = friendlyName;

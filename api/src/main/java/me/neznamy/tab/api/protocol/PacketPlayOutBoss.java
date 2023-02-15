@@ -151,7 +151,7 @@ public class PacketPlayOutBoss implements TabPacket {
      *
      * @return  the bitmask
      */
-    public byte getFlags(){
+    public byte getFlags() {
         byte value = 0;
         if (darkenScreen) value += 1;
         if (playMusic) value += 2;

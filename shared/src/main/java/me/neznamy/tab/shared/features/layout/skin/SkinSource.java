@@ -40,7 +40,7 @@ public abstract class SkinSource {
     public abstract List<String> download(String input);
 
     protected JSONObject getResponse(String url) throws IOException, ParseException {
-        try (InputStreamReader reader = new InputStreamReader(new URL(url).openStream())){
+        try (InputStreamReader reader = new InputStreamReader(new URL(url).openStream())) {
             return (JSONObject) new JSONParser().parse(reader);
         }
     }

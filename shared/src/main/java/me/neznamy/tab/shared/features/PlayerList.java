@@ -119,7 +119,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     }
 
     @Override
-    public void load(){
+    public void load() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabled(all.getServer(), all.getWorld())) {
                 addDisabledPlayer(all);
@@ -131,7 +131,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     }
 
     @Override
-    public void unload(){
+    public void unload() {
         disabling = true;
         List<PlayerInfoData> updatedPlayers = new ArrayList<>();
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {

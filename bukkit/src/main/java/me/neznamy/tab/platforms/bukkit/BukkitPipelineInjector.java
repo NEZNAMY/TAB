@@ -31,7 +31,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
     /**
      * Constructs new instance
      */
-    public BukkitPipelineInjector(){
+    public BukkitPipelineInjector() {
         super("packet_handler");
     }
 
@@ -49,7 +49,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
             try {
                 if (TAB.getInstance().getFeatureManager().onPacketReceive(player, packet)) return;
                 super.channelRead(context, packet);
-            } catch (Exception e){
+            } catch (Exception e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
         }
@@ -69,14 +69,14 @@ public class BukkitPipelineInjector extends PipelineInjector {
                     super.write(context, packet, channelPromise);
                     return;
                 }
-                if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet)){
+                if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet)) {
                     TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
                 }
                 if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
-            } catch (Exception e){
+            } catch (Exception e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
             try {

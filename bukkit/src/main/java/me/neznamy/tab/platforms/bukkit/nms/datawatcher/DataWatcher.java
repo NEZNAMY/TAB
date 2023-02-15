@@ -29,7 +29,7 @@ public class DataWatcher {
      * @param   value
      *          value
      */
-    public void setValue(@NonNull DataWatcherObject type, @NonNull Object value){
+    public void setValue(@NonNull DataWatcherObject type, @NonNull Object value) {
         dataValues.put(type.getPosition(), new DataWatcherItem(type, value));
     }
 

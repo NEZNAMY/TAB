@@ -31,7 +31,7 @@ public class WrappedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public List<IChatBaseComponent> getExtra(){
+    public List<IChatBaseComponent> getExtra() {
         throw new UnsupportedOperationException("Not supported for " + getClass().getSimpleName());
     }
 
@@ -46,7 +46,7 @@ public class WrappedChatComponent extends IChatBaseComponent {
     }
 
     @Override
-    public IChatBaseComponent setExtra(List<IChatBaseComponent> components){
+    public IChatBaseComponent setExtra(List<IChatBaseComponent> components) {
         throw new UnsupportedOperationException("Not supported for " + getClass().getSimpleName());
     }
 

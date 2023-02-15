@@ -44,7 +44,7 @@ public class ChatModifier {
      *
      * @return  true if bold is defined and set to true, false otherwise
      */
-    public boolean isBold(){
+    public boolean isBold() {
         return Boolean.TRUE.equals(bold);
     }
 
@@ -53,7 +53,7 @@ public class ChatModifier {
      *
      * @return  true if italic is defined and set to true, false otherwise
      */
-    public boolean isItalic(){
+    public boolean isItalic() {
         return Boolean.TRUE.equals(italic);
     }
 
@@ -62,7 +62,7 @@ public class ChatModifier {
      *
      * @return  true if underlined is defined and set to true, false otherwise
      */
-    public boolean isUnderlined(){
+    public boolean isUnderlined() {
         return Boolean.TRUE.equals(underlined);
     }
 
@@ -71,7 +71,7 @@ public class ChatModifier {
      *
      * @return  true if strikethrough is defined and set to true, false otherwise
      */
-    public boolean isStrikethrough(){
+    public boolean isStrikethrough() {
         return Boolean.TRUE.equals(strikethrough);
     }
 
@@ -80,7 +80,7 @@ public class ChatModifier {
      *
      * @return  true if obfuscation is defined and set to true, false otherwise
      */
-    public boolean isObfuscated(){
+    public boolean isObfuscated() {
         return Boolean.TRUE.equals(obfuscated);
     }
 

@@ -69,7 +69,7 @@ public class AnnounceBarCommand extends SubCommand {
                 if (bar.getName().toLowerCase().startsWith(arguments[0].toLowerCase()) &&
                         bar.isAnnouncementBar()) suggestions.add(bar.getName());
             }
-        } else if (arguments.length == 2 && b.getBossBar(arguments[0]) != null){
+        } else if (arguments.length == 2 && b.getBossBar(arguments[0]) != null) {
             for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
                 if (time.startsWith(arguments[1])) suggestions.add(time);
             }

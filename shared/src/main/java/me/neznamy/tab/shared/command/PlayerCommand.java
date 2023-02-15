@@ -84,8 +84,8 @@ public class PlayerCommand extends PropertyCommand {
      * @param   value
      *          new value
      */
-    public void savePlayer(TabPlayer sender, String player, String type, String value, String server, String world){
-        if (value.length() > 0){
+    public void savePlayer(TabPlayer sender, String player, String type, String value, String server, String world) {
+        if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
         } else {
             sendMessage(sender, getMessages().getPlayerValueRemoved(type, player));
@@ -96,7 +96,7 @@ public class PlayerCommand extends PropertyCommand {
         TabPlayer pl = TAB.getInstance().getPlayer(player);
         try {
             if (pl == null) pl = TAB.getInstance().getPlayer(UUID.fromString(player));
-        } catch (IllegalArgumentException ignored){} // not an uuid string
+        } catch (IllegalArgumentException ignored) {} // not an uuid string
         if (pl != null) {
             pl.forceRefresh();
         }

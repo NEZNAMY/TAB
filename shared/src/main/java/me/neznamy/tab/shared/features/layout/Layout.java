@@ -24,7 +24,7 @@ public class Layout extends TabFeature {
     private final Condition displayCondition;
     private final Map<Integer, FixedSlot> fixedSlots;
     private final List<Integer> emptySlots;
-    private final List<ParentGroup> groups;
+    @Getter private final List<ParentGroup> groups;
     @Getter private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
 
     public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
@@ -72,10 +72,6 @@ public class Layout extends TabFeature {
         return displayCondition == null || displayCondition.isMet(p);
     }
 
-    public List<ParentGroup> getGroups(){
-        return groups;
-    }
-
     public void tick() {
         Stream<TabPlayer> str = manager.getSortedPlayers().keySet().stream();
         if (manager.isHideVanishedPlayers()) {
@@ -109,7 +105,7 @@ public class Layout extends TabFeature {
     public void onServerChange(TabPlayer player, String from, String to) {
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         //velocity clearing TabList on server switch
-        if (viewers.remove(player)){
+        if (viewers.remove(player)) {
             sendTo(player);
         }
     }

@@ -271,7 +271,7 @@ public abstract class NMSStorage {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType);
         } else if (minorVersion >= 8) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent, byte.class);
-        } else if (minorVersion >= 7){
+        } else if (minorVersion >= 7) {
             newPacketPlayOutChat = PacketPlayOutChat.getConstructor(IChatBaseComponent);
         }
     }
@@ -690,7 +690,7 @@ public abstract class NMSStorage {
      *          class to return field values from
      * @return  map of values
      */
-    public Map<String, Object> getStaticFields(Class<?> clazz){
+    public Map<String, Object> getStaticFields(Class<?> clazz) {
         Map<String, Object> fields = new HashMap<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers())) {

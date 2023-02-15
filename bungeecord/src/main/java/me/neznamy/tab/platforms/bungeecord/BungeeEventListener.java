@@ -27,7 +27,7 @@ public class BungeeEventListener implements Listener {
      *          disconnect event
      */
     @EventHandler
-    public void onQuit(PlayerDisconnectEvent e){
+    public void onQuit(PlayerDisconnectEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
@@ -40,7 +40,7 @@ public class BungeeEventListener implements Listener {
      *          switch event
      */
     @EventHandler
-    public void onSwitch(ServerSwitchEvent e){
+    public void onSwitch(ServerSwitchEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() -> {
             if (TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
@@ -71,7 +71,7 @@ public class BungeeEventListener implements Listener {
      *          plugin message event
      */
     @EventHandler
-    public void on(PluginMessageEvent event){
+    public void on(PluginMessageEvent event) {
         if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);

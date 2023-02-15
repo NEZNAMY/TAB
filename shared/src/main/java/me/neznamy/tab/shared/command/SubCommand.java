@@ -126,7 +126,7 @@ public abstract class SubCommand {
      *          beginning of the name
      * @return  List of compatible players
      */
-    public List<String> getOnlinePlayers(String nameStart){
+    public List<String> getOnlinePlayers(String nameStart) {
         List<String> suggestions = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
@@ -134,7 +134,7 @@ public abstract class SubCommand {
         return suggestions;
     }
 
-    public List<String> getStartingArgument(Collection<String> values, String argument){
+    public List<String> getStartingArgument(Collection<String> values, String argument) {
         return values.stream().filter(value -> value.toLowerCase().startsWith(argument.toLowerCase())).collect(Collectors.toList());
     }
 

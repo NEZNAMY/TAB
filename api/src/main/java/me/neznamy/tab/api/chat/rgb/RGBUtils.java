@@ -143,7 +143,7 @@ public class RGBUtils {
         if (!text.contains("#")) return EnumChatFormat.color(text);
         String applied = applyFormats(text);
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < applied.length(); i++){
+        for (int i = 0; i < applied.length(); i++) {
             char c = applied.charAt(i);
             if (c == '#' && applied.length() > i+6) {
                 String hexCode = applied.substring(i+1, i+7);

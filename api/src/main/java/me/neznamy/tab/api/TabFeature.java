@@ -285,7 +285,7 @@ public abstract class TabFeature {
      * @param   player
      *          Player who changed vanish status
      */
-    public void onVanishStatusChange(TabPlayer player){
+    public void onVanishStatusChange(TabPlayer player) {
         //empty by default
     }
 

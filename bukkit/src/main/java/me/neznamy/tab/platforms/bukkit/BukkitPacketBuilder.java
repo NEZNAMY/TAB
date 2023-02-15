@@ -50,7 +50,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
             entityIds.put(EntityType.ARMOR_STAND, 1);
         } else {
             entityIds.put(EntityType.WITHER, 64);
-            if (nms.getMinorVersion() >= 8){
+            if (nms.getMinorVersion() >= 8) {
                 entityIds.put(EntityType.ARMOR_STAND, 30);
             }
         }
@@ -511,7 +511,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
      *          double value
      * @return  int value
      */
-    private int floor(double paramDouble){
+    private int floor(double paramDouble) {
         int i = (int)paramDouble;
         return paramDouble < i ? i - 1 : i;
     }

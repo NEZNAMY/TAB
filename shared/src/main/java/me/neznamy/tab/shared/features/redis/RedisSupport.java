@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class RedisSupport extends TabFeature {
 
     /** Redis players on other proxies by their UUID */
-    protected final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
+    @Getter protected final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
 
     /** UUID of this proxy to ignore messages coming from the same proxy */
     protected final UUID proxy = UUID.randomUUID();
@@ -59,15 +59,6 @@ public abstract class RedisSupport extends TabFeature {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
-    }
-
-    /**
-     * Returns all players on other proxies
-     *
-     * @return  all players on other proxies
-     */
-    public Map<String, RedisPlayer> getRedisPlayers(){
-        return redisPlayers;
     }
 
     /**
