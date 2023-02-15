@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -22,7 +23,7 @@ import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,14 +50,15 @@ public class Main {
     @Inject @Getter private ProxyServer server;
     
     /** Metrics factory for bStats */
-    @Inject
-    private Metrics.Factory metricsFactory;
+    @Inject private Metrics.Factory metricsFactory;
 
     /** Console logger with TAB's prefix */
-    @Inject
-    private Logger logger;
+    @Inject private Logger logger;
 
-    /** TAB's plugin message channel */
+    /** Folder for configuration files */
+    @Inject @DataDirectory Path dataFolder;
+
+    /** Plugin message channel */
     @Getter private final MinecraftChannelIdentifier minecraftChannelIdentifier = MinecraftChannelIdentifier.create(
             TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[0], TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME.split(":")[1]);
 
@@ -77,7 +79,7 @@ public class Main {
                     + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
         }
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
-        TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, server.getVersion().getVersion(), new File("plugins" + File.separatorChar + "TAB"), logger));
+        TAB.setInstance(new TAB(platform, ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
