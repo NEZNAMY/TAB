@@ -33,12 +33,10 @@ import java.util.stream.Collectors;
 
 public final class SpongePacketBuilder extends PacketBuilder {
 
-    @Getter private static final SpongePacketBuilder instance = new SpongePacketBuilder();
     private final NMSStorage nms = NMSStorage.getInstance();
     public final Scoreboard dummyScoreboard = new Scoreboard();
 
-    public final int ARMOR_STAND_ID = 1;
-
+    public static final int ARMOR_STAND_ID = 1;
     private static final UUID SYSTEM_ID = new UUID(0, 0);
 
     @Getter private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,

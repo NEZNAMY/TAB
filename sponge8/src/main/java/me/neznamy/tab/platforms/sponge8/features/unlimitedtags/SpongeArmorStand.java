@@ -125,7 +125,7 @@ public class SpongeArmorStand extends BackendArmorStand {
     private TabPacket[] getSpawnPackets(TabPlayer viewer) {
         visible = calculateVisibility();
         return new TabPacket[] {
-                new PacketPlayOutSpawnEntityLiving(entityId, uuid, SpongePacketBuilder.getInstance().ARMOR_STAND_ID,
+                new PacketPlayOutSpawnEntityLiving(entityId, uuid, SpongePacketBuilder.ARMOR_STAND_ID,
                         player.location().x(), getLocation(viewer), player.location().z(), 0, 0),
                 new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer))
         };
