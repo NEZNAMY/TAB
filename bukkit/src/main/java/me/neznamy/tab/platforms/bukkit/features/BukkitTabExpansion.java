@@ -35,7 +35,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
 
     @Override
     public @NotNull String getIdentifier(){
-        return "tab";
+        return TabConstants.PLUGIN_ID;
     }
 
     @Override

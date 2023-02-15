@@ -15,7 +15,8 @@ public class TabConstants {
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";
     public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-2";
-    public static final String REDIS_CHANNEL_NAME = "TAB";
+    public static final String REDIS_CHANNEL_NAME = PLUGIN_NAME;
+    public static final String PIPELINE_HANDLER_NAME = PLUGIN_NAME;
 
     /**
      * Private constructor to prevent the class from being instantiated

@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import io.netty.channel.ChannelDuplexHandler;
 import lombok.Setter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -22,7 +23,7 @@ import me.neznamy.tab.shared.TAB;
 public abstract class PipelineInjector extends TabFeature {
 
     //name of the pipeline decoder injected in netty
-    public final String DECODER_NAME = "TAB";
+    public final String DECODER_NAME = TabConstants.PIPELINE_HANDLER_NAME;
 
     //handler to inject before
     private final String injectPosition;
