@@ -42,6 +42,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
     //players currently seeing this scoreboard
     @Getter private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 
+    private final String titleProperty;
+
     /**
      * Constructs new instance with given parameters and registers lines to feature manager
      *
@@ -81,6 +83,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         this.manager = manager;
         this.name = name;
         this.title = title;
+        this.titleProperty = getName() + "-" + TabConstants.Property.SCOREBOARD_TITLE;
         for (int i=0; i<lines.size(); i++) {
             ScoreboardLine score;
             if (dynamicLinesOnly) {
@@ -131,8 +134,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
     public void addPlayer(TabPlayer p) {
         if (players.contains(p)) return; //already registered
         players.add(p);
-        p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
-        p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(TabConstants.Property.SCOREBOARD_TITLE).get(),
+        p.setProperty(this, titleProperty, title);
+        p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(),
                 EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
         p.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(ScoreboardManagerImpl.DISPLAY_SLOT, ScoreboardManagerImpl.OBJECTIVE_NAME), TabConstants.PacketCategory.SCOREBOARD_TITLE);
         for (Line s : lines) {
@@ -168,14 +171,14 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
     public void refresh(TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
         refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
-                refreshed.getProperty(TabConstants.Property.SCOREBOARD_TITLE).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
+                refreshed.getProperty(titleProperty).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
     }
 
     @Override
     public void setTitle(String title) {
         this.title = title;
         for (TabPlayer p : players) {
-            p.setProperty(this, TabConstants.Property.SCOREBOARD_TITLE, title);
+            p.setProperty(this, titleProperty, title);
             refresh(p, false);
         }
     }
