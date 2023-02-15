@@ -117,7 +117,7 @@ public class LayoutManager extends TabFeature {
         if (highest == null) return;
         List<PlayerInfoData> data = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            data.add(new PlayerInfoData(all.getTablistUUID()));
+            data.add(new PlayerInfoData(all.getTablistId()));
         }
         p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, data), this);
     }

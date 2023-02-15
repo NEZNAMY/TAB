@@ -83,7 +83,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "tabformat");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put("tabformat", format);
         sendMessage(json.toString());
     }
@@ -103,7 +103,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "nametag");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put(TabConstants.Property.TAGPREFIX, tagPrefix);
         json.put(TabConstants.Property.TAGSUFFIX, tagSuffix);
         sendMessage(json.toString());
@@ -122,7 +122,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "belowname");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put("belowname", value);
         sendMessage(json.toString());
     }
@@ -140,7 +140,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "yellow-number");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put("yellow-number", value);
         sendMessage(json.toString());
     }
@@ -158,7 +158,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "team");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put("to", to);
         sendMessage(json.toString());
     }
@@ -377,7 +377,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "server");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put("server", to);
         sendMessage(json.toString());
         if (p.getVersion().getMinorVersion() < 8 || global == null) return;
@@ -398,7 +398,7 @@ public abstract class RedisSupport extends TabFeature {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "quit");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         sendMessage(json.toString());
     }
 

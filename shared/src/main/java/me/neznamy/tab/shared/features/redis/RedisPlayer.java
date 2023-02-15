@@ -91,7 +91,7 @@ public class RedisPlayer {
     public static JSONObject toJson(RedisSupport redis, TabPlayer p) {
         JSONObject json = new JSONObject();
         json.put("action", "join");
-        json.put("UUID", p.getTablistUUID().toString());
+        json.put("UUID", p.getTablistId().toString());
         json.put("name", p.getName());
         json.put("server", p.getServer());
         if (redis.getPlayerList() != null) {

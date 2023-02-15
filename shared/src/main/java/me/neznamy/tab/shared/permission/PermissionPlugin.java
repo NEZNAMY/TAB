@@ -13,6 +13,9 @@ public abstract class PermissionPlugin {
     /** Version of the permission plugin */
     @Getter private final String version;
 
+    /** Permission plugin's name */
+    @Getter private final String name = getClass().getSimpleName();
+
     /**
      * Returns primary permission group of player
      *
@@ -21,13 +24,4 @@ public abstract class PermissionPlugin {
      * @return  player's primary permission group
      */
     public abstract String getPrimaryGroup(TabPlayer player);
-
-    /**
-     * Returns name of the permission plugin
-     *
-     * @return  name of the permission plugin
-     */
-    public String getName() {
-        return getClass().getSimpleName();
-    }
 }

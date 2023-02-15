@@ -528,7 +528,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
      * @return  converted component or {@code null} if {@code component} is {@code null}
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
-        if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).get();
+        if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).getOriginalComponent();
         return componentCache.get(component, clientVersion);
     }
 

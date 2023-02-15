@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TabConstants;
 
@@ -8,6 +9,8 @@ import me.neznamy.tab.api.TabConstants;
  */
 public class None extends PermissionPlugin {
 
+    @Getter private final String name = "Unknown/None";
+
     public None() {
         super(null);
     }
@@ -15,10 +18,5 @@ public class None extends PermissionPlugin {
     @Override
     public String getPrimaryGroup(TabPlayer p) {
         return TabConstants.NO_GROUP;
-    }
-
-    @Override
-    public String getName() {
-        return "Unknown/None";
     }
 }

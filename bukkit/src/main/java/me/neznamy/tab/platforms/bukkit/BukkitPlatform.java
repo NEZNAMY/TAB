@@ -8,7 +8,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
@@ -18,7 +17,6 @@ import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
-import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
@@ -41,6 +39,9 @@ import java.util.Collection;
  * Implementation of Platform interface for Bukkit platform
  */
 public class BukkitPlatform extends BackendPlatform {
+
+    @Getter private final BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
+    @Getter private final BukkitPipelineInjector pipelineInjector = new BukkitPipelineInjector();
 
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
@@ -106,11 +107,6 @@ public class BukkitPlatform extends BackendPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector getPipelineInjector() {
-        return new BukkitPipelineInjector();
-    }
-
-    @Override
     public NameTag getUnlimitedNametags() {
         return new BukkitNameTagX(plugin);
     }
@@ -133,11 +129,6 @@ public class BukkitPlatform extends BackendPlatform {
     @Override
     public @Nullable TabFeature getPerWorldPlayerlist() {
         return new PerWorldPlayerList(plugin);
-    }
-
-    @Override
-    public PacketBuilder createPacketBuilder() {
-        return new BukkitPacketBuilder();
     }
 
     /**

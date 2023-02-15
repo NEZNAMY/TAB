@@ -32,7 +32,7 @@ public abstract class ITabPlayer implements TabPlayer {
     @Getter private final UUID uniqueId;
 
     /** Player's tablist UUID */
-    private final UUID tabListId;
+    @Getter private final UUID tablistId;
 
     /**
      * World the player is currently in, {@code "N/A"} if TAB is
@@ -50,7 +50,7 @@ public abstract class ITabPlayer implements TabPlayer {
     private String temporaryGroup;
 
     /** Player's game type, {@code true} for Bedrock, {@code false} for Java */
-    private final boolean bedrockPlayer;
+    @Getter private final boolean bedrockPlayer;
 
     /** Player's property map where key is unique identifier and value is property object */
     private final Map<String, Property> properties = new HashMap<>();
@@ -105,7 +105,7 @@ public abstract class ITabPlayer implements TabPlayer {
         this.bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
         this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
         UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-        this.tabListId = useRealId ? getUniqueId() : offlineId;
+        this.tablistId = useRealId ? getUniqueId() : offlineId;
     }
 
     /**
@@ -206,11 +206,6 @@ public abstract class ITabPlayer implements TabPlayer {
     @Override
     public void sendMessage(IChatBaseComponent message) {
         sendCustomPacket(new PacketPlayOutChat(message, ChatMessageType.SYSTEM));
-    }
-
-    @Override
-    public UUID getTablistUUID() {
-        return tabListId;
     }
 
     @Override
@@ -321,11 +316,6 @@ public abstract class ITabPlayer implements TabPlayer {
             return setProperty(feature, property, value[0], value[1], true);
         }
         return setProperty(feature, property, ifNotSet, "None", true);
-    }
-
-    @Override
-    public boolean isBedrockPlayer() {
-        return bedrockPlayer;
     }
 
     @Override

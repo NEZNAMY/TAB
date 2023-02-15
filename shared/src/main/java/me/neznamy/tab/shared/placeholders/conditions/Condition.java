@@ -22,7 +22,7 @@ public class Condition {
     private static Map<String, Condition> registeredConditions = new HashMap<>();
 
     /** All supported sub-condition types */
-    private static final Map<String, Function<String, SimpleCondition>> conditionTypes =
+    @Getter private static final Map<String, Function<String, SimpleCondition>> conditionTypes =
             new LinkedHashMap<String, Function<String, SimpleCondition>>(){{
         put("permission:", PermissionCondition::new);
         put("<-", ContainsCondition::new);
@@ -188,15 +188,6 @@ public class Condition {
      */
     public static void clearConditions() {
         registeredConditions = new HashMap<>();
-    }
-
-    /**
-     * Returns map of all registered condition types
-     *
-     * @return  all registered condition types
-     */
-    public static Map<String, Function<String, SimpleCondition>> getConditionTypes() {
-        return conditionTypes;
     }
 
     /**

@@ -9,27 +9,20 @@ import java.sql.SQLException;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 
+@RequiredArgsConstructor
 public class MySQL {
 
     private Connection con;
     private final String host;
+    private final int port;
     private final String database;
     private final String username;
     private final String password;
-    private final int port;
 
-    public MySQL(String host, int port, String database, String username, String password) throws SQLException {
-        this.host = host;
-        this.port = port;
-        this.database = database;
-        this.username = username;
-        this.password = password;
-        openConnection();
-    }
-    
-    private void openConnection() throws SQLException {
+    public void openConnection() throws SQLException {
         if (isConnected()) return;
         con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
         TAB.getInstance().sendConsoleMessage("&aSuccessfully connected to MySQL", true);

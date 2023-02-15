@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import com.viaversion.viaversion.api.Via;
-import lombok.Getter;
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -27,9 +26,6 @@ import java.util.UUID;
  * but require platform-specific API calls
  */
 public abstract class Platform {
-
-    /** Platform's packet builder implementation */
-    @Getter private final PacketBuilder packetBuilder = createPacketBuilder();
 
     public void sendConsoleMessage(String message, boolean translateColors) {
         Object logger = TAB.getInstance().getLogger();
@@ -219,6 +215,5 @@ public abstract class Platform {
 
     public abstract @Nullable TabFeature getPerWorldPlayerlist();
 
-    public abstract PacketBuilder createPacketBuilder();
-
+    public abstract PacketBuilder getPacketBuilder();
 }

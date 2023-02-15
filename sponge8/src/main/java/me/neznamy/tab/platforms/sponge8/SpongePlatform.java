@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -7,25 +8,27 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.sponge8.features.PetFix;
 import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
-import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 @RequiredArgsConstructor
-public final class SpongePlatform extends Platform {
+public final class SpongePlatform extends BackendPlatform {
 
     private final Main plugin;
+    @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
+    @Getter private final TabExpansion tabExpansion = null;
+    @Getter private final TabFeature perWorldPlayerlist = null;
+    @Getter private final PacketBuilder packetBuilder = new SpongePacketBuilder();
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
@@ -58,43 +61,13 @@ public final class SpongePlatform extends Platform {
     }
 
     @Override
-    public PipelineInjector getPipelineInjector() {
-        return new SpongePipelineInjector();
-    }
-
-    @Override
     public NameTag getUnlimitedNametags() {
         return new SpongeNameTagX(plugin);
     }
 
     @Override
-    public TabExpansion getTabExpansion() {
-        return null;
-    }
-
-    @Override
     public TabFeature getPetFix() {
         return new PetFix();
-    }
-
-    @Override
-    public @Nullable TabFeature getGlobalPlayerlist() {
-        return null;
-    }
-
-    @Override
-    public @Nullable RedisSupport getRedisSupport() {
-        return null;
-    }
-
-    @Override
-    public @Nullable TabFeature getPerWorldPlayerlist() {
-        return null;
-    }
-
-    @Override
-    public PacketBuilder createPacketBuilder() {
-        return new SpongePacketBuilder();
     }
 
     @Override

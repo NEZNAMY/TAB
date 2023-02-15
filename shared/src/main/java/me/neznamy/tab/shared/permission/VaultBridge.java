@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.permission;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TabConstants;
 
@@ -9,6 +10,7 @@ import me.neznamy.tab.api.TabConstants;
  */
 public class VaultBridge extends PermissionPlugin {
 
+    @Getter private final String name = "Vault through BukkitBridge";
     /**
      * Constructs new instance
      */
@@ -19,10 +21,5 @@ public class VaultBridge extends PermissionPlugin {
     @Override
     public String getPrimaryGroup(TabPlayer p) {
         return p.getGroup() == null ? TabConstants.NO_GROUP : p.getGroup();
-    }
-
-    @Override
-    public String getName() {
-        return "Vault through BukkitBridge";
     }
 }

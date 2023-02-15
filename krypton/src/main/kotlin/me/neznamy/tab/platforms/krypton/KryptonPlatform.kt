@@ -20,6 +20,7 @@ import java.util.*
 class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
 
     private val server = plugin.server
+    private val packetBuilder = KryptonPacketBuilder
 
     override fun detectPermissionPlugin(): PermissionPlugin {
         if (server.pluginManager.isLoaded(TabConstants.Plugin.LUCKPERMS.lowercase(Locale.getDefault())))
@@ -83,7 +84,7 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
         return null
     }
 
-    override fun createPacketBuilder(): PacketBuilder {
-        return KryptonPacketBuilder
+    override fun getPacketBuilder(): PacketBuilder {
+        return packetBuilder
     }
 }

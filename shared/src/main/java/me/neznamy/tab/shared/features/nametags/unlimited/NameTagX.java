@@ -24,6 +24,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     @Getter private final Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
     @Getter private final boolean armorStandsAlwaysVisible = TAB.getInstance().getConfiguration().getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
 
+    @Getter private final String featureName = "Unlimited NameTags";
     private final Set<TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
     @Getter private final Set<TabPlayer> disabledUnlimitedPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Map<TabPlayer, ArmorStandManager> armorStandManagerMap = new WeakHashMap<>();
@@ -159,11 +160,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         if (p.hasInvisibilityPotion()) return false; //1.8.x client sided bug
         if (playersWithInvisibleNameTagView.contains(viewer)) return false;
         return isOnBoat(p) || isPlayerDisabled(p);
-    }
-
-    @Override
-    public String getFeatureName() {
-        return "Unlimited NameTags";
     }
 
     public abstract boolean isOnBoat(TabPlayer player);

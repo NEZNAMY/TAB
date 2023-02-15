@@ -63,7 +63,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
                 }
             }
         }
-        return p.getTablistUUID(); //layout not enabled or player not visible to viewer
+        return p.getTablistId(); //layout not enabled or player not visible to viewer
     }
 
     /**
@@ -223,7 +223,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
         if (!info.getActions().contains(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
         for (PlayerInfoData playerInfoData : info.getEntries()) {
             TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
-            if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistUUID() == getTablistUUID(packetPlayer, receiver)) {
+            if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, receiver)) {
                 playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
             }
         }

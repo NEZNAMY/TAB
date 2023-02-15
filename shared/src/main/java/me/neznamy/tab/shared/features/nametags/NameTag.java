@@ -23,7 +23,8 @@ public class NameTag extends TabFeature implements TeamManager {
     private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
     private final boolean canSeeFriendlyInvisibles = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
     @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-    private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
+    @Getter private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
+    @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
 
     private final Set<TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Set<TabPlayer> teamHandlingPaused = Collections.newSetFromMap(new WeakHashMap<>());
@@ -307,14 +308,6 @@ public class NameTag extends TabFeature implements TeamManager {
     public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
         return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNameTags
                 && (!accepting18x || !p.hasInvisibilityPotion()) && !playersWithInvisibleNameTagView.contains(viewer);
-    }
-
-    public CollisionManager getCollisionManager() {
-        return collisionManager;
-    }
-
-    public int getTeamOptions() {
-        return canSeeFriendlyInvisibles ? 2 : 0;
     }
 
     @Override

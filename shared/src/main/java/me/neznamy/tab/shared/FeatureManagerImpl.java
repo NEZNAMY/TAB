@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import lombok.Getter;
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -27,7 +28,7 @@ public class FeatureManagerImpl implements FeatureManager {
     private final Map<String, TabFeature> features = new LinkedHashMap<>();
 
     /** All registered features in an array to avoid memory allocations on iteration */
-    private TabFeature[] values = new TabFeature[0];
+    @Getter private TabFeature[] values = new TabFeature[0];
 
     private boolean objectiveListeners = false;
 
@@ -327,10 +328,5 @@ public class FeatureManagerImpl implements FeatureManager {
     @Override
     public TabFeature getFeature(String name) {
         return features.get(name);
-    }
-
-    @Override
-    public TabFeature[] getValues() {
-        return values;
     }
 }

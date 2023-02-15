@@ -33,11 +33,11 @@ public interface TabPlayer {
 
     /**
      * Returns player's uuid used in TabList. This may only be different from real uuid if
-     * TAB is installed on velocity with some specific velocity setup
+     * TAB is installed on a proxy which does not rewrite UUIDs.
      *
      * @return  player's uuid in TabList
      */
-    UUID getTablistUUID();
+    UUID getTablistId();
 
     /**
      * Returns player's protocol version

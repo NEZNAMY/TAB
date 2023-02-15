@@ -32,7 +32,7 @@ public class DynamicText implements Property {
     private final TabPlayer owner;
     
     /** Raw value as defined in configuration */
-    private String rawValue;
+    @Getter private String originalRawValue;
 
     /** Raw value assigned via API, null if not set */
     @Getter private String temporaryValue;
@@ -79,8 +79,8 @@ public class DynamicText implements Property {
         this.listener = listener;
         this.owner = owner;
         this.source = source;
-        this.rawValue = (rawValue == null ? "" : rawValue);
-        analyze(this.rawValue);
+        this.originalRawValue = (rawValue == null ? "" : rawValue);
+        analyze(this.originalRawValue);
     }
 
     /**
@@ -137,11 +137,11 @@ public class DynamicText implements Property {
      *          new source of the text
      */
     public void changeRawValue(String newValue, String newSource) {
-        if (rawValue.equals(newValue)) return;
-        rawValue = newValue;
+        if (originalRawValue.equals(newValue)) return;
+        originalRawValue = newValue;
         source = newSource;
         if (temporaryValue == null) {
-            analyze(rawValue);
+            analyze(originalRawValue);
         }
     }
 
@@ -161,20 +161,15 @@ public class DynamicText implements Property {
             analyze(this.temporaryValue);
         } else {
             this.temporaryValue = null;
-            analyze(rawValue);
+            analyze(originalRawValue);
         }
     }
     
     @Override
     public String getCurrentRawValue() {
-        return temporaryValue != null ? temporaryValue : rawValue;
+        return temporaryValue != null ? temporaryValue : originalRawValue;
     }
 
-    @Override
-    public String getOriginalRawValue() {
-        return rawValue;
-    }
-    
     @Override
     public String updateAndGet() {
         update();

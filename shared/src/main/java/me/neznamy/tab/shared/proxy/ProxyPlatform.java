@@ -8,7 +8,6 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -18,7 +17,6 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +34,10 @@ public abstract class ProxyPlatform extends Platform {
 
     /** Placeholders which are refreshed on backend server */
     @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
+
+    @Getter private final TabFeature perWorldPlayerlist = null;
+    @Getter private final ProxyTabExpansion tabExpansion = new ProxyTabExpansion();
+    @Getter private final TabFeature petFix = new TabFeature("", "") {};
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
@@ -91,22 +93,7 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public TabExpansion getTabExpansion() {
-        return new ProxyTabExpansion();
-    }
-
-    @Override
-    public TabFeature getPetFix() {
-        return new TabFeature("", "") {};
-    }
-
-    @Override
-    public @Nullable TabFeature getGlobalPlayerlist() {
+    public TabFeature getGlobalPlayerlist() {
         return new GlobalPlayerList();
-    }
-
-    @Override
-    public @Nullable TabFeature getPerWorldPlayerlist() {
-        return null;
     }
 }

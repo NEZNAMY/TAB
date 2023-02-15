@@ -63,7 +63,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
             }
             final GameType type = GameType.valueOf(entry.getGameMode().name());
             Component displayName = entry.getDisplayName() instanceof WrappedChatComponent ?
-                    (Component) ((WrappedChatComponent) entry.getDisplayName()).get() : componentCache.get(entry.getDisplayName(), clientVersion);
+                    (Component) ((WrappedChatComponent) entry.getDisplayName()).getOriginalComponent() : componentCache.get(entry.getDisplayName(), clientVersion);
             return new ClientboundPlayerInfoPacket().new PlayerUpdate(profile, entry.getLatency(), type, displayName);
         }).collect(Collectors.toList());
         final ClientboundPlayerInfoPacket infoPacket = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()));

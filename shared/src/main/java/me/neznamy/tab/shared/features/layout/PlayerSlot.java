@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.UUID;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -13,6 +14,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlayerList;
 
+@RequiredArgsConstructor
 public class PlayerSlot {
 
     private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
@@ -20,11 +22,6 @@ public class PlayerSlot {
     @Getter private final UUID uniqueId;
     @Getter private TabPlayer player;
     private String text = "";
-
-    public PlayerSlot(Layout layout, UUID id) {
-        this.layout = layout;
-        this.uniqueId = id;
-    }
 
     public void setPlayer(TabPlayer newPlayer) {
         if (player == newPlayer) return;

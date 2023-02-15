@@ -140,7 +140,7 @@ public class GlobalPlayerList extends TabFeature {
 
     public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
-                new PlayerInfoData(p.getTablistUUID()), new PlayerInfoData(EMPTY_ID));
+                new PlayerInfoData(p.getTablistId()), new PlayerInfoData(EMPTY_ID));
     }
 
     public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
@@ -152,7 +152,7 @@ public class GlobalPlayerList extends TabFeature {
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER,
                 new PlayerInfoData(
                         p.getName(),
-                        p.getTablistUUID(),
+                        p.getTablistId(),
                         p.getSkin(),
                         true,
                         p.getPing(),

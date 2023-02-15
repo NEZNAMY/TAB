@@ -4,6 +4,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -29,16 +30,13 @@ public class SpongePipelineInjector extends PipelineInjector {
     /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
 
+    @Getter private final Function<TabPlayer, ChannelDuplexHandler> channelFunction = SpongeChannelDuplexHandler::new;
+
     /**
      * Constructs new instance
      */
     public SpongePipelineInjector(){
         super("packet_handler");
-    }
-
-    @Override
-    public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
-        return SpongeChannelDuplexHandler::new;
     }
 
     /**

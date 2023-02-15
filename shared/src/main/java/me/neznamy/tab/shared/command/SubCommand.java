@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -17,6 +18,7 @@ import me.neznamy.tab.shared.config.MessageFile;
 /**
  * Abstract class representing a subcommand of "/tab" command
  */
+@RequiredArgsConstructor
 public abstract class SubCommand {
 
     //all properties assignable with a command
@@ -25,27 +27,14 @@ public abstract class SubCommand {
     //properties that require unlimited NameTag mode
     protected final List<String> extraProperties = Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.BELOWNAME, TabConstants.Property.CUSTOMTAGNAME);
 
+    //subcommands of this command
+    @Getter private final Map<String, SubCommand> subcommands = new HashMap<>();
+
     //name of this subcommand
     @Getter private final String name;
 
     //permission required to run this command
     private final String permission;
-
-    //subcommands of this command
-    @Getter private final Map<String, SubCommand> subcommands = new HashMap<>();
-
-    /**
-     * Constructs new instance with given parameters
-     *
-     * @param   name
-     *          command name
-     * @param   permission
-     *          permission requirement
-     */
-    protected SubCommand(String name, String permission) {
-        this.name = name;
-        this.permission = permission;
-    }
 
     /**
      * Registers new subcommand

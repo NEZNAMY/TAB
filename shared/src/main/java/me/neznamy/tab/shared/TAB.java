@@ -206,7 +206,7 @@ public class TAB extends TabAPI {
      */
     public void addPlayer(TabPlayer player) {
         data.put(player.getUniqueId(), player);
-        playersByTabListId.put(player.getTablistUUID(), player);
+        playersByTabListId.put(player.getTablistId(), player);
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
 
@@ -218,7 +218,7 @@ public class TAB extends TabAPI {
      */
     public void removePlayer(TabPlayer player) {
         data.remove(player.getUniqueId());
-        playersByTabListId.remove(player.getTablistUUID());
+        playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
     }
 

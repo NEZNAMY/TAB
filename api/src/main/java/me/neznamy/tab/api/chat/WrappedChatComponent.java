@@ -1,6 +1,7 @@
 package me.neznamy.tab.api.chat;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import org.jetbrains.annotations.NotNull;
@@ -17,15 +18,7 @@ import java.util.List;
 public class WrappedChatComponent extends IChatBaseComponent {
 
     /** Original NMS component */
-    private final Object originalComponent;
-
-    /**
-     * Returns the original NMS component
-     * @return  the original NMS component
-     */
-    public Object get() {
-        return originalComponent;
-    }
+    @Getter private final Object originalComponent;
 
     @Override
     public String toString() {

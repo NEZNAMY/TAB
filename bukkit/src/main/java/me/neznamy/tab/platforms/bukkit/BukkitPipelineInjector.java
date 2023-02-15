@@ -8,6 +8,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
@@ -25,16 +26,13 @@ public class BukkitPipelineInjector extends PipelineInjector {
     /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
 
+    @Getter private final Function<TabPlayer, ChannelDuplexHandler> channelFunction = BukkitChannelDuplexHandler::new;
+
     /**
      * Constructs new instance
      */
     public BukkitPipelineInjector(){
         super("packet_handler");
-    }
-
-    @Override
-    public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
-        return BukkitChannelDuplexHandler::new;
     }
 
     /**

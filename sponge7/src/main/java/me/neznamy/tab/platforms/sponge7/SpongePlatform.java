@@ -1,23 +1,28 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.protocol.PacketBuilder;
-import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 
-public final class SpongePlatform extends Platform {
+public final class SpongePlatform extends BackendPlatform {
+
+    @Getter private final PipelineInjector pipelineInjector = null;
+    @Getter private final TabExpansion tabExpansion = null;
+    @Getter private final TabFeature petFix = null;
+    @Getter private final TabFeature perWorldPlayerlist = null;
+    @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
@@ -50,42 +55,7 @@ public final class SpongePlatform extends Platform {
     }
 
     @Override
-    public @Nullable PipelineInjector getPipelineInjector() {
-        return null;
-    }
-
-    @Override
     public NameTag getUnlimitedNametags() {
         return new NameTag();
-    }
-
-    @Override
-    public TabExpansion getTabExpansion() {
-        return null;
-    }
-
-    @Override
-    public @Nullable TabFeature getPetFix() {
-        return null;
-    }
-
-    @Override
-    public @Nullable TabFeature getGlobalPlayerlist() {
-        return null;
-    }
-
-    @Override
-    public @Nullable RedisSupport getRedisSupport() {
-        return null;
-    }
-
-    @Override
-    public @Nullable TabFeature getPerWorldPlayerlist() {
-        return null;
-    }
-
-    @Override
-    public PacketBuilder createPacketBuilder() {
-        return new PacketBuilder();
     }
 }

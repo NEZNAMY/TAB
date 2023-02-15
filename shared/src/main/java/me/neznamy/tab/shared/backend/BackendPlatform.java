@@ -1,19 +1,12 @@
 package me.neznamy.tab.shared.backend;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class BackendPlatform extends Platform {
 
-    @Override
-    public @Nullable TabFeature getGlobalPlayerlist() {
-        return null;
-    }
-
-    @Override
-    public @Nullable RedisSupport getRedisSupport() {
-        return null;
-    }
+    @Getter private final TabFeature globalPlayerlist = null;
+    @Getter private final RedisSupport redisSupport = null;
 }

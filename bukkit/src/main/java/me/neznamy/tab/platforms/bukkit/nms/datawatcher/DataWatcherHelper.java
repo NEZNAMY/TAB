@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * A class to help to assign DataWatcher items as positions often change per-version
  */
+@AllArgsConstructor
 public class DataWatcherHelper {
 
     /** Position of armor stand flags */
@@ -21,18 +23,7 @@ public class DataWatcherHelper {
     private final DataWatcher data;
 
     /** Data Watcher registry reference */
-    private final DataWatcherRegistry registry;
-
-    /**
-     * Constructs new instance of this class with given parent
-     *
-     * @param   data
-     *          data to write to
-     */
-    public DataWatcherHelper(DataWatcher data) {
-        this.data = data;
-        this.registry = NMSStorage.getInstance().getDataWatcherRegistry();
-    }
+    private final DataWatcherRegistry registry = NMSStorage.getInstance().getDataWatcherRegistry();
 
     /**
      * Returns armor stand flags position based on server version

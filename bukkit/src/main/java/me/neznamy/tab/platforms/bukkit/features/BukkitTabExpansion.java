@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.TabAPI;
@@ -23,24 +24,13 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     /** Map holding all values for all players for easy and high-performance access */
     private final Map<TabPlayer, Map<String, String>> values = new WeakHashMap<>();
 
+    @Getter private final String author = "NEZNAMY";
+    @Getter private final String identifier = TabConstants.PLUGIN_ID;
+    @Getter private final String version = TabConstants.PLUGIN_VERSION;
+
     @Override
     public boolean persist(){
         return true;
-    }
-
-    @Override
-    public @NotNull String getAuthor(){
-        return "NEZNAMY";
-    }
-
-    @Override
-    public @NotNull String getIdentifier(){
-        return TabConstants.PLUGIN_ID;
-    }
-
-    @Override
-    public @NotNull String getVersion() {
-        return TabConstants.PLUGIN_VERSION;
     }
 
     @Override

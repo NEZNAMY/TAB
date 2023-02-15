@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.permission;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,8 @@ public class Vault extends PermissionPlugin {
 
     /** Permission plugin */
     private final Permission permission;
+
+    @Getter private final String version = "Vault " + super.getVersion();
 
     /**
      * Constructs new instance with given parameters
@@ -37,10 +40,5 @@ public class Vault extends PermissionPlugin {
     @Override
     public String getName() {
         return permission.getName();
-    }
-
-    @Override
-    public String getVersion() {
-        return "Vault " + super.getVersion();
     }
 }

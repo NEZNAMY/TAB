@@ -37,15 +37,15 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
     @Getter private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-    private final Map<String, Integer> serverPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server");
-    private final Map<String, Integer> playerPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player");
+    @Getter private final Map<String, Integer> serverPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server");
+    @Getter private final Map<String, Integer> playerPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player");
     private final Map<String, Integer> relationalPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.relational");
 
     //plugin internals + PAPI + API
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
     //map of String-Set of features using placeholder
-    private final Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
+    @Getter private final Map<String, Set<TabFeature>> placeholderUsage = new ConcurrentHashMap<>();
     private Placeholder[] usedPlaceholders = new Placeholder[0];
 
     @Getter private final AtomicInteger loopTime = new AtomicInteger();
@@ -162,14 +162,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return placeholder;
     }
 
-    public Map<String, Integer> getServerPlaceholderRefreshIntervals() {
-        return serverPlaceholderRefreshIntervals;
-    }
-
-    public Map<String, Integer> getPlayerPlaceholderRefreshIntervals() {
-        return playerPlaceholderRefreshIntervals;
-    }
-
     @Override
     public void load() {
         for (Placeholder pl : usedPlaceholders) {
@@ -274,10 +266,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Override
     public List<String> getUsedPlaceholders() {
         return Arrays.stream(usedPlaceholders).map(Placeholder::getIdentifier).collect(Collectors.toList());
-    }
-
-    public Map<String, Set<TabFeature>> getPlaceholderUsage(){
-        return placeholderUsage;
     }
 
     @Override
