@@ -10,7 +10,8 @@ tasks {
         filter<ReplaceTokens>("tokens" to mapOf(
             "name" to rootProject.name,
             "version" to project.version,
-            "description" to project.description
+            "description" to project.description,
+            "website" to rootProject.ext.get("website")!!.toString()
         ))
     }
     javadoc {

@@ -32,11 +32,20 @@ sponge {
         version("1.0")
     }
     license("LICENSE")
-    plugin("tab") {
-        displayName("TAB")
+    plugin(rootProject.ext.get("id")!!.toString()) {
+        displayName(rootProject.name)
         version(project.version.toString())
         description(project.description)
         entrypoint("me.neznamy.tab.platforms.sponge8.Main")
+        links {
+            val website = rootProject.ext.get("website")!!.toString()
+            homepage(website)
+            source(website)
+            issues("$website/issues")
+        }
+        contributor("NEZNAMY") {
+            description("Lead Developer")
+        }
     }
 }
 

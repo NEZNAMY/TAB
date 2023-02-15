@@ -27,7 +27,14 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-@Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(
+        id = TabConstants.PLUGIN_ID,
+        name = TabConstants.PLUGIN_NAME,
+        version = TabConstants.PLUGIN_VERSION,
+        description = TabConstants.PLUGIN_DESCRIPTION,
+        url = TabConstants.PLUGIN_WEBSITE,
+        authors = {"NEZNAMY"}
+)
 public final class Main {
 
     @Inject

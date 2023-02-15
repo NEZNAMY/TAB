@@ -28,10 +28,10 @@ import java.util.*
  * Main class for Krypton platform
  */
 @Plugin(
-    "tab",
-    "TAB",
+    TabConstants.PLUGIN_ID,
+    TabConstants.PLUGIN_NAME,
     TabConstants.PLUGIN_VERSION,
-    "An all-in-one solution that works",
+    TabConstants.PLUGIN_DESCRIPTION,
     ["NEZNAMY", "BomBardyGamer"],
     [
         Dependency("luckperms", true),

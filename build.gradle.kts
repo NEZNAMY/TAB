@@ -4,8 +4,11 @@ plugins {
 
 allprojects {
     group = "me.neznamy"
-    version = property("projectVersion") as String // from gradle.properties
+    version = "3.3.0-SNAPSHOT"
     description = "An all-in-one solution that works"
+
+    ext.set("id", "tab")
+    ext.set("website", "https://github.com/NEZNAMY/TAB")
 }
 
 val platforms = setOf(

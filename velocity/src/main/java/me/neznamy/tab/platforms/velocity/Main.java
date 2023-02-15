@@ -6,6 +6,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -31,7 +32,14 @@ import java.util.List;
  * requires manual compilation. This avoids unnecessary complications
  * and bug reports from an unsupported platform.
  */
-//@com.velocitypowered.api.plugin.Plugin(id = "tab", name = "TAB", version = TabConstants.PLUGIN_VERSION, description = "An all-in-one solution that works", authors = {"NEZNAMY"})
+@Plugin(
+        id = TabConstants.PLUGIN_ID,
+        name = TabConstants.PLUGIN_NAME,
+        version = TabConstants.PLUGIN_VERSION,
+        description = TabConstants.PLUGIN_DESCRIPTION,
+        url = TabConstants.PLUGIN_WEBSITE,
+        authors = {"NEZNAMY"}
+)
 public class Main {
 
     /** Plugin instance */

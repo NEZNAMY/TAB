@@ -16,7 +16,11 @@ dependencies {
 }
 
 blossom {
-    replaceToken("@plugin_version@", project.version)
+    replaceToken("@name@", rootProject.name)
+    replaceToken("@id@", rootProject.ext.get("id")!!.toString())
+    replaceToken("@version@", project.version)
+    replaceToken("@description@", project.description)
+    replaceToken("@website@", rootProject.ext.get("website")!!.toString())
     replaceTokenIn("src/main/java/me/neznamy/tab/api/TabConstants.java")
 }
 

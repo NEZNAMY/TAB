@@ -6,7 +6,12 @@ package me.neznamy.tab.api;
  */
 public class TabConstants {
 
-    public static final String PLUGIN_VERSION = "@plugin_version@";
+    public static final String PLUGIN_NAME = "@name@";
+    public static final String PLUGIN_ID = "@id@";
+    public static final String PLUGIN_VERSION = "@version@";
+    public static final String PLUGIN_DESCRIPTION = "@description@";
+    public static final String PLUGIN_WEBSITE = "@website@";
+
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";
     public static final String PLUGIN_MESSAGE_CHANNEL_NAME = "tab:bridge-2";

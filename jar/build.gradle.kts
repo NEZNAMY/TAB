@@ -18,7 +18,7 @@ tasks {
         archiveFileName.set("TAB-${project.version}.jar")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         platforms.forEach {
-            val shadowJarTask = it.tasks.named<ShadowJar>("shadowJar").forUseAtConfigurationTime().get()
+            val shadowJarTask = it.tasks.named<ShadowJar>("shadowJar").get()
             dependsOn(shadowJarTask)
             dependsOn(it.tasks.withType<Jar>())
             from(zipTree(shadowJarTask.archiveFile))

@@ -1,10 +1,10 @@
-name: TAB
+name: @name@
 version: @version@
 author: NEZNAMY
 main: me.neznamy.tab.platforms.bukkit.Main
 api-version: 1.13
 softdepend: [PlaceholderAPI, Vault, LuckPerms, Essentials, LibsDisguises, ProtocolSupport, ViaVersion, floodgate]
-website: "https://github.com/NEZNAMY/TAB"
+website: "@website@"
 description: @description@
 commands:
   tab:

@@ -1,4 +1,4 @@
-name: TAB
+name: @name@
 main: me.neznamy.tab.platforms.bungeecord.Main
 version: @version@
 author: NEZNAMY
