@@ -37,13 +37,8 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
     /** Component cache for better performance (1.16+ players) */
 
-    private final ComponentCache<IChatBaseComponent, Object> componentCacheModern = new ComponentCache<>(10000,
+    private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(10000,
             (component, clientVersion) -> nms.ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
-
-    /** Component cache for better performance (1.15- players) */
-    private final ComponentCache<IChatBaseComponent, Object> componentCacheLegacy = new ComponentCache<>(10000,
-            (component, clientVersion) -> nms.ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
-
 
     /**
      * Constructs new instance
@@ -534,7 +529,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).get();
-        return (clientVersion.getMinorVersion() >= 16 ? componentCacheModern : componentCacheLegacy).get(component, clientVersion);
+        return componentCache.get(component, clientVersion);
     }
 
     /**
