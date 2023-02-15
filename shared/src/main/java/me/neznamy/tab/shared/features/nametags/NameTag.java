@@ -12,6 +12,7 @@ import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
@@ -42,6 +43,12 @@ public class NameTag extends TabFeature implements TeamManager {
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.SORTING, sorting);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
+        PipelineInjector pipeline = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PIPELINE_INJECTION);
+        boolean antiOverride = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.anti-override", true);
+        if (pipeline != null && antiOverride) {
+            pipeline.setAntiOverrideTeams(true);
+            pipeline.setByteBufDeserialization(true);
+        }
         TAB.getInstance().debug(String.format("Loaded NameTag feature with parameters collisionRule=%s, disabledWorlds=%s, disabledServers=%s, invisibleNameTags=%s",
                 collisionRule, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), invisibleNameTags));
     }
