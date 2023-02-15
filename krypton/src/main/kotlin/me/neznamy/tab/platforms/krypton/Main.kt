@@ -22,7 +22,6 @@ import org.kryptonmc.api.plugin.annotation.DataFolder
 import org.kryptonmc.api.plugin.annotation.Dependency
 import org.kryptonmc.api.plugin.annotation.Plugin
 import java.nio.file.Path
-import java.util.*
 
 /**
  * Main class for Krypton platform
@@ -77,8 +76,9 @@ class Main @Inject constructor(
     }
 
     fun getProtocolVersion(player: Player): Int {
-        if (server.pluginManager.isLoaded(TabConstants.Plugin.VIAVERSION.lowercase(Locale.getDefault())))
+        if (server.pluginManager.isLoaded(TabConstants.Plugin.VIAVERSION.lowercase())) {
             return TAB.getInstance().platform.getProtocolVersionVia(player.uuid, player.profile.name, 0)
+        }
         return TAB.getInstance().serverVersion.networkId
     }
 

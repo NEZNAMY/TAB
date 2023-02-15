@@ -30,7 +30,8 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
 
     override fun sendConsoleMessage(message: String, translateColors: Boolean) {
         val component = if (translateColors) LegacyComponentSerializer.legacyAmpersand().deserialize(message) else Component.text(message)
-        server.console.sendMessage(component)
+        val actualMessage = Component.text().append(Component.text("[TAB] ")).append(component).build()
+        server.console.sendMessage(actualMessage)
     }
 
     override fun registerUnknownPlaceholder(identifier: String) {
