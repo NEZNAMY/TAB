@@ -150,6 +150,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public void sendPluginMessage(byte[] message) {
         if (getPlayer().getServer() == null) return;
         getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
-        TAB.getInstance().getCPUManager().packetSent("Plugin Message (" + new String(message) + ")");
+        TAB.getInstance().getCPUManager().packetSent("Plugin Message");
     }
 }
