@@ -73,7 +73,7 @@ class KryptonTabPlayer(
 
     override fun getPlayer(): Player = delegate
 
-    override fun isOnline(): Boolean = delegate.isOnline
+    override fun isOnline(): Boolean = delegate.isOnline()
 
     override fun isVanished(): Boolean = false
 

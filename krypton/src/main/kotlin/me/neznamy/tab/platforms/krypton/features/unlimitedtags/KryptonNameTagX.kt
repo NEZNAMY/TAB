@@ -9,9 +9,7 @@ import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandMan
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX
 import org.kryptonmc.api.entity.Entity
 import org.kryptonmc.api.entity.player.Player
-import org.kryptonmc.api.event.EventFilter
 import org.kryptonmc.api.event.EventNode
-import org.kryptonmc.api.event.player.PerformActionEvent
 import org.kryptonmc.krypton.packet.EntityPacket
 import org.kryptonmc.krypton.packet.MovementPacket
 import org.kryptonmc.krypton.packet.`in`.play.PacketInInteract
@@ -24,10 +22,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
     private val eventListener = EventListener(this)
 
     init {
-        val eventNode = EventNode.filteredForEvent("tab_nametagx", EventFilter.ALL) { event ->
-            if (event !is PerformActionEvent) return@filteredForEvent false
-            event.action == PerformActionEvent.Action.START_SNEAKING || event.action == PerformActionEvent.Action.STOP_SNEAKING
-        }
+        val eventNode = EventNode.all("tab_nametagx")
         plugin.eventNode.addChild(eventNode)
         eventNode.registerListeners(eventListener)
     }
