@@ -82,7 +82,7 @@ public class VehicleRefresher extends TabFeature {
     public void onQuit(TabPlayer disconnectedPlayer) {
         if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.get(disconnectedPlayer)));
         for (List<Integer> entities : vehicles.values()) {
-            entities.remove(feature.getEntityId(disconnectedPlayer));
+            entities.remove((Integer)feature.getEntityId(disconnectedPlayer));
         }
     }
 
