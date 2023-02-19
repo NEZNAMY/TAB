@@ -15,6 +15,7 @@ dependencyResolutionManagement {
         maven("https://repo.purpurmc.org/snapshots") // Purpur, Vault
         maven("https://repo.papermc.io/repository/maven-public/") // Velocity
         maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
+        maven("https://oss.sonatype.org/content/repositories/snapshots/") // Spark
     }
 }
 
