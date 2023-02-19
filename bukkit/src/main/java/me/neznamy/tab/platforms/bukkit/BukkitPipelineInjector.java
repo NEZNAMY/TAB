@@ -11,8 +11,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -57,22 +61,23 @@ public class BukkitPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
-                if (nms.PacketPlayOutPlayerInfo.isInstance(packet) ||
-                        (nms.ClientboundPlayerInfoRemovePacket != null && nms.ClientboundPlayerInfoRemovePacket.isInstance(packet))) {
+                if (PacketPlayOutPlayerInfoStorage.CLASS.isInstance(packet) ||
+                   (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null &&
+                   PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket.isInstance(packet))) {
                     super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
                     return;
                 }
-                if (antiOverrideTeams && nms.PacketPlayOutScoreboardTeam.isInstance(packet)) {
+                if (antiOverrideTeams && PacketPlayOutScoreboardTeamStorage.CLASS.isInstance(packet)) {
                     long time = System.nanoTime();
                     modifyPlayers(packet);
                     TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
                     super.write(context, packet, channelPromise);
                     return;
                 }
-                if (nms.PacketPlayOutScoreboardDisplayObjective.isInstance(packet)) {
+                if (PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS.isInstance(packet)) {
                     TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
                 }
-                if (nms.PacketPlayOutScoreboardObjective.isInstance(packet)) {
+                if (PacketPlayOutScoreboardObjectiveStorage.CLASS.isInstance(packet)) {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
@@ -96,10 +101,10 @@ public class BukkitPipelineInjector extends PipelineInjector {
          */
         @SuppressWarnings("unchecked")
         private void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
-            int action = nms.PacketPlayOutScoreboardTeam_ACTION.getInt(packetPlayOutScoreboardTeam);
+            int action = PacketPlayOutScoreboardTeamStorage.ACTION.getInt(packetPlayOutScoreboardTeam);
             if (action == 1 || action == 2 || action == 4) return;
-            Collection<String> players = (Collection<String>) nms.PacketPlayOutScoreboardTeam_PLAYERS.get(packetPlayOutScoreboardTeam);
-            String teamName = (String) nms.PacketPlayOutScoreboardTeam_NAME.get(packetPlayOutScoreboardTeam);
+            Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeamStorage.PLAYERS.get(packetPlayOutScoreboardTeam);
+            String teamName = (String) PacketPlayOutScoreboardTeamStorage.NAME.get(packetPlayOutScoreboardTeam);
             if (players == null) return;
             //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
             Collection<String> newList = new ArrayList<>();
@@ -117,7 +122,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
                     newList.add(entry);
                 }
             }
-            nms.setField(packetPlayOutScoreboardTeam, nms.PacketPlayOutScoreboardTeam_PLAYERS, newList);
+            PacketPlayOutScoreboardTeamStorage.PLAYERS.set(packetPlayOutScoreboardTeam, newList);
         }
 
         /**

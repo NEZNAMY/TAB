@@ -6,7 +6,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.util.SupplierWithException;
-import me.neznamy.tab.platforms.bukkit.nms.storage.*;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.*;
 import me.neznamy.tab.shared.TAB;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;

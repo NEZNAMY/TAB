@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.nms.storage;
+package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
@@ -8,6 +8,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 
 import java.util.Arrays;
 
@@ -54,15 +55,15 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
 
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        PING = getField(EntityPlayer, "ping");
-        ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
-        ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
-        ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
+        (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true);
+        PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setAllowFriendlyFire = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
         if (minorVersion >= 7) {
             ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
         }
         if (minorVersion >= 8) {
-            ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8}
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setNameTagVisibility = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility); // {1.8.1+, 1.8}
         }
         if (minorVersion >= 9) {
             DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("register", DataWatcherObject.CLASS, Object.class);
@@ -79,11 +80,11 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
             DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("a", int.class, Object.class);
         }
         if (minorVersion >= 13) {
-            ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
-            ScoreboardTeam_setSuffix = ScoreboardTeam.getMethod("setSuffix", IChatBaseComponent);
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = PacketPlayOutScoreboardTeamStorage.ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = PacketPlayOutScoreboardTeamStorage.ScoreboardTeam.getMethod("setSuffix", IChatBaseComponent);
         } else {
-            ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
-            ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
         }
     }
 
@@ -97,18 +98,18 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         Entity = getLegacyClass("Entity");
         EntityLiving = getLegacyClass("EntityLiving");
         PlayerConnection = getLegacyClass("PlayerConnection");
-        PacketPlayOutChat = getLegacyClass("PacketPlayOutChat", "Packet3Chat");
+        PacketPlayOutChatStorage.CLASS = getLegacyClass("PacketPlayOutChat", "Packet3Chat");
         NetworkManager = getLegacyClass("NetworkManager");
         if (minorVersion >= 7) {
             IChatBaseComponent = getLegacyClass("IChatBaseComponent");
             ChatSerializer = getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
         }
         if (minorVersion >= 8) {
-            PacketPlayOutPlayerListHeaderFooter = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
+            PacketPlayOutPlayerListHeaderFooterStorage.CLASS = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
             EntityArmorStand = getLegacyClass("EntityArmorStand");
         }
         if (minorVersion >= 12) {
-            ChatMessageType = (Class<Enum>) getLegacyClass("ChatMessageType");
+            PacketPlayOutChatStorage.ChatMessageTypeClass = (Class<Enum>) getLegacyClass("ChatMessageType");
         }
 
         // DataWatcher
@@ -135,29 +136,29 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
 
         // Player Info
         if (minorVersion >= 8) {
-            PacketPlayOutPlayerInfo = getLegacyClass("PacketPlayOutPlayerInfo");
-            EnumPlayerInfoAction = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
-            PlayerInfoData = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-            EnumGamemode = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
+            PacketPlayOutPlayerInfoStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo");
+            PacketPlayOutPlayerInfoStorage.EnumPlayerInfoActionClass = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+            PacketPlayOutPlayerInfoStorage.EnumGamemodeClass = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
         }
 
         // Scoreboard
-        PacketPlayOutScoreboardDisplayObjective = getLegacyClass("PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
-        PacketPlayOutScoreboardObjective = getLegacyClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
-        PacketPlayOutScoreboardTeam = getLegacyClass("PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
-        PacketPlayOutScoreboardScore = getLegacyClass("PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
+        PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
+        PacketPlayOutScoreboardObjectiveStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
+        PacketPlayOutScoreboardTeamStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
+        PacketPlayOutScoreboardScoreStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
         Scoreboard = getLegacyClass("Scoreboard");
-        ScoreboardObjective = getLegacyClass("ScoreboardObjective");
-        ScoreboardScore = getLegacyClass("ScoreboardScore");
+        PacketPlayOutScoreboardObjectiveStorage.ScoreboardObjective = getLegacyClass("ScoreboardObjective");
+        PacketPlayOutScoreboardScoreStorage.ScoreboardScore = getLegacyClass("ScoreboardScore");
         IScoreboardCriteria = getLegacyClass("IScoreboardCriteria", "IObjective"); // 1.5.1+, 1.5
-        ScoreboardTeam = getLegacyClass("ScoreboardTeam");
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam = getLegacyClass("ScoreboardTeam");
         if (minorVersion >= 8) {
-            EnumScoreboardHealthDisplay = (Class<Enum>) getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
-            EnumScoreboardAction = (Class<Enum>) getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
-            EnumNameTagVisibility = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
+            PacketPlayOutScoreboardObjectiveStorage.EnumScoreboardHealthDisplay = (Class<Enum>) getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
+            PacketPlayOutScoreboardScoreStorage.EnumScoreboardAction = (Class<Enum>) getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
+            PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
         }
         if (minorVersion >= 9) {
-            EnumTeamPush = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
+            PacketPlayOutScoreboardTeamStorage.EnumTeamPush = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
         }
     }
 }

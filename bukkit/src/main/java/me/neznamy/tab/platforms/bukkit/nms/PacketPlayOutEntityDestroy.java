@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.Data;
 import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -30,7 +30,7 @@ public class PacketPlayOutEntityDestroy implements TabPacket {
      *          If something fails
      */
     public static void load(NMSStorage nms) throws NoSuchMethodException {
-        ENTITIES = nms.setAccessible(CLASS.getDeclaredFields()[0]);
+        (ENTITIES = CLASS.getDeclaredFields()[0]).setAccessible(true);
         try {
             CONSTRUCTOR = CLASS.getConstructor(int[].class);
         } catch (NoSuchMethodException e) {

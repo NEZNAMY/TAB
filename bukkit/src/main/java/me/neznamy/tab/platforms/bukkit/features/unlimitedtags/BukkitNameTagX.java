@@ -5,7 +5,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
@@ -54,7 +54,7 @@ public class BukkitNameTagX extends BackendNameTagX {
                 }
             }
             if (attacked != null && attacked != sender) {
-                nms.setField(packet, nms.PacketPlayInUseEntity_ENTITY, getEntityId(attacked));
+                nms.PacketPlayInUseEntity_ENTITY.set(packet, getEntityId(attacked));
             }
         }
         return false;

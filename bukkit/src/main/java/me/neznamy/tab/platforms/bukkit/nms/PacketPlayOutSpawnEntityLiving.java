@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.ToString;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 

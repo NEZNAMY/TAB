@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

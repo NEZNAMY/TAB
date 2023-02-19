@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.platforms.bukkit.BukkitPacketBuilder;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 
 import java.util.Optional;
@@ -86,7 +85,7 @@ public class DataWatcherHelper {
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
             data.setValue(new DataWatcherObject(2, DataWatcherSerializer_OPTIONAL_COMPONENT),
-                    Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
+                    Optional.ofNullable(NMSStorage.getInstance().toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
         } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) {
             data.setValue(new DataWatcherObject(2, DataWatcherSerializer_STRING), customName);
         } else {

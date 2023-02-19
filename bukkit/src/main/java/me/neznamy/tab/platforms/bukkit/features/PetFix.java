@@ -6,7 +6,7 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
-import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 
@@ -154,7 +154,7 @@ public class PetFix extends TabFeature {
             DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
             if (petOwner != null && (petOwner.getValue() instanceof Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
                 watcher.removeValue(petOwnerPosition);
-                nms.setField(packet, PacketPlayOutSpawnEntityLiving.DATA_WATCHER, watcher.build());
+                PacketPlayOutSpawnEntityLiving.DATA_WATCHER.set(packet, watcher.build());
             }
         }
     }
