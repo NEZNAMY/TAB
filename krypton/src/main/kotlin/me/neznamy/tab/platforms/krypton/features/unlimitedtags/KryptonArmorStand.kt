@@ -46,7 +46,7 @@ class KryptonArmorStand(
     }
 
     override fun sendTeleportPacket(viewer: TabPlayer) {
-        viewer.sendPacket(PacketOutTeleportEntity(entityId, player.position.x, getArmorStandYFor(viewer), player.position.z, 0F, 0F, false))
+        viewer.sendPacket(PacketOutTeleportEntity(entityId, player.position.x, getArmorStandYFor(viewer), player.position.z, 0, 0, false))
     }
 
     private fun getSpawnPackets(viewer: TabPlayer): Array<Packet> {
@@ -54,7 +54,7 @@ class KryptonArmorStand(
         val data = createMetadata(property.getFormat(viewer), viewer)
         return arrayOf(
             PacketOutSpawnEntity(entityId, uuid, KryptonEntityTypes.ARMOR_STAND, player.position.x, getArmorStandYFor(viewer),
-                player.position.z, 0F, 0F, 0F, 0, 0, 0, 0),
+                player.position.z, 0, 0, 0, 0, 0, 0, 0),
             PacketOutSetEntityMetadata(entityId, data.collectAll())
         )
     }

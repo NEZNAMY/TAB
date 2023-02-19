@@ -17,6 +17,7 @@ dependencies {
         exclude("org.kryptonmc", "serialization-nbt")
     }
     compileOnly(libs.kotlin.stdlib)
+    compileOnly(libs.spark)
     kapt(libs.krypton.annotationProcessor)
 }
 

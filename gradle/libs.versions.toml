@@ -21,7 +21,7 @@ event = "3.0.0"
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.19-R0.1-SNAPSHOT"
-krypton = "a4dbe52787" # Krypton uses commit-based versioning
+krypton = "a81b4baaed" # Krypton uses commit-based versioning
 velocity = "3.1.2-SNAPSHOT"
 sponge7 = "7.4.0"
 sponge8 = "8.1.0"
@@ -33,6 +33,7 @@ via = "4.5.1"
 authlib = "1.5.25"
 bstats = "3.0.0"
 redisBungee = "0.10.1"
+spark = "0.1-SNAPSHOT"
 
 # Plugins
 shadow = "7.1.2"
@@ -74,6 +75,7 @@ vault = { group = "com.github.MilkBowl", name = "VaultAPI", version.ref = "vault
 via = { group = "com.viaversion", name = "viaversion-api", version.ref = "via" }
 authlib = { group = "com.mojang", name = "authlib", version.ref = "authlib" }
 redisBungee = { group = "com.github.limework.redisbungee", name = "RedisBungee-Bungee", version.ref = "redisBungee" }
+spark = { group = "me.lucko", name = "spark-api", version.ref = "spark" }
 
 # Metrics
 bstats-bukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bstats" }
