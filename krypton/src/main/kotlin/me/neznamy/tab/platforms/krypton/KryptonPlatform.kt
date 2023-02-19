@@ -33,7 +33,7 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
     }
 
     override fun registerPlaceholders() {
-        KryptonPlaceholderRegistry().registerPlaceholders(TAB.getInstance().placeholderManager)
+        KryptonPlaceholderRegistry(plugin).registerPlaceholders(TAB.getInstance().placeholderManager)
     }
 
     override fun getPipelineInjector(): PipelineInjector {

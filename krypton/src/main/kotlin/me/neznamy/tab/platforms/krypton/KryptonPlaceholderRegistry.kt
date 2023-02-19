@@ -1,17 +1,13 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.lucko.spark.api.Spark
-import me.lucko.spark.api.statistic.StatisticWindow.CpuUsage
-import me.lucko.spark.api.statistic.StatisticWindow.MillisPerTick
-import me.lucko.spark.api.statistic.StatisticWindow.TicksPerSecond
+import me.lucko.spark.api.statistic.StatisticWindow.*
 import me.neznamy.tab.api.placeholder.PlaceholderManager
-import me.neznamy.tab.shared.placeholders.PlaceholderRegistry
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import org.kryptonmc.api.entity.player.Player
-import java.math.RoundingMode
-import java.text.NumberFormat
 import kotlin.math.ceil
 
-class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry {
+class KryptonPlaceholderRegistry(private val plugin: Main) : UniversalPlaceholderRegistry() {
 
     override fun registerPlaceholders(manager: PlaceholderManager) {
         // Built-in stuff
@@ -20,6 +16,7 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
 
         // Spark placeholders, registered if Spark is present
         registerSparkPlaceholders(manager)
+        super.registerPlaceholders(manager)
     }
 
     private fun registerSparkPlaceholders(manager: PlaceholderManager) {
@@ -38,20 +35,20 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
         // MSPT
         val mspt = spark.mspt()
         if (mspt != null) {
-            manager.registerServerPlaceholder("%mspt_min_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).min()) }
-            manager.registerServerPlaceholder("%mspt_max_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).max()) }
-            manager.registerServerPlaceholder("%mspt_mean_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).mean()) }
-            manager.registerServerPlaceholder("%mspt_median_10s%", 1000) { formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).median()) }
+            manager.registerServerPlaceholder("%mspt_min_10s%", 1000) { format(mspt.poll(MillisPerTick.SECONDS_10).min()) }
+            manager.registerServerPlaceholder("%mspt_max_10s%", 1000) { format(mspt.poll(MillisPerTick.SECONDS_10).max()) }
+            manager.registerServerPlaceholder("%mspt_mean_10s%", 1000) { format(mspt.poll(MillisPerTick.SECONDS_10).mean()) }
+            manager.registerServerPlaceholder("%mspt_median_10s%", 1000) { format(mspt.poll(MillisPerTick.SECONDS_10).median()) }
             manager.registerServerPlaceholder("%mspt_percentile95_10s%", 1000) {
-                formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).percentile95th())
+                format(mspt.poll(MillisPerTick.SECONDS_10).percentile95th())
             }
 
-            manager.registerServerPlaceholder("%mspt_min_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).min()) }
-            manager.registerServerPlaceholder("%mspt_max_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).max()) }
-            manager.registerServerPlaceholder("%mspt_mean_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).mean()) }
-            manager.registerServerPlaceholder("%mspt_median_1m%", 1000) { formatMSPT(mspt.poll(MillisPerTick.MINUTES_1).median()) }
+            manager.registerServerPlaceholder("%mspt_min_1m%", 1000) { format(mspt.poll(MillisPerTick.MINUTES_1).min()) }
+            manager.registerServerPlaceholder("%mspt_max_1m%", 1000) { format(mspt.poll(MillisPerTick.MINUTES_1).max()) }
+            manager.registerServerPlaceholder("%mspt_mean_1m%", 1000) { format(mspt.poll(MillisPerTick.MINUTES_1).mean()) }
+            manager.registerServerPlaceholder("%mspt_median_1m%", 1000) { format(mspt.poll(MillisPerTick.MINUTES_1).median()) }
             manager.registerServerPlaceholder("%mspt_percentile95_1m%", 1000) {
-                formatMSPT(mspt.poll(MillisPerTick.SECONDS_10).percentile95th())
+                format(mspt.poll(MillisPerTick.SECONDS_10).percentile95th())
             }
         }
 
@@ -66,20 +63,5 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
         manager.registerServerPlaceholder("%cpu_system_10s%", 1000) { format(system.poll(CpuUsage.SECONDS_10)) }
         manager.registerServerPlaceholder("%cpu_system_1m%", 1000) { format(system.poll(CpuUsage.MINUTES_1)) }
         manager.registerServerPlaceholder("%cpu_system_15m%", 1000) { format(system.poll(CpuUsage.MINUTES_15)) }
-    }
-
-    private fun format(value: Double): String = TWO_DECIMAL_PLACES.format(value)
-
-    private fun formatMSPT(value: Double): String = TWO_DECIMAL_PLACES_ROUNDING_DOWN.format(value)
-
-    companion object {
-
-        private val TWO_DECIMAL_PLACES = NumberFormat.getInstance().apply {
-            maximumFractionDigits = 2
-        }
-        private val TWO_DECIMAL_PLACES_ROUNDING_DOWN = NumberFormat.getInstance().apply {
-            roundingMode = RoundingMode.DOWN
-            maximumFractionDigits = 2
-        }
     }
 }
