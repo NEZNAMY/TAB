@@ -22,9 +22,6 @@ public class DataWatcherHelper {
     /** DataWatcher to write to */
     private final DataWatcher data;
 
-    /** Data Watcher registry reference */
-    private final DataWatcherRegistry registry = NMSStorage.getInstance().getDataWatcherRegistry();
-
     /**
      * Returns armor stand flags position based on server version
      *
@@ -56,7 +53,7 @@ public class DataWatcherHelper {
      *          flags to write
      */
     public void setEntityFlags(byte flags) {
-        data.setValue(new DataWatcherObject(0, registry.getTypeByte()), flags);
+        data.setValue(new DataWatcherObject(0, NMSStorage.getInstance().DataWatcherSerializer_BYTE), flags);
     }
 
     /**
@@ -69,9 +66,10 @@ public class DataWatcherHelper {
      */
     public void setCustomName(String customName, ProtocolVersion clientVersion) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 13) {
-            data.setValue(new DataWatcherObject(2, registry.getTypeOptionalComponent()), Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
+            data.setValue(new DataWatcherObject(2, NMSStorage.getInstance().DataWatcherSerializer_OPTIONAL_COMPONENT),
+                    Optional.ofNullable(((BukkitPacketBuilder)TAB.getInstance().getPlatform().getPacketBuilder()).toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));
         } else if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 8) {
-            data.setValue(new DataWatcherObject(2, registry.getTypeString()), customName);
+            data.setValue(new DataWatcherObject(2, NMSStorage.getInstance().DataWatcherSerializer_STRING), customName);
         } else {
             //name length is limited to 64 characters on <1.8
             String cutName = (customName.length() > 64 ? customName.substring(0, 64) : customName);
@@ -91,7 +89,7 @@ public class DataWatcherHelper {
      */
     public void setCustomNameVisible(boolean visible) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
-            data.setValue(new DataWatcherObject(3, registry.getTypeBoolean()), visible);
+            data.setValue(new DataWatcherObject(3, NMSStorage.getInstance().DataWatcherSerializer_BOOLEAN), visible);
         } else {
             data.setValue(new DataWatcherObject(3, null), (byte)(visible?1:0));
         }
@@ -105,7 +103,7 @@ public class DataWatcherHelper {
      */
     public void setHealth(float health) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 6) {
-            data.setValue(new DataWatcherObject(6, registry.getTypeFloat()), health);
+            data.setValue(new DataWatcherObject(6, NMSStorage.getInstance().DataWatcherSerializer_FLOAT), health);
         } else {
             data.setValue(new DataWatcherObject(16, null), (int)health);
         }
@@ -118,7 +116,7 @@ public class DataWatcherHelper {
      *          flags to write
      */
     public void setArmorStandFlags(byte flags) {
-        data.setValue(new DataWatcherObject(armorStandFlagsPosition, registry.getTypeByte()), flags);
+        data.setValue(new DataWatcherObject(armorStandFlagsPosition, NMSStorage.getInstance().DataWatcherSerializer_BYTE), flags);
     }
 
     /**

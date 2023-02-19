@@ -26,6 +26,16 @@ public class BukkitModernNMSStorage extends NMSStorage {
         ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
+        DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
+        DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
+        DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
+        if (is1_19_3Plus()) {
+            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("g").get(null);
+            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("j").get(null);
+        } else {
+            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
+            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
+        }
         if (minorVersion >= 19) {
             EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
             PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "e");
@@ -91,7 +101,6 @@ public class BukkitModernNMSStorage extends NMSStorage {
             ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$a");
         }
         if (is1_19_3Plus()) {
-            //1.19.3+
             ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
             PacketPlayOutPlayerInfo = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
             EnumPlayerInfoAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");

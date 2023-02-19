@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.util.ReflectionUtils;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherRegistry;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.*;
@@ -72,7 +71,11 @@ public abstract class NMSStorage {
     public Field DataWatcherObject_SLOT;
     public Field DataWatcherObject_SERIALIZER;
     public Method DataWatcher_REGISTER;
-    @Getter private final DataWatcherRegistry dataWatcherRegistry;
+    public Object DataWatcherSerializer_BYTE;
+    public Object DataWatcherSerializer_FLOAT;
+    public Object DataWatcherSerializer_STRING;
+    public Object DataWatcherSerializer_OPTIONAL_COMPONENT;
+    public Object DataWatcherSerializer_BOOLEAN;
     //1.19.3+
     protected Class<?> DataWatcher$DataValue;
     public Field DataWatcher$DataValue_POSITION;
@@ -238,7 +241,6 @@ public abstract class NMSStorage {
         PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
         sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
-        dataWatcherRegistry = new DataWatcherRegistry(this);
         dataWatcher();
         entityTeleport();
         spawnEntityLiving();
@@ -681,27 +683,5 @@ public abstract class NMSStorage {
     public <T extends AccessibleObject> T setAccessible(T o) {
         o.setAccessible(true);
         return o;
-    }
-
-    /**
-     * Gets values of all static fields in a class
-     *
-     * @param   clazz
-     *          class to return field values from
-     * @return  map of values
-     */
-    public Map<String, Object> getStaticFields(Class<?> clazz) {
-        Map<String, Object> fields = new HashMap<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers())) {
-                setAccessible(field);
-                try {
-                    fields.put(field.getName(), field.get(null));
-                } catch (IllegalAccessException e) {
-                    //this will never happen
-                }
-            }
-        }
-        return fields;
     }
 }

@@ -74,6 +74,15 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
             ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
             ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
         }
+        DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
+        DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
+        DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
+        if (getMinorVersion() >= 13) {
+            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
+            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
+        } else {
+            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
+        }
     }
 
     @Override
