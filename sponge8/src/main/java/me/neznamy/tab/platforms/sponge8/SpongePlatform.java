@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
@@ -13,9 +12,6 @@ import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.None;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.spongepowered.api.Sponge;
@@ -31,20 +27,12 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final PacketBuilder packetBuilder = new SpongePacketBuilder();
 
     @Override
-    public PermissionPlugin detectPermissionPlugin() {
-        if (Sponge.pluginManager().plugin(TabConstants.Plugin.LUCKPERMS.toLowerCase()).isPresent()) {
-            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS.toLowerCase()));
-        }
-        return new None();
+    public String getPluginVersion(String plugin) {
+        return Sponge.pluginManager().plugin(plugin.toLowerCase()).map(container -> container.metadata().version().toString()).orElse(null);
     }
 
     @Override
-    public String getPluginVersion(final String plugin) {
-        return Sponge.pluginManager().plugin(plugin).map(container -> container.metadata().version().toString()).orElse(null);
-    }
-
-    @Override
-    public void registerUnknownPlaceholder(final String identifier) {
+    public void registerUnknownPlaceholder(String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
