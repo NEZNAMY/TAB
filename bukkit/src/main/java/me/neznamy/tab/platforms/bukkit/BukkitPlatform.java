@@ -14,6 +14,7 @@ import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -41,7 +42,7 @@ import java.util.Collection;
 public class BukkitPlatform extends BackendPlatform {
 
     @Getter private final BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
-    @Getter private final BukkitPipelineInjector pipelineInjector = new BukkitPipelineInjector();
+    @Getter private final BukkitPipelineInjector pipelineInjector = NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
 
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
