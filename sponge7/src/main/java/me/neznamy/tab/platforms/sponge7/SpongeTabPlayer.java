@@ -174,7 +174,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 if (bossBars.containsKey(packet.getId())) return;
                 bar = ServerBossBar.builder()
                         .name(textCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()))
-                        .color(converBossBarColor(packet.getColor()))
+                        .color(convertBossBarColor(packet.getColor()))
                         .overlay(convertOverlay(packet.getOverlay()))
                         .percent(packet.getPct())
                         .createFog(packet.isCreateWorldFog())
@@ -196,7 +196,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 break;
             case UPDATE_STYLE:
                 bar = bossBars.get(packet.getId());
-                bar.setColor(converBossBarColor(packet.getColor()));
+                bar.setColor(convertBossBarColor(packet.getColor()));
                 bar.setOverlay(convertOverlay(packet.getOverlay()));
                 break;
             case UPDATE_PROPERTIES:
@@ -208,7 +208,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
         }
     }
 
-    private static BossBarColor converBossBarColor(final BarColor color) {
+    private static BossBarColor convertBossBarColor(final BarColor color) {
         switch (color) {
             case PINK:
                 return BossBarColors.PINK;
