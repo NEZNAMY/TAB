@@ -3,6 +3,9 @@ package me.neznamy.tab.platforms.bukkit.features;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
@@ -118,9 +121,9 @@ public class PetFix extends TabFeature {
     @SuppressWarnings("unchecked")
     @Override
     public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
-        if (nms.PacketPlayOutEntityMetadata.isInstance(packet)) {
+        if (PacketPlayOutEntityMetadata.CLASS.isInstance(packet)) {
             Object removedEntry = null;
-            List<Object> items = (List<Object>) nms.PacketPlayOutEntityMetadata_LIST.get(packet);
+            List<Object> items = (List<Object>) PacketPlayOutEntityMetadata.LIST.get(packet);
             if (items == null) return;
             try {
                 for (Object item : items) {
@@ -128,11 +131,11 @@ public class PetFix extends TabFeature {
                     int slot;
                     Object value;
                     if (nms.is1_19_3Plus()) {
-                        slot = nms.DataWatcher$DataValue_POSITION.getInt(item);
-                        value = nms.DataWatcher$DataValue_VALUE.get(item);
+                        slot = DataWatcher.DataValue_POSITION.getInt(item);
+                        value = DataWatcher.DataValue_VALUE.get(item);
                     } else {
-                        slot = nms.DataWatcherObject_SLOT.getInt(nms.DataWatcherItem_TYPE.get(item));
-                        value = nms.DataWatcherItem_VALUE.get(item);
+                        slot = DataWatcherObject.SLOT.getInt(DataWatcherItem.TYPE.get(item));
+                        value = DataWatcherItem.VALUE.get(item);
                     }
                     if (slot == petOwnerPosition) {
                         if (value instanceof Optional || value instanceof com.google.common.base.Optional) {
@@ -145,13 +148,13 @@ public class PetFix extends TabFeature {
                 onPacketSend(receiver, packet);
             }
             if (removedEntry != null) items.remove(removedEntry);
-        } else if (nms.PacketPlayOutSpawnEntityLiving.isInstance(packet) && nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER != null) {
+        } else if (PacketPlayOutSpawnEntityLiving.CLASS.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATA_WATCHER != null) {
             //<1.15
-            DataWatcher watcher = DataWatcher.fromNMS(nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER.get(packet));
+            DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATA_WATCHER.get(packet));
             DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
             if (petOwner != null && (petOwner.getValue() instanceof Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
                 watcher.removeValue(petOwnerPosition);
-                nms.setField(packet, nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER, watcher.toNMS());
+                nms.setField(packet, PacketPlayOutSpawnEntityLiving.DATA_WATCHER, watcher.build());
             }
         }
     }

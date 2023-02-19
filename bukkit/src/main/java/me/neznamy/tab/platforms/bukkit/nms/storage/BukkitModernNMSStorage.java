@@ -1,45 +1,47 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage;
 
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
+
 /**
  * NMS loader for minecraft 1.17+ using Mojang packaging and bukkit names.
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitModernNMSStorage extends NMSStorage {
 
-    /**
-     * Creates new instance, initializes required NMS classes and fields
-     *
-     * @throws  ReflectiveOperationException
-     *          If any class, field or method fails to load
-     */
-    public BukkitModernNMSStorage() throws ReflectiveOperationException {
-    }
+    public BukkitModernNMSStorage() throws ReflectiveOperationException {}
 
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         PING = getField(EntityPlayer, "e");
         ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-        DataWatcher_REGISTER = getMethod(DataWatcher, new String[]{"register", "a"}, DataWatcherObject, Object.class); // {Bukkit, Bukkit 1.18+}
+        DataWatcher.REGISTER = getMethod(DataWatcher.CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
         ScoreboardScore_setScore = getMethod(ScoreboardScore, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setAllowFriendlyFire = getMethod(ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
         ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
-        DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
-        DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
-        DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
+        DataWatcherHelper.DataWatcherSerializer_BYTE = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("a").get(null);
+        DataWatcherHelper.DataWatcherSerializer_FLOAT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("c").get(null);
+        DataWatcherHelper.DataWatcherSerializer_STRING = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("d").get(null);
         if (is1_19_3Plus()) {
-            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("g").get(null);
-            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("j").get(null);
+            DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("g").get(null);
+            DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("j").get(null);
         } else {
-            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
-            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
+            DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("f").get(null);
+            DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("i").get(null);
         }
         if (minorVersion >= 19) {
-            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
-            PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getField(PacketPlayOutSpawnEntityLiving, "e");
-            DataWatcher_b = DataWatcher.getMethod("b");
+            PacketPlayOutSpawnEntityLiving.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLiving.EntityTypes.getDeclaredField("d").get(null);
+            PacketPlayOutSpawnEntityLiving.ENTITY_TYPE = getField(PacketPlayOutSpawnEntityLiving.CLASS, "e");
+            DataWatcher.packDirty = DataWatcher.CLASS.getMethod("b");
         }
     }
 
@@ -67,32 +69,32 @@ public class BukkitModernNMSStorage extends NMSStorage {
         }
 
         // DataWatcher
-        DataWatcher = Class.forName("net.minecraft.network.syncher.DataWatcher");
-        DataWatcherItem = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
-        DataWatcherObject = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
-        DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
-        DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.DataWatcherSerializer");
+        DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher");
+        DataWatcherItem.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
+        DataWatcherObject.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
+        DataWatcherHelper.DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
+        DataWatcherHelper.DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.DataWatcherSerializer");
         if (is1_19_3Plus()) {
-            DataWatcher$DataValue = Class.forName("net.minecraft.network.syncher.DataWatcher$b");
+            DataWatcher.DataValue = Class.forName("net.minecraft.network.syncher.DataWatcher$packDirty");
         }
 
         // Entities
         if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLiving = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
+            PacketPlayOutSpawnEntityLiving.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
         } else {
-            PacketPlayOutSpawnEntityLiving = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
+            PacketPlayOutSpawnEntityLiving.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
         }
-        PacketPlayOutEntityTeleport = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport");
+        PacketPlayOutEntityTeleport.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport");
         PacketPlayInUseEntity = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity");
         PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$d");
         PacketPlayOutEntity = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntity");
-        PacketPlayOutEntityDestroy = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
+        PacketPlayOutEntityDestroy.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
         PacketPlayOutEntityLook = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook");
-        PacketPlayOutEntityMetadata = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
+        PacketPlayOutEntityMetadata.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
         PacketPlayOutNamedEntitySpawn = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn");
         EnumEntityUseAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction");
         if (minorVersion >= 19) {
-            EntityTypes = Class.forName("net.minecraft.world.entity.EntityTypes");
+            PacketPlayOutSpawnEntityLiving.EntityTypes = Class.forName("net.minecraft.world.entity.EntityTypes");
         }
 
         // Player Info

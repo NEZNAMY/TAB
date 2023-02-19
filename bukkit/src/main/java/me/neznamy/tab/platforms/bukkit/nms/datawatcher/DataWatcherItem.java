@@ -4,17 +4,37 @@ import lombok.Data;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
+import java.lang.reflect.Field;
+
 /**
  * Class representing NMS Data Watcher Item
  */
 @Data
 public class DataWatcherItem {
-    
-    /** Value type */
+
+    /** NMS Fields */
+    public static Class<?> CLASS;
+    public static Field TYPE;
+    public static Field VALUE;
+
+    /** Instance fields */
     private final DataWatcherObject type;
-    
-    /** Data value */
     private final Object value;
+
+    /**
+     * Loads all required Fields
+     *
+     * @param   nms
+     *          NMS storage reference
+     */
+    public static void load(NMSStorage nms) {
+        VALUE = nms.getFields(CLASS, Object.class).get(0);
+        if (nms.getMinorVersion() >= 9) {
+            TYPE = nms.getFields(CLASS, DataWatcherObject.CLASS).get(0);
+        } else {
+            TYPE = nms.getFields(CLASS, int.class).get(1);
+        }
+    }
 
     /**
      * Returns and instance of this class from given NMS item
@@ -27,13 +47,13 @@ public class DataWatcherItem {
      */
     public static DataWatcherItem fromNMS(Object nmsItem) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
-        Object value = nms.DataWatcherItem_VALUE.get(nmsItem);
+        Object value = VALUE.get(nmsItem);
         DataWatcherObject object;
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
-            Object nmsObject = nms.DataWatcherItem_TYPE.get(nmsItem);
-            object = new DataWatcherObject(nms.DataWatcherObject_SLOT.getInt(nmsObject), nms.DataWatcherObject_SERIALIZER.get(nmsObject));
+            Object nmsObject = TYPE.get(nmsItem);
+            object = new DataWatcherObject(DataWatcherObject.SLOT.getInt(nmsObject), DataWatcherObject.SERIALIZER.get(nmsObject));
         } else {
-            object = new DataWatcherObject(nms.DataWatcherItem_TYPE.getInt(nmsItem), null);
+            object = new DataWatcherObject(TYPE.getInt(nmsItem), null);
         }
         return new DataWatcherItem(object, value);
     }

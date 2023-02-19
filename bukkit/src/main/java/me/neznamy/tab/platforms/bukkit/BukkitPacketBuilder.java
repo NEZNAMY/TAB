@@ -32,9 +32,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
     /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
 
-    /** Map of entity type ids for entities used by the plugin */
-    private final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
-
     /** Component cache for better performance (1.16+ players) */
 
     private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(10000,
@@ -44,20 +41,10 @@ public class BukkitPacketBuilder extends PacketBuilder {
      * Constructs new instance
      */
     public BukkitPacketBuilder() {
-        if (nms.getMinorVersion() >= 19) {
-            entityIds.put(EntityType.ARMOR_STAND, 2);
-        } else if (nms.getMinorVersion() >= 13) {
-            entityIds.put(EntityType.ARMOR_STAND, 1);
-        } else {
-            entityIds.put(EntityType.WITHER, 64);
-            if (nms.getMinorVersion() >= 8) {
-                entityIds.put(EntityType.ARMOR_STAND, 30);
-            }
-        }
-        buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata)packet));
-        buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport)packet));
-        buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> build((PacketPlayOutEntityDestroy)packet));
-        buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving)packet));
+        buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> ((PacketPlayOutEntityMetadata)packet).build());
+        buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> ((PacketPlayOutEntityTeleport)packet).build());
+        buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> ((PacketPlayOutEntityDestroy)packet).build());
+        buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> ((PacketPlayOutSpawnEntityLiving)packet).build());
     }
 
     @Override
@@ -236,114 +223,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
     }
 
     /**
-     * Builds entity destroy packet from custom packet class
-     *
-     * @param   packet
-     *          Destroy packet
-     * @return  NMS destroy packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
-        try {
-            return nms.newPacketPlayOutEntityDestroy.newInstance(new Object[]{packet.getEntities()});
-        } catch (IllegalArgumentException e) {
-            //1.17.0
-            return nms.newPacketPlayOutEntityDestroy.newInstance(packet.getEntities()[0]);
-        }
-    }
-
-    /**
-     * Builds entity metadata packet from custom packet class
-     *
-     * @param   packet
-     *          Metadata packet
-     * @return  NMS metadata packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public Object build(PacketPlayOutEntityMetadata packet) throws ReflectiveOperationException {
-        if (nms.newPacketPlayOutEntityMetadata.getParameterCount() == 2) {
-            //1.19.3+
-            return nms.newPacketPlayOutEntityMetadata.newInstance(packet.getEntityId(), nms.DataWatcher_b.invoke(packet.getDataWatcher().toNMS()));
-        } else {
-            return nms.newPacketPlayOutEntityMetadata.newInstance(packet.getEntityId(), packet.getDataWatcher().toNMS(), true);
-        }
-    }
-
-    /**
-     * Builds entity spawn packet from custom packet class
-     *
-     * @param   packet
-     *          Spawn packet
-     * @return  NMS spawn packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
-        Object nmsPacket;
-        if (nms.getMinorVersion() >= 17) {
-            nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance(nms.dummyEntity);
-        } else {
-            nmsPacket = nms.newPacketPlayOutSpawnEntityLiving.newInstance();
-        }
-        nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYID, packet.getEntityId());
-        nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_YAW, (byte)(packet.getLocation().getYaw() * 256.0f / 360.0f));
-        nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_PITCH, (byte)(packet.getLocation().getPitch() * 256.0f / 360.0f));
-        if (nms.getMinorVersion() <= 14) {
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_DATAWATCHER, packet.getDataWatcher().toNMS());
-        }
-        if (nms.getMinorVersion() >= 9) {
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_UUID, packet.getUniqueId());
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_X, packet.getLocation().getX());
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_Y, packet.getLocation().getY());
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_Z, packet.getLocation().getZ());
-        } else {
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_X, floor(packet.getLocation().getX()*32));
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_Y, floor(packet.getLocation().getY()*32));
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_Z, floor(packet.getLocation().getZ()*32));
-        }
-        int id = entityIds.get(packet.getEntityType());
-        if (nms.getMinorVersion() >= 19) {
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, nms.EntityTypes_ARMOR_STAND); // :(
-        } else {
-            nms.setField(nmsPacket, nms.PacketPlayOutSpawnEntityLiving_ENTITYTYPE, id);
-        }
-        return nmsPacket;
-    }
-
-    /**
-     * Builds entity teleport packet from custom packet class
-     *
-     * @param   packet
-     *          Teleport packet
-     * @return  NMS teleport packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException {
-        Object nmsPacket;
-        if (nms.getMinorVersion() >= 17) {
-            nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance(nms.dummyEntity);
-        } else {
-            nmsPacket = nms.newPacketPlayOutEntityTeleport.newInstance();
-        }
-        nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_ENTITYID, packet.getEntityId());
-        if (nms.getMinorVersion() >= 9) {
-            nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_X, packet.getLocation().getX());
-            nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_Y, packet.getLocation().getY());
-            nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_Z, packet.getLocation().getZ());
-        } else {
-            nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_X, floor(packet.getLocation().getX()*32));
-            nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_Y, floor(packet.getLocation().getY()*32));
-            nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_Z, floor(packet.getLocation().getZ()*32));
-        }
-        nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_YAW, (byte) (packet.getLocation().getYaw()/360*256));
-        nms.setField(nmsPacket, nms.PacketPlayOutEntityTeleport_PITCH, (byte) (packet.getLocation().getPitch()/360*256));
-        return nmsPacket;
-    }
-
-    /**
      * Writes data into NMS team from custom team packet. Used on 1.13+ servers.
      *
      * @param   packet
@@ -484,7 +363,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
         int entityId = packet.getId().hashCode();
         if (packet.getAction() == Action.REMOVE) {
-            return build(new PacketPlayOutEntityDestroy(entityId));
+            return new PacketPlayOutEntityDestroy(entityId).build();
         }
         DataWatcher w = new DataWatcher();
         if (packet.getAction() == Action.UPDATE_PCT || packet.getAction() == Action.ADD) {
@@ -498,9 +377,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (packet.getAction() == Action.ADD) {
             w.getHelper().setEntityFlags((byte) 32);
             w.getHelper().setWitherInvulnerableTime(880); // Magic number
-            return build(new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w));
+            return new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w).build();
         } else {
-            return build(new PacketPlayOutEntityMetadata(entityId, w));
+            return new PacketPlayOutEntityMetadata(entityId, w).build();
         }
     }
 

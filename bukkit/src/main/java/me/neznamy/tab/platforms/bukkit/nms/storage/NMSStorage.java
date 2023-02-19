@@ -6,6 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.util.ReflectionUtils;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.*;
@@ -37,8 +45,8 @@ public abstract class NMSStorage {
     public Class<Enum> EnumChatFormat;
     public Class<?> EntityPlayer;
     protected Class<?> EntityHuman;
-    protected Class<?> Entity;
-    protected Class<?> EntityLiving;
+    public Class<?> Entity;
+    public Class<?> EntityLiving;
     protected Class<?> PlayerConnection;
     public Field PING;
     public Field PLAYER_CONNECTION;
@@ -58,56 +66,6 @@ public abstract class NMSStorage {
     public Class<Enum> ChatMessageType;
     public Constructor<?> newPacketPlayOutChat;
 
-    /** DataWatcher */
-    protected Class<?> DataWatcher;
-    protected Class<?> DataWatcherItem;
-    protected Class<?> DataWatcherObject;
-    protected Class<?> DataWatcherSerializer;
-    public Class<?> DataWatcherRegistry;
-    public Constructor<?> newDataWatcher;
-    public Constructor<?> newDataWatcherObject;
-    public Field DataWatcherItem_TYPE;
-    public Field DataWatcherItem_VALUE;
-    public Field DataWatcherObject_SLOT;
-    public Field DataWatcherObject_SERIALIZER;
-    public Method DataWatcher_REGISTER;
-    public Object DataWatcherSerializer_BYTE;
-    public Object DataWatcherSerializer_FLOAT;
-    public Object DataWatcherSerializer_STRING;
-    public Object DataWatcherSerializer_OPTIONAL_COMPONENT;
-    public Object DataWatcherSerializer_BOOLEAN;
-    //1.19.3+
-    protected Class<?> DataWatcher$DataValue;
-    public Field DataWatcher$DataValue_POSITION;
-    public Field DataWatcher$DataValue_VALUE;
-    public Method DataWatcher_markDirty;
-    public Method DataWatcher_b;
-
-    /** PacketPlayOutSpawnEntityLiving */
-    public Class<?> PacketPlayOutSpawnEntityLiving;
-    public Class<?> EntityTypes;
-    public Constructor<?> newPacketPlayOutSpawnEntityLiving;
-    public Field PacketPlayOutSpawnEntityLiving_ENTITYID;
-    public Field PacketPlayOutSpawnEntityLiving_ENTITYTYPE;
-    public Field PacketPlayOutSpawnEntityLiving_YAW;
-    public Field PacketPlayOutSpawnEntityLiving_PITCH;
-    public Field PacketPlayOutSpawnEntityLiving_UUID;
-    public Field PacketPlayOutSpawnEntityLiving_X;
-    public Field PacketPlayOutSpawnEntityLiving_Y;
-    public Field PacketPlayOutSpawnEntityLiving_Z;
-    public Field PacketPlayOutSpawnEntityLiving_DATAWATCHER;
-    public Object EntityTypes_ARMOR_STAND;
-
-    /** PacketPlayOutEntityTeleport */
-    public Class<?> PacketPlayOutEntityTeleport;
-    public Constructor<?> newPacketPlayOutEntityTeleport;
-    public Field PacketPlayOutEntityTeleport_ENTITYID;
-    public Field PacketPlayOutEntityTeleport_X;
-    public Field PacketPlayOutEntityTeleport_Y;
-    public Field PacketPlayOutEntityTeleport_Z;
-    public Field PacketPlayOutEntityTeleport_YAW;
-    public Field PacketPlayOutEntityTeleport_PITCH;
-
     /** PacketPlayOutPlayerListHeaderFooter */
     protected Class<?> PacketPlayOutPlayerListHeaderFooter;
     public Constructor<?> newPacketPlayOutPlayerListHeaderFooter;
@@ -124,15 +82,7 @@ public abstract class NMSStorage {
     public Class<?> PacketPlayOutEntity;
     public Field PacketPlayOutEntity_ENTITYID;
 
-    public Class<?> PacketPlayOutEntityDestroy;
-    public Constructor<?> newPacketPlayOutEntityDestroy;
-    public Field PacketPlayOutEntityDestroy_ENTITIES;
-
     public Class<?> PacketPlayOutEntityLook;
-
-    public Class<?> PacketPlayOutEntityMetadata;
-    public Constructor<?> newPacketPlayOutEntityMetadata;
-    public Field PacketPlayOutEntityMetadata_LIST;
 
     public Class<?> PacketPlayOutNamedEntitySpawn;
     public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
@@ -241,9 +191,14 @@ public abstract class NMSStorage {
         PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
         sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
-        dataWatcher();
-        entityTeleport();
-        spawnEntityLiving();
+        DataWatcher.load(this);
+        DataWatcherItem.load(this);
+        DataWatcherObject.load(this);
+        DataWatcherHelper.load(this);
+        PacketPlayOutEntityDestroy.load(this);
+        PacketPlayOutEntityMetadata.load(this);
+        PacketPlayOutEntityTeleport.load(this);
+        PacketPlayOutSpawnEntityLiving.load(this);
         chat();
         playerListHeaderFooter();
         playerInfo();
@@ -315,75 +270,6 @@ public abstract class NMSStorage {
     }
 
     /**
-     * Loads PacketPlayOutSpawnEntityLiving's methods, fields and constructors
-     *
-     * @throws  ReflectiveOperationException
-     *          If some method, field or constructor was not found
-     */
-    protected void spawnEntityLiving() throws ReflectiveOperationException {
-        if (minorVersion >= 17) {
-            if (is1_19_3Plus()) {
-                newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(Entity);
-            } else {
-                newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor(EntityLiving);
-            }
-        } else {
-            newPacketPlayOutSpawnEntityLiving = PacketPlayOutSpawnEntityLiving.getConstructor();
-        }
-        PacketPlayOutSpawnEntityLiving_ENTITYID = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(0);
-        PacketPlayOutSpawnEntityLiving_YAW = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(0);
-        PacketPlayOutSpawnEntityLiving_PITCH = getFields(PacketPlayOutSpawnEntityLiving, byte.class).get(1);
-        if (minorVersion >= 9) {
-            PacketPlayOutSpawnEntityLiving_UUID = getFields(PacketPlayOutSpawnEntityLiving, UUID.class).get(0);
-            if (minorVersion >= 19) {
-                PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
-                PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(3);
-                PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(4);
-            } else {
-                PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(0);
-                PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(1);
-                PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, double.class).get(2);
-            }
-        } else {
-            PacketPlayOutSpawnEntityLiving_X = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(2);
-            PacketPlayOutSpawnEntityLiving_Y = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(3);
-            PacketPlayOutSpawnEntityLiving_Z = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(4);
-        }
-        if (minorVersion < 19) {
-            PacketPlayOutSpawnEntityLiving_ENTITYTYPE = getFields(PacketPlayOutSpawnEntityLiving, int.class).get(1);
-        }
-        if (minorVersion <= 14) {
-            PacketPlayOutSpawnEntityLiving_DATAWATCHER = getFields(PacketPlayOutSpawnEntityLiving, DataWatcher).get(0);
-        }
-    }
-
-    /**
-     * Loads PacketPlayOutEntityTeleport's methods, fields and constructors
-     *
-     * @throws  ReflectiveOperationException
-     *          If some method, field or constructor was not found
-     */
-    protected void entityTeleport() throws ReflectiveOperationException {
-        PacketPlayOutEntityTeleport_ENTITYID = getFields(PacketPlayOutEntityTeleport, int.class).get(0);
-        PacketPlayOutEntityTeleport_YAW = getFields(PacketPlayOutEntityTeleport, byte.class).get(0);
-        PacketPlayOutEntityTeleport_PITCH = getFields(PacketPlayOutEntityTeleport, byte.class).get(1);
-        if (minorVersion >= 17) {
-            newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor(Entity);
-        } else {
-            newPacketPlayOutEntityTeleport = PacketPlayOutEntityTeleport.getConstructor();
-        }
-        if (minorVersion >= 9) {
-            PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, double.class).get(0);
-            PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, double.class).get(1);
-            PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, double.class).get(2);
-        } else {
-            PacketPlayOutEntityTeleport_X = getFields(PacketPlayOutEntityTeleport, int.class).get(1);
-            PacketPlayOutEntityTeleport_Y = getFields(PacketPlayOutEntityTeleport, int.class).get(2);
-            PacketPlayOutEntityTeleport_Z = getFields(PacketPlayOutEntityTeleport, int.class).get(3);
-        }
-    }
-
-    /**
      * Loads PacketPlayOutPlayerListHeaderFooter's methods, fields and constructors
      *
      * @throws  ReflectiveOperationException
@@ -401,54 +287,15 @@ public abstract class NMSStorage {
     }
 
     /**
-     * Loads methods, fields and constructors for other entity packets
+     * Loads fields for other entity packets
      *
-     * @throws  ReflectiveOperationException
-     *          If some method, field or constructor was not found
      */
-    protected void otherEntity() throws ReflectiveOperationException {
+    protected void otherEntity() {
         PacketPlayOutEntity_ENTITYID = getFields(PacketPlayOutEntity, int.class).get(0);
-        PacketPlayOutEntityDestroy_ENTITIES = setAccessible(PacketPlayOutEntityDestroy.getDeclaredFields()[0]);
-        if (is1_19_3Plus()) {
-            newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, List.class);
-        } else {
-            newPacketPlayOutEntityMetadata = PacketPlayOutEntityMetadata.getConstructor(int.class, DataWatcher, boolean.class);
-        }
-        PacketPlayOutEntityMetadata_LIST = getFields(PacketPlayOutEntityMetadata, List.class).get(0);
         PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         if (minorVersion >= 7) {
             PacketPlayInUseEntity_ENTITY = getFields(PacketPlayInUseEntity, int.class).get(0);
             PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
-        }
-        try {
-            newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int[].class);
-        } catch (NoSuchMethodException e) {
-            //1.17.0
-            newPacketPlayOutEntityDestroy = PacketPlayOutEntityDestroy.getConstructor(int.class);
-        }
-    }
-
-    /**
-     * Loads DataWatcher's methods, fields and constructors
-     *
-     * @throws  ReflectiveOperationException
-     *          If some method, field or constructor was not found
-     */
-    protected void dataWatcher() throws ReflectiveOperationException {
-        newDataWatcher = DataWatcher.getConstructors()[0];
-        DataWatcherItem_VALUE = getFields(DataWatcherItem, Object.class).get(0);
-        if (minorVersion >= 9) {
-            newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
-            DataWatcherItem_TYPE = getFields(DataWatcherItem, DataWatcherObject).get(0);
-            DataWatcherObject_SLOT = getFields(DataWatcherObject, int.class).get(0);
-            DataWatcherObject_SERIALIZER = getFields(DataWatcherObject, DataWatcherSerializer).get(0);
-            if (is1_19_3Plus()) {
-                DataWatcher$DataValue_POSITION = getFields(DataWatcher$DataValue, int.class).get(0);
-                DataWatcher$DataValue_VALUE = getFields(DataWatcher$DataValue, Object.class).get(0);
-                DataWatcher_markDirty = getMethods(DataWatcher, void.class, DataWatcherObject).get(0);
-            }
-        } else {
-            DataWatcherItem_TYPE = getFields(DataWatcherItem, int.class).get(1);
         }
     }
 
@@ -582,7 +429,7 @@ public abstract class NMSStorage {
      *          Parameter types of methods
      * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
      */
-    protected List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
+    public List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
             if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
@@ -608,7 +455,7 @@ public abstract class NMSStorage {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
-    protected List<Field> getFields(Class<?> clazz, Class<?> type) {
+    public List<Field> getFields(Class<?> clazz, Class<?> type) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type) {

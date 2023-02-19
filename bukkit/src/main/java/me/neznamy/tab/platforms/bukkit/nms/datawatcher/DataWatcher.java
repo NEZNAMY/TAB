@@ -5,6 +5,9 @@ import lombok.NonNull;
 import lombok.ToString;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +18,40 @@ import java.util.Map;
 @ToString
 public class DataWatcher {
 
+    /** NMS Fields */
+    public static Class<?> CLASS;
+    public static Constructor<?> CONSTRUCTOR;
+    public static Method REGISTER;
+    public static Method markDirty;
+    public static Method packDirty;
+
+    public static Class<?> DataValue;
+    public static Field DataValue_POSITION;
+    public static Field DataValue_VALUE;
+    
     /** Watched data */
     private final Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
 
     /** Helper for easier data write */
     @Getter private final DataWatcherHelper helper = new DataWatcherHelper(this);
 
+    /**
+     * Loads all required Fields and throws Exception if something went wrong
+     *
+     * @param   nms
+     *          NMS storage reference
+     * @throws  NoSuchMethodException
+     *          If something fails
+     */
+    public static void load(NMSStorage nms) throws NoSuchMethodException {
+        CONSTRUCTOR = CLASS.getConstructors()[0];
+        if (nms.is1_19_3Plus()) {
+            markDirty = nms.getMethods(CLASS, void.class, DataWatcherObject.CLASS).get(0);
+            DataValue_POSITION = nms.getFields(DataValue, int.class).get(0);
+            DataValue_VALUE = nms.getFields(DataValue, Object.class).get(0);
+        }
+    }
+    
     /**
      * Sets value into data values
      *
@@ -61,23 +92,18 @@ public class DataWatcher {
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
-    public Object toNMS() throws ReflectiveOperationException {
+    public Object build() throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsWatcher;
-        if (nms.newDataWatcher.getParameterCount() == 1) { //1.7+
-            nmsWatcher = nms.newDataWatcher.newInstance(new Object[] {null});
+        if (CONSTRUCTOR.getParameterCount() == 1) { //1.7+
+            nmsWatcher = CONSTRUCTOR.newInstance(new Object[] {null});
         } else {
-            nmsWatcher = nms.newDataWatcher.newInstance();
+            nmsWatcher = CONSTRUCTOR.newInstance();
         }
         for (DataWatcherItem item : dataValues.values()) {
-            Object position;
-            if (nms.getMinorVersion() >= 9) {
-                position = nms.newDataWatcherObject.newInstance(item.getType().getPosition(), item.getType().getSerializer());
-            } else {
-                position = item.getType().getPosition();
-            }
-            nms.DataWatcher_REGISTER.invoke(nmsWatcher, position, item.getValue());
-            if (nms.is1_19_3Plus()) nms.DataWatcher_markDirty.invoke(nmsWatcher, position);
+            Object nmsObject = item.getType().build();
+            REGISTER.invoke(nmsWatcher, nmsObject, item.getValue());
+            if (nms.is1_19_3Plus()) markDirty.invoke(nmsWatcher, nmsObject);
         }
         return nmsWatcher;
     }

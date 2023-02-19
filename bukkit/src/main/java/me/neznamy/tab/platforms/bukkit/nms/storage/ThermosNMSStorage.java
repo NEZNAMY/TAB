@@ -1,30 +1,15 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage;
 
 import me.neznamy.tab.platforms.bukkit.Main;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 
 /**
  * NMS loader for Thermos 1.7.10.
  */
 public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
 
-    /**
-     * Creates new instance, initializes required NMS classes and fields
-     *
-     * @throws  ReflectiveOperationException
-     *          If any class, field or method fails to load
-     */
-    public ThermosNMSStorage() throws ReflectiveOperationException {
-    }
+    public ThermosNMSStorage() throws ReflectiveOperationException {}
 
-    /**
-     * Returns class from given name
-     *
-     * @param   name
-     *          class name
-     * @return  class from given name
-     * @throws  ClassNotFoundException
-     *          if class was not found
-     */
     @Override
     public Class<?> getLegacyClass(String name) throws ClassNotFoundException {
         try {
@@ -42,7 +27,7 @@ public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
         ScoreboardTeam_setAllowFriendlyFire = ScoreboardTeam.getMethod("func_96660_a", boolean.class);
         ScoreboardTeam_setCanSeeFriendlyInvisibles = ScoreboardTeam.getMethod("func_98300_b", boolean.class);
         ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("func_150699_a", String.class);
-        DataWatcher_REGISTER = DataWatcher.getMethod("func_75682_a", int.class, Object.class);
+        DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("func_75682_a", int.class, Object.class);
         ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("func_96666_b", String.class);
         ScoreboardTeam_setSuffix = ScoreboardTeam.getMethod("func_96662_c", String.class);
     }

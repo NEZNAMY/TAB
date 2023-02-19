@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.storage.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
@@ -65,13 +67,13 @@ public class BukkitNameTagX extends BackendNameTagX {
         if (!receiver.isLoaded() || isDisabledPlayer(receiver) || getDisabledUnlimitedPlayers().contains(receiver)) return;
         if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
             packetListener.onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
-        } else if (nms.PacketPlayOutEntityTeleport.isInstance(packet)) {
-            packetListener.onEntityMove(receiver, nms.PacketPlayOutEntityTeleport_ENTITYID.getInt(packet));
+        } else if (PacketPlayOutEntityTeleport.CLASS.isInstance(packet)) {
+            packetListener.onEntityMove(receiver, PacketPlayOutEntityTeleport.ENTITY_ID.getInt(packet));
         } else if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
             packetListener.onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-        } else if (nms.PacketPlayOutEntityDestroy.isInstance(packet)) {
+        } else if (PacketPlayOutEntityDestroy.CLASS.isInstance(packet)) {
             if (nms.getMinorVersion() >= 17) {
-                Object entities = nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet);
+                Object entities = PacketPlayOutEntityDestroy.ENTITIES.get(packet);
                 if (entities instanceof List) {
                     packetListener.onEntityDestroy(receiver, (List<Integer>) entities);
                 } else {
@@ -79,7 +81,7 @@ public class BukkitNameTagX extends BackendNameTagX {
                     packetListener.onEntityDestroy(receiver, (int) entities);
                 }
             } else {
-                packetListener.onEntityDestroy(receiver, (int[]) nms.PacketPlayOutEntityDestroy_ENTITIES.get(packet));
+                packetListener.onEntityDestroy(receiver, (int[]) PacketPlayOutEntityDestroy.ENTITIES.get(packet));
             }
         }
     }

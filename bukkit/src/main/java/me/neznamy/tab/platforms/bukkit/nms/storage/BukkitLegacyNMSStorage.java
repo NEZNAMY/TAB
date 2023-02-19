@@ -1,5 +1,14 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage;
 
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
+
 import java.util.Arrays;
 
 /**
@@ -8,14 +17,7 @@ import java.util.Arrays;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitLegacyNMSStorage extends NMSStorage {
 
-    /**
-     * Creates new instance, initializes required NMS classes and fields
-     *
-     * @throws  ReflectiveOperationException
-     *          If any class, field or method fails to load
-     */
-    public BukkitLegacyNMSStorage() throws ReflectiveOperationException {
-    }
+    public BukkitLegacyNMSStorage() throws ReflectiveOperationException {}
 
     /**
      * Returns class with given potential names in same order
@@ -63,9 +65,18 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
             ScoreboardTeam_setNameTagVisibility = getMethod(ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8}
         }
         if (minorVersion >= 9) {
-            DataWatcher_REGISTER = DataWatcher.getMethod("register", DataWatcherObject, Object.class);
+            DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("register", DataWatcherObject.CLASS, Object.class);
+            DataWatcherHelper.DataWatcherSerializer_BYTE = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("a").get(null);
+            DataWatcherHelper.DataWatcherSerializer_FLOAT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("c").get(null);
+            DataWatcherHelper.DataWatcherSerializer_STRING = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("d").get(null);
+            if (getMinorVersion() >= 13) {
+                DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("f").get(null);
+                DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("i").get(null);
+            } else {
+                DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("h").get(null);
+            }
         } else {
-            DataWatcher_REGISTER = DataWatcher.getMethod("a", int.class, Object.class);
+            DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("a", int.class, Object.class);
         }
         if (minorVersion >= 13) {
             ScoreboardTeam_setPrefix = ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
@@ -73,15 +84,6 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         } else {
             ScoreboardTeam_setPrefix = getMethod(ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
             ScoreboardTeam_setSuffix = getMethod(ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
-        }
-        DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
-        DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
-        DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
-        if (getMinorVersion() >= 13) {
-            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
-            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
-        } else {
-            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
         }
     }
 
@@ -110,22 +112,22 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         }
 
         // DataWatcher
-        DataWatcher = getLegacyClass("DataWatcher");
-        DataWatcherItem = getLegacyClass("DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
+        DataWatcher.CLASS = getLegacyClass("DataWatcher");
+        DataWatcherItem.CLASS = getLegacyClass("DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
         if (minorVersion >= 9) {
-            DataWatcherObject = getLegacyClass("DataWatcherObject");
-            DataWatcherRegistry = getLegacyClass("DataWatcherRegistry");
-            DataWatcherSerializer = getLegacyClass("DataWatcherSerializer");
+            DataWatcherObject.CLASS = getLegacyClass("DataWatcherObject");
+            DataWatcherHelper.DataWatcherRegistry = getLegacyClass("DataWatcherRegistry");
+            DataWatcherHelper.DataWatcherSerializer = getLegacyClass("DataWatcherSerializer");
         }
 
         // Entities
-        PacketPlayOutSpawnEntityLiving = getLegacyClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
-        PacketPlayOutEntityTeleport = getLegacyClass("PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
+        PacketPlayOutSpawnEntityLiving.CLASS = getLegacyClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
+        PacketPlayOutEntityTeleport.CLASS = getLegacyClass("PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
         PacketPlayInUseEntity = getLegacyClass("PacketPlayInUseEntity", "Packet7UseEntity");
         PacketPlayOutEntity = getLegacyClass("PacketPlayOutEntity", "Packet30Entity");
-        PacketPlayOutEntityDestroy = getLegacyClass("PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
+        PacketPlayOutEntityDestroy.CLASS = getLegacyClass("PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
         PacketPlayOutEntityLook = getLegacyClass("PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook");
-        PacketPlayOutEntityMetadata = getLegacyClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
+        PacketPlayOutEntityMetadata.CLASS = getLegacyClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
         PacketPlayOutNamedEntitySpawn = getLegacyClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
         if (minorVersion >= 7) {
             EnumEntityUseAction = (Class<Enum>) getLegacyClass("PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction");
