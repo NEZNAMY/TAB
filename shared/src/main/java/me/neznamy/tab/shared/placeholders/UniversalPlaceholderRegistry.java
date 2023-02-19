@@ -81,6 +81,21 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
         }
         Condition.finishSetups();
     }
+
+    public String format(double value) {
+        return decimal2.format(value);
+    }
+
+    /**
+     * Formats TPS using number formatter with 2 decimal places.
+     *
+     * @param   tps
+     *          TPS to format
+     * @return  Formatted TPS as a String
+     */
+    public String formatTPS(double tps) {
+        return decimal2.format(Math.min(20, tps));
+    }
     
     /**
      * Evaluates inserted date format. If it's not valid, a message is printed into console

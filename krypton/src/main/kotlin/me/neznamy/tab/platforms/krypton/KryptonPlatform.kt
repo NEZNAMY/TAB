@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.backend.BackendPlatform
 import me.neznamy.tab.shared.features.PipelineInjector
 import me.neznamy.tab.shared.features.TabExpansion
 import me.neznamy.tab.shared.features.nametags.NameTag
-import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
@@ -34,8 +33,7 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
     }
 
     override fun registerPlaceholders() {
-        KryptonPlaceholderRegistry(plugin).registerPlaceholders(TAB.getInstance().placeholderManager)
-        UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().placeholderManager)
+        KryptonPlaceholderRegistry().registerPlaceholders(TAB.getInstance().placeholderManager)
     }
 
     override fun getPipelineInjector(): PipelineInjector {

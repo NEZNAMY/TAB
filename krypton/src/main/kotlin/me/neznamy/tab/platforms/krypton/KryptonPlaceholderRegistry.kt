@@ -1,13 +1,11 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.placeholder.PlaceholderManager
-import me.neznamy.tab.shared.placeholders.PlaceholderRegistry
+import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import org.kryptonmc.api.entity.player.Player
-import java.math.RoundingMode
-import java.text.NumberFormat
 import kotlin.math.ceil
 
-class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry {
+class KryptonPlaceholderRegistry : UniversalPlaceholderRegistry() {
 
     override fun registerPlaceholders(manager: PlaceholderManager) {
         // Built-in stuff
@@ -50,20 +48,7 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : PlaceholderRegistry
 //        manager.registerServerPlaceholder("%cpu_system_10s%", 1000) { format(system.poll(CpuUsage.SECONDS_10)) }
 //        manager.registerServerPlaceholder("%cpu_system_1m%", 1000) { format(system.poll(CpuUsage.MINUTES_1)) }
 //        manager.registerServerPlaceholder("%cpu_system_15m%", 1000) { format(system.poll(CpuUsage.MINUTES_15)) }
-    }
 
-    private fun format(value: Double): String = TWO_DECIMAL_PLACES.format(value)
-
-    private fun formatMSPT(value: Double): String = TWO_DECIMAL_PLACES_ROUNDING_DOWN.format(value)
-
-    companion object {
-
-        private val TWO_DECIMAL_PLACES = NumberFormat.getInstance().apply {
-            maximumFractionDigits = 2
-        }
-        private val TWO_DECIMAL_PLACES_ROUNDING_DOWN = NumberFormat.getInstance().apply {
-            roundingMode = RoundingMode.DOWN
-            maximumFractionDigits = 2
-        }
+        super.registerPlaceholders(manager)
     }
 }

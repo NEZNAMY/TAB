@@ -13,17 +13,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
  * Bukkit registry to register bukkit-only and universal placeholders
  */
 public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
-
-    /** Number formatter for 2 decimal places */
-    private final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
     /** Vault Chat hook */
     private Chat chat;
@@ -47,7 +42,6 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
      * Constructs new instance and loads hooks
      */
     public BukkitPlaceholderRegistry() {
-        numberFormat.setMaximumFractionDigits(2);
         if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VAULT)) {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
             if (rspChat != null) chat = rspChat.getProvider();
@@ -81,7 +75,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, -1, () -> -1);
         }
         if (paperMspt != null) {
-            manager.registerServerPlaceholder(TabConstants.Placeholder.MSPT, 1000, () -> numberFormat.format(Bukkit.getAverageTickTime()));
+            manager.registerServerPlaceholder(TabConstants.Placeholder.MSPT, 1000, () -> format(Bukkit.getAverageTickTime()));
         }
         Plugin essentials = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.ESSENTIALS);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.AFK, 500, p -> {
@@ -107,16 +101,5 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
         }
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100, p -> (int) Math.ceil(((Player) p.getPlayer()).getHealth()));
         super.registerPlaceholders(manager);
-    }
-
-    /**
-     * Formats TPS using number formatter with 2 decimal places.
-     *
-     * @param   tps
-     *          TPS to format
-     * @return  Formatted TPS as a String
-     */
-    private String formatTPS(double tps) {
-        return numberFormat.format(Math.min(20, tps));
     }
 }
