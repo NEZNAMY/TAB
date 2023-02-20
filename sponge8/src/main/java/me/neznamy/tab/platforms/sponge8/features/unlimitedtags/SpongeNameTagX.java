@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.sponge8.Main;
+import me.neznamy.tab.platforms.sponge8.Sponge8TAB;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
@@ -27,7 +27,7 @@ public class SpongeNameTagX extends BackendNameTagX {
     /** Event listener */
     private final EventListener eventListener = new EventListener(this);
 
-    public SpongeNameTagX(final Main plugin) {
+    public SpongeNameTagX(Sponge8TAB plugin) {
         Sponge.eventManager().registerListeners(plugin.getContainer(), eventListener);
     }
 

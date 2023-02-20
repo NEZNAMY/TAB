@@ -20,7 +20,7 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 @RequiredArgsConstructor
 public final class SpongePlatform extends BackendPlatform {
 
-    private final Main plugin;
+    private final Sponge8TAB plugin;
     @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
     @Getter private final TabExpansion tabExpansion = null;
     @Getter private final TabFeature perWorldPlayerlist = null;

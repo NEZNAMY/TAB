@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Main class for Bukkit platform
  */
-public class Main extends JavaPlugin {
+public class BukkitTAB extends JavaPlugin {
 
     @Override
     public void onEnable() {

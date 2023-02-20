@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 
-import me.neznamy.tab.platforms.bukkit.Main;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
@@ -15,7 +14,7 @@ public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
     @Override
     public Class<?> getLegacyClass(String name) throws ClassNotFoundException {
         try {
-            return Main.class.getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+            return getClass().getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
         } catch (NullPointerException e) {
             // nested class not found
             throw new ClassNotFoundException(name);

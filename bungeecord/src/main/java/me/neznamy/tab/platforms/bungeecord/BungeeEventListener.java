@@ -1,8 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -14,11 +15,7 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * The core for BungeeCord forwarding events into all enabled features
  */
-@AllArgsConstructor
 public class BungeeEventListener implements Listener {
-
-    /** Reference to BungeeCord platform implementation */
-    private final BungeePlatform platform;
 
     /**
      * Disconnect event listener to forward the event to all features
@@ -75,7 +72,7 @@ public class BungeeEventListener implements Listener {
         if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);
-            platform.getPluginMessageHandler().onPluginMessage(
+            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
                     ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
         }
     }

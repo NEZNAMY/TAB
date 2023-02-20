@@ -9,6 +9,8 @@ import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
 /**
  * The core for velocity forwarding events into all enabled features
@@ -73,7 +75,7 @@ public class VelocityEventListener {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
-            Main.getInstance().getPlatform().getPluginMessageHandler().onPluginMessage(
+            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
                     ((Player) event.getTarget()).getUniqueId(), event.getData());
         }
     }

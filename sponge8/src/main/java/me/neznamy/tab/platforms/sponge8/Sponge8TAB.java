@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import com.google.inject.Inject;
-import java.nio.file.Path;
 import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
@@ -17,7 +16,6 @@ import org.bstats.charts.SimplePie;
 import org.bstats.sponge.Metrics;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
-import org.spongepowered.api.SystemSubject;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandCompletion;
@@ -32,36 +30,30 @@ import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class Main {
+public class Sponge8TAB {
 
-    private final Game game;
-    private final Path configDir;
-    private final Logger logger;
-    @Getter
-    private final PluginContainer container;
+    @Inject private Game game;
+    @Inject @ConfigDir(sharedRoot = false) private Path configDir;
+    @Inject private Logger logger;
+    @Inject @Getter private PluginContainer container;
     private final Metrics metrics;
 
     @Inject
-    public Main(Game game, @ConfigDir(sharedRoot = false) Path configDir, Logger logger, PluginContainer container, Metrics.Factory metricsFactory) {
-        this.game = game;
-        this.configDir = configDir;
-        this.logger = logger;
-        this.container = container;
+    public Sponge8TAB(Metrics.Factory metricsFactory) {
         this.metrics = metricsFactory.make(17732);
     }
 
     @Listener
-    public void onServerStart(final StartingEngineEvent<Server> event) {
-        final SystemSubject console = event.game().systemSubject();
-        final String version = game.platform().minecraftVersion().name();
-        console.sendMessage(Component.text("[TAB] Server version: " + version));
-        final SpongePlatform platform = new SpongePlatform(this);
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
+    public void onServerStart(StartingEngineEvent<Server> event) {
+        String version = game.platform().minecraftVersion().name();
+        event.game().systemSubject().sendMessage(Component.text("[TAB] Server version: " + version));
+        TAB.setInstance(new TAB(new SpongePlatform(this), ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
         game.eventManager().registerListeners(container, new SpongeEventListener());
         TAB.getInstance().load();
         setupMetrics();
@@ -73,34 +65,34 @@ public final class Main {
     }
 
     @Listener
-    public void onRegisterCommands(final RegisterCommandEvent<Command.Raw> event) {
+    public void onRegisterCommands(RegisterCommandEvent<Command.Raw> event) {
         event.register(container, new TABCommand(), "tab");
     }
 
     @Listener
-    public void onServerStop(final StoppingEngineEvent<Server> event) {
+    public void onServerStop(StoppingEngineEvent<Server> event) {
         if (TAB.getInstance() != null) TAB.getInstance().unload();
     }
 
-    private static final class TABCommand implements Command.Raw {
+    private static class TABCommand implements Command.Raw {
 
         @Override
         public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) {
-            final String[] args = arguments.input().split(" ");
+            String[] args = arguments.input().split(" ");
 
             if (TabAPI.getInstance().isPluginDisabled()) {
-                final boolean hasReloadPermission = cause.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
-                final boolean hasAdminPermission = cause.hasPermission(TabConstants.Permission.COMMAND_ALL);
+                boolean hasReloadPermission = cause.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
+                boolean hasAdminPermission = cause.hasPermission(TabConstants.Permission.COMMAND_ALL);
 
-                final List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);
-                for (final String message : messages) {
+                List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);
+                for (String message : messages) {
                     cause.sendMessage(Identity.nil(), LegacyComponentSerializer.legacySection().deserialize(message));
                 }
                 return CommandResult.success();
             }
 
             TabPlayer player = null;
-            final Audience audience = cause.audience();
+            Audience audience = cause.audience();
             if (audience instanceof Player) {
                 player = TAB.getInstance().getPlayer(((Player) audience).uniqueId());
                 if (player == null) return CommandResult.success(); // Player not loaded correctly
@@ -112,7 +104,7 @@ public final class Main {
         @Override
         public List<CommandCompletion> complete(CommandCause cause, ArgumentReader.Mutable arguments) {
             TabPlayer player = null;
-            final Player source = cause.context().get(EventContextKeys.PLAYER).orElse(null);
+            Player source = cause.context().get(EventContextKeys.PLAYER).orElse(null);
             if (source != null) {
                 player = TAB.getInstance().getPlayer(source.uniqueId());
                 if (player == null) return Collections.emptyList(); // Player not loaded correctly

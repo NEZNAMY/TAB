@@ -1,8 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import com.google.inject.Inject;
-import java.io.File;
-import java.util.List;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
@@ -15,7 +13,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,8 +21,10 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
+
+import java.io.File;
+import java.util.List;
 
 @Plugin(
         id = TabConstants.PLUGIN_ID,
@@ -35,52 +34,39 @@ import org.spongepowered.api.text.serializer.TextSerializers;
         url = TabConstants.PLUGIN_WEBSITE,
         authors = {"NEZNAMY"}
 )
-public final class Main {
+public class Sponge7TAB {
 
-    @Inject
-    private Game game;
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    private File configDir;
-    @Inject
-    private Logger logger;
+    @Inject private Game game;
+    @Inject @ConfigDir(sharedRoot = false) private File configDir;
+    @Inject private Logger logger;
 
     @Listener
-    public void onServerStart(final GameStartedServerEvent event) {
-        final String version = game.getPlatform().getMinecraftVersion().getName();
-        final ConsoleSource console = game.getServer().getConsole();
-        console.sendMessage(Text.of("[TAB] Server version: " + version));
-
-        final SpongePlatform platform = new SpongePlatform();
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
-            console.sendMessage(Text.builder("[TAB] Unknown server version: " + version + "! Plugin may not work correctly.").color(TextColors.RED).build());
-        }
-
+    public void onServerStart(GameStartedServerEvent event) {
+        String version = game.getPlatform().getMinecraftVersion().getName();
+        game.getServer().getConsole().sendMessage(Text.of("[TAB] Server version: " + version));
+        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
         game.getEventManager().registerListeners(this, new SpongeEventListener());
         TAB.getInstance().load();
-
-        final CommandSpec command = CommandSpec.builder()
+        game.getCommandManager().register(this, CommandSpec.builder()
                 .arguments(GenericArguments.remainingJoinedStrings(Text.of("arguments")))
                 .executor(this::executeCommand)
-                .build();
-        game.getCommandManager().register(this, command, "tab");
+                .build(), "tab");
     }
 
     @Listener
-    public void onServerStop(final GameStoppedServerEvent event) {
+    public void onServerStop(GameStoppedServerEvent event) {
         if (TAB.getInstance() != null) TAB.getInstance().unload();
     }
 
-    private @NotNull CommandResult executeCommand(final CommandSource source, final CommandContext context) {
-        final String[] args = context.<String>getOne(Text.of("arguments")).orElse("").split(" ");
+    private @NotNull CommandResult executeCommand(CommandSource source, CommandContext context) {
+        String[] args = context.<String>getOne(Text.of("arguments")).orElse("").split(" ");
 
         if (TabAPI.getInstance().isPluginDisabled()) {
-            final boolean hasReloadPermission = source.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
-            final boolean hasAdminPermission = source.hasPermission(TabConstants.Permission.COMMAND_ALL);
-            final List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);
+            boolean hasReloadPermission = source.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = source.hasPermission(TabConstants.Permission.COMMAND_ALL);
+            List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);
 
-            for (final String message : messages) {
+            for (String message : messages) {
                 source.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
             }
             return CommandResult.success();

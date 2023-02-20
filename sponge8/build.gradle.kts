@@ -36,7 +36,7 @@ sponge {
         displayName(rootProject.name)
         version(project.version.toString())
         description(project.description)
-        entrypoint("me.neznamy.tab.platforms.sponge8.Main")
+        entrypoint("me.neznamy.tab.platforms.sponge8.Sponge8TAB")
         links {
             val website = rootProject.ext.get("website")!!.toString()
             homepage(website)

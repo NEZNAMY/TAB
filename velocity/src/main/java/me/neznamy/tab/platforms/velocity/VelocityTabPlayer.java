@@ -13,6 +13,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
@@ -204,7 +205,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          Packet request to handle
      */
     private void handle(PacketPlayOutScoreboardDisplayObjective packet) {
-        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this,
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
                 "PacketPlayOutScoreboardDisplayObjective", packet.getSlot(), packet.getObjectiveName());
     }
 
@@ -221,12 +222,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         args.add(packet.getObjectiveName());
         args.add(packet.getAction());
         if (packet.getAction() == 0 || packet.getAction() == 2) {
-            args.add(getVersion().getMinorVersion() < 13 ? Main.getInstance().getPlatform().getPacketBuilder()
+            args.add(getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
                     .cutTo(packet.getDisplayName(), 32) : packet.getDisplayName());
             args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
             args.add(packet.getRenderType().ordinal());
         }
-        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this, args.toArray());
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
     }
 
     /**
@@ -243,7 +244,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         args.add(packet.getAction().ordinal());
         args.add(packet.getPlayer());
         args.add(packet.getScore());
-        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this, args.toArray());
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
     }
 
     /**
@@ -261,9 +262,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         args.add(packet.getPlayers().size());
         args.addAll(packet.getPlayers());
         if (packet.getAction() == 0 || packet.getAction() == 2) {
-            String prefix = getVersion().getMinorVersion() < 13 ? Main.getInstance().getPlatform().getPacketBuilder()
+            String prefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
                     .cutTo(packet.getPlayerPrefix(), 16) : packet.getPlayerPrefix();
-            String suffix = getVersion().getMinorVersion() < 13 ? Main.getInstance().getPlatform().getPacketBuilder()
+            String suffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
                     .cutTo(packet.getPlayerSuffix(), 16) : packet.getPlayerSuffix();
             args.add(prefix);
             args.add(IChatBaseComponent.optimizedComponent(prefix).toString(getVersion()));
@@ -274,7 +275,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             args.add(packet.getCollisionRule());
             args.add((packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal());
         }
-        Main.getInstance().getPlatform().getPluginMessageHandler().sendMessage(this, args.toArray());
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
     }
 
     /**
@@ -351,7 +352,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         try {
             Optional<ServerConnection> server = getPlayer().getCurrentServer();
             if (server.isPresent()) {
-                server.get().sendPluginMessage(Main.getInstance().getMinecraftChannelIdentifier(), message);
+                server.get().sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message);
                 TAB.getInstance().getThreadManager().packetSent("Plugin Message");
             }
         } catch (IllegalStateException e) {

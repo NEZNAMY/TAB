@@ -1,5 +1,5 @@
 name: @name@
-main: me.neznamy.tab.platforms.bungeecord.Main
+main: me.neznamy.tab.platforms.bungeecord.BungeeTAB
 version: @version@
 author: NEZNAMY
 description: @description@
