@@ -170,7 +170,7 @@ public abstract class BackendArmorStand implements ArmorStand {
      * @param   sleeping
      *          Whether player is sleeping or not
      * @param   sneaking
-     *          Whether player is sneakinig or not
+     *          Whether player is sneaking or not
      * @param   viewer
      *          Viewer of the armor stand
      * @return  Y to add to player's location

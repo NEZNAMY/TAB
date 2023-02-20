@@ -21,7 +21,7 @@ public class MessageFile extends YamlConfigurationFile {
     @Getter private final String sendCommandUsage = getString("send-command-usage", "Usage: /tab send <type> <player> <bar name> <length>\nCurrently supported types: &lbar");
     @Getter private final String sendBarCommandUsage = getString("send-bar-command-usage", "Usage: /tab send bar <player> <bar name> <length>");
     @Getter private final String teamFeatureRequired = getString("team-feature-required", "This command requires scoreboard teams feature enabled");
-    @Getter private final String collisionCommandUsage = getString("collision-command-ussage", "Usage: /tab setcollision <player> <true/false>");
+    @Getter private final String collisionCommandUsage = getString("collision-command-usage", "Usage: /tab setcollision <player> <true/false>");
     @Getter private final String noPermission = getString("no-permission", "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
     @Getter private final String commandOnlyFromGame = getString("command-only-from-game", "&cThis command must be ran from the game");
     @Getter private final String unlimitedNametagModeNotEnabled = getString("unlimited-nametag-mode-not-enabled", "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-mode in the config!");
