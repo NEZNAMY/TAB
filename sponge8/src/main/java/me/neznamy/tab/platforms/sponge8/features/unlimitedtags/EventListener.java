@@ -26,6 +26,7 @@ public class EventListener {
     }
 
     @Listener
+    @SuppressWarnings("unchecked")
     public void onSneak(final ChangeDataHolderEvent.ValueChange event) {
         if (!(event.targetHolder() instanceof Player)) return;
         final Player player = (Player) event.targetHolder();
