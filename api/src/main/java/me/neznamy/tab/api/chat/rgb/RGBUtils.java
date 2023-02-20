@@ -3,7 +3,7 @@ package me.neznamy.tab.api.chat.rgb;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.TextColor;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.format.*;
 import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
 import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
@@ -132,7 +132,9 @@ public class RGBUtils {
     }
 
     /**
-     * Converts all hex codes in given string to legacy codes
+     * Converts all hex codes in given string to legacy codes.
+     * Also removes redundant color codes caused by this operation
+     * to properly fit in limits.
      *
      * @param   text
      *          text to convert
@@ -140,29 +142,7 @@ public class RGBUtils {
      */
     public String convertRGBtoLegacy(String text) {
         if (text == null) return null;
-        if (!text.contains("#")) return EnumChatFormat.color(text);
-        String applied = applyFormats(text);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < applied.length(); i++) {
-            char c = applied.charAt(i);
-            if (c == '#' && applied.length() > i+6) {
-                String hexCode = applied.substring(i+1, i+7);
-                if (isHexCode(hexCode)) {
-                    if (containsLegacyCode(applied, i)) {
-                        sb.append(new TextColor(hexCode, EnumChatFormat.getByChar(applied.charAt(i+8))).getLegacyColor().getFormat());
-                        i += 8;
-                    } else {
-                        sb.append(new TextColor(hexCode).getLegacyColor().getFormat());
-                        i += 6;
-                    }
-                } else {
-                    sb.append(c);
-                }
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
+        return IChatBaseComponent.fromColoredText(text).toLegacyText();
     }
 
     /**
