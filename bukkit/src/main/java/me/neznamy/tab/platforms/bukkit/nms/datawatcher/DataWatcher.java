@@ -40,10 +40,8 @@ public class DataWatcher {
      *
      * @param   nms
      *          NMS storage reference
-     * @throws  NoSuchMethodException
-     *          If something fails
      */
-    public static void load(NMSStorage nms) throws NoSuchMethodException {
+    public static void load(NMSStorage nms) {
         CONSTRUCTOR = CLASS.getConstructors()[0];
         if (nms.is1_19_3Plus()) {
             markDirty = nms.getMethods(CLASS, void.class, DataWatcherObject.CLASS).get(0);

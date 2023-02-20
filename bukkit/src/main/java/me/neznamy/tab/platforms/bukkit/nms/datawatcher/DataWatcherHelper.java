@@ -29,18 +29,6 @@ public class DataWatcherHelper {
     private final DataWatcher data;
 
     /**
-     * Loads all required Fields and throws Exception if something went wrong
-     *
-     * @param   nms
-     *          NMS storage reference
-     * @throws  NoSuchMethodException
-     *          If something fails
-     */
-    public static void load(NMSStorage nms) throws NoSuchMethodException {
-
-    }
-
-    /**
      * Returns armor stand flags position based on server version
      *
      * @return  armor stand flags position based on server version

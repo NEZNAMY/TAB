@@ -15,14 +15,18 @@ import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import org.bukkit.Bukkit;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class holding all NMS classes, methods, fields and constructors used by TAB.
@@ -120,7 +124,6 @@ public abstract class NMSStorage {
         DataWatcher.load(this);
         DataWatcherItem.load(this);
         DataWatcherObject.load(this);
-        DataWatcherHelper.load(this);
         PacketPlayOutEntityDestroy.load(this);
         PacketPlayOutEntityMetadata.load(this);
         PacketPlayOutEntityTeleport.load(this);

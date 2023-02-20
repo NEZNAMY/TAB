@@ -117,7 +117,7 @@ public class PacketPlayOutPlayerInfoStorage {
         public static Method PlayerInfoData_getDisplayName;
         public static Method PlayerInfoData_getProfilePublicKeyRecord;
 
-        public static void load(NMSStorage nms) throws NoSuchMethodException {
+        public static void load(NMSStorage nms) {
             if (nms.getMinorVersion() < 8) return;
             newPlayerInfoData = CLASS.getConstructors()[0];
             PlayerInfoData_getProfile = nms.getMethods(CLASS, GameProfile.class).get(0);

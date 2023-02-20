@@ -75,10 +75,8 @@ public class PacketBuilder {
      * @param   clientVersion
      *          Protocol version of player to build the packet for
      * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -105,10 +103,8 @@ public class PacketBuilder {
      * @param   clientVersion
      *          Protocol version of player to build the packet for
      * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -120,10 +116,8 @@ public class PacketBuilder {
      * @param   clientVersion
      *          Protocol version of player to build the packet for
      * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -135,10 +129,8 @@ public class PacketBuilder {
      * @param   clientVersion
      *          Protocol version of player to build the packet for
      * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -150,10 +142,8 @@ public class PacketBuilder {
      * @param   clientVersion
      *          Protocol version of player to build the packet for
      * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -165,10 +155,8 @@ public class PacketBuilder {
      * @param   clientVersion
      *          Protocol version of player to build the packet for
      * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
