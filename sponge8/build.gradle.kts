@@ -16,7 +16,6 @@ repositories {
 
 dependencies {
     implementation(projects.shared)
-    compileOnly(libs.sponge8)
     implementation(libs.bstats.sponge)
 }
 
@@ -26,7 +25,7 @@ minecraft {
 }
 
 sponge {
-    apiVersion("8.1.0")
+    apiVersion("8.0.0")
     loader {
         name(PluginLoaders.JAVA_PLAIN)
         version("1.0")
