@@ -82,27 +82,26 @@ public class PacketPlayOutPlayerInfoStorage {
     public static PacketPlayOutPlayerInfo read(Object nmsPacket) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         if (nms.getMinorVersion() < 8) return null;
+        if (ClientboundPlayerInfoRemovePacket != null && ClientboundPlayerInfoRemovePacket.isInstance(nmsPacket)) {
+            List<UUID> entries = (List<UUID>) ClientboundPlayerInfoRemovePacket_getEntries.invoke(nmsPacket);
+            return new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+                    entries.stream().map(PacketPlayOutPlayerInfo.PlayerInfoData::new).collect(Collectors.toList())
+            );
+        }
         List<PacketPlayOutPlayerInfo.PlayerInfoData> listData = new ArrayList<>();
         for (Object nmsData : (List<?>) PLAYERS.get(nmsPacket)) {
             listData.add(PlayerInfoDataStorage.read(nmsData));
         }
         if (ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
-            if (ClientboundPlayerInfoRemovePacket.isInstance(nmsPacket)) {
-                List<UUID> entries = (List<UUID>) ClientboundPlayerInfoRemovePacket_getEntries.invoke(nmsPacket);
-                return new PacketPlayOutPlayerInfo(
-                        PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
-                        entries.stream().map(PacketPlayOutPlayerInfo.PlayerInfoData::new).collect(Collectors.toList())
-                );
-            }
-            EnumSet<?> set = (EnumSet<?>) ACTION.get(nmsPacket);
-            PacketPlayOutPlayerInfo.EnumPlayerInfoAction[] array = set.stream().map(action -> PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(action.toString())).toArray(PacketPlayOutPlayerInfo.EnumPlayerInfoAction[]::new);
-            EnumSet<PacketPlayOutPlayerInfo.EnumPlayerInfoAction> actions = EnumSet.of(array[0], array);
-            return new PacketPlayOutPlayerInfo(actions, listData);
+            PacketPlayOutPlayerInfo.EnumPlayerInfoAction[] array = ((EnumSet<?>) ACTION.get(nmsPacket)).stream().map(action ->
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(action.toString())).toArray(
+                            PacketPlayOutPlayerInfo.EnumPlayerInfoAction[]::new);
+            return new PacketPlayOutPlayerInfo(EnumSet.of(array[0], array), listData);
         } else {
             //1.19.2-
-            PacketPlayOutPlayerInfo.EnumPlayerInfoAction action = PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(ACTION.get(nmsPacket).toString());
-            return new PacketPlayOutPlayerInfo(action, listData);
+            return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.valueOf(ACTION.get(nmsPacket).toString()), listData);
         }
     }
 
