@@ -40,7 +40,6 @@ public class NameTag extends TabFeature implements TeamManager {
 
     public NameTag() {
         super("NameTags", "Updating prefix/suffix", "scoreboard-teams");
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.SORTING, sorting);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         PipelineInjector pipeline = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PIPELINE_INJECTION);
