@@ -23,7 +23,7 @@ public class Animation {
     private final int interval;
 
     /**
-     * Refresh interval of placeholder created from this information.
+     * Refresh interval of placeholder created from this animation.
      * It may be lower than change interval due to nested placeholders,
      * which may need to refresh faster for any reason,
      * such as this being a slow animation with a fast nested animation.
