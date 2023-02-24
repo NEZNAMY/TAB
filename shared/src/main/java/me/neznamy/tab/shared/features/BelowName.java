@@ -24,7 +24,7 @@ public class BelowName extends TabFeature {
 
     private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
-    private final TabFeature textRefresher = new TextRefresher();
+    private final TabFeature textRefresher = new TextRefresher(this);
 
     public BelowName() {
         super("BelowName", "Updating BelowName number", "belowname-objective");
@@ -152,13 +152,16 @@ public class BelowName extends TabFeature {
 
     public class TextRefresher extends TabFeature {
 
-        public TextRefresher() {
+        private final BelowName feature;
+
+        public TextRefresher(BelowName feature) {
             super("BelowName", "Updating BelowName text");
+            this.feature = feature;
         }
 
         @Override
         public void refresh(TabPlayer refreshed, boolean force) {
-            if (isDisabledPlayer(refreshed)) return;
+            if (feature.isDisabledPlayer(refreshed)) return;
             refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), textRefresher);
         }
     }
