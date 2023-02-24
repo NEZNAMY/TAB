@@ -73,6 +73,7 @@ public class BukkitTAB extends JavaPlugin {
                 "v1_9_R1", "v1_9_R2", "v1_10_R1", "v1_11_R1", "v1_12_R1", "v1_13_R1", "v1_13_R2",
                 "v1_14_R1", "v1_15_R1", "v1_16_R1", "v1_16_R2", "v1_16_R3", "v1_17_R1", "v1_18_R1",
                 "v1_18_R2", "v1_19_R1", "v1_19_R2");
+        String supportedVersionRange = "1.5 - 1.19.3";
         String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         try {
             long time = System.currentTimeMillis();
@@ -81,13 +82,13 @@ public class BukkitTAB extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
                 return true;
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on 1.5.2 - 1.19.3. Disabling just to stay safe."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on " + supportedVersionRange + ". Disabling just to stay safe."));
             }
         } catch (IllegalStateException ex) {
             if (supportedVersions.contains(serverPackage)) {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report this issue (include your server version & fork too)"));
             } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports 1.5.2 - 1.19.3. Disabling."));
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports " + supportedVersionRange + ". Disabling."));
             }
         }
         return false;
