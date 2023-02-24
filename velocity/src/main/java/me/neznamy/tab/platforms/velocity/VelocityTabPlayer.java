@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
@@ -349,14 +348,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        try {
-            Optional<ServerConnection> server = getPlayer().getCurrentServer();
-            if (server.isPresent()) {
-                server.get().sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message);
-                TAB.getInstance().getThreadManager().packetSent("Plugin Message");
-            }
-        } catch (IllegalStateException e) {
-            //java.lang.IllegalStateException: Not connected to server!
-        }
+        getPlayer().getCurrentServer().ifPresent(server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message));
     }
 }
