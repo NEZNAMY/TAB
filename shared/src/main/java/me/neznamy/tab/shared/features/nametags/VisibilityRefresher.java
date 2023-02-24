@@ -20,6 +20,7 @@ public class VisibilityRefresher extends TabFeature {
 
     @Override
     public void refresh(TabPlayer p, boolean force) {
+        if (nameTags.isDisabledPlayer(p)) return;
         nameTags.updateTeamData(p);
     }
 }
