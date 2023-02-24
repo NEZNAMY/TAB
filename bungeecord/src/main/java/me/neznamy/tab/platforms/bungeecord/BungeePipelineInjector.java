@@ -6,7 +6,6 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -36,7 +35,10 @@ public class BungeePipelineInjector extends PipelineInjector {
     private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
     private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
-    @Getter private final Function<TabPlayer, ChannelDuplexHandler> channelFunction = BungeeChannelDuplexHandler::new;
+    @Override
+    public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
+        return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : BungeeChannelDuplexHandler::new;
+    }
 
     /**
      * Constructs new instance of the feature
