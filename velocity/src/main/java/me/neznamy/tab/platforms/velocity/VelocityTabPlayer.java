@@ -141,7 +141,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                     case UPDATE_LISTED:
                         getEntry(data.getUniqueId()).setListed(data.isListed());
                         break;
-                    case INITIALIZE_CHAT: // not supported yet //TODO
+                    case INITIALIZE_CHAT: // not supported by Velocity
                     default:
                         break;
                 }
