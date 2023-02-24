@@ -268,7 +268,7 @@ public class Converter {
         }
         newConfig.set("scoreboard.scoreboards.admin.display-condition", "permission:tab.scoreboard.admin");
         newConfig.set("scoreboard.scoreboards.admin.title", "Admin scoreboard");
-        newConfig.set("scoreboard.scoreboards.admin.lines", Arrays.asList("%animation:MyAnimation1%", "&6Online:", "* &eOnline&7: &f%online%&7/&4%maxplayers%",
+        newConfig.set("scoreboard.scoreboards.admin.lines", Arrays.asList("%animation:MyAnimation1%", "&6Online:", "* &eOnline&7: &f%online%&7",
                 "* &eCurrent World&7: &f%worldonline%", "* &eStaff&7: &f%staffonline%", " ", "&6Server Info:", "* &bTPS&7: %tps%",
                 "* &bUptime&7: &f%server_uptime%", "* &bMemory&7: &f%memory-used%&7/&4%memory-max%", "%animation:MyAnimation1%"));
         newConfig.set("scoreboard.scoreboards.scoreboard1.title", "Default");
