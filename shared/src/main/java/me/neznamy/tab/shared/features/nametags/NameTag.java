@@ -1,22 +1,21 @@
 package me.neznamy.tab.shared.features.nametags;
 
-import java.util.*;
-
 import lombok.Getter;
-import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabExpansion;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+
+import java.util.*;
 
 public class NameTag extends TabFeature implements TeamManager {
 
@@ -246,13 +245,8 @@ public class NameTag extends TabFeature implements TeamManager {
     
     @Override
     public void updateTeamData(TabPlayer p) {
-        Property tagPrefix = p.getProperty(TabConstants.Property.TAGPREFIX);
-        Property tagSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX);
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            String currentPrefix = tagPrefix.getFormat(viewer);
-            String currentSuffix = tagSuffix.getFormat(viewer);
-            boolean visible = getTeamVisibility(p, viewer);
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+            updateTeamData(p, viewer);
         }
         RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) redis.updateNameTag(p, p.getProperty(TabConstants.Property.TAGPREFIX).get(), p.getProperty(TabConstants.Property.TAGSUFFIX).get());
