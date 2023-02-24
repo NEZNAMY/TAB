@@ -122,7 +122,7 @@ public abstract class Platform {
 
         if (configuration.getConfig().getBoolean("global-playerlist.enabled", false)) {
             TabFeature global = getGlobalPlayerlist();
-            if (global != null) featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, getGlobalPlayerlist());
+            if (global != null) featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, global);
         }
 
         if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
