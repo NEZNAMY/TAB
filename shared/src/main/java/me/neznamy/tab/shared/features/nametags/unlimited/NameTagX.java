@@ -286,7 +286,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void setPrefix(TabPlayer player, String prefix) {
-        Preconditions.checkLoaded(player);
         super.setPrefix(player, prefix);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
@@ -294,7 +293,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void setSuffix(TabPlayer player, String suffix) {
-        Preconditions.checkLoaded(player);
         super.setSuffix(player, suffix);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
@@ -302,7 +300,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void resetPrefix(TabPlayer player) {
-        Preconditions.checkLoaded(player);
         super.resetPrefix(player);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
@@ -310,7 +307,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void resetSuffix(TabPlayer player) {
-        Preconditions.checkLoaded(player);
         super.resetSuffix(player);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
