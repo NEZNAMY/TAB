@@ -1,17 +1,15 @@
 package me.neznamy.tab.api.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
  * Class with utility methods used in the plugin
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Preconditions {
-
-    /**
-     * Private constructor preventing the class from being instantiated
-     */
-    private Preconditions() {}
 
     /**
      * Checks length of String and throws {@code IllegalArgumentException} if it is
