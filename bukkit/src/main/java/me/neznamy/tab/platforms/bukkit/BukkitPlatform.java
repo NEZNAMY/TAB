@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.TabConstants;
@@ -39,6 +40,7 @@ import java.util.Collection;
 /**
  * Implementation of Platform interface for Bukkit platform
  */
+@RequiredArgsConstructor
 public class BukkitPlatform extends BackendPlatform {
 
     @Getter private final BukkitPacketBuilder packetBuilder = new BukkitPacketBuilder();
@@ -50,27 +52,8 @@ public class BukkitPlatform extends BackendPlatform {
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
     @Getter @Setter private boolean libsDisguisesEnabled = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
-    private Plugin viaVersion;
+    private final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
     private final boolean protocolSupport = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
-
-    /**
-     * Constructs new instance with given plugin parameter
-     *
-     * @param   plugin
-     *          plugin instance
-     */
-    public BukkitPlatform(JavaPlugin plugin) {
-        this.plugin = plugin;
-        if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VIAVERSION)) {
-            if (ReflectionUtils.classExists("com.viaversion.viaversion.api.Via")) {
-                viaVersion = Bukkit.getPluginManager().getPlugin(TabConstants.Plugin.VIAVERSION);
-            } else {
-                TAB.getInstance().sendConsoleMessage("&cAn outdated version of ViaVersion (" + getPluginVersion(TabConstants.Plugin.VIAVERSION) + ") was detected.", true);
-                TAB.getInstance().sendConsoleMessage("&cTAB only supports ViaVersion 4.0.0 and above. Disabling ViaVersion hook.", true);
-                TAB.getInstance().sendConsoleMessage("&cThis might cause problems, such as limitations still being present for latest MC clients as well as RGB not working.", true);
-            }
-        }
-    }
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
@@ -205,7 +188,7 @@ public class BukkitPlatform extends BackendPlatform {
             //some PS versions return -1 on unsupported server versions instead of throwing exception
             if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
         }
-        if (viaVersion != null) {
+        if (viaVersion) {
             return getProtocolVersionVia(player.getUniqueId(), player.getName(), 0);
         }
         return TAB.getInstance().getServerVersion().getNetworkId();
