@@ -86,12 +86,12 @@ public class BungeePipelineInjector extends PipelineInjector {
                 default:
                     break;
                 }
-            } catch (Exception | NoSuchMethodError e) {
+            } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
             }
             try {
                 super.write(context, packet, channelPromise);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", packet.getClass().getSimpleName(), player.getName()), e);
             }
         }

@@ -20,7 +20,7 @@ class KryptonPipelineInjector : PipelineInjector("handler") {
             try {
                 if (TAB.getInstance().featureManager.onPacketReceive(player, msg)) return
                 super.channelRead(ctx, msg)
-            } catch (exception: Exception) {
+            } catch (exception: Throwable) {
                 TAB.getInstance().errorManager.printError("An error occurred when reading packets", exception)
             }
         }
@@ -37,7 +37,7 @@ class KryptonPipelineInjector : PipelineInjector("handler") {
             }
             try {
                 super.write(ctx, msg, promise)
-            } catch (exception: Exception) {
+            } catch (exception: Throwable) {
                 TAB.getInstance().errorManager.printError("Failed to forward packet ${msg.javaClass.simpleName} to ${player.name}", exception)
             }
         }

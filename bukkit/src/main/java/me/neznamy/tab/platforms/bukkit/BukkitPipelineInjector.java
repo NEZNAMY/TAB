@@ -53,7 +53,7 @@ public class BukkitPipelineInjector extends PipelineInjector {
             try {
                 if (TAB.getInstance().getFeatureManager().onPacketReceive(player, packet)) return;
                 super.channelRead(context, packet);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
         }
@@ -81,12 +81,12 @@ public class BukkitPipelineInjector extends PipelineInjector {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
             }
             try {
                 super.write(context, packet, channelPromise);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
             }
         }
