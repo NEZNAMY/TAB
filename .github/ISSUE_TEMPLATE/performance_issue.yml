@@ -1,0 +1,55 @@
+name: Performance issue
+description: Performance issue in TAB or in server caused by TAB
+labels: ["Type: Performance"]
+body:
+  - type: input
+    attributes:
+      label: Server version
+      description: Version and type of used server software where TAB is installed.
+      placeholder: Spigot 1.18.1
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: TAB version
+      description: Full version in numbers, "latest" is not a version.
+      placeholder: 3.0.2
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Evidence
+      description: Any evidence proving the performance issue, such as output of /tab cpu or timings.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce (if known)
+      description: What to do in order to reproduce this issue
+      placeholder: |
+        Step 1: ..
+        Step 2: ..
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional info
+      description: Any other info you want to provide.
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Let's make sure this report is valid
+      options:
+        - label: I am running latest version of the plugin
+          required: true
+        - label: I have included sufficient evidence of the issue
+          required: true
+        - label: I ticked all of the boxes without actually reading them
+          required: false
