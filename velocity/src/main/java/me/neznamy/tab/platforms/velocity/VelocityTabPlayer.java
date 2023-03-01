@@ -139,7 +139,12 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                         getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
                         break;
                     case UPDATE_LISTED:
-                        getEntry(data.getUniqueId()).setListed(data.isListed());
+                        try {
+                            // 3.1.2+
+                            getEntry(data.getUniqueId()).setListed(data.isListed());
+                        } catch (NoSuchMethodError e) {
+                            // 3.1.1-
+                        }
                         break;
                     case INITIALIZE_CHAT: // not supported by Velocity
                     default:
@@ -338,7 +343,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public Object getProfilePublicKey() {
-        return getPlayer().getIdentifiedKey();
+        try {
+            // 3.1.2+
+            return getPlayer().getIdentifiedKey();
+        } catch (NoSuchMethodError e) {
+            // 3.1.1-
+            return null;
+        }
     }
 
     @Override
