@@ -52,8 +52,8 @@ public class WidthCheckCommand extends SubCommand {
         }
         if (args.length == 1) {
             int i = Integer.parseInt(args[0]);
-            if (i > Character.MAX_VALUE) {
-                sendMessage(sender, "&cCharacter ID out of range: 0-" + (int) Character.MAX_VALUE);
+            if (i < 0 || i > Character.MAX_VALUE) {
+                sendMessage(sender, "&cCharacter ID out of range: 0-" + (int) Character.MAX_VALUE + " (was " + i + ")");
                 return;
             }
             int ROWS = 15;
