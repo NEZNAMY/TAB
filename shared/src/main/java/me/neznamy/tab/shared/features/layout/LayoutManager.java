@@ -94,6 +94,7 @@ public class LayoutManager extends TabFeature {
                             positions.add(i);
                         }
                     }
+                    positions.removeAll(fixedSlots.keySet());
                     parentGroups.add(new ParentGroup(l, condition, positions.stream().mapToInt(i->i).toArray()));
                     emptySlots.removeAll(positions);
                 }
