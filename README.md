@@ -57,8 +57,11 @@ disappear again.
 I am obviously not available 24/7, but I do not intentionally leave anything to them. I reply
 whenever I am available without any intentional delays.  
   
-The wiki contains everything about the plugin, so support should not even be needed.
-It's provided to people who prefer paying for support over reading the wiki.
+The wiki contains everything about the plugin in one way or another, so support should not 
+even be needed. It also contains a few examples, but obviously cannot contain a pre-made config
+for every possible idea anyone can come up with.  
+Support is provided to people who decided paying for support is more time efficient than reading the wiki,
+especially for serious servers, where price of the plugin is nothing compared to other server costs.
 
 # Other links
 Download the plugin for free: 
