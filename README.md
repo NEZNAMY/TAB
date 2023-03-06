@@ -12,7 +12,8 @@ customers who have purchased the plugin.
 # Compiling
 Compilation requires JDK 8 and up.  
 To compile the plugin, run `./gradlew build` from the terminal.  
-Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.
+Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.  
+The universal jar contains all modules for all supported platforms.
 
 # Links
 Download the plugin for free: [GitHub releases](https://github.com/NEZNAMY/TAB/releases), 
