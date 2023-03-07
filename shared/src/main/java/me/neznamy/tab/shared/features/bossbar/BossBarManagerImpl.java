@@ -27,7 +27,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
     private BossBar[] lineValues;
 
     //config options
-    private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
+    @Getter private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
     private final boolean hiddenByDefault = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.hidden-by-default", false);
     private final boolean rememberToggleChoice = TAB.getInstance().getConfiguration().getConfig().getBoolean("bossbar.remember-toggle-choice", false);
     private final String toggleOnMessage = TAB.getInstance().getConfiguration().getMessages().getBossBarOn();

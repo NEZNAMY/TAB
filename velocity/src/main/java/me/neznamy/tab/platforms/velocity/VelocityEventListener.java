@@ -10,6 +10,8 @@ import com.velocitypowered.api.proxy.Player;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
 /**
@@ -59,9 +61,15 @@ public class VelocityEventListener {
     @Subscribe
     public void onCommand(CommandExecuteEvent e) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
-        if (e.getCommandSource() instanceof Player && TabAPI.getInstance().getFeatureManager().onCommand(
-                TabAPI.getInstance().getPlayer(((Player)e.getCommandSource()).getUniqueId()), e.getCommand()))
-            e.setResult(CommandResult.denied());
+        // Imagine not allowing to cancel a command while it works completely fine on BungeeCord and Bukkit and everywhere else
+        BossBarManagerImpl bossbar = (BossBarManagerImpl) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
+        if (bossbar != null && bossbar.getToggleCommand().substring(1).equals(e.getCommand())) {
+            e.setResult(CommandResult.command("vtab bossbar"));
+        }
+        ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
+        if (scoreboard != null && scoreboard.getToggleCommand().substring(1).equals(e.getCommand())) {
+            e.setResult(CommandResult.command("vtab scoreboard"));
+        }
     }
 
     /**
