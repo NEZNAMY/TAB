@@ -35,11 +35,14 @@ public class YellowNumber extends TabFeature {
     private final EnumScoreboardHealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) || "%player_health%".equals(rawValue) ||
             "%player_health_rounded%".equals(rawValue) ? EnumScoreboardHealthDisplay.HEARTS : EnumScoreboardHealthDisplay.INTEGER;
 
+    private final RedisSupport redis;
+
     /**
      * Constructs new instance and sends debug message that feature loaded.
      */
-    public YellowNumber() {
+    public YellowNumber(RedisSupport redis) {
         super("Yellow number", "Updating value", "yellow-number-in-tablist");
+        this.redis = redis;
         TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), displayType));
     }
 
@@ -122,7 +125,6 @@ public class YellowNumber extends TabFeature {
         }
         if (!disabledNow && disabledBefore) {
             onJoin(p);
-            RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
             if (redis != null) redis.updateYellowNumber(p, p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
         }
     }
@@ -134,7 +136,6 @@ public class YellowNumber extends TabFeature {
             if (isDisabledPlayer(all) || all.isBedrockPlayer()) continue;
             all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, refreshed.getNickname(), value), this);
         }
-        RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
     }
 

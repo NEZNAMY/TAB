@@ -310,6 +310,7 @@ public class FeatureManagerImpl implements FeatureManager {
 
     @Override
     public void registerFeature(String featureName, TabFeature featureHandler) {
+        if (featureName == null || featureHandler == null) return;
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
     }

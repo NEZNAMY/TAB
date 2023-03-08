@@ -6,6 +6,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.layout.LayoutManager;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -22,7 +23,8 @@ public class AlignedPlayerList extends PlayerList {
     private final Map<TabPlayer, PlayerView> playerViews = new HashMap<>();
     @Getter private final byte[] widths = loadWidths();
 
-    public AlignedPlayerList() {
+    public AlignedPlayerList(LayoutManager layoutManager) {
+        super(layoutManager);
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
     }
 

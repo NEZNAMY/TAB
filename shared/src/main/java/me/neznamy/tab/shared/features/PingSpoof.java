@@ -24,13 +24,14 @@ public class PingSpoof extends TabFeature {
     //fake ping value
     private final int value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);
 
-    private LayoutManager layoutManager;
+    private final LayoutManager layoutManager;
 
     /**
      * Constructs new instance and loads config options
      */
-    public PingSpoof() {
+    public PingSpoof(LayoutManager layoutManager) {
         super("Ping spoof", null);
+        this.layoutManager = layoutManager;
         TAB.getInstance().debug(String.format("Loaded PingSpoof feature with parameters value=%s", value));
     }
 
@@ -56,7 +57,6 @@ public class PingSpoof extends TabFeature {
 
     @Override
     public void load() {
-        layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
         updateAll(false);
     }
 

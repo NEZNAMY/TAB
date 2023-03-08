@@ -32,6 +32,7 @@ public class Sorting extends TabFeature {
 
     private NameTag nameTags;
     private LayoutManager layout;
+    private RedisSupport redis;
     
     //map of all registered sorting types
     private final Map<String, BiFunction<Sorting, String, SortingType>> types = new LinkedHashMap<>();
@@ -79,8 +80,10 @@ public class Sorting extends TabFeature {
     
     @Override
     public void load() {
+        // All of these features are instantiated after this one, so they must be detected later
         nameTags = (NameTag) TAB.getInstance().getTeamManager();
         layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             constructTeamNames(all);
         }
@@ -155,8 +158,7 @@ public class Sorting extends TabFeature {
                 return checkTeamName(p, currentName, id+1);
             }
         }
-        if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.REDIS_BUNGEE)) {
-            RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        if (redis != null) {
             for (RedisPlayer all : redis.getRedisPlayers().values()) {
                 if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
                     return checkTeamName(p, currentName, id+1);

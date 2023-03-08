@@ -34,10 +34,11 @@ public class LayoutManager extends TabFeature {
     @Getter private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
     @Getter private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
-    private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    private final Sorting sorting;
 
-    public LayoutManager() {
+    public LayoutManager(Sorting sorting) {
         super("Layout", "Switching layouts");
+        this.sorting = sorting;
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         TAB.getInstance().debug("Loaded Layout feature");

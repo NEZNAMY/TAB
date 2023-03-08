@@ -25,6 +25,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
+    private final LayoutManager layoutManager;
     /**
      * Flag tracking when the plugin is disabling to properly clear
      * display name by setting it to null value and not force the value back
@@ -35,8 +36,9 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     /**
      * Constructs new instance and sends debug message that feature loaded.
      */
-    public PlayerList() {
+    public PlayerList(LayoutManager layoutManager) {
         super("TabList prefix/suffix", "Updating TabList format", "tablist-name-formatting");
+        this.layoutManager = layoutManager;
         TAB.getInstance().debug(String.format("Loaded PlayerList feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTabList=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), antiOverrideTabList));
     }
 
@@ -53,9 +55,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
      * @return  UUID of TabList entry representing requested player
      */
     public UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
-        LayoutManager manager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
-        if (manager != null) {
-            Layout layout = manager.getPlayerViews().get(viewer);
+        if (layoutManager != null) {
+            Layout layout = layoutManager.getPlayerViews().get(viewer);
             if (layout != null) {
                 PlayerSlot slot = layout.getSlot(p);
                 if (slot != null) {

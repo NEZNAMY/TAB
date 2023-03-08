@@ -33,8 +33,11 @@ public class GlobalPlayerList extends TabFeature {
     private final Map<TabPlayer, Long> lastServerSwitch = new WeakHashMap<>();
     private final UUID EMPTY_ID = new UUID(0, 0);
 
-    public GlobalPlayerList() {
+    private final PlayerList playerlist;
+
+    public GlobalPlayerList(PlayerList playerlist) {
         super("Global PlayerList", null);
+        this.playerlist = playerlist;
         boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
         if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
@@ -145,7 +148,6 @@ public class GlobalPlayerList extends TabFeature {
 
     public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
         IChatBaseComponent format = null;
-        PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
         }

@@ -32,17 +32,11 @@ public abstract class RedisSupport extends TabFeature {
     /** UUID of this proxy to ignore messages coming from the same proxy */
     protected final UUID proxy = UUID.randomUUID();
 
-    /** Global PlayerList feature */
-    protected final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
-
-    /** PlayerList feature */
-    @Getter private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-
-    /** NameTag feature */
-    @Getter private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
-
-    /** Sorting feature */
-    @Getter  private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    /** Features this one hooks into */
+    protected final GlobalPlayerList global;
+    @Getter private final PlayerList playerList;
+    @Getter private final NameTag nameTags;
+    @Getter private final Sorting sorting;
 
     private final UUID EMPTY_ID = new UUID(0, 0);
 
@@ -51,8 +45,12 @@ public abstract class RedisSupport extends TabFeature {
     /**
      * Constructs new instance
      */
-    protected RedisSupport() {
+    protected RedisSupport(GlobalPlayerList global, PlayerList playerList, NameTag nameTags) {
         super("RedisBungee", null);
+        this.global = global;
+        this.playerList = playerList;
+        this.nameTags = nameTags;
+        this.sorting = nameTags == null ? null : nameTags.getSorting();
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished()).count());

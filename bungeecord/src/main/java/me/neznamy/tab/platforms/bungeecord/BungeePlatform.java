@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.ProxyServer;
@@ -23,10 +26,10 @@ public class BungeePlatform extends ProxyPlatform {
     @Getter private final BungeePipelineInjector pipelineInjector = new BungeePipelineInjector();
 
     @Override
-    public @Nullable RedisSupport getRedisSupport() {
+    public @Nullable RedisSupport getRedisSupport(GlobalPlayerList global, PlayerList playerList, NameTag nameTags) {
         if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.REDIS_BUNGEE) != null) {
             if (RedisBungeeAPI.getRedisBungeeApi() != null) {
-                return new RedisBungeeSupport(plugin);
+                return new RedisBungeeSupport(plugin, global, playerList, nameTags);
             } else {
                 TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
             }

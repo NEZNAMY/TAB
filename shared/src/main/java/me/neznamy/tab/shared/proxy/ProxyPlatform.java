@@ -8,7 +8,6 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -90,10 +89,5 @@ public abstract class ProxyPlatform extends Platform {
     @Override
     public NameTag getUnlimitedNametags() {
         return new ProxyNameTagX();
-    }
-
-    @Override
-    public TabFeature getGlobalPlayerlist() {
-        return new GlobalPlayerList();
     }
 }

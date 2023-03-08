@@ -20,20 +20,18 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 
 public class NickCompatibility extends TabFeature {
 
-    private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
-    private final BelowName belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
-    private final YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
-    private RedisSupport redis;
+    private final NameTag nameTags;
+    private final BelowName belowname;
+    private final YellowNumber yellownumber;
+    private final RedisSupport redis;
 
-    public NickCompatibility() {
+    public NickCompatibility(NameTag nameTags, BelowName belowname, YellowNumber yellownumber, RedisSupport redis) {
         super("Nick compatibility", null);
+        this.nameTags = nameTags;
+        this.belowname = belowname;
+        this.yellownumber = yellownumber;
+        this.redis = redis;
         TAB.getInstance().debug("Loaded NickCompatibility feature");
-    }
-
-    @Override
-    public void load() {
-        // redis feature is instantiated after nick compatibility
-        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
     }
 
     @Override

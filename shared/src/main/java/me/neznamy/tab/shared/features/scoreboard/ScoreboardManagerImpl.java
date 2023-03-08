@@ -36,10 +36,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Getter private final Map<String, Scoreboard> registeredScoreboards = new LinkedHashMap<>();
     private Scoreboard[] definedScoreboards;
 
-    //toggle messages
-    private final String scoreboardOn = TAB.getInstance().getConfiguration().getMessages().getScoreboardOn();
-    private final String scoreboardOff = TAB.getInstance().getConfiguration().getMessages().getScoreboardOff();
-
     //list of players with disabled scoreboard
     private final List<String> sbOffPlayers;
 
@@ -56,7 +52,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      * Constructs new instance and loads configuration
      */
     @SuppressWarnings("unchecked")
-    public ScoreboardManagerImpl() {
+    public ScoreboardManagerImpl(PipelineInjector inj) {
         super("Scoreboard", "Switching displayed scoreboard", "scoreboard");
         if (rememberToggleChoice) {
             sbOffPlayers = Collections.synchronizedList(new ArrayList<>(TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("scoreboard-off", new ArrayList<>())));
@@ -82,13 +78,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         }
         definedScoreboards = registeredScoreboards.values().toArray(new Scoreboard[0]);
         if (respectOtherPlugins) {
-            PipelineInjector inj = (PipelineInjector) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PIPELINE_INJECTION);
             //null check if injection was disabled in config or velocity
             if (inj != null) inj.setByteBufDeserialization(true);
         }
         TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
                 + ", disabledServers=%s, rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
-                toggleCommand, usingNumbers, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), rememberToggleChoice, hiddenByDefault, scoreboardOn, scoreboardOff, staticNumber, joinDelay));
+                toggleCommand, usingNumbers, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), rememberToggleChoice, hiddenByDefault,
+                TAB.getInstance().getConfiguration().getMessages().getScoreboardOn(), TAB.getInstance().getConfiguration().getMessages().getScoreboardOff(), staticNumber, joinDelay));
     }
 
     @Override
@@ -286,7 +282,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             visiblePlayers.add(player);
             sendHighestScoreboard(player);
             if (sendToggleMessage) {
-                player.sendMessage(scoreboardOn, true);
+                player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOn(), true);
             }
             if (rememberToggleChoice) {
                 if (hiddenByDefault) {
@@ -302,7 +298,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             visiblePlayers.remove(player);
             unregisterScoreboard(player);
             if (sendToggleMessage) {
-                player.sendMessage(scoreboardOff, true);
+                player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getScoreboardOff(), true);
             }
             if (rememberToggleChoice) {
                 if (hiddenByDefault) {
