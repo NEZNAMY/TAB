@@ -1,9 +1,7 @@
 package me.neznamy.tab.shared.features.bossbar;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -11,8 +9,9 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.features.TabExpansion;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class for handling BossBar feature
@@ -249,8 +248,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
                 TAB.getInstance().getConfiguration().getPlayerDataFile().set("bossbar-off", new ArrayList<>(bossBarOffPlayers));
             }
         }
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        if (expansion != null) expansion.setBossBarVisible(player, visible);
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setBossBarVisible(player, visible);
     }
 
     @Override

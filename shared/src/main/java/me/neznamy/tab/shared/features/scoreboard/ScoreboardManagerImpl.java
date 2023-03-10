@@ -1,19 +1,17 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.features.TabExpansion;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Feature handler for scoreboard feature
@@ -299,8 +297,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
                 }
             }
         }
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        if (expansion != null) expansion.setScoreboardVisible(player, visible);
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setScoreboardVisible(player, visible);
     }
 
     @Override

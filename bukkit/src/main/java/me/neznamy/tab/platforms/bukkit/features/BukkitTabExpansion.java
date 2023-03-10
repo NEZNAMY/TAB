@@ -8,7 +8,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.TabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +22,7 @@ import java.util.WeakHashMap;
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
 
     /** Map holding all values for all players for easy and high-performance access */
-    private final Map<TabPlayer, Map<String, String>> values = new WeakHashMap<>();
+    private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();
 
     @Getter private final String author = "NEZNAMY";
     @Getter private final String identifier = TabConstants.PLUGIN_ID;
@@ -50,14 +50,11 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
         if (identifier.startsWith("placeholder_")) {
             TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", (TabFeature) TabAPI.getInstance().getPlaceholderManager());
         }
-        if (player == null) return "<Player cannot be null>";
-        TabPlayer p = TabAPI.getInstance().getPlayer(player.getUniqueId());
-        if (p == null || !p.isLoaded()) return "<Player is not loaded>";
-        return values.get(p).get(identifier);
+        return values.get(player).get(identifier);
     }
 
     @Override
     public void setValue(TabPlayer player, String key, String value) {
-        values.computeIfAbsent(player, p -> new HashMap<>()).put(key, value);
+        values.computeIfAbsent((Player) player.getPlayer(), p -> new HashMap<>()).put(key, value);
     }
 }

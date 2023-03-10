@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -28,6 +28,8 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.TabPlaceholder;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 
 /**
  * Messy class for placeholder management
@@ -52,7 +54,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private int refreshInterval = 10000;
     private Future<?> refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(refreshInterval, this, "Refreshing placeholders", this::refresh);
 
-    @Getter @Setter private TabExpansion tabExpansion;
+    @Getter @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", false) ?
+            TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
 
     public PlaceholderManagerImpl() {
         super("Refreshing placeholders", "Updating placeholders");
@@ -232,10 +235,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             recalculateUsedPlaceholders();
             TabPlaceholder p = getPlaceholder(identifier);
             p.markAsUsed();
-            if (tabExpansion != null) {
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
-                }
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
             }
             if (p.getRefresh() % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL == 0 && p.getRefresh() > 0) {
                 int refresh = gcd(p.getRefresh(), refreshInterval);
@@ -280,7 +281,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             if (p instanceof PlayerPlaceholderImpl) {
                 ((PlayerPlaceholderImpl)p).update(connectedPlayer);
             }
-            if (tabExpansion != null && p instanceof ServerPlaceholder) { // server placeholders don't update on join
+            if (p instanceof ServerPlaceholder) { // server placeholders don't update on join
                 tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholder) p).getLastValue());
             }
         }

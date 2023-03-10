@@ -10,7 +10,8 @@ import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.features.TabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.kyori.adventure.text.Component;
@@ -23,7 +24,7 @@ public final class SpongePlatform extends BackendPlatform {
 
     private final Sponge8TAB plugin;
     @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
-    @Getter private final TabExpansion tabExpansion = null;
+    @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature perWorldPlayerlist = null;
     @Getter private final PacketBuilder packetBuilder = new SpongePacketBuilder();
 

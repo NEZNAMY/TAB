@@ -9,7 +9,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.features.TabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 
 /**
@@ -120,8 +120,8 @@ public class DynamicText implements Property {
         }
         lastReplacedValue = rawFormattedValue;
         update();
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        if (expansion != null && name != null) {
+        if (name != null) {
+            TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
             expansion.setPropertyValue(owner, name, lastReplacedValue);
             expansion.setRawPropertyValue(owner, name, getCurrentRawValue());
         }
@@ -193,9 +193,8 @@ public class DynamicText implements Property {
         string = EnumChatFormat.color(string);
         if (!lastReplacedValue.equals(string)) {
             lastReplacedValue = string;
-            TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-            if (expansion != null && name != null) {
-                expansion.setPropertyValue(owner, name, lastReplacedValue);
+            if (name != null) {
+                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPropertyValue(owner, name, lastReplacedValue);
             }
             TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
             return true;

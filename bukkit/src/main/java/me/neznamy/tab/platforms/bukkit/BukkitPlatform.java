@@ -20,7 +20,8 @@ import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.TabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -34,6 +35,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -97,13 +99,13 @@ public class BukkitPlatform extends BackendPlatform {
     }
 
     @Override
-    public TabExpansion getTabExpansion() {
+    public @NotNull TabExpansion getTabExpansion() {
         if (placeholderAPI) {
             BukkitTabExpansion expansion = new BukkitTabExpansion();
             expansion.register();
             return expansion;
         }
-        return null;
+        return new EmptyTabExpansion();
     }
 
     @Override

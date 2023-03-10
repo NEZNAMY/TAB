@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import com.viaversion.viaversion.api.Via;
+import lombok.NonNull;
 import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
@@ -18,6 +19,7 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -141,10 +143,6 @@ public abstract class Platform {
             featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, belowName);
 
         featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, nickCompatibility);
-
-        if (configuration.getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
-            TAB.getInstance().getPlaceholderManager().setTabExpansion(getTabExpansion());
-        }
     }
 
     public BossBarManagerImpl getLegacyBossBar() {
@@ -216,7 +214,7 @@ public abstract class Platform {
 
     public abstract NameTag getUnlimitedNametags(Sorting sorting);
 
-    public abstract TabExpansion getTabExpansion();
+    public abstract @NonNull TabExpansion getTabExpansion();
 
     public abstract @Nullable TabFeature getPetFix();
 

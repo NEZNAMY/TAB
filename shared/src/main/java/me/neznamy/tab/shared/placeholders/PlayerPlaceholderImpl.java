@@ -62,8 +62,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (!lastValues.containsKey(p) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p).equals(newValue))) {
             lastValues.put(p, ERROR_VALUE.equals(newValue) ? identifier : newValue);
             updateParents(p);
-            if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
+            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
             return true;
         }
         return false;
@@ -86,8 +85,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
                 setPlaceholders(value.toString(), player));
         if (s.equals(lastValues.getOrDefault(player, identifier)) && !force) return;
         lastValues.put(player, s);
-        if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
-            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
         if (!player.isLoaded()) {
             if (player.isOnline()) {
                 TAB.getInstance().getCPUManager().runTask(() -> updateValue(player, value, force));

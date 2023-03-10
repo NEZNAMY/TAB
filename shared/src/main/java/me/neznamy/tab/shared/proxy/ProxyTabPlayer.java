@@ -8,6 +8,8 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.permission.VaultBridge;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +64,11 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * joined, containing all plugin configuration data.
      */
     public void sendJoinPluginMessage() {
-        ProxyTabExpansion expansion = (ProxyTabExpansion) TAB.getInstance().getPlaceholderManager().getTabExpansion();
+        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge && !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX),
-                expansion != null);
+                !(expansion instanceof EmptyTabExpansion));
         ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
         Map<String, Integer> placeholders = platform.getBridgePlaceholders();
         args.add(placeholders.size());
@@ -93,9 +95,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
             }
         }
         ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
-        if (expansion != null) {
-            expansion.resendAllValues(this);
-        }
+        if (expansion instanceof ProxyTabExpansion) ((ProxyTabExpansion) expansion).resendAllValues(this);
     }
 
     /**

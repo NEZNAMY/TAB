@@ -6,9 +6,10 @@ import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.backend.BackendPlatform
 import me.neznamy.tab.shared.features.PipelineInjector
-import me.neznamy.tab.shared.features.TabExpansion
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion
 import me.neznamy.tab.shared.features.nametags.NameTag
 import me.neznamy.tab.shared.features.sorting.Sorting
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 
@@ -45,8 +46,8 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
         return KryptonNameTagX(plugin, sorting)
     }
 
-    override fun getTabExpansion(): TabExpansion? {
-        return null
+    override fun getTabExpansion(): TabExpansion {
+        return EmptyTabExpansion()
     }
 
     override fun getPetFix(): TabFeature? {

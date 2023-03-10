@@ -55,8 +55,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
             lastValue = newValue;
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 updateParents(player);
-                if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
-                    TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
+                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
             }
             return true;
         }
@@ -87,8 +86,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
                 TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);
             }
             updateParents(player);
-            if (TAB.getInstance().getPlaceholderManager().getTabExpansion() != null)
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
+            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
         }
     }
 

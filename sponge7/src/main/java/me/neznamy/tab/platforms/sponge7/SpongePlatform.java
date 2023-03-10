@@ -6,7 +6,8 @@ import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PipelineInjector;
-import me.neznamy.tab.shared.features.TabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.spongepowered.api.Sponge;
@@ -16,7 +17,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 public final class SpongePlatform extends BackendPlatform {
 
     @Getter private final PipelineInjector pipelineInjector = null;
-    @Getter private final TabExpansion tabExpansion = null;
+    @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature petFix = null;
     @Getter private final TabFeature perWorldPlayerlist = null;
     @Getter private final PacketBuilder packetBuilder = new PacketBuilder();

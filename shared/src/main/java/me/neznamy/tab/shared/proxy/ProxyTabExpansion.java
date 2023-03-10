@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.proxy;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.TabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 
 import java.util.HashMap;
 import java.util.Map;

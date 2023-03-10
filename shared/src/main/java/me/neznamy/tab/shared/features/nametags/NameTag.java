@@ -9,7 +9,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
@@ -48,7 +47,6 @@ public class NameTag extends TabFeature implements TeamManager {
         redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             hiddenNameTagFor.put(all, new ArrayList<>());
@@ -57,7 +55,7 @@ public class NameTag extends TabFeature implements TeamManager {
                 continue;
             }
             registerTeam(all);
-            if (expansion != null) expansion.setNameTagVisibility(all, true);
+            TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
         }
     }
 
@@ -102,10 +100,7 @@ public class NameTag extends TabFeature implements TeamManager {
                 registerTeam(all, connectedPlayer);
             }
         }
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        if (expansion != null) {
-            expansion.setNameTagVisibility(connectedPlayer, true);
-        }
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(connectedPlayer, true);
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
             addDisabledPlayer(connectedPlayer);
             return;
@@ -349,10 +344,7 @@ public class NameTag extends TabFeature implements TeamManager {
             playersWithInvisibleNameTagView.add(player);
             if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsHidden(), true);
         }
-        TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        if (expansion != null) {
-            expansion.setNameTagVisibility(player, !playersWithInvisibleNameTagView.contains(player));
-        }
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(player, !playersWithInvisibleNameTagView.contains(player));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateTeamData(all, player);
         }
