@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -47,11 +46,10 @@ public class PetFix extends TabFeature {
     private static final int INTERACT_COOLDOWN = 160;
 
     /**
-     * Constructs new instance with given parameter
+     * Constructs new instance
      */
     public PetFix() {
         super("Pet name fix", null);
-        TabAPI.getInstance().debug("Loaded PetFix feature");
     }
 
     /**

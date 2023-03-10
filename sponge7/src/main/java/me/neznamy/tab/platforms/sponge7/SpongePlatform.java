@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PipelineInjector;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -43,7 +44,7 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
-        return new NameTag();
+    public NameTag getUnlimitedNametags(Sorting sorting) {
+        return new NameTag(sorting);
     }
 }

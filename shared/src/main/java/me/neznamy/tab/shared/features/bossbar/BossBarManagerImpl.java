@@ -37,7 +37,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
     @Getter private final List<BossBar> announcedBossBars = new ArrayList<>();
 
     //players with toggled BossBar
-    private final List<String> bossBarOffPlayers = rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("bossbar-off", new ArrayList<>()) : Collections.emptyList();
+    private final List<String> bossBarOffPlayers = rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
+            .getStringList("bossbar-off", new ArrayList<>()) : Collections.emptyList();
 
     //time when BossBar announce ends, used for placeholder
     private long announceEndTime;
@@ -55,9 +56,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
             if (!line.isAnnouncementBar()) defaultBars.add(bar.toString());
         }
         lineValues = registeredBossBars.values().toArray(new BossBar[0]);
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
-        TAB.getInstance().debug(String.format("Loaded BossBar feature with parameters disabledWorlds=%s, disabledServers=%s, toggleCommand=%s, defaultBars=%s, hiddenByDefault=%s, remember_toggle_choice=%s",
-                Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), toggleCommand, defaultBars, hiddenByDefault, rememberToggleChoice));
     }
 
     /**
@@ -95,6 +93,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
     @Override
     public void load() {
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.COUNTDOWN, 100, () -> (announceEndTime - System.currentTimeMillis()) / 1000);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }

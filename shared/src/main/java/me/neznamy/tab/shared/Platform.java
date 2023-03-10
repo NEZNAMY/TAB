@@ -51,98 +51,100 @@ public abstract class Platform {
     public void loadFeatures() {
         Configs configuration = TAB.getInstance().getConfiguration();
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
+        int minorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
 
-        LayoutManager layout = null;
-        NameTag nameTags = null;
-        BelowName belowName = null;
-        YellowNumber yellowNumber = null;
-        RedisSupport redis;
-        PlayerList playerList = null;
-        Sorting sorting = null;
-        PipelineInjector pipelineInjector = null;
-        GlobalPlayerList globalPlayerList = null;
+        BossBarManagerImpl bossBar = minorVersion >= 9 ? new BossBarManagerImpl() : getLegacyBossBar();
+        TabFeature petFix = getPetFix();
+        HeaderFooter headerFooter = new HeaderFooter();
+        GhostPlayerFix ghostPlayerFix = new GhostPlayerFix();
+        SpectatorFix spectatorFix = new SpectatorFix();
+        PipelineInjector pipelineInjector = getPipelineInjector();
+        TabFeature perWorldPlayerList = getPerWorldPlayerlist();
+        ScoreboardManagerImpl scoreboardManager = new ScoreboardManagerImpl();
+        Sorting sorting = new Sorting();
+
+        NameTag nameTags = new NameTag(sorting);
+        NameTag unlimitedNameTags = getUnlimitedNametags(sorting);
+        LayoutManager layout = new LayoutManager(sorting);
+        PingSpoof pingSpoof = new PingSpoof(layout);
+        PlayerList playerList = configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false) ?
+                new AlignedPlayerList(layout) : new PlayerList(layout);
+        GlobalPlayerList globalPlayerList = new GlobalPlayerList(playerList);
+        RedisSupport redis = getRedisSupport(globalPlayerList, playerList, nameTags);
+        BelowName belowName = new BelowName(redis);
+        YellowNumber yellowNumber = new YellowNumber(redis);
+        NickCompatibility nickCompatibility = new NickCompatibility(nameTags, belowName, yellowNumber, redis);
 
         if (configuration.getConfig().getBoolean("bossbar.enabled", false)) {
-            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
-                featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, new BossBarManagerImpl());
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, getLegacyBossBar());
-            }
+            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, bossBar);
         }
 
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9 &&
-                configuration.getConfig().getBoolean("fix-pet-names.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.PET_FIX, getPetFix());
+        if (minorVersion >= 9 && configuration.getConfig().getBoolean("fix-pet-names.enabled", false)) {
+            featureManager.registerFeature(TabConstants.Feature.PET_FIX, petFix);
         }
 
         if (configuration.getConfig().getBoolean("header-footer.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
+            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, headerFooter);
 
         if (configuration.isRemoveGhostPlayers())
-            featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, new GhostPlayerFix());
+            featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, ghostPlayerFix);
 
         if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
+            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, spectatorFix);
 
         if (configuration.isPipelineInjection()) {
-            featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, pipelineInjector = getPipelineInjector());
+            featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, pipelineInjector);
         }
 
         if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl(pipelineInjector));
-
-        if (configuration.getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
-            TAB.getInstance().getPlaceholderManager().setTabExpansion(getTabExpansion());
-        }
+            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, scoreboardManager);
 
         if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, getPerWorldPlayerlist());
+            featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, perWorldPlayerList);
         }
 
-        // Must be loaded after: PipelineInjector, Sorting
+        if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
+                configuration.getLayout().getBoolean("enabled", false)) {
+            featureManager.registerFeature(TabConstants.Feature.SORTING, sorting);
+        }
+
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-            featureManager.registerFeature(TabConstants.Feature.SORTING, sorting = new Sorting());
-            if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false)
-                    && TAB.getInstance().getServerVersion().getMinorVersion() >= 8) {
-                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, nameTags = getUnlimitedNametags());
+            if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && minorVersion >= 8) {
+                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimitedNameTags);
             } else {
-                featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, nameTags = new NameTag());
+                featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, nameTags);
             }
         }
 
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
-            if (sorting == null) {
-                //sorting is disabled, but layout needs team names
-                featureManager.registerFeature(TabConstants.Feature.SORTING, sorting = new Sorting());
-            }
-            featureManager.registerFeature(TabConstants.Feature.LAYOUT, layout = new LayoutManager(sorting));
+        if (minorVersion >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
+            featureManager.registerFeature(TabConstants.Feature.LAYOUT, layout);
         }
 
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
-            if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, playerList = new AlignedPlayerList(layout));
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, playerList = new PlayerList(layout));
-            }
+        if (minorVersion >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
+            featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, playerList);
         }
 
         if (configuration.getConfig().getBoolean("global-playerlist.enabled", false) &&
                 TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
-            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, globalPlayerList = new GlobalPlayerList(playerList));
+            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, globalPlayerList);
         }
 
         if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof(layout));
+            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, pingSpoof);
 
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis = getRedisSupport(globalPlayerList, playerList, nameTags));
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
 
         if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, yellowNumber = new YellowNumber(redis));
+            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, yellowNumber);
 
         if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, belowName = new BelowName(redis));
+            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, belowName);
 
-        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility(nameTags, belowName, yellowNumber, redis));
+        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, nickCompatibility);
+
+        if (configuration.getConfig().getBoolean("placeholders.register-tab-expansion", false)) {
+            TAB.getInstance().getPlaceholderManager().setTabExpansion(getTabExpansion());
+        }
     }
 
     public BossBarManagerImpl getLegacyBossBar() {
@@ -212,7 +214,7 @@ public abstract class Platform {
 
     public abstract @Nullable PipelineInjector getPipelineInjector();
 
-    public abstract NameTag getUnlimitedNametags();
+    public abstract NameTag getUnlimitedNametags(Sorting sorting);
 
     public abstract TabExpansion getTabExpansion();
 

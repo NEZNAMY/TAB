@@ -37,7 +37,8 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     private Scoreboard[] definedScoreboards;
 
     //list of players with disabled scoreboard
-    private final List<String> sbOffPlayers;
+    private final List<String> sbOffPlayers = rememberToggleChoice ? TAB.getInstance().getConfiguration().getPlayerDataFile()
+            .getStringList("scoreboard-off", new ArrayList<>()) : Collections.emptyList();
 
     //active scoreboard announcement
     private Scoreboard announcement;
@@ -51,14 +52,13 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     /**
      * Constructs new instance and loads configuration
      */
-    @SuppressWarnings("unchecked")
-    public ScoreboardManagerImpl(PipelineInjector inj) {
+    public ScoreboardManagerImpl() {
         super("Scoreboard", "Switching displayed scoreboard", "scoreboard");
-        if (rememberToggleChoice) {
-            sbOffPlayers = Collections.synchronizedList(new ArrayList<>(TAB.getInstance().getConfiguration().getPlayerDataFile().getStringList("scoreboard-off", new ArrayList<>())));
-        } else {
-            sbOffPlayers = Collections.emptyList();
-        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void load() {
         Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
             String condition = (String) entry.getValue().get("display-condition");
@@ -77,18 +77,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);
         }
         definedScoreboards = registeredScoreboards.values().toArray(new Scoreboard[0]);
-        if (respectOtherPlugins) {
-            //null check if injection was disabled in config or velocity
-            if (inj != null) inj.setByteBufDeserialization(true);
-        }
-        TAB.getInstance().debug(String.format("Loaded Scoreboard feature with parameters toggleCommand=%s, useNumbers=%s, disabledWorlds=%s"
-                + ", disabledServers=%s, rememberToggleChoice=%s, hiddenByDefault=%s, scoreboard_on=%s, scoreboard_off=%s, staticNumber=%s, joinDelay=%s",
-                toggleCommand, usingNumbers, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), rememberToggleChoice, hiddenByDefault,
-                TAB.getInstance().getConfiguration().getMessages().getScoreboardOn(), TAB.getInstance().getConfiguration().getMessages().getScoreboardOff(), staticNumber, joinDelay));
-    }
-
-    @Override
-    public void load() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }

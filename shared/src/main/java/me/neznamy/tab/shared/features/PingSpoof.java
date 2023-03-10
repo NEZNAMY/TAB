@@ -1,10 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -15,6 +10,10 @@ import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.ParentGroup;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Sets ping of all players in the packet to configured value to prevent hacked clients from seeing exact ping value of each player
@@ -32,7 +31,6 @@ public class PingSpoof extends TabFeature {
     public PingSpoof(LayoutManager layoutManager) {
         super("Ping spoof", null);
         this.layoutManager = layoutManager;
-        TAB.getInstance().debug(String.format("Loaded PingSpoof feature with parameters value=%s", value));
     }
 
     @Override

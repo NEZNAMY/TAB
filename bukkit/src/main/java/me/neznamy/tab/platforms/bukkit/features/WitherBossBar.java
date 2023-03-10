@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,27 +20,22 @@ import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 /**
  * An additional class with additional code for &lt;1.9 servers due to an entity being required
  */
+@RequiredArgsConstructor
 public class WitherBossBar extends BossBarManagerImpl implements Listener {
 
     /** Distance of the Wither in blocks */
     private static final int WITHER_DISTANCE = 60;
-    
-    /**
-     * Constructs a new instance of the class and registers events and task
-     *
-     * @param   plugin
-     *          plugin instance
-     */
-    public WitherBossBar(JavaPlugin plugin) {
+
+    /** Reference to plugin for registering listener */
+    private final JavaPlugin plugin;
+
+    @Override
+    public void load() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         //when MC is on fullscreen, BossBar disappears after 1 second of not being seen
         //when in a small window, it's about 100ms
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100,
                 this, TabConstants.CpuUsageCategory.TELEPORTING_WITHER, this::teleport);
-    }
-    
-    @Override
-    public void load() {
         super.load();
         teleport();
     }

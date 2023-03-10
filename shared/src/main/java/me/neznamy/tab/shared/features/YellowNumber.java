@@ -43,7 +43,6 @@ public class YellowNumber extends TabFeature {
     public YellowNumber(RedisSupport redis) {
         super("Yellow number", "Updating value", "yellow-number-in-tablist");
         this.redis = redis;
-        TAB.getInstance().debug(String.format("Loaded YellowNumber feature with parameters value=%s, disabledWorlds=%s, disabledServers=%s, displayType=%s", rawValue, Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), displayType));
     }
 
     /**

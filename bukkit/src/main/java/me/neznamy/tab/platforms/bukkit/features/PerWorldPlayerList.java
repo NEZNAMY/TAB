@@ -30,6 +30,9 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
     private final List<String> ignoredWorlds = TabAPI.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
     private final Map<String, List<String>> sharedWorlds = TabAPI.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
+    /** Plugin reference*/
+    private final JavaPlugin plugin;
+
     /**
      * Constructs new instance with given parameters and loads config options
      *
@@ -38,13 +41,13 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
      */
     public PerWorldPlayerList(JavaPlugin plugin) {
         super("Per world PlayerList", null);
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-        TabAPI.getInstance().debug(String.format("Loaded PerWorldPlayerList feature with parameters allowBypass=%s, ignoredWorlds=%s, sharedWorlds=%s", allowBypass, ignoredWorlds, sharedWorlds));
+        this.plugin = plugin;
     }
 
     @Override
     public void load() {
         Bukkit.getOnlinePlayers().forEach(this::checkPlayer);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override

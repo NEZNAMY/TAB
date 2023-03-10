@@ -8,6 +8,7 @@ import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.*;
 import org.spongepowered.api.Sponge;
@@ -27,8 +28,17 @@ public class SpongeNameTagX extends BackendNameTagX {
     /** Event listener */
     private final EventListener eventListener = new EventListener(this);
 
-    public SpongeNameTagX(Sponge8TAB plugin) {
+    private final Sponge8TAB plugin;
+
+    public SpongeNameTagX(Sponge8TAB plugin, Sorting sorting) {
+        super(sorting);
+        this.plugin = plugin;
+    }
+
+    @Override
+    public void load() {
         Sponge.eventManager().registerListeners(plugin.getContainer(), eventListener);
+        super.load();
     }
 
     @Override

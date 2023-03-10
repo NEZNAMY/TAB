@@ -20,11 +20,10 @@ import me.neznamy.tab.api.TabConstants;
 public class SpectatorFix extends TabFeature {
 
     /**
-     * Constructs new instance and sends debug message that feature loaded.
+     * Constructs new instance
      */
     public SpectatorFix() {
         super("Spectator fix", null);
-        TAB.getInstance().debug("Loaded SpectatorFix feature");
     }
 
     /**

@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 import lombok.Getter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,24 +16,8 @@ public abstract class BackendNameTagX extends NameTagX {
     /** Packet Listener reference */
     protected final PacketListener packetListener = new PacketListener(this);
 
-    public BackendNameTagX() {
-        super(BackendArmorStandManager::new);
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
-        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, TabPlayer::getGamemode);
-        TabFeature gamemode = new TabFeature("Unlimited NameTags", "Gamemode listener") {
-            {
-                addUsedPlaceholders(Collections.singletonList("%gamemode%"));
-            }
-
-            @Override
-            public void refresh(TabPlayer viewer, boolean force) {
-                for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
-                    getArmorStandManager(target).updateMetadata(viewer);
-                }
-            }
-        };
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, gamemode);
+    public BackendNameTagX(Sorting sorting) {
+        super(BackendArmorStandManager::new, sorting);
     }
 
     /**
@@ -55,6 +40,22 @@ public abstract class BackendNameTagX extends NameTagX {
 
     @Override
     public void load() {
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
+        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, TabPlayer::getGamemode);
+        TabFeature gamemode = new TabFeature("Unlimited NameTags", "Gamemode listener") {
+            {
+                addUsedPlaceholders(Collections.singletonList("%gamemode%"));
+            }
+
+            @Override
+            public void refresh(TabPlayer viewer, boolean force) {
+                for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
+                    getArmorStandManager(target).updateMetadata(viewer);
+                }
+            }
+        };
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, gamemode);
         super.load();
         for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
             if (isPlayerDisabled(all)) continue;

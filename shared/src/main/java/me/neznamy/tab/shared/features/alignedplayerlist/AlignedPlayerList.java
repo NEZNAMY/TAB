@@ -25,7 +25,6 @@ public class AlignedPlayerList extends PlayerList {
 
     public AlignedPlayerList(LayoutManager layoutManager) {
         super(layoutManager);
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
     }
 
     /**
@@ -58,6 +57,7 @@ public class AlignedPlayerList extends PlayerList {
 
     @Override
     public void load() {
+        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             playerViews.put(all, new PlayerView(this, all));

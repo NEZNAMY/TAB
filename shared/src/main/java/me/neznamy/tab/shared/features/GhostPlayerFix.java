@@ -15,7 +15,6 @@ public class GhostPlayerFix extends TabFeature {
 
     public GhostPlayerFix() {
         super("Ghost player fix", null);
-        TAB.getInstance().debug("Loaded GhostPlayerFix feature");
     }
     
     @Override

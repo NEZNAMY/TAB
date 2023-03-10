@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.sponge8.features;
 
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
@@ -41,7 +40,6 @@ public class PetFix extends TabFeature {
      */
     public PetFix() {
         super("Pet name fix", null);
-        TabAPI.getInstance().debug("Loaded PetFix feature");
     }
 
     /**

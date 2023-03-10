@@ -22,9 +22,6 @@ import me.neznamy.tab.shared.TAB;
  */
 public abstract class PipelineInjector extends TabFeature {
 
-    //name of the pipeline decoder injected in netty
-    public final String DECODER_NAME = TabConstants.PIPELINE_HANDLER_NAME;
-
     //handler to inject before
     private final String injectPosition;
 
@@ -32,8 +29,7 @@ public abstract class PipelineInjector extends TabFeature {
     private String lastTeamOverrideMessage;
 
     //anti-override rules
-    @Setter protected boolean antiOverrideTeams;
-
+    protected boolean antiOverrideTeams;
     @Setter protected boolean byteBufDeserialization;
 
     /**
@@ -61,7 +57,7 @@ public abstract class PipelineInjector extends TabFeature {
         }
         uninject(player);
         try {
-            player.getChannel().pipeline().addBefore(injectPosition, DECODER_NAME, getChannelFunction().apply(player));
+            player.getChannel().pipeline().addBefore(injectPosition, TabConstants.PIPELINE_HANDLER_NAME, getChannelFunction().apply(player));
         } catch (NoSuchElementException | IllegalArgumentException e) {
             //I don't really know how does this keep happening but whatever
         }
@@ -70,15 +66,21 @@ public abstract class PipelineInjector extends TabFeature {
     public void uninject(TabPlayer player) {
         if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
         try {
-            if (player.getChannel().pipeline().names().contains(DECODER_NAME)) player.getChannel().pipeline().remove(DECODER_NAME);
+            if (player.getChannel().pipeline().names().contains(TabConstants.PIPELINE_HANDLER_NAME))
+                player.getChannel().pipeline().remove(TabConstants.PIPELINE_HANDLER_NAME);
         } catch (NoSuchElementException e) {
             //for whatever reason this rarely throws
-            //java.util.NoSuchElementException: TABReader
+            //java.util.NoSuchElementException: TAB
         }
     }
 
     @Override
     public void load() {
+        antiOverrideTeams = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.enabled", true) &&
+                TAB.getInstance().getConfig().getBoolean("scoreboard-teams.anti-override", true);
+        boolean respectOtherScoreboardPlugins = TAB.getInstance().getConfig().getBoolean("scoreboard.enabled", false) &&
+                TAB.getInstance().getConfig().getBoolean("scoreboard.respect-other-plugins", true);
+        byteBufDeserialization = antiOverrideTeams || respectOtherScoreboardPlugins;
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             inject(p);
         }

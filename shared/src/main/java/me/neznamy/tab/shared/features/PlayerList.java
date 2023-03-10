@@ -1,10 +1,5 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -17,6 +12,10 @@ import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Feature handler for TabList display names
  */
@@ -26,6 +25,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
     private final LayoutManager layoutManager;
+    private RedisSupport redis;
+
     /**
      * Flag tracking when the plugin is disabling to properly clear
      * display name by setting it to null value and not force the value back
@@ -39,7 +40,6 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     public PlayerList(LayoutManager layoutManager) {
         super("TabList prefix/suffix", "Updating TabList format", "tablist-name-formatting");
         this.layoutManager = layoutManager;
-        TAB.getInstance().debug(String.format("Loaded PlayerList feature with parameters disabledWorlds=%s, disabledServers=%s, antiOverrideTabList=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers), antiOverrideTabList));
     }
 
     /**
@@ -96,7 +96,6 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
                     new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null)), this);
         }
-        RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
     }
 
@@ -121,6 +120,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
 
     @Override
     public void load() {
+        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabled(all.getServer(), all.getWorld())) {
                 addDisabledPlayer(all);

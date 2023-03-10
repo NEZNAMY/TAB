@@ -9,6 +9,7 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -31,15 +32,18 @@ public class BukkitNameTagX extends BackendNameTagX {
     /** Bukkit event listener */
     private final EventListener eventListener = new EventListener(this);
 
-    /**
-     * Constructs new instance with given parameter, loads config options, registers events
-     * and registers sub-features.
-     *
-     * @param   plugin
-     *          plugin instance
-     */
-    public BukkitNameTagX(JavaPlugin plugin) {
+    /** Plugin reference */
+    private final JavaPlugin plugin;
+
+    public BukkitNameTagX(JavaPlugin plugin, Sorting sorting) {
+        super(sorting);
+        this.plugin = plugin;
+    }
+
+    @Override
+    public void load() {
         Bukkit.getPluginManager().registerEvents(eventListener, plugin);
+        super.load();
     }
 
     @Override

@@ -12,6 +12,7 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -35,13 +36,21 @@ public class LayoutManager extends TabFeature {
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
     @Getter private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
     private final Sorting sorting;
+    @Getter private PlayerList playerList;
 
     public LayoutManager(Sorting sorting) {
         super("Layout", "Switching layouts");
         this.sorting = sorting;
+    }
+
+    @Override
+    public void load() {
+        playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
-        TAB.getInstance().debug("Loaded Layout feature");
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            onJoin(p);
+        }
     }
 
     private Direction parseDirection(String value) {
@@ -136,13 +145,6 @@ public class LayoutManager extends TabFeature {
             return (slot-1)%4*20+(slot-((slot-1)%4))/4+1;
         } else {
             return slot;
-        }
-    }
-
-    @Override
-    public void load() {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            onJoin(p);
         }
     }
 

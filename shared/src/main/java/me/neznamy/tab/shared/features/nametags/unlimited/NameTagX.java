@@ -2,13 +2,14 @@ package me.neznamy.tab.shared.features.nametags.unlimited;
 
 import lombok.Getter;
 import me.neznamy.tab.api.ArmorStandManager;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -35,16 +36,12 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     private final Set<TabPlayer> playersPreviewingNametag = Collections.newSetFromMap(new WeakHashMap<>());
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
 
-    public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
+    public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction, Sorting sorting) {
+        super(sorting);
         this.armorStandFunction = armorStandFunction;
+    }
+    {
         Collections.reverse(dynamicLines);
-        if (invisibleNameTags) {
-            TAB.getInstance().getErrorManager().startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.");
-            TAB.getInstance().getErrorManager().startupWarn("If you want nametags to be invisible, you don't need unlimited nametag mode at all.");
-            TAB.getInstance().getErrorManager().startupWarn("If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
-        }
-        TAB.getInstance().debug(String.format("Loaded Unlimited NameTag feature with parameters markerFor18x=%s, disableOnBoats=%s, disabledUnlimitedServers=%s, disabledUnlimitedWorlds=%s",
-                markerFor18x, disableOnBoats, disabledUnlimitedServers, disabledUnlimitedWorlds));
     }
 
     public boolean isUnlimitedDisabled(String server, String world) {
@@ -66,6 +63,11 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void load() {
+        if (invisibleNameTags) {
+            TAB.getInstance().getErrorManager().startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.");
+            TAB.getInstance().getErrorManager().startupWarn("If you want nametags to be invisible, you don't need unlimited nametag mode at all.");
+            TAB.getInstance().getErrorManager().startupWarn("If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
+        }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             armorStandManagerMap.put(all, armorStandFunction.apply(this, all));

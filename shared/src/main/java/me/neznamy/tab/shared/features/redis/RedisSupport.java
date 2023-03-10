@@ -1,17 +1,21 @@
 package me.neznamy.tab.shared.features.redis;
 
 import lombok.Getter;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -42,6 +46,8 @@ public abstract class RedisSupport extends TabFeature {
 
     private final Map<RedisPlayer, Long> lastServerSwitch = new WeakHashMap<>();
 
+    private final EventHandler<TabPlaceholderRegisterEvent> eventHandler;
+
     /**
      * Constructs new instance
      */
@@ -51,12 +57,16 @@ public abstract class RedisSupport extends TabFeature {
         this.playerList = playerList;
         this.nameTags = nameTags;
         this.sorting = nameTags == null ? null : nameTags.getSorting();
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
-                Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
-                        redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
-        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () ->
-                Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
-                        redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
+        eventHandler = event -> {
+            String identifier = event.getIdentifier();
+            if (identifier.startsWith("%online_")) {
+                String server = identifier.substring(8, identifier.length()-1);
+                event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
+                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
+                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count()));
+
+            }
+        };
     }
 
     /**
@@ -331,6 +341,13 @@ public abstract class RedisSupport extends TabFeature {
 
     @Override
     public void load() {
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
+                Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
+                        redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
+        TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () ->
+                Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
+                        redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
+        TabAPI.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
         sendMessage("{\"action\":\"loadrequest\",\"proxy\":\"" + proxy.toString() + "\"}");
     }
@@ -339,6 +356,7 @@ public abstract class RedisSupport extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onQuit(p);
         unregister();
+        TabAPI.getInstance().getEventBus().unregister(eventHandler);
     }
 
     @Override

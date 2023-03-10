@@ -28,6 +28,7 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
+    private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
     private final List<ServerPlaceholder> placeholders = new ArrayList<>();
     private final Map<TabPlayer, Long> lastServerSwitch = new WeakHashMap<>();
@@ -38,19 +39,16 @@ public class GlobalPlayerList extends TabFeature {
     public GlobalPlayerList(PlayerList playerlist) {
         super("Global PlayerList", null);
         this.playerlist = playerlist;
-        boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
+    }
+
+    @Override
+    public void load() {
         if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         for (Entry<String, List<String>> entry : sharedServers.entrySet()) {
             placeholders.add(TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), -1,
                     () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count()));
         }
-        TAB.getInstance().debug(String.format("Loaded GlobalPlayerList feature with parameters spyServers=%s, sharedServers=%s, displayAsSpectators=%s, vanishedAsSpectators=%s, isolateUnlistedServers=%s, updateLatency=%s",
-                spyServers, sharedServers, displayAsSpectators, vanishedAsSpectators, isolateUnlistedServers, updateLatency));
-    }
-
-    @Override
-    public void load() {
         for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getServer().equals(displayed.getServer())) continue;

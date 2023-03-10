@@ -8,7 +8,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.shared.TAB;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,7 +20,6 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 
     public HeaderFooter() {
         super("Header/Footer", "Updating header/footer", "header-footer");
-        TAB.getInstance().debug(String.format("Loaded HeaderFooter feature with parameters disabledWorlds=%s, disabledServers=%s", Arrays.toString(disabledWorlds), Arrays.toString(disabledServers)));
     }
 
     @Override

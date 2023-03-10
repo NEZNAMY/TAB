@@ -9,8 +9,7 @@ import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.redis.RedisPlayer;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
@@ -18,7 +17,6 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,8 +54,7 @@ public abstract class ProxyPlatform extends Platform {
         if (identifier.startsWith("%online_")) {
             String server = identifier.substring(8, identifier.length()-1);
             pl.registerServerPlaceholder(identifier, 1000, () ->
-                    Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
-                            getRedisPlayers().values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count());
+                    Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count());
             return;
         }
         Placeholder placeholder;
@@ -76,18 +73,13 @@ public abstract class ProxyPlatform extends Platform {
         }
     }
 
-    private Map<String, RedisPlayer> getRedisPlayers() {
-        RedisSupport support = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-        return support == null ? Collections.emptyMap() : support.getRedisPlayers();
-    }
-
     @Override
     public void registerPlaceholders() {
         new UniversalPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
-        return new ProxyNameTagX();
+    public NameTag getUnlimitedNametags(Sorting sorting) {
+        return new ProxyNameTagX(sorting);
     }
 }

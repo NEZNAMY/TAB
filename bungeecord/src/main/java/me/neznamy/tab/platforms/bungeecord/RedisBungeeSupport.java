@@ -17,13 +17,18 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class RedisBungeeSupport extends RedisSupport implements Listener {
 
-    /**
-     * Constructs new instance, registers listeners and overrides placeholders
-     */
+    private final Plugin plugin;
+
     public RedisBungeeSupport(Plugin plugin, GlobalPlayerList global, PlayerList playerList, NameTag nameTags) {
         super(global, playerList, nameTags);
+        this.plugin = plugin;
+    }
+
+    @Override
+    public void load() {
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
         RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
+        super.load();
     }
 
     @EventHandler

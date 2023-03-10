@@ -23,6 +23,7 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.TabExpansion;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
@@ -91,8 +92,8 @@ public class BukkitPlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
-        return new BukkitNameTagX(plugin);
+    public NameTag getUnlimitedNametags(Sorting sorting) {
+        return new BukkitNameTagX(plugin, sorting);
     }
 
     @Override

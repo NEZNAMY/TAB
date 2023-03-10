@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX
+import me.neznamy.tab.shared.features.sorting.Sorting
 import org.kryptonmc.api.entity.Entity
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.EventNode
@@ -17,14 +18,15 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutRemoveEntities
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnPlayer
 import kotlin.math.sqrt
 
-class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
+class KryptonNameTagX(private val plugin: Main, sorting: Sorting) : BackendNameTagX(sorting) {
 
     private val eventListener = EventListener(this)
 
-    init {
+    override fun load() {
         val eventNode = EventNode.all("tab_nametagx")
         plugin.eventNode.addChild(eventNode)
         eventNode.registerListeners(eventListener)
+        super.load()
     }
 
     override fun onPacketReceive(sender: TabPlayer, packet: Any): Boolean {

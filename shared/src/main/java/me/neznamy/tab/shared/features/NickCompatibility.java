@@ -31,7 +31,6 @@ public class NickCompatibility extends TabFeature {
         this.belowname = belowname;
         this.yellownumber = yellownumber;
         this.redis = redis;
-        TAB.getInstance().debug("Loaded NickCompatibility feature");
     }
 
     @Override
