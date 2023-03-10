@@ -42,6 +42,10 @@ public class VehicleRefresher extends TabFeature {
     public VehicleRefresher(BackendNameTagX feature) {
         super(feature.getFeatureName(), "Refreshing vehicles");
         this.feature = feature;
+    }
+
+    @Override
+    public void load() {
         TabAPI.getInstance().getThreadManager().startRepeatingMeasuredTask(50,
                 this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
@@ -56,10 +60,6 @@ public class VehicleRefresher extends TabFeature {
                 });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
         feature.registerVehiclePlaceholder();
-    }
-
-    @Override
-    public void load() {
         for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
             Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
