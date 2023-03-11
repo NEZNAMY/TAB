@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.ProtocolVersion;
@@ -175,8 +176,9 @@ public class PacketPlayOutPlayerInfoStorage {
             GameProfile profile = (GameProfile) PlayerInfoData_getProfile.invoke(nmsData);
             Object nmsComponent = PlayerInfoData_getDisplayName.invoke(nmsData);
             Skin skin = null;
-            if (!profile.getProperties().get("textures").isEmpty()) {
-                Property pr = profile.getProperties().get("textures").iterator().next();
+            Collection<Property> textures = profile.getProperties().get("textures");
+            Property pr = Iterables.getFirst(textures, null);
+            if (pr != null) {
                 skin = new Skin(pr.getValue(), pr.getSignature());
             }
             boolean listed = true;
