@@ -1,5 +1,10 @@
 package me.neznamy.tab.shared;
 
+import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,30 +12,35 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * An error assistant to print internal errors into error file
  * and warn user about misconfiguration
  */
+
 public class ErrorManager {
 
     /** Date format used in error messages */
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss - ");
 
     /** errors.log file for internal plugin errors */
-    private final File errorLog = new File(TAB.getInstance().getDataFolder(), "errors.log");
+    private final File errorLog;
 
     /** anti-override.log file when some plugin or server itself attempts to override the plugin */
-    @Getter private final File antiOverrideLog = new File(TAB.getInstance().getDataFolder(), "anti-override.log");
+    @Getter private final File antiOverrideLog;
 
     /** placeholder-errors.log file for errors thrown by placeholders */
-    private final File placeholderErrorLog = new File(TAB.getInstance().getDataFolder(), "placeholder-errors.log");
+    private final File placeholderErrorLog;
+
+    public ErrorManager(TAB tab) {
+        errorLog = new File(tab.getDataFolder(), "errors.log");
+        antiOverrideLog = new File(tab.getDataFolder(), "anti-override.log");
+        placeholderErrorLog = new File(tab.getDataFolder(), "placeholder-errors.log");
+    }
 
     /**
      * Prints error message into errors.log file

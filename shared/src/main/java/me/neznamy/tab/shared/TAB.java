@@ -66,7 +66,7 @@ public class TAB extends TabAPI {
      * occur in any part of the code including hooks into other plugins
      * into files instead of flooding the already flooded console.
      */
-    @Getter private ErrorManager errorManager;
+    @Getter private final ErrorManager errorManager;
 
     /** Feature manager forwarding events into all loaded features */
     @Getter private FeatureManagerImpl featureManager;
@@ -113,6 +113,7 @@ public class TAB extends TabAPI {
         this.serverVersionString = serverVersionString;
         this.dataFolder = dataFolder;
         this.logger = logger;
+        this.errorManager = new ErrorManager(this);
         try {
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {
@@ -141,7 +142,6 @@ public class TAB extends TabAPI {
     public String load() {
         try {
             long time = System.currentTimeMillis();
-            errorManager = new ErrorManager();
             cpu = new CpuManager();
             configuration = new Configs();
             featureManager = new FeatureManagerImpl();
