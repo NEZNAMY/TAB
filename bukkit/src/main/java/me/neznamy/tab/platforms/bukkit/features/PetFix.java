@@ -141,11 +141,11 @@ public class PetFix extends TabFeature {
                         }
                     }
                 }
+                if (removedEntry != null) items.remove(removedEntry);
             } catch (ConcurrentModificationException e) {
                 //no idea how can this list change in another thread since it's created for the packet but whatever, try again
                 onPacketSend(receiver, packet);
             }
-            if (removedEntry != null) items.remove(removedEntry);
         } else if (PacketPlayOutSpawnEntityLiving.CLASS.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATA_WATCHER != null) {
             //<1.15
             DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATA_WATCHER.get(packet));
