@@ -39,7 +39,12 @@ public class FeatureManagerImpl implements FeatureManager {
      * This function is called on plugin startup.
      */
     public void load() {
-        for (TabFeature f : values) f.load();
+        for (TabFeature f : values) {
+            if (!f.overridesMethod("load")) continue;
+            long time = System.currentTimeMillis();
+            f.load();
+            TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed load in " + (System.currentTimeMillis()-time) + "ms");
+        }
         if (TAB.getInstance().getConfiguration().getUsers() instanceof MySQLUserConfiguration) {
             MySQLUserConfiguration users = (MySQLUserConfiguration) TAB.getInstance().getConfiguration().getUsers();
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) users.load(p);

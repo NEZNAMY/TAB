@@ -57,6 +57,8 @@ public abstract class TabFeature {
         try {
             if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onCommand");
+            if (getClass().getMethod("load").getDeclaringClass() != TabFeature.class)
+                methodOverrides.add("load");
             if (getClass().getMethod("onJoin", TabPlayer.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onJoin");
             if (getClass().getMethod("onQuit", TabPlayer.class).getDeclaringClass() != TabFeature.class)
