@@ -5,7 +5,7 @@ import me.neznamy.tab.api.protocol.PacketBuilder
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.backend.BackendPlatform
-import me.neznamy.tab.shared.features.PipelineInjector
+import me.neznamy.tab.shared.features.injection.PipelineInjector
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion
 import me.neznamy.tab.shared.features.nametags.NameTag
 import me.neznamy.tab.shared.features.sorting.Sorting

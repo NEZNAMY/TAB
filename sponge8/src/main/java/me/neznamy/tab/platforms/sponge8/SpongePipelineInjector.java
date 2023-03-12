@@ -12,7 +12,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NettyPipelineInjector;
+import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;

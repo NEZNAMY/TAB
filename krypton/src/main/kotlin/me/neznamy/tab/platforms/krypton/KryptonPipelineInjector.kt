@@ -6,8 +6,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
-import me.neznamy.tab.shared.features.NettyPipelineInjector
-import me.neznamy.tab.shared.features.PipelineInjector
+import me.neznamy.tab.shared.features.injection.NettyPipelineInjector
 import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoRemove
 import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoUpdate

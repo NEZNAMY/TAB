@@ -12,7 +12,7 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.features.NettyPipelineInjector;
+import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

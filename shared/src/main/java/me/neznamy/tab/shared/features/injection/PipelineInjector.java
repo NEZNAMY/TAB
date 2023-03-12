@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.injection;
 
 import lombok.Setter;
 import me.neznamy.tab.api.TabFeature;

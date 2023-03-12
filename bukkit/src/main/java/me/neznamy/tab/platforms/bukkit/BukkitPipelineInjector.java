@@ -19,7 +19,7 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboar
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.NettyPipelineInjector;
+import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.injection;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
