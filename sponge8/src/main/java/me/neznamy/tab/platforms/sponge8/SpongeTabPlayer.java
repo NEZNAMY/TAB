@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.sponge8;
 
-import io.netty.channel.Channel;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -12,7 +11,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import org.spongepowered.api.Sponge;
@@ -23,7 +21,6 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public final class SpongeTabPlayer extends ITabPlayer {
@@ -40,14 +37,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
                 player.world().key().value(),
                 getProtocolVersion(player), true);
-
-        try {
-            final Field channelField = Connection.class.getDeclaredField("channel");
-            channelField.setAccessible(true);
-            channel = (Channel) channelField.get(((net.minecraft.server.level.ServerPlayer) player).connection.connection);
-        } catch (final ReflectiveOperationException exception) {
-            throw new RuntimeException(exception);
-        }
     }
 
     private static int getProtocolVersion(ServerPlayer player) {

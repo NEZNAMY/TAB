@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import java.lang.reflect.Field;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
@@ -10,12 +12,14 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,7 +29,18 @@ import java.util.function.Function;
 /**
  * Pipeline injection for sponge
  */
-public class SpongePipelineInjector extends PipelineInjector {
+public class SpongePipelineInjector extends NettyPipelineInjector {
+
+    private static Field channelField;
+
+    static {
+        try {
+            channelField = Connection.class.getDeclaredField("channel");
+            channelField.setAccessible(true);
+        } catch (final ReflectiveOperationException exception) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to initialize sponge internal fields", exception);
+        }
+    }
 
     /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
@@ -37,6 +52,17 @@ public class SpongePipelineInjector extends PipelineInjector {
      */
     public SpongePipelineInjector() {
         super("packet_handler");
+    }
+
+    @Override
+    protected Channel getChannel(TabPlayer player) {
+        final SpongeTabPlayer sponge = (SpongeTabPlayer) player;
+        try {
+            return (Channel) channelField.get(((ServerPlayer) sponge.getPlayer()).connection.connection);
+        } catch (final ReflectiveOperationException exception) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to get channel for " + player.getName(), exception);
+        }
+        return null;
     }
 
     /**

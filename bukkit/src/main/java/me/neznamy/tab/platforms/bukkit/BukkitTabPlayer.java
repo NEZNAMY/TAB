@@ -6,7 +6,7 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
-import io.netty.channel.Channel;
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
@@ -39,7 +39,7 @@ public class BukkitTabPlayer extends ITabPlayer {
     private Object handle;
 
     /** Player's connection for sending packets, preloading for speed */
-    private Object playerConnection;
+    @Getter private Object playerConnection;
     
     /** Bukkit BossBars the player can currently see */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
@@ -283,16 +283,5 @@ public class BukkitTabPlayer extends ITabPlayer {
     @Override
     public int getGamemode() {
         return getPlayer().getGameMode().getValue();
-    }
-
-    @Override
-    public Channel getChannel() {
-        try {
-            if (NMSStorage.getInstance().CHANNEL != null)
-                return (Channel) NMSStorage.getInstance().CHANNEL.get(NMSStorage.getInstance().NETWORK_MANAGER.get(playerConnection));
-        } catch (IllegalAccessException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get channel of " + getName(), e);
-        }
-        return null;
     }
 }

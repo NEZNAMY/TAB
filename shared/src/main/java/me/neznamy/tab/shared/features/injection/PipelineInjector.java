@@ -1,11 +1,6 @@
-package me.neznamy.tab.shared.features;
+package me.neznamy.tab.shared.features.injection;
 
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-
-import io.netty.channel.ChannelDuplexHandler;
 import lombok.Setter;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -22,9 +17,6 @@ import me.neznamy.tab.shared.TAB;
  */
 public abstract class PipelineInjector extends TabFeature {
 
-    //handler to inject before
-    private final String injectPosition;
-
     //preventing spam when packet is sent to everyone
     private String lastTeamOverrideMessage;
 
@@ -32,47 +24,13 @@ public abstract class PipelineInjector extends TabFeature {
     protected boolean antiOverrideTeams;
     @Setter protected boolean byteBufDeserialization;
 
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   injectPosition
-     *          position to inject handler before
-     */
-    protected PipelineInjector(String injectPosition) {
+    protected PipelineInjector() {
         super("Pipeline injection", null);
-        this.injectPosition = injectPosition;
     }
 
-    /**
-     * Injects custom channel duplex handler to prevent other plugins from overriding this one
-     *
-     * @param   player
-     *          player to inject
-     */
-    public void inject(TabPlayer player) {
-        if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
-        if (!player.getChannel().pipeline().names().contains(injectPosition)) {
-            //fake player or waterfall bug
-            return;
-        }
-        uninject(player);
-        try {
-            player.getChannel().pipeline().addBefore(injectPosition, TabConstants.PIPELINE_HANDLER_NAME, getChannelFunction().apply(player));
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            //I don't really know how does this keep happening but whatever
-        }
-    }
+    public abstract void inject(TabPlayer player);
 
-    public void uninject(TabPlayer player) {
-        if (player.getVersion().getMinorVersion() < 8 || player.getChannel() == null) return; //hello A248
-        try {
-            if (player.getChannel().pipeline().names().contains(TabConstants.PIPELINE_HANDLER_NAME))
-                player.getChannel().pipeline().remove(TabConstants.PIPELINE_HANDLER_NAME);
-        } catch (NoSuchElementException e) {
-            //for whatever reason this rarely throws
-            //java.util.NoSuchElementException: TAB
-        }
-    }
+    public abstract void uninject(TabPlayer player);
 
     @Override
     public void load() {
@@ -106,6 +64,4 @@ public abstract class PipelineInjector extends TabFeature {
             TAB.getInstance().getErrorManager().printError(message, null, false, TAB.getInstance().getErrorManager().getAntiOverrideLog());
         }
     }
-
-    public abstract Function<TabPlayer, ChannelDuplexHandler> getChannelFunction();
 }

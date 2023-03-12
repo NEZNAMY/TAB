@@ -2,18 +2,22 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import java.lang.reflect.Field;
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
@@ -29,7 +33,18 @@ import java.util.function.Supplier;
  * from overriding it.
  */
 @SuppressWarnings("unchecked")
-public class BungeePipelineInjector extends PipelineInjector {
+public class BungeePipelineInjector extends NettyPipelineInjector {
+
+    private static Field wrapperField;
+
+    static {
+        try {
+            wrapperField = InitialHandler.class.getDeclaredField("ch");
+            wrapperField.setAccessible(true);
+        } catch (final ReflectiveOperationException exception) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", exception);
+        }
+    }
 
     /** Packets used by the plugin that must be deserialized and BungeeCord does not do it automatically */
     private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
@@ -38,6 +53,17 @@ public class BungeePipelineInjector extends PipelineInjector {
     @Override
     public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
         return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : BungeeChannelDuplexHandler::new;
+    }
+
+    @Override
+    protected Channel getChannel(TabPlayer player) {
+        final BungeeTabPlayer bungee = (BungeeTabPlayer) player;
+        try {
+            return ((ChannelWrapper) wrapperField.get(bungee.getPlayer().getPendingConnection())).getHandle();
+        } catch (final IllegalAccessException exception) {
+            TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + bungee.getPlayer().getName(), exception);
+        }
+        return null;
     }
 
     /**

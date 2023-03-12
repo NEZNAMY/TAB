@@ -11,7 +11,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
-import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
@@ -52,11 +51,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      */
     public BungeeTabPlayer(ProxiedPlayer p) {
         super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1, true);
-        try {
-            channel = ((ChannelWrapper)wrapperField.get(getPlayer().getPendingConnection())).getHandle();
-        } catch (IllegalAccessException e) {
-            TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + getPlayer().getName(), e);
-        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.krypton
 
-import io.netty.channel.Channel
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
@@ -31,10 +30,7 @@ class KryptonTabPlayer(
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
 
-    init {
-        val connection = this.delegate.connection
-        channel = NettyConnection::class.java.getDeclaredField("channel").apply { isAccessible = true }.get(connection) as Channel
-    }
+    fun connection(): NettyConnection = delegate.connection
 
     override fun hasPermission(permission: String): Boolean = delegate.hasPermission(permission)
 
