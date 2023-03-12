@@ -2,7 +2,6 @@ package me.neznamy.tab.api;
 
 import java.util.UUID;
 
-import io.netty.channel.Channel;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.protocol.TabPacket;
@@ -140,13 +139,6 @@ public interface TabPlayer {
      *          message to send
      */
     void sendMessage(IChatBaseComponent message);
-
-    /**
-     * Returns player's netty channel. On servers running version 1.7 or older returns {@code null}.
-     *
-     * @return  player's channel
-     */
-    Channel getChannel();
 
     /**
      * Returns player's ping calculated by server

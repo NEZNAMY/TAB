@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import io.netty.channel.Channel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
@@ -18,14 +19,14 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboar
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.PipelineInjector;
+import me.neznamy.tab.shared.features.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Pipeline injection for bukkit
  */
-public class BukkitPipelineInjector extends PipelineInjector {
+public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     /** NMS data storage */
     private final NMSStorage nms = NMSStorage.getInstance();
@@ -37,6 +38,17 @@ public class BukkitPipelineInjector extends PipelineInjector {
      */
     public BukkitPipelineInjector() {
         super("packet_handler");
+    }
+
+    @Override
+    protected Channel getChannel(TabPlayer player) {
+        final BukkitTabPlayer bukkit = (BukkitTabPlayer) player;
+        try {
+            if (nms.CHANNEL != null) return (Channel) nms.CHANNEL.get(nms.NETWORK_MANAGER.get(bukkit.getPlayerConnection()));
+        } catch (final IllegalAccessException exception) {
+            TAB.getInstance().getErrorManager().printError("Failed to get channel of " + bukkit.getName(), exception);
+        }
+        return null;
     }
 
     /**

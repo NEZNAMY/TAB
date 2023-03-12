@@ -1,18 +1,26 @@
 package me.neznamy.tab.platforms.krypton
 
+import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.features.NettyPipelineInjector
 import me.neznamy.tab.shared.features.PipelineInjector
+import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoRemove
 import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoUpdate
 import java.util.function.Function
 
-class KryptonPipelineInjector : PipelineInjector("handler") {
+class KryptonPipelineInjector : NettyPipelineInjector("handler") {
 
     override fun getChannelFunction(): Function<TabPlayer, ChannelDuplexHandler> = Function(::KryptonChannelDuplexHandler)
+
+    override fun getChannel(player: TabPlayer?): Channel {
+        val connection = (player as KryptonTabPlayer).connection()
+        return NettyConnection::class.java.getDeclaredField("channel").apply { isAccessible = true }.get(connection) as Channel
+    }
 
     inner class KryptonChannelDuplexHandler(private val player: TabPlayer) : ChannelDuplexHandler() {
 
