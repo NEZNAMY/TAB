@@ -4,26 +4,18 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
  * A pipeline injector for Netty connections. As most servers use Netty, this avoids code duplication.
  */
+@RequiredArgsConstructor
 public abstract class NettyPipelineInjector extends PipelineInjector {
 
     //handler to inject before
     private final String injectPosition;
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   injectPosition
-     *          position to inject handler before
-     */
-    protected NettyPipelineInjector(String injectPosition) {
-        this.injectPosition = injectPosition;
-    }
 
     protected abstract Channel getChannel(TabPlayer player);
 
