@@ -54,8 +54,12 @@ public class NameTag extends TabFeature implements TeamManager {
                 addDisabledPlayer(all);
                 continue;
             }
-            registerTeam(all);
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
+        }
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+                if (!isDisabledPlayer(target)) registerTeam(target, viewer);
+            }
         }
     }
 
