@@ -20,6 +20,14 @@ public class CollisionManager extends TabFeature {
         super(nameTags.getFeatureName(), "Updating collision");
         this.nameTags = nameTags;
         this.collisionRule = collisionRule;
+    }
+    
+    public boolean getCollision(TabPlayer p) {
+        return forcedCollision.getOrDefault(p, collision.getOrDefault(p, collisionRule));
+    }
+
+    @Override
+    public void load() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
         if (!collisionRule) return; //no need to refresh disguise status since collision is disabled
         if (TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.LIBS_DISGUISES) == null && TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return; //no disguise plugin available
@@ -31,16 +39,8 @@ public class CollisionManager extends TabFeature {
             return newCollision;
         });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.COLLISION));
-    }
-    
-    public boolean getCollision(TabPlayer p) {
-        return forcedCollision.getOrDefault(p, collision.getOrDefault(p, collisionRule));
-    }
-
-    @Override
-    public void load() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            collision.put(all, collisionRule);
+            collision.put(all, true);
         }
     }
     
