@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
@@ -31,6 +32,8 @@ public class LayoutManager extends TabFeature {
             put(slot, new UUID(0, translateSlot(slot)));
         }
     }};
+    @Getter private final PacketPlayOutPlayerInfo removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
+            uuids.values().stream().map(PlayerInfoData::new).collect(Collectors.toList()));
     private final Map<String, Layout> layouts = loadLayouts();
     @Getter private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
@@ -160,13 +163,9 @@ public class LayoutManager extends TabFeature {
 
     @Override
     public void unload() {
-        List<PlayerInfoData> list = new ArrayList<>();
-        for (UUID id : uuids.values()) {
-            list.add(new PlayerInfoData(id));
-        }
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
-            p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
+            p.sendCustomPacket(removePacket, this);
         }
     }
 

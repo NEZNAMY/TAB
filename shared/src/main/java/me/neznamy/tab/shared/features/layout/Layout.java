@@ -60,12 +60,8 @@ public class Layout extends TabFeature {
     public void removeFrom(TabPlayer p) {
         if (!viewers.contains(p)) return;
         viewers.remove(p);
-        List<PlayerInfoData> list = new ArrayList<>();
-        for (UUID id : manager.getUuids().values()) {
-            list.add(new PlayerInfoData(id));
-        }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, list), this);
+        p.sendCustomPacket(manager.getRemovePacket(), this);
     }
 
     public boolean isConditionMet(TabPlayer p) {
