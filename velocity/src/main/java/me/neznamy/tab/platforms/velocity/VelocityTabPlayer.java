@@ -359,6 +359,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        getPlayer().getCurrentServer().ifPresent(server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message));
+        try {
+            getPlayer().getCurrentServer().ifPresent(server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message));
+        } catch (IllegalStateException VelocityBeingVelocityException) {
+            // java.lang.IllegalStateException: Not connected to server!
+        }
     }
 }
