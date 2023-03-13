@@ -83,7 +83,9 @@ public class LayoutManager extends TabFeature {
                     String text = array[1];
                     String skin = array.length > 2 ? array[2] : "";
                     int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], emptySlotPing) : emptySlotPing;
-                    FixedSlot f = new FixedSlot(l, slot, text, skin, ping);
+                    FixedSlot f = new FixedSlot(l, uuids.get(slot), text,
+                            "Layout-" + l.getName() + "SLOT-" + slot,
+                            skinManager.getSkin(skin.length() == 0 ? defaultSkin : skin), ping);
                     fixedSlots.put(slot, f);
                     emptySlots.remove((Integer)slot);
                     if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
@@ -107,6 +109,9 @@ public class LayoutManager extends TabFeature {
                     positions.removeAll(fixedSlots.keySet());
                     parentGroups.add(new ParentGroup(l, condition, positions.stream().mapToInt(i->i).toArray()));
                     emptySlots.removeAll(positions);
+                    if (condition != null) {
+                        l.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
+                    }
                 }
             }
             layoutMap.put(layout.getKey().toString(), l);
