@@ -5,16 +5,27 @@ import lombok.Data;
 import lombok.NonNull;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A class representing platform specific packet class
  */
 @Data @AllArgsConstructor
 public class PacketPlayOutPlayerInfo implements TabPacket {
+
+    /** Map for faster EnumSet creation */
+    private static final EnumMap<EnumPlayerInfoAction, EnumSet<EnumPlayerInfoAction>> actionToEnumSetMap =
+            new EnumMap<EnumPlayerInfoAction, EnumSet<EnumPlayerInfoAction>>(EnumPlayerInfoAction.class) {{
+                for (EnumPlayerInfoAction action : EnumPlayerInfoAction.values()) {
+                    if (action == EnumPlayerInfoAction.ADD_PLAYER) {
+                        EnumSet<EnumPlayerInfoAction> set = EnumSet.allOf(EnumPlayerInfoAction.class);
+                        set.remove(EnumPlayerInfoAction.REMOVE_PLAYER);
+                        put(action, set);
+                    } else {
+                        put(action, EnumSet.of(action));
+                    }
+                }
+            }};
 
     /** Packet actions */
     private final EnumSet<EnumPlayerInfoAction> actions;
@@ -43,16 +54,7 @@ public class PacketPlayOutPlayerInfo implements TabPacket {
      *          Affected entries
      */
     public PacketPlayOutPlayerInfo(@NonNull EnumPlayerInfoAction action, @NonNull List<PlayerInfoData> entries) {
-        if (action == EnumPlayerInfoAction.ADD_PLAYER) {
-            actions = EnumSet.of(EnumPlayerInfoAction.ADD_PLAYER,
-                    EnumPlayerInfoAction.INITIALIZE_CHAT,
-                    EnumPlayerInfoAction.UPDATE_GAME_MODE,
-                    EnumPlayerInfoAction.UPDATE_LISTED,
-                    EnumPlayerInfoAction.UPDATE_LATENCY,
-                    EnumPlayerInfoAction.UPDATE_DISPLAY_NAME);
-        } else {
-            this.actions = EnumSet.of(action);
-        }
+        this.actions = actionToEnumSetMap.get(action);
         this.entries = entries;
     }
 
