@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -8,7 +9,6 @@ import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.*;
 import org.spongepowered.api.Sponge;
@@ -21,6 +21,7 @@ import org.spongepowered.api.world.Location;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class SpongeNameTagX extends BackendNameTagX {
 
     private final NMSStorage nms = NMSStorage.getInstance();
@@ -29,11 +30,6 @@ public class SpongeNameTagX extends BackendNameTagX {
     private final EventListener eventListener = new EventListener(this);
 
     private final Sponge8TAB plugin;
-
-    public SpongeNameTagX(Sponge8TAB plugin, Sorting sorting) {
-        super(sorting);
-        this.plugin = plugin;
-    }
 
     @Override
     public void load() {

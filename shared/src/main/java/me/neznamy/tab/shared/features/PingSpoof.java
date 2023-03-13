@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -23,14 +24,13 @@ public class PingSpoof extends TabFeature {
     //fake ping value
     private final int value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);
 
-    private final LayoutManager layoutManager;
+    private final LayoutManager layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
 
     /**
      * Constructs new instance and loads config options
      */
-    public PingSpoof(LayoutManager layoutManager) {
+    public PingSpoof() {
         super("Ping spoof", null);
-        this.layoutManager = layoutManager;
     }
 
     @Override

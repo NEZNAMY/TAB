@@ -19,7 +19,7 @@ public class NameTag extends TabFeature implements TeamManager {
     protected final boolean invisibleNameTags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
     private final boolean canSeeFriendlyInvisibles = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
-    @Getter private final Sorting sorting;
+    @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     @Getter private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
 
@@ -36,9 +36,8 @@ public class NameTag extends TabFeature implements TeamManager {
             TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.PROTOCOL_SUPPORT) != null ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
-    public NameTag(Sorting sorting) {
+    public NameTag() {
         super("NameTags", "Updating prefix/suffix", "scoreboard-teams");
-        this.sorting = sorting;
     }
 
     @Override

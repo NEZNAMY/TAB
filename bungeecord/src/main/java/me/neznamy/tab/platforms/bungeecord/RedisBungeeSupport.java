@@ -2,10 +2,8 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
+import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.features.PlayerList;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -15,14 +13,11 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * Redis implementation for BungeeCord
  */
+@AllArgsConstructor
 public class RedisBungeeSupport extends RedisSupport implements Listener {
 
+    /** Plugin reference for registering listener */
     private final Plugin plugin;
-
-    public RedisBungeeSupport(Plugin plugin, GlobalPlayerList global, PlayerList playerList, NameTag nameTags) {
-        super(global, playerList, nameTags);
-        this.plugin = plugin;
-    }
 
     @Override
     public void load() {

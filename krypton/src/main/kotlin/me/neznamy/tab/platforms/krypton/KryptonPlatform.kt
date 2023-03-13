@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.backend.BackendPlatform
 import me.neznamy.tab.shared.features.injection.PipelineInjector
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion
 import me.neznamy.tab.shared.features.nametags.NameTag
-import me.neznamy.tab.shared.features.sorting.Sorting
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -42,8 +41,8 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
         return KryptonPipelineInjector()
     }
 
-    override fun getUnlimitedNametags(sorting: Sorting): NameTag {
-        return KryptonNameTagX(plugin, sorting)
+    override fun getUnlimitedNametags(): NameTag {
+        return KryptonNameTagX(plugin)
     }
 
     override fun getTabExpansion(): TabExpansion {

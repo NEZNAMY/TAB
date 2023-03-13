@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.spongepowered.api.Sponge;
@@ -51,8 +50,8 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags(Sorting sorting) {
-        return new SpongeNameTagX(plugin, sorting);
+    public NameTag getUnlimitedNametags() {
+        return new SpongeNameTagX(plugin);
     }
 
     @Override

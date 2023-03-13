@@ -33,14 +33,13 @@ public class YellowNumber extends TabFeature {
     private final EnumScoreboardHealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) || "%player_health%".equals(rawValue) ||
             "%player_health_rounded%".equals(rawValue) ? EnumScoreboardHealthDisplay.HEARTS : EnumScoreboardHealthDisplay.INTEGER;
 
-    private final RedisSupport redis;
+    private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     /**
      * Constructs new instance and sends debug message that feature loaded.
      */
-    public YellowNumber(RedisSupport redis) {
+    public YellowNumber() {
         super("Yellow number", "Updating value", "yellow-number-in-tablist");
-        this.redis = redis;
     }
 
     /**

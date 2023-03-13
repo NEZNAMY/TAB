@@ -4,7 +4,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.proxy.PluginMessageHandler;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -13,8 +12,8 @@ public class ProxyNameTagX extends NameTagX {
 
     private final PluginMessageHandler plm = ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler();
 
-    public ProxyNameTagX(Sorting sorting) {
-        super(ProxyArmorStandManager::new, sorting);
+    public ProxyNameTagX() {
+        super(ProxyArmorStandManager::new);
     }
 
     @Override

@@ -27,11 +27,10 @@ public class BelowName extends TabFeature {
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
     private final TabFeature textRefresher = new TextRefresher(this);
 
-    private final RedisSupport redis;
+    private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
-    public BelowName(RedisSupport redis) {
+    public BelowName() {
         super("BelowName", "Updating BelowName number", "belowname-objective");
-        this.redis = redis;
     }
 
     @Override

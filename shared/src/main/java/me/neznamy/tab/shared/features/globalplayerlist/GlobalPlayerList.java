@@ -29,11 +29,10 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
     private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
-    private final PlayerList playerlist;
+    private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
 
-    public GlobalPlayerList(PlayerList playerlist) {
+    public GlobalPlayerList() {
         super("Global PlayerList", null);
-        this.playerlist = playerlist;
     }
 
     @Override

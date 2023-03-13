@@ -37,36 +37,22 @@ public abstract class RedisSupport extends TabFeature {
     protected final UUID proxy = UUID.randomUUID();
 
     /** Features this one hooks into */
-    protected final GlobalPlayerList global;
-    @Getter private final PlayerList playerList;
-    @Getter private final NameTag nameTags;
-    @Getter private final Sorting sorting;
+    protected final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
+    @Getter private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+    @Getter private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
+    @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
     private final UUID EMPTY_ID = new UUID(0, 0);
 
     private final Map<RedisPlayer, Long> lastServerSwitch = new WeakHashMap<>();
 
-    private final EventHandler<TabPlaceholderRegisterEvent> eventHandler;
+    private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
 
     /**
      * Constructs new instance
      */
-    protected RedisSupport(GlobalPlayerList global, PlayerList playerList, NameTag nameTags) {
+    protected RedisSupport() {
         super("RedisBungee", null);
-        this.global = global;
-        this.playerList = playerList;
-        this.nameTags = nameTags;
-        this.sorting = nameTags == null ? null : nameTags.getSorting();
-        eventHandler = event -> {
-            String identifier = event.getIdentifier();
-            if (identifier.startsWith("%online_")) {
-                String server = identifier.substring(8, identifier.length()-1);
-                event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
-                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
-                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count()));
-
-            }
-        };
     }
 
     /**
@@ -341,6 +327,16 @@ public abstract class RedisSupport extends TabFeature {
 
     @Override
     public void load() {
+        eventHandler = event -> {
+            String identifier = event.getIdentifier();
+            if (identifier.startsWith("%online_")) {
+                String server = identifier.substring(8, identifier.length()-1);
+                event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
+                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
+                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count()));
+
+            }
+        };
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished()).count());

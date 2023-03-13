@@ -8,7 +8,6 @@ import me.neznamy.tab.api.team.UnlimitedNametagManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -35,8 +34,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     private final Set<TabPlayer> playersPreviewingNametag = Collections.newSetFromMap(new WeakHashMap<>());
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
 
-    public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction, Sorting sorting) {
-        super(sorting);
+    public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
     }
     {

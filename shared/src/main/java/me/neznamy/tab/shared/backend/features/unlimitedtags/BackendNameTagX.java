@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 import lombok.Getter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +15,8 @@ public abstract class BackendNameTagX extends NameTagX {
     /** Packet Listener reference */
     protected final PacketListener packetListener = new PacketListener(this);
 
-    public BackendNameTagX(Sorting sorting) {
-        super(BackendArmorStandManager::new, sorting);
+    public BackendNameTagX() {
+        super(BackendArmorStandManager::new);
     }
 
     /**

@@ -18,7 +18,7 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutRemoveEntities
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnPlayer
 import kotlin.math.sqrt
 
-class KryptonNameTagX(private val plugin: Main, sorting: Sorting) : BackendNameTagX(sorting) {
+class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
 
     private val eventListener = EventListener(this)
 

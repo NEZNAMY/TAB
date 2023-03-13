@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
@@ -79,7 +78,7 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags(Sorting sorting) {
-        return new ProxyNameTagX(sorting);
+    public NameTag getUnlimitedNametags() {
+        return new ProxyNameTagX();
     }
 }

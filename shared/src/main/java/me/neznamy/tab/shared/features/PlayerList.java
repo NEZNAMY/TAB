@@ -24,7 +24,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
-    private final LayoutManager layoutManager;
+    private final LayoutManager layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
 
     /**
@@ -37,9 +37,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     /**
      * Constructs new instance and sends debug message that feature loaded.
      */
-    public PlayerList(LayoutManager layoutManager) {
+    public PlayerList() {
         super("TabList prefix/suffix", "Updating TabList format", "tablist-name-formatting");
-        this.layoutManager = layoutManager;
     }
 
     /**

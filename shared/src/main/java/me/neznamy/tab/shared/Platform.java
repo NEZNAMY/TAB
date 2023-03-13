@@ -56,94 +56,87 @@ public abstract class Platform {
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
         int minorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
 
-        BossBarManagerImpl bossBar = minorVersion >= 9 ? new BossBarManagerImpl() : getLegacyBossBar();
-        TabFeature petFix = getPetFix();
-        HeaderFooter headerFooter = new HeaderFooter();
-        GhostPlayerFix ghostPlayerFix = new GhostPlayerFix();
-        SpectatorFix spectatorFix = new SpectatorFix();
-        PipelineInjector pipelineInjector = getPipelineInjector();
-        TabFeature perWorldPlayerList = getPerWorldPlayerlist();
-        ScoreboardManagerImpl scoreboardManager = new ScoreboardManagerImpl();
-        Sorting sorting = new Sorting();
-
-        NameTag nameTags = new NameTag(sorting);
-        NameTag unlimitedNameTags = getUnlimitedNametags(sorting);
-        LayoutManager layout = new LayoutManager(sorting);
-        PingSpoof pingSpoof = new PingSpoof(layout);
-        PlayerList playerList = configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false) ?
-                new AlignedPlayerList(layout) : new PlayerList(layout);
-        GlobalPlayerList globalPlayerList = new GlobalPlayerList(playerList);
-        RedisSupport redis = getRedisSupport(globalPlayerList, playerList, nameTags);
-        BelowName belowName = new BelowName(redis);
-        YellowNumber yellowNumber = new YellowNumber(redis);
-        NickCompatibility nickCompatibility = new NickCompatibility(nameTags, belowName, yellowNumber, redis);
-
         if (configuration.getConfig().getBoolean("bossbar.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR, bossBar);
+            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR,
+                    minorVersion >= 9 ? new BossBarManagerImpl() : getLegacyBossBar());
         }
 
         if (minorVersion >= 9 && configuration.getConfig().getBoolean("fix-pet-names.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.PET_FIX, petFix);
+            featureManager.registerFeature(TabConstants.Feature.PET_FIX, getPetFix());
         }
 
         if (configuration.getConfig().getBoolean("header-footer.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, headerFooter);
+            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
 
         if (configuration.isRemoveGhostPlayers())
-            featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, ghostPlayerFix);
+            featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, new GhostPlayerFix());
 
         if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, spectatorFix);
+            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
 
         if (configuration.isPipelineInjection()) {
-            featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, pipelineInjector);
+            featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, getPipelineInjector());
         }
 
         if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, scoreboardManager);
+            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
 
         if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, perWorldPlayerList);
+            featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, getPerWorldPlayerlist());
         }
 
+        // No requirements, but due to chicken vs egg, the feature uses NameTags, Layout and RedisBungee
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
                 configuration.getLayout().getBoolean("enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.SORTING, sorting);
+            featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
         }
 
+        // Must be loaded after: Sorting
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true)) {
             if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && minorVersion >= 8) {
-                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimitedNameTags);
+                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, getUnlimitedNametags());
             } else {
-                featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, nameTags);
+                featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
             }
         }
 
+        // Must be loaded after: Sorting
         if (minorVersion >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.LAYOUT, layout);
+            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
         }
 
+        // Must be loaded after: Layout
         if (minorVersion >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
-            featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, playerList);
+            if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
+                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new AlignedPlayerList());
+            } else {
+                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
+            }
         }
 
+        // Must be loaded after: PlayerList
         if (configuration.getConfig().getBoolean("global-playerlist.enabled", false) &&
                 TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
-            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, globalPlayerList);
+            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
         }
 
+        // Must be loaded after: Layout
         if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, pingSpoof);
+            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
 
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
+        // Must be loaded after: Global PlayerList, PlayerList, NameTags
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, getRedisSupport());
 
+        // Must be loaded after: RedisBungee
         if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, yellowNumber);
+            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
 
+        // Must be loaded after: RedisBungee
         if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, belowName);
+            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
 
-        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, nickCompatibility);
+        // Must be loaded after: NameTags, BelowName, YellowNumber, RedisBungee
+        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
     }
 
     public BossBarManagerImpl getLegacyBossBar() {
@@ -213,13 +206,13 @@ public abstract class Platform {
 
     public abstract @Nullable PipelineInjector getPipelineInjector();
 
-    public abstract NameTag getUnlimitedNametags(Sorting sorting);
+    public abstract NameTag getUnlimitedNametags();
 
     public abstract @NonNull TabExpansion getTabExpansion();
 
     public abstract @Nullable TabFeature getPetFix();
 
-    public abstract @Nullable RedisSupport getRedisSupport(GlobalPlayerList global, PlayerList playerList, NameTag nameTags);
+    public abstract @Nullable RedisSupport getRedisSupport();
 
     public abstract @Nullable TabFeature getPerWorldPlayerlist();
 

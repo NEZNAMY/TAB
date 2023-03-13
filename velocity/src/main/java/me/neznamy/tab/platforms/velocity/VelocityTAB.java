@@ -20,15 +20,11 @@ import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.PlayerList;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -71,6 +67,7 @@ public class VelocityTAB extends ProxyPlatform {
     /** Variables for getters for Platform implementation */
     @Getter private final PipelineInjector pipelineInjector = null;
     @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
+    @Getter private final RedisSupport redisSupport = null; // Not available on Velocity
 
     /**
      * Initializes plugin for velocity
@@ -118,12 +115,6 @@ public class VelocityTAB extends ProxyPlatform {
         for (Player p : server.getAllPlayers()) {
             TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
         }
-    }
-
-    @Override
-    public @Nullable RedisSupport getRedisSupport(GlobalPlayerList global, PlayerList playerList, NameTag nameTags) {
-        // Not available on Velocity
-        return null;
     }
 
     /**
