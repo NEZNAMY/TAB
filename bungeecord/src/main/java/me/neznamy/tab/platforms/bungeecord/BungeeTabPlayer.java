@@ -25,7 +25,6 @@ import java.util.UUID;
 public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Inaccessible bungee internals */
-    private static Field wrapperField;
     private static Object directionData;
     private static Method getId;
 
@@ -34,10 +33,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
             Field f = Protocol.class.getDeclaredField("TO_CLIENT");
             f.setAccessible(true);
             directionData = f.get(Protocol.GAME);
-            getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class);
-            getId.setAccessible(true);
-            wrapperField = InitialHandler.class.getDeclaredField("ch");
-            wrapperField.setAccessible(true);
+            (getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class)).setAccessible(true);
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", e);
         }

@@ -39,9 +39,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     static {
         try {
-            wrapperField = InitialHandler.class.getDeclaredField("ch");
-            wrapperField.setAccessible(true);
-        } catch (final ReflectiveOperationException exception) {
+            (wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
+        } catch (ReflectiveOperationException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", exception);
         }
     }
