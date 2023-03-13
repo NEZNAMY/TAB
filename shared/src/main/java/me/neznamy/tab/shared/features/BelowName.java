@@ -11,6 +11,8 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -45,11 +47,16 @@ public class BelowName extends TabFeature {
             loaded.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), textRefresher);
             loaded.sendCustomPacket(new PacketPlayOutScoreboardDisplayObjective(DISPLAY_SLOT, OBJECTIVE_NAME), textRefresher);
         }
+        Map<TabPlayer, Integer> values = new HashMap<>();
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+            if (isDisabledPlayer(target)) continue;
+            values.put(target, getValue(target));
+        }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(viewer)) continue;
-            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (sameServerAndWorld(target, viewer)) {
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, target.getNickname(), getValue(target)), this);
+            for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
+                if (sameServerAndWorld(entry.getKey(), viewer)) {
+                    viewer.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, OBJECTIVE_NAME, entry.getKey().getNickname(), entry.getValue()), this);
                 }
             }
         }
