@@ -122,12 +122,21 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     public void load() {
         redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            updateProperties(all);
             if (isDisabled(all.getServer(), all.getWorld())) {
                 addDisabledPlayer(all);
-                updateProperties(all);
-                continue;
+            } else {
+                if (redis != null) redis.updateTabFormat(all, all.getProperty(TabConstants.Property.TABPREFIX).get() + all.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + all.getProperty(TabConstants.Property.TABSUFFIX).get());
             }
-            refresh(all, true);
+        }
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) continue;
+            List<PlayerInfoData> list = new ArrayList<>();
+            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+                if (isDisabledPlayer(target)) continue;
+                list.add(new PlayerInfoData(getTablistUUID(target, viewer), getTabFormat(target, viewer)));
+            }
+            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
         }
     }
 
