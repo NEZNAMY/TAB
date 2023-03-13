@@ -126,7 +126,7 @@ public class Sorting extends TabFeature {
             shortName.append(type.getChars((ITabPlayer) p));
         }
         StringBuilder fullName = new StringBuilder(shortName);
-        if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)) {
+        if (layout != null) {
             //layout is enabled, start with max character to fix compatibility with plugins
             //which add empty player into a team such as LibsDisguises
             shortName.insert(0, Character.MAX_VALUE);
