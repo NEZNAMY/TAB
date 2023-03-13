@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import java.util.Collections;
 import java.util.Objects;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -20,14 +21,11 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 
 public class NickCompatibility extends TabFeature {
 
+    @Getter private final String featureName = "Nick compatibility";
     private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
     private final BelowName belowname = (BelowName) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
     private final YellowNumber yellownumber = (YellowNumber) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.YELLOW_NUMBER);
     private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-
-    public NickCompatibility() {
-        super("Nick compatibility", null);
-    }
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {

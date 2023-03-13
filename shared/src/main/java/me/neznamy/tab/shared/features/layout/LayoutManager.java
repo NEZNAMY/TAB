@@ -40,10 +40,8 @@ public class LayoutManager extends TabFeature {
     @Getter private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
     private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     @Getter private PlayerList playerList;
-
-    public LayoutManager() {
-        super("Layout", "Switching layouts");
-    }
+    @Getter private final String featureName = "Layout";
+    @Getter private final String refreshDisplayName = "Switching layouts";
 
     @Override
     public void load() {

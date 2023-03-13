@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge8.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
@@ -35,12 +36,7 @@ public class PetFix extends TabFeature {
      */
     private static final int INTERACT_COOLDOWN = 160;
 
-    /**
-     * Constructs new instance with given parameter
-     */
-    public PetFix() {
-        super("Pet name fix", null);
-    }
+    @Getter private final String featureName = "Pet name fix";
 
     /**
      * Cancels a packet if previous one arrived with no delay to prevent double toggle since 1.16

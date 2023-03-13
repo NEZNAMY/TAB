@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -13,10 +14,8 @@ import me.neznamy.tab.shared.TAB;
  */
 public class GhostPlayerFix extends TabFeature {
 
-    public GhostPlayerFix() {
-        super("Ghost player fix", null);
-    }
-    
+    @Getter private final String featureName = "Ghost player fix";
+
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         TAB.getInstance().getCPUManager().runTaskLater(500, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {

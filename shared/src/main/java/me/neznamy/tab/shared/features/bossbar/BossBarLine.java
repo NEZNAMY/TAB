@@ -93,7 +93,11 @@ public class BossBarLine implements BossBar {
         propertyColor = TabConstants.Property.bossbarColor(name);
         propertyStyle = TabConstants.Property.bossbarStyle(name);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name),
-                textRefresher = new TabFeature(manager.getFeatureName(), "Updating text") {
+                textRefresher = new TabFeature() {
+
+            @Getter private final String featureName = "BossBar";
+            @Getter private final String refreshDisplayName = "Updating text";
+
             @Override
             public void refresh(TabPlayer refreshed, boolean force) {
                 if (!players.contains(refreshed)) return;
@@ -101,7 +105,11 @@ public class BossBarLine implements BossBar {
             }
         });
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name),
-                progressRefresher = new TabFeature(manager.getFeatureName(), "Updating progress") {
+                progressRefresher = new TabFeature() {
+
+            @Getter private final String featureName = "BossBar";
+            @Getter private final String refreshDisplayName = "Updating progress";
+
             @Override
             public void refresh(TabPlayer refreshed, boolean force) {
                 if (!players.contains(refreshed)) return;
@@ -109,7 +117,11 @@ public class BossBarLine implements BossBar {
             }
         });
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarColorStyle(name),
-                colorAndStyleRefresher = new TabFeature(manager.getFeatureName(), "Updating color and style") {
+                colorAndStyleRefresher = new TabFeature() {
+
+            @Getter private final String featureName = "BossBar";
+            @Getter private final String refreshDisplayName = "Updating color and style";
+
             @Override
             public void refresh(TabPlayer refreshed, boolean force) {
                 if (!players.contains(refreshed)) return;

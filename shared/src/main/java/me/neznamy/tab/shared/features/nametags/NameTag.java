@@ -16,6 +16,8 @@ import java.util.*;
 
 public class NameTag extends TabFeature implements TeamManager {
 
+    @Getter private final String featureName = "NameTags";
+    @Getter private final String refreshDisplayName = "Updating prefix/suffix";
     protected final boolean invisibleNameTags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
     private final boolean canSeeFriendlyInvisibles = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
@@ -37,7 +39,7 @@ public class NameTag extends TabFeature implements TeamManager {
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {
-        super("NameTags", "Updating prefix/suffix", "scoreboard-teams");
+        super("scoreboard-teams");
     }
 
     @Override

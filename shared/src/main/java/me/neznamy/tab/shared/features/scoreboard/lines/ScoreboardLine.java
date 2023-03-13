@@ -19,6 +19,9 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
  */
 public abstract class ScoreboardLine extends TabFeature implements Line {
 
+    @Getter private final String featureName = "Scoreboard";
+    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
+
     //ID of this line
     protected final int lineNumber;
     
@@ -43,7 +46,6 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          ID of this line
      */
     protected ScoreboardLine(ScoreboardImpl parent, int lineNumber) {
-        super(parent.getFeatureName(), "Updating scoreboard lines");
         this.parent = parent;
         this.lineNumber = lineNumber;
         teamName = "TAB-SB-TM-" + lineNumber;

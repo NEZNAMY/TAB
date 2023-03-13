@@ -33,7 +33,9 @@ public abstract class ProxyPlatform extends Platform {
 
     @Getter private final TabFeature perWorldPlayerlist = null;
     @Getter private final ProxyTabExpansion tabExpansion = new ProxyTabExpansion();
-    @Getter private final TabFeature petFix = new TabFeature("", "") {};
+    @Getter private final TabFeature petFix = new TabFeature() {
+        @Getter private final String featureName = "";
+    };
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {

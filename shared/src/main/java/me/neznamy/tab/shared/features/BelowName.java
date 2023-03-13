@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -23,6 +25,8 @@ public class BelowName extends TabFeature {
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
     public static final int DISPLAY_SLOT = 2;
 
+    @Getter private final String refreshDisplayName = "Updating BelowName number";
+    @Getter private final String featureName = "BelowName";
     private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
     private final TabFeature textRefresher = new TextRefresher(this);
@@ -30,7 +34,7 @@ public class BelowName extends TabFeature {
     private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     public BelowName() {
-        super("BelowName", "Updating BelowName number", "belowname-objective");
+        super("belowname-objective");
     }
 
     @Override
@@ -154,14 +158,12 @@ public class BelowName extends TabFeature {
         return player2.getWorld().equals(player1.getWorld()) && Objects.equals(player2.getServer(), player1.getServer());
     }
 
+    @RequiredArgsConstructor
     public class TextRefresher extends TabFeature {
 
+        @Getter private final String refreshDisplayName = "Updating BelowName text";
+        @Getter private final String featureName = "BelowName";
         private final BelowName feature;
-
-        public TextRefresher(BelowName feature) {
-            super("BelowName", "Updating BelowName text");
-            this.feature = feature;
-        }
 
         @Override
         public void refresh(TabPlayer refreshed, boolean force) {

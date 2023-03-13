@@ -1,18 +1,21 @@
 package me.neznamy.tab.shared.features.layout;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 
+@RequiredArgsConstructor
 public class LayoutLatencyRefresher extends TabFeature {
 
+    @Getter private final String featureName = "Layout";
+    @Getter private final String refreshDisplayName = "Updating latency";
     private final LayoutManager manager;
 
-    public LayoutLatencyRefresher(LayoutManager manager) {
-        super(manager.getFeatureName(), "Updating latency");
-        this.manager = manager;
+    {
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
     }
 

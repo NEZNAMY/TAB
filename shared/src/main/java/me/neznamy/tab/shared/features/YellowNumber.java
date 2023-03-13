@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -16,6 +17,9 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
  * PLAYER_LIST display slot (in tablist).
  */
 public class YellowNumber extends TabFeature {
+
+    @Getter private final String featureName = "Yellow Number";
+    @Getter private final String refreshDisplayName = "Updating value";
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
@@ -39,7 +43,7 @@ public class YellowNumber extends TabFeature {
      * Constructs new instance and sends debug message that feature loaded.
      */
     public YellowNumber() {
-        super("Yellow number", "Updating value", "yellow-number-in-tablist");
+        super("yellow-number-in-tablist");
     }
 
     /**

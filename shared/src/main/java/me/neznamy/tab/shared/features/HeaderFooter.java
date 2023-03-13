@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.HeaderFooterManager;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -15,11 +16,13 @@ import java.util.List;
  */
 public class HeaderFooter extends TabFeature implements HeaderFooterManager {
 
+    @Getter private final String featureName = "Header/Footer";
+    @Getter private final String refreshDisplayName = "Updating header/footer";
     private final List<Object> worldGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-world").keySet());
     private final List<Object> serverGroups = new ArrayList<>(TAB.getInstance().getConfig().getConfigurationSection("header-footer.per-server").keySet());
 
     public HeaderFooter() {
-        super("Header/Footer", "Updating header/footer", "header-footer");
+        super("header-footer");
     }
 
     @Override

@@ -23,6 +23,9 @@ import java.util.*;
  */
 public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
+    @Getter private final String featureName = "Scoreboard";
+    @Getter private final String refreshDisplayName = "Updating Scoreboard title";
+
     //scoreboard manager
     @Getter private final ScoreboardManagerImpl manager;
 
@@ -78,7 +81,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
      *          lines of scoreboard
      */
     public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, boolean dynamicLinesOnly) {
-        super(manager.getFeatureName(), "Updating scoreboard title");
         this.manager = manager;
         this.name = name;
         this.title = title;

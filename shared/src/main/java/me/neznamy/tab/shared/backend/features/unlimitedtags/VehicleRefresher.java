@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -18,7 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Additionally, when entering a vehicle, no move packet is sent
  * and therefore manual teleporting of armor stands is required.
  */
+@RequiredArgsConstructor
 public class VehicleRefresher extends TabFeature {
+
+    @Getter private final String featureName = "NameTags";
+    @Getter private final String refreshDisplayName = "Refreshing vehicles";
 
     /** Map of players currently in a vehicle */
     private final WeakHashMap<TabPlayer, Object> playersInVehicle = new WeakHashMap<>();
@@ -32,17 +37,6 @@ public class VehicleRefresher extends TabFeature {
 
     /** Reference to the main feature */
     private final BackendNameTagX feature;
-
-    /**
-     * Constructs new instance with given parameter and starts tasks.
-     *
-     * @param   feature
-     *          Main feature
-     */
-    public VehicleRefresher(BackendNameTagX feature) {
-        super(feature.getFeatureName(), "Refreshing vehicles");
-        this.feature = feature;
-    }
 
     @Override
     public void load() {

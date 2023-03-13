@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.injection;
 
-import lombok.Setter;
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -17,16 +17,14 @@ import me.neznamy.tab.shared.TAB;
  */
 public abstract class PipelineInjector extends TabFeature {
 
+    @Getter private final String featureName = "Pipeline injection";
+
     //preventing spam when packet is sent to everyone
     private String lastTeamOverrideMessage;
 
     //anti-override rules
     protected boolean antiOverrideTeams;
-    @Setter protected boolean byteBufDeserialization;
-
-    protected PipelineInjector() {
-        super("Pipeline injection", null);
-    }
+    protected boolean byteBufDeserialization;
 
     public abstract void inject(TabPlayer player);
 

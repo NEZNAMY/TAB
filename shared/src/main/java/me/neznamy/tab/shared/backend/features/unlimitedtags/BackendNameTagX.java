@@ -42,7 +42,11 @@ public abstract class BackendNameTagX extends NameTagX {
         TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
         TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
         TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, TabPlayer::getGamemode);
-        TabFeature gamemode = new TabFeature("Unlimited NameTags", "Gamemode listener") {
+        TabFeature gamemode = new TabFeature() {
+
+            @Getter private final String featureName = "Unlimited NameTags";
+            @Getter private final String refreshDisplayName = "Gamemode listener";
+
             {
                 addUsedPlaceholders(Collections.singletonList("%gamemode%"));
             }

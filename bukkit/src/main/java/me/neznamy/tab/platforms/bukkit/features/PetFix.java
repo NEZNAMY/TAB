@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
@@ -45,12 +46,7 @@ public class PetFix extends TabFeature {
      */
     private static final int INTERACT_COOLDOWN = 160;
 
-    /**
-     * Constructs new instance
-     */
-    public PetFix() {
-        super("Pet name fix", null);
-    }
+    @Getter private final String featureName = "Pet name fix";
 
     /**
      * Returns position of pet owner field based on server version

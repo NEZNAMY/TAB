@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -17,8 +18,11 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
+@RequiredArgsConstructor
 public class Layout extends TabFeature {
 
+    @Getter private final String featureName = "Layout";
+    @Getter private final String refreshDisplayName = "Updating player groups";
     @Getter private final String name;
     @Getter private final LayoutManager manager;
     private final Condition displayCondition;
@@ -26,16 +30,6 @@ public class Layout extends TabFeature {
     private final List<Integer> emptySlots;
     @Getter private final List<ParentGroup> groups;
     @Getter private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
-
-    public Layout(String name, LayoutManager manager, Condition displayCondition, Map<Integer, FixedSlot> fixedSlots, List<Integer> emptySlots, List<ParentGroup> groups) {
-        super(manager.getFeatureName(), "Updating player groups");
-        this.name = name;
-        this.manager = manager;
-        this.displayCondition = displayCondition;
-        this.fixedSlots = fixedSlots;
-        this.emptySlots = emptySlots;
-        this.groups = groups;
-    }
 
     public void sendTo(TabPlayer p) {
         if (viewers.contains(p)) return;

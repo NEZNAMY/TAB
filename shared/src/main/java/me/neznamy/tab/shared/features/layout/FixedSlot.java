@@ -14,6 +14,8 @@ import me.neznamy.tab.api.TabConstants;
 
 public class FixedSlot extends TabFeature {
 
+    @Getter private final String featureName = "Layout";
+    @Getter private final String refreshDisplayName = "Updating fixed slots";
     private final Layout layout;
     @Getter private final UUID id;
     @Getter private final String text;
@@ -22,7 +24,6 @@ public class FixedSlot extends TabFeature {
     @Getter private final int ping;
 
     public FixedSlot(Layout layout, int slot, String text, String skin, int ping) {
-        super(layout.getFeatureName(), "Updating fixed slots");
         this.layout = layout;
         this.id = layout.getManager().getUUID(slot);
         this.text = text;

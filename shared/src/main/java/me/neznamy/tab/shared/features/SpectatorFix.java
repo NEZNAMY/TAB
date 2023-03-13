@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -19,12 +20,7 @@ import me.neznamy.tab.api.TabConstants;
  */
 public class SpectatorFix extends TabFeature {
 
-    /**
-     * Constructs new instance
-     */
-    public SpectatorFix() {
-        super("Spectator fix", null);
-    }
+    @Getter private final String featureName = "Spectator fix";
 
     /**
      * Sends GameMode update of all players to either their real GameMode if

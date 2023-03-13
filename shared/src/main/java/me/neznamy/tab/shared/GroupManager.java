@@ -23,6 +23,8 @@ public class GroupManager extends TabFeature {
     /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
     private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
+    @Getter private final String featureName = "Permission group refreshing";
+
     /**
      * Constructs new instance with given permission plugin, loads
      * event listeners and registers group placeholder.
@@ -31,7 +33,6 @@ public class GroupManager extends TabFeature {
      *          Detected permission plugin
      */
     public GroupManager(PermissionPlugin plugin) {
-        super("Permission group refreshing", null);
         this.plugin = plugin;
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, this, TabConstants.CpuUsageCategory.GROUP_REFRESHING, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

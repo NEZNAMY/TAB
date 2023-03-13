@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.globalplayerlist;
 import java.util.*;
 import java.util.Map.Entry;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -30,10 +31,7 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
     private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-
-    public GlobalPlayerList() {
-        super("Global PlayerList", null);
-    }
+    @Getter private final String featureName = "Global PlayerList";
 
     @Override
     public void load() {

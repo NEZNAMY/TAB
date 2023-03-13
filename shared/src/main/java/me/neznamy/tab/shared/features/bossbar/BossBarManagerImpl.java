@@ -44,11 +44,14 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager {
 
     private final Set<TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
 
+    @Getter private final String featureName = "BossBar";
+    @Getter private final String refreshDisplayName = "Updating display conditions";
+
     /**
      * Constructs new instance and loads configuration
      */
     public BossBarManagerImpl() {
-        super("BossBar", "Processing display conditions", "bossbar");
+        super("bossbar");
         for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()) {
             BossBarLine line = loadFromConfig(bar.toString());
             registeredBossBars.put(bar.toString(), line);

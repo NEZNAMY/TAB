@@ -2,7 +2,7 @@ package me.neznamy.tab.api;
 
 import java.util.*;
 
-import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
@@ -13,12 +13,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
  * It receives all kinds of events and can react to them.
  */
 public abstract class TabFeature {
-
-    /** Feature's name displayed in /tab cpu */
-    @Getter private final String featureName;
-
-    /** Feature's function name displayed in place of refreshing in /tab cpu */
-    @Getter private final String refreshDisplayName;
 
     /** Servers where the feature is disabled (or enabled if using whitelist mode) */
     protected String[] disabledServers = new String[0];
@@ -44,16 +38,9 @@ public abstract class TabFeature {
     private final List<String> methodOverrides = new ArrayList<>();
 
     /**
-     * Constructs new instance with given parameters and loads method overrides
-     *
-     * @param   featureName
-     *          Feature's name in /tab cpu
-     * @param   refreshDisplayName
-     *          "refreshing" cpu display type name of the feature
+     * Constructs new instance and loads method overrides
      */
-    protected TabFeature(String featureName, String refreshDisplayName) {
-        this.featureName = featureName;
-        this.refreshDisplayName = refreshDisplayName;
+    protected TabFeature() {
         try {
             if (getClass().getMethod("onCommand", TabPlayer.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onCommand");
@@ -99,16 +86,12 @@ public abstract class TabFeature {
      * Also loads lists of disabled worlds and servers of this feature with config
      * section path specified with {@code configSection} parameter.
      *
-     * @param   featureName
-     *          Feature's name in /tab cpu
-     * @param   refreshDisplayName
-     *          "refreshing" cpu display type name of the feature
      * @param   configSection
      *          Configuration section of the feature to load disabled
      *          servers / worlds from
      */
-    protected TabFeature(String featureName, String refreshDisplayName, String configSection) {
-        this(featureName, refreshDisplayName);
+    protected TabFeature(@NonNull String configSection) {
+        this();
         List<String> disabledServers = TabAPI.getInstance().getConfig().getStringList(configSection + ".disable-in-servers");
         List<String> disabledWorlds = TabAPI.getInstance().getConfig().getStringList(configSection + ".disable-in-worlds");
         if (disabledServers != null) {
@@ -392,4 +375,19 @@ public abstract class TabFeature {
     public void removeDisabledPlayer(TabPlayer p) {
         disabledPlayers.remove(p);
     }
+
+    /**
+     * Returns display name of {@link #refresh(TabPlayer, boolean)}
+     * called for this feature in /tab cpu
+     *
+     * @return  Display name of refresh function in this feature
+     */
+    public String getRefreshDisplayName() { return null; }
+
+    /**
+     * Returns name of this feature displayed in /tab cpu
+     *
+     * @return  name of this feature display in /tab cpu
+     */
+    public abstract String getFeatureName();
 }

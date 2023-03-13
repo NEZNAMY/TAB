@@ -38,6 +38,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
+    @Getter private final String refreshDisplayName = "Updating placeholders";
+    @Getter private final String featureName = "Refreshing placeholders";
     @Getter private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
     @Getter private final Map<String, Integer> serverPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server");
     @Getter private final Map<String, Integer> playerPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player");
@@ -57,10 +59,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Getter @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", false) ?
             TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
 
-    public PlaceholderManagerImpl() {
-        super("Refreshing placeholders", "Updating placeholders");
-    }
-    
     private void refresh() {
         int loopTime = this.loopTime.addAndGet(refreshInterval);
         int size = TAB.getInstance().getOnlinePlayers().length;

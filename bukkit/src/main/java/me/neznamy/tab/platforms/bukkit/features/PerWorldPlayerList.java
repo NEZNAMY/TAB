@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,6 +25,7 @@ import me.neznamy.tab.shared.TAB;
  * Per-world-PlayerList feature handler
  */
 @SuppressWarnings("deprecation")
+@RequiredArgsConstructor
 public class PerWorldPlayerList extends TabFeature implements Listener {
 
     /** Config options */
@@ -33,16 +36,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener {
     /** Plugin reference*/
     private final JavaPlugin plugin;
 
-    /**
-     * Constructs new instance with given parameters and loads config options
-     *
-     * @param   plugin
-     *          plugin instance
-     */
-    public PerWorldPlayerList(JavaPlugin plugin) {
-        super("Per world PlayerList", null);
-        this.plugin = plugin;
-    }
+    @Getter private final String featureName = "Per world PlayerList";
 
     @Override
     public void load() {

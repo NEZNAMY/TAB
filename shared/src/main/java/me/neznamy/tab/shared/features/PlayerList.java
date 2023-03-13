@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -21,6 +22,9 @@ import java.util.UUID;
  */
 public class PlayerList extends TabFeature implements TablistFormatManager {
 
+    @Getter private final String featureName = "Tablist name formatting";
+    @Getter private final String refreshDisplayName = "Updating TabList format";
+
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
@@ -38,7 +42,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
      * Constructs new instance and sends debug message that feature loaded.
      */
     public PlayerList() {
-        super("TabList prefix/suffix", "Updating TabList format", "tablist-name-formatting");
+        super("tablist-name-formatting");
     }
 
     /**

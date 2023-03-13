@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -26,12 +27,7 @@ public class PingSpoof extends TabFeature {
 
     private final LayoutManager layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
 
-    /**
-     * Constructs new instance and loads config options
-     */
-    public PingSpoof() {
-        super("Ping spoof", null);
-    }
+    @Getter private final String featureName = "Ping spoof";
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {

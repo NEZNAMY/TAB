@@ -30,6 +30,9 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  */
 public class Sorting extends TabFeature {
 
+    @Getter private final String featureName = "Team name refreshing";
+    @Getter private final String refreshDisplayName = "Updating team name";
+
     private NameTag nameTags;
     private LayoutManager layout;
     private RedisSupport redis;
@@ -52,7 +55,6 @@ public class Sorting extends TabFeature {
      * Constructs new instance and loads config options
      */
     public Sorting() {
-        super("Team name refreshing", "Refreshing team name");
         types.put("GROUPS", Groups::new);
         types.put("PERMISSIONS", Permissions::new);
         types.put("PLACEHOLDER", Placeholder::new);

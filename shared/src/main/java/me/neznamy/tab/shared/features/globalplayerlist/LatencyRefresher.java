@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
+import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -10,8 +11,10 @@ import me.neznamy.tab.shared.TAB;
 
 public class LatencyRefresher extends TabFeature {
 
-    public LatencyRefresher() {
-        super("Global PlayerList", "Updating latency");
+    @Getter private final String featureName = "Global PlayerList";
+    @Getter private final String refreshDisplayName = "Updating latency";
+
+    {
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
     }
 

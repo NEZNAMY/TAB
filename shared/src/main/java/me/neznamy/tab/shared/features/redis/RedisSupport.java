@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("unchecked")
 public abstract class RedisSupport extends TabFeature {
 
+    @Getter private final String featureName = "RedisSupport";
+
     /** Redis players on other proxies by their UUID */
     @Getter protected final Map<String, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
 
@@ -47,13 +49,6 @@ public abstract class RedisSupport extends TabFeature {
     private final Map<RedisPlayer, Long> lastServerSwitch = new WeakHashMap<>();
 
     private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
-
-    /**
-     * Constructs new instance
-     */
-    protected RedisSupport() {
-        super("RedisBungee", null);
-    }
 
     /**
      * Sends a message to all other proxies to update

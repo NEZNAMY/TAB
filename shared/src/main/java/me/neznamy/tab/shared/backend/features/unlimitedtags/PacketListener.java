@@ -1,5 +1,7 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -17,24 +19,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * For entering/leaving tracking range there are no events and
  * periodic / move-triggered distance checks would cause high CPU usage.
  */
+@RequiredArgsConstructor
 public class PacketListener extends TabFeature {
+
+    @Getter private final String featureName = "Unlimited NameTags";
 
     /** Reference to the main feature */
     protected final BackendNameTagX nameTagX;
 
     /** A player map by entity id, used for better performance */
     private final Map<Integer, TabPlayer> entityIdMap = new ConcurrentHashMap<>();
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   nameTagX
-     *          main feature
-     */
-    public PacketListener(BackendNameTagX nameTagX) {
-        super(nameTagX.getFeatureName(), null);
-        this.nameTagX = nameTagX;
-    }
 
     @Override
     public void load() {
