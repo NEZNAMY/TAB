@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -30,8 +29,6 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
     private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
-    private final List<ServerPlaceholder> placeholders = new ArrayList<>();
-
     private final PlayerList playerlist;
 
     public GlobalPlayerList(PlayerList playerlist) {
@@ -44,8 +41,8 @@ public class GlobalPlayerList extends TabFeature {
         if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         for (Entry<String, List<String>> entry : sharedServers.entrySet()) {
-            placeholders.add(TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), -1,
-                    () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count()));
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000,
+                    () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count());
         }
         for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -53,7 +50,6 @@ public class GlobalPlayerList extends TabFeature {
                 if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), this);
             }
         }
-        placeholders.forEach(pl -> pl.updateValue(pl.request()));
     }
 
     public boolean shouldSee(TabPlayer viewer, TabPlayer displayed) {
@@ -91,29 +87,19 @@ public class GlobalPlayerList extends TabFeature {
                 connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), this);
             }
         }
-        placeholders.forEach(pl -> pl.updateValue(pl.request()));
     }
 
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
-        //delay due to waterfall bug calling server switch when players leave
-        TAB.getInstance().getCPUManager().runTaskLater(50, this, TabConstants.CpuUsageCategory.PLAYER_QUIT, () -> {
-
-            if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return;
-            PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (all == disconnectedPlayer) continue;
-                all.sendCustomPacket(remove, this);
-            }
-            //update after player is removed
-            placeholders.forEach(pl -> pl.updateValue(pl.request()));
-        });
+        PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all == disconnectedPlayer) continue;
+            all.sendCustomPacket(remove, this);
+        }
     }
 
     @Override
     public void onServerChange(TabPlayer changed, String from, String to) {
-        placeholders.forEach(pl -> pl.updateValue(pl.request()));
-
         // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == changed) continue;
