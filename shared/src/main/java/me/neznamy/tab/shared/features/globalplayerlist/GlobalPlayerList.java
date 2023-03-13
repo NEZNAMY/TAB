@@ -44,11 +44,13 @@ public class GlobalPlayerList extends TabFeature {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000,
                     () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count());
         }
-        for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            List<PlayerInfoData> entries = new ArrayList<>();
+            for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getServer().equals(displayed.getServer())) continue;
-                if (shouldSee(viewer, displayed)) viewer.sendCustomPacket(getAddPacket(displayed, viewer), this);
+                if (shouldSee(viewer, displayed)) entries.add(getAddInfoData(displayed, viewer));
             }
+            if (!entries.isEmpty()) viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entries), this);
         }
     }
 
@@ -78,15 +80,15 @@ public class GlobalPlayerList extends TabFeature {
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
+        List<PlayerInfoData> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all == connectedPlayer) continue;
+            if (connectedPlayer.getServer().equals(all.getServer())) continue;
             if (shouldSee(all, connectedPlayer)) {
-                all.sendCustomPacket(getAddPacket(connectedPlayer, all), this);
+                all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getAddInfoData(connectedPlayer, all)), this);
             }
-            if (shouldSee(connectedPlayer, all)) {
-                connectedPlayer.sendCustomPacket(getAddPacket(all, connectedPlayer), this);
-            }
+            if (shouldSee(connectedPlayer, all)) entries.add(getAddInfoData(all, connectedPlayer));
         }
+        if (!entries.isEmpty()) connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entries), this);
     }
 
     @Override
@@ -101,14 +103,16 @@ public class GlobalPlayerList extends TabFeature {
     @Override
     public void onServerChange(TabPlayer changed, String from, String to) {
         // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
+        List<PlayerInfoData> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == changed) continue;
             if (shouldSee(changed, all)) {
-                changed.sendCustomPacket(getAddPacket(all, changed), this);
+                entries.add(getAddInfoData(all, changed));
             } else {
                 changed.sendCustomPacket(getRemovePacket(all), this);
             }
         }
+        if (!entries.isEmpty()) changed.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entries), this);
 
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         TAB.getInstance().getCPUManager().runTaskLater(200, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
@@ -116,7 +120,7 @@ public class GlobalPlayerList extends TabFeature {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == changed) continue;
                 if (shouldSee(all, changed)) {
-                    all.sendCustomPacket(getAddPacket(changed, all), this);
+                    all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getAddInfoData(changed, all)), this);
                 } else {
                     all.sendCustomPacket(removeChanged, this);
                 }
@@ -128,23 +132,21 @@ public class GlobalPlayerList extends TabFeature {
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getTablistId()));
     }
 
-    public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
+    public PlayerInfoData getAddInfoData(TabPlayer p, TabPlayer viewer) {
         IChatBaseComponent format = null;
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER,
-                new PlayerInfoData(
-                        p.getName(),
-                        p.getTablistId(),
-                        p.getSkin(),
-                        true,
-                        p.getPing(),
-                        vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
-                        viewer.getVersion().getMinorVersion() >= 8 ? format : null,
-                        fillProfileKey ? ((ProxyTabPlayer)p).getChatSessionId() : null,
-                        fillProfileKey ? ((ProxyTabPlayer)p).getProfilePublicKey() : null
-                )
+        return new PlayerInfoData(
+                p.getName(),
+                p.getTablistId(),
+                p.getSkin(),
+                true,
+                p.getPing(),
+                vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
+                viewer.getVersion().getMinorVersion() >= 8 ? format : null,
+                fillProfileKey ? ((ProxyTabPlayer)p).getChatSessionId() : null,
+                fillProfileKey ? ((ProxyTabPlayer)p).getProfilePublicKey() : null
         );
     }
 
@@ -174,7 +176,7 @@ public class GlobalPlayerList extends TabFeature {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == p) continue;
                 if (shouldSee(viewer, p)) {
-                    viewer.sendCustomPacket(getAddPacket(p, viewer), TabConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
+                    viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getAddInfoData(p, viewer)), TabConstants.PacketCategory.GLOBAL_PLAYERLIST_VANISH);
                 }
             }
         }
