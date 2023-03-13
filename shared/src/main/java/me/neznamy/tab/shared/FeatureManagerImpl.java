@@ -56,7 +56,13 @@ public class FeatureManagerImpl implements FeatureManager {
      * This function is called on plugin disable.
      */
     public void unload() {
-        for (TabFeature f : values) f.unload();
+        for (TabFeature f : values) {
+            if (!f.overridesMethod("unload")) continue;
+            long time = System.currentTimeMillis();
+            f.unload();
+            TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
+
+        }
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
             PluginMessageHandler plm = ((ProxyPlatform) TAB.getInstance().getPlatform()).getPluginMessageHandler();
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
