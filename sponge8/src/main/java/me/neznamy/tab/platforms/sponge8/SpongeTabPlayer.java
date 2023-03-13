@@ -41,7 +41,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     private static int getProtocolVersion(ServerPlayer player) {
         if (Sponge.pluginManager().plugin(TabConstants.Plugin.VIAVERSION.toLowerCase()).isPresent()) {
-            return TAB.getInstance().getPlatform().getProtocolVersionVia(player.uniqueId(), player.name(), 0);
+            return ProtocolVersion.getPlayerVersionVia(player.uniqueId(), player.name());
         }
         return ProtocolVersion.V1_16_5.getNetworkId();
     }

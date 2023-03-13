@@ -12,6 +12,7 @@ dependencies {
     compileOnlyApi(libs.adventureMiniMessage)
     compileOnlyApi(libs.adventureApi)
     compileOnlyApi(libs.adventureLegacy)
+    compileOnlyApi(libs.via)
 }
 
 blossom {

@@ -77,7 +77,7 @@ class Main @Inject constructor(
 
     fun getProtocolVersion(player: Player): Int {
         if (server.pluginManager.isLoaded(TabConstants.Plugin.VIAVERSION.lowercase())) {
-            return TAB.getInstance().platform.getProtocolVersionVia(player.uuid, player.profile.name, 0)
+            return ProtocolVersion.getPlayerVersionVia(player.uuid, player.profile.name)
         }
         return TAB.getInstance().serverVersion.networkId
     }

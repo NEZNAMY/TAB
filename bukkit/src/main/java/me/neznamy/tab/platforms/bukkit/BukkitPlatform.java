@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -191,7 +192,7 @@ public class BukkitPlatform extends BackendPlatform {
             if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
         }
         if (viaVersion) {
-            return getProtocolVersionVia(player.getUniqueId(), player.getName(), 0);
+            return ProtocolVersion.getPlayerVersionVia(player.getUniqueId(), player.getName());
         }
         return TAB.getInstance().getServerVersion().getNetworkId();
     }

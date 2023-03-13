@@ -1,7 +1,10 @@
 package me.neznamy.tab.api;
 
+import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 /**
  * Enum class representing all possibly used protocol versions
@@ -136,5 +139,20 @@ public enum ProtocolVersion {
             if (networkId == v.getNetworkId()) return v;
         }
         return UNKNOWN_CLIENT_VERSION;
+    }
+
+    /**
+     * Gets player's network version using ViaVersion API
+     *
+     * @param   player
+     *          Player's UUID
+     * @param   playerName
+     *          Player's name for debug messages
+     * @return  Player's network version
+     */
+    public static int getPlayerVersionVia(UUID player, String playerName) {
+        int version = Via.getAPI().getPlayerVersion(player);
+        TabAPI.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
+        return version;
     }
 }
