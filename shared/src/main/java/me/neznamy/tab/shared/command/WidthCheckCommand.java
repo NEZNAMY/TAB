@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class WidthCheckCommand extends SubCommand {
 
-    private final byte[] widths = loadWidths();
+    private byte[] widths;
 
     /**
      * Constructs new instance
@@ -46,6 +46,7 @@ public class WidthCheckCommand extends SubCommand {
 
     @Override
     public void execute(TabPlayer sender, String[] args) {
+        if (widths == null) widths = loadWidths();
         if (sender == null) {
             sendMessage(null, getMessages().getCommandOnlyFromGame());
             return;
