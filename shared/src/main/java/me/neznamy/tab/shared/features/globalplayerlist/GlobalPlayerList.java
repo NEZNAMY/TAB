@@ -31,8 +31,6 @@ public class GlobalPlayerList extends TabFeature {
     private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
     private final List<ServerPlaceholder> placeholders = new ArrayList<>();
-    private final Map<TabPlayer, Long> lastServerSwitch = new WeakHashMap<>();
-    private final UUID EMPTY_ID = new UUID(0, 0);
 
     private final PlayerList playerlist;
 
@@ -113,35 +111,35 @@ public class GlobalPlayerList extends TabFeature {
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        lastServerSwitch.put(p, System.currentTimeMillis());
-        Runnable r = () -> {
-            PacketPlayOutPlayerInfo removeChanged = getRemovePacket(p);
+    public void onServerChange(TabPlayer changed, String from, String to) {
+        placeholders.forEach(pl -> pl.updateValue(pl.request()));
+
+        // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (all == changed) continue;
+            if (shouldSee(changed, all)) {
+                changed.sendCustomPacket(getAddPacket(all, changed), this);
+            } else {
+                changed.sendCustomPacket(getRemovePacket(all), this);
+            }
+        }
+
+        // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
+        TAB.getInstance().getCPUManager().runTaskLater(200, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
+            PacketPlayOutPlayerInfo removeChanged = getRemovePacket(changed);
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (all == p) continue;
-                if (shouldSee(all, p)) {
-                    all.sendCustomPacket(getAddPacket(p, all), this);
+                if (all == changed) continue;
+                if (shouldSee(all, changed)) {
+                    all.sendCustomPacket(getAddPacket(changed, all), this);
                 } else {
                     all.sendCustomPacket(removeChanged, this);
                 }
-                if (shouldSee(p, all)) {
-                    p.sendCustomPacket(getAddPacket(all, p), this);
-                } else {
-                    p.sendCustomPacket(getRemovePacket(all), this);
-                }
             }
-        };
-        if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) {
-            TAB.getInstance().getCPUManager().runTaskLater(200, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, r);
-        } else {
-            r.run();
-        }
-        placeholders.forEach(pl -> pl.updateValue(pl.request()));
+        });
     }
 
     public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
-                new PlayerInfoData(p.getTablistId()), new PlayerInfoData(EMPTY_ID));
+        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getTablistId()));
     }
 
     public PacketPlayOutPlayerInfo getAddPacket(TabPlayer p, TabPlayer viewer) {
@@ -166,20 +164,6 @@ public class GlobalPlayerList extends TabFeature {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (info.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
-            boolean packetFromTAB = info.getEntries().stream().anyMatch(data -> data.getUniqueId().equals(EMPTY_ID));
-            for (PlayerInfoData playerInfoData : info.getEntries()) {
-                TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
-                    //not preventing NPC removals
-                if (packetPlayer != null && !packetFromTAB && !packetPlayer.isVanished()
-                        && (System.currentTimeMillis()-lastServerSwitch.getOrDefault(packetPlayer, 0L) < 2000)
-                ) {
-                    //remove packet not coming from tab
-                    //changing to random non-existing player, the easiest way to cancel the removal
-                    playerInfoData.setUniqueId(UUID.randomUUID());
-                }
-            }
-        }
         if (!displayAsSpectators) return;
         if (info.getActions().contains(EnumPlayerInfoAction.UPDATE_GAME_MODE)) {
             for (PlayerInfoData playerInfoData : info.getEntries()) {
