@@ -161,18 +161,4 @@ public class RGBUtils {
         }
         return true;
     }
-
-    /**
-     * Returns true if text contains legacy color request at defined RGB index start
-     *
-     * @param   text
-     *          text to check
-     * @param   i
-     *          current index start
-     * @return  {@code true} if legacy color is defined and valid, {@code false} otherwise
-     */
-    private static boolean containsLegacyCode(String text, int i) {
-        if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
-        return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
-    }
 }

@@ -11,7 +11,6 @@ import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -24,9 +23,6 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import java.util.*;
 
 public final class SpongeTabPlayer extends ITabPlayer {
-
-    private static final ComponentCache<IChatBaseComponent, Component> textCache = new ComponentCache<>(10000,
-            (component, version) -> Component.Serializer.fromJson(component.toString(version)));
 
     private static final ComponentCache<IChatBaseComponent, net.kyori.adventure.text.Component> adventureCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));

@@ -46,7 +46,6 @@ public class DataWatcherItem {
      *          if thrown by reflective operation
      */
     public static DataWatcherItem fromNMS(Object nmsItem) throws ReflectiveOperationException {
-        NMSStorage nms = NMSStorage.getInstance();
         Object value = VALUE.get(nmsItem);
         DataWatcherObject object;
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
