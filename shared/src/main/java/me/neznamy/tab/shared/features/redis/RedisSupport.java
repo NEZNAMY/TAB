@@ -428,7 +428,7 @@ public abstract class RedisSupport extends TabFeature {
     public void onLoginPacket(TabPlayer packetReceiver) {
         for (RedisPlayer p : redisPlayers.values()) {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                all.sendCustomPacket(p.getRegisterTeamPacket());
+                all.sendCustomPacket(p.getRegisterTeamPacket(), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
             }
         }
     }
