@@ -46,8 +46,7 @@ public class VelocityEventListener {
             if (TabAPI.getInstance().getPlayer(p.getUniqueId()) == null) {
                 TabAPI.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
             } else {
-                String server = p.getCurrentServer().isPresent() ? p.getCurrentServer().get().getServerInfo().getName() : "null";
-                TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), server);
+                TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().get().getServerInfo().getName());
             }
         });
     }

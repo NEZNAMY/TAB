@@ -58,8 +58,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          velocity player
      */
     public VelocityTabPlayer(Player p) {
-        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
-                p.getCurrentServer().get().getServerInfo().getName() : "-", p.getProtocolVersion().getProtocol(),
+        super(p, p.getUniqueId(), p.getUsername(),
+                p.getCurrentServer().get().getServerInfo().getName(), p.getProtocolVersion().getProtocol(),
                 TabAPI.getInstance().getConfig().getBoolean("use-online-uuid-in-tablist", true));
     }
     
