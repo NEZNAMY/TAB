@@ -34,7 +34,7 @@ public class NameTag extends TabFeature implements TeamManager {
     private RedisSupport redis;
 
     private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
-            TAB.getInstance().getPlatform().getPluginVersion("ViaRewind") != null ||
+            TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.VIAREWIND) != null ||
             TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.PROTOCOL_SUPPORT) != null ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 

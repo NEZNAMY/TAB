@@ -42,9 +42,7 @@ sponge {
             source(website)
             issues("$website/issues")
         }
-        contributor("NEZNAMY") {
-            description("Lead Developer")
-        }
+        contributor(rootProject.ext.get("author")!!.toString()) {}
     }
 }
 

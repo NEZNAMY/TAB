@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.krypton
 
 import me.lucko.spark.api.Spark
 import me.lucko.spark.api.statistic.StatisticWindow.*
+import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.placeholder.PlaceholderManager
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry
 import org.kryptonmc.api.entity.player.Player
@@ -11,8 +12,8 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : UniversalPlaceholde
 
     override fun registerPlaceholders(manager: PlaceholderManager) {
         // Built-in stuff
-        manager.registerPlayerPlaceholder("%displayname%", 500) { (it.player as Player).displayName }
-        manager.registerPlayerPlaceholder("%health%", 100) { ceil((it.player as Player).health) }
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500) { (it.player as Player).displayName }
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100) { ceil((it.player as Player).health) }
 
         // Spark placeholders, registered if Spark is present
         registerSparkPlaceholders(manager)

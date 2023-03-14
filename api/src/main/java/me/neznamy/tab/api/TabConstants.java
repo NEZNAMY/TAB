@@ -15,6 +15,7 @@ public class TabConstants {
     public static final String PLUGIN_VERSION = "@version@";
     public static final String PLUGIN_DESCRIPTION = "@description@";
     public static final String PLUGIN_WEBSITE = "@website@";
+    public static final String PLUGIN_AUTHOR = "@author@";
 
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";
@@ -347,6 +348,7 @@ public class TabConstants {
         public static final String VAULT = "Vault";
         public static final String PLACEHOLDER_API = "PlaceholderAPI";
         public static final String LIBS_DISGUISES = "LibsDisguises";
+        public static final String VIAREWIND = "ViaRewind";
         public static final String VIAVERSION = "ViaVersion";
         public static final String PROTOCOL_SUPPORT = "ProtocolSupport";
         public static final String ESSENTIALS = "Essentials";

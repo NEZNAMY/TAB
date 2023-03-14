@@ -282,3 +282,8 @@ global-playerlist:
 
 # Take permissions and groups from backend server instead of proxy
 use-bukkit-permissions-manager: false
+
+# Sometimes server might be using offline uuids in tablist instead of online, such as disabling waterfall's tablist rewrite option
+# If you experience tablist formatting not working and global playerlist duplicating players, toggle this option (set it to opposite value)
+# Only affects proxies with online mode enabled
+use-online-uuid-in-tablist: true

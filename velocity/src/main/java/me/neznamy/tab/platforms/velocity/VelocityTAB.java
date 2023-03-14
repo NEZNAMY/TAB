@@ -44,7 +44,7 @@ import java.util.Locale;
         version = TabConstants.PLUGIN_VERSION,
         description = TabConstants.PLUGIN_DESCRIPTION,
         url = TabConstants.PLUGIN_WEBSITE,
-        authors = {"NEZNAMY"}
+        authors = {TabConstants.PLUGIN_AUTHOR}
 )
 public class VelocityTAB extends ProxyPlatform {
 
@@ -77,10 +77,6 @@ public class VelocityTAB extends ProxyPlatform {
      */
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        if (server.getConfiguration().isOnlineMode()) {
-            logger.info(EnumChatFormat.color("&6If you experience tablist prefix/suffix not working and global playerlist duplicating players, toggle "
-                    + "\"use-online-uuid-in-tablist\" option in config.yml (set it to opposite value)."));
-        }
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
         TAB.setInstance(new TAB(this, ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
         server.getEventManager().register(this, new VelocityEventListener());

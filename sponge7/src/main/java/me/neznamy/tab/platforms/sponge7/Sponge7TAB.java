@@ -32,7 +32,7 @@ import java.util.List;
         version = TabConstants.PLUGIN_VERSION,
         description = TabConstants.PLUGIN_DESCRIPTION,
         url = TabConstants.PLUGIN_WEBSITE,
-        authors = {"NEZNAMY"}
+        authors = {TabConstants.PLUGIN_AUTHOR}
 )
 public class Sponge7TAB {
 

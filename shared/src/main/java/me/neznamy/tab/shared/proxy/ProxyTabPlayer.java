@@ -51,11 +51,9 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      *          Player's server
      * @param   protocolVersion
      *          Player's protocol network id
-     * @param   useRealId
-     *          Whether tablist uses real uuid or offline
      */
-    protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion, boolean useRealId) {
-        super(player, uniqueId, name, server, "N/A", protocolVersion, useRealId);
+    protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
+        super(player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
         sendJoinPluginMessage();
     }
 

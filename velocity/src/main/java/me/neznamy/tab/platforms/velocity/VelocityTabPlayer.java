@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
@@ -58,9 +57,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          velocity player
      */
     public VelocityTabPlayer(Player p) {
-        super(p, p.getUniqueId(), p.getUsername(),
-                p.getCurrentServer().get().getServerInfo().getName(), p.getProtocolVersion().getProtocol(),
-                TabAPI.getInstance().getConfig().getBoolean("use-online-uuid-in-tablist", true));
+        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().get().getServerInfo().getName(), p.getProtocolVersion().getProtocol());
     }
     
     @Override
@@ -210,7 +207,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     private void handle(PacketPlayOutScoreboardDisplayObjective packet) {
         ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
-                "PacketPlayOutScoreboardDisplayObjective", packet.getSlot(), packet.getObjectiveName());
+                packet.getClass().getSimpleName(), packet.getSlot(), packet.getObjectiveName());
     }
 
     /**
@@ -222,7 +219,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     private void handle(PacketPlayOutScoreboardObjective packet) {
         List<Object> args = new ArrayList<>();
-        args.add("PacketPlayOutScoreboardObjective");
+        args.add(packet.getClass().getSimpleName());
         args.add(packet.getObjectiveName());
         args.add(packet.getAction());
         if (packet.getAction() == 0 || packet.getAction() == 2) {
@@ -243,7 +240,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     private void handle(PacketPlayOutScoreboardScore packet) {
         List<Object> args = new ArrayList<>();
-        args.add("PacketPlayOutScoreboardScore");
+        args.add(packet.getClass().getSimpleName());
         args.add(packet.getObjectiveName());
         args.add(packet.getAction().ordinal());
         args.add(packet.getPlayer());
@@ -260,7 +257,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     private void handle(PacketPlayOutScoreboardTeam packet) {
         List<Object> args = new ArrayList<>();
-        args.add("PacketPlayOutScoreboardTeam");
+        args.add(packet.getClass().getSimpleName());
         args.add(packet.getName());
         args.add(packet.getAction());
         args.add(packet.getPlayers().size());
@@ -313,9 +310,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         //possibly add logging into the future to see when this happens
         return TabListEntry.builder()
                 .tabList(getPlayer().getTabList())
-                .displayName(Component.text(""))
+                .displayName(Component.empty())
                 .gameMode(0)
-                .profile(new GameProfile(id, "empty", new ArrayList<>()))
+                .profile(new GameProfile(id, "", Collections.emptyList()))
                 .latency(0)
                 .build();
     }

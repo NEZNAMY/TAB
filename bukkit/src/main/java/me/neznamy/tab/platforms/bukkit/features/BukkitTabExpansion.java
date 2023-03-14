@@ -24,7 +24,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     /** Map holding all values for all players for easy and high-performance access */
     private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();
 
-    @Getter private final String author = "NEZNAMY";
+    @Getter private final String author = TabConstants.PLUGIN_AUTHOR;
     @Getter private final String identifier = TabConstants.PLUGIN_ID;
     @Getter private final String version = TabConstants.PLUGIN_VERSION;
 

@@ -9,6 +9,7 @@ allprojects {
 
     ext.set("id", "tab")
     ext.set("website", "https://github.com/NEZNAMY/TAB")
+    ext.set("author", "NEZNAMY")
 }
 
 val platforms = setOf(

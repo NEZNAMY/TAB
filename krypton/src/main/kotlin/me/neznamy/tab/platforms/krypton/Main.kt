@@ -31,7 +31,7 @@ import java.nio.file.Path
     TabConstants.PLUGIN_NAME,
     TabConstants.PLUGIN_VERSION,
     TabConstants.PLUGIN_DESCRIPTION,
-    ["NEZNAMY", "BomBardyGamer"],
+    [TabConstants.PLUGIN_AUTHOR, "BomBardyGamer"],
     [
         Dependency("luckperms", true),
         Dependency("viaversion", true)

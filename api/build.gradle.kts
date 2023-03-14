@@ -21,6 +21,7 @@ blossom {
     replaceToken("@version@", project.version)
     replaceToken("@description@", project.description)
     replaceToken("@website@", rootProject.ext.get("website")!!.toString())
+    replaceToken("@author@", rootProject.ext.get("author")!!.toString())
     replaceTokenIn("src/main/java/me/neznamy/tab/api/TabConstants.java")
 }
 

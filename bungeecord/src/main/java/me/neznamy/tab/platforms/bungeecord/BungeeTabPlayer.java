@@ -46,7 +46,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *          BungeeCord player
      */
     public BungeeTabPlayer(ProxiedPlayer p) {
-        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1, true);
+        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
     }
 
     @Override
