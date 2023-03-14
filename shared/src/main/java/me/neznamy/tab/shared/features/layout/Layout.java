@@ -1,9 +1,5 @@
 package me.neznamy.tab.shared.features.layout;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
@@ -14,9 +10,11 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class Layout extends TabFeature {
@@ -88,14 +86,5 @@ public class Layout extends TabFeature {
             }
         }
         return null;
-    }
-
-    @Override
-    public void onServerChange(TabPlayer player, String from, String to) {
-        if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        //velocity clearing TabList on server switch
-        if (viewers.remove(player)) {
-            sendTo(player);
-        }
     }
 }

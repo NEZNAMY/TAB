@@ -9,8 +9,11 @@ import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
+import me.neznamy.tab.shared.features.layout.Layout;
+import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
@@ -47,6 +50,16 @@ public class VelocityEventListener {
                 TabAPI.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
             } else {
                 TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().get().getServerInfo().getName());
+
+                // Velocity clears TabList on server switch
+                TabPlayer player = TAB.getInstance().getPlayer(p.getUniqueId());
+                LayoutManager layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+                if (layoutManager == null) return;
+                Layout layout = layoutManager.getPlayerViews().get(player);
+                if (layout == null) return;
+                if (layout.getViewers().remove(player)) {
+                    layout.sendTo(player);
+                }
             }
         });
     }
