@@ -4,16 +4,18 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand;
-import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityTeleportStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -67,13 +69,13 @@ public class BukkitNameTagX extends BackendNameTagX {
         if (!receiver.isLoaded() || isDisabledPlayer(receiver) || getDisabledUnlimitedPlayers().contains(receiver)) return;
         if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
             packetListener.onEntityMove(receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
-        } else if (PacketPlayOutEntityTeleport.CLASS.isInstance(packet)) {
-            packetListener.onEntityMove(receiver, PacketPlayOutEntityTeleport.ENTITY_ID.getInt(packet));
+        } else if (PacketPlayOutEntityTeleportStorage.CLASS.isInstance(packet)) {
+            packetListener.onEntityMove(receiver, PacketPlayOutEntityTeleportStorage.ENTITY_ID.getInt(packet));
         } else if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
             packetListener.onEntitySpawn(receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-        } else if (PacketPlayOutEntityDestroy.CLASS.isInstance(packet)) {
+        } else if (PacketPlayOutEntityDestroyStorage.CLASS.isInstance(packet)) {
             if (nms.getMinorVersion() >= 17) {
-                Object entities = PacketPlayOutEntityDestroy.ENTITIES.get(packet);
+                Object entities = PacketPlayOutEntityDestroyStorage.ENTITIES.get(packet);
                 if (entities instanceof List) {
                     packetListener.onEntityDestroy(receiver, (List<Integer>) entities);
                 } else {
@@ -81,7 +83,7 @@ public class BukkitNameTagX extends BackendNameTagX {
                     packetListener.onEntityDestroy(receiver, (int) entities);
                 }
             } else {
-                packetListener.onEntityDestroy(receiver, (int[]) PacketPlayOutEntityDestroy.ENTITIES.get(packet));
+                packetListener.onEntityDestroy(receiver, (int[]) PacketPlayOutEntityDestroyStorage.ENTITIES.get(packet));
             }
         }
     }
@@ -148,7 +150,54 @@ public class BukkitNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public BackendArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset) {
-        return new BukkitArmorStand(this, feature, owner, lineName, yOffset, staticOffset);
+    public boolean isSneaking(TabPlayer player) {
+        return ((Player)player.getPlayer()).isSneaking();
+    }
+
+    @Override
+    public boolean isSwimming(TabPlayer player) {
+        Player p = (Player) player.getPlayer();
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
+        return TabAPI.getInstance().getServerVersion().getMinorVersion() == 13 && p.isSwimming();
+    }
+
+    @Override
+    public boolean isGliding(TabPlayer player) {
+        return TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
+    }
+
+    @Override
+    public boolean isSleeping(TabPlayer player) {
+        return ((Player)player.getPlayer()).isSleeping();
+    }
+
+    @Override
+    public Object getArmorStandType() {
+        return PacketPlayOutSpawnEntityLivingStorage.entityIds.get(EntityType.ARMOR_STAND);
+    }
+
+    @Override
+    public double getX(TabPlayer player) {
+        return ((Player)player.getPlayer()).getLocation().getX();
+    }
+
+    @Override
+    public double getY(Object entity) {
+        return ((Entity)entity).getLocation().getY();
+    }
+
+    @Override
+    public double getZ(TabPlayer player) {
+        return ((Player)player.getPlayer()).getLocation().getZ();
+    }
+
+    @Override
+    public Object createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag) {
+        DataWatcher datawatcher = new DataWatcher();
+        datawatcher.getHelper().setEntityFlags(flags);
+        datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());
+        datawatcher.getHelper().setCustomNameVisible(nameVisible);
+        if (markerFlag) datawatcher.getHelper().setArmorStandFlags((byte)16);
+        return datawatcher;
     }
 }

@@ -10,15 +10,17 @@ import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
-import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.sponge8.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
@@ -36,13 +38,13 @@ public final class SpongePacketBuilder extends PacketBuilder {
     private final NMSStorage nms = NMSStorage.getInstance();
     public final Scoreboard dummyScoreboard = new Scoreboard();
 
-    public static final int ARMOR_STAND_ID = 1;
     private static final UUID SYSTEM_ID = new UUID(0, 0);
 
     @Getter private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
             (component, clientVersion) -> Component.Serializer.fromJson(component.toString(clientVersion)));
 
     {
+        buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> build((PacketPlayOutEntityDestroy) packet));
         buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport) packet));
         buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata) packet));
         buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving) packet));
@@ -193,7 +195,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
 
 
     public Object build(PacketPlayOutEntityMetadata packet) {
-        return new ClientboundSetEntityDataPacket(packet.getEntityId(), packet.getDataWatcher(), true);
+        return new ClientboundSetEntityDataPacket(packet.getEntityId(), (SynchedEntityData) packet.getDataWatcher(), true);
     }
 
     /**
@@ -203,8 +205,13 @@ public final class SpongePacketBuilder extends PacketBuilder {
      *          Spawn packet
      * @return  NMS spawn packet
      */
+
     public Object build(PacketPlayOutSpawnEntityLiving packet) {
         return new ClientboundAddEntityPacket(packet.getEntityId(), packet.getUniqueId(), packet.getX(), packet.getY(), packet.getZ(),
-                packet.getYaw(), packet.getPitch(), Registry.ENTITY_TYPE.byId(packet.getEntityType()), 0, Vec3.ZERO);
+                packet.getYaw(), packet.getPitch(), Registry.ENTITY_TYPE.byId((Integer) packet.getEntityType()), 0, Vec3.ZERO);
+    }
+
+    public Object build(PacketPlayOutEntityDestroy packet) {
+        return new ClientboundRemoveEntitiesPacket(packet.getEntities());
     }
 }

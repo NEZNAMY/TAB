@@ -1,6 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,13 +15,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.bossbar.BossBar;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 
 /**
  * An additional class with additional code for &lt;1.9 servers due to an entity being required
@@ -50,7 +49,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
                 if (!line.containsPlayer(p)) continue;
                 Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
                 if (loc.getY() < 1) loc.setY(1);
-                p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc), TabConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
+                p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc.getX(), loc.getY(), loc.getZ(), 0, 0), TabConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
             }
         }
     }

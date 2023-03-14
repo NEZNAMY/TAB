@@ -1,8 +1,8 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import lombok.Data;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,16 +10,12 @@ import java.lang.reflect.Field;
 /**
  * Custom class for holding data used in PacketPlayOutEntityDestroy minecraft packet.
  */
-@Data
-public class PacketPlayOutEntityDestroy implements TabPacket {
+public class PacketPlayOutEntityDestroyStorage implements TabPacket {
 
     /** NMS Fields */
     public static Class<?> CLASS;
     public static Constructor<?> CONSTRUCTOR;
     public static Field ENTITIES;
-
-    /** Packet's instance fields */
-    private final int[] entities;
 
     /**
      * Loads all required Fields and throws Exception if something went wrong
@@ -40,28 +36,18 @@ public class PacketPlayOutEntityDestroy implements TabPacket {
     }
 
     /**
-     * Constructs new instance with given parameter
-     *
-     * @param   entities
-     *          Destroyed entities
-     */
-    public PacketPlayOutEntityDestroy(int... entities) {
-        this.entities = entities;
-    }
-
-    /**
      * Converts this class into NMS packet
      *
      * @return  NMS packet
      * @throws  ReflectiveOperationException
      *          If something went wrong
      */
-    public Object build() throws ReflectiveOperationException {
+    public static Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
         if (CONSTRUCTOR.getParameterTypes()[0] != int.class) {
-            return CONSTRUCTOR.newInstance(new Object[]{entities});
+            return CONSTRUCTOR.newInstance(new Object[]{packet.getEntities()});
         } else {
             //1.17.0
-            return CONSTRUCTOR.newInstance(entities[0]);
+            return CONSTRUCTOR.newInstance(packet.getEntities()[0]);
         }
     }
 }

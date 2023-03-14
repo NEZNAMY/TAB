@@ -3,14 +3,14 @@ package me.neznamy.tab.platforms.bukkit;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
-import org.bukkit.Location;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.entity.EntityType;
 
 import java.util.UUID;
@@ -18,10 +18,10 @@ import java.util.UUID;
 public class BukkitPacketBuilder extends PacketBuilder {
 
     {
-        buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> ((PacketPlayOutEntityMetadata)packet).build());
-        buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> ((PacketPlayOutEntityTeleport)packet).build());
-        buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> ((PacketPlayOutEntityDestroy)packet).build());
-        buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> ((PacketPlayOutSpawnEntityLiving)packet).build());
+        buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> PacketPlayOutEntityMetadataStorage.build((PacketPlayOutEntityMetadata) packet));
+        buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> PacketPlayOutEntityTeleportStorage.build((PacketPlayOutEntityTeleport) packet));
+        buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> PacketPlayOutEntityDestroyStorage.build((PacketPlayOutEntityDestroy) packet));
+        buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> PacketPlayOutSpawnEntityLivingStorage.build((PacketPlayOutSpawnEntityLiving) packet));
         buildMap.put(PacketPlayOutPlayerListHeaderFooter.class, (packet, version) -> PacketPlayOutPlayerListHeaderFooterStorage.build((PacketPlayOutPlayerListHeaderFooter) packet, version));
         buildMap.put(PacketPlayOutChat.class, (packet, version) -> PacketPlayOutChatStorage.build((PacketPlayOutChat) packet, version));
         buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> PacketPlayOutScoreboardObjectiveStorage.build((PacketPlayOutScoreboardObjective) packet, version));
@@ -76,7 +76,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
 
         int entityId = packet.getId().hashCode();
         if (packet.getAction() == Action.REMOVE) {
-            return new PacketPlayOutEntityDestroy(entityId).build();
+            return build(new PacketPlayOutEntityDestroy(entityId), clientVersion);
         }
         DataWatcher w = new DataWatcher();
         if (packet.getAction() == Action.UPDATE_PCT || packet.getAction() == Action.ADD) {
@@ -90,9 +90,9 @@ public class BukkitPacketBuilder extends PacketBuilder {
         if (packet.getAction() == Action.ADD) {
             w.getHelper().setEntityFlags((byte) 32);
             w.getHelper().setWitherInvulnerableTime(880); // Magic number
-            return new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, new Location(null, 0,0,0), w).build();
+            return build(new PacketPlayOutSpawnEntityLiving(entityId, new UUID(0, 0), EntityType.WITHER, 0, 0, 0, 0, 0, w), clientVersion);
         } else {
-            return new PacketPlayOutEntityMetadata(entityId, w).build();
+            return build(new PacketPlayOutEntityMetadata(entityId, w), clientVersion);
         }
     }
 }

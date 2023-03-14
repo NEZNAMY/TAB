@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityMetadataStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityTeleportStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
@@ -35,8 +35,8 @@ public class MojangModernNMSStorage extends NMSStorage {
         DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("OPTIONAL_COMPONENT").get(null);
         DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("BOOLEAN").get(null);
         if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLiving.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLiving.EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
-            (PacketPlayOutSpawnEntityLiving.ENTITY_TYPE = PacketPlayOutSpawnEntityLiving.CLASS.getDeclaredField("type")).setAccessible(true);
+            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
+            (PacketPlayOutSpawnEntityLivingStorage.ENTITY_TYPE = PacketPlayOutSpawnEntityLivingStorage.CLASS.getDeclaredField("type")).setAccessible(true);
             DataWatcher.packDirty = DataWatcher.CLASS.getMethod("packDirty");
         }
     }
@@ -75,21 +75,21 @@ public class MojangModernNMSStorage extends NMSStorage {
 
         // Entities
         if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLiving.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
+            PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
         } else {
-            PacketPlayOutSpawnEntityLiving.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddMobPacket");
+            PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddMobPacket");
         }
-        PacketPlayOutEntityTeleport.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket");
+        PacketPlayOutEntityTeleportStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket");
         PacketPlayInUseEntity = Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket");
         PacketPlayInUseEntity$d = Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket$InteractionAction");
         PacketPlayOutEntity = Class.forName("net.minecraft.network.protocol.game.ClientboundMoveEntityPacket");
-        PacketPlayOutEntityDestroy.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket");
+        PacketPlayOutEntityDestroyStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket");
         PacketPlayOutEntityLook = Class.forName("net.minecraft.network.protocol.game.ClientboundMoveEntityPacket$Rot");
-        PacketPlayOutEntityMetadata.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket");
+        PacketPlayOutEntityMetadataStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket");
         PacketPlayOutNamedEntitySpawn = Class.forName("net.minecraft.network.protocol.game.ClientboundAddPlayerPacket");
         EnumEntityUseAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ServerboundInteractPacket$Action");
         if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLiving.EntityTypes = Class.forName("net.minecraft.world.entity.EntityType");
+            PacketPlayOutSpawnEntityLivingStorage.EntityTypes = Class.forName("net.minecraft.world.entity.EntityType");
         }
 
         // Player Info

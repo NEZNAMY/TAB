@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8.nms;
+package me.neznamy.tab.shared.backend.protocol;
 
 import lombok.Data;
 import me.neznamy.tab.api.protocol.TabPacket;
@@ -11,6 +11,8 @@ public class PacketPlayOutEntityTeleport implements TabPacket {
 
     /** Entity's id */
     private final int entityId;
+
+    /** Entity location */
     private final double x;
     private final double y;
     private final double z;

@@ -35,11 +35,11 @@ public class BelowName extends TabFeature {
 
     public BelowName() {
         super("belowname-objective");
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
     }
 
     @Override
     public void load() {
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
             loaded.setProperty(this, TabConstants.Property.BELOWNAME_NUMBER, rawNumber);
             loaded.setProperty(textRefresher, TabConstants.Property.BELOWNAME_TEXT, rawText);

@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.bukkit.features;
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.platforms.bukkit.nms.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityMetadataStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
@@ -115,9 +115,9 @@ public class PetFix extends TabFeature {
     @SuppressWarnings("unchecked")
     @Override
     public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
-        if (PacketPlayOutEntityMetadata.CLASS.isInstance(packet)) {
+        if (PacketPlayOutEntityMetadataStorage.CLASS.isInstance(packet)) {
             Object removedEntry = null;
-            List<Object> items = (List<Object>) PacketPlayOutEntityMetadata.LIST.get(packet);
+            List<Object> items = (List<Object>) PacketPlayOutEntityMetadataStorage.LIST.get(packet);
             if (items == null) return;
             try {
                 for (Object item : items) {
@@ -142,13 +142,13 @@ public class PetFix extends TabFeature {
                 //no idea how can this list change in another thread since it's created for the packet but whatever, try again
                 onPacketSend(receiver, packet);
             }
-        } else if (PacketPlayOutSpawnEntityLiving.CLASS.isInstance(packet) && PacketPlayOutSpawnEntityLiving.DATA_WATCHER != null) {
+        } else if (PacketPlayOutSpawnEntityLivingStorage.CLASS.isInstance(packet) && PacketPlayOutSpawnEntityLivingStorage.DATA_WATCHER != null) {
             //<1.15
-            DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLiving.DATA_WATCHER.get(packet));
+            DataWatcher watcher = DataWatcher.fromNMS(PacketPlayOutSpawnEntityLivingStorage.DATA_WATCHER.get(packet));
             DataWatcherItem petOwner = watcher.getItem(petOwnerPosition);
             if (petOwner != null && (petOwner.getValue() instanceof Optional || petOwner.getValue() instanceof com.google.common.base.Optional)) {
                 watcher.removeValue(petOwnerPosition);
-                PacketPlayOutSpawnEntityLiving.DATA_WATCHER.set(packet, watcher.build());
+                PacketPlayOutSpawnEntityLivingStorage.DATA_WATCHER.set(packet, watcher.build());
             }
         }
     }

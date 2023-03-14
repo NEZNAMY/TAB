@@ -1,15 +1,17 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.ArmorStand;
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
 
 import java.util.UUID;
 
-public abstract class BackendArmorStand implements ArmorStand {
+public class BackendArmorStand implements ArmorStand {
 
     /** Entity id counter to pick unique entity ID for each armor stand */
     private static int idCounter = 2000000000;
@@ -34,9 +36,6 @@ public abstract class BackendArmorStand implements ArmorStand {
 
     /** Unique ID of this armor stand */
     protected final UUID uuid = UUID.randomUUID();
-
-    /** Sneaking flag of armor stands */
-    protected boolean sneaking;
 
     /** Armor stand visibility to use in metadata */
     protected boolean visible;
@@ -97,31 +96,6 @@ public abstract class BackendArmorStand implements ArmorStand {
     }
 
     @Override
-    public void sneak(boolean sneaking) {
-        if (this.sneaking == sneaking) return; //idk
-        this.sneaking = sneaking;
-        for (TabPlayer viewer : asm.getNearbyPlayers()) {
-            if (viewer.getVersion().getMinorVersion() == 14 && !manager.isArmorStandsAlwaysVisible()) {
-                //1.14.x client sided bug, de-spawning completely
-                if (sneaking) {
-                    destroy(viewer);
-                } else {
-                    spawn(viewer);
-                }
-            } else {
-                //respawning so there's no animation and it's instant
-                respawn(viewer);
-            }
-        }
-    }
-
-    @Override
-    public void destroy() {
-        for (TabPlayer all : asm.getNearbyPlayers())
-            destroy(all);
-    }
-
-    @Override
     public void teleport() {
         for (TabPlayer all : asm.getNearbyPlayers()) {
             sendTeleportPacket(all);
@@ -134,6 +108,13 @@ public abstract class BackendArmorStand implements ArmorStand {
             asm.spawn(viewer);
         } else {
             sendTeleportPacket(viewer);
+        }
+    }
+
+    @Override
+    public void spawn(TabPlayer viewer) {
+        for (TabPacket packet : getSpawnPackets(viewer)) {
+            viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
         }
     }
 
@@ -196,19 +177,12 @@ public abstract class BackendArmorStand implements ArmorStand {
         return y;
     }
 
-    public void respawn(TabPlayer viewer) {
-        destroy(viewer);
-        // 1.8.0 will not see entity that respawned in the same tick
-        // creating new delayed task every time someone sneaks can be abused and cause OOM
-        spawn(viewer);
-    }
-
     /**
      * Updates armor stand's metadata for everyone
      */
     public void updateMetadata() {
         for (TabPlayer viewer : asm.getNearbyPlayers()) {
-            updateMetadata(viewer);
+            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
         }
     }
 
@@ -218,10 +192,79 @@ public abstract class BackendArmorStand implements ArmorStand {
                 (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3);
     }
 
-    /**
-     * Updates armor stand's metadata for specified viewer
-     */
-    public abstract void updateMetadata(TabPlayer viewer);
+    public TabPacket[] getSpawnPackets(TabPlayer viewer) {
+        visible = calculateVisibility();
+        Object dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
+        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 15) {
+            return new TabPacket[] {
+                    new PacketPlayOutSpawnEntityLiving(entityId, uuid, manager.getArmorStandType(),
+                            manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0, null),
+                    new PacketPlayOutEntityMetadata(entityId, dataWatcher)
+            };
+        } else {
+            return new TabPacket[] {
+                    new PacketPlayOutSpawnEntityLiving(entityId, uuid, manager.getArmorStandType(),
+                            manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0, dataWatcher),
+            };
+        }
+    }
 
-    public abstract void sendTeleportPacket(TabPlayer viewer);
+    public void sendTeleportPacket(TabPlayer viewer) {
+        viewer.sendCustomPacket(new PacketPlayOutEntityTeleport(entityId, manager.getX(owner), getYLocation(viewer),
+                        manager.getZ(owner), 0, 0), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
+    }
+
+    /**
+     * Creates data watcher with specified display name for viewer
+     *
+     * @param   displayName
+     *          armor stand name
+     * @param   viewer
+     *          player to apply checks against
+     * @return  DataWatcher for viewer
+     */
+    public Object createDataWatcher(String displayName, TabPlayer viewer) {
+        byte flags = (byte) (asm.isSneaking() ? 34 : 32);
+        boolean nameVisible = !shouldBeInvisibleFor(viewer, displayName) && visible;
+        boolean marker = viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x();
+        return manager.createDataWatcher(viewer, flags, displayName, nameVisible, marker);
+    }
+
+    /**
+     * Returns Y location where armor stand should be at time of calling.
+     * This takes into account everything that affects height, including
+     * viewer's game version.
+     *
+     * @param   viewer
+     *          Player looking at the armor stand
+     * @return  Location where armor stand should be for specified viewer
+     */
+    public double getYLocation(TabPlayer viewer) {
+        double y = manager.getY(owner.getPlayer());
+        //1.14+ server sided bug
+        Object vehicle = manager.getVehicle(owner);
+        if (vehicle != null) {
+            String type = manager.getEntityType(vehicle);
+            double vehicleY = manager.getY(vehicle);
+            if (type.contains("horse")) { //covering all 3 horse types
+                y = vehicleY + 0.85;
+            }
+            if (type.equals("donkey")) { //1.11+
+                y = vehicleY + 0.525;
+            }
+            if (type.equals("pig")) {
+                y = vehicleY + 0.325;
+            }
+            if (type.equals("strider")) { //1.16+
+                y = vehicleY + 1.15;
+            }
+        } else {
+            //1.13+ swimming or 1.9+ flying with elytra
+            if (manager.isSwimming(owner) || manager.isGliding(owner)) {
+                y = manager.getY(owner.getPlayer())-1.22;
+            }
+        }
+        y += getYAdd(manager.isSleeping(owner), asm.isSneaking(), viewer);
+        return y;
+    }
 }

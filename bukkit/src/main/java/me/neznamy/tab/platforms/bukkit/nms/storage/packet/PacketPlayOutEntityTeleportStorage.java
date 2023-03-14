@@ -1,11 +1,8 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.ToString;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import org.bukkit.Location;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -13,8 +10,7 @@ import java.lang.reflect.Field;
 /**
  * Custom class for holding data used in PacketPlayOutEntityTeleport minecraft packet.
  */
-@AllArgsConstructor @ToString
-public class PacketPlayOutEntityTeleport implements TabPacket {
+public class PacketPlayOutEntityTeleportStorage implements TabPacket {
 
     /** NMS Fields */
     public static Class<?> CLASS;
@@ -25,10 +21,6 @@ public class PacketPlayOutEntityTeleport implements TabPacket {
     public static Field Z;
     public static Field YAW;
     public static Field PITCH;
-
-    /** Packet's instance fields */
-    private final int entityId;
-    @NonNull private final Location location;
 
     /**
      * Loads all required Fields and throws Exception if something went wrong
@@ -65,7 +57,7 @@ public class PacketPlayOutEntityTeleport implements TabPacket {
      * @throws  ReflectiveOperationException
      *          If something went wrong
      */
-    public Object build() throws ReflectiveOperationException {
+    public static Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
@@ -73,22 +65,22 @@ public class PacketPlayOutEntityTeleport implements TabPacket {
         } else {
             nmsPacket = CONSTRUCTOR.newInstance();
         }
-        ENTITY_ID.set(nmsPacket, entityId);
+        ENTITY_ID.set(nmsPacket, packet.getEntityId());
         if (nms.getMinorVersion() >= 9) {
-            X.set(nmsPacket, location.getX());
-            Y.set(nmsPacket, location.getY());
-            Z.set(nmsPacket, location.getZ());
+            X.set(nmsPacket, packet.getX());
+            Y.set(nmsPacket, packet.getY());
+            Z.set(nmsPacket, packet.getZ());
         } else {
-            X.set(nmsPacket, floor(location.getX()*32));
-            Y.set(nmsPacket, floor(location.getY()*32));
-            Z.set(nmsPacket, floor(location.getZ()*32));
+            X.set(nmsPacket, floor(packet.getX()*32));
+            Y.set(nmsPacket, floor(packet.getY()*32));
+            Z.set(nmsPacket, floor(packet.getZ()*32));
         }
-        YAW.set(nmsPacket, (byte) (location.getYaw()/360*256));
-        PITCH.set(nmsPacket, (byte) (location.getPitch()/360*256));
+        YAW.set(nmsPacket, (byte) (packet.getYaw()/360*256));
+        PITCH.set(nmsPacket, (byte) (packet.getPitch()/360*256));
         return nmsPacket;
     }
 
-    private int floor(double paramDouble) {
+    private static int floor(double paramDouble) {
         int i = (int)paramDouble;
         return paramDouble < i ? i - 1 : i;
     }

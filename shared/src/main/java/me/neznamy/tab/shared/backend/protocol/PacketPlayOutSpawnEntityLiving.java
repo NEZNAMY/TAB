@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.sponge8.nms;
+package me.neznamy.tab.shared.backend.protocol;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -19,11 +19,14 @@ public class PacketPlayOutSpawnEntityLiving implements TabPacket {
     @NonNull private final UUID uniqueId;
 
     /** Type of entity */
-    private final int entityType;
+    private final Object entityType;
 
     private final double x;
     private final double y;
     private final double z;
     private final float yaw;
     private final float pitch;
+
+    /** Data Watcher for 1.14- */
+    private final Object dataWatcher;
 }

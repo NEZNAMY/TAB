@@ -2,15 +2,17 @@ package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 
 import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabPlayer
+import me.neznamy.tab.platforms.krypton.KryptonPacketBuilder
 import me.neznamy.tab.platforms.krypton.Main
 import me.neznamy.tab.shared.TAB
-import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStand
-import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendArmorStandManager
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX
-import me.neznamy.tab.shared.features.sorting.Sorting
 import org.kryptonmc.api.entity.Entity
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.api.event.EventNode
+import org.kryptonmc.krypton.entity.KryptonEntityTypes
+import org.kryptonmc.krypton.entity.metadata.MetadataHolder
+import org.kryptonmc.krypton.entity.metadata.MetadataKeys
+import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.packet.EntityPacket
 import org.kryptonmc.krypton.packet.MovementPacket
 import org.kryptonmc.krypton.packet.`in`.play.PacketInInteract
@@ -99,8 +101,50 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         return (entity as Entity).type.key().value()
     }
 
-    override fun createArmorStand(asm: BackendArmorStandManager, owner: TabPlayer, lineName: String, yOffset: Double, staticOffset: Boolean): BackendArmorStand {
-        return KryptonArmorStand(asm, this, owner, lineName, yOffset, staticOffset)
+    override fun isSneaking(player: TabPlayer): Boolean {
+        return (player as Player).isSneaking
+    }
+
+    override fun isSwimming(player: TabPlayer?): Boolean {
+        return (player as Player).isSwimming
+    }
+
+    override fun isGliding(player: TabPlayer?): Boolean {
+        return (player as Player).isGliding
+    }
+
+    override fun isSleeping(player: TabPlayer?): Boolean {
+        return false
+    }
+
+    override fun getArmorStandType(): Any {
+        return KryptonEntityTypes.ARMOR_STAND
+    }
+
+    override fun getX(player: TabPlayer): Double {
+        return (player as Player).position.x
+    }
+
+    override fun getY(entity: Any): Double {
+        return (entity as Entity).position.y
+    }
+
+    override fun getZ(player: TabPlayer): Double {
+        return (player as Player).position.z
+    }
+
+    override fun createDataWatcher(viewer: TabPlayer, flags: Byte, displayName: String, nameVisible: Boolean, markerFlag: Boolean): Any {
+        val viewerPlayer = viewer.player as KryptonPlayer
+        val holder = MetadataHolder(viewerPlayer).apply {
+            define(MetadataKeys.Entity.FLAGS, 0)
+            define(MetadataKeys.Entity.CUSTOM_NAME, null)
+            define(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, false)
+        }
+        holder.set(MetadataKeys.Entity.FLAGS, flags)
+        holder.set(MetadataKeys.Entity.CUSTOM_NAME, KryptonPacketBuilder.toComponent(displayName, viewer.version))
+        holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, nameVisible)
+        if (markerFlag) holder.define(MetadataKeys.ArmorStand.FLAGS, 16.toByte())
+        return holder
     }
 
     companion object {

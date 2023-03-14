@@ -17,6 +17,25 @@ public abstract class BackendNameTagX extends NameTagX {
 
     public BackendNameTagX() {
         super(BackendArmorStandManager::new);
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
+        TabFeature gamemode = new TabFeature() {
+
+            @Getter private final String featureName = "Unlimited NameTags";
+            @Getter private final String refreshDisplayName = "Gamemode listener";
+
+            {
+                addUsedPlaceholders(Collections.singletonList("%gamemode%"));
+            }
+
+            @Override
+            public void refresh(TabPlayer viewer, boolean force) {
+                for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
+                    getArmorStandManager(target).updateMetadata(viewer);
+                }
+            }
+        };
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, gamemode);
     }
 
     /**
@@ -39,26 +58,7 @@ public abstract class BackendNameTagX extends NameTagX {
 
     @Override
     public void load() {
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
         TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, TabPlayer::getGamemode);
-        TabFeature gamemode = new TabFeature() {
-
-            @Getter private final String featureName = "Unlimited NameTags";
-            @Getter private final String refreshDisplayName = "Gamemode listener";
-
-            {
-                addUsedPlaceholders(Collections.singletonList("%gamemode%"));
-            }
-
-            @Override
-            public void refresh(TabPlayer viewer, boolean force) {
-                for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
-                    getArmorStandManager(target).updateMetadata(viewer);
-                }
-            }
-        };
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, gamemode);
         super.load();
         for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
             if (isPlayerDisabled(all)) continue;
@@ -198,5 +198,21 @@ public abstract class BackendNameTagX extends NameTagX {
 
     public abstract String getEntityType(Object entity);
 
-    public abstract BackendArmorStand createArmorStand(BackendArmorStandManager feature, TabPlayer owner, String lineName, double yOffset, boolean staticOffset);
+    public abstract boolean isSneaking(TabPlayer player);
+
+    public abstract boolean isSwimming(TabPlayer player);
+
+    public abstract boolean isGliding(TabPlayer player);
+
+    public abstract boolean isSleeping(TabPlayer player);
+
+    public abstract Object getArmorStandType();
+
+    public abstract double getX(TabPlayer player);
+
+    public abstract double getY(Object entity);
+
+    public abstract double getZ(TabPlayer player);
+
+    public abstract Object createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag);
 }

@@ -1,12 +1,9 @@
-package me.neznamy.tab.platforms.bukkit.nms;
+package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.ToString;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import org.bukkit.Location;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Constructor;
@@ -17,8 +14,7 @@ import java.util.UUID;
 /**
  * Custom class for holding data used in PacketPlayOutSpawnEntityLiving minecraft packet.
  */
-@AllArgsConstructor @ToString
-public class PacketPlayOutSpawnEntityLiving implements TabPacket {
+public class PacketPlayOutSpawnEntityLivingStorage implements TabPacket {
 
     /** NMS Fields */
     public static Class<?> CLASS;
@@ -37,13 +33,6 @@ public class PacketPlayOutSpawnEntityLiving implements TabPacket {
 
     /** Entity types */
     public static final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
-    
-    /** Packet's instance fields */
-    private final int entityId;
-    @NonNull private final UUID uniqueId;
-    @NonNull private final EntityType entityType;
-    @NonNull private final Location location;
-    private final DataWatcher dataWatcher;
 
     /**
      * Loads all required Fields and throws Exception if something went wrong
@@ -108,7 +97,7 @@ public class PacketPlayOutSpawnEntityLiving implements TabPacket {
      * @throws  ReflectiveOperationException
      *          If something went wrong
      */
-    public Object build() throws ReflectiveOperationException {
+    public static Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
@@ -116,32 +105,31 @@ public class PacketPlayOutSpawnEntityLiving implements TabPacket {
         } else {
             nmsPacket = CONSTRUCTOR.newInstance();
         }
-        ENTITY_ID.set(nmsPacket, entityId);
-        YAW.set(nmsPacket, (byte)(location.getYaw() * 256.0f / 360.0f));
-        PITCH.set(nmsPacket, (byte)(location.getPitch() * 256.0f / 360.0f));
+        ENTITY_ID.set(nmsPacket, packet.getEntityId());
+        YAW.set(nmsPacket, (byte)(packet.getYaw() * 256.0f / 360.0f));
+        PITCH.set(nmsPacket, (byte)(packet.getPitch() * 256.0f / 360.0f));
         if (nms.getMinorVersion() <= 14) {
-            DATA_WATCHER.set(nmsPacket, dataWatcher.build());
+            DATA_WATCHER.set(nmsPacket, ((DataWatcher)packet.getDataWatcher()).build());
         }
         if (nms.getMinorVersion() >= 9) {
-            UUID.set(nmsPacket, uniqueId);
-            X.set(nmsPacket, location.getX());
-            Y.set(nmsPacket, location.getY());
-            Z.set(nmsPacket, location.getZ());
+            UUID.set(nmsPacket, packet.getUniqueId());
+            X.set(nmsPacket, packet.getX());
+            Y.set(nmsPacket, packet.getY());
+            Z.set(nmsPacket, packet.getZ());
         } else {
-            X.set(nmsPacket, floor(location.getX()*32));
-            Y.set(nmsPacket, floor(location.getY()*32));
-            Z.set(nmsPacket, floor(location.getZ()*32));
+            X.set(nmsPacket, floor(packet.getX()*32));
+            Y.set(nmsPacket, floor(packet.getY()*32));
+            Z.set(nmsPacket, floor(packet.getZ()*32));
         }
-        int id = entityIds.get(entityType);
         if (nms.getMinorVersion() >= 19) {
             ENTITY_TYPE.set(nmsPacket, EntityTypes_ARMOR_STAND); // :(
         } else {
-            ENTITY_TYPE.set(nmsPacket, id);
+            ENTITY_TYPE.set(nmsPacket, packet.getEntityType());
         }
         return nmsPacket;
     }
 
-    private int floor(double paramDouble) {
+    private static int floor(double paramDouble) {
         int i = (int)paramDouble;
         return paramDouble < i ? i - 1 : i;
     }

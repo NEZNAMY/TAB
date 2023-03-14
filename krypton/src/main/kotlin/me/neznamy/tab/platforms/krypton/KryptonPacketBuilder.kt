@@ -6,26 +6,37 @@ import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.*
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData
+import me.neznamy.tab.api.util.BiFunctionWithException
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.auth.GameProfile
 import org.kryptonmc.api.auth.ProfileProperty
 import org.kryptonmc.api.world.GameMode
 import org.kryptonmc.krypton.adventure.KryptonAdventure
+import org.kryptonmc.krypton.entity.KryptonEntityType
+import org.kryptonmc.krypton.entity.metadata.MetadataHolder
 import org.kryptonmc.krypton.entity.player.PlayerPublicKey
 import org.kryptonmc.krypton.network.chat.RemoteChatSession
-import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoRemove
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoUpdate
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateObjectives
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateTeams
-import java.util.EnumSet
+import org.kryptonmc.krypton.packet.out.play.*
+import java.util.*
 
 // All build functions that just return the packet parameter will be passed through to be handled in KryptonTabPlayer.
 object KryptonPacketBuilder : PacketBuilder() {
 
     private val GAME_MODES = GameMode.values()
+
+    init {
+        buildMap[PacketPlayOutEntityMetadata::class.java] =
+            BiFunctionWithException { packet: TabPacket, _: ProtocolVersion? ->
+                build(packet as PacketPlayOutEntityMetadata)
+            }
+        buildMap[PacketPlayOutSpawnEntityLiving::class.java] =
+            BiFunctionWithException { packet: TabPacket, _: ProtocolVersion? ->
+                build(packet as PacketPlayOutSpawnEntityLiving)
+            }
+    }
 
     @JvmStatic
     fun toComponent(text: String?, clientVersion: ProtocolVersion): Component {
@@ -91,6 +102,15 @@ object KryptonPacketBuilder : PacketBuilder() {
         val action = PacketOutUpdateTeams.Action.fromId(packet.action)!!
         val players = packet.players.map(Component::text)
         return PacketOutUpdateTeams(packet.name, action, createParameters(packet, clientVersion), players)
+    }
+
+    private fun build(packet: PacketPlayOutEntityMetadata): Any {
+        return PacketOutSetEntityMetadata(packet.entityId, (packet.dataWatcher as MetadataHolder).collectAll())
+    }
+
+    private fun build(packet: PacketPlayOutSpawnEntityLiving): Any {
+        return PacketOutSpawnEntity(packet.entityId, packet.uniqueId, packet.entityType as KryptonEntityType<*>,
+            packet.x, packet.y, packet.z, 0, 0, 0, 0, 0, 0, 0)
     }
 
     private fun createParameters(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): PacketOutUpdateTeams.Parameters? {

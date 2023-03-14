@@ -47,28 +47,7 @@ public interface ArmorStand {
      *          player to send packet to
      */
     void teleport(TabPlayer viewer);
-    
-    /**
-     * Changes sneaking flag and sends packets to everyone in range
-     *
-     * @param   sneaking
-     *          new sneaking status
-     */
-    void sneak(boolean sneaking);
-    
-    /**
-     * DeSpawns armor stand for everyone
-     */
-    void destroy();
-    
-    /**
-     * DeSpawns armor stand for specified player
-     *
-     * @param   viewer
-     *          player to send packet to
-     */
-    void destroy(TabPlayer viewer);
-    
+
     /**
      * Updates armor stand's name if needed
      */
@@ -96,13 +75,4 @@ public interface ArmorStand {
      *          player to spawn for
      */
     void spawn(TabPlayer viewer);
-
-    /**
-     * Sends respawn packets to specified player to make position
-     * change instant instead of teleport animation
-     *
-     * @param   viewer
-     *          Player to send armor stand respawn packets to
-     */
-    void respawn(TabPlayer viewer);
 }

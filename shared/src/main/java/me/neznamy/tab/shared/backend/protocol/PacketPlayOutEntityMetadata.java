@@ -1,9 +1,8 @@
-package me.neznamy.tab.platforms.sponge8.nms;
+package me.neznamy.tab.shared.backend.protocol;
 
 import lombok.Data;
 import lombok.NonNull;
 import me.neznamy.tab.api.protocol.TabPacket;
-import net.minecraft.network.syncher.SynchedEntityData;
 
 /**
  * Custom class for holding data used in PacketPlayOutEntityMetadata minecraft packet.
@@ -14,6 +13,6 @@ public class PacketPlayOutEntityMetadata implements TabPacket {
     /** Entity's id */
     private final int entityId;
 
-    /** Entity's data that changed */
-    @NonNull private final SynchedEntityData dataWatcher;
+    /** Entity's platform specific data watcher object */
+    @NonNull private final Object dataWatcher;
 }
