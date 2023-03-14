@@ -45,6 +45,7 @@ public abstract class NMSStorage {
 
     /** Flag determining whether the server version is at least 1.19.3 or not */
     @Getter private final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+    @Getter private final boolean is1_19_4Plus = is1_19_3Plus && !serverPackage.equals("v1_19_R2");
 
     /** Basic universal values */
     protected Class<?> Packet;
