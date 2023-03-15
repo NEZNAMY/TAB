@@ -8,7 +8,6 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityTeleportStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -173,7 +172,7 @@ public class BukkitNameTagX extends BackendNameTagX {
 
     @Override
     public Object getArmorStandType() {
-        return PacketPlayOutSpawnEntityLivingStorage.entityIds.get(EntityType.ARMOR_STAND);
+        return EntityType.ARMOR_STAND;
     }
 
     @Override

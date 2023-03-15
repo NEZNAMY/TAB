@@ -124,7 +124,7 @@ public class PacketPlayOutSpawnEntityLivingStorage implements TabPacket {
         if (nms.getMinorVersion() >= 19) {
             ENTITY_TYPE.set(nmsPacket, EntityTypes_ARMOR_STAND); // :(
         } else {
-            ENTITY_TYPE.set(nmsPacket, packet.getEntityType());
+            ENTITY_TYPE.set(nmsPacket, entityIds.get((EntityType) packet.getEntityType()));
         }
         return nmsPacket;
     }
