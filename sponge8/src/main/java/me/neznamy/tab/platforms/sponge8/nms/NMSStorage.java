@@ -32,11 +32,6 @@ public class NMSStorage {
     public final Field ServerboundInteractPacket_ENTITYID = getFields(ServerboundInteractPacket.class, int.class).get(0);
 
     public final Field ClientboundTeleportEntityPacket_ENTITYID = getFields(ClientboundTeleportEntityPacket.class, int.class).get(0);
-    public final Field ClientboundTeleportEntityPacket_X = getFields(ClientboundTeleportEntityPacket.class, double.class).get(0);
-    public final Field ClientboundTeleportEntityPacket_Y = getFields(ClientboundTeleportEntityPacket.class, double.class).get(1);
-    public final Field ClientboundTeleportEntityPacket_Z = getFields(ClientboundTeleportEntityPacket.class, double.class).get(2);
-    public final Field ClientboundTeleportEntityPacket_YAW = getFields(ClientboundTeleportEntityPacket.class, byte.class).get(0);
-    public final Field ClientboundTeleportEntityPacket_PITCH = getFields(ClientboundTeleportEntityPacket.class, byte.class).get(1);
 
     public final Field ClientboundSetPlayerTeamPacket_NAME = getFields(ClientboundSetPlayerTeamPacket.class, String.class).get(0);
     public final Field ClientboundSetPlayerTeamPacket_ACTION = getInstanceFields(ClientboundSetPlayerTeamPacket.class, int.class).get(0);

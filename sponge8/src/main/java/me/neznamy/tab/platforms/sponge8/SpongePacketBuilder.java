@@ -21,6 +21,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.ServerScoreboard;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
@@ -36,6 +38,7 @@ public final class SpongePacketBuilder extends PacketBuilder {
 
     private final NMSStorage nms = NMSStorage.getInstance();
     public final Scoreboard dummyScoreboard = new Scoreboard();
+    private final ArmorStand dummyEntity = new ArmorStand(EntityType.ARMOR_STAND, null);
 
     @Getter private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
             (component, clientVersion) -> Component.Serializer.fromJson(component.toString(clientVersion)));
@@ -174,15 +177,13 @@ public final class SpongePacketBuilder extends PacketBuilder {
      *          Teleport packet
      * @return  NMS teleport packet
      */
-    public Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException{
-        ClientboundTeleportEntityPacket nmsPacket = new ClientboundTeleportEntityPacket();
-        nms.ClientboundTeleportEntityPacket_ENTITYID.set(nmsPacket, packet.getEntityId());
-        nms.ClientboundTeleportEntityPacket_X.set(nmsPacket, packet.getX());
-        nms.ClientboundTeleportEntityPacket_Y.set(nmsPacket, packet.getY());
-        nms.ClientboundTeleportEntityPacket_Z.set(nmsPacket, packet.getZ());
-        nms.ClientboundTeleportEntityPacket_YAW.set(nmsPacket,(byte) (packet.getYaw()/360*256));
-        nms.ClientboundTeleportEntityPacket_PITCH.set(nmsPacket, (byte) (packet.getPitch()/360*256));
-        return nmsPacket;
+    public Object build(PacketPlayOutEntityTeleport packet) {
+        // While the entity is shared, packets are build in a single thread, so no risk of concurrent access
+        dummyEntity.setId(packet.getEntityId());
+        dummyEntity.setPos(packet.getX(), packet.getY(), packet.getZ());
+        dummyEntity.xRot = packet.getYaw();
+        dummyEntity.yRot = packet.getPitch();
+        return new ClientboundTeleportEntityPacket(dummyEntity);
     }
 
 
