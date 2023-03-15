@@ -2,6 +2,7 @@ package me.neznamy.tab.api;
 
 import java.util.UUID;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.protocol.TabPacket;
@@ -295,4 +296,14 @@ public interface TabPlayer {
      * @return  player's game profile name as seen by other players
      */
     String getNickname();
+
+    /**
+     * Sets header and footer to specified values
+     *
+     * @param   header
+     *          Header to use
+     * @param   footer
+     *          Footer to use
+     */
+    void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer);
 }

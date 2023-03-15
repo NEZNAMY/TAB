@@ -22,7 +22,6 @@ public class BukkitPacketBuilder extends PacketBuilder {
         buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> PacketPlayOutEntityTeleportStorage.build((PacketPlayOutEntityTeleport) packet));
         buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> PacketPlayOutEntityDestroyStorage.build((PacketPlayOutEntityDestroy) packet));
         buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> PacketPlayOutSpawnEntityLivingStorage.build((PacketPlayOutSpawnEntityLiving) packet));
-        buildMap.put(PacketPlayOutPlayerListHeaderFooter.class, (packet, version) -> PacketPlayOutPlayerListHeaderFooterStorage.build((PacketPlayOutPlayerListHeaderFooter) packet, version));
         buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> PacketPlayOutScoreboardObjectiveStorage.build((PacketPlayOutScoreboardObjective) packet, version));
         buildMap.put(PacketPlayOutScoreboardDisplayObjective.class, (packet, version) -> PacketPlayOutScoreboardDisplayObjectiveStorage.build((PacketPlayOutScoreboardDisplayObjective) packet, version));
         buildMap.put(PacketPlayOutScoreboardTeam.class, (packet, version) -> PacketPlayOutScoreboardTeamStorage.build((PacketPlayOutScoreboardTeam) packet, version));

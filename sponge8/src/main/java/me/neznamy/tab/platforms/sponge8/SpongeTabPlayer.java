@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -62,8 +62,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
         }
         if (packet instanceof PacketPlayOutBoss) {
             handle((PacketPlayOutBoss) packet);
-        } else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
-            handle((PacketPlayOutPlayerListHeaderFooter)packet);
         }
     }
 
@@ -123,13 +121,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
         }
     }
 
-    private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-        getPlayer().tabList().setHeaderAndFooter(
-                adventureCache.get(packet.getHeader(), getVersion()),
-                adventureCache.get(packet.getFooter(), getVersion())
-        );
-    }
-
     @Override
     public boolean hasInvisibilityPotion() {
         for (PotionEffect effect : getPlayer().get(Keys.POTION_EFFECTS).orElse(Collections.emptyList())) {
@@ -171,6 +162,11 @@ public final class SpongeTabPlayer extends ITabPlayer {
         if (getPlayer().gameMode().get() == GameModes.ADVENTURE.get()) return 2;
         if (getPlayer().gameMode().get() == GameModes.SPECTATOR.get()) return 3;
         return 0;
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        getPlayer().tabList().setHeaderAndFooter(adventureCache.get(header, version), adventureCache.get(footer, version));
     }
 
     public void setPlayer(final ServerPlayer player) {

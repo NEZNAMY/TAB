@@ -77,8 +77,6 @@ object KryptonPacketBuilder : PacketBuilder() {
         return PacketOutPlayerInfoUpdate(actions, entries)
     }
 
-    override fun build(packet: PacketPlayOutPlayerListHeaderFooter, clientVersion: ProtocolVersion?): Any = packet
-
     override fun build(packet: PacketPlayOutScoreboardDisplayObjective, clientVersion: ProtocolVersion?): Any {
         return PacketOutDisplayObjective(packet.slot, packet.objectiveName)
     }

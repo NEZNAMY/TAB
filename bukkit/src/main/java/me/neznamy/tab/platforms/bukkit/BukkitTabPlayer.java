@@ -12,10 +12,13 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerListHeaderFooterStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
@@ -35,10 +38,15 @@ import java.util.UUID;
 /**
  * TabPlayer implementation for Bukkit platform
  */
+@SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends ITabPlayer {
 
     /** Spigot check */
     private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
+
+    /** Component cache to save CPU when creating components */
+    private static final ComponentCache<IChatBaseComponent, BaseComponent[]> componentCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> ComponentSerializer.parse(component.toString(clientVersion)));
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
     private Object handle;
@@ -110,10 +118,9 @@ public class BukkitTabPlayer extends ITabPlayer {
     }
 
     @Override
-    @SuppressWarnings("deprecated")
     public void sendMessage(IChatBaseComponent message) {
         if (spigot) {
-            getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(version)));
+            getPlayer().spigot().sendMessage(componentCache.get(message, version));
         } else {
             getPlayer().sendMessage(message.toLegacyText());
         }
@@ -296,5 +303,27 @@ public class BukkitTabPlayer extends ITabPlayer {
     @Override
     public int getGamemode() {
         return getPlayer().getGameMode().getValue();
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        // Method was added to Bukkit API in 1.13.1, however despite that it's just a String one
+        // Using it would cause high CPU usage and massive memory allocations on RGB & animations
+        // Send packet instead for performance & older server version support
+
+        /*if (TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_13_1.getNetworkId()) {
+            String bukkitHeader = RGBUtils.getInstance().convertToBukkitFormat(header.toFlatText(),
+                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+            String bukkitFooter = RGBUtils.getInstance().convertToBukkitFormat(footer.toFlatText(),
+                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+            getPlayer().setPlayerListHeaderFooter(bukkitHeader, bukkitFooter);
+            return;
+        }*/
+
+        try {
+            sendPacket(PacketPlayOutPlayerListHeaderFooterStorage.build(header, footer, version));
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

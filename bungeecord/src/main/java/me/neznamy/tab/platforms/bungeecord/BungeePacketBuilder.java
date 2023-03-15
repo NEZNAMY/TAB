@@ -85,11 +85,6 @@ public class BungeePacketBuilder extends PacketBuilder {
     }
 
     @Override
-    public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) {
-        return new PlayerListHeaderFooter(packet.getHeader().toString(clientVersion, true), packet.getFooter().toString(clientVersion, true));
-    }
-
-    @Override
     public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
         return new ScoreboardDisplay((byte)packet.getSlot(), packet.getObjectiveName());
     }

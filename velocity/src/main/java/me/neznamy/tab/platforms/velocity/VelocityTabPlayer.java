@@ -4,6 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
+import lombok.NonNull;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
@@ -38,7 +39,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
         put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
         put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
         put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
         put(PacketPlayOutScoreboardScore.class, packet -> handle((PacketPlayOutScoreboardScore) packet));
@@ -77,17 +77,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void sendMessage(IChatBaseComponent message) {
         getPlayer().sendMessage(componentCache.get(message, getVersion()));
-    }
-
-    /**
-     * Handles PacketPlayOutPlayerListHeaderFooter request using Velocity API
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutPlayerListHeaderFooter packet) {
-        getPlayer().sendPlayerListHeaderAndFooter(componentCache.get(packet.getHeader(), getVersion()),
-                componentCache.get(packet.getFooter(), getVersion()));
     }
 
     /**
@@ -324,6 +313,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public int getGamemode() {
         return getEntry(getTablistId()).getGameMode();
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        getPlayer().sendPlayerListHeaderAndFooter(componentCache.get(header, version), componentCache.get(footer, version));
     }
 
     @Override

@@ -1,28 +1,33 @@
 package me.neznamy.tab.platforms.krypton
 
+import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter
 import me.neznamy.tab.api.protocol.Skin
+import me.neznamy.tab.api.util.ComponentCache
 import me.neznamy.tab.shared.ITabPlayer
 import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.bossbar.BossBar
-import net.kyori.adventure.bossbar.BossBar.Color
-import net.kyori.adventure.bossbar.BossBar.Flag
-import net.kyori.adventure.bossbar.BossBar.Overlay
+import net.kyori.adventure.bossbar.BossBar.*
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
-import java.util.UUID
+import java.util.*
 
 class KryptonTabPlayer(
     delegate: Player,
     protocolVersion: Int
 ) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion, true) {
+
+    /** Component cache to save CPU when creating components  */
+    private val componentCache = ComponentCache(10000) {
+            component: IChatBaseComponent, clientVersion: ProtocolVersion ->
+        GsonComponentSerializer.gson().deserialize(component.toString(clientVersion))
+    }
 
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
@@ -46,7 +51,6 @@ class KryptonTabPlayer(
             }
             when (packet) {
                 is PacketPlayOutBoss -> handle(packet)
-                is PacketPlayOutPlayerListHeaderFooter -> handle(packet)
             }
         } catch (exception: Exception) {
             TAB.getInstance().errorManager.printError("An error occurred when sending ${packet.javaClass.simpleName}", exception)
@@ -54,7 +58,7 @@ class KryptonTabPlayer(
     }
 
     override fun sendMessage(message: IChatBaseComponent) {
-        delegate.sendMessage(GsonComponentSerializer.gson().deserialize(message.toString(version)))
+        delegate.sendMessage(componentCache.get(message, version))
     }
 
     override fun hasInvisibilityPotion(): Boolean = false
@@ -74,6 +78,10 @@ class KryptonTabPlayer(
     override fun isVanished(): Boolean = false
 
     override fun getGamemode(): Int = delegate.gameMode.ordinal
+
+    override fun setPlayerListHeaderFooter(header: IChatBaseComponent, footer: IChatBaseComponent) {
+        delegate.sendPlayerListHeaderAndFooter(componentCache.get(header, version), componentCache.get(footer, version))
+    }
 
     private fun handle(packet: PacketPlayOutBoss) {
         when (packet.action) {
@@ -110,12 +118,6 @@ class KryptonTabPlayer(
             }
             else -> Unit
         }
-    }
-
-    private fun handle(packet: PacketPlayOutPlayerListHeaderFooter) {
-        val header = GsonComponentSerializer.gson().deserialize(packet.header.toString(version))
-        val footer = GsonComponentSerializer.gson().deserialize(packet.footer.toString(version))
-        delegate.sendPlayerListHeaderAndFooter(header, footer)
     }
 
     private fun processFlag(bar: BossBar, targetValue: Boolean, flag: Flag) {

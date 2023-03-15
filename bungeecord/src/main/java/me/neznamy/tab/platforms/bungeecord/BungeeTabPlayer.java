@@ -5,10 +5,12 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -25,6 +27,10 @@ import java.util.UUID;
  * TabPlayer implementation for BungeeCord
  */
 public class BungeeTabPlayer extends ProxyTabPlayer {
+
+    /** Component cache to save CPU when creating components */
+    private static final ComponentCache<IChatBaseComponent, BaseComponent[]> componentCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> ComponentSerializer.parse(component.toString(clientVersion)));
 
     /** Inaccessible bungee internals */
     private static Object directionData;
@@ -73,7 +79,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
+        getPlayer().sendMessage(componentCache.get(message, getVersion()));
     }
 
     @Override
@@ -131,6 +137,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public int getGamemode() {
         return ((UserConnection)player).getGamemode();
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        getPlayer().setTabHeader(componentCache.get(header, getVersion()), componentCache.get(footer, getVersion()));
     }
 
     @Override

@@ -28,7 +28,6 @@ public class PacketBuilder {
     public PacketBuilder() {
         buildMap.put(PacketPlayOutBoss.class, (packet, version) -> build((PacketPlayOutBoss)packet, version));
         buildMap.put(PacketPlayOutPlayerInfo.class, (packet, version) -> build((PacketPlayOutPlayerInfo)packet, version));
-        buildMap.put(PacketPlayOutPlayerListHeaderFooter.class, (packet, version) -> build((PacketPlayOutPlayerListHeaderFooter)packet, version));
         buildMap.put(PacketPlayOutScoreboardDisplayObjective.class, (packet, version) -> build((PacketPlayOutScoreboardDisplayObjective)packet, version));
         buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> build((PacketPlayOutScoreboardObjective)packet, version));
         buildMap.put(PacketPlayOutScoreboardScore.class, (packet, version) -> build((PacketPlayOutScoreboardScore)packet, version));
@@ -78,19 +77,6 @@ public class PacketBuilder {
      *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return packet;
-    }
-
-    /**
-     * Constructs platform-specific PacketPlayOutPlayerListHeaderFooter class based on custom packet class
-     *
-     * @param   packet
-     *          Custom packet to be built
-     * @param   clientVersion
-     *          Protocol version of player to build the packet for
-     * @return  Platform-specific packet
-     */
-    public Object build(PacketPlayOutPlayerListHeaderFooter packet, ProtocolVersion clientVersion) {
         return packet;
     }
 

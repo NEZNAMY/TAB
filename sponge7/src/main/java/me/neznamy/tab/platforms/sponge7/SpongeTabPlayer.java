@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -44,7 +45,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods = new HashMap<>();
     {
-        packetMethods.put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
         packetMethods.put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
         packetMethods.put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
         packetMethods.put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
@@ -80,13 +80,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void sendMessage(IChatBaseComponent message) {
         getPlayer().sendMessage(textCache.get(message, getVersion()));
-    }
-
-    private void handle(final PacketPlayOutPlayerListHeaderFooter packet) {
-        getPlayer().getTabList().setHeaderAndFooter(
-                textCache.get(packet.getHeader(), getVersion()),
-                textCache.get(packet.getFooter(), getVersion())
-        );
     }
 
     private void handle(final PacketPlayOutPlayerInfo packet) {
@@ -434,5 +427,10 @@ public final class SpongeTabPlayer extends ITabPlayer {
         if (gameMode.equals(GameModes.ADVENTURE)) return 2;
         if (gameMode.equals(GameModes.SPECTATOR)) return 3;
         return 0;
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        getPlayer().getTabList().setHeaderAndFooter(textCache.get(header, version), textCache.get(footer, version));
     }
 }

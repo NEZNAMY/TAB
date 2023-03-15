@@ -5,7 +5,7 @@ import me.neznamy.tab.api.HeaderFooterManager;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(p) || p.getVersion().getMinorVersion() < 8) continue;
-            p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("",""), this);
+            sendHeaderFooter(p, "","");
         }
     }
 
@@ -66,14 +66,14 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
         }
         if (p.getVersion().getMinorVersion() < 8) return;
         if (disabledNow) {
-            if (!disabledBefore) p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter("", ""), this);
+            if (!disabledBefore) sendHeaderFooter(p, "", "");
         } else {
             boolean refresh = p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
             if (p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER))) {
                 refresh = true;
             }
             if (refresh || disabledBefore) {
-                p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get()), this);
+                sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
             }
         }
     }
@@ -85,7 +85,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
             p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));
         }
         if (isDisabledPlayer(p) || p.getVersion().getMinorVersion() < 8) return;
-        p.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(p.getProperty(TabConstants.Property.HEADER).updateAndGet(), p.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).updateAndGet(), p.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     private String getProperty(TabPlayer p, String property) {
@@ -118,41 +118,50 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager {
         return String.join("\n", lines);
     }
 
+    private void sendHeaderFooter(TabPlayer player, String header, String footer) {
+        sendHeaderFooter(player, IChatBaseComponent.optimizedComponent(header), IChatBaseComponent.optimizedComponent(footer));
+    }
+    
+    private void sendHeaderFooter(TabPlayer player, IChatBaseComponent header, IChatBaseComponent footer) {
+        player.setPlayerListHeaderFooter(header, footer);
+        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
+    }
+
     @Override
     public void setHeader(TabPlayer player, String header) {
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
-        player.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
     public void setFooter(TabPlayer player, String footer) {
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
-        player.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
     public void setHeaderAndFooter(TabPlayer player, String header, String footer) {
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
-        player.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
     public void resetHeader(TabPlayer player) {
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(null);
-        player.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
     public void resetFooter(TabPlayer player) {
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(null);
-        player.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
     public void resetHeaderAndFooter(TabPlayer player) {
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(null);
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(null);
-        player.sendCustomPacket(new PacketPlayOutPlayerListHeaderFooter(player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet()), this);
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 }
