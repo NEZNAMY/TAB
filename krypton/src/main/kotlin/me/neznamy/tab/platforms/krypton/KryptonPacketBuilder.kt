@@ -44,8 +44,6 @@ object KryptonPacketBuilder : PacketBuilder() {
         return GsonComponentSerializer.gson().deserialize(IChatBaseComponent.optimizedComponent(text).toString(clientVersion))
     }
 
-    override fun build(packet: PacketPlayOutBoss, clientVersion: ProtocolVersion?): Any = packet
-
     @Suppress("UNCHECKED_CAST")
     override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion): Any {
         if (packet.actions.contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {

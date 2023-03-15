@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.bungeecord;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
@@ -18,6 +20,7 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.packet.BossBar;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -142,6 +145,55 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().setTabHeader(componentCache.get(header, getVersion()), componentCache.get(footer, getVersion()));
+    }
+
+    @Override
+    public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+        if (getVersion().getMinorVersion() < 9) return;
+        BossBar bossbar = new BossBar(id, 0);
+        bossbar.setHealth(progress);
+        bossbar.setTitle(IChatBaseComponent.optimizedComponent(title).toString(getVersion()));
+        bossbar.setColor(color.ordinal());
+        bossbar.setDivision(style.ordinal());
+        getPlayer().unsafe().sendPacket(bossbar);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull String title) {
+        if (getVersion().getMinorVersion() < 9) return;
+        BossBar bossbar = new BossBar(id, 3);
+        bossbar.setTitle(IChatBaseComponent.optimizedComponent(title).toString(getVersion()));
+        getPlayer().unsafe().sendPacket(bossbar);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, float progress) {
+        if (getVersion().getMinorVersion() < 9) return;
+        BossBar bossbar = new BossBar(id, 2);
+        bossbar.setHealth(progress);
+        getPlayer().unsafe().sendPacket(bossbar);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarStyle style) {
+        if (getVersion().getMinorVersion() < 9) return;
+        BossBar bossbar = new BossBar(id, 4);
+        bossbar.setDivision(style.ordinal());
+        getPlayer().unsafe().sendPacket(bossbar);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarColor color) {
+        if (getVersion().getMinorVersion() < 9) return;
+        BossBar bossbar = new BossBar(id, 4);
+        bossbar.setDivision(color.ordinal());
+        getPlayer().unsafe().sendPacket(bossbar);
+    }
+
+    @Override
+    public void removeBossBar(@NonNull UUID id) {
+        if (getVersion().getMinorVersion() < 9) return;
+        getPlayer().unsafe().sendPacket(new BossBar(id, 1));
     }
 
     @Override

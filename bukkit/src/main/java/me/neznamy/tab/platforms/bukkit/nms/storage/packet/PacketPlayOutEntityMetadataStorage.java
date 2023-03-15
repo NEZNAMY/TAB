@@ -51,4 +51,12 @@ public class PacketPlayOutEntityMetadataStorage implements TabPacket {
             return CONSTRUCTOR.newInstance(packet.getEntityId(), ((DataWatcher)packet.getDataWatcher()).build(), true);
         }
     }
+
+    public static Object buildSilent(PacketPlayOutEntityMetadata packet) {
+        try {
+            return build(packet);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

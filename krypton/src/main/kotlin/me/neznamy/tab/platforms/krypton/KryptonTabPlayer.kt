@@ -1,17 +1,15 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
+import me.neznamy.tab.api.bossbar.BarColor
+import me.neznamy.tab.api.bossbar.BarStyle
 import me.neznamy.tab.api.chat.IChatBaseComponent
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
 import me.neznamy.tab.api.protocol.Skin
 import me.neznamy.tab.api.util.ComponentCache
 import me.neznamy.tab.shared.ITabPlayer
-import me.neznamy.tab.shared.TAB
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.bossbar.BossBar.*
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.network.NettyConnection
@@ -44,17 +42,7 @@ class KryptonTabPlayer(
 
     override fun sendPacket(packet: Any?) {
         if (packet == null) return
-        try {
-            if (packet is Packet) {
-                delegate.connection.send(packet)
-                return
-            }
-            when (packet) {
-                is PacketPlayOutBoss -> handle(packet)
-            }
-        } catch (exception: Exception) {
-            TAB.getInstance().errorManager.printError("An error occurred when sending ${packet.javaClass.simpleName}", exception)
-        }
+        delegate.connection.send(packet as Packet)
     }
 
     override fun sendMessage(message: IChatBaseComponent) {
@@ -83,48 +71,38 @@ class KryptonTabPlayer(
         delegate.sendPlayerListHeaderAndFooter(componentCache.get(header, version), componentCache.get(footer, version))
     }
 
-    private fun handle(packet: PacketPlayOutBoss) {
-        when (packet.action) {
-            Action.ADD -> {
-                if (bossBars.containsKey(packet.id)) return
-                val bar = BossBar.bossBar(
-                    GsonComponentSerializer.gson().deserialize(IChatBaseComponent.optimizedComponent(packet.name).toString(getVersion())),
-                    packet.pct,
-                    Color.valueOf(packet.color.toString()),
-                    Overlay.valueOf(packet.overlay.toString())
-                )
-                if (packet.isCreateWorldFog) bar.addFlag(Flag.CREATE_WORLD_FOG)
-                if (packet.isDarkenScreen) bar.addFlag(Flag.DARKEN_SCREEN)
-                if (packet.isPlayMusic) bar.addFlag(Flag.PLAY_BOSS_MUSIC)
-                bossBars.put(packet.id, bar)
-                delegate.showBossBar(bar)
-            }
-            Action.REMOVE -> {
-                delegate.hideBossBar(bossBars.get(packet.id) ?: return)
-                bossBars.remove(packet.id)
-            }
-            Action.UPDATE_PCT -> bossBars.get(packet.id)?.progress(packet.pct)
-            Action.UPDATE_NAME -> bossBars.get(packet.id)?.name(LegacyComponentSerializer.legacySection().deserialize(packet.name))
-            Action.UPDATE_STYLE -> {
-                val bar = bossBars.get(packet.id) ?: return
-                bar.overlay(Overlay.valueOf(packet.overlay.toString()))
-                bar.color(Color.valueOf(packet.color.toString()))
-            }
-            Action.UPDATE_PROPERTIES -> {
-                val bar = bossBars.get(packet.id) ?: return
-                processFlag(bar, packet.isCreateWorldFog, Flag.CREATE_WORLD_FOG)
-                processFlag(bar, packet.isDarkenScreen, Flag.DARKEN_SCREEN)
-                processFlag(bar, packet.isPlayMusic, Flag.PLAY_BOSS_MUSIC)
-            }
-            else -> Unit
-        }
+    override fun sendBossBar(id: UUID, title: String, progress: Float, color: BarColor, style: BarStyle) {
+        if (bossBars.containsKey(id)) return
+        val bar = bossBar(
+            componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()),
+            progress,
+            Color.valueOf(color.toString()),
+            Overlay.valueOf(style.toString())
+        )
+        bossBars[id] = bar
+        delegate.showBossBar(bar)
     }
 
-    private fun processFlag(bar: BossBar, targetValue: Boolean, flag: Flag) {
-        if (targetValue) {
-            if (!bar.hasFlag(flag)) bar.addFlag(flag)
-        } else {
-            if (bar.hasFlag(flag)) bar.removeFlag(flag)
-        }
+    override fun updateBossBar(id: UUID, title: String) {
+        bossBars[id]?.name(componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()))
+    }
+
+    override fun updateBossBar(id: UUID, progress: Float) {
+        bossBars[id]?.progress(progress)
+    }
+
+    override fun updateBossBar(id: UUID, style: BarStyle) {
+        val bar = bossBars[id] ?: return
+        bar.overlay(Overlay.valueOf(style.toString()))
+    }
+
+    override fun updateBossBar(id: UUID, color: BarColor) {
+        val bar = bossBars[id] ?: return
+        bar.color(Color.valueOf(color.toString()))
+    }
+
+    override fun removeBossBar(id: UUID) {
+        delegate.hideBossBar(bossBars[id] ?: return)
+        bossBars.remove(id)
     }
 }

@@ -50,7 +50,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
         packetMethods.put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
         packetMethods.put(PacketPlayOutScoreboardScore.class, packet -> handle((PacketPlayOutScoreboardScore) packet));
         packetMethods.put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
-        packetMethods.put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
     }
 
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
@@ -140,85 +139,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 return GameModes.SPECTATOR;
             default:
                 throw new IllegalArgumentException("Unknown gamemode: " + mode);
-        }
-    }
-
-    private void handle(final PacketPlayOutBoss packet) {
-        ServerBossBar bar;
-        switch (packet.getAction()) {
-            case ADD:
-                if (bossBars.containsKey(packet.getId())) return;
-                bar = ServerBossBar.builder()
-                        .name(textCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()))
-                        .color(convertBossBarColor(packet.getColor()))
-                        .overlay(convertOverlay(packet.getOverlay()))
-                        .percent(packet.getPct())
-                        .createFog(packet.isCreateWorldFog())
-                        .darkenSky(packet.isDarkenScreen())
-                        .playEndBossMusic(packet.isPlayMusic())
-                        .build();
-                bossBars.put(packet.getId(), bar);
-                bar.addPlayer(getPlayer());
-                break;
-            case REMOVE:
-                bossBars.get(packet.getId()).removePlayer(getPlayer());
-                bossBars.remove(packet.getId());
-                break;
-            case UPDATE_PCT:
-                bossBars.get(packet.getId()).setPercent(packet.getPct());
-                break;
-            case UPDATE_NAME:
-                bossBars.get(packet.getId()).setName(textCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
-                break;
-            case UPDATE_STYLE:
-                bar = bossBars.get(packet.getId());
-                bar.setColor(convertBossBarColor(packet.getColor()));
-                bar.setOverlay(convertOverlay(packet.getOverlay()));
-                break;
-            case UPDATE_PROPERTIES:
-                bar = bossBars.get(packet.getId());
-                bar.setCreateFog(packet.isCreateWorldFog());
-                bar.setDarkenSky(packet.isDarkenScreen());
-                bar.setPlayEndBossMusic(packet.isPlayMusic());
-                break;
-        }
-    }
-
-    private static BossBarColor convertBossBarColor(final BarColor color) {
-        switch (color) {
-            case PINK:
-                return BossBarColors.PINK;
-            case BLUE:
-                return BossBarColors.BLUE;
-            case RED:
-                return BossBarColors.RED;
-            case GREEN:
-                return BossBarColors.GREEN;
-            case YELLOW:
-                return BossBarColors.YELLOW;
-            case PURPLE:
-                return BossBarColors.PURPLE;
-            case WHITE:
-                return BossBarColors.WHITE;
-            default:
-                throw new IllegalArgumentException("Unknown boss bar color: " + color);
-        }
-    }
-
-    private static BossBarOverlay convertOverlay(final BarStyle style) {
-        switch (style) {
-            case PROGRESS:
-                return BossBarOverlays.PROGRESS;
-            case NOTCHED_6:
-                return BossBarOverlays.NOTCHED_6;
-            case NOTCHED_10:
-                return BossBarOverlays.NOTCHED_10;
-            case NOTCHED_12:
-                return BossBarOverlays.NOTCHED_12;
-            case NOTCHED_20:
-                return BossBarOverlays.NOTCHED_20;
-            default:
-                throw new IllegalArgumentException("Unknown boss bar overlay: " + style);
         }
     }
 
@@ -432,5 +352,64 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().getTabList().setHeaderAndFooter(textCache.get(header, version), textCache.get(footer, version));
+    }
+
+    @Override
+    public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+        ServerBossBar bar = ServerBossBar.builder()
+                .name(textCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()))
+                .color(convertBossBarColor(color))
+                .overlay(convertOverlay(style))
+                .percent(progress)
+                .build();
+        bossBars.put(id, bar);
+        bar.addPlayer(getPlayer());
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull String title) {
+        bossBars.get(id).setName(textCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()));
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, float progress) {
+        bossBars.get(id).setPercent(progress);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarStyle style) {
+        bossBars.get(id).setOverlay(convertOverlay(style));
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarColor color) {
+        bossBars.get(id).setColor(convertBossBarColor(color));
+    }
+
+    @Override
+    public void removeBossBar(@NonNull UUID id) {
+        bossBars.remove(id).removePlayer(getPlayer());
+    }
+
+    private @NonNull BossBarColor convertBossBarColor(@NonNull BarColor color) {
+        switch (color) {
+            case PINK: return BossBarColors.PINK;
+            case BLUE: return BossBarColors.BLUE;
+            case RED: return BossBarColors.RED;
+            case GREEN: return BossBarColors.GREEN;
+            case YELLOW: return BossBarColors.YELLOW;
+            case WHITE: return BossBarColors.WHITE;
+            default: return BossBarColors.PURPLE;
+        }
+    }
+
+    private @NonNull BossBarOverlay convertOverlay(@NonNull BarStyle style) {
+        switch (style) {
+            case NOTCHED_6: return BossBarOverlays.NOTCHED_6;
+            case NOTCHED_10: return BossBarOverlays.NOTCHED_10;
+            case NOTCHED_12: return BossBarOverlays.NOTCHED_12;
+            case NOTCHED_20: return BossBarOverlays.NOTCHED_20;
+            default: return BossBarOverlays.PROGRESS;
+        }
     }
 }

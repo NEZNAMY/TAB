@@ -5,6 +5,8 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
 import lombok.NonNull;
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
@@ -15,7 +17,6 @@ import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
-import net.kyori.adventure.bossbar.BossBar.Flag;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -37,7 +38,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      */
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
-        put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
         put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
         put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
@@ -129,53 +129,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     /**
-     * Handles PacketPlayOutBoss request using Velocity API
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutBoss packet) {
-        BossBar bar;
-        switch (packet.getAction()) {
-        case ADD:
-            if (bossBars.containsKey(packet.getId())) return;
-            bar = BossBar.bossBar(componentCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()),
-                    packet.getPct(), 
-                    Color.valueOf(packet.getColor().toString()), 
-                    Overlay.valueOf(packet.getOverlay().toString()));
-            if (packet.isCreateWorldFog()) bar.addFlag(Flag.CREATE_WORLD_FOG);
-            if (packet.isDarkenScreen()) bar.addFlag(Flag.DARKEN_SCREEN);
-            if (packet.isPlayMusic()) bar.addFlag(Flag.PLAY_BOSS_MUSIC);
-            bossBars.put(packet.getId(), bar);
-            getPlayer().showBossBar(bar);
-            break;
-        case REMOVE:
-            getPlayer().hideBossBar(bossBars.get(packet.getId()));
-            bossBars.remove(packet.getId());
-            break;
-        case UPDATE_PCT:
-            bossBars.get(packet.getId()).progress(packet.getPct());
-            break;
-        case UPDATE_NAME:
-            bossBars.get(packet.getId()).name(componentCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
-            break;
-        case UPDATE_STYLE:
-            bar = bossBars.get(packet.getId());
-            bar.overlay(Overlay.valueOf(packet.getOverlay().toString()));
-            bar.color(Color.valueOf(packet.getColor().toString()));
-            break;
-        case UPDATE_PROPERTIES:
-            bar = bossBars.get(packet.getId());
-            processFlag(bar, packet.isCreateWorldFog(), Flag.CREATE_WORLD_FOG);
-            processFlag(bar, packet.isDarkenScreen(), Flag.DARKEN_SCREEN);
-            processFlag(bar, packet.isPlayMusic(), Flag.PLAY_BOSS_MUSIC);
-            break;
-        default:
-            break;
-        }
-    }
-
-    /**
      * Handles PacketPlayOutScoreboardDisplayObjective request by forwarding the task
      * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
      *
@@ -257,21 +210,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     /**
-     * Processes BossBar flag by adding or removing it based on provided value.
-     *
-     * @param   bar
-     *          BossBar to process flag of
-     * @param   targetValue
-     *          Flag value
-     * @param   flag
-     *          Flag to process
-     */
-    private void processFlag(BossBar bar, boolean targetValue, Flag flag) {
-        if (targetValue && !bar.hasFlag(flag)) bar.addFlag(flag);
-        if (!targetValue && bar.hasFlag(flag)) bar.removeFlag(flag);
-    }
-
-    /**
      * Returns TabList entry with specified UUID. If no such entry was found,
      * a new, dummy entry is returned to avoid NPE.
      *
@@ -318,6 +256,40 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().sendPlayerListHeaderAndFooter(componentCache.get(header, version), componentCache.get(footer, version));
+    }
+
+    @Override
+    public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+        if (bossBars.containsKey(id)) return;
+        BossBar bar = BossBar.bossBar(componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()),
+                progress, Color.valueOf(color.toString()), Overlay.valueOf(style.toString()));
+        bossBars.put(id, bar);
+        getPlayer().showBossBar(bar);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull String title) {
+        bossBars.get(id).name(componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()));
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, float progress) {
+        bossBars.get(id).progress(progress);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarStyle style) {
+        bossBars.get(id).overlay(Overlay.valueOf(style.toString()));
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarColor color) {
+        bossBars.get(id).color(Color.valueOf(color.toString()));
+    }
+
+    @Override
+    public void removeBossBar(@NonNull UUID id) {
+        getPlayer().hideBossBar(bossBars.remove(id));
     }
 
     @Override

@@ -50,4 +50,12 @@ public class PacketPlayOutEntityDestroyStorage implements TabPacket {
             return CONSTRUCTOR.newInstance(packet.getEntities()[0]);
         }
     }
+
+    public static Object buildSilent(PacketPlayOutEntityDestroy packet) {
+        try {
+            return build(packet);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

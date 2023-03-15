@@ -70,7 +70,8 @@ public class TabConstants {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class PacketCategory {
 
-        public static final String BOSSBAR_COLOR_STYLE = "BossBar (Color and style)";
+        public static final String BOSSBAR_COLOR = "BossBar (Color)";
+        public static final String BOSSBAR_STYLE = "BossBar (Style)";
         public static final String BOSSBAR_PROGRESS = "BossBar (Progress)";
         public static final String BOSSBAR_TEXT = "BossBar (Text)";
         public static final String BOSSBAR_WITHER_TELEPORT = "BossBar (Teleporting Wither)";
@@ -273,8 +274,12 @@ public class TabConstants {
             return "BossBar-progress-" + name;
         }
 
-        public static String bossBarColorStyle(String name) {
-            return "BossBar-color-style-" + name;
+        public static String bossBarColor(String color) {
+            return "BossBar-color-" + color;
+        }
+
+        public static String bossBarStyle(String style) {
+            return "BossBar-style-" + style;
         }
     }
 

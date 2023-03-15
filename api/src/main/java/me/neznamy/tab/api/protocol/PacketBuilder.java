@@ -26,7 +26,6 @@ public class PacketBuilder {
      * of packets present on all platforms.
      */
     public PacketBuilder() {
-        buildMap.put(PacketPlayOutBoss.class, (packet, version) -> build((PacketPlayOutBoss)packet, version));
         buildMap.put(PacketPlayOutPlayerInfo.class, (packet, version) -> build((PacketPlayOutPlayerInfo)packet, version));
         buildMap.put(PacketPlayOutScoreboardDisplayObjective.class, (packet, version) -> build((PacketPlayOutScoreboardDisplayObjective)packet, version));
         buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> build((PacketPlayOutScoreboardObjective)packet, version));
@@ -48,21 +47,6 @@ public class PacketBuilder {
      */
     public Object build(@NonNull TabPacket packet, @NonNull ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return buildMap.get(packet.getClass()).apply(packet, clientVersion);
-    }
-
-    /**
-     * Constructs platform-specific PacketPlayOutBoss class based on custom packet class
-     *
-     * @param   packet
-     *          Custom packet to be built
-     * @param   clientVersion
-     *          Protocol version of player to build the packet for
-     * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return packet;
     }
 
     /**

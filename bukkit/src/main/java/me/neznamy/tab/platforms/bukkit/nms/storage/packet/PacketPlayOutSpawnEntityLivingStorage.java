@@ -133,4 +133,12 @@ public class PacketPlayOutSpawnEntityLivingStorage implements TabPacket {
         int i = (int)paramDouble;
         return paramDouble < i ? i - 1 : i;
     }
+
+    public static Object buildSilent(PacketPlayOutSpawnEntityLiving packet) {
+        try {
+            return build(packet);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -3,8 +3,9 @@ package me.neznamy.tab.platforms.sponge8;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -32,8 +33,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
-                player.world().key().value(),
-                getProtocolVersion(player), true);
+                player.world().key().value(), getProtocolVersion(player), true);
     }
 
     private static int getProtocolVersion(ServerPlayer player) {
@@ -56,69 +56,12 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void sendPacket(Object packet) {
         if (packet == null) return;
-        if (packet instanceof Packet<?>) {
-            ((net.minecraft.server.level.ServerPlayer) getPlayer()).connection.send((Packet<?>) packet);
-            return;
-        }
-        if (packet instanceof PacketPlayOutBoss) {
-            handle((PacketPlayOutBoss) packet);
-        }
+        ((net.minecraft.server.level.ServerPlayer) getPlayer()).connection.send((Packet<?>) packet);
     }
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
         getPlayer().sendMessage(adventureCache.get(message, getVersion()));
-    }
-
-    private void handle(PacketPlayOutBoss packet) {
-        BossBar bar;
-        switch (packet.getAction()) {
-            case ADD:
-                if (bossBars.containsKey(packet.getId())) return;
-                bar = BossBar.bossBar(adventureCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()), packet.getPct(),
-                        BossBar.Color.valueOf(packet.getColor().toString()), BossBar.Overlay.valueOf(packet.getOverlay().toString()));
-                if (packet.isCreateWorldFog()) bar.addFlag(BossBar.Flag.CREATE_WORLD_FOG);
-                if (packet.isDarkenScreen()) bar.addFlag(BossBar.Flag.DARKEN_SCREEN);
-                if (packet.isPlayMusic()) bar.addFlag(BossBar.Flag.PLAY_BOSS_MUSIC);
-                bossBars.put(packet.getId(), bar);
-                getPlayer().showBossBar(bar);
-                break;
-            case REMOVE:
-                bar = bossBars.remove(packet.getId());
-                if (bar != null) getPlayer().hideBossBar(bar);
-                break;
-            case UPDATE_PCT:
-                bar = bossBars.get(packet.getId());
-                if (bar != null) bar.progress(packet.getPct());
-                break;
-            case UPDATE_NAME:
-                bar = bossBars.get(packet.getId());
-                if (bar != null) bar.name(adventureCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
-                break;
-            case UPDATE_STYLE:
-                bar = bossBars.get(packet.getId());
-                if (bar != null) {
-                    bar.color(BossBar.Color.valueOf(packet.getColor().toString()));
-                    bar.overlay(BossBar.Overlay.valueOf(packet.getOverlay().toString()));
-                }
-                break;
-            case UPDATE_PROPERTIES:
-                bar = bossBars.get(packet.getId());
-                if (bar != null) {
-                    processFlag(bar, packet.isCreateWorldFog(), BossBar.Flag.CREATE_WORLD_FOG);
-                    processFlag(bar, packet.isDarkenScreen(), BossBar.Flag.DARKEN_SCREEN);
-                    processFlag(bar, packet.isPlayMusic(), BossBar.Flag.PLAY_BOSS_MUSIC);
-                }
-                break;
-        }
-    }
-
-    private void processFlag(final BossBar bar, final boolean targetValue, final BossBar.Flag flag) {
-        if (targetValue) {
-            if (!bar.hasFlag(flag)) bar.addFlag(flag);
-        } else {
-            if (bar.hasFlag(flag)) bar.removeFlag(flag);
-        }
     }
 
     @Override
@@ -167,6 +110,40 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().tabList().setHeaderAndFooter(adventureCache.get(header, version), adventureCache.get(footer, version));
+    }
+
+    @Override
+    public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+        if (bossBars.containsKey(id)) return;
+        BossBar bar = BossBar.bossBar(adventureCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()),
+                progress, BossBar.Color.valueOf(color.toString()), BossBar.Overlay.valueOf(style.toString()));
+        bossBars.put(id, bar);
+        getPlayer().showBossBar(bar);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull String title) {
+        bossBars.get(id).name(adventureCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()));
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, float progress) {
+        bossBars.get(id).progress(progress);
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarStyle style) {
+        bossBars.get(id).overlay(BossBar.Overlay.valueOf(style.toString()));
+    }
+
+    @Override
+    public void updateBossBar(@NonNull UUID id, @NonNull BarColor color) {
+        bossBars.get(id).color(BossBar.Color.valueOf(color.toString()));
+    }
+
+    @Override
+    public void removeBossBar(@NonNull UUID id) {
+        getPlayer().hideBossBar(bossBars.remove(id));
     }
 
     public void setPlayer(final ServerPlayer player) {

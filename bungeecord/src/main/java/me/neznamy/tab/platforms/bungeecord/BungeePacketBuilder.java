@@ -22,18 +22,6 @@ import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 public class BungeePacketBuilder extends PacketBuilder {
 
     @Override
-    public Object build(PacketPlayOutBoss packet, ProtocolVersion clientVersion) {
-        if (clientVersion.getMinorVersion() < 9) return null;
-        BossBar bungeePacket = new BossBar(packet.getId(), packet.getAction().ordinal());
-        bungeePacket.setHealth(packet.getPct());
-        bungeePacket.setTitle(packet.getName() == null ? null : IChatBaseComponent.optimizedComponent(packet.getName()).toString(clientVersion));
-        bungeePacket.setColor(packet.getColor() == null ? 0 : packet.getColor().ordinal());
-        bungeePacket.setDivision(packet.getOverlay() == null ? 0: packet.getOverlay().ordinal());
-        bungeePacket.setFlags(packet.getFlags());
-        return bungeePacket;
-    }
-
-    @Override
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) {
         if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() &&
                 packet.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
