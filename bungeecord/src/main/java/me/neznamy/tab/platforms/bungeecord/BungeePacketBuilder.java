@@ -57,8 +57,7 @@ public class BungeePacketBuilder extends PacketBuilder {
         }
         if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
             PlayerListItemUpdate bungeePacket = new PlayerListItemUpdate();
-            PlayerListItemUpdate.Action[] array = packet.getActions().stream().map(action -> PlayerListItemUpdate.Action.valueOf(
-                    action.toString().replace("GAME_MODE", "GAMEMODE"))).toArray(PlayerListItemUpdate.Action[]::new);
+            PlayerListItemUpdate.Action[] array = packet.getActions().stream().map(this::convertToUpdateAction).toArray(PlayerListItemUpdate.Action[]::new);
             bungeePacket.setActions(EnumSet.of(array[0], array));
             bungeePacket.setItems(items.toArray(new Item[0]));
             return bungeePacket;
@@ -66,10 +65,20 @@ public class BungeePacketBuilder extends PacketBuilder {
             PlayerListItem bungeePacket = new PlayerListItem();
             EnumPlayerInfoAction action = packet.getActions().contains(EnumPlayerInfoAction.ADD_PLAYER) ?
                     EnumPlayerInfoAction.ADD_PLAYER : packet.getActions().iterator().next();
-            bungeePacket.setAction(PlayerListItem.Action.valueOf(action.toString().replace("GAME_MODE", "GAMEMODE")));
+            bungeePacket.setAction(convertToItemAction(action));
             bungeePacket.setItems(items.toArray(new Item[0]));
             return bungeePacket;
         }
+    }
+
+    private PlayerListItemUpdate.Action convertToUpdateAction(EnumPlayerInfoAction action) {
+        if (action == EnumPlayerInfoAction.UPDATE_GAME_MODE) return PlayerListItemUpdate.Action.UPDATE_GAMEMODE;
+        return PlayerListItemUpdate.Action.valueOf(action.name());
+    }
+
+    private PlayerListItem.Action convertToItemAction(EnumPlayerInfoAction action) {
+        if (action == EnumPlayerInfoAction.UPDATE_GAME_MODE) return PlayerListItem.Action.UPDATE_GAMEMODE;
+        return PlayerListItem.Action.valueOf(action.name());
     }
 
     @Override
@@ -121,15 +130,21 @@ public class BungeePacketBuilder extends PacketBuilder {
                     i.getPublicKey()));
         }
         if (bungeePacket instanceof PlayerListItemUpdate) {
-            EnumPlayerInfoAction[] array = ((PlayerListItemUpdate) bungeePacket).getActions().stream().map(this::toCustomAction).toArray(EnumPlayerInfoAction[]::new);
+            EnumPlayerInfoAction[] array = ((PlayerListItemUpdate) bungeePacket).getActions().stream().map(this::convertFromUpdateAction).toArray(EnumPlayerInfoAction[]::new);
             return new PacketPlayOutPlayerInfo(EnumSet.of(array[0], array), listData);
         } else {
-            return new PacketPlayOutPlayerInfo(toCustomAction(((PlayerListItem) bungeePacket).getAction()), listData);
+            return new PacketPlayOutPlayerInfo(convertFromItemAction(((PlayerListItem) bungeePacket).getAction()), listData);
         }
     }
 
-    private EnumPlayerInfoAction toCustomAction(Object action) {
-        return EnumPlayerInfoAction.valueOf(action.toString().replace("GAMEMODE", "GAME_MODE"));
+    private EnumPlayerInfoAction convertFromUpdateAction(PlayerListItemUpdate.Action action) {
+        if (action == PlayerListItemUpdate.Action.UPDATE_GAMEMODE) return EnumPlayerInfoAction.UPDATE_GAME_MODE;
+        return EnumPlayerInfoAction.valueOf(action.name());
+    }
+
+    private EnumPlayerInfoAction convertFromItemAction(PlayerListItem.Action action) {
+        if (action == PlayerListItem.Action.UPDATE_GAMEMODE) return EnumPlayerInfoAction.UPDATE_GAME_MODE;
+        return EnumPlayerInfoAction.valueOf(action.name());
     }
 
     @Override
