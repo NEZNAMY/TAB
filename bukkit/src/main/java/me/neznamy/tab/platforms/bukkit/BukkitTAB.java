@@ -5,7 +5,6 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.util.SupplierWithException;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.*;
 import me.neznamy.tab.shared.TAB;
 import org.bstats.bukkit.Metrics;
@@ -19,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Main class for Bukkit platform
@@ -95,14 +95,14 @@ public class BukkitTAB extends JavaPlugin {
     }
 
     private NMSStorage getNMSLoader() {
-        List<SupplierWithException<NMSStorage>> loaders = new ArrayList<>();
+        List<Callable<NMSStorage>> loaders = new ArrayList<>();
         loaders.add(BukkitLegacyNMSStorage::new);
         loaders.add(BukkitModernNMSStorage::new);
         loaders.add(MojangModernNMSStorage::new);
         loaders.add(ThermosNMSStorage::new);
-        for (SupplierWithException<NMSStorage> loader : loaders) {
+        for (Callable<NMSStorage> loader : loaders) {
             try {
-                return loader.get();
+                return loader.call();
             } catch (Exception ignored) {}
         }
         throw new IllegalStateException("Unsupported server version");
