@@ -28,9 +28,6 @@ public class CpuManager implements ThreadManager {
     /** Active time in current time period saved as nanoseconds from chosen methods */
     private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
 
-    /** Amount of sent packets in current time period */
-    private Map<String, AtomicInteger> packetsCurrent = new ConcurrentHashMap<>();
-
     /** Active time in previous time period saved as nanoseconds from features */
     private Map<String, Map<String, AtomicLong>> featureUsagePrevious = new HashMap<>();
 
@@ -39,9 +36,6 @@ public class CpuManager implements ThreadManager {
 
     /** Active time in previous time period saved as nanoseconds from chosen methods */
     private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
-
-    /** Amount of sent packets in previous time period */
-    private Map<String, AtomicInteger> packetsPrevious = new ConcurrentHashMap<>();
 
     /** TAB's main thread where all tasks are executed */
     private final ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
@@ -64,12 +58,10 @@ public class CpuManager implements ThreadManager {
             featureUsagePrevious = featureUsageCurrent;
             placeholderUsagePrevious = placeholderUsageCurrent;
             methodUsagePrevious = methodUsageCurrent;
-            packetsPrevious = packetsCurrent;
 
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
             methodUsageCurrent = new ConcurrentHashMap<>();
-            packetsCurrent = new ConcurrentHashMap<>();
         });
     }
 
@@ -136,15 +128,6 @@ public class CpuManager implements ThreadManager {
      */
     public Map<String, Float> getMethodUsage() {
         return getUsage(methodUsagePrevious);
-    }
-
-    /**
-     * Returns map of sent packets per feature in previous time period
-     *
-     * @return  map of sent packets per feature
-     */
-    public Map<String, AtomicInteger> getSentPackets() {
-        return sortByValue1(packetsPrevious);
     }
 
     /**
@@ -330,16 +313,6 @@ public class CpuManager implements ThreadManager {
      */
     public void addMethodTime(String method, long nanoseconds) {
         addTime(methodUsageCurrent, method, nanoseconds);
-    }
-
-    /**
-     * Increments packets sent by 1 of specified feature
-     *
-     * @param   feature
-     *          feature to increment packet counter of
-     */
-    public void packetSent(String feature) {
-        packetsCurrent.computeIfAbsent(feature, f -> new AtomicInteger()).incrementAndGet();
     }
 
     @Override

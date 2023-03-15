@@ -134,9 +134,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         players.add(p);
         p.setProperty(this, titleProperty, title);
         p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(),
-                EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
+                EnumScoreboardHealthDisplay.INTEGER));
         p.setObjectiveDisplaySlot(ScoreboardManagerImpl.DISPLAY_SLOT, ScoreboardManagerImpl.OBJECTIVE_NAME);
-        TAB.getInstance().getCPUManager().packetSent(TabConstants.PacketCategory.SCOREBOARD_TITLE);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }
@@ -155,9 +154,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     public void removePlayer(TabPlayer p) {
         if (!players.contains(p)) return; //not registered
-        p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME), this);
+        p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME));
         for (Line line : lines) {
-            p.sendCustomPacket(new PacketPlayOutScoreboardTeam(((ScoreboardLine)line).getTeamName()), TabConstants.PacketCategory.SCOREBOARD_LINES);
+            p.sendCustomPacket(new PacketPlayOutScoreboardTeam(((ScoreboardLine)line).getTeamName()));
         }
         players.remove(p);
         manager.getActiveScoreboards().remove(p);
@@ -168,7 +167,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
     public void refresh(TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
         refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
-                refreshed.getProperty(titleProperty).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER), TabConstants.PacketCategory.SCOREBOARD_TITLE);
+                refreshed.getProperty(titleProperty).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
     }
 
     @Override
@@ -215,7 +214,6 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
             }
             if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0) {
                 p.setScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(p), score++);
-                TAB.getInstance().getCPUManager().packetSent(getFeatureName());
             }
         }
     }

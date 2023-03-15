@@ -135,7 +135,7 @@ public class LayoutManager extends TabFeature {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             data.add(new PlayerInfoData(all.getTablistId()));
         }
-        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, data), this);
+        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, data));
     }
 
     @Override
@@ -168,7 +168,7 @@ public class LayoutManager extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
-            p.sendCustomPacket(removePacket, this);
+            p.sendCustomPacket(removePacket);
         }
     }
 

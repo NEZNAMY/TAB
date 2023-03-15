@@ -64,7 +64,7 @@ public class CustomLine extends ScoreboardLine {
             } else {
                 //only prefix/suffix changed
                 refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(),
-                        refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+                        refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0));
             }
         }
     }

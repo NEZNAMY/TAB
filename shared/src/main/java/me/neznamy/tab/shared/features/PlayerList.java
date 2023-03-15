@@ -97,7 +97,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null)), this);
+                    new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null)));
         }
         if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
     }
@@ -139,7 +139,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
                 if (isDisabledPlayer(target)) continue;
                 list.add(new PlayerInfoData(getTablistUUID(target, viewer), getTabFormat(target, viewer)));
             }
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
+            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
         }
     }
 
@@ -151,7 +151,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
             if (!isDisabledPlayer(p)) updatedPlayers.add(new PlayerInfoData(getTablistUUID(p, p)));
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers), this);
+            if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers));
         }
     }
 
@@ -162,9 +162,9 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
         TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p))), this);
+                        new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p))));
                 if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all))), this);
+                        new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all))));
             }
         });
     }
@@ -221,7 +221,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
                 if (all == connectedPlayer) continue; //already sent 4 lines above
                 list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer)));
             }
-            if (!list.isEmpty()) connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list), this);
+            if (!list.isEmpty()) connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
         };
         r.run();
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled

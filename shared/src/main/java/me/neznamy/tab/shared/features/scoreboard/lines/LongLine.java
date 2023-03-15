@@ -37,7 +37,7 @@ public class LongLine extends ScoreboardLine {
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
                 refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, refreshed.getProperty(textProperty).get(),
-                        "", "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+                        "", "always", "always", 0));
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
                 String[] values = splitText(getPlayerName(lineNumber), RGBUtils.getInstance().convertRGBtoLegacy(refreshed.getProperty(textProperty).get()), refreshed.getVersion().getMinorVersion() >= 8 ? 40 : 16);

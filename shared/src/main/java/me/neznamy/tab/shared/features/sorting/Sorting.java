@@ -72,7 +72,7 @@ public class Sorting extends TabFeature {
         if (!shortTeamNames.get(p).equals(previousShortName)) {
             if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.isDisabledPlayer(p)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(previousShortName), TabConstants.PacketCategory.SORTING_CHANGING_TEAM_NAME);
+                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(previousShortName));
                 }
                 nameTags.registerTeam(p);
             }

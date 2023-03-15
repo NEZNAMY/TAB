@@ -65,7 +65,7 @@ public class PingSpoof extends TabFeature {
             list.add(new PlayerInfoData(p.getUniqueId(), realPing ? p.getPing() : value));
         }
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list), this);
+            p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_LATENCY, list));
         }
     }
 }

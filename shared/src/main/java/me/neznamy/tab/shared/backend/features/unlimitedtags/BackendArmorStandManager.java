@@ -149,7 +149,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         // creating new delayed task every time someone sneaks can be abused and cause OOM
         // RIP 1.8.0
         for (PacketPlayOutEntityDestroy packet : destroyPackets) {
-            viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+            viewer.sendCustomPacket(packet);
         }
         for (ArmorStand a : armorStandArray) {
             a.spawn(viewer);
@@ -219,7 +219,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      */
     public void destroy(TabPlayer viewer) {
         for (PacketPlayOutEntityDestroy packet : destroyPackets) {
-            viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+            viewer.sendCustomPacket(packet);
         }
         unregisterPlayer(viewer);
     }
@@ -228,7 +228,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
     public void destroy() {
         for (TabPlayer viewer : nearbyPlayers) {
             for (PacketPlayOutEntityDestroy packet : destroyPackets) {
-                viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_DESPAWN);
+                viewer.sendCustomPacket(packet);
             }
         }
         nearbyPlayerList.clear();
@@ -249,7 +249,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
 
     public void updateMetadata(TabPlayer viewer) {
         for (BackendArmorStand a : armorStandArray) {
-            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(a.getEntityId(), a.createDataWatcher(a.getProperty().getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
+            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(a.getEntityId(), a.createDataWatcher(a.getProperty().getFormat(viewer), viewer)));
         }
     }
 }

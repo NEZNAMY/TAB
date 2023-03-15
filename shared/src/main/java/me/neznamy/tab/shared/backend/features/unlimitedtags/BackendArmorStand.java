@@ -114,7 +114,7 @@ public class BackendArmorStand implements ArmorStand {
     @Override
     public void spawn(TabPlayer viewer) {
         for (TabPacket packet : getSpawnPackets(viewer)) {
-            viewer.sendCustomPacket(packet, TabConstants.PacketCategory.UNLIMITED_NAMETAGS_SPAWN);
+            viewer.sendCustomPacket(packet);
         }
     }
 
@@ -182,7 +182,7 @@ public class BackendArmorStand implements ArmorStand {
      */
     public void updateMetadata() {
         for (TabPlayer viewer : asm.getNearbyPlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_METADATA);
+            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
         }
     }
 
@@ -211,7 +211,7 @@ public class BackendArmorStand implements ArmorStand {
 
     public void sendTeleportPacket(TabPlayer viewer) {
         viewer.sendCustomPacket(new PacketPlayOutEntityTeleport(entityId, manager.getX(owner), getYLocation(viewer),
-                        manager.getZ(owner), 0, 0), TabConstants.PacketCategory.UNLIMITED_NAMETAGS_TELEPORT);
+                        manager.getZ(owner), 0, 0));
     }
 
     /**

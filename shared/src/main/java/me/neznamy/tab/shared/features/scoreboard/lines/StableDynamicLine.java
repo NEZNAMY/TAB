@@ -6,7 +6,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
@@ -40,7 +39,7 @@ public class StableDynamicLine extends ScoreboardLine {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;
-        refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixSuffix[0], prefixSuffix[1], "always", "always", 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+        refreshed.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefixSuffix[0], prefixSuffix[1], "always", "always", 0));
     }
 
     @Override

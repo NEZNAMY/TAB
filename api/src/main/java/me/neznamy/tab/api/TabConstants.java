@@ -64,43 +64,6 @@ public class TabConstants {
     }
 
     /**
-     * Information why a specific feature sent a packet
-     * and what the packet sent is supposed to do.
-     */
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class PacketCategory {
-
-        public static final String BOSSBAR_COLOR = "BossBar (Color)";
-        public static final String BOSSBAR_STYLE = "BossBar (Style)";
-        public static final String BOSSBAR_PROGRESS = "BossBar (Progress)";
-        public static final String BOSSBAR_TEXT = "BossBar (Text)";
-        public static final String BOSSBAR_WITHER_TELEPORT = "BossBar (Teleporting Wither)";
-
-        public static final String GLOBAL_PLAYERLIST_LATENCY = "Global PlayerList (Updating latency)";
-        public static final String GLOBAL_PLAYERLIST_VANISH = "Global PlayerList (Vanishing)";
-
-        public static final String LAYOUT_FIXED_SLOTS = "Layout (Fixed slots)";
-        public static final String LAYOUT_PLAYER_SLOTS = "Layout (Player slots)";
-        public static final String LAYOUT_LATENCY = "Layout (Updating latency)";
-
-        public static final String NAMETAGS_TEAM_REGISTER = "NameTags (Team register)";
-        public static final String NAMETAGS_TEAM_UNREGISTER = "NameTags (Team unregister)";
-        public static final String NAMETAGS_TEAM_UPDATE = "NameTags (Team update)";
-
-        public static final String SORTING_CHANGING_TEAM_NAME = "Sorting (Changing team name)";
-
-        public static final String SCOREBOARD_TITLE = "Scoreboard (Title)";
-        public static final String SCOREBOARD_LINES = "Scoreboard (Lines)";
-
-        public static final String UNLIMITED_NAMETAGS_OFFSET_CHANGE = "Unlimited NameTags (Changing offset)";
-        public static final String UNLIMITED_NAMETAGS_SPAWN = "Unlimited NameTags (Spawning)";
-        public static final String UNLIMITED_NAMETAGS_DESPAWN = "Unlimited NameTags (Despawning)";
-        public static final String UNLIMITED_NAMETAGS_TELEPORT = "Unlimited NameTags (Teleporting)";
-        public static final String UNLIMITED_NAMETAGS_SNEAK = "Unlimited NameTags (Sneaking)";
-        public static final String UNLIMITED_NAMETAGS_METADATA = "Unlimited NameTags (Metadata)";
-    }
-
-    /**
      * Permission nodes used by the plugin
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

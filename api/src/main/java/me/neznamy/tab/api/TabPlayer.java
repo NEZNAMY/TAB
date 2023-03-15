@@ -87,28 +87,6 @@ public interface TabPlayer {
     void sendCustomPacket(TabPacket packet);
 
     /**
-     * Sends the player a custom universal packet and adds that packet into counter that
-     * is displayed in /tab cpu
-     *
-     * @param   packet
-     *          packet to send
-     * @param   feature
-     *          feature to increment sent packet counter of
-     */
-    void sendCustomPacket(TabPacket packet, TabFeature feature);
-    
-    /**
-     * Sends the player a custom universal packet and adds that packet into counter that
-     * is displayed in /tab cpu
-     *
-     * @param   packet
-     *          packet to send
-     * @param   feature
-     *          feature to increment sent packet counter of
-     */
-    void sendCustomPacket(TabPacket packet, String feature);
-
-    /**
      * Sends the player a platform-specific packet
      *
      * @param   packet
@@ -383,7 +361,24 @@ public interface TabPlayer {
      */
     void setObjectiveDisplaySlot(int slot, @NonNull String objective);
 
+    /**
+     * Sets scoreboard score
+     * @param   objective
+     *          Objective name
+     * @param   player
+     *          Affected player
+     * @param   score
+     *          New score value
+     */
     void setScoreboardScore(@NonNull String objective, @NonNull String player, int score);
 
+    /**
+     * Removes scoreboard score
+     *
+     * @param   objective
+     *          Objective to remove from
+     * @param   player
+     *          Player to remove from sidebar
+     */
     void removeScoreboardScore(@NonNull String objective, @NonNull String player);
 }

@@ -163,7 +163,7 @@ public class RedisPlayer {
                     disabledPlayerList = false;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        all.sendCustomPacket(getUpdatePacket(), redis);
+                        all.sendCustomPacket(getUpdatePacket());
                     }
                 }
             } else {
@@ -171,7 +171,7 @@ public class RedisPlayer {
                     disabledPlayerList = true;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        all.sendCustomPacket(getUpdatePacket(), redis);
+                        all.sendCustomPacket(getUpdatePacket());
                     }
                 }
             }
@@ -181,14 +181,14 @@ public class RedisPlayer {
                 if (!redis.getNameTags().isDisabled(server, null)) {
                     disabledNameTags = false;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.sendCustomPacket(getRegisterTeamPacket(), redis);
+                        all.sendCustomPacket(getRegisterTeamPacket());
                     }
                 }
             } else {
                 if (redis.getNameTags().isDisabled(server, null)) {
                     disabledNameTags = true;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.sendCustomPacket(getUnregisterTeamPacket(), redis);
+                        all.sendCustomPacket(getUnregisterTeamPacket());
                     }
                 }
             }

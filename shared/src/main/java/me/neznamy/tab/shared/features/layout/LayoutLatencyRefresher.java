@@ -28,7 +28,7 @@ public class LayoutLatencyRefresher extends TabFeature {
             PlayerSlot slot = layout.getSlot(p);
             if (slot == null) continue;
             all.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_LATENCY,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(slot.getUniqueId(), p.getPing())), TabConstants.PacketCategory.LAYOUT_LATENCY);
+                    new PacketPlayOutPlayerInfo.PlayerInfoData(slot.getUniqueId(), p.getPing())));
         }
     }
 }

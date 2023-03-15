@@ -23,7 +23,7 @@ public class GhostPlayerFix extends TabFeature {
             if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == disconnectedPlayer) continue;
-                all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())), this);
+                all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())));
             }
         });
     }

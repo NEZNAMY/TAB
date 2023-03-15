@@ -30,7 +30,7 @@ public class FixedSlot extends TabFeature {
     public void refresh(TabPlayer p, boolean force) {
         if (!layout.containsViewer(p) || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                new PlayerInfoData(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()))), TabConstants.PacketCategory.LAYOUT_FIXED_SLOTS);
+                new PlayerInfoData(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()))));
     }
 
     public PlayerInfoData createEntry(TabPlayer viewer) {

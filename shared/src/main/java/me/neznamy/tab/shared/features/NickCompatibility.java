@@ -52,11 +52,11 @@ public class NickCompatibility extends TabFeature {
 
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player)), this);
+                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player)));
                     String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
                     viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
-                            nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(player.getNickname()), nameTags.getTeamOptions()), this);
+                            nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(player.getNickname()), nameTags.getTeamOptions()));
                 }
             }
             if (belowname != null) {
@@ -64,7 +64,6 @@ public class NickCompatibility extends TabFeature {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (all.getWorld().equals(player.getWorld()) && Objects.equals(all.getServer(), player.getServer())) {
                         all.setScoreboardScore(BelowName.OBJECTIVE_NAME, player.getNickname(), value);
-                        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                     }
                 }
             }
@@ -72,7 +71,6 @@ public class NickCompatibility extends TabFeature {
                 int value = yellownumber.getValue(player);
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), value);
-                    TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                 }
             }
         });
@@ -85,22 +83,20 @@ public class NickCompatibility extends TabFeature {
                 PacketPlayOutScoreboardTeam unregister = player.getUnregisterTeamPacket();
                 PacketPlayOutScoreboardTeam register = player.getRegisterTeamPacket();
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(unregister, this);
-                    viewer.sendCustomPacket(register, this);
+                    viewer.sendCustomPacket(unregister);
+                    viewer.sendCustomPacket(register);
                 }
             }
             if (belowname != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (Objects.equals(all.getServer(), player.getServer())) {
                         all.setScoreboardScore(BelowName.OBJECTIVE_NAME, player.getNickname(), player.getBelowName());
-                        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                     }
                 }
             }
             if (yellownumber != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), player.getYellowNumber());
-                    TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                 }
             }
         });

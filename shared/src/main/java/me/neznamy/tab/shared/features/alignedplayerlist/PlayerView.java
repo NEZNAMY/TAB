@@ -46,7 +46,7 @@ public class PlayerView {
             updateAllPlayers();
         } else {
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(connectedPlayer, viewer), formatName(connectedPlayer))), feature);
+                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(connectedPlayer, viewer), formatName(connectedPlayer))));
         }
     }
 
@@ -58,7 +58,7 @@ public class PlayerView {
                 updateAllPlayers();
             } else {
                 viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))), feature);
+                        new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))));
             }
         }
     }
@@ -66,7 +66,7 @@ public class PlayerView {
     private void updateAllPlayers() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))), feature);
+                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))));
         }
     }
 
@@ -130,7 +130,7 @@ public class PlayerView {
             updateAllPlayers();
         } else {
             viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))), feature);
+                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))));
         }
     }
 

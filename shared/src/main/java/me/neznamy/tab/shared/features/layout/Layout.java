@@ -41,7 +41,7 @@ public class Layout extends TabFeature {
             list.add(new PlayerInfoData(getEntryName(p, slot), manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent(""), null, null));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list), this);
+        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list));
     }
 
     public String getEntryName(TabPlayer viewer, long slot) {
@@ -52,7 +52,7 @@ public class Layout extends TabFeature {
         if (!viewers.contains(p)) return;
         viewers.remove(p);
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-        p.sendCustomPacket(manager.getRemovePacket(), this);
+        p.sendCustomPacket(manager.getRemovePacket());
     }
 
     public boolean isConditionMet(TabPlayer p) {

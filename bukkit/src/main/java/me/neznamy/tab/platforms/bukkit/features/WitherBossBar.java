@@ -49,7 +49,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
                 if (!line.containsPlayer(p)) continue;
                 Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
                 if (loc.getY() < 1) loc.setY(1);
-                p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc.getX(), loc.getY(), loc.getZ(), 0, 0), TabConstants.PacketCategory.BOSSBAR_WITHER_TELEPORT);
+                p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc.getX(), loc.getY(), loc.getZ(), 0, 0));
             }
         }
     }

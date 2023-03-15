@@ -261,18 +261,6 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public void sendCustomPacket(TabPacket packet, TabFeature feature) {
-        sendCustomPacket(packet);
-        if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature.getFeatureName());
-    }
-    
-    @Override
-    public void sendCustomPacket(TabPacket packet, String feature) {
-        sendCustomPacket(packet);
-        if (feature != null) TAB.getInstance().getCPUManager().packetSent(feature);
-    }
-
-    @Override
     public Property getProperty(String name) {
         return properties.get(name);
     }

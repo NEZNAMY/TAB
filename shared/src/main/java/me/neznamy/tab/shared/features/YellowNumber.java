@@ -63,15 +63,13 @@ public class YellowNumber extends TabFeature {
                 continue;
             }
             if (loaded.isBedrockPlayer()) continue;
-            loaded.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType), this);
+            loaded.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType));
             loaded.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
-            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 viewer.setScoreboardScore(OBJECTIVE_NAME, target.getNickname(), getValue(target));
-                TAB.getInstance().getCPUManager().packetSent(getFeatureName());
             }
         }
     }
@@ -80,7 +78,7 @@ public class YellowNumber extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(p) || p.isBedrockPlayer()) continue;
-            p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), this);
+            p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME));
         }
     }
 
@@ -92,20 +90,17 @@ public class YellowNumber extends TabFeature {
             return;
         }
         if (!connectedPlayer.isBedrockPlayer()) {
-            connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType), this);
+            connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType));
             connectedPlayer.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
-            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
         }
         int value = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!isDisabledPlayer(all)) {
                 if (!all.isBedrockPlayer()) {
                     all.setScoreboardScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), value);
-                    TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                 }
                 if (!connectedPlayer.isBedrockPlayer()) {
                     connectedPlayer.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-                    TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                 }
             }
         }
@@ -127,7 +122,7 @@ public class YellowNumber extends TabFeature {
             removeDisabledPlayer(p);
         }
         if (disabledNow && !disabledBefore) {
-            if (!p.isBedrockPlayer()) p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME), this);
+            if (!p.isBedrockPlayer()) p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME));
         }
         if (!disabledNow && disabledBefore) {
             onJoin(p);
@@ -141,7 +136,6 @@ public class YellowNumber extends TabFeature {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(all) || all.isBedrockPlayer()) continue;
             all.setScoreboardScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
-            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
         }
         if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
     }
@@ -149,13 +143,11 @@ public class YellowNumber extends TabFeature {
     @Override
     public void onLoginPacket(TabPlayer packetReceiver) {
         if (isDisabledPlayer(packetReceiver) || packetReceiver.isBedrockPlayer()) return;
-        packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType), this);
+        packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, TITLE, displayType));
         packetReceiver.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
-        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.isLoaded()) {
                 packetReceiver.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-                TAB.getInstance().getCPUManager().packetSent(getFeatureName());
             }
         }
     }

@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
@@ -28,8 +27,8 @@ public class PlayerSlot {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(uniqueId));
         for (TabPlayer viewer : layout.getViewers()) {
             if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
-            viewer.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getSlot(viewer)), TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+            viewer.sendCustomPacket(packet);
+            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getSlot(viewer)));
         }
     }
 
@@ -72,7 +71,7 @@ public class PlayerSlot {
             PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(uniqueId, IChatBaseComponent.optimizedComponent(text)));
             for (TabPlayer all : layout.getViewers()) {
                 if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
-                all.sendCustomPacket(packet, TabConstants.PacketCategory.LAYOUT_PLAYER_SLOTS);
+                all.sendCustomPacket(packet);
             }
         }
     }

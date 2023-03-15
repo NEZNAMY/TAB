@@ -73,7 +73,7 @@ public class NameTag extends TabFeature implements TeamManager {
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (PacketPlayOutScoreboardTeam packet : packets) {
-                viewer.sendCustomPacket(packet, TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+                viewer.sendCustomPacket(packet);
             }
         }
     }
@@ -126,7 +126,7 @@ public class NameTag extends TabFeature implements TeamManager {
             PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(disconnectedPlayer));
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                viewer.sendCustomPacket(packet, TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+                viewer.sendCustomPacket(packet);
             }
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -256,13 +256,14 @@ public class NameTag extends TabFeature implements TeamManager {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix, translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_UPDATE);
+        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix,
+                translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()));
     }
 
     public void unregisterTeam(TabPlayer p, String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabConstants.PacketCategory.NAMETAGS_TEAM_UNREGISTER);
+            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName));
         }
     }
 
@@ -277,7 +278,7 @@ public class NameTag extends TabFeature implements TeamManager {
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
         viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
-                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions()), TabConstants.PacketCategory.NAMETAGS_TEAM_REGISTER);
+                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions()));
     }
 
     public String translate(boolean b) {

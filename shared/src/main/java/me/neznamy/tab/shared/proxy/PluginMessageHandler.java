@@ -126,7 +126,6 @@ public class PluginMessageHandler {
         for (Object arg : args) {
             writeObject(out, arg);
         }
-        TAB.getInstance().getThreadManager().packetSent("Plugin Message");
         ((ProxyTabPlayer)player).sendPluginMessage(out.toByteArray());
     }
 

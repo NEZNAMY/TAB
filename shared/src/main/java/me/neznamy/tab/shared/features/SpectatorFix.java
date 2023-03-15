@@ -38,7 +38,7 @@ public class SpectatorFix extends TabFeature {
             if (viewer == target || target.getGamemode() != 3) continue;
             list.add(new PlayerInfoData(target.getUniqueId(), realGameMode ? EnumGamemode.VALUES[target.getGamemode()+1] : EnumGamemode.CREATIVE));
         }
-        if (!list.isEmpty()) viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list), this);
+        if (!list.isEmpty()) viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list));
     }
 
     @Override
