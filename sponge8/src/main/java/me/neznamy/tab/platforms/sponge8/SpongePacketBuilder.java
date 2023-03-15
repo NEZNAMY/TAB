@@ -37,8 +37,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
     private final NMSStorage nms = NMSStorage.getInstance();
     public final Scoreboard dummyScoreboard = new Scoreboard();
 
-    private static final UUID SYSTEM_ID = new UUID(0, 0);
-
     @Getter private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
             (component, clientVersion) -> Component.Serializer.fromJson(component.toString(clientVersion)));
 
