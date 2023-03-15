@@ -3,8 +3,6 @@ package me.neznamy.tab.platforms.krypton
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss.Action
-import me.neznamy.tab.api.protocol.PacketPlayOutChat
-import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerListHeaderFooter
 import me.neznamy.tab.api.protocol.Skin
 import me.neznamy.tab.shared.ITabPlayer
@@ -13,7 +11,6 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.bossbar.BossBar.Color
 import net.kyori.adventure.bossbar.BossBar.Flag
 import net.kyori.adventure.bossbar.BossBar.Overlay
-import net.kyori.adventure.chat.ChatType
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.kryptonmc.api.entity.player.Player
@@ -49,12 +46,15 @@ class KryptonTabPlayer(
             }
             when (packet) {
                 is PacketPlayOutBoss -> handle(packet)
-                is PacketPlayOutChat -> handle(packet)
                 is PacketPlayOutPlayerListHeaderFooter -> handle(packet)
             }
         } catch (exception: Exception) {
             TAB.getInstance().errorManager.printError("An error occurred when sending ${packet.javaClass.simpleName}", exception)
         }
+    }
+
+    override fun sendMessage(message: IChatBaseComponent) {
+        delegate.sendMessage(GsonComponentSerializer.gson().deserialize(message.toString(version)))
     }
 
     override fun hasInvisibilityPotion(): Boolean = false
@@ -109,15 +109,6 @@ class KryptonTabPlayer(
                 processFlag(bar, packet.isPlayMusic, Flag.PLAY_BOSS_MUSIC)
             }
             else -> Unit
-        }
-    }
-
-    private fun handle(packet: PacketPlayOutChat) {
-        val message = GsonComponentSerializer.gson().deserialize(packet.message.toString(version))
-        when (packet.type) {
-            ChatMessageType.CHAT -> delegate.sendMessage(message, ChatType.CHAT.bind(getPlayer().displayName))
-            ChatMessageType.SYSTEM -> delegate.sendMessage(message)
-            ChatMessageType.GAME_INFO -> delegate.sendActionBar(message)
         }
     }
 

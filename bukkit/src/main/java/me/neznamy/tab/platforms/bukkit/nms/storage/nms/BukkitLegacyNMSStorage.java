@@ -98,7 +98,6 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         Entity = getLegacyClass("Entity");
         EntityLiving = getLegacyClass("EntityLiving");
         PlayerConnection = getLegacyClass("PlayerConnection");
-        PacketPlayOutChatStorage.CLASS = getLegacyClass("PacketPlayOutChat", "Packet3Chat");
         NetworkManager = getLegacyClass("NetworkManager");
         if (minorVersion >= 7) {
             IChatBaseComponent = getLegacyClass("IChatBaseComponent");
@@ -107,9 +106,6 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         if (minorVersion >= 8) {
             PacketPlayOutPlayerListHeaderFooterStorage.CLASS = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
             EntityArmorStand = getLegacyClass("EntityArmorStand");
-        }
-        if (minorVersion >= 12) {
-            PacketPlayOutChatStorage.ChatMessageTypeClass = (Class<Enum>) getLegacyClass("ChatMessageType");
         }
 
         // DataWatcher

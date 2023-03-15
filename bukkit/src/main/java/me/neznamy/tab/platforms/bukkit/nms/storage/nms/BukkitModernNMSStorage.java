@@ -66,12 +66,6 @@ public class BukkitModernNMSStorage extends NMSStorage {
         PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
 
         PacketPlayOutPlayerListHeaderFooterStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
-        if (minorVersion >= 19) {
-            PacketPlayOutChatStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundSystemChatPacket");
-        } else {
-            PacketPlayOutChatStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutChat");
-            PacketPlayOutChatStorage.ChatMessageTypeClass = (Class<Enum>) Class.forName("net.minecraft.network.chat.ChatMessageType");
-        }
 
         // DataWatcher
         DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher");

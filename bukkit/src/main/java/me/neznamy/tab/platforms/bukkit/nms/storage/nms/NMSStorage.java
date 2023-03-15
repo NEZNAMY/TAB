@@ -129,7 +129,6 @@ public abstract class NMSStorage {
         PacketPlayOutEntityMetadataStorage.load(this);
         PacketPlayOutEntityTeleportStorage.load(this);
         PacketPlayOutSpawnEntityLivingStorage.load(this);
-        PacketPlayOutChatStorage.load(this);
         PacketPlayOutPlayerListHeaderFooterStorage.load(this);
         PacketPlayOutPlayerInfoStorage.load(this);
         PacketPlayOutScoreboardObjectiveStorage.load(this);

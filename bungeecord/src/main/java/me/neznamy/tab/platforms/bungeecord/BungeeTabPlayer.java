@@ -3,12 +3,14 @@ package me.neznamy.tab.platforms.bungeecord;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -67,6 +69,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         long time = System.nanoTime();
         if (nmsPacket != null && getPlayer().isConnected()) getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
         TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
+    }
+
+    @Override
+    public void sendMessage(IChatBaseComponent message) {
+        getPlayer().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
     }
 
     @Override

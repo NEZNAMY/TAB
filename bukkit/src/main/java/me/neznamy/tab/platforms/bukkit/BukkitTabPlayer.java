@@ -8,13 +8,15 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossFlag;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.PacketPlayOutBoss;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -34,6 +36,9 @@ import java.util.UUID;
  * TabPlayer implementation for Bukkit platform
  */
 public class BukkitTabPlayer extends ITabPlayer {
+
+    /** Spigot check */
+    private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
     private Object handle;
@@ -95,8 +100,6 @@ public class BukkitTabPlayer extends ITabPlayer {
                 } else {
                     handleVia((PacketPlayOutBoss) nmsPacket);
                 }
-            } else if (nmsPacket instanceof PacketPlayOutChat) {
-                getPlayer().sendMessage(((PacketPlayOutChat) nmsPacket).getMessage().toLegacyText());
             } else {
                 NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
             }
@@ -104,6 +107,16 @@ public class BukkitTabPlayer extends ITabPlayer {
             TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
         }
         TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
+    }
+
+    @Override
+    @SuppressWarnings("deprecated")
+    public void sendMessage(IChatBaseComponent message) {
+        if (spigot) {
+            getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(version)));
+        } else {
+            getPlayer().sendMessage(message.toLegacyText());
+        }
     }
 
     /**

@@ -10,6 +10,7 @@ import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.protocol.Packet;
 import org.spongepowered.api.Sponge;
@@ -24,7 +25,7 @@ import java.util.*;
 
 public final class SpongeTabPlayer extends ITabPlayer {
 
-    private static final ComponentCache<IChatBaseComponent, net.kyori.adventure.text.Component> adventureCache = new ComponentCache<>(10000,
+    private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
@@ -64,6 +65,11 @@ public final class SpongeTabPlayer extends ITabPlayer {
         } else if (packet instanceof PacketPlayOutPlayerListHeaderFooter) {
             handle((PacketPlayOutPlayerListHeaderFooter)packet);
         }
+    }
+
+    @Override
+    public void sendMessage(IChatBaseComponent message) {
+        getPlayer().sendMessage(adventureCache.get(message, getVersion()));
     }
 
     private void handle(PacketPlayOutBoss packet) {

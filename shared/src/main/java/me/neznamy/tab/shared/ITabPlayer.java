@@ -8,7 +8,6 @@ import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.*;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -200,12 +199,7 @@ public abstract class ITabPlayer implements TabPlayer {
         } else {
             component = new IChatBaseComponent(message);
         }
-        sendCustomPacket(new PacketPlayOutChat(component, ChatMessageType.SYSTEM));
-    }
-
-    @Override
-    public void sendMessage(IChatBaseComponent message) {
-        sendCustomPacket(new PacketPlayOutChat(message, ChatMessageType.SYSTEM));
+        sendMessage(component);
     }
 
     @Override

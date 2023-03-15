@@ -56,12 +56,6 @@ public class MojangModernNMSStorage extends NMSStorage {
         EntityLiving = Class.forName("net.minecraft.world.entity.LivingEntity");
         PlayerConnection = Class.forName("net.minecraft.server.network.ServerGamePacketListenerImpl");
         PacketPlayOutPlayerListHeaderFooterStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundTabListPacket");
-        if (minorVersion >= 19) {
-            PacketPlayOutChatStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundSystemChatPacket");
-        } else {
-            PacketPlayOutChatStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundChatPacket");
-            PacketPlayOutChatStorage.ChatMessageTypeClass = (Class<Enum>) Class.forName("net.minecraft.network.chat.ChatType");
-        }
 
         // DataWatcher
         DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.SynchedEntityData");

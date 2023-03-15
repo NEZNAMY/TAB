@@ -46,8 +46,6 @@ object KryptonPacketBuilder : PacketBuilder() {
 
     override fun build(packet: PacketPlayOutBoss, clientVersion: ProtocolVersion?): Any = packet
 
-    override fun build(packet: PacketPlayOutChat, clientVersion: ProtocolVersion?): Any = packet
-
     @Suppress("UNCHECKED_CAST")
     override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion): Any {
         if (packet.actions.contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {

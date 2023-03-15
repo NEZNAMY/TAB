@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.*;
@@ -48,11 +47,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
         buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> build((PacketPlayOutEntityTeleport) packet));
         buildMap.put(PacketPlayOutEntityMetadata.class, (packet, version) -> build((PacketPlayOutEntityMetadata) packet));
         buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> build((PacketPlayOutSpawnEntityLiving) packet));
-    }
-
-    @Override
-    public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
-        return new ClientboundChatPacket(componentCache.get(packet.getMessage(), clientVersion), ChatType.valueOf(packet.getType().name()), SYSTEM_ID);
     }
 
     @Override

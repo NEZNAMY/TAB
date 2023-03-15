@@ -34,15 +34,6 @@ public class BungeePacketBuilder extends PacketBuilder {
     }
 
     @Override
-    public Object build(PacketPlayOutChat packet, ProtocolVersion clientVersion) {
-        if (clientVersion.getMinorVersion() >= 19) {
-            return new SystemChat(packet.getMessage().toString(clientVersion), (byte) packet.getType().ordinal());
-        } else {
-            return new Chat(packet.getMessage().toString(clientVersion), (byte) packet.getType().ordinal());
-        }
-    }
-
-    @Override
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) {
         if (clientVersion.getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() &&
                 packet.getActions().contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {

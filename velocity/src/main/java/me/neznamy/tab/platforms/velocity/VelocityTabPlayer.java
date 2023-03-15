@@ -7,7 +7,6 @@ import com.velocitypowered.api.util.GameProfile.Property;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
-import me.neznamy.tab.api.protocol.PacketPlayOutChat.ChatMessageType;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
@@ -38,7 +37,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
         put(PacketPlayOutBoss.class, packet -> handle((PacketPlayOutBoss) packet));
-        put(PacketPlayOutChat.class, packet -> handle((PacketPlayOutChat) packet));
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
         put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
         put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
@@ -76,19 +74,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         packetMethods.get(packet.getClass()).accept((TabPacket) packet);
     }
 
-    /**
-     * Handles PacketPlayOutChat request using Velocity API
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutChat packet) {
-        Component message = componentCache.get(packet.getMessage(), getVersion());
-        if (packet.getType() == ChatMessageType.GAME_INFO) {
-            getPlayer().sendActionBar(message);
-        } else {
-            getPlayer().sendMessage(message);
-        }
+    @Override
+    public void sendMessage(IChatBaseComponent message) {
+        getPlayer().sendMessage(componentCache.get(message, getVersion()));
     }
 
     /**

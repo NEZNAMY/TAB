@@ -29,8 +29,6 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.chat.ChatType;
-import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Collection;
@@ -46,7 +44,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods = new HashMap<>();
     {
-        packetMethods.put(PacketPlayOutChat.class, packet -> handle((PacketPlayOutChat) packet));
         packetMethods.put(PacketPlayOutPlayerListHeaderFooter.class, packet -> handle((PacketPlayOutPlayerListHeaderFooter) packet));
         packetMethods.put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
         packetMethods.put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
@@ -80,23 +77,9 @@ public final class SpongeTabPlayer extends ITabPlayer {
         packetMethods.get(packet.getClass()).accept((TabPacket) packet);
     }
 
-    private void handle(final PacketPlayOutChat packet) {
-        final Text message = textCache.get(packet.getMessage(), getVersion());
-        final ChatType type;
-        switch (packet.getType()) {
-            case CHAT:
-                type = ChatTypes.CHAT;
-                break;
-            case SYSTEM:
-                type = ChatTypes.SYSTEM;
-                break;
-            case GAME_INFO:
-                type = ChatTypes.ACTION_BAR;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown chat type: " + packet.getType());
-        }
-        getPlayer().sendMessage(type, message);
+    @Override
+    public void sendMessage(IChatBaseComponent message) {
+        getPlayer().sendMessage(textCache.get(message, getVersion()));
     }
 
     private void handle(final PacketPlayOutPlayerListHeaderFooter packet) {
