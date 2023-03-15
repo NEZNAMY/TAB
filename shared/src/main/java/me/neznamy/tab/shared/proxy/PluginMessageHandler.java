@@ -1,11 +1,8 @@
 package me.neznamy.tab.shared.proxy;
 
 import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import lombok.NonNull;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -32,6 +29,7 @@ public class PluginMessageHandler {
      * @param   bytes
      *          incoming message
      */
+    @SuppressWarnings("UnstableApiUsage")
     public void onPluginMessage(UUID uuid, byte[] bytes) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
@@ -110,43 +108,5 @@ public class PluginMessageHandler {
                         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(in.readUTF()));
                     }
                 });
-    }
-
-    /**
-     * Sends plugin message to specified player
-     *
-     * @param   player
-     *          Player to send plugin message to
-     * @param   args
-     *          Messages to encode
-     */
-    public void sendMessage(TabPlayer player, Object... args) {
-//        System.out.println(player.getName() + ": " + Arrays.toString(args));
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        for (Object arg : args) {
-            writeObject(out, arg);
-        }
-        ((ProxyTabPlayer)player).sendPluginMessage(out.toByteArray());
-    }
-
-    /**
-     * Writes object to data input by calling proper write method
-     * based on data type of the object.
-     *
-     * @param   out
-     *          Data output to write to
-     * @param   value
-     *          Value to write
-     */
-    private void writeObject(@NonNull ByteArrayDataOutput out, @NonNull Object value) {
-        if (value instanceof String) {
-            out.writeUTF((String) value);
-        } else if (value instanceof Boolean) {
-            out.writeBoolean((boolean) value);
-        } else if (value instanceof Integer) {
-            out.writeInt((int) value);
-        } else if (value instanceof Double) {
-            out.writeDouble((double) value);
-        } else throw new IllegalArgumentException("Unhandled message data type " + value.getClass().getName());
     }
 }

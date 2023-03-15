@@ -2,15 +2,10 @@ package me.neznamy.tab.shared.proxy.features.unlimitedtags;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
-import me.neznamy.tab.shared.proxy.PluginMessageHandler;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 public class ProxyNameTagX extends NameTagX {
-
-    private final PluginMessageHandler plm = ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler();
 
     public ProxyNameTagX() {
         super(ProxyArmorStandManager::new);
@@ -20,11 +15,11 @@ public class ProxyNameTagX extends NameTagX {
     public void onServerChange(TabPlayer p, String from, String to) {
         super.onServerChange(p, from, to);
         if (isPreviewingNametag(p)) {
-            plm.sendMessage(p, "NameTagX", "Preview", true);
+            ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "Preview", true);
         }
         for (String line : getDefinedLines()) {
             String text = p.getProperty(line).get();
-            plm.sendMessage(p, "NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(p.getVersion())); //rel placeholder support in the future
+            ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(p.getVersion())); //rel placeholder support in the future
         }
     }
 
@@ -41,21 +36,21 @@ public class ProxyNameTagX extends NameTagX {
 
     @Override
     public void setNameTagPreview(TabPlayer player, boolean status) {
-        plm.sendMessage(player, "NameTagX", "Preview", status);
+        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Preview", status);
     }
 
     @Override
     public void resumeArmorStands(TabPlayer player) {
-        plm.sendMessage(player, "NameTagX", "Resume");
+        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Resume");
     }
 
     @Override
     public void pauseArmorStands(TabPlayer player) {
-        plm.sendMessage(player, "NameTagX", "Pause");
+        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Pause");
     }
 
     @Override
     public void updateNameTagVisibilityView(TabPlayer player) {
-        plm.sendMessage(player, "NameTagX", "VisibilityView");
+        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "VisibilityView");
     }
 }

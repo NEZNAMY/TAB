@@ -1,7 +1,10 @@
 package me.neznamy.tab.shared.proxy;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -92,7 +95,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
                 args.add(Double.valueOf(String.valueOf(entry.getValue())));
             }
         }
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+        sendPluginMessage(args.toArray());
         if (expansion instanceof ProxyTabExpansion) ((ProxyTabExpansion) expansion).resendAllValues(this);
     }
 
@@ -147,9 +150,45 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     @Override
     public boolean hasPermission(String permission) {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, "Permission", permission);
+            sendPluginMessage("Permission", permission);
             return permissions != null && permissions.getOrDefault(permission, false);
         }
         return hasPermission0(permission);
+    }
+
+    /**
+     * Sends plugin message
+     *
+     * @param   args
+     *          Messages to encode
+     */
+    @SuppressWarnings("UnstableApiUsage")
+    public void sendPluginMessage(Object... args) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        for (Object arg : args) {
+            writeObject(out, arg);
+        }
+        sendPluginMessage(out.toByteArray());
+    }
+
+    /**
+     * Writes object to data input by calling proper write method
+     * based on data type of the object.
+     *
+     * @param   out
+     *          Data output to write to
+     * @param   value
+     *          Value to write
+     */
+    private void writeObject(@NonNull ByteArrayDataOutput out, @NonNull Object value) {
+        if (value instanceof String) {
+            out.writeUTF((String) value);
+        } else if (value instanceof Boolean) {
+            out.writeBoolean((boolean) value);
+        } else if (value instanceof Integer) {
+            out.writeInt((int) value);
+        } else if (value instanceof Double) {
+            out.writeDouble((double) value);
+        } else throw new IllegalArgumentException("Unhandled message data type " + value.getClass().getName());
     }
 }

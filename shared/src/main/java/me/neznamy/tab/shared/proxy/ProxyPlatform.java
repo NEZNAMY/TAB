@@ -70,7 +70,7 @@ public abstract class ProxyPlatform extends Platform {
         }
         bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            pluginMessageHandler.sendMessage(all, "Placeholder", placeholder.getIdentifier(), refresh);
+            ((ProxyTabPlayer)all).sendPluginMessage("Placeholder", placeholder.getIdentifier(), refresh);
         }
     }
 

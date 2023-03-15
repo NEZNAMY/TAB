@@ -13,7 +13,6 @@ import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
@@ -144,7 +143,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
             args.add(packet.getRenderType().ordinal());
         }
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+        sendPluginMessage(args.toArray());
     }
 
     /**
@@ -175,7 +174,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             args.add(packet.getCollisionRule());
             args.add((packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal());
         }
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
+        sendPluginMessage(args.toArray());
     }
 
     /**
@@ -263,20 +262,17 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
-                "PacketPlayOutScoreboardDisplayObjective", slot, objective);
+        sendPluginMessage("PacketPlayOutScoreboardDisplayObjective", slot, objective);
     }
 
     @Override
     public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
-                "PacketPlayOutScoreboardScore", objective, 0, player, score);
+        sendPluginMessage("PacketPlayOutScoreboardScore", objective, 0, player, score);
     }
 
     @Override
     public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
-                "PacketPlayOutScoreboardScore", objective, 1, player, 0);
+        sendPluginMessage("PacketPlayOutScoreboardScore", objective, 1, player, 0);
     }
 
     @Override
