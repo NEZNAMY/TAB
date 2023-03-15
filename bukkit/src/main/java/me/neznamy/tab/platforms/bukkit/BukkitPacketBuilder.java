@@ -16,9 +16,7 @@ public class BukkitPacketBuilder extends PacketBuilder {
         buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> PacketPlayOutEntityDestroyStorage.build((PacketPlayOutEntityDestroy) packet));
         buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> PacketPlayOutSpawnEntityLivingStorage.build((PacketPlayOutSpawnEntityLiving) packet));
         buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> PacketPlayOutScoreboardObjectiveStorage.build((PacketPlayOutScoreboardObjective) packet, version));
-        buildMap.put(PacketPlayOutScoreboardDisplayObjective.class, (packet, version) -> PacketPlayOutScoreboardDisplayObjectiveStorage.build((PacketPlayOutScoreboardDisplayObjective) packet, version));
         buildMap.put(PacketPlayOutScoreboardTeam.class, (packet, version) -> PacketPlayOutScoreboardTeamStorage.build((PacketPlayOutScoreboardTeam) packet, version));
-        buildMap.put(PacketPlayOutScoreboardScore.class, (packet, version) -> PacketPlayOutScoreboardScoreStorage.build((PacketPlayOutScoreboardScore) packet, version));
     }
 
     @Override
@@ -34,10 +32,5 @@ public class BukkitPacketBuilder extends PacketBuilder {
     @Override
     public PacketPlayOutScoreboardObjective readObjective(Object nmsPacket) throws ReflectiveOperationException {
         return PacketPlayOutScoreboardObjectiveStorage.read(nmsPacket);
-    }
-
-    @Override
-    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket) throws ReflectiveOperationException {
-        return PacketPlayOutScoreboardDisplayObjectiveStorage.read(nmsPacket);
     }
 }

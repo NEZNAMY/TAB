@@ -11,7 +11,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.proxy.PluginMessageHandler;
@@ -267,24 +266,23 @@ public class FeatureManagerImpl implements FeatureManager {
     }
 
     /**
-     * Calls onDisplayObjective(TabPlayer, PacketPlayOutScoreboardDisplayObjective) on all features
+     * Calls onDisplayObjective(...) on all features
      *
      * @param   packetReceiver
      *          player who received the packet
-     * @param   packet
-     *          the packet
-     * @throws  ReflectiveOperationException
-     *          if reflective operation fails
+     * @param   slot
+     *          Objective slot
+     * @param   objective
+     *          Objective name
      */
-    public void onDisplayObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
+    public void onDisplayObjective(TabPlayer packetReceiver, int slot, String objective) {
         if (!displayObjectiveListeners) return;
         long time = System.nanoTime();
-        PacketPlayOutScoreboardDisplayObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readDisplayObjective(packet);
         TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.PACKET_DISPLAY_OBJECTIVE, System.nanoTime()-time);
         for (TabFeature f : values) {
             if (!f.overridesMethod("onDisplayObjective")) continue;
             time = System.nanoTime();
-            f.onDisplayObjective(packetReceiver, display);
+            f.onDisplayObjective(packetReceiver, slot, objective);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }

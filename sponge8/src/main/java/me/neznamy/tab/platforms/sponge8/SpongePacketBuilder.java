@@ -17,10 +17,8 @@ import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
@@ -69,14 +67,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
     }
 
     @Override
-    public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
-        return new ClientboundSetDisplayObjectivePacket(
-                packet.getSlot(),
-                new Objective(dummyScoreboard, packet.getObjectiveName(), null, TextComponent.EMPTY, null)
-        );
-    }
-
-    @Override
     public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
         String displayName = clientVersion.getMinorVersion() < 13 ? cutTo(packet.getDisplayName(), 32) : packet.getDisplayName();
         return new ClientboundSetObjectivePacket(
@@ -88,16 +78,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
                         packet.getRenderType() == null ? null : ObjectiveCriteria.RenderType.valueOf(packet.getRenderType().name())
                 ),
                 packet.getAction()
-        );
-    }
-
-    @Override
-    public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
-        return new ClientboundSetScorePacket(
-                ServerScoreboard.Method.valueOf(packet.getAction().name()),
-                packet.getObjectiveName(),
-                packet.getPlayer(),
-                packet.getScore()
         );
     }
 
@@ -159,14 +139,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
                 (String) nms.ClientboundSetObjectivePacket_objectivename.get(packet),
                 null,
                 PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER
-        );
-    }
-
-    @Override
-    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object nmsPacket) throws ReflectiveOperationException {
-        return new PacketPlayOutScoreboardDisplayObjective(
-                nms.ClientboundSetDisplayObjectivePacket_position.getInt(nmsPacket),
-                (String) nms.ClientboundSetDisplayObjectivePacket_objectivename.get(nmsPacket)
         );
     }
 

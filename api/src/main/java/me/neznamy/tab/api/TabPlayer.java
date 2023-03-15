@@ -372,4 +372,18 @@ public interface TabPlayer {
      *          Unique identifier to match the bossbar with other functions
      */
     void removeBossBar(@NonNull UUID id);
+
+    /**
+     * Sets objective display slot of specified objective
+     *
+     * @param   slot
+     *          Position, 0 = PlayerList, 1 = SideBar, 2 = BelowName
+     * @param   objective
+     *          Objective name
+     */
+    void setObjectiveDisplaySlot(int slot, @NonNull String objective);
+
+    void setScoreboardScore(@NonNull String objective, @NonNull String player, int score);
+
+    void removeScoreboardScore(@NonNull String objective, @NonNull String player);
 }

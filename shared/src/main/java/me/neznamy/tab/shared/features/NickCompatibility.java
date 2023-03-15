@@ -7,10 +7,8 @@ import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.api.TabConstants;
@@ -64,14 +62,17 @@ public class NickCompatibility extends TabFeature {
             if (belowname != null) {
                 int value = belowname.getValue(player);
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    if (all.getWorld().equals(player.getWorld()) && Objects.equals(all.getServer(), player.getServer()))
-                        all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, player.getNickname(), value), this);
+                    if (all.getWorld().equals(player.getWorld()) && Objects.equals(all.getServer(), player.getServer())) {
+                        all.setScoreboardScore(BelowName.OBJECTIVE_NAME, player.getNickname(), value);
+                        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
+                    }
                 }
             }
             if (yellownumber != null) {
                 int value = yellownumber.getValue(player);
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, player.getNickname(), value), this);
+                    all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), value);
+                    TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                 }
             }
         });
@@ -89,16 +90,17 @@ public class NickCompatibility extends TabFeature {
                 }
             }
             if (belowname != null) {
-                PacketPlayOutScoreboardScore packet = player.getBelowNameUpdatePacket();
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    if (Objects.equals(all.getServer(), player.getServer()))
-                        all.sendCustomPacket(packet, this);
+                    if (Objects.equals(all.getServer(), player.getServer())) {
+                        all.setScoreboardScore(BelowName.OBJECTIVE_NAME, player.getNickname(), player.getBelowName());
+                        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
+                    }
                 }
             }
             if (yellownumber != null) {
-                PacketPlayOutScoreboardScore packet = player.getYellowNumberUpdatePacket();
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.sendCustomPacket(packet, this);
+                    all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), player.getYellowNumber());
+                    TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                 }
             }
         });

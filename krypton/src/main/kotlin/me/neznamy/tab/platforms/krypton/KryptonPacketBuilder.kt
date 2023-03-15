@@ -75,10 +75,6 @@ object KryptonPacketBuilder : PacketBuilder() {
         return PacketOutPlayerInfoUpdate(actions, entries)
     }
 
-    override fun build(packet: PacketPlayOutScoreboardDisplayObjective, clientVersion: ProtocolVersion?): Any {
-        return PacketOutDisplayObjective(packet.slot, packet.objectiveName)
-    }
-
     override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion): Any {
         return PacketOutUpdateObjectives(
             packet.objectiveName,
@@ -86,10 +82,6 @@ object KryptonPacketBuilder : PacketBuilder() {
             toComponent(packet.displayName, clientVersion),
             packet.renderType?.ordinal ?: -1
         )
-    }
-
-    override fun build(packet: PacketPlayOutScoreboardScore, clientVersion: ProtocolVersion?): Any {
-        return PacketOutUpdateScore(packet.player, packet.action.ordinal, packet.objectiveName, packet.score)
     }
 
     override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): Any {
@@ -157,6 +149,4 @@ object KryptonPacketBuilder : PacketBuilder() {
     }
 
     override fun readObjective(packet: Any?): PacketPlayOutScoreboardObjective? = null
-
-    override fun readDisplayObjective(packet: Any?): PacketPlayOutScoreboardDisplayObjective? = null
 }

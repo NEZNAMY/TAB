@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.Constructor;
@@ -20,14 +18,11 @@ public class PacketPlayOutScoreboardDisplayObjectiveStorage {
         OBJECTIVE_NAME = nms.getFields(CLASS, String.class).get(0);
     }
 
-    public static Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return CONSTRUCTOR.newInstance(packet.getSlot(), NMSStorage.getInstance().newScoreboardObjective(packet.getObjectiveName()));
-    }
-
-    public static PacketPlayOutScoreboardDisplayObjective read(Object nmsPacket) throws ReflectiveOperationException {
-        return new PacketPlayOutScoreboardDisplayObjective(
-                POSITION.getInt(nmsPacket),
-                (String) OBJECTIVE_NAME.get(nmsPacket)
-        );
+    public static Object buildSilent(int slot, String objective) {
+        try {
+            return CONSTRUCTOR.newInstance(slot, NMSStorage.getInstance().newScoreboardObjective(objective));
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

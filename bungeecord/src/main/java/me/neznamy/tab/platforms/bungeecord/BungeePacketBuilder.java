@@ -82,18 +82,8 @@ public class BungeePacketBuilder extends PacketBuilder {
     }
 
     @Override
-    public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
-        return new ScoreboardDisplay((byte)packet.getSlot(), packet.getObjectiveName());
-    }
-
-    @Override
     public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
         return new ScoreboardObjective(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : HealthDisplay.valueOf(packet.getRenderType().toString()), (byte)packet.getAction());
-    }
-
-    @Override
-    public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
-        return new ScoreboardScore(packet.getPlayer(), (byte) packet.getAction().ordinal(), packet.getObjectiveName(), packet.getScore());
     }
 
     @Override
@@ -151,10 +141,5 @@ public class BungeePacketBuilder extends PacketBuilder {
     public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket) {
         return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) bungeePacket).getAction(), ((ScoreboardObjective) bungeePacket).getName(),
                 null, PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER);
-    }
-
-    @Override
-    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object bungeePacket) {
-        return new PacketPlayOutScoreboardDisplayObjective(((ScoreboardDisplay) bungeePacket).getPosition(), ((ScoreboardDisplay) bungeePacket).getName());
     }
 }

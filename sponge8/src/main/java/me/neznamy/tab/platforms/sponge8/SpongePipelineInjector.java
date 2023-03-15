@@ -99,7 +99,7 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
                     return;
                 }
                 if (packet instanceof ClientboundSetDisplayObjectivePacket) {
-                    TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
+                    onDisplayObjective(player, packet);
                 }
                 if (packet instanceof ClientboundSetObjectivePacket) {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
@@ -113,6 +113,12 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
             }
+        }
+
+        private void onDisplayObjective(TabPlayer player, Object packet) throws IllegalAccessException {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+                    nms.ClientboundSetDisplayObjectivePacket_position.getInt(packet),
+                    (String) nms.ClientboundSetDisplayObjectivePacket_objectivename.get(packet));
         }
 
         /**

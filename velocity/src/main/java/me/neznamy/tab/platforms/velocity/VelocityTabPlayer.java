@@ -39,9 +39,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
         put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
-        put(PacketPlayOutScoreboardScore.class, packet -> handle((PacketPlayOutScoreboardScore) packet));
         put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }};
 
@@ -129,18 +127,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     /**
-     * Handles PacketPlayOutScoreboardDisplayObjective request by forwarding the task
-     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutScoreboardDisplayObjective packet) {
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
-                packet.getClass().getSimpleName(), packet.getSlot(), packet.getObjectiveName());
-    }
-
-    /**
      * Handles PacketPlayOutScoreboardObjective request by forwarding the task
      * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
      *
@@ -158,23 +144,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
             args.add(packet.getRenderType().ordinal());
         }
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
-    }
-
-    /**
-     * Handles PacketPlayOutScoreboardScore request by forwarding the task
-     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutScoreboardScore packet) {
-        List<Object> args = new ArrayList<>();
-        args.add(packet.getClass().getSimpleName());
-        args.add(packet.getObjectiveName());
-        args.add(packet.getAction().ordinal());
-        args.add(packet.getPlayer());
-        args.add(packet.getScore());
         ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this, args.toArray());
     }
 
@@ -290,6 +259,24 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void removeBossBar(@NonNull UUID id) {
         getPlayer().hideBossBar(bossBars.remove(id));
+    }
+
+    @Override
+    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
+                "PacketPlayOutScoreboardDisplayObjective", slot, objective);
+    }
+
+    @Override
+    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
+                "PacketPlayOutScoreboardScore", objective, 0, player, score);
+    }
+
+    @Override
+    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
+        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().sendMessage(this,
+                "PacketPlayOutScoreboardScore", objective, 1, player, 0);
     }
 
     @Override

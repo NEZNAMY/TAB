@@ -27,9 +27,7 @@ public class PacketBuilder {
      */
     public PacketBuilder() {
         buildMap.put(PacketPlayOutPlayerInfo.class, (packet, version) -> build((PacketPlayOutPlayerInfo)packet, version));
-        buildMap.put(PacketPlayOutScoreboardDisplayObjective.class, (packet, version) -> build((PacketPlayOutScoreboardDisplayObjective)packet, version));
         buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> build((PacketPlayOutScoreboardObjective)packet, version));
-        buildMap.put(PacketPlayOutScoreboardScore.class, (packet, version) -> build((PacketPlayOutScoreboardScore)packet, version));
         buildMap.put(PacketPlayOutScoreboardTeam.class, (packet, version) -> build((PacketPlayOutScoreboardTeam)packet, version));
     }
 
@@ -65,19 +63,6 @@ public class PacketBuilder {
     }
 
     /**
-     * Constructs platform-specific PacketPlayOutScoreboardDisplayObjective class based on custom packet class
-     *
-     * @param   packet
-     *          Custom packet to be built
-     * @param   clientVersion
-     *          Protocol version of player to build the packet for
-     * @return  Platform-specific packet
-     */
-    public Object build(PacketPlayOutScoreboardDisplayObjective packet, ProtocolVersion clientVersion) {
-        return packet;
-    }
-
-    /**
      * Constructs platform-specific PacketPlayOutScoreboardObjective class based on custom packet class
      *
      * @param   packet
@@ -87,19 +72,6 @@ public class PacketBuilder {
      * @return  Platform-specific packet
      */
     public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-        return packet;
-    }
-
-    /**
-     * Constructs platform-specific PacketPlayOutScoreboardScore class based on custom packet class
-     *
-     * @param   packet
-     *          Custom packet to be built
-     * @param   clientVersion
-     *          Protocol version of player to build the packet for
-     * @return  Platform-specific packet
-     */
-    public Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -192,20 +164,6 @@ public class PacketBuilder {
      *          if thrown by reflective operation
      */
     public PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException {
-        return null;
-    }
-
-    /**
-     * Converts platform-specific instance of display objective packet into
-     * {@link PacketPlayOutScoreboardDisplayObjective} object.
-     *
-     * @param   packet
-     *          platform-specific display objective packet
-     * @return  The packet converted into {@link PacketPlayOutScoreboardDisplayObjective}
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public PacketPlayOutScoreboardDisplayObjective readDisplayObjective(Object packet) throws ReflectiveOperationException {
         return null;
     }
 }

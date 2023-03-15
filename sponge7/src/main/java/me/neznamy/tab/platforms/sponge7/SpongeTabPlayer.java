@@ -46,9 +46,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods = new HashMap<>();
     {
         packetMethods.put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        packetMethods.put(PacketPlayOutScoreboardDisplayObjective.class, packet -> handle((PacketPlayOutScoreboardDisplayObjective) packet));
         packetMethods.put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
-        packetMethods.put(PacketPlayOutScoreboardScore.class, packet -> handle((PacketPlayOutScoreboardScore) packet));
         packetMethods.put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }
 
@@ -142,25 +140,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
         }
     }
 
-    private void handle(final PacketPlayOutScoreboardDisplayObjective packet) {
-        final Objective objective = objectives.get(packet.getObjectiveName());
-        final DisplaySlot slot = convertDisplaySlot(packet.getSlot());
-        getPlayer().getScoreboard().updateDisplaySlot(objective, slot);
-    }
-
-    private static DisplaySlot convertDisplaySlot(final int slot) {
-        switch (slot) {
-            case 0:
-                return DisplaySlots.LIST;
-            case 1:
-                return DisplaySlots.SIDEBAR;
-            case 2:
-                return DisplaySlots.BELOW_NAME;
-            default:
-                throw new IllegalArgumentException("Unknown display slot: " + slot);
-        }
-    }
-
     private void handle(final PacketPlayOutScoreboardObjective packet) {
         final Scoreboard scoreboard = getPlayer().getScoreboard();
         String displayName;
@@ -196,17 +175,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 return ObjectiveDisplayModes.HEARTS;
             default:
                 throw new IllegalArgumentException("Unknown display mode: " + mode);
-        }
-    }
-
-    private void handle(final PacketPlayOutScoreboardScore packet) {
-        switch (packet.getAction()) {
-            case CHANGE:
-                objectives.get(packet.getObjectiveName()).getOrCreateScore(textCache.get(IChatBaseComponent.optimizedComponent(packet.getPlayer()), getVersion())).setScore(packet.getScore());
-                break;
-            case REMOVE:
-                objectives.get(packet.getObjectiveName()).removeScore(textCache.get(IChatBaseComponent.optimizedComponent(packet.getPlayer()), getVersion()));
-                break;
         }
     }
 
@@ -410,6 +378,29 @@ public final class SpongeTabPlayer extends ITabPlayer {
             case NOTCHED_12: return BossBarOverlays.NOTCHED_12;
             case NOTCHED_20: return BossBarOverlays.NOTCHED_20;
             default: return BossBarOverlays.PROGRESS;
+        }
+    }
+
+    @Override
+    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
+        getPlayer().getScoreboard().updateDisplaySlot(objectives.get(objective), convertDisplaySlot(slot));
+    }
+
+    @Override
+    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
+        objectives.get(objective).getOrCreateScore(textCache.get(IChatBaseComponent.optimizedComponent(player), getVersion())).setScore(score);
+    }
+
+    @Override
+    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
+        objectives.get(objective).removeScore(textCache.get(IChatBaseComponent.optimizedComponent(player), getVersion()));
+    }
+
+    private static DisplaySlot convertDisplaySlot(final int slot) {
+        switch (slot) {
+            case 0: return DisplaySlots.LIST;
+            case 1: return DisplaySlots.SIDEBAR;
+            default: return DisplaySlots.BELOW_NAME;
         }
     }
 }

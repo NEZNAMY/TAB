@@ -4,7 +4,6 @@ import java.util.*;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardDisplayObjective;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 
 /**
@@ -56,7 +55,7 @@ public abstract class TabFeature {
                 methodOverrides.add("onWorldChange");
             if (getClass().getMethod("onServerChange", TabPlayer.class, String.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onServerChange");
-            if (getClass().getMethod("onDisplayObjective", TabPlayer.class, PacketPlayOutScoreboardDisplayObjective.class).getDeclaringClass() != TabFeature.class) {
+            if (getClass().getMethod("onDisplayObjective", TabPlayer.class, int.class, String.class).getDeclaringClass() != TabFeature.class) {
                 methodOverrides.add("onDisplayObjective");
                 TabAPI.getInstance().getFeatureManager().markDisplayObjective();
             }
@@ -184,10 +183,12 @@ public abstract class TabFeature {
      *
      * @param   receiver
      *          player receiving packet
-     * @param   packet
-     *          received packet
+     * @param   slot
+     *          Objective slot
+     * @param   objective
+     *          Objective name
      */
-    public void onDisplayObjective(TabPlayer receiver, PacketPlayOutScoreboardDisplayObjective packet) {
+    public void onDisplayObjective(TabPlayer receiver, int slot, String objective) {
         //empty by default
     }
 

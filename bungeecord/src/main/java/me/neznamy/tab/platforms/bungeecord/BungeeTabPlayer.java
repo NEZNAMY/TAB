@@ -21,6 +21,8 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.BossBar;
+import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -194,6 +196,22 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public void removeBossBar(@NonNull UUID id) {
         if (getVersion().getMinorVersion() < 9) return;
         getPlayer().unsafe().sendPacket(new BossBar(id, 1));
+    }
+
+    @Override
+    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
+        getPlayer().unsafe().sendPacket(new ScoreboardDisplay((byte)slot, objective));
+    }
+
+    @Override
+    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
+        getPlayer().unsafe().sendPacket(new ScoreboardScore(player, (byte) 0, objective, score));
+
+    }
+
+    @Override
+    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
+        getPlayer().unsafe().sendPacket(new ScoreboardScore(player, (byte) 1, objective, 0));
     }
 
     @Override

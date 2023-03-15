@@ -14,6 +14,8 @@ import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
+import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
+import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
 import java.util.*
 
 class KryptonTabPlayer(
@@ -104,5 +106,17 @@ class KryptonTabPlayer(
     override fun removeBossBar(id: UUID) {
         delegate.hideBossBar(bossBars[id] ?: return)
         bossBars.remove(id)
+    }
+
+    override fun setObjectiveDisplaySlot(slot: Int, objective: String) {
+        sendPacket(PacketOutDisplayObjective(slot, objective))
+    }
+
+    override fun setScoreboardScore0(objective: String, player: String, score: Int) {
+        sendPacket(PacketOutUpdateScore(player, 0, objective, score))
+    }
+
+    override fun removeScoreboardScore0(objective: String, player: String) {
+        sendPacket(PacketOutUpdateScore(player, 1, objective, 0))
     }
 }

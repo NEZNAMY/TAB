@@ -87,7 +87,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                     return;
                 }
                 if (PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS.isInstance(packet)) {
-                    TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
+                    onDisplayObjective(player, packet);
                 }
                 if (PacketPlayOutScoreboardObjectiveStorage.CLASS.isInstance(packet)) {
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
@@ -101,6 +101,12 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError("Failed to forward packet " + packet.getClass().getSimpleName() + " to " + player.getName(), e);
             }
+        }
+
+        private void onDisplayObjective(TabPlayer player, Object packet) throws IllegalAccessException {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+                PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
+                (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
         }
 
         /**

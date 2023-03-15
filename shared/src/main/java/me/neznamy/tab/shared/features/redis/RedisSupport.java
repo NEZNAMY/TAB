@@ -11,7 +11,9 @@ import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
+import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -233,7 +235,8 @@ public abstract class RedisSupport extends TabFeature {
                     if (target == null) break;
                     target.setBelowName((String) message.get("belowname"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        viewer.sendCustomPacket(target.getBelowNameUpdatePacket(), this);
+                        viewer.setScoreboardScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
+                        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                     }
                     break;
                 case "yellow-number":
@@ -241,7 +244,8 @@ public abstract class RedisSupport extends TabFeature {
                     if (target == null) break;
                     target.setYellowNumber((String) message.get("yellow-number"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        viewer.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
+                        viewer.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
+                        TAB.getInstance().getCPUManager().packetSent(getFeatureName());
                     }
                     break;
                 case "team":
@@ -280,8 +284,10 @@ public abstract class RedisSupport extends TabFeature {
     private void join(RedisPlayer target) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             all.sendCustomPacket(target.getRegisterTeamPacket(), this);
-            all.sendCustomPacket(target.getBelowNameUpdatePacket(), this);
-            all.sendCustomPacket(target.getYellowNumberUpdatePacket(), this);
+            all.setScoreboardScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
+            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
+            all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
+            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
             if (all.getVersion().getMinorVersion() < 8) continue;
             if (global == null) {
                 if (all.getServer().equals(target.getServer())) all.sendCustomPacket(target.getUpdatePacket(), this);
@@ -357,8 +363,10 @@ public abstract class RedisSupport extends TabFeature {
         sendMessage(json.toString());
         for (RedisPlayer redis : redisPlayers.values()) {
             p.sendCustomPacket(redis.getRegisterTeamPacket(), this);
-            p.sendCustomPacket(redis.getBelowNameUpdatePacket(), this);
-            p.sendCustomPacket(redis.getYellowNumberUpdatePacket(), this);
+            p.setScoreboardScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), redis.getBelowName());
+            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
+            p.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, redis.getNickname(), redis.getYellowNumber());
+            TAB.getInstance().getCPUManager().packetSent(getFeatureName());
             if (global == null) continue;
             if (shouldSee(p, redis.getServer(), redis.isVanished())) {
                 if (!p.getServer().equals(redis.getServer())) {

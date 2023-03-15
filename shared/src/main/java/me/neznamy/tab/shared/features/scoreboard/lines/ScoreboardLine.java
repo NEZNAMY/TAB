@@ -1,18 +1,17 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import java.util.Collections;
-
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+
+import java.util.Collections;
 
 /**
  * Abstract class representing a line of scoreboard
@@ -119,7 +118,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          suffix
      */
     protected void addLine(TabPlayer p, String fakePlayer, String prefix, String suffix) {
-        p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.CHANGE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p)), TabConstants.PacketCategory.SCOREBOARD_LINES);
+        p.setScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
+        TAB.getInstance().getCPUManager().packetSent(TabConstants.PacketCategory.SCOREBOARD_LINES);
         p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
     }
     
@@ -132,7 +132,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          player name
      */
     protected void removeLine(TabPlayer p, String fakePlayer) {
-        p.sendCustomPacket(new PacketPlayOutScoreboardScore(Action.REMOVE, ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, 0), TabConstants.PacketCategory.SCOREBOARD_LINES);
+        p.removeScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
+        TAB.getInstance().getCPUManager().packetSent(TabConstants.PacketCategory.SCOREBOARD_LINES);
         p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName), TabConstants.PacketCategory.SCOREBOARD_LINES);
     }
 

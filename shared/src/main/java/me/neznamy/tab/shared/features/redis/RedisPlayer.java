@@ -1,26 +1,21 @@
 package me.neznamy.tab.shared.features.redis;
 
-import java.util.Collections;
-import java.util.UUID;
-
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.api.protocol.Skin;
-import org.json.simple.JSONObject;
-
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore.Action;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.shared.features.BelowName;
-import me.neznamy.tab.shared.features.YellowNumber;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.UUID;
 
 public class RedisPlayer {
 
@@ -152,14 +147,12 @@ public class RedisPlayer {
         return new PacketPlayOutScoreboardTeam(teamName);
     }
 
-    public PacketPlayOutScoreboardScore getBelowNameUpdatePacket() {
-        if (belowName == null) return null;
-        return new PacketPlayOutScoreboardScore(Action.CHANGE, BelowName.OBJECTIVE_NAME, nickname, TAB.getInstance().getErrorManager().parseInteger(belowName, 0));
+    public int getBelowName() {
+        return TAB.getInstance().getErrorManager().parseInteger(belowName, 0);
     }
 
-    public PacketPlayOutScoreboardScore getYellowNumberUpdatePacket() {
-        if (yellowNumber == null) return null;
-        return new PacketPlayOutScoreboardScore(Action.CHANGE, YellowNumber.OBJECTIVE_NAME, nickname, TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0));
+    public int getYellowNumber() {
+        return TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0);
     }
 
     public void setServer(String server) {

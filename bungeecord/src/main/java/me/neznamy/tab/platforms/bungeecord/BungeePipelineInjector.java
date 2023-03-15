@@ -98,7 +98,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     }
                     break;
                 case "ScoreboardDisplay":
-                    TAB.getInstance().getFeatureManager().onDisplayObjective(player, packet);
+                    onDisplayObjective(player, packet);
                     break;
                 case "ScoreboardObjective":
                     TAB.getInstance().getFeatureManager().onObjective(player, packet);
@@ -119,6 +119,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             } catch (Throwable e) {
                 TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", packet.getClass().getSimpleName(), player.getName()), e);
             }
+        }
+
+        private void onDisplayObjective(TabPlayer player, Object packet) {
+            TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+                    ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
         }
 
         /**

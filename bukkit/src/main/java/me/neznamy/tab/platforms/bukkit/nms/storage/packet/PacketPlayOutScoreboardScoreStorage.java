@@ -1,7 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardScore;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.Constructor;
@@ -33,19 +31,31 @@ public class PacketPlayOutScoreboardScoreStorage {
         }
     }
 
-    public static Object build(PacketPlayOutScoreboardScore packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        NMSStorage nms = NMSStorage.getInstance();
-        if (nms.getMinorVersion() >= 13) {
-            return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, packet.getAction().toString()), packet.getObjectiveName(), packet.getPlayer(), packet.getScore());
+    public static Object change(String objective, String player, int score) {
+        try {
+            NMSStorage nms = NMSStorage.getInstance();
+            if (nms.getMinorVersion() >= 13) {
+                return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "CHANGE"), objective, player, score);
+            }
+            Object scoreboardScore = newScoreboardScore.newInstance(nms.emptyScoreboard, nms.newScoreboardObjective(objective), player);
+            ScoreboardScore_setScore.invoke(scoreboardScore, score);
+            if (nms.getMinorVersion() >= 8) {
+                return CONSTRUCTOR.newInstance(scoreboardScore);
+            }
+            return CONSTRUCTOR.newInstance(scoreboardScore, 0);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
-        if (packet.getAction() == PacketPlayOutScoreboardScore.Action.REMOVE) {
-            return CONSTRUCTOR_String.newInstance(packet.getPlayer());
+    }
+
+    public static Object remove(String objective, String player) {
+        try {
+            if (NMSStorage.getInstance().getMinorVersion() >= 13) {
+                return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "REMOVE"), objective, player, 0);
+            }
+            return CONSTRUCTOR_String.newInstance(player);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
-        Object score = newScoreboardScore.newInstance(nms.emptyScoreboard, nms.newScoreboardObjective(packet.getObjectiveName()), packet.getPlayer());
-        ScoreboardScore_setScore.invoke(score, packet.getScore());
-        if (nms.getMinorVersion() >= 8) {
-            return CONSTRUCTOR.newInstance(score);
-        }
-        return CONSTRUCTOR.newInstance(score, 0);
     }
 }

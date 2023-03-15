@@ -253,16 +253,6 @@ public abstract class ITabPlayer implements TabPlayer {
                 }
             }
         }
-        //avoiding console spam from geyser
-        if (packet instanceof PacketPlayOutScoreboardScore) {
-            String objective = ((PacketPlayOutScoreboardScore) packet).getObjectiveName();
-            String player = ((PacketPlayOutScoreboardScore) packet).getPlayer();
-            if (!registeredObjectives.contains(objective)) {
-                TAB.getInstance().getErrorManager().printError("Tried to update score (" + player + ") without the existence of its requested objective '" +
-                        objective + "' to player " + getName());
-                return;
-            }
-        }
         try {
             sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
         } catch (Exception e) {
@@ -318,4 +308,26 @@ public abstract class ITabPlayer implements TabPlayer {
         if (sorting == null) return null;
         return sorting.getShortTeamName(this);
     }
+
+    public void setScoreboardScore(@NonNull String objective, @NonNull String player, int score) {
+        if (!registeredObjectives.contains(objective)) {
+            TAB.getInstance().getErrorManager().printError("Tried to update score (" + player +
+                    ") without the existence of its requested objective '" + objective + "' to player " + getName());
+            return;
+        }
+        setScoreboardScore0(objective, player, score);
+    }
+
+    public void removeScoreboardScore(@NonNull String objective, @NonNull String player) {
+        if (!registeredObjectives.contains(objective)) {
+            TAB.getInstance().getErrorManager().printError("Tried to update score (" + player +
+                    ") without the existence of its requested objective '" + objective + "' to player " + getName());
+            return;
+        }
+        removeScoreboardScore0(objective, player);
+    }
+
+    public abstract void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score);
+
+    public abstract void removeScoreboardScore0(@NonNull String objective, @NonNull String player);
 }

@@ -13,7 +13,13 @@ import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
+import net.minecraft.server.ServerScoreboard;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
@@ -144,6 +150,22 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void removeBossBar(@NonNull UUID id) {
         getPlayer().hideBossBar(bossBars.remove(id));
+    }
+
+    @Override
+    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
+        sendPacket(new ClientboundSetDisplayObjectivePacket(slot,
+                new Objective(new Scoreboard(), objective, null, TextComponent.EMPTY, null)));
+    }
+
+    @Override
+    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
+        sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, player, score));
+    }
+
+    @Override
+    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
+        sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, player, 0));
     }
 
     public void setPlayer(final ServerPlayer player) {

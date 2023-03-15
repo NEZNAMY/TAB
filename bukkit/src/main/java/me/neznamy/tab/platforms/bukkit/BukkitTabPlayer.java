@@ -14,10 +14,7 @@ import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityMetadataStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerListHeaderFooterStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
@@ -288,5 +285,20 @@ public class BukkitTabPlayer extends ITabPlayer {
         } else {
             sendPacket(PacketPlayOutEntityDestroyStorage.buildSilent(new PacketPlayOutEntityDestroy(id.hashCode())));
         }
+    }
+
+    @Override
+    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
+        sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot, objective));
+    }
+
+    @Override
+    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
+        sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, player, score));
+    }
+
+    @Override
+    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
+        sendPacket(PacketPlayOutScoreboardScoreStorage.remove(objective, player));
     }
 }
