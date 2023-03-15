@@ -134,7 +134,7 @@ public class SpongeNameTagX extends BackendNameTagX {
 
     @Override
     public boolean isGliding(TabPlayer player) {
-        return ((Player)player).elytraFlying().get();
+        return ((Player)player.getPlayer()).elytraFlying().get();
     }
 
     @Override
