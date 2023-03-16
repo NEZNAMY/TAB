@@ -5,6 +5,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
@@ -20,14 +21,12 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.BossBar;
-import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective;
-import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -218,6 +217,33 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
         getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, getVersion(), 32), hearts ? HealthDisplay.HEARTS : HealthDisplay.INTEGER, (byte) 2));
+    }
+
+    @Override
+    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+        int color = 0;
+        if (getVersion().getMinorVersion() >= 13) {
+            color = EnumChatFormat.lastColorsOf(prefix).ordinal();
+        }
+        getPlayer().unsafe().sendPacket(new Team(name, (byte) 0, jsonOrCut(name, getVersion(), 16),
+                jsonOrCut(prefix, getVersion(), 16), jsonOrCut(suffix, getVersion(), 16),
+                visibility, collision, color, (byte)options, players.toArray(new String[0])));
+    }
+
+    @Override
+    public void unregisterScoreboardTeam0(@NonNull String name) {
+        getPlayer().unsafe().sendPacket(new Team(name));
+    }
+
+    @Override
+    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+        int color = 0;
+        if (getVersion().getMinorVersion() >= 13) {
+            color = EnumChatFormat.lastColorsOf(prefix).ordinal();
+        }
+        getPlayer().unsafe().sendPacket(new Team(name, (byte) 2, jsonOrCut(name, getVersion(), 16),
+                jsonOrCut(prefix, getVersion(), 16), jsonOrCut(suffix, getVersion(), 16),
+                visibility, collision, color, (byte)options, null));
     }
 
     /**

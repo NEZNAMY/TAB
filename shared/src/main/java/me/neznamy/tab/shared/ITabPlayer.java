@@ -211,27 +211,6 @@ public abstract class ITabPlayer implements TabPlayer {
     @Override
     public void sendCustomPacket(TabPacket packet) {
         if (packet == null) return;
-        //avoiding BungeeCord bug kicking all players
-        if (packet instanceof PacketPlayOutScoreboardTeam) {
-            String team = ((PacketPlayOutScoreboardTeam) packet).getName();
-            int method = ((PacketPlayOutScoreboardTeam) packet).getAction();
-            if (method == 0) {
-                if (!registeredTeams.add(team)) {
-                    TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + team + " to player " + getName());
-                    return;
-                }
-            } else if (method == 1) {
-                if (!registeredTeams.remove(team)) {
-                    TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing team " + team + " for player " + getName());
-                    return;
-                }
-            } else if (method == 2) {
-                if (!registeredTeams.contains(team)) {
-                    TAB.getInstance().getErrorManager().printError("Tried to modify non-existing team " + team + " for player " + getName());
-                    return;
-                }
-            }
-        }
         try {
             sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
         } catch (Exception e) {
@@ -318,6 +297,33 @@ public abstract class ITabPlayer implements TabPlayer {
         updateObjectiveTitle0(objectiveName, title, hearts);
     }
 
+    @Override
+    public void registerScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+        if (!registeredTeams.add(name)) {
+            TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + name + " to player " + getName());
+            return;
+        }
+        registerScoreboardTeam0(name, prefix, suffix, visibility, collision, players, options);
+    }
+
+    @Override
+    public void unregisterScoreboardTeam(@NonNull String name) {
+        if (!registeredTeams.remove(name)) {
+            TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing team " + name + " for player " + getName());
+            return;
+        }
+        unregisterScoreboardTeam0(name);
+    }
+
+    @Override
+    public void updateScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+        if (!registeredTeams.contains(name)) {
+            TAB.getInstance().getErrorManager().printError("Tried to modify non-existing team " + name + " for player " + getName());
+            return;
+        }
+        updateScoreboardTeam0(name, prefix, suffix, visibility, collision, options);
+    }
+
     public abstract void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score);
 
     public abstract void removeScoreboardScore0(@NonNull String objective, @NonNull String player);
@@ -327,4 +333,12 @@ public abstract class ITabPlayer implements TabPlayer {
     public abstract void unregisterObjective0(@NonNull String objectiveName);
 
     public abstract void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
+
+    public abstract void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility,
+                                String collision, Collection<String> players, int options);
+
+    public abstract void unregisterScoreboardTeam0(@NonNull String name);
+
+    public abstract void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options);
+
 }

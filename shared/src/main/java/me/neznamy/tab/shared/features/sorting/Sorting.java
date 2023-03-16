@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -72,7 +71,7 @@ public class Sorting extends TabFeature {
         if (!shortTeamNames.get(p).equals(previousShortName)) {
             if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.isDisabledPlayer(p)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(previousShortName));
+                    viewer.unregisterScoreboardTeam(previousShortName);
                 }
                 nameTags.registerTeam(p);
             }

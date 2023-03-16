@@ -6,15 +6,16 @@ import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.WrappedChatComponent;
-import me.neznamy.tab.api.protocol.*;
+import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
+import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
@@ -23,17 +24,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Scoreboard;
-import net.minecraft.world.scores.Team;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class SpongePacketBuilder extends PacketBuilder {
 
     private final NMSStorage nms = NMSStorage.getInstance();
-    public final Scoreboard dummyScoreboard = new Scoreboard();
     private final ArmorStand dummyEntity = new ArmorStand(EntityType.ARMOR_STAND, null);
 
     @Getter private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
@@ -62,30 +60,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
         final ClientboundPlayerInfoPacket infoPacket = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()));
         nms.ClientboundPlayerInfoPacket_entries.set(infoPacket, entries);
         return infoPacket;
-    }
-
-    @Override
-    public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
-        PlayerTeam team = new PlayerTeam(dummyScoreboard, packet.getName());
-        team.setAllowFriendlyFire((packet.getOptions() & 0x01) > 0);
-        team.setSeeFriendlyInvisibles((packet.getOptions() & 0x02) > 0);
-        team.setColor(packet.getColor() == null ? ChatFormatting.RESET : ChatFormatting.valueOf(packet.getColor().name()));
-        String prefix = packet.getPlayerPrefix();
-        String suffix = packet.getPlayerSuffix();
-        if (clientVersion.getMinorVersion() < 13) {
-            prefix = cutTo(prefix, 16);
-            suffix = cutTo(suffix, 16);
-        }
-        if (packet.getCollisionRule() != null)
-            team.setCollisionRule(Team.CollisionRule.valueOf(packet.getCollisionRule().toUpperCase(Locale.US)));
-        if (packet.getNameTagVisibility() != null)
-            team.setNameTagVisibility(Team.Visibility.valueOf(packet.getNameTagVisibility().toUpperCase(Locale.US)));
-        if (prefix != null)
-            team.setPlayerPrefix(componentCache.get(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
-        if (suffix != null)
-            team.setPlayerSuffix(componentCache.get(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
-        team.getPlayers().addAll(packet.getPlayers());
-        return new ClientboundSetPlayerTeamPacket(team, packet.getAction());
     }
 
     @SuppressWarnings("unchecked")

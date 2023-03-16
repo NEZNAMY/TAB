@@ -5,6 +5,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
@@ -13,14 +14,18 @@ import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -196,6 +201,58 @@ public final class SpongeTabPlayer extends ITabPlayer {
                         hearts ? RenderType.HEARTS : RenderType.INTEGER
                 ), 2
         ));
+    }
+
+    @Override
+    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+        PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
+        team.setAllowFriendlyFire((options & 0x01) > 0);
+        team.setSeeFriendlyInvisibles((options & 0x02) > 0);
+        team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
+        String finalPrefix = prefix;
+        String finalSuffix = suffix;
+        if (getVersion().getMinorVersion() < 13) {
+            finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
+            finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
+        }
+        if (collision != null)
+            team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
+        if (visibility != null)
+            team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
+        if (finalPrefix != null)
+            team.setPlayerPrefix(componentCache.get(IChatBaseComponent.optimizedComponent(finalPrefix), getVersion()));
+        if (finalSuffix != null)
+            team.setPlayerSuffix(componentCache.get(IChatBaseComponent.optimizedComponent(finalSuffix), getVersion()));
+        team.getPlayers().addAll(players);
+        sendPacket(new ClientboundSetPlayerTeamPacket(team, 0));
+    }
+
+    @Override
+    public void unregisterScoreboardTeam0(@NonNull String name) {
+        sendPacket(new ClientboundSetPlayerTeamPacket(new PlayerTeam(dummyScoreboard, name), 1));
+    }
+
+    @Override
+    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+        PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
+        team.setAllowFriendlyFire((options & 0x01) > 0);
+        team.setSeeFriendlyInvisibles((options & 0x02) > 0);
+        team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
+        String finalPrefix = prefix;
+        String finalSuffix = suffix;
+        if (getVersion().getMinorVersion() < 13) {
+            finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
+            finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
+        }
+        if (collision != null)
+            team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
+        if (visibility != null)
+            team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
+        if (finalPrefix != null)
+            team.setPlayerPrefix(componentCache.get(IChatBaseComponent.optimizedComponent(finalPrefix), getVersion()));
+        if (finalSuffix != null)
+            team.setPlayerSuffix(componentCache.get(IChatBaseComponent.optimizedComponent(finalSuffix), getVersion()));
+        sendPacket(new ClientboundSetPlayerTeamPacket(team, 2));
     }
 
     @Override

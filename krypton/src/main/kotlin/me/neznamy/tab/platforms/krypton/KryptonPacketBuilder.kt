@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
-import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.*
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction
@@ -14,7 +13,6 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.auth.GameProfile
 import org.kryptonmc.api.auth.ProfileProperty
 import org.kryptonmc.api.world.GameMode
-import org.kryptonmc.krypton.adventure.KryptonAdventure
 import org.kryptonmc.krypton.entity.KryptonEntityType
 import org.kryptonmc.krypton.entity.metadata.MetadataHolder
 import org.kryptonmc.krypton.entity.player.PlayerPublicKey
@@ -75,12 +73,6 @@ object KryptonPacketBuilder : PacketBuilder() {
         return PacketOutPlayerInfoUpdate(actions, entries)
     }
 
-    override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): Any {
-        val action = PacketOutUpdateTeams.Action.fromId(packet.action)!!
-        val players = packet.players.map(Component::text)
-        return PacketOutUpdateTeams(packet.name, action, createParameters(packet, clientVersion), players)
-    }
-
     private fun build(packet: PacketPlayOutEntityMetadata): Any {
         return PacketOutSetEntityMetadata(packet.entityId, (packet.dataWatcher as MetadataHolder).collectAll())
     }
@@ -88,25 +80,6 @@ object KryptonPacketBuilder : PacketBuilder() {
     private fun build(packet: PacketPlayOutSpawnEntityLiving): Any {
         return PacketOutSpawnEntity(packet.entityId, packet.uniqueId, packet.entityType as KryptonEntityType<*>,
             packet.x, packet.y, packet.z, 0, 0, 0, 0, 0, 0, 0)
-    }
-
-    private fun createParameters(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): PacketOutUpdateTeams.Parameters? {
-        if (packet.action != 0 && packet.action != 2) return null
-        var prefix = packet.playerPrefix
-        var suffix = packet.playerSuffix
-        if (clientVersion.minorVersion < 13) {
-            prefix = cutTo(prefix, 16)
-            suffix = cutTo(suffix, 16)
-        }
-        return PacketOutUpdateTeams.Parameters(
-            Component.text(packet.name),
-            packet.options,
-            packet.nameTagVisibility,
-            packet.collisionRule,
-            KryptonAdventure.getColorFromId(packet.color?.ordinal ?: EnumChatFormat.lastColorsOf(packet.playerPrefix).ordinal),
-            toComponent(prefix, clientVersion),
-            toComponent(suffix, clientVersion)
-        )
     }
 
     override fun readPlayerInfo(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutPlayerInfo? {

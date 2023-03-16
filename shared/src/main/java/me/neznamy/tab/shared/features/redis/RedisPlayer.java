@@ -9,7 +9,6 @@ import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.shared.TAB;
 import org.json.simple.JSONObject;
@@ -31,9 +30,9 @@ public class RedisPlayer {
     @Getter private String teamName;
     @Getter private boolean vanished;
     private Skin skin;
-    @Setter private String tagPrefix;
-    @Setter private String tagSuffix;
-    private boolean nameVisibility;
+    @Setter @Getter private String tagPrefix;
+    @Setter @Getter private String tagSuffix;
+    @Getter private boolean nameVisibility;
     @Setter private String belowName;
     @Setter private String yellowNumber;
     @Getter private boolean staff;
@@ -132,21 +131,6 @@ public class RedisPlayer {
         return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
     }
 
-    public PacketPlayOutScoreboardTeam getRegisterTeamPacket() {
-        if (disabledNameTags) return null;
-        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", Collections.singletonList(nickname), 2);
-    }
-
-    public PacketPlayOutScoreboardTeam getUpdateTeamPacket() {
-        if (disabledNameTags) return null;
-        return new PacketPlayOutScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never", "always", 2);
-    }
-
-    public PacketPlayOutScoreboardTeam getUnregisterTeamPacket() {
-        if (disabledNameTags) return null;
-        return new PacketPlayOutScoreboardTeam(teamName);
-    }
-
     public int getBelowName() {
         return TAB.getInstance().getErrorManager().parseInteger(belowName, 0);
     }
@@ -181,14 +165,15 @@ public class RedisPlayer {
                 if (!redis.getNameTags().isDisabled(server, null)) {
                     disabledNameTags = false;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.sendCustomPacket(getRegisterTeamPacket());
+                        all.registerScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never",
+                                "always", Collections.singletonList(nickname), 2);
                     }
                 }
             } else {
                 if (redis.getNameTags().isDisabled(server, null)) {
                     disabledNameTags = true;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.sendCustomPacket(getUnregisterTeamPacket());
+                        all.unregisterScoreboardTeam(teamName);
                     }
                 }
             }

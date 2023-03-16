@@ -1,5 +1,6 @@
 package me.neznamy.tab.api;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import lombok.NonNull;
@@ -387,4 +388,11 @@ public interface TabPlayer {
     void unregisterObjective(@NonNull String objectiveName);
 
     void updateObjectiveTitle(@NonNull String objectiveName, @NonNull String title, boolean hearts);
+
+    void registerScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility,
+                                String collision, Collection<String> players, int options);
+
+    void unregisterScoreboardTeam(@NonNull String name);
+
+    void updateScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options);
 }

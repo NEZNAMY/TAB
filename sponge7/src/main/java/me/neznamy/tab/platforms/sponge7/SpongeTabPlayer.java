@@ -45,7 +45,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods = new HashMap<>();
     {
         packetMethods.put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        packetMethods.put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }
 
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
@@ -138,99 +137,9 @@ public final class SpongeTabPlayer extends ITabPlayer {
         }
     }
 
-    private void handle(final PacketPlayOutScoreboardTeam packet) {
-        final Scoreboard scoreboard = getPlayer().getScoreboard();
-        String prefix;
-        String suffix;
-        Team team;
-        switch (packet.getAction()) {
-            case 0:
-                prefix = cutToLength(packet.getPlayerPrefix(), 16);
-                suffix = cutToLength(packet.getPlayerSuffix(), 16);
-                team = Team.builder()
-                        .name(packet.getName())
-                        .displayName(textCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()))
-                        .prefix(textCache.get(IChatBaseComponent.optimizedComponent(prefix), getVersion()))
-                        .suffix(textCache.get(IChatBaseComponent.optimizedComponent(suffix), getVersion()))
-                        .allowFriendlyFire((packet.getOptions() & 0x01) != 0)
-                        .canSeeFriendlyInvisibles((packet.getOptions() & 0x02) != 0)
-                        .collisionRule(convertCollisionRule(packet.getCollisionRule()))
-                        .nameTagVisibility(convertVisibility(packet.getNameTagVisibility()))
-                        .build();
-                for (final String member : packet.getPlayers()) {
-                    team.addMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
-                }
-                scoreboard.registerTeam(team);
-                break;
-            case 1:
-                scoreboard.getTeam(packet.getName()).ifPresent(Team::unregister);
-                break;
-            case 2:
-                team = scoreboard.getTeam(packet.getName()).orElse(null);
-                if (team == null) return;
-
-                prefix = cutToLength(packet.getPlayerPrefix(), 16);
-                suffix = cutToLength(packet.getPlayerSuffix(), 16);
-                team.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(packet.getName()), getVersion()));
-                team.setPrefix(textCache.get(IChatBaseComponent.optimizedComponent(prefix), getVersion()));
-                team.setSuffix(textCache.get(IChatBaseComponent.optimizedComponent(suffix), getVersion()));
-                team.setAllowFriendlyFire((packet.getOptions() & 0x01) != 0);
-                team.setCanSeeFriendlyInvisibles((packet.getOptions() & 0x02) != 0);
-                team.setCollisionRule(convertCollisionRule(packet.getCollisionRule()));
-                team.setNameTagVisibility(convertVisibility(packet.getNameTagVisibility()));
-                break;
-            case 3:
-                team = scoreboard.getTeam(packet.getName()).orElse(null);
-                if (team == null) return;
-
-                for (final String member : packet.getPlayers()) {
-                    team.addMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
-                }
-                break;
-            case 4:
-                team = scoreboard.getTeam(packet.getName()).orElse(null);
-                if (team == null) return;
-
-                for (final String member : packet.getPlayers()) {
-                    team.removeMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
-                }
-                break;
-        }
-    }
-
     private static String cutToLength(String text, final int maxLength) {
         if (text.length() > maxLength) text = text.substring(0, maxLength);
         return text;
-    }
-
-    private static CollisionRule convertCollisionRule(final String rule) {
-        switch (rule) {
-            case "always":
-                return CollisionRules.ALWAYS;
-            case "never":
-                return CollisionRules.NEVER;
-            case "pushOtherTeams":
-                return CollisionRules.PUSH_OTHER_TEAMS;
-            case "pushOwnTeam":
-                return CollisionRules.PUSH_OWN_TEAM;
-            default:
-                throw new IllegalArgumentException("Unknown collision rule: " + rule);
-        }
-    }
-
-    private static Visibility convertVisibility(final String visibility) {
-        switch (visibility) {
-            case "always":
-                return Visibilities.ALWAYS;
-            case "never":
-                return Visibilities.NEVER;
-            case "hideForOtherTeams":
-                return Visibilities.HIDE_FOR_OTHER_TEAMS;
-            case "hideForOwnTeam":
-                return Visibilities.HIDE_FOR_OWN_TEAM;
-            default:
-                throw new IllegalArgumentException("Unknown visibility: " + visibility);
-        }
     }
 
     @Override
@@ -370,6 +279,62 @@ public final class SpongeTabPlayer extends ITabPlayer {
         Objective obj = objectives.get(objectiveName);
         obj.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()));
         obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER);
+    }
+
+    @Override
+    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+        Team team = Team.builder()
+                .name(name)
+                .displayName(textCache.get(IChatBaseComponent.optimizedComponent(name), getVersion()))
+                .prefix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(prefix, 16)), getVersion()))
+                .suffix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(suffix, 16)), getVersion()))
+                .allowFriendlyFire((options & 0x01) != 0)
+                .canSeeFriendlyInvisibles((options & 0x02) != 0)
+                .collisionRule(convertCollisionRule(collision))
+                .nameTagVisibility(convertVisibility(visibility))
+                .build();
+        for (String member : players) {
+            team.addMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
+        }
+        getPlayer().getScoreboard().registerTeam(team);
+    }
+
+    @Override
+    public void unregisterScoreboardTeam0(@NonNull String name) {
+        getPlayer().getScoreboard().getTeam(name).ifPresent(Team::unregister);
+    }
+
+    @Override
+    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+        Team team = getPlayer().getScoreboard().getTeam(name).orElse(null);
+        if (team == null) return;
+        team.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(name), getVersion()));
+        team.setPrefix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(prefix, 16)), getVersion()));
+        team.setSuffix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(prefix, 16)), getVersion()));
+        team.setAllowFriendlyFire((options & 0x01) != 0);
+        team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
+        team.setCollisionRule(convertCollisionRule(collision));
+        team.setNameTagVisibility(convertVisibility(visibility));
+    }
+
+    private static CollisionRule convertCollisionRule(String rule) {
+        switch (rule) {
+            case "always": return CollisionRules.ALWAYS;
+            case "never": return CollisionRules.NEVER;
+            case "pushOtherTeams": return CollisionRules.PUSH_OTHER_TEAMS;
+            case "pushOwnTeam": return CollisionRules.PUSH_OWN_TEAM;
+            default: throw new IllegalArgumentException();
+        }
+    }
+
+    private static Visibility convertVisibility(String visibility) {
+        switch (visibility) {
+            case "always": return Visibilities.ALWAYS;
+            case "never": return Visibilities.NEVER;
+            case "hideForOtherTeams": return Visibilities.HIDE_FOR_OTHER_TEAMS;
+            case "hideForOwnTeam": return Visibilities.HIDE_FOR_OWN_TEAM;
+            default: throw new IllegalArgumentException();
+        }
     }
 
     @Override

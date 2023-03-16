@@ -38,7 +38,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }};
 
     /** BossBars currently displayed to this player */
@@ -122,37 +121,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                 }
             }
         }
-    }
-
-    /**
-     * Handles PacketPlayOutScoreboardTeam request by forwarding the task
-     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutScoreboardTeam packet) {
-        List<Object> args = new ArrayList<>();
-        args.add(packet.getClass().getSimpleName());
-        args.add(packet.getName());
-        args.add(packet.getAction());
-        args.add(packet.getPlayers().size());
-        args.addAll(packet.getPlayers());
-        if (packet.getAction() == 0 || packet.getAction() == 2) {
-            String prefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                    .cutTo(packet.getPlayerPrefix(), 16) : packet.getPlayerPrefix();
-            String suffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                    .cutTo(packet.getPlayerSuffix(), 16) : packet.getPlayerSuffix();
-            args.add(prefix);
-            args.add(IChatBaseComponent.optimizedComponent(prefix).toString(getVersion()));
-            args.add(suffix);
-            args.add(IChatBaseComponent.optimizedComponent(suffix).toString(getVersion()));
-            args.add(packet.getOptions());
-            args.add(packet.getNameTagVisibility());
-            args.add(packet.getCollisionRule());
-            args.add((packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal());
-        }
-        sendPluginMessage(args.toArray());
     }
 
     /**
@@ -260,6 +228,56 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 2,
                 getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title,
                 IChatBaseComponent.optimizedComponent(title).toString(getVersion()), hearts ? 1 : 0);
+    }
+
+    @Override
+    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+        List<Object> args = new ArrayList<>();
+        args.add("PacketPlayOutScoreboardTeam");
+        args.add(name);
+        args.add(0);
+        args.add(players.size());
+        args.addAll(players);
+        String finalPrefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+                .cutTo(prefix, 16) : prefix;
+        String finalSuffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+                .cutTo(suffix, 16) : suffix;
+        args.add(finalPrefix);
+        args.add(IChatBaseComponent.optimizedComponent(finalPrefix).toString(getVersion()));
+        args.add(finalSuffix);
+        args.add(IChatBaseComponent.optimizedComponent(finalSuffix).toString(getVersion()));
+        args.add(options);
+        args.add(visibility);
+        args.add(collision);
+        args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
+        sendPluginMessage(args.toArray());
+    }
+
+    @Override
+    public void unregisterScoreboardTeam0(@NonNull String name) {
+        sendPluginMessage("PacketPlayOutScoreboardTeam", name, 1, 0);
+    }
+
+    @Override
+    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+        List<Object> args = new ArrayList<>();
+        args.add("PacketPlayOutScoreboardTeam");
+        args.add(name);
+        args.add(2);
+        args.add(0);
+        String finalPrefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+                .cutTo(prefix, 16) : prefix;
+        String finalSuffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
+                .cutTo(suffix, 16) : suffix;
+        args.add(finalPrefix);
+        args.add(IChatBaseComponent.optimizedComponent(finalPrefix).toString(getVersion()));
+        args.add(finalSuffix);
+        args.add(IChatBaseComponent.optimizedComponent(finalSuffix).toString(getVersion()));
+        args.add(options);
+        args.add(visibility);
+        args.add(collision);
+        args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
+        sendPluginMessage(args.toArray());
     }
 
     @Override

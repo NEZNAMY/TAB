@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
@@ -80,16 +79,6 @@ public class BungeePacketBuilder extends PacketBuilder {
         return PlayerListItem.Action.valueOf(action.name());
     }
 
-    @Override
-    public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
-        int color = 0;
-        if (clientVersion.getMinorVersion() >= 13) {
-            color = (packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(packet.getPlayerPrefix())).ordinal();
-        }
-        return new Team(packet.getName(), (byte)packet.getAction(), jsonOrCut(packet.getName(), clientVersion, 16), jsonOrCut(packet.getPlayerPrefix(), clientVersion, 16), jsonOrCut(packet.getPlayerSuffix(), clientVersion, 16),
-                packet.getNameTagVisibility(), packet.getCollisionRule(), color, (byte)packet.getOptions(), packet.getPlayers().toArray(new String[0]));
-    }
-    
     @Override
     public PacketPlayOutPlayerInfo readPlayerInfo(Object bungeePacket, ProtocolVersion clientVersion) {
         if (bungeePacket instanceof PlayerListItemRemove) {

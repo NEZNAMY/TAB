@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 
@@ -63,56 +62,21 @@ public class PacketPlayOutScoreboardTeamStorage {
         }
     }
 
-    public static Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    private static void createTeamModern(Object team, ProtocolVersion clientVersion, String prefix, String suffix, String visibility, String collision) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
-        Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, packet.getName());
-        String prefix = packet.getPlayerPrefix();
-        String suffix = packet.getPlayerSuffix();
-        if (clientVersion.getMinorVersion() < 13) {
-            prefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(prefix, 16);
-            suffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(suffix, 16);
-        }
-        ((Collection<String>)ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(packet.getPlayers());
-        ScoreboardTeam_setAllowFriendlyFire.invoke(team, (packet.getOptions() & 0x1) > 0);
-        ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (packet.getOptions() & 0x2) > 0);
-        if (nms.getMinorVersion() >= 13) {
-            createTeamModern(packet, clientVersion, team, prefix, suffix, nms);
-        } else {
-            createTeamLegacy(packet, team, prefix, suffix, nms);
-        }
-        if (nms.getMinorVersion() >= 17) {
-            switch (packet.getAction()) {
-                case 0:
-                    return Constructor_ofBoolean.invoke(null, team, true);
-                case 1:
-                    return Constructor_of.invoke(null, team);
-                case 2:
-                    return Constructor_ofBoolean.invoke(null, team, false);
-                case 3:
-                    return Constructor_ofString.invoke(null, team, packet.getPlayers().iterator().next(), Enum.valueOf(PlayerAction, "ADD"));
-                case 4:
-                    return Constructor_ofString.invoke(null, team, packet.getPlayers().iterator().next(), Enum.valueOf(PlayerAction, "REMOVE"));
-                default:
-                    throw new IllegalArgumentException("Invalid action: " + packet.getAction());
-            }
-        }
-        return CONSTRUCTOR.newInstance(team, packet.getAction());
-    }
-
-    private static void createTeamModern(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion, Object team, String prefix, String suffix, NMSStorage nms) throws ReflectiveOperationException {
         if (prefix != null) ScoreboardTeam_setPrefix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
         if (suffix != null) ScoreboardTeam_setSuffix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
-        EnumChatFormat format = packet.getColor() != null ? packet.getColor() : EnumChatFormat.lastColorsOf(prefix);
-        ScoreboardTeam_setColor.invoke(team, Enum.valueOf(nms.EnumChatFormat, format.toString()));
-        ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(packet.getNameTagVisibility()).equals("always") ? "ALWAYS" : "NEVER"));
-        ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(packet.getCollisionRule()).equals("always") ? "ALWAYS" : "NEVER"));
+        ScoreboardTeam_setColor.invoke(team, Enum.valueOf(nms.EnumChatFormat, EnumChatFormat.lastColorsOf(prefix).toString()));
+        ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
+        ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
     }
 
-    private static void createTeamLegacy(PacketPlayOutScoreboardTeam packet, Object team, String prefix, String suffix, NMSStorage nms) throws ReflectiveOperationException {
+    private static void createTeamLegacy(Object team, String prefix, String suffix, String visibility, String collision) throws ReflectiveOperationException {
+        NMSStorage nms = NMSStorage.getInstance();
         if (prefix != null) ScoreboardTeam_setPrefix.invoke(team, prefix);
         if (suffix != null) ScoreboardTeam_setSuffix.invoke(team, suffix);
-        if (nms.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(packet.getNameTagVisibility()).equals("always") ? "ALWAYS" : "NEVER"));
-        if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(packet.getCollisionRule()).equals("always") ? "ALWAYS" : "NEVER"));
+        if (nms.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
+        if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
     }
 
     private static List<Field> getInstanceFields(Class<?> clazz, Class<?> type) {
@@ -124,5 +88,72 @@ public class PacketPlayOutScoreboardTeamStorage {
             }
         }
         return list;
+    }
+
+    public static Object register(String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options, ProtocolVersion clientVersion) {
+        try {
+            NMSStorage nms = NMSStorage.getInstance();
+            Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);
+            String finalPrefix = prefix;
+            String finalSuffix = suffix;
+            if (clientVersion.getMinorVersion() < 13) {
+                finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
+                finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
+            }
+            ((Collection<String>)ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
+            ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
+            ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
+            if (nms.getMinorVersion() >= 13) {
+                createTeamModern(team, clientVersion, finalPrefix, finalSuffix, visibility, collision);
+            } else {
+                createTeamLegacy(team, finalPrefix, finalSuffix, visibility, collision);
+            }
+            if (nms.getMinorVersion() >= 17) {
+                return Constructor_ofBoolean.invoke(null, team, true);
+            }
+            return CONSTRUCTOR.newInstance(team, 0);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object unregister(String name) {
+        try {
+            NMSStorage nms = NMSStorage.getInstance();
+            Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);
+            if (nms.getMinorVersion() >= 17) {
+                return Constructor_of.invoke(null, team);
+            } else {
+                return CONSTRUCTOR.newInstance(team, 1);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object update(String name, String prefix, String suffix, String visibility, String collision, int options, ProtocolVersion clientVersion) {
+        try {
+            NMSStorage nms = NMSStorage.getInstance();
+            Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);
+            String finalPrefix = prefix;
+            String finalSuffix = suffix;
+            if (clientVersion.getMinorVersion() < 13) {
+                finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
+                finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
+            }
+            ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
+            ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
+            if (nms.getMinorVersion() >= 13) {
+                createTeamModern(team, clientVersion, finalPrefix, finalSuffix, visibility, collision);
+            } else {
+                createTeamLegacy(team, finalPrefix, finalSuffix, visibility, collision);
+            }
+            if (nms.getMinorVersion() >= 17) {
+                return Constructor_ofBoolean.invoke(null, team, false);
+            }
+            return CONSTRUCTOR.newInstance(team, 2);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -308,6 +308,21 @@ public class BukkitTabPlayer extends ITabPlayer {
     }
 
     @Override
+    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+        sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, getVersion()));
+    }
+
+    @Override
+    public void unregisterScoreboardTeam0(@NonNull String name) {
+        sendPacket(PacketPlayOutScoreboardTeamStorage.unregister(name));
+    }
+
+    @Override
+    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+        sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, getVersion()));
+    }
+
+    @Override
     public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
         sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, player, score));
     }

@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -117,7 +116,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      */
     protected void addLine(TabPlayer p, String fakePlayer, String prefix, String suffix) {
         p.setScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
-        p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0));
+        p.registerScoreboardTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0);
     }
     
     /**
@@ -130,7 +129,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      */
     protected void removeLine(TabPlayer p, String fakePlayer) {
         p.removeScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
-        p.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName));
+        p.unregisterScoreboardTeam(teamName);
     }
 
     /**

@@ -9,7 +9,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
@@ -52,11 +51,11 @@ public class NickCompatibility extends TabFeature {
 
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player)));
+                    viewer.unregisterScoreboardTeam(nameTags.getSorting().getShortTeamName(player));
                     String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-                    viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(nameTags.getSorting().getShortTeamName(player), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
-                            nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(player.getNickname()), nameTags.getTeamOptions()));
+                    viewer.registerScoreboardTeam(nameTags.getSorting().getShortTeamName(player), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
+                            nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(player.getNickname()), nameTags.getTeamOptions());
                 }
             }
             if (belowname != null) {
@@ -80,11 +79,10 @@ public class NickCompatibility extends TabFeature {
         TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
 
             if (nameTags != null) {
-                PacketPlayOutScoreboardTeam unregister = player.getUnregisterTeamPacket();
-                PacketPlayOutScoreboardTeam register = player.getRegisterTeamPacket();
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.sendCustomPacket(unregister);
-                    viewer.sendCustomPacket(register);
+                    viewer.unregisterScoreboardTeam(player.getTeamName());
+                    viewer.registerScoreboardTeam(player.getTeamName(), player.getTagPrefix(), player.getTagSuffix(),
+                            player.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(player.getNickname()), 2);
                 }
             }
             if (belowname != null) {

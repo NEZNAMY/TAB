@@ -5,7 +5,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
@@ -66,14 +65,10 @@ public class NameTag extends TabFeature implements TeamManager {
 
     @Override
     public void unload() {
-        List<PacketPlayOutScoreboardTeam> packets = new ArrayList<>();
-        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-            if (hasTeamHandlingPaused(target)) return;
-            packets.add(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(target)));
-        }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            for (PacketPlayOutScoreboardTeam packet : packets) {
-                viewer.sendCustomPacket(packet);
+            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+                if (hasTeamHandlingPaused(target)) return;
+                viewer.unregisterScoreboardTeam(sorting.getShortTeamName(target));
             }
         }
     }
@@ -123,10 +118,9 @@ public class NameTag extends TabFeature implements TeamManager {
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         if (!isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
-            PacketPlayOutScoreboardTeam packet = new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(disconnectedPlayer));
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                viewer.sendCustomPacket(packet);
+                viewer.unregisterScoreboardTeam(sorting.getShortTeamName(disconnectedPlayer));
             }
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -256,14 +250,14 @@ public class NameTag extends TabFeature implements TeamManager {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix,
-                translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions()));
+        viewer.updateScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix,
+                translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions());
     }
 
     public void unregisterTeam(TabPlayer p, String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(teamName));
+            viewer.unregisterScoreboardTeam(teamName);
         }
     }
 
@@ -277,8 +271,8 @@ public class NameTag extends TabFeature implements TeamManager {
         if (hasTeamHandlingPaused(p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.sendCustomPacket(new PacketPlayOutScoreboardTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
-                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions()));
+        viewer.registerScoreboardTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
+                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions());
     }
 
     public String translate(boolean b) {
