@@ -7,7 +7,6 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
-import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -19,9 +18,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective;
-import net.md_5.bungee.protocol.packet.Team;
+import net.md_5.bungee.protocol.packet.*;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -51,7 +48,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
-        return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : BungeeChannelDuplexHandler::new;
+        return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : TabChannelDuplexHandler::new;
     }
 
     @Override
@@ -65,6 +62,69 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         return null;
     }
 
+    @Override
+    public void onDisplayObjective(TabPlayer player, Object packet) {
+        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+                ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
+    }
+
+    @Override
+    public void onObjective(TabPlayer player, Object packet) {
+        TAB.getInstance().getFeatureManager().onObjective(player,
+                ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
+    }
+
+    @Override
+    public boolean isDisplayObjective(Object packet) {
+        return packet instanceof ScoreboardDisplay;
+    }
+
+    @Override
+    public boolean isObjective(Object packet) {
+        return packet instanceof ScoreboardObjective;
+    }
+
+    @Override
+    public boolean isTeam(Object packet) {
+        return packet instanceof Team;
+    }
+
+    @Override
+    public boolean isPlayerInfo(Object packet) {
+        return packet instanceof PlayerListItem ||
+                packet instanceof PlayerListItemUpdate || packet instanceof PlayerListItemRemove;
+    }
+
+    @Override
+    public void modifyPlayers(Object team) {
+        Team packet = (Team) team;
+        if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
+        Collection<String> col = Lists.newArrayList(packet.getPlayers());
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
+                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(sorting.getShortTeamName(p))) {
+                logTeamOverride(packet.getName(), p.getName(), sorting.getShortTeamName(p));
+                col.remove(p.getNickname());
+            }
+        }
+        RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        if (redis != null) {
+            for (RedisPlayer p : redis.getRedisPlayers().values()) {
+                if (col.contains(p.getNickname()) && !packet.getName().equals(p.getTeamName())) {
+                    logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
+                    col.remove(p.getNickname());
+                }
+            }
+        }
+        packet.setPlayers(col.toArray(new String[0]));
+    }
+
+    @Override
+    public boolean isLogin(Object packet) {
+        return packet instanceof Login;
+    }
+
     /**
      * Constructs new instance of the feature
      */
@@ -73,100 +133,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     /**
-     * Custom channel duplex handler override
-     */
-    @AllArgsConstructor
-    public class BungeeChannelDuplexHandler extends ChannelDuplexHandler {
-
-        /** Injected player */
-        protected final TabPlayer player;
-
-        @Override
-        public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
-            try {
-                switch(packet.getClass().getSimpleName()) {
-                case "PlayerListItem":
-                case "PlayerListItemUpdate":
-                case "PlayerListItemRemove":
-                    super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-                    return;
-                case "Team":
-                    if (antiOverrideTeams) {
-                        long time = System.nanoTime();
-                        modifyPlayers((Team) packet);
-                        TAB.getInstance().getCPUManager().addTime("NameTags", TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
-                    }
-                    break;
-                case "ScoreboardDisplay":
-                    onDisplayObjective(player, packet);
-                    break;
-                case "ScoreboardObjective":
-                    onObjective(player, packet);
-                    break;
-                case "Login":
-                    //making sure to not send own packets before login packet is actually sent
-                    super.write(context, packet, channelPromise);
-                    TAB.getInstance().getFeatureManager().onLoginPacket(player);
-                    return;
-                default:
-                    break;
-                }
-            } catch (Throwable e) {
-                TAB.getInstance().getErrorManager().printError("An error occurred when analyzing packets for player " + player.getName() + " with client version " + player.getVersion().getFriendlyName(), e);
-            }
-            try {
-                super.write(context, packet, channelPromise);
-            } catch (Throwable e) {
-                TAB.getInstance().getErrorManager().printError(String.format("Failed to forward packet %s to %s", packet.getClass().getSimpleName(), player.getName()), e);
-            }
-        }
-
-        private void onDisplayObjective(TabPlayer player, Object packet) {
-            TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                    ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
-        }
-
-        private void onObjective(TabPlayer player, Object packet) {
-            TAB.getInstance().getFeatureManager().onObjective(player,
-                    ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
-        }
-
-        /**
-         * Removes all real players from packet if the packet doesn't come from TAB
-         *
-         * @param   packet
-         *          packet to modify
-         */
-        private void modifyPlayers(Team packet) {
-            if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
-            Collection<String> col = Lists.newArrayList(packet.getPlayers());
-            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-                if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                        !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(sorting.getShortTeamName(p))) {
-                    logTeamOverride(packet.getName(), p.getName(), sorting.getShortTeamName(p));
-                    col.remove(p.getNickname());
-                }
-            }
-            RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
-            if (redis != null) {
-                for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                    if (col.contains(p.getNickname()) && !packet.getName().equals(p.getTeamName())) {
-                        logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-                        col.remove(p.getNickname());
-                    }
-                }
-            }
-            packet.setPlayers(col.toArray(new String[0]));
-        }
-    }
-
-    /**
      * Channel duplex handler override if features using packets that must be
      * deserialized manually are used. If they are disabled, deserialization is
      * disabled for better performance.
      */
-    public class DeserializableBungeeChannelDuplexHandler extends BungeeChannelDuplexHandler {
+    public class DeserializableBungeeChannelDuplexHandler extends TabChannelDuplexHandler {
 
         /**
          * Constructs new instance with given player
