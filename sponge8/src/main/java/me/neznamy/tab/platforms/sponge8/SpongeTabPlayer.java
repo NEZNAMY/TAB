@@ -16,10 +16,12 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
+import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
@@ -34,6 +36,11 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
+
+    private static final ComponentCache<IChatBaseComponent, net.minecraft.network.chat.Component> componentCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> net.minecraft.network.chat.Component.Serializer.fromJson(component.toString(clientVersion)));
+
+    private static final Scoreboard dummyScoreboard = new Scoreboard();
 
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
@@ -156,6 +163,39 @@ public final class SpongeTabPlayer extends ITabPlayer {
     public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
         sendPacket(new ClientboundSetDisplayObjectivePacket(slot,
                 new Objective(new Scoreboard(), objective, null, TextComponent.EMPTY, null)));
+    }
+
+    @Override
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        String displayName = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title;
+        sendPacket(new ClientboundSetObjectivePacket(
+                new Objective(
+                        dummyScoreboard,
+                        objectiveName,
+                        null,
+                        componentCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()),
+                        hearts ? RenderType.HEARTS : RenderType.INTEGER
+                ), 0
+        ));
+    }
+
+    @Override
+    public void unregisterObjective0(@NonNull String objectiveName) {
+        sendPacket(new ClientboundSetObjectivePacket(new Objective(dummyScoreboard, objectiveName, null, null, null), 1));
+    }
+
+    @Override
+    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        String displayName = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title;
+        sendPacket(new ClientboundSetObjectivePacket(
+                new Objective(
+                        dummyScoreboard,
+                        objectiveName,
+                        null,
+                        componentCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()),
+                        hearts ? RenderType.HEARTS : RenderType.INTEGER
+                ), 2
+        ));
     }
 
     @Override

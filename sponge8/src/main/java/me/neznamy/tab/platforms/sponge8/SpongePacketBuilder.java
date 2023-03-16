@@ -23,11 +23,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.Team;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,21 +62,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
         final ClientboundPlayerInfoPacket infoPacket = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()));
         nms.ClientboundPlayerInfoPacket_entries.set(infoPacket, entries);
         return infoPacket;
-    }
-
-    @Override
-    public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-        String displayName = clientVersion.getMinorVersion() < 13 ? cutTo(packet.getDisplayName(), 32) : packet.getDisplayName();
-        return new ClientboundSetObjectivePacket(
-                new Objective(
-                        dummyScoreboard,
-                        packet.getObjectiveName(),
-                        null,
-                        componentCache.get(IChatBaseComponent.optimizedComponent(displayName), clientVersion),
-                        packet.getRenderType() == null ? null : ObjectiveCriteria.RenderType.valueOf(packet.getRenderType().name())
-                ),
-                packet.getAction()
-        );
     }
 
     @Override
@@ -130,16 +113,6 @@ public final class SpongePacketBuilder extends PacketBuilder {
                     null));
         }
         return new PacketPlayOutPlayerInfo(action, listData);
-    }
-
-    @Override
-    public PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException {
-        return new PacketPlayOutScoreboardObjective(
-                nms.ClientboundSetObjectivePacket_action.getInt(packet),
-                (String) nms.ClientboundSetObjectivePacket_objectivename.get(packet),
-                null,
-                PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER
-        );
     }
 
     /**

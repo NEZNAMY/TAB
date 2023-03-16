@@ -381,4 +381,10 @@ public interface TabPlayer {
      *          Player to remove from sidebar
      */
     void removeScoreboardScore(@NonNull String objective, @NonNull String player);
+
+    void registerObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts);
+
+    void unregisterObjective(@NonNull String objectiveName);
+
+    void updateObjectiveTitle(@NonNull String objectiveName, @NonNull String title, boolean hearts);
 }

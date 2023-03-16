@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
@@ -44,7 +42,7 @@ public class BelowName extends TabFeature {
                 addDisabledPlayer(loaded);
                 continue;
             }
-            loaded.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+            loaded.registerObjective(OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
             loaded.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
         }
         Map<TabPlayer, Integer> values = new HashMap<>();
@@ -66,7 +64,7 @@ public class BelowName extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(p)) continue;
-            p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME));
+            p.unregisterObjective(OBJECTIVE_NAME);
         }
     }
 
@@ -78,7 +76,7 @@ public class BelowName extends TabFeature {
             addDisabledPlayer(connectedPlayer);
             return;
         }
-        connectedPlayer.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+        connectedPlayer.registerObjective(OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         connectedPlayer.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
         int number = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -106,7 +104,7 @@ public class BelowName extends TabFeature {
             removeDisabledPlayer(p);
         }
         if (disabledNow && !disabledBefore) {
-            p.sendCustomPacket(new PacketPlayOutScoreboardObjective(OBJECTIVE_NAME));
+            p.unregisterObjective(OBJECTIVE_NAME);
             return;
         }
         if (!disabledNow && disabledBefore) {
@@ -143,7 +141,7 @@ public class BelowName extends TabFeature {
     @Override
     public void onLoginPacket(TabPlayer packetReceiver) {
         if (isDisabledPlayer(packetReceiver)) return;
-        packetReceiver.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+        packetReceiver.registerObjective(OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         packetReceiver.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.isLoaded() && sameServerAndWorld(all, packetReceiver)) {
@@ -166,7 +164,7 @@ public class BelowName extends TabFeature {
         @Override
         public void refresh(TabPlayer refreshed, boolean force) {
             if (feature.isDisabledPlayer(refreshed)) return;
-            refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+            refreshed.updateObjectiveTitle(OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         }
     }
 }

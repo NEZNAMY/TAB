@@ -101,7 +101,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     onDisplayObjective(player, packet);
                     break;
                 case "ScoreboardObjective":
-                    TAB.getInstance().getFeatureManager().onObjective(player, packet);
+                    onObjective(player, packet);
                     break;
                 case "Login":
                     //making sure to not send own packets before login packet is actually sent
@@ -124,6 +124,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         private void onDisplayObjective(TabPlayer player, Object packet) {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                     ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
+        }
+
+        private void onObjective(TabPlayer player, Object packet) {
+            TAB.getInstance().getFeatureManager().onObjective(player,
+                    ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
         }
 
         /**

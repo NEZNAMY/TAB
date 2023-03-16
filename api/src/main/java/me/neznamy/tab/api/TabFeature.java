@@ -4,7 +4,6 @@ import java.util.*;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 
 /**
  * Abstract class representing a core feature of the plugin.
@@ -61,7 +60,7 @@ public abstract class TabFeature {
             }
             if (getClass().getMethod("onLoginPacket", TabPlayer.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onLoginPacket");
-            if (getClass().getMethod("onObjective", TabPlayer.class, PacketPlayOutScoreboardObjective.class).getDeclaringClass() != TabFeature.class) {
+            if (getClass().getMethod("onObjective", TabPlayer.class, int.class, String.class).getDeclaringClass() != TabFeature.class) {
                 methodOverrides.add("onObjective");
                 TabAPI.getInstance().getFeatureManager().markObjective();
             }
@@ -207,10 +206,12 @@ public abstract class TabFeature {
      *
      * @param   receiver
      *          player receiving packet
-     * @param   packet
-     *          received packet
+     * @param   action
+     *          Packet action
+     * @param   objective
+     *          Objective name
      */
-    public void onObjective(TabPlayer receiver, PacketPlayOutScoreboardObjective packet) {
+    public void onObjective(TabPlayer receiver, int action, String objective) {
         //empty by default
     }
 

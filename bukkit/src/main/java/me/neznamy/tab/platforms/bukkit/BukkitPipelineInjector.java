@@ -90,7 +90,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                     onDisplayObjective(player, packet);
                 }
                 if (PacketPlayOutScoreboardObjectiveStorage.CLASS.isInstance(packet)) {
-                    TAB.getInstance().getFeatureManager().onObjective(player, packet);
+                    onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
             } catch (Throwable e) {
@@ -107,6 +107,12 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                 PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
                 (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
+        }
+
+        private void onObjective(TabPlayer player, Object packet) throws ReflectiveOperationException {
+            TAB.getInstance().getFeatureManager().onObjective(player,
+                    PacketPlayOutScoreboardObjectiveStorage.METHOD.getInt(packet),
+                    (String) PacketPlayOutScoreboardObjectiveStorage.OBJECTIVE_NAME.get(packet));
         }
 
         /**

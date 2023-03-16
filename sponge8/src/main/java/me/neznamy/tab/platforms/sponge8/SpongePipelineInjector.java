@@ -102,7 +102,7 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
                     onDisplayObjective(player, packet);
                 }
                 if (packet instanceof ClientboundSetObjectivePacket) {
-                    TAB.getInstance().getFeatureManager().onObjective(player, packet);
+                    onObjective(player, packet);
                 }
                 TAB.getInstance().getFeatureManager().onPacketSend(player, packet);
             } catch (Throwable e) {
@@ -119,6 +119,12 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
             TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                     nms.ClientboundSetDisplayObjectivePacket_position.getInt(packet),
                     (String) nms.ClientboundSetDisplayObjectivePacket_objectivename.get(packet));
+        }
+
+        private void onObjective(TabPlayer player, Object packet) throws IllegalAccessException {
+            TAB.getInstance().getFeatureManager().onObjective(player,
+                    nms.ClientboundSetObjectivePacket_action.getInt(packet),
+                    (String) nms.ClientboundSetObjectivePacket_objectivename.get(packet));
         }
 
         /**

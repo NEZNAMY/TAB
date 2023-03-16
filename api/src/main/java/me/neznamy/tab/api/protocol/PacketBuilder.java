@@ -27,7 +27,6 @@ public class PacketBuilder {
      */
     public PacketBuilder() {
         buildMap.put(PacketPlayOutPlayerInfo.class, (packet, version) -> build((PacketPlayOutPlayerInfo)packet, version));
-        buildMap.put(PacketPlayOutScoreboardObjective.class, (packet, version) -> build((PacketPlayOutScoreboardObjective)packet, version));
         buildMap.put(PacketPlayOutScoreboardTeam.class, (packet, version) -> build((PacketPlayOutScoreboardTeam)packet, version));
     }
 
@@ -59,19 +58,6 @@ public class PacketBuilder {
      *          if thrown by reflective operation
      */
     public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return packet;
-    }
-
-    /**
-     * Constructs platform-specific PacketPlayOutScoreboardObjective class based on custom packet class
-     *
-     * @param   packet
-     *          Custom packet to be built
-     * @param   clientVersion
-     *          Protocol version of player to build the packet for
-     * @return  Platform-specific packet
-     */
-    public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
         return packet;
     }
 
@@ -150,20 +136,6 @@ public class PacketBuilder {
      *          if thrown by reflective operation
      */
     public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return null;
-    }
-
-    /**
-     * Converts platform-specific instance of objective packet into
-     * {@link PacketPlayOutScoreboardObjective} object.
-     *
-     * @param   packet
-     *          platform-specific objective packet
-     * @return  The packet converted into {@link PacketPlayOutScoreboardObjective}
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public PacketPlayOutScoreboardObjective readObjective(Object packet) throws ReflectiveOperationException {
         return null;
     }
 }

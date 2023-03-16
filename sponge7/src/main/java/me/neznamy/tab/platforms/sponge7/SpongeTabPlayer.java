@@ -27,7 +27,6 @@ import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlot;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
-import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -46,7 +45,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods = new HashMap<>();
     {
         packetMethods.put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        packetMethods.put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
         packetMethods.put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }
 
@@ -137,44 +135,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
                 return GameModes.SPECTATOR;
             default:
                 throw new IllegalArgumentException("Unknown gamemode: " + mode);
-        }
-    }
-
-    private void handle(final PacketPlayOutScoreboardObjective packet) {
-        final Scoreboard scoreboard = getPlayer().getScoreboard();
-        String displayName;
-        switch (packet.getAction()) {
-            case 0:
-                displayName = cutToLength(packet.getDisplayName(), 32);
-                final Objective objective = Objective.builder()
-                        .name(packet.getObjectiveName())
-                        .displayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()))
-                        .objectiveDisplayMode(convertDisplayMode(packet.getRenderType()))
-                        .criterion(Criteria.DUMMY)
-                        .build();
-                objectives.put(packet.getObjectiveName(), objective);
-                scoreboard.addObjective(objective);
-                break;
-            case 1:
-                scoreboard.removeObjective(objectives.get(packet.getObjectiveName()));
-                break;
-            case 2:
-                displayName = cutToLength(packet.getDisplayName(), 32);
-                final Objective obj = objectives.get(packet.getObjectiveName());
-                obj.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()));
-                if (packet.getRenderType() != null) obj.setDisplayMode(convertDisplayMode(packet.getRenderType()));
-                break;
-        }
-    }
-
-    private static ObjectiveDisplayMode convertDisplayMode(final PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay mode) {
-        switch (mode) {
-            case INTEGER:
-                return ObjectiveDisplayModes.INTEGER;
-            case HEARTS:
-                return ObjectiveDisplayModes.HEARTS;
-            default:
-                throw new IllegalArgumentException("Unknown display mode: " + mode);
         }
     }
 
@@ -384,6 +344,32 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
         getPlayer().getScoreboard().updateDisplaySlot(objectives.get(objective), convertDisplaySlot(slot));
+    }
+
+    @Override
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        String displayName = cutToLength(title, 32);
+        Objective objective = Objective.builder()
+                .name(objectiveName)
+                .displayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()))
+                .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
+                .criterion(Criteria.DUMMY)
+                .build();
+        objectives.put(objectiveName, objective);
+        getPlayer().getScoreboard().addObjective(objective);
+    }
+
+    @Override
+    public void unregisterObjective0(@NonNull String objectiveName) {
+        getPlayer().getScoreboard().removeObjective(objectives.get(objectiveName));
+    }
+
+    @Override
+    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        String displayName = cutToLength(title, 32);
+        Objective obj = objectives.get(objectiveName);
+        obj.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()));
+        obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER);
     }
 
     @Override

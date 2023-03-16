@@ -38,7 +38,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
             = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
         put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-        put(PacketPlayOutScoreboardObjective.class, packet -> handle((PacketPlayOutScoreboardObjective) packet));
         put(PacketPlayOutScoreboardTeam.class, packet -> handle((PacketPlayOutScoreboardTeam) packet));
     }};
 
@@ -123,27 +122,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
                 }
             }
         }
-    }
-
-    /**
-     * Handles PacketPlayOutScoreboardObjective request by forwarding the task
-     * to Bridge plugin, which encodes the packet and Velocity forwards it to the player.
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutScoreboardObjective packet) {
-        List<Object> args = new ArrayList<>();
-        args.add(packet.getClass().getSimpleName());
-        args.add(packet.getObjectiveName());
-        args.add(packet.getAction());
-        if (packet.getAction() == 0 || packet.getAction() == 2) {
-            args.add(getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                    .cutTo(packet.getDisplayName(), 32) : packet.getDisplayName());
-            args.add(IChatBaseComponent.optimizedComponent(packet.getDisplayName()).toString(getVersion()));
-            args.add(packet.getRenderType().ordinal());
-        }
-        sendPluginMessage(args.toArray());
     }
 
     /**
@@ -263,6 +241,25 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
         sendPluginMessage("PacketPlayOutScoreboardDisplayObjective", slot, objective);
+    }
+
+    @Override
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 0,
+                getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title,
+                IChatBaseComponent.optimizedComponent(title).toString(getVersion()), hearts ? 1 : 0);
+    }
+
+    @Override
+    public void unregisterObjective0(@NonNull String objectiveName) {
+        sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 1);
+    }
+
+    @Override
+    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 2,
+                getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title,
+                IChatBaseComponent.optimizedComponent(title).toString(getVersion()), hearts ? 1 : 0);
     }
 
     @Override

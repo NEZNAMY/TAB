@@ -14,7 +14,6 @@ import net.md_5.bungee.protocol.PlayerPublicKey;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
 
 /**
  * Packet builder for BungeeCord platform
@@ -82,11 +81,6 @@ public class BungeePacketBuilder extends PacketBuilder {
     }
 
     @Override
-    public Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) {
-        return new ScoreboardObjective(packet.getObjectiveName(), jsonOrCut(packet.getDisplayName(), clientVersion, 32), packet.getRenderType() == null ? null : HealthDisplay.valueOf(packet.getRenderType().toString()), (byte)packet.getAction());
-    }
-
-    @Override
     public Object build(PacketPlayOutScoreboardTeam packet, ProtocolVersion clientVersion) {
         int color = 0;
         if (clientVersion.getMinorVersion() >= 13) {
@@ -135,11 +129,5 @@ public class BungeePacketBuilder extends PacketBuilder {
     private EnumPlayerInfoAction convertFromItemAction(PlayerListItem.Action action) {
         if (action == PlayerListItem.Action.UPDATE_GAMEMODE) return EnumPlayerInfoAction.UPDATE_GAME_MODE;
         return EnumPlayerInfoAction.valueOf(action.name());
-    }
-
-    @Override
-    public PacketPlayOutScoreboardObjective readObjective(Object bungeePacket) {
-        return new PacketPlayOutScoreboardObjective(((ScoreboardObjective) bungeePacket).getAction(), ((ScoreboardObjective) bungeePacket).getName(),
-                null, PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER);
     }
 }

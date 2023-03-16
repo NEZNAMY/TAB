@@ -9,12 +9,14 @@ import me.neznamy.tab.api.util.ComponentCache
 import me.neznamy.tab.shared.ITabPlayer
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.bossbar.BossBar.*
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
 import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
+import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateObjectives
 import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
 import java.util.*
 
@@ -110,6 +112,28 @@ class KryptonTabPlayer(
 
     override fun setObjectiveDisplaySlot(slot: Int, objective: String) {
         sendPacket(PacketOutDisplayObjective(slot, objective))
+    }
+
+    override fun registerObjective0(objectiveName: String, title: String, hearts: Boolean) {
+        sendPacket(PacketOutUpdateObjectives(
+            objectiveName,
+            PacketOutUpdateObjectives.Actions.CREATE,
+            KryptonPacketBuilder.toComponent(title, getVersion()),
+            if (hearts) 1 else 0
+        ))
+    }
+
+    override fun unregisterObjective0(objectiveName: String) {
+        sendPacket(PacketOutUpdateObjectives(objectiveName,PacketOutUpdateObjectives.Actions.REMOVE, Component.empty(), -1))
+    }
+
+    override fun updateObjectiveTitle0(objectiveName: String, title: String, hearts: Boolean) {
+        sendPacket(PacketOutUpdateObjectives(
+            objectiveName,
+            PacketOutUpdateObjectives.Actions.UPDATE_TEXT,
+            KryptonPacketBuilder.toComponent(title, getVersion()),
+            if (hearts) 1 else 0
+        ))
     }
 
     override fun setScoreboardScore0(objective: String, player: String, score: Int) {

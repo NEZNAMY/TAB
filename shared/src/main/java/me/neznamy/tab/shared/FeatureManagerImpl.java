@@ -11,7 +11,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -290,18 +289,19 @@ public class FeatureManagerImpl implements FeatureManager {
      *
      * @param   packetReceiver
      *          player who received the packet
-     * @throws  ReflectiveOperationException
-     *          if reflective operation fails
+     * @param   action
+     *          Packet action
+     * @param   objective
+     *          Objective name
      */
-    public void onObjective(TabPlayer packetReceiver, Object packet) throws ReflectiveOperationException {
+    public void onObjective(TabPlayer packetReceiver, int action, String objective) {
         if (!objectiveListeners) return;
         long time = System.nanoTime();
-        PacketPlayOutScoreboardObjective display = TAB.getInstance().getPlatform().getPacketBuilder().readObjective(packet);
         TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.PACKET_OBJECTIVE, System.nanoTime()-time);
         for (TabFeature f : values) {
             if (!f.overridesMethod("onObjective")) continue;
             time = System.nanoTime();
-            f.onObjective(packetReceiver, display);
+            f.onObjective(packetReceiver, action, objective);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.ANTI_OVERRIDE, System.nanoTime()-time);
         }
     }

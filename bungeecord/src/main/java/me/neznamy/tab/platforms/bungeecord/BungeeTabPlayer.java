@@ -22,6 +22,8 @@ import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
+import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
 import java.lang.reflect.Field;
@@ -201,6 +203,43 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
         getPlayer().unsafe().sendPacket(new ScoreboardDisplay((byte)slot, objective));
+    }
+
+    @Override
+    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, getVersion(), 32), hearts ? HealthDisplay.HEARTS : HealthDisplay.INTEGER, (byte) 0));
+    }
+
+    @Override
+    public void unregisterObjective0(@NonNull String objectiveName) {
+        getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, null, null, (byte) 1));
+    }
+
+    @Override
+    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, getVersion(), 32), hearts ? HealthDisplay.HEARTS : HealthDisplay.INTEGER, (byte) 2));
+    }
+
+    /**
+     * If {@code clientVersion} is &gt;= 1.13, creates a component from given text and returns
+     * it as a serialized component, which BungeeCord uses.
+     * <p>
+     * If {@code clientVersion} is &lt; 1.12, the text is cut to {@code length} characters if
+     * needed and returned.
+     *
+     * @param   text
+     *          Text to convert
+     * @param   clientVersion
+     *          Version of player to convert text for
+     * @return  serialized component for 1.13+ clients, cut string for 1.12-
+     */
+    private String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
+        if (text == null) return null;
+        if (clientVersion.getMinorVersion() >= 13) {
+            return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
+        } else {
+            return TAB.getInstance().getPlatform().getPacketBuilder().cutTo(text, length);
+        }
     }
 
     @Override

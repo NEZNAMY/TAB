@@ -4,8 +4,6 @@ import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay;
 import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardTeam;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
@@ -133,8 +131,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         if (players.contains(p)) return; //already registered
         players.add(p);
         p.setProperty(this, titleProperty, title);
-        p.sendCustomPacket(new PacketPlayOutScoreboardObjective(0, ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(),
-                EnumScoreboardHealthDisplay.INTEGER));
+        p.registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(), false);
         p.setObjectiveDisplaySlot(ScoreboardManagerImpl.DISPLAY_SLOT, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
@@ -154,7 +151,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     public void removePlayer(TabPlayer p) {
         if (!players.contains(p)) return; //not registered
-        p.sendCustomPacket(new PacketPlayOutScoreboardObjective(ScoreboardManagerImpl.OBJECTIVE_NAME));
+        p.unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
             p.sendCustomPacket(new PacketPlayOutScoreboardTeam(((ScoreboardLine)line).getTeamName()));
         }
@@ -166,8 +163,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
     @Override
     public void refresh(TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
-        refreshed.sendCustomPacket(new PacketPlayOutScoreboardObjective(2, ScoreboardManagerImpl.OBJECTIVE_NAME, 
-                refreshed.getProperty(titleProperty).updateAndGet(), EnumScoreboardHealthDisplay.INTEGER));
+        refreshed.updateObjectiveTitle(ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(titleProperty).updateAndGet(), false);
     }
 
     @Override

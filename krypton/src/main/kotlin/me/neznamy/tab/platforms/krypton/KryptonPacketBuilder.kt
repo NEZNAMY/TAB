@@ -75,15 +75,6 @@ object KryptonPacketBuilder : PacketBuilder() {
         return PacketOutPlayerInfoUpdate(actions, entries)
     }
 
-    override fun build(packet: PacketPlayOutScoreboardObjective, clientVersion: ProtocolVersion): Any {
-        return PacketOutUpdateObjectives(
-            packet.objectiveName,
-            packet.action,
-            toComponent(packet.displayName, clientVersion),
-            packet.renderType?.ordinal ?: -1
-        )
-    }
-
     override fun build(packet: PacketPlayOutScoreboardTeam, clientVersion: ProtocolVersion): Any {
         val action = PacketOutUpdateTeams.Action.fromId(packet.action)!!
         val players = packet.players.map(Component::text)
@@ -147,6 +138,4 @@ object KryptonPacketBuilder : PacketBuilder() {
 
         return PacketPlayOutPlayerInfo(actions, entries)
     }
-
-    override fun readObjective(packet: Any?): PacketPlayOutScoreboardObjective? = null
 }

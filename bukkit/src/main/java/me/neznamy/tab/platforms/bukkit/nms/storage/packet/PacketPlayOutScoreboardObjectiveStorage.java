@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutScoreboardObjective;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 
@@ -41,30 +40,29 @@ public class PacketPlayOutScoreboardObjectiveStorage {
         }
     }
 
-    public static Object build(PacketPlayOutScoreboardObjective packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        NMSStorage nms = NMSStorage.getInstance();
-        String displayName = clientVersion.getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(packet.getDisplayName(), 32) : packet.getDisplayName();
-        if (nms.getMinorVersion() >= 13) {
-            return CONSTRUCTOR.newInstance(newScoreboardObjective.newInstance(null, packet.getObjectiveName(), null,
-                            nms.toNMSComponent(IChatBaseComponent.optimizedComponent(displayName), clientVersion),
-                            packet.getRenderType() == null ? null : Enum.valueOf(EnumScoreboardHealthDisplay, packet.getRenderType().toString())),
-                    packet.getAction());
+    public static Object buildSilent(int action, String objectiveName, String title, boolean hearts, ProtocolVersion clientVersion) {
+        try {
+            NMSStorage nms = NMSStorage.getInstance();
+            String displayName = clientVersion.getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title;
+            if (nms.getMinorVersion() >= 13) {
+                return CONSTRUCTOR.newInstance(newScoreboardObjective.newInstance(null, objectiveName, null,
+                        nms.toNMSComponent(IChatBaseComponent.optimizedComponent(displayName), clientVersion),
+                        asDisplayType(hearts)), action);
+            }
+            Object nmsPacket = CONSTRUCTOR.newInstance();
+            OBJECTIVE_NAME.set(nmsPacket, objectiveName);
+            DISPLAY_NAME.set(nmsPacket, displayName);
+            if (nms.getMinorVersion() >= 8) {
+                RENDER_TYPE.set(nmsPacket, asDisplayType(hearts));
+            }
+            METHOD.set(nmsPacket, action);
+            return nmsPacket;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
-
-        Object nmsPacket = CONSTRUCTOR.newInstance();
-        OBJECTIVE_NAME.set(nmsPacket, packet.getObjectiveName());
-        DISPLAY_NAME.set(nmsPacket, displayName);
-        if (nms.getMinorVersion() >= 8 && packet.getRenderType() != null) {
-            RENDER_TYPE.set(nmsPacket, Enum.valueOf(EnumScoreboardHealthDisplay, packet.getRenderType().toString()));
-        }
-        METHOD.set(nmsPacket, packet.getAction());
-        return nmsPacket;
     }
 
-    public static PacketPlayOutScoreboardObjective read(Object nmsPacket) throws ReflectiveOperationException {
-        return new PacketPlayOutScoreboardObjective(METHOD.getInt(nmsPacket),
-                (String) OBJECTIVE_NAME.get(nmsPacket), null,
-                PacketPlayOutScoreboardObjective.EnumScoreboardHealthDisplay.INTEGER
-        );
+    private static Object asDisplayType(boolean hearts) {
+        return Enum.valueOf(EnumScoreboardHealthDisplay, hearts ? "HEARTS" : "INTEGER");
     }
 }

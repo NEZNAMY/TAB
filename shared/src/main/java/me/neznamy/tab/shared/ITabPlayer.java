@@ -232,27 +232,6 @@ public abstract class ITabPlayer implements TabPlayer {
                 }
             }
         }
-        //avoiding BungeeCord bug kicking all players
-        if (packet instanceof PacketPlayOutScoreboardObjective) {
-            String objective = ((PacketPlayOutScoreboardObjective) packet).getObjectiveName();
-            int method = ((PacketPlayOutScoreboardObjective) packet).getAction();
-            if (method == 0) {
-                if (!registeredObjectives.add(objective)) {
-                    TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objective + " to player " + getName());
-                    return;
-                }
-            } else if (method == 1) {
-                if (!registeredObjectives.remove(objective)) {
-                    TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing objective " + objective + " for player " + getName());
-                    return;
-                }
-            } else if (method == 2) {
-                if (!registeredObjectives.contains(objective)) {
-                    TAB.getInstance().getErrorManager().printError("Tried to modify non-existing objective " + objective + " for player " + getName());
-                    return;
-                }
-            }
-        }
         try {
             sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
         } catch (Exception e) {
@@ -315,7 +294,37 @@ public abstract class ITabPlayer implements TabPlayer {
         removeScoreboardScore0(objective, player);
     }
 
+    public void registerObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        if (!registeredObjectives.add(objectiveName)) {
+            TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objectiveName + " to player " + getName());
+            return;
+        }
+        registerObjective0(objectiveName, title, hearts);
+    }
+
+    public void unregisterObjective(@NonNull String objectiveName) {
+        if (!registeredObjectives.remove(objectiveName)) {
+            TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing objective " + objectiveName + " for player " + getName());
+            return;
+        }
+        unregisterObjective0(objectiveName);
+    }
+
+    public void updateObjectiveTitle(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+        if (!registeredObjectives.contains(objectiveName)) {
+            TAB.getInstance().getErrorManager().printError("Tried to modify non-existing objective " + objectiveName + " for player " + getName());
+            return;
+        }
+        updateObjectiveTitle0(objectiveName, title, hearts);
+    }
+
     public abstract void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score);
 
     public abstract void removeScoreboardScore0(@NonNull String objective, @NonNull String player);
+
+    public abstract void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
+
+    public abstract void unregisterObjective0(@NonNull String objectiveName);
+
+    public abstract void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
 }
