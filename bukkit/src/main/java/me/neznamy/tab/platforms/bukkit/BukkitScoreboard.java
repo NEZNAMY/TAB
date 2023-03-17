@@ -29,7 +29,7 @@ public class BukkitScoreboard extends TabScoreboard {
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, "", false, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(1, objectiveName, "", false, player.getVersion()));
     }
 
     @Override
