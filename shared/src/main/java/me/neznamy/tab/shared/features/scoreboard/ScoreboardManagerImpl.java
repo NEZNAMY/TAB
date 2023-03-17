@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
+import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -17,7 +18,6 @@ import java.util.Map.Entry;
 public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager {
 
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
-    public static final int DISPLAY_SLOT = 1;
 
     //config options
     @Getter private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("scoreboard.toggle-command", "/sb");
@@ -194,7 +194,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onDisplayObjective(TabPlayer receiver, int slot, String objective) {
-        if (respectOtherPlugins && slot == DISPLAY_SLOT && !objective.equals(OBJECTIVE_NAME)) {
+        if (respectOtherPlugins && slot == DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             otherPluginScoreboards.put(receiver, objective);
             ScoreboardImpl sb = activeScoreboards.get(receiver);

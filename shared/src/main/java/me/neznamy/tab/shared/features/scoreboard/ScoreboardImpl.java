@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
+import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -130,8 +131,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         if (players.contains(p)) return; //already registered
         players.add(p);
         p.setProperty(this, titleProperty, title);
-        p.registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(), false);
-        p.setObjectiveDisplaySlot(ScoreboardManagerImpl.DISPLAY_SLOT, ScoreboardManagerImpl.OBJECTIVE_NAME);
+        p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(), false);
+        p.getScoreboard().setDisplaySlot(DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }
@@ -150,9 +151,9 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
 
     public void removePlayer(TabPlayer p) {
         if (!players.contains(p)) return; //not registered
-        p.unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
+        p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
-            p.unregisterScoreboardTeam(((ScoreboardLine)line).getTeamName());
+            p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
         }
         players.remove(p);
         manager.getActiveScoreboards().remove(p);
@@ -162,7 +163,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
     @Override
     public void refresh(TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
-        refreshed.updateObjectiveTitle(ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(titleProperty).updateAndGet(), false);
+        refreshed.getScoreboard().updateObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(titleProperty).updateAndGet(), false);
     }
 
     @Override
@@ -208,7 +209,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
                 continue;
             }
             if (line instanceof StaticLine || p.getProperty(getName() + "-" + ((ScoreboardLine)line).getTeamName()).get().length() > 0) {
-                p.setScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(p), score++);
+                p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, ((ScoreboardLine)line).getPlayerName(p), score++);
             }
         }
     }

@@ -226,7 +226,7 @@ public abstract class RedisSupport extends TabFeature {
                     target.setTagPrefix((String) message.get(TabConstants.Property.TAGPREFIX));
                     target.setTagSuffix((String) message.get(TabConstants.Property.TAGSUFFIX));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        viewer.updateScoreboardTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(), target.isNameVisibility() ? "always" : "never", "always", 2);
+                        viewer.getScoreboard().updateTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(), target.isNameVisibility() ? "always" : "never", "always", 2);
                     }
                     break;
                 case "belowname":
@@ -234,7 +234,7 @@ public abstract class RedisSupport extends TabFeature {
                     if (target == null) break;
                     target.setBelowName((String) message.get("belowname"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        viewer.setScoreboardScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
+                        viewer.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
                     }
                     break;
                 case "yellow-number":
@@ -242,7 +242,7 @@ public abstract class RedisSupport extends TabFeature {
                     if (target == null) break;
                     target.setYellowNumber((String) message.get("yellow-number"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        viewer.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
+                        viewer.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
                     }
                     break;
                 case "team":
@@ -250,8 +250,8 @@ public abstract class RedisSupport extends TabFeature {
                     if (target == null) break;
                     target.setTeamName((String) message.get("to"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        viewer.unregisterScoreboardTeam(target.getTeamName());
-                        viewer.registerScoreboardTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(),
+                        viewer.getScoreboard().unregisterTeam(target.getTeamName());
+                        viewer.getScoreboard().registerTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(),
                                 target.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(target.getNickname()), 2);
                     }
                     break;
@@ -259,7 +259,7 @@ public abstract class RedisSupport extends TabFeature {
                     target = redisPlayers.get(id.toString());
                     if (target == null) break; //player left current proxy and was unloaded from memory, therefore null check didn't pass
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.unregisterScoreboardTeam(target.getTeamName());
+                        all.getScoreboard().unregisterTeam(target.getTeamName());
                         if (all.getVersion().getMinorVersion() < 8) continue;
                         if (!target.getServer().equals(all.getServer())) all.sendCustomPacket(target.getRemovePacket());
                     }
@@ -279,9 +279,9 @@ public abstract class RedisSupport extends TabFeature {
      */
     private void join(RedisPlayer target) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            all.registerScoreboardTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(), target.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(target.getNickname()), 2);
-            all.setScoreboardScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
-            all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
+            all.getScoreboard().registerTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(), target.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(target.getNickname()), 2);
+            all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
+            all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
             if (all.getVersion().getMinorVersion() < 8) continue;
             if (global == null) {
                 if (all.getServer().equals(target.getServer())) all.sendCustomPacket(target.getUpdatePacket());
@@ -356,9 +356,9 @@ public abstract class RedisSupport extends TabFeature {
         json.put("proxy", proxy.toString());
         sendMessage(json.toString());
         for (RedisPlayer redis : redisPlayers.values()) {
-            p.registerScoreboardTeam(redis.getTeamName(), redis.getTagPrefix(), redis.getTagSuffix(), redis.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(redis.getNickname()), 2);
-            p.setScoreboardScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), redis.getBelowName());
-            p.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, redis.getNickname(), redis.getYellowNumber());
+            p.getScoreboard().registerTeam(redis.getTeamName(), redis.getTagPrefix(), redis.getTagSuffix(), redis.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(redis.getNickname()), 2);
+            p.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), redis.getBelowName());
+            p.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, redis.getNickname(), redis.getYellowNumber());
             if (global == null) continue;
             if (shouldSee(p, redis.getServer(), redis.isVanished())) {
                 if (!p.getServer().equals(redis.getServer())) {
@@ -428,7 +428,7 @@ public abstract class RedisSupport extends TabFeature {
     public void onLoginPacket(TabPlayer packetReceiver) {
         for (RedisPlayer p : redisPlayers.values()) {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                all.registerScoreboardTeam(p.getTeamName(), p.getTagPrefix(), p.getTagSuffix(), p.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(p.getNickname()), 2);
+                all.getScoreboard().registerTeam(p.getTeamName(), p.getTagPrefix(), p.getTagSuffix(), p.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(p.getNickname()), 2);
             }
         }
     }

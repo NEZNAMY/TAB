@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -18,7 +19,6 @@ import java.util.Objects;
 public class BelowName extends TabFeature {
 
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
-    public static final int DISPLAY_SLOT = 2;
 
     @Getter private final String refreshDisplayName = "Updating BelowName number";
     @Getter private final String featureName = "BelowName";
@@ -42,8 +42,8 @@ public class BelowName extends TabFeature {
                 addDisabledPlayer(loaded);
                 continue;
             }
-            loaded.registerObjective(OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-            loaded.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
+            loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
+            loaded.getScoreboard().setDisplaySlot(DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         }
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
@@ -54,7 +54,7 @@ public class BelowName extends TabFeature {
             if (isDisabledPlayer(viewer)) continue;
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
                 if (sameServerAndWorld(entry.getKey(), viewer)) {
-                    viewer.setScoreboardScore(OBJECTIVE_NAME, entry.getKey().getNickname(), entry.getValue());
+                    viewer.getScoreboard().setScore(OBJECTIVE_NAME, entry.getKey().getNickname(), entry.getValue());
                 }
             }
         }
@@ -64,7 +64,7 @@ public class BelowName extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(p)) continue;
-            p.unregisterObjective(OBJECTIVE_NAME);
+            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
     }
 
@@ -76,13 +76,13 @@ public class BelowName extends TabFeature {
             addDisabledPlayer(connectedPlayer);
             return;
         }
-        connectedPlayer.registerObjective(OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        connectedPlayer.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
+        connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
+        connectedPlayer.getScoreboard().setDisplaySlot(DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         int number = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (sameServerAndWorld(all, connectedPlayer)) {
-                all.setScoreboardScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), number);
-                connectedPlayer.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+                all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), number);
+                connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
             }
         }
         if (redis != null) redis.updateBelowName(connectedPlayer, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
@@ -104,7 +104,7 @@ public class BelowName extends TabFeature {
             removeDisabledPlayer(p);
         }
         if (disabledNow && !disabledBefore) {
-            p.unregisterObjective(OBJECTIVE_NAME);
+            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
             return;
         }
         if (!disabledNow && disabledBefore) {
@@ -115,8 +115,8 @@ public class BelowName extends TabFeature {
         int number = getValue(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (sameServerAndWorld(all, p)) {
-                all.setScoreboardScore(OBJECTIVE_NAME, p.getNickname(), number);
-                p.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+                all.getScoreboard().setScore(OBJECTIVE_NAME, p.getNickname(), number);
+                p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
             }
         }
         if (redis != null) redis.updateBelowName(p, p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
@@ -132,7 +132,7 @@ public class BelowName extends TabFeature {
         int number = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (sameServerAndWorld(all, refreshed)) {
-                all.setScoreboardScore(OBJECTIVE_NAME, refreshed.getNickname(), number);
+                all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), number);
             }
         }
         if (redis != null) redis.updateBelowName(refreshed, refreshed.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
@@ -141,11 +141,11 @@ public class BelowName extends TabFeature {
     @Override
     public void onLoginPacket(TabPlayer packetReceiver) {
         if (isDisabledPlayer(packetReceiver)) return;
-        packetReceiver.registerObjective(OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        packetReceiver.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
+        packetReceiver.getScoreboard().registerObjective(OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
+        packetReceiver.getScoreboard().setDisplaySlot(DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.isLoaded() && sameServerAndWorld(all, packetReceiver)) {
-                packetReceiver.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+                packetReceiver.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
             }
         }
     }
@@ -164,7 +164,7 @@ public class BelowName extends TabFeature {
         @Override
         public void refresh(TabPlayer refreshed, boolean force) {
             if (feature.isDisabledPlayer(refreshed)) return;
-            refreshed.updateObjectiveTitle(OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
+            refreshed.getScoreboard().updateObjective(OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         }
     }
 }

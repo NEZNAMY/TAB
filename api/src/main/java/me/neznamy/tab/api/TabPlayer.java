@@ -1,6 +1,5 @@
 package me.neznamy.tab.api;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import lombok.NonNull;
@@ -353,46 +352,9 @@ public interface TabPlayer {
     void removeBossBar(@NonNull UUID id);
 
     /**
-     * Sets objective display slot of specified objective
+     * Returns scoreboard interface for calling scoreboard-related methods
      *
-     * @param   slot
-     *          Position, 0 = PlayerList, 1 = SideBar, 2 = BelowName
-     * @param   objective
-     *          Objective name
+     * @return  scoreboard interface for calling scoreboard-related methods
      */
-    void setObjectiveDisplaySlot(int slot, @NonNull String objective);
-
-    /**
-     * Sets scoreboard score
-     * @param   objective
-     *          Objective name
-     * @param   player
-     *          Affected player
-     * @param   score
-     *          New score value
-     */
-    void setScoreboardScore(@NonNull String objective, @NonNull String player, int score);
-
-    /**
-     * Removes scoreboard score
-     *
-     * @param   objective
-     *          Objective to remove from
-     * @param   player
-     *          Player to remove from sidebar
-     */
-    void removeScoreboardScore(@NonNull String objective, @NonNull String player);
-
-    void registerObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts);
-
-    void unregisterObjective(@NonNull String objectiveName);
-
-    void updateObjectiveTitle(@NonNull String objectiveName, @NonNull String title, boolean hearts);
-
-    void registerScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility,
-                                String collision, Collection<String> players, int options);
-
-    void unregisterScoreboardTeam(@NonNull String name);
-
-    void updateScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options);
+    Scoreboard getScoreboard();
 }

@@ -115,8 +115,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          suffix
      */
     protected void addLine(TabPlayer p, String fakePlayer, String prefix, String suffix) {
-        p.setScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
-        p.registerScoreboardTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0);
+        p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
+        p.getScoreboard().registerTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0);
     }
     
     /**
@@ -128,8 +128,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          player name
      */
     protected void removeLine(TabPlayer p, String fakePlayer) {
-        p.removeScoreboardScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
-        p.unregisterScoreboardTeam(teamName);
+        p.getScoreboard().removeScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
+        p.getScoreboard().unregisterTeam(teamName);
     }
 
     /**

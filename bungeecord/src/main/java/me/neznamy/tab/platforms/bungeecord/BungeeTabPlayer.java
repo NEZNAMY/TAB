@@ -1,11 +1,12 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
@@ -21,12 +22,10 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.*;
-import net.md_5.bungee.protocol.packet.ScoreboardObjective.HealthDisplay;
+import net.md_5.bungee.protocol.packet.BossBar;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -52,6 +51,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", e);
         }
     }
+
+    /** Player's scoreboard */
+    @Getter private final Scoreboard scoreboard = new BungeeScoreboard(this);
 
     /**
      * Constructs new instance for given player
@@ -197,86 +199,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public void removeBossBar(@NonNull UUID id) {
         if (getVersion().getMinorVersion() < 9) return;
         getPlayer().unsafe().sendPacket(new BossBar(id, 1));
-    }
-
-    @Override
-    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
-        getPlayer().unsafe().sendPacket(new ScoreboardDisplay((byte)slot, objective));
-    }
-
-    @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, getVersion(), 32), hearts ? HealthDisplay.HEARTS : HealthDisplay.INTEGER, (byte) 0));
-    }
-
-    @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
-        getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, null, null, (byte) 1));
-    }
-
-    @Override
-    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, getVersion(), 32), hearts ? HealthDisplay.HEARTS : HealthDisplay.INTEGER, (byte) 2));
-    }
-
-    @Override
-    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        int color = 0;
-        if (getVersion().getMinorVersion() >= 13) {
-            color = EnumChatFormat.lastColorsOf(prefix).ordinal();
-        }
-        getPlayer().unsafe().sendPacket(new Team(name, (byte) 0, jsonOrCut(name, getVersion(), 16),
-                jsonOrCut(prefix, getVersion(), 16), jsonOrCut(suffix, getVersion(), 16),
-                visibility, collision, color, (byte)options, players.toArray(new String[0])));
-    }
-
-    @Override
-    public void unregisterScoreboardTeam0(@NonNull String name) {
-        getPlayer().unsafe().sendPacket(new Team(name));
-    }
-
-    @Override
-    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        int color = 0;
-        if (getVersion().getMinorVersion() >= 13) {
-            color = EnumChatFormat.lastColorsOf(prefix).ordinal();
-        }
-        getPlayer().unsafe().sendPacket(new Team(name, (byte) 2, jsonOrCut(name, getVersion(), 16),
-                jsonOrCut(prefix, getVersion(), 16), jsonOrCut(suffix, getVersion(), 16),
-                visibility, collision, color, (byte)options, null));
-    }
-
-    /**
-     * If {@code clientVersion} is &gt;= 1.13, creates a component from given text and returns
-     * it as a serialized component, which BungeeCord uses.
-     * <p>
-     * If {@code clientVersion} is &lt; 1.12, the text is cut to {@code length} characters if
-     * needed and returned.
-     *
-     * @param   text
-     *          Text to convert
-     * @param   clientVersion
-     *          Version of player to convert text for
-     * @return  serialized component for 1.13+ clients, cut string for 1.12-
-     */
-    private String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
-        if (text == null) return null;
-        if (clientVersion.getMinorVersion() >= 13) {
-            return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
-        } else {
-            return TAB.getInstance().getPlatform().getPacketBuilder().cutTo(text, length);
-        }
-    }
-
-    @Override
-    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
-        getPlayer().unsafe().sendPacket(new ScoreboardScore(player, (byte) 0, objective, score));
-
-    }
-
-    @Override
-    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
-        getPlayer().unsafe().sendPacket(new ScoreboardScore(player, (byte) 1, objective, 0));
     }
 
     @Override

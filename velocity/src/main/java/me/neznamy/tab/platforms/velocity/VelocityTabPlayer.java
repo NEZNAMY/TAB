@@ -4,15 +4,17 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.api.util.GameProfile.Property;
+import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.*;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.api.util.ComponentCache;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
@@ -42,6 +44,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /** BossBars currently displayed to this player */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
+
+    @Getter private final Scoreboard scoreboard = new VelocityScoreboard(this);
 
     /**
      * Constructs new instance for given player
@@ -204,90 +208,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void removeBossBar(@NonNull UUID id) {
         getPlayer().hideBossBar(bossBars.remove(id));
-    }
-
-    @Override
-    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
-        sendPluginMessage("PacketPlayOutScoreboardDisplayObjective", slot, objective);
-    }
-
-    @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 0,
-                getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title,
-                IChatBaseComponent.optimizedComponent(title).toString(getVersion()), hearts ? 1 : 0);
-    }
-
-    @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
-        sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 1);
-    }
-
-    @Override
-    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 2,
-                getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title,
-                IChatBaseComponent.optimizedComponent(title).toString(getVersion()), hearts ? 1 : 0);
-    }
-
-    @Override
-    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        List<Object> args = new ArrayList<>();
-        args.add("PacketPlayOutScoreboardTeam");
-        args.add(name);
-        args.add(0);
-        args.add(players.size());
-        args.addAll(players);
-        String finalPrefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                .cutTo(prefix, 16) : prefix;
-        String finalSuffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                .cutTo(suffix, 16) : suffix;
-        args.add(finalPrefix);
-        args.add(IChatBaseComponent.optimizedComponent(finalPrefix).toString(getVersion()));
-        args.add(finalSuffix);
-        args.add(IChatBaseComponent.optimizedComponent(finalSuffix).toString(getVersion()));
-        args.add(options);
-        args.add(visibility);
-        args.add(collision);
-        args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
-        sendPluginMessage(args.toArray());
-    }
-
-    @Override
-    public void unregisterScoreboardTeam0(@NonNull String name) {
-        sendPluginMessage("PacketPlayOutScoreboardTeam", name, 1, 0);
-    }
-
-    @Override
-    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        List<Object> args = new ArrayList<>();
-        args.add("PacketPlayOutScoreboardTeam");
-        args.add(name);
-        args.add(2);
-        args.add(0);
-        String finalPrefix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                .cutTo(prefix, 16) : prefix;
-        String finalSuffix = getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder()
-                .cutTo(suffix, 16) : suffix;
-        args.add(finalPrefix);
-        args.add(IChatBaseComponent.optimizedComponent(finalPrefix).toString(getVersion()));
-        args.add(finalSuffix);
-        args.add(IChatBaseComponent.optimizedComponent(finalSuffix).toString(getVersion()));
-        args.add(options);
-        args.add(visibility);
-        args.add(collision);
-        args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
-        sendPluginMessage(args.toArray());
-    }
-
-    @Override
-    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
-        sendPluginMessage("PacketPlayOutScoreboardScore", objective, 0, player, score);
-    }
-
-    @Override
-    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
-        sendPluginMessage("PacketPlayOutScoreboardScore", objective, 1, player, 0);
     }
 
     @Override

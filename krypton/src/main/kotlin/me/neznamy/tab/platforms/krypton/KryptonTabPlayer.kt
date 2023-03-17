@@ -1,26 +1,20 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
+import me.neznamy.tab.api.Scoreboard
 import me.neznamy.tab.api.bossbar.BarColor
 import me.neznamy.tab.api.bossbar.BarStyle
-import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.Skin
 import me.neznamy.tab.api.util.ComponentCache
 import me.neznamy.tab.shared.ITabPlayer
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.bossbar.BossBar.*
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.entity.player.Player
-import org.kryptonmc.krypton.adventure.KryptonAdventure
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
-import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateObjectives
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateTeams
 import java.util.*
 
 class KryptonTabPlayer(
@@ -36,6 +30,7 @@ class KryptonTabPlayer(
 
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
+    private val scoreboard = KryptonScoreboard(this)
 
     fun connection(): NettyConnection = delegate.connection
 
@@ -113,85 +108,7 @@ class KryptonTabPlayer(
         bossBars.remove(id)
     }
 
-    override fun setObjectiveDisplaySlot(slot: Int, objective: String) {
-        sendPacket(PacketOutDisplayObjective(slot, objective))
-    }
-
-    override fun registerObjective0(objectiveName: String, title: String, hearts: Boolean) {
-        sendPacket(PacketOutUpdateObjectives(
-            objectiveName,
-            PacketOutUpdateObjectives.Actions.CREATE,
-            KryptonPacketBuilder.toComponent(title, getVersion()),
-            if (hearts) 1 else 0
-        ))
-    }
-
-    override fun unregisterObjective0(objectiveName: String) {
-        sendPacket(PacketOutUpdateObjectives(objectiveName,PacketOutUpdateObjectives.Actions.REMOVE, Component.empty(), -1))
-    }
-
-    override fun updateObjectiveTitle0(objectiveName: String, title: String, hearts: Boolean) {
-        sendPacket(PacketOutUpdateObjectives(
-            objectiveName,
-            PacketOutUpdateObjectives.Actions.UPDATE_TEXT,
-            KryptonPacketBuilder.toComponent(title, getVersion()),
-            if (hearts) 1 else 0
-        ))
-    }
-
-    override fun registerScoreboardTeam0(
-        name: String,
-        prefix: String,
-        suffix: String,
-        visibility: String,
-        collision: String,
-        players: MutableCollection<String>,
-        options: Int
-    ) {
-        sendPacket(PacketOutUpdateTeams(name, PacketOutUpdateTeams.Action.CREATE,
-            createParameters(name, prefix, suffix, visibility, collision, options), players.map(Component::text)))
-    }
-
-    override fun unregisterScoreboardTeam0(name: String) {
-        sendPacket(PacketOutUpdateTeams(name, PacketOutUpdateTeams.Action.REMOVE, null, emptyList()))
-    }
-
-    override fun updateScoreboardTeam0(
-        name: String,
-        prefix: String,
-        suffix: String,
-        visibility: String,
-        collision: String,
-        options: Int
-    ) {
-        sendPacket(PacketOutUpdateTeams(name, PacketOutUpdateTeams.Action.UPDATE_INFO,
-            createParameters(name, prefix, suffix, visibility, collision, options), emptyList()
-        ))
-    }
-
-    private fun createParameters(name: String, prefix: String, suffix: String, visibility: String, collision: String, options: Int): PacketOutUpdateTeams.Parameters {
-        var finalPrefix = prefix
-        var finalSuffix = suffix
-        if (getVersion().minorVersion < 13) {
-            finalPrefix = KryptonPacketBuilder.cutTo(finalPrefix, 16)
-            finalSuffix = KryptonPacketBuilder.cutTo(finalSuffix, 16)
-        }
-        return PacketOutUpdateTeams.Parameters(
-            Component.text(name),
-            options,
-            visibility,
-            collision,
-            KryptonAdventure.getColorFromId(EnumChatFormat.lastColorsOf(finalPrefix).ordinal),
-            KryptonPacketBuilder.toComponent(finalPrefix, getVersion()),
-            KryptonPacketBuilder.toComponent(finalSuffix, getVersion())
-        )
-    }
-
-    override fun setScoreboardScore0(objective: String, player: String, score: Int) {
-        sendPacket(PacketOutUpdateScore(player, 0, objective, score))
-    }
-
-    override fun removeScoreboardScore0(objective: String, player: String) {
-        sendPacket(PacketOutUpdateScore(player, 1, objective, 0))
+    override fun getScoreboard(): Scoreboard {
+        return scoreboard
     }
 }

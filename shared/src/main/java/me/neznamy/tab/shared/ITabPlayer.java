@@ -66,12 +66,6 @@ public abstract class ITabPlayer implements TabPlayer {
      */
     @Getter private boolean loaded;
 
-    /** Scoreboard teams player has registered */
-    private final Set<String> registeredTeams = new HashSet<>();
-
-    /** Scoreboard objectives player has registered */
-    private final Set<String> registeredObjectives = new HashSet<>();
-
     /** Player's name as seen in GameProfile, can be altered by nick plugins */
     @Getter @Setter private String nickname;
 
@@ -165,14 +159,6 @@ public abstract class ITabPlayer implements TabPlayer {
         forceRefresh();
     }
 
-    /**
-     * Clears maps of registered teams and objectives when Login packet is sent
-     */
-    public void clearRegisteredObjectives() {
-        registeredTeams.clear();
-        registeredObjectives.clear();
-    }
-
     @Override
     public void setTemporaryGroup(String group) {
         if (Objects.equals(group, temporaryGroup)) return;
@@ -254,91 +240,4 @@ public abstract class ITabPlayer implements TabPlayer {
         if (sorting == null) return null;
         return sorting.getShortTeamName(this);
     }
-
-    public void setScoreboardScore(@NonNull String objective, @NonNull String player, int score) {
-        if (!registeredObjectives.contains(objective)) {
-            TAB.getInstance().getErrorManager().printError("Tried to update score (" + player +
-                    ") without the existence of its requested objective '" + objective + "' to player " + getName());
-            return;
-        }
-        setScoreboardScore0(objective, player, score);
-    }
-
-    public void removeScoreboardScore(@NonNull String objective, @NonNull String player) {
-        if (!registeredObjectives.contains(objective)) {
-            TAB.getInstance().getErrorManager().printError("Tried to update score (" + player +
-                    ") without the existence of its requested objective '" + objective + "' to player " + getName());
-            return;
-        }
-        removeScoreboardScore0(objective, player);
-    }
-
-    public void registerObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        if (!registeredObjectives.add(objectiveName)) {
-            TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objectiveName + " to player " + getName());
-            return;
-        }
-        registerObjective0(objectiveName, title, hearts);
-    }
-
-    public void unregisterObjective(@NonNull String objectiveName) {
-        if (!registeredObjectives.remove(objectiveName)) {
-            TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing objective " + objectiveName + " for player " + getName());
-            return;
-        }
-        unregisterObjective0(objectiveName);
-    }
-
-    public void updateObjectiveTitle(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        if (!registeredObjectives.contains(objectiveName)) {
-            TAB.getInstance().getErrorManager().printError("Tried to modify non-existing objective " + objectiveName + " for player " + getName());
-            return;
-        }
-        updateObjectiveTitle0(objectiveName, title, hearts);
-    }
-
-    @Override
-    public void registerScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        if (!registeredTeams.add(name)) {
-            TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + name + " to player " + getName());
-            return;
-        }
-        registerScoreboardTeam0(name, prefix, suffix, visibility, collision, players, options);
-    }
-
-    @Override
-    public void unregisterScoreboardTeam(@NonNull String name) {
-        if (!registeredTeams.remove(name)) {
-            TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing team " + name + " for player " + getName());
-            return;
-        }
-        unregisterScoreboardTeam0(name);
-    }
-
-    @Override
-    public void updateScoreboardTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        if (!registeredTeams.contains(name)) {
-            TAB.getInstance().getErrorManager().printError("Tried to modify non-existing team " + name + " for player " + getName());
-            return;
-        }
-        updateScoreboardTeam0(name, prefix, suffix, visibility, collision, options);
-    }
-
-    public abstract void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score);
-
-    public abstract void removeScoreboardScore0(@NonNull String objective, @NonNull String player);
-
-    public abstract void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
-
-    public abstract void unregisterObjective0(@NonNull String objectiveName);
-
-    public abstract void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
-
-    public abstract void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility,
-                                String collision, Collection<String> players, int options);
-
-    public abstract void unregisterScoreboardTeam0(@NonNull String name);
-
-    public abstract void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options);
-
 }

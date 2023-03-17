@@ -62,7 +62,7 @@ public class CustomLine extends ScoreboardLine {
                         refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(), refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get());
             } else {
                 //only prefix/suffix changed
-                refreshed.updateScoreboardTeam(teamName, refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(),
+                refreshed.getScoreboard().updateTeam(teamName, refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(),
                         refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get(), "always", "always", 0);
             }
         }

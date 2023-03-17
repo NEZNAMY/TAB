@@ -35,7 +35,7 @@ public class LongLine extends ScoreboardLine {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
-                refreshed.updateScoreboardTeam(teamName, refreshed.getProperty(textProperty).get(),
+                refreshed.getScoreboard().updateTeam(teamName, refreshed.getProperty(textProperty).get(),
                         "", "always", "always", 0);
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());

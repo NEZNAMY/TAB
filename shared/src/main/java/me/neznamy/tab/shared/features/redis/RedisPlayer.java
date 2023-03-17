@@ -165,7 +165,7 @@ public class RedisPlayer {
                 if (!redis.getNameTags().isDisabled(server, null)) {
                     disabledNameTags = false;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.registerScoreboardTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never",
+                        all.getScoreboard().registerTeam(teamName, tagPrefix, tagSuffix, nameVisibility ? "always" : "never",
                                 "always", Collections.singletonList(nickname), 2);
                     }
                 }
@@ -173,7 +173,7 @@ public class RedisPlayer {
                 if (redis.getNameTags().isDisabled(server, null)) {
                     disabledNameTags = true;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                        all.unregisterScoreboardTeam(teamName);
+                        all.getScoreboard().unregisterTeam(teamName);
                     }
                 }
             }

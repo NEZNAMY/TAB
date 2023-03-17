@@ -71,7 +71,7 @@ public class Sorting extends TabFeature {
         if (!shortTeamNames.get(p).equals(previousShortName)) {
             if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.isDisabledPlayer(p)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.unregisterScoreboardTeam(previousShortName);
+                    viewer.getScoreboard().unregisterTeam(previousShortName);
                 }
                 nameTags.registerTeam(p);
             }

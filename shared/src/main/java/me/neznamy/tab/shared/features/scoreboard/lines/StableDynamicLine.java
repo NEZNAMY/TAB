@@ -38,7 +38,7 @@ public class StableDynamicLine extends ScoreboardLine {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;
-        refreshed.updateScoreboardTeam(teamName, prefixSuffix[0], prefixSuffix[1], "always", "always", 0);
+        refreshed.getScoreboard().updateTeam(teamName, prefixSuffix[0], prefixSuffix[1], "always", "always", 0);
     }
 
     @Override

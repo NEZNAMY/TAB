@@ -7,6 +7,7 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.Skin;
@@ -61,6 +62,9 @@ public class BukkitTabPlayer extends ITabPlayer {
 
     /** ViaVersion BossBars this 1.9+ player can see on 1.8 server */
     private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossBars = new HashMap<>();
+
+    /** Player's scoreboard */
+    @Getter private final Scoreboard scoreboard = new BukkitScoreboard(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version
@@ -285,50 +289,5 @@ public class BukkitTabPlayer extends ITabPlayer {
         } else {
             sendPacket(PacketPlayOutEntityDestroyStorage.buildSilent(new PacketPlayOutEntityDestroy(id.hashCode())));
         }
-    }
-
-    @Override
-    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
-        sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot, objective));
-    }
-
-    @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, getVersion()));
-    }
-
-    @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
-        sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, "", false, getVersion()));
-    }
-
-    @Override
-    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, getVersion()));
-    }
-
-    @Override
-    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, getVersion()));
-    }
-
-    @Override
-    public void unregisterScoreboardTeam0(@NonNull String name) {
-        sendPacket(PacketPlayOutScoreboardTeamStorage.unregister(name));
-    }
-
-    @Override
-    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, getVersion()));
-    }
-
-    @Override
-    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
-        sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, player, score));
-    }
-
-    @Override
-    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
-        sendPacket(PacketPlayOutScoreboardScoreStorage.remove(objective, player));
     }
 }

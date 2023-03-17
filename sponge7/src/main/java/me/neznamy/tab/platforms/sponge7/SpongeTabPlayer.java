@@ -1,13 +1,17 @@
 package me.neznamy.tab.platforms.sponge7;
 
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.*;
+import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -22,12 +26,6 @@ import org.spongepowered.api.entity.living.player.tab.TabList;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
-import org.spongepowered.api.scoreboard.*;
-import org.spongepowered.api.scoreboard.critieria.Criteria;
-import org.spongepowered.api.scoreboard.displayslot.DisplaySlot;
-import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
-import org.spongepowered.api.scoreboard.objective.Objective;
-import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -48,7 +46,8 @@ public final class SpongeTabPlayer extends ITabPlayer {
     }
 
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
-    private final Map<String, Objective> objectives = new HashMap<>();
+
+    @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
@@ -247,111 +246,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
             case NOTCHED_12: return BossBarOverlays.NOTCHED_12;
             case NOTCHED_20: return BossBarOverlays.NOTCHED_20;
             default: return BossBarOverlays.PROGRESS;
-        }
-    }
-
-    @Override
-    public void setObjectiveDisplaySlot(int slot, @NonNull String objective) {
-        getPlayer().getScoreboard().updateDisplaySlot(objectives.get(objective), convertDisplaySlot(slot));
-    }
-
-    @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = cutToLength(title, 32);
-        Objective objective = Objective.builder()
-                .name(objectiveName)
-                .displayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()))
-                .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
-                .criterion(Criteria.DUMMY)
-                .build();
-        objectives.put(objectiveName, objective);
-        getPlayer().getScoreboard().addObjective(objective);
-    }
-
-    @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
-        getPlayer().getScoreboard().removeObjective(objectives.get(objectiveName));
-    }
-
-    @Override
-    public void updateObjectiveTitle0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = cutToLength(title, 32);
-        Objective obj = objectives.get(objectiveName);
-        obj.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(displayName), getVersion()));
-        obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER);
-    }
-
-    @Override
-    public void registerScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        Team team = Team.builder()
-                .name(name)
-                .displayName(textCache.get(IChatBaseComponent.optimizedComponent(name), getVersion()))
-                .prefix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(prefix, 16)), getVersion()))
-                .suffix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(suffix, 16)), getVersion()))
-                .allowFriendlyFire((options & 0x01) != 0)
-                .canSeeFriendlyInvisibles((options & 0x02) != 0)
-                .collisionRule(convertCollisionRule(collision))
-                .nameTagVisibility(convertVisibility(visibility))
-                .build();
-        for (String member : players) {
-            team.addMember(textCache.get(IChatBaseComponent.optimizedComponent(member), getVersion()));
-        }
-        getPlayer().getScoreboard().registerTeam(team);
-    }
-
-    @Override
-    public void unregisterScoreboardTeam0(@NonNull String name) {
-        getPlayer().getScoreboard().getTeam(name).ifPresent(Team::unregister);
-    }
-
-    @Override
-    public void updateScoreboardTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        Team team = getPlayer().getScoreboard().getTeam(name).orElse(null);
-        if (team == null) return;
-        team.setDisplayName(textCache.get(IChatBaseComponent.optimizedComponent(name), getVersion()));
-        team.setPrefix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(prefix, 16)), getVersion()));
-        team.setSuffix(textCache.get(IChatBaseComponent.optimizedComponent(cutToLength(prefix, 16)), getVersion()));
-        team.setAllowFriendlyFire((options & 0x01) != 0);
-        team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
-        team.setCollisionRule(convertCollisionRule(collision));
-        team.setNameTagVisibility(convertVisibility(visibility));
-    }
-
-    private static CollisionRule convertCollisionRule(String rule) {
-        switch (rule) {
-            case "always": return CollisionRules.ALWAYS;
-            case "never": return CollisionRules.NEVER;
-            case "pushOtherTeams": return CollisionRules.PUSH_OTHER_TEAMS;
-            case "pushOwnTeam": return CollisionRules.PUSH_OWN_TEAM;
-            default: throw new IllegalArgumentException();
-        }
-    }
-
-    private static Visibility convertVisibility(String visibility) {
-        switch (visibility) {
-            case "always": return Visibilities.ALWAYS;
-            case "never": return Visibilities.NEVER;
-            case "hideForOtherTeams": return Visibilities.HIDE_FOR_OTHER_TEAMS;
-            case "hideForOwnTeam": return Visibilities.HIDE_FOR_OWN_TEAM;
-            default: throw new IllegalArgumentException();
-        }
-    }
-
-    @Override
-    public void setScoreboardScore0(@NonNull String objective, @NonNull String player, int score) {
-        objectives.get(objective).getOrCreateScore(textCache.get(IChatBaseComponent.optimizedComponent(player), getVersion())).setScore(score);
-    }
-
-    @Override
-    public void removeScoreboardScore0(@NonNull String objective, @NonNull String player) {
-        objectives.get(objective).removeScore(textCache.get(IChatBaseComponent.optimizedComponent(player), getVersion()));
-    }
-
-    private static DisplaySlot convertDisplaySlot(final int slot) {
-        switch (slot) {
-            case 0: return DisplaySlots.LIST;
-            case 1: return DisplaySlots.SIDEBAR;
-            default: return DisplaySlots.BELOW_NAME;
         }
     }
 }

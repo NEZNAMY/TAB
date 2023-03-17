@@ -68,7 +68,7 @@ public class NameTag extends TabFeature implements TeamManager {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (hasTeamHandlingPaused(target)) return;
-                viewer.unregisterScoreboardTeam(sorting.getShortTeamName(target));
+                viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(target));
             }
         }
     }
@@ -120,7 +120,7 @@ public class NameTag extends TabFeature implements TeamManager {
         if (!isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
-                viewer.unregisterScoreboardTeam(sorting.getShortTeamName(disconnectedPlayer));
+                viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(disconnectedPlayer));
             }
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -250,14 +250,14 @@ public class NameTag extends TabFeature implements TeamManager {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.updateScoreboardTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix,
+        viewer.getScoreboard().updateTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix,
                 translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions());
     }
 
     public void unregisterTeam(TabPlayer p, String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.unregisterScoreboardTeam(teamName);
+            viewer.getScoreboard().unregisterTeam(teamName);
         }
     }
 
@@ -271,7 +271,7 @@ public class NameTag extends TabFeature implements TeamManager {
         if (hasTeamHandlingPaused(p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.registerScoreboardTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
+        viewer.getScoreboard().registerTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
                 translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions());
     }
 

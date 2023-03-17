@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
+import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -18,9 +19,6 @@ public class YellowNumber extends TabFeature {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-YellowNumber";
-
-    /** Correct display slot of this feature */
-    public static final int DISPLAY_SLOT = 0;
 
     /** Scoreboard title which is unused in java */
     private static final String TITLE = "PlayerListObjectiveTitle";
@@ -60,13 +58,13 @@ public class YellowNumber extends TabFeature {
                 continue;
             }
             if (loaded.isBedrockPlayer()) continue;
-            loaded.registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            loaded.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
+            loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
+            loaded.getScoreboard().setDisplaySlot(DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                viewer.setScoreboardScore(OBJECTIVE_NAME, target.getNickname(), getValue(target));
+                viewer.getScoreboard().setScore(OBJECTIVE_NAME, target.getNickname(), getValue(target));
             }
         }
     }
@@ -75,7 +73,7 @@ public class YellowNumber extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(p) || p.isBedrockPlayer()) continue;
-            p.unregisterObjective(OBJECTIVE_NAME);
+            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
     }
 
@@ -87,17 +85,17 @@ public class YellowNumber extends TabFeature {
             return;
         }
         if (!connectedPlayer.isBedrockPlayer()) {
-            connectedPlayer.registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            connectedPlayer.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
+            connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
+            connectedPlayer.getScoreboard().setDisplaySlot(DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         }
         int value = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!isDisabledPlayer(all)) {
                 if (!all.isBedrockPlayer()) {
-                    all.setScoreboardScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), value);
+                    all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), value);
                 }
                 if (!connectedPlayer.isBedrockPlayer()) {
-                    connectedPlayer.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+                    connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
                 }
             }
         }
@@ -119,7 +117,7 @@ public class YellowNumber extends TabFeature {
             removeDisabledPlayer(p);
         }
         if (disabledNow && !disabledBefore) {
-            if (!p.isBedrockPlayer()) p.unregisterObjective(OBJECTIVE_NAME);
+            if (!p.isBedrockPlayer()) p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
         if (!disabledNow && disabledBefore) {
             onJoin(p);
@@ -132,7 +130,7 @@ public class YellowNumber extends TabFeature {
         int value = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(all) || all.isBedrockPlayer()) continue;
-            all.setScoreboardScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
+            all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
         }
         if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
     }
@@ -140,11 +138,11 @@ public class YellowNumber extends TabFeature {
     @Override
     public void onLoginPacket(TabPlayer packetReceiver) {
         if (isDisabledPlayer(packetReceiver) || packetReceiver.isBedrockPlayer()) return;
-        packetReceiver.registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-        packetReceiver.setObjectiveDisplaySlot(DISPLAY_SLOT, OBJECTIVE_NAME);
+        packetReceiver.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
+        packetReceiver.getScoreboard().setDisplaySlot(DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.isLoaded()) {
-                packetReceiver.setScoreboardScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+                packetReceiver.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
             }
         }
     }

@@ -51,10 +51,10 @@ public class NickCompatibility extends TabFeature {
 
             if (nameTags != null && !nameTags.hasTeamHandlingPaused(player)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.unregisterScoreboardTeam(nameTags.getSorting().getShortTeamName(player));
+                    viewer.getScoreboard().unregisterTeam(nameTags.getSorting().getShortTeamName(player));
                     String replacedPrefix = player.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
                     String replacedSuffix = player.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-                    viewer.registerScoreboardTeam(nameTags.getSorting().getShortTeamName(player), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
+                    viewer.getScoreboard().registerTeam(nameTags.getSorting().getShortTeamName(player), replacedPrefix, replacedSuffix, nameTags.translate(nameTags.getTeamVisibility(player, viewer)),
                             nameTags.translate(nameTags.getCollisionManager().getCollision(player)), Collections.singletonList(player.getNickname()), nameTags.getTeamOptions());
                 }
             }
@@ -62,14 +62,14 @@ public class NickCompatibility extends TabFeature {
                 int value = belowname.getValue(player);
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (all.getWorld().equals(player.getWorld()) && Objects.equals(all.getServer(), player.getServer())) {
-                        all.setScoreboardScore(BelowName.OBJECTIVE_NAME, player.getNickname(), value);
+                        all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), value);
                     }
                 }
             }
             if (yellownumber != null) {
                 int value = yellownumber.getValue(player);
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), value);
+                    all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), value);
                 }
             }
         });
@@ -80,21 +80,21 @@ public class NickCompatibility extends TabFeature {
 
             if (nameTags != null) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.unregisterScoreboardTeam(player.getTeamName());
-                    viewer.registerScoreboardTeam(player.getTeamName(), player.getTagPrefix(), player.getTagSuffix(),
+                    viewer.getScoreboard().unregisterTeam(player.getTeamName());
+                    viewer.getScoreboard().registerTeam(player.getTeamName(), player.getTagPrefix(), player.getTagSuffix(),
                             player.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(player.getNickname()), 2);
                 }
             }
             if (belowname != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (Objects.equals(all.getServer(), player.getServer())) {
-                        all.setScoreboardScore(BelowName.OBJECTIVE_NAME, player.getNickname(), player.getBelowName());
+                        all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), player.getBelowName());
                     }
                 }
             }
             if (yellownumber != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.setScoreboardScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), player.getYellowNumber());
+                    all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), player.getYellowNumber());
                 }
             }
         });
