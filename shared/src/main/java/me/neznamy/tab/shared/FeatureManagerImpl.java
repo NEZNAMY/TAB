@@ -9,8 +9,8 @@ import me.neznamy.tab.api.FeatureManager;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -79,32 +79,43 @@ public class FeatureManagerImpl implements FeatureManager {
         for (TabFeature f : values) f.refresh(refreshed, force);
     }
 
-    /**
-     * Calls onPlayerInfo(TabPlayer, Object) on all features
-     * 
-     * @param   receiver
-     *          packet receiver
-     * @param   packet
-     *          an instance of custom packet class PacketPlayOutPlayerInfo
-     * @return  altered rebuilt packet
-     * @throws  ReflectiveOperationException
-     *          if reflective operation fails
-     */
-    public Object onPacketPlayOutPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
-        if (receiver.getVersion().getMinorVersion() < 8) return packet;
-        long time = System.nanoTime();
-        PacketPlayOutPlayerInfo info = TAB.getInstance().getPlatform().getPacketBuilder().readPlayerInfo(packet, receiver.getVersion());
-        TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
+    public int onGameModeChange(TabPlayer packetReceiver, UUID id, int gameMode) {
         for (TabFeature f : values) {
-            if (!f.overridesMethod("onPlayerInfo")) continue;
-            time = System.nanoTime();
-            f.onPlayerInfo(receiver, info);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
+            if (!f.overridesMethod("onGameModeChange")) continue;
+            long time = System.nanoTime();
+            gameMode = f.onGameModeChange(packetReceiver, id, gameMode);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
         }
-        time = System.nanoTime();
-        Object pack = TAB.getInstance().getPlatform().getPacketBuilder().build(info, receiver.getVersion());
-        TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_SERIALIZING, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime()-time);
-        return pack;
+        return gameMode;
+    }
+
+    public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
+        for (TabFeature f : values) {
+            if (!f.overridesMethod("onLatencyChange")) continue;
+            long time = System.nanoTime();
+            latency = f.onLatencyChange(packetReceiver, id, latency);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+        }
+        return latency;
+    }
+
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
+        for (TabFeature f : values) {
+            if (!f.overridesMethod("onDisplayNameChange")) continue;
+            long time = System.nanoTime();
+            displayName = f.onDisplayNameChange(packetReceiver, id, displayName);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+        }
+        return displayName;
+    }
+
+    public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
+        for (TabFeature f : values) {
+            if (!f.overridesMethod("onEntryAdd")) continue;
+            long time = System.nanoTime();
+            f.onEntryAdd(packetReceiver, id, name);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+        }
     }
 
     @Override
@@ -253,7 +264,7 @@ public class FeatureManagerImpl implements FeatureManager {
      *          player who received the packet
      */
     public void onLoginPacket(TabPlayer packetReceiver) {
-        packetReceiver.getScoreboard().clearRegisteredObjectives();
+        ((TabScoreboard)packetReceiver.getScoreboard()).clearRegisteredObjectives();
         for (TabFeature f : values) {
             if (!f.overridesMethod("onLoginPacket")) continue;
             long time = System.nanoTime();

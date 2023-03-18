@@ -1,9 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityMetadataStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityTeleportStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
@@ -88,7 +84,6 @@ public class MojangModernNMSStorage extends NMSStorage {
 
         // Player Info
         if (minorVersion >= 19) {
-            PacketPlayOutPlayerInfoStorage.ProfilePublicKey = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey");
             PacketPlayOutPlayerInfoStorage.ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$Data");
         }
         if (is1_19_3Plus()) {
@@ -96,7 +91,6 @@ public class MojangModernNMSStorage extends NMSStorage {
             PacketPlayOutPlayerInfoStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
             PacketPlayOutPlayerInfoStorage.EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
             PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry");
-            PacketPlayOutPlayerInfoStorage.RemoteChatSession = Class.forName("net.minecraft.network.chat.RemoteChatSession");
             PacketPlayOutPlayerInfoStorage.RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$Data");
         } else {
             PacketPlayOutPlayerInfoStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");

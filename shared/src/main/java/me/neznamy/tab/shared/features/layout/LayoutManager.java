@@ -2,15 +2,12 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
@@ -32,8 +29,6 @@ public class LayoutManager extends TabFeature {
             put(slot, new UUID(0, translateSlot(slot)));
         }
     }};
-    @Getter private final PacketPlayOutPlayerInfo removePacket = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
-            uuids.values().stream().map(PlayerInfoData::new).collect(Collectors.toList()));
     private final Map<String, Layout> layouts = loadLayouts();
     @Getter private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
@@ -47,7 +42,8 @@ public class LayoutManager extends TabFeature {
     public void load() {
         playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
+        if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PING_SPOOF))
+            TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
         }
@@ -131,11 +127,11 @@ public class LayoutManager extends TabFeature {
 
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
-        List<PlayerInfoData> data = new ArrayList<>();
+        Map<UUID, IChatBaseComponent> data = new HashMap<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            data.add(new PlayerInfoData(all.getTablistId()));
+            data.put(all.getTablistId(), null);
         }
-        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, data));
+        p.getTabList().updateDisplayNames(data);
     }
 
     @Override
@@ -168,7 +164,7 @@ public class LayoutManager extends TabFeature {
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) continue;
-            p.sendCustomPacket(removePacket);
+            p.getTabList().removeEntries(uuids.values());
         }
     }
 

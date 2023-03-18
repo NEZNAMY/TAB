@@ -82,10 +82,12 @@ public class PetFix extends TabFeature {
     public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
         if (nms.PacketPlayInUseEntity.isInstance(packet) && isInteract(nms.PacketPlayInUseEntity_ACTION.get(packet))) {
             if (System.currentTimeMillis() - lastInteractFix.getOrDefault(sender, 0L) < INTERACT_COOLDOWN) {
+                System.out.println(System.currentTimeMillis()+ " Cancelling interact");
                 //last interact packet was sent right now, cancelling to prevent double-toggle due to this feature enabled
                 return true;
             }
             //this is the first packet, saving player so the next packet can be cancelled
+            System.out.println(System.currentTimeMillis()+ " Letting interact through");
             lastInteractFix.put(sender, System.currentTimeMillis());
         }
         return false;

@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -23,6 +24,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.BossBar;
+import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -54,6 +56,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Player's scoreboard */
     @Getter private final Scoreboard scoreboard = new BungeeScoreboard(this);
+
+    /** Player's tablist */
+    @Getter private final TabList tabList = new BungeeTabList(this);
 
     /**
      * Constructs new instance for given player
@@ -202,13 +207,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public Object getProfilePublicKey() {
-        return ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest().getPublicKey();
-    }
-
-    @Override
-    public UUID getChatSessionId() {
-        return ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest().getUuid();
+    public Object getChatSession() {
+        LoginRequest login = ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest();
+        return new Object[]{login.getUuid(), login.getPublicKey()}; // BungeeCord has no single object for this
     }
 
     @Override

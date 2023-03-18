@@ -6,7 +6,6 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.sponge8.Sponge8TAB;
-import me.neznamy.tab.platforms.sponge8.SpongePacketBuilder;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import net.minecraft.core.Registry;
@@ -167,7 +166,7 @@ public class SpongeNameTagX extends BackendNameTagX {
         SynchedEntityData dataWatcher = new SynchedEntityData(null);
         dataWatcher.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
         dataWatcher.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT),
-                Optional.ofNullable(SpongePacketBuilder.getComponentCache().get(
+                Optional.ofNullable(Sponge8TAB.getComponentCache().get(
                         IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion())));
         dataWatcher.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
         if (markerFlag) dataWatcher.define(new EntityDataAccessor<>(14, EntityDataSerializers.BYTE), (byte)16);

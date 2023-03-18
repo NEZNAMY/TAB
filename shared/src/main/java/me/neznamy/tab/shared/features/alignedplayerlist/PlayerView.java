@@ -4,7 +4,6 @@ import me.neznamy.tab.api.Property;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 
@@ -45,8 +44,7 @@ public class PlayerView {
             maxPlayer = connectedPlayer;
             updateAllPlayers();
         } else {
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(connectedPlayer, viewer), formatName(connectedPlayer))));
+            viewer.getTabList().updateDisplayName(feature.getTablistUUID(connectedPlayer, viewer), formatName(connectedPlayer));
         }
     }
 
@@ -57,16 +55,14 @@ public class PlayerView {
             if (recalculateMaxWidth(null)) {
                 updateAllPlayers();
             } else {
-                viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))));
+                viewer.getTabList().updateDisplayName(feature.getTablistUUID(target, viewer), formatName(target));
             }
         }
     }
 
     private void updateAllPlayers() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(all, viewer), formatName(all))));
+            viewer.getTabList().updateDisplayName(feature.getTablistUUID(all, viewer), formatName(all));
         }
     }
 
@@ -129,8 +125,7 @@ public class PlayerView {
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
         } else {
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PacketPlayOutPlayerInfo.PlayerInfoData(feature.getTablistUUID(target, viewer), formatName(target))));
+            viewer.getTabList().updateDisplayName(feature.getTablistUUID(target, viewer), formatName(target));
         }
     }
 

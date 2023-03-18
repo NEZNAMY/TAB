@@ -8,6 +8,7 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.Scoreboard;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.Skin;
@@ -16,6 +17,8 @@ import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.platforms.bukkit.tablist.BulkUpdateBukkitTabList;
+import me.neznamy.tab.platforms.bukkit.tablist.SingleUpdateBukkitTabList;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
@@ -65,6 +68,10 @@ public class BukkitTabPlayer extends ITabPlayer {
 
     /** Player's scoreboard */
     @Getter private final Scoreboard scoreboard = new BukkitScoreboard(this);
+
+    /** Player's tablist */
+    @Getter private final TabList tabList = getVersion().getMinorVersion() >= 8 ?
+            new BulkUpdateBukkitTabList(this) : new SingleUpdateBukkitTabList(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version

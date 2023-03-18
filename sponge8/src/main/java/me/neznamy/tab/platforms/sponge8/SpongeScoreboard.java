@@ -58,7 +58,7 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPacket(new ClientboundSetObjectivePacket(new Objective(dummyScoreboard, objectiveName, null, null, null), 1));
+        player.sendPacket(new ClientboundSetObjectivePacket(new Objective(dummyScoreboard, objectiveName, null, TextComponent.EMPTY, null), 1));
     }
 
     @Override

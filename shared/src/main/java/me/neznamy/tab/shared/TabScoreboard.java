@@ -95,7 +95,9 @@ public abstract class TabScoreboard implements Scoreboard {
         updateTeam0(name, prefix, suffix, visibility, collision, options);
     }
 
-    @Override
+    /**
+     * Clears maps of registered teams and objectives when Login packet is sent
+     */
     public void clearRegisteredObjectives() {
         registeredTeams.clear();
         registeredObjectives.clear();

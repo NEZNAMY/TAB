@@ -2,18 +2,14 @@ package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
-import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.api.util.GameProfile.Property;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.Skin;
-import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
@@ -22,8 +18,9 @@ import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * TabPlayer implementation for Velocity
@@ -33,19 +30,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     /** Component cache to save CPU when creating components */
     private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
-    
-    /**
-     * Map of methods executing tasks using Velocity API calls equal to sending the actual packets
-     */
-    private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods
-            = new HashMap<Class<? extends TabPacket>, Consumer<TabPacket>>() {{
-        put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-    }};
 
     /** BossBars currently displayed to this player */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
     @Getter private final Scoreboard scoreboard = new VelocityScoreboard(this);
+
+    @Getter private final TabList tabList = new VelocityTabList(this);
 
     /**
      * Constructs new instance for given player
@@ -69,8 +60,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     
     @Override
     public void sendPacket(Object packet) {
-        if (packet == null || !getPlayer().isActive()) return;
-        packetMethods.get(packet.getClass()).accept((TabPacket) packet);
+        throw new IllegalStateException("No longer supported");
     }
 
     @Override
@@ -78,78 +68,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         getPlayer().sendMessage(componentCache.get(message, getVersion()));
     }
 
-    /**
-     * Handles PacketPlayOutPlayerInfo request using Velocity API
-     *
-     * @param   packet
-     *          Packet request to handle
-     */
-    private void handle(PacketPlayOutPlayerInfo packet) {
-        for (PlayerInfoData data : packet.getEntries()) {
-            for (PacketPlayOutPlayerInfo.EnumPlayerInfoAction action : packet.getActions()) {
-                switch (action) {
-                    case ADD_PLAYER:
-                        if (getPlayer().getTabList().containsEntry(data.getUniqueId())) continue;
-                        getPlayer().getTabList().addEntry(TabListEntry.builder()
-                                .tabList(getPlayer().getTabList())
-                                .displayName(componentCache.get(data.getDisplayName(), getVersion()))
-                                .gameMode(data.getGameMode().ordinal()-1)
-                                .profile(new GameProfile(data.getUniqueId(), data.getName(), data.getSkin() == null ? new ArrayList<>() :
-                                        Collections.singletonList(new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature()))))
-                                .latency(data.getLatency())
-                                .build());
-                        break;
-                    case REMOVE_PLAYER:
-                        getPlayer().getTabList().removeEntry(data.getUniqueId());
-                        break;
-                    case UPDATE_DISPLAY_NAME:
-                        getEntry(data.getUniqueId()).setDisplayName(componentCache.get(data.getDisplayName(), getVersion()));
-                        break;
-                    case UPDATE_LATENCY:
-                        getEntry(data.getUniqueId()).setLatency(data.getLatency());
-                        break;
-                    case UPDATE_GAME_MODE:
-                        getEntry(data.getUniqueId()).setGameMode(data.getGameMode().ordinal()-1);
-                        break;
-                    case UPDATE_LISTED:
-                        try {
-                            // 3.1.2+
-                            getEntry(data.getUniqueId()).setListed(data.isListed());
-                        } catch (NoSuchMethodError e) {
-                            // 3.1.1-
-                        }
-                        break;
-                    case INITIALIZE_CHAT: // not supported by Velocity
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns TabList entry with specified UUID. If no such entry was found,
-     * a new, dummy entry is returned to avoid NPE.
-     *
-     * @param   id
-     *          UUID to get entry by
-     * @return  TabList entry with specified UUID
-     */
-    private TabListEntry getEntry(UUID id) {
-        for (TabListEntry entry : getPlayer().getTabList().getEntries()) {
-            if (entry.getProfile().getId().equals(id)) return entry;
-        }
-        //return dummy entry to not cause NPE
-        //possibly add logging into the future to see when this happens
-        return TabListEntry.builder()
-                .tabList(getPlayer().getTabList())
-                .displayName(Component.empty())
-                .gameMode(0)
-                .profile(new GameProfile(id, "", Collections.emptyList()))
-                .latency(0)
-                .build();
-    }
-    
     @Override
     public Skin getSkin() {
         if (getPlayer().getGameProfile().getProperties().size() == 0) return null; //offline mode
@@ -168,7 +86,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public int getGamemode() {
-        return getEntry(getTablistId()).getGameMode();
+        for (TabListEntry entry : getPlayer().getTabList().getEntries()) {
+            if (entry.getProfile().getId().equals(getTablistId())) return entry.getGameMode();
+        }
+        return 0;
     }
 
     @Override
@@ -211,19 +132,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public Object getProfilePublicKey() {
-        try {
-            // 3.1.2+
-            return getPlayer().getIdentifiedKey();
-        } catch (NoSuchMethodError e) {
-            // 3.1.1-
-            return null;
-        }
-    }
-
-    @Override
-    public UUID getChatSessionId() {
-        return null; // not supported on velocity
+    public Object getChatSession() {
+        return null; // not supported by Velocity
     }
 
     @Override

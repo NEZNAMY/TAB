@@ -7,11 +7,8 @@ import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -42,12 +39,12 @@ public class GlobalPlayerList extends TabFeature {
                     () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count());
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            List<PlayerInfoData> entries = new ArrayList<>();
+            List<TabListEntry> entries = new ArrayList<>();
             for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getServer().equals(displayed.getServer())) continue;
                 if (shouldSee(viewer, displayed)) entries.add(getAddInfoData(displayed, viewer));
             }
-            if (!entries.isEmpty()) viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entries));
+            if (!entries.isEmpty()) viewer.getTabList().addEntries(entries);
         }
     }
 
@@ -68,96 +65,89 @@ public class GlobalPlayerList extends TabFeature {
     @Override
     public void unload() {
         for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
-            PacketPlayOutPlayerInfo displayedRemovePacket = getRemovePacket(displayed);
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                if (!displayed.getServer().equals(viewer.getServer())) viewer.sendCustomPacket(displayedRemovePacket);
+                if (!displayed.getServer().equals(viewer.getServer())) viewer.getTabList().removeEntry(displayed.getTablistId());
             }
         }
     }
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        List<PlayerInfoData> entries = new ArrayList<>();
+        List<TabListEntry> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (connectedPlayer.getServer().equals(all.getServer())) continue;
             if (shouldSee(all, connectedPlayer)) {
-                all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getAddInfoData(connectedPlayer, all)));
+                all.getTabList().addEntry(getAddInfoData(connectedPlayer, all));
             }
             if (shouldSee(connectedPlayer, all)) entries.add(getAddInfoData(all, connectedPlayer));
         }
-        if (!entries.isEmpty()) connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entries));
+        if (!entries.isEmpty()) connectedPlayer.getTabList().addEntries(entries);
     }
 
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
-        PacketPlayOutPlayerInfo remove = getRemovePacket(disconnectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == disconnectedPlayer) continue;
-            all.sendCustomPacket(remove);
+            all.getTabList().removeEntry(disconnectedPlayer.getTablistId());
         }
     }
 
     @Override
     public void onServerChange(TabPlayer changed, String from, String to) {
         // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
-        List<PlayerInfoData> entries = new ArrayList<>();
+        List<TabListEntry> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == changed) continue;
             if (shouldSee(changed, all)) {
                 entries.add(getAddInfoData(all, changed));
             } else {
-                changed.sendCustomPacket(getRemovePacket(all));
+                changed.getTabList().removeEntry(all.getTablistId());
             }
         }
-        if (!entries.isEmpty()) changed.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entries));
+        if (!entries.isEmpty()) changed.getTabList().addEntries(entries);
 
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         TAB.getInstance().getCPUManager().runTaskLater(200, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
-            PacketPlayOutPlayerInfo removeChanged = getRemovePacket(changed);
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == changed) continue;
                 if (shouldSee(all, changed)) {
-                    all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getAddInfoData(changed, all)));
+                    all.getTabList().addEntry(getAddInfoData(changed, all));
                 } else {
-                    all.sendCustomPacket(removeChanged);
+                    all.getTabList().removeEntry(changed.getTablistId());
                 }
             }
         });
     }
 
-    public PacketPlayOutPlayerInfo getRemovePacket(TabPlayer p) {
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(p.getTablistId()));
-    }
-
-    public PlayerInfoData getAddInfoData(TabPlayer p, TabPlayer viewer) {
+    public TabListEntry getAddInfoData(TabPlayer p, TabPlayer viewer) {
         IChatBaseComponent format = null;
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        return new PlayerInfoData(
-                p.getName(),
+        return new TabListEntry(
                 p.getTablistId(),
+                p.getName(),
                 p.getSkin(),
                 true,
                 p.getPing(),
-                vanishedAsSpectators && p.isVanished() ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE,
+                vanishedAsSpectators && p.isVanished() ? 3 : p.getGamemode(),
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null,
-                fillProfileKey ? ((ProxyTabPlayer)p).getChatSessionId() : null,
-                fillProfileKey ? ((ProxyTabPlayer)p).getProfilePublicKey() : null
+                fillProfileKey ? ((ProxyTabPlayer)p).getChatSession() : null
         );
     }
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (!displayAsSpectators) return;
-        if (info.getActions().contains(EnumPlayerInfoAction.UPDATE_GAME_MODE)) {
-            for (PlayerInfoData playerInfoData : info.getEntries()) {
-                TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
-                if (packetPlayer != null && !receiver.getServer().equals(packetPlayer.getServer())) {
-                    playerInfoData.setGameMode(EnumGamemode.SPECTATOR);
+    public int onGameModeChange(TabPlayer packetReceiver, UUID id, int gameMode) {
+        TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (packetPlayer != null && packetPlayer == packetReceiver) {
+            // Player changed gamemode, update on all servers
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+                if (!packetPlayer.getServer().equals(viewer.getServer())) {
+                    viewer.getTabList().updateGameMode(id, displayAsSpectators ? 3 : gameMode);
                 }
             }
         }
+        return gameMode;
     }
 
     @Override
@@ -166,14 +156,14 @@ public class GlobalPlayerList extends TabFeature {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == p) continue;
                 if (!shouldSee(all, p)) {
-                    all.sendCustomPacket(getRemovePacket(p));
+                    all.getTabList().removeEntry(p.getTablistId());
                 }
             }
         } else {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == p) continue;
                 if (shouldSee(viewer, p)) {
-                    viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, getAddInfoData(p, viewer)));
+                    viewer.getTabList().addEntry(getAddInfoData(p, viewer));
                 }
             }
         }

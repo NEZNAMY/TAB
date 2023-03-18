@@ -82,6 +82,9 @@ public abstract class Platform {
             featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, getPerWorldPlayerlist());
         }
 
+        if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
+            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
+
         // No requirements, but due to chicken vs egg, the feature uses NameTags, Layout and RedisBungee
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
                 configuration.getLayout().getBoolean("enabled", false)) {
@@ -116,10 +119,6 @@ public abstract class Platform {
                 TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
         }
-
-        // Must be loaded after: Layout
-        if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
 
         // Must be loaded after: Global PlayerList, PlayerList, NameTags
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, getRedisSupport());

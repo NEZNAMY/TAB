@@ -3,9 +3,6 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
@@ -23,7 +20,7 @@ public class GhostPlayerFix extends TabFeature {
             if (TAB.getInstance().getPlayer(disconnectedPlayer.getName()) != null) return; //player reconnected meanwhile, not removing then
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == disconnectedPlayer) continue;
-                all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new PlayerInfoData(disconnectedPlayer.getUniqueId())));
+                all.getTabList().removeEntry(disconnectedPlayer.getTablistId());
             }
         });
     }

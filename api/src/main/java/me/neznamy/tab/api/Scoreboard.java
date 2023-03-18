@@ -49,9 +49,4 @@ public interface Scoreboard {
     void unregisterTeam(@NonNull String name);
 
     void updateTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options);
-
-    /**
-     * Clears maps of registered teams and objectives when Login packet is sent
-     */
-    void clearRegisteredObjectives();
 }

@@ -3,9 +3,6 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
@@ -13,8 +10,8 @@ import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -96,8 +93,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     protected void updatePlayer(TabPlayer p, boolean format) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                    new PlayerInfoData(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null)));
+            viewer.getTabList().updateDisplayName(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null);
         }
         if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
     }
@@ -134,24 +130,24 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            List<PlayerInfoData> list = new ArrayList<>();
+            Map<UUID, IChatBaseComponent> map = new HashMap<>();
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (isDisabledPlayer(target)) continue;
-                list.add(new PlayerInfoData(getTablistUUID(target, viewer), getTabFormat(target, viewer)));
+                map.put(getTablistUUID(target, viewer), getTabFormat(target, viewer));
             }
-            viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
+            viewer.getTabList().updateDisplayNames(map);
         }
     }
 
     @Override
     public void unload() {
         disabling = true;
-        List<PlayerInfoData> updatedPlayers = new ArrayList<>();
+        Map<UUID, IChatBaseComponent> updatedPlayers = new HashMap<>();
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (!isDisabledPlayer(p)) updatedPlayers.add(new PlayerInfoData(getTablistUUID(p, p)));
+            if (!isDisabledPlayer(p)) updatedPlayers.put(getTablistUUID(p, p), null);
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, updatedPlayers));
+            if (all.getVersion().getMinorVersion() >= 8) all.getTabList().updateDisplayNames(updatedPlayers);
         }
     }
 
@@ -161,10 +157,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (p.getVersion().getMinorVersion() >= 8) p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PlayerInfoData(getTablistUUID(all, p), getTabFormat(all, p))));
-                if (all.getVersion().getMinorVersion() >= 8) all.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME,
-                        new PlayerInfoData(getTablistUUID(p, all), getTabFormat(p, all))));
+                if (p.getVersion().getMinorVersion() >= 8) p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
+                if (all.getVersion().getMinorVersion() >= 8) all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
             }
         });
     }
@@ -216,12 +210,12 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
         Runnable r = () -> {
             refresh(connectedPlayer, true);
             if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
-            List<PlayerInfoData> list = new ArrayList<>();
+            Map<UUID, IChatBaseComponent> map = new HashMap<>();
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; //already sent 4 lines above
-                list.add(new PlayerInfoData(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer)));
+                map.put(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
-            if (!list.isEmpty()) connectedPlayer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, list));
+            if (!map.isEmpty()) connectedPlayer.getTabList().updateDisplayNames(map);
         };
         r.run();
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
@@ -231,15 +225,13 @@ public class PlayerList extends TabFeature implements TablistFormatManager {
     }
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (disabling || !antiOverrideTabList) return;
-        if (!info.getActions().contains(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME)) return;
-        for (PlayerInfoData playerInfoData : info.getEntries()) {
-            TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
-            if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, receiver)) {
-                playerInfoData.setDisplayName(getTabFormat(packetPlayer, receiver));
-            }
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
+        if (disabling || !antiOverrideTabList) return displayName;
+        TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {
+            return getTabFormat(packetPlayer, packetReceiver);
         }
+        return displayName;
     }
 
     @Override

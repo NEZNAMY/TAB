@@ -6,6 +6,8 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
@@ -37,6 +39,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sponge8TAB {
+
+    @Getter private static final ComponentCache<IChatBaseComponent, net.minecraft.network.chat.Component> componentCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> net.minecraft.network.chat.Component.Serializer.fromJson(component.toString(clientVersion)));
 
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;

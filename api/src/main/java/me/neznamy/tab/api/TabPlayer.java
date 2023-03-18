@@ -8,6 +8,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.api.tablist.TabList;
 
 /**
  * An interface representing a player
@@ -357,4 +358,10 @@ public interface TabPlayer {
      * @return  scoreboard interface for calling scoreboard-related methods
      */
     Scoreboard getScoreboard();
+
+    /**
+     * Returns TabList interface for calling tablist-related methods
+     * @return  TabList interface for calling tablist-related methods
+     */
+    TabList getTabList();
 }

@@ -4,25 +4,34 @@ import io.netty.channel.Channel;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.chat.WrappedChatComponent;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Pipeline injection for sponge
  */
 public class SpongePipelineInjector extends NettyPipelineInjector {
+
+    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
+            (component, clientVersion) -> net.minecraft.network.chat.Component.Serializer.fromJson(component.toString(clientVersion)));
 
     private static Field channelField;
 
@@ -92,6 +101,36 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
     @Override
     public boolean isLogin(Object packet) {
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
+        ClientboundPlayerInfoPacket info = (ClientboundPlayerInfoPacket) packet;
+        ClientboundPlayerInfoPacket.Action action = (ClientboundPlayerInfoPacket.Action) nms.ClientboundPlayerInfoPacket_action.get(packet);
+        List<ClientboundPlayerInfoPacket.PlayerUpdate> updatedList = new ArrayList<>();
+        for (ClientboundPlayerInfoPacket.PlayerUpdate data : (List<ClientboundPlayerInfoPacket.PlayerUpdate>) nms.ClientboundPlayerInfoPacket_entries.get(packet)) {
+            int gameMode = data.getGameMode().getId();
+            int ping = data.getLatency();
+            IChatBaseComponent displayName = data.getDisplayName() == null ? null : new WrappedChatComponent(data.getDisplayName());
+            if (action == ClientboundPlayerInfoPacket.Action.UPDATE_GAME_MODE) {
+                gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, data.getProfile().getId(), gameMode);
+            }
+            if (action == ClientboundPlayerInfoPacket.Action.UPDATE_LATENCY) {
+                ping = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, data.getProfile().getId(), ping);
+            }
+            if (action == ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME) {
+                displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, data.getProfile().getId(), displayName);
+            }
+            if (action == ClientboundPlayerInfoPacket.Action.ADD_PLAYER) {
+                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, data.getProfile().getId(), data.getProfile().getName());
+            }
+            Component component = displayName instanceof WrappedChatComponent ?
+                    (Component) ((WrappedChatComponent) displayName).getOriginalComponent() : componentCache.get(displayName, receiver.getVersion());
+            updatedList.add(info.new PlayerUpdate(data.getProfile(), ping, GameType.byId(gameMode), component));
+        }
+        // Easiest way to update entries without using reflection
+        nms.ClientboundPlayerInfoPacket_entries.set(packet, updatedList);
     }
 
     @SuppressWarnings("unchecked")

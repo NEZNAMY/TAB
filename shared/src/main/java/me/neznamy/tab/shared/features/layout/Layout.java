@@ -6,10 +6,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 import java.util.*;
@@ -32,16 +29,16 @@ public class Layout extends TabFeature {
     public void sendTo(TabPlayer p) {
         if (viewers.contains(p)) return;
         viewers.add(p);
-        List<PlayerInfoData> list = new ArrayList<>();
+        List<TabListEntry> list = new ArrayList<>();
         groups.forEach(g -> list.addAll(g.getSlots(p)));
         for (FixedSlot slot : fixedSlots.values()) {
             list.add(slot.createEntry(p));
         }
         for (int slot : emptySlots) {
-            list.add(new PlayerInfoData(getEntryName(p, slot), manager.getUUID(slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), EnumGamemode.CREATIVE, new IChatBaseComponent(""), null, null));
+            list.add(new TabListEntry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), 0, new IChatBaseComponent(""), null));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-        p.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, list));
+        p.getTabList().addEntries(list);
     }
 
     public String getEntryName(TabPlayer viewer, long slot) {
@@ -52,7 +49,7 @@ public class Layout extends TabFeature {
         if (!viewers.contains(p)) return;
         viewers.remove(p);
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-        p.sendCustomPacket(manager.getRemovePacket());
+        p.getTabList().removeEntries(manager.getUuids().values());
     }
 
     public boolean isConditionMet(TabPlayer p) {

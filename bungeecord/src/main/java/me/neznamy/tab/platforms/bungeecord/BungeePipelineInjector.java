@@ -9,6 +9,7 @@ import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
@@ -91,8 +92,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(Object packet) {
-        return packet instanceof PlayerListItem ||
-                packet instanceof PlayerListItemUpdate || packet instanceof PlayerListItemRemove;
+        return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
     }
 
     @Override
@@ -123,6 +123,45 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     @Override
     public boolean isLogin(Object packet) {
         return packet instanceof Login;
+    }
+
+    @Override
+    public void onPlayerInfo(TabPlayer receiver, Object packet) {
+        PlayerListItem.Item[] items;
+        if (packet instanceof PlayerListItemUpdate) {
+            PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
+            for (PlayerListItem.Item item : update.getItems()) {
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_GAMEMODE)) {
+                    item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
+                    IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
+                    displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
+                    item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));
+                }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
+                }
+            }
+        } else {
+            PlayerListItem listItem = (PlayerListItem) packet;
+            for (PlayerListItem.Item item : listItem.getItems()) {
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE) {
+                    item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY) {
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME) {
+                    IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
+                    displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
+                    item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));
+                }
+            }
+        }
     }
 
     /**

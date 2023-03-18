@@ -1,20 +1,18 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.Collections;
-import java.util.Objects;
-
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.ITabPlayer;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+
+import java.util.Collections;
+import java.util.Objects;
+import java.util.UUID;
 
 public class NickCompatibility extends TabFeature {
 
@@ -25,23 +23,20 @@ public class NickCompatibility extends TabFeature {
     private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo packet) {
-        if (!packet.getActions().contains(EnumPlayerInfoAction.ADD_PLAYER)) return;
-        for (PlayerInfoData data : packet.getEntries()) {
-            TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(data.getUniqueId());
-            if (packetPlayer != null && packetPlayer != receiver && !packetPlayer.getNickname().equals(data.getName())) {
-                ((ITabPlayer)packetPlayer).setNickname(data.getName());
-                TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + data.getName());
-                processNameChange(packetPlayer);
-            }
-            if (redis != null) {
-                RedisPlayer redisPlayer = redis.getRedisPlayers().get(data.getUniqueId().toString());
-                if (redisPlayer == null) continue;
-                if (!redisPlayer.getNickname().equals(data.getName())) {
-                    redisPlayer.setNickname(data.getName());
-                    TAB.getInstance().debug("Processing name change of redis player " + redisPlayer.getName() + " to " + data.getName());
-                    processNameChange(redisPlayer);
-                }
+    public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
+        TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (packetPlayer != null && packetPlayer != packetReceiver && !packetPlayer.getNickname().equals(name)) {
+            ((ITabPlayer)packetPlayer).setNickname(name);
+            TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + name);
+            processNameChange(packetPlayer);
+        }
+        if (redis != null) {
+            RedisPlayer redisPlayer = redis.getRedisPlayers().get(id.toString());
+            if (redisPlayer == null) return;
+            if (!redisPlayer.getNickname().equals(name)) {
+                redisPlayer.setNickname(name);
+                TAB.getInstance().debug("Processing name change of redis player " + redisPlayer.getName() + " to " + name);
+                processNameChange(redisPlayer);
             }
         }
     }

@@ -22,14 +22,6 @@ public class PacketBuilder {
     protected final Map<Class<? extends TabPacket>, BiFunctionWithException<TabPacket, ProtocolVersion, Object>> buildMap = new HashMap<>();
 
     /**
-     * Constructs new instance and fills {@link #buildMap} with abstract build methods
-     * of packets present on all platforms.
-     */
-    public PacketBuilder() {
-        buildMap.put(PacketPlayOutPlayerInfo.class, (packet, version) -> build((PacketPlayOutPlayerInfo)packet, version));
-    }
-
-    /**
      * Converts custom packet into platform-specific packet by calling a function from
      * {@link #buildMap}.
      *
@@ -43,21 +35,6 @@ public class PacketBuilder {
      */
     public Object build(@NonNull TabPacket packet, @NonNull ProtocolVersion clientVersion) throws ReflectiveOperationException {
         return buildMap.get(packet.getClass()).apply(packet, clientVersion);
-    }
-
-    /**
-     * Constructs platform-specific PacketPlayOutPlayerInfo class based on custom packet class
-     *
-     * @param   packet
-     *          Custom packet to be built
-     * @param   clientVersion
-     *          Protocol version of player to build the packet for
-     * @return  Platform-specific packet
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return packet;
     }
 
     /**
@@ -107,21 +84,5 @@ public class PacketBuilder {
         } else {
             return cutTo(text, length);
         }
-    }
-
-    /**
-     * Converts platform-specific instance of player info packet into
-     * {@link PacketPlayOutPlayerInfo} object.
-     *
-     * @param   packet
-     *          platform-specific info packet
-     * @param   clientVersion
-     *          Version of client receiving the packet
-     * @return  The packet converted into {@link PacketPlayOutPlayerInfo}
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    public PacketPlayOutPlayerInfo readPlayerInfo(Object packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return null;
     }
 }

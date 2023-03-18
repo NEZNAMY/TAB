@@ -129,18 +129,11 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
     public abstract void sendPluginMessage(byte[] message);
 
     /**
-     * Returns player's profile key as a platform-specific object (1.19+)
+     * Returns player's chat signing key (1.19+), chat session (1.19.3+)
      *
-     * @return  Player's profile key as a platform-specific object (1.19+)
+     * @return  Player's chat session
      */
-    public abstract Object getProfilePublicKey();
-
-    /**
-     * Returns player's chat session id (1.19.3+)
-     *
-     * @return  Player's chat session id (1.19.3+)
-     */
-    public abstract UUID getChatSessionId();
+    public abstract Object getChatSession();
 
     @Override
     public boolean hasInvisibilityPotion() {

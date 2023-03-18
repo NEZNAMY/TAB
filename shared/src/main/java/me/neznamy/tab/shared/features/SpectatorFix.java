@@ -1,17 +1,14 @@
 package me.neznamy.tab.shared.features;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
@@ -33,23 +30,20 @@ public class SpectatorFix extends TabFeature {
      */
     private void updatePlayer(TabPlayer viewer, boolean realGameMode) {
         if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) return;
-        List<PlayerInfoData> list = new ArrayList<>();
+        Map<UUID, Integer> map = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == target || target.getGamemode() != 3) continue;
-            list.add(new PlayerInfoData(target.getUniqueId(), realGameMode ? EnumGamemode.VALUES[target.getGamemode()+1] : EnumGamemode.CREATIVE));
+            map.put(target.getUniqueId(), realGameMode ? target.getGamemode() : 1);
         }
-        if (!list.isEmpty()) viewer.sendCustomPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_GAME_MODE, list));
+        if (!map.isEmpty()) viewer.getTabList().updateGameModes(map);
     }
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (!info.getActions().contains(EnumPlayerInfoAction.UPDATE_GAME_MODE)) return;
-        for (PlayerInfoData playerInfoData : info.getEntries()) {
-            if (playerInfoData.getGameMode() != EnumGamemode.SPECTATOR) continue;
-            if (receiver.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
-            TabPlayer changed = TAB.getInstance().getPlayerByTabListUUID(playerInfoData.getUniqueId());
-            if (changed != receiver) playerInfoData.setGameMode(EnumGamemode.CREATIVE);
-        }
+    public int onGameModeChange(TabPlayer packetReceiver, UUID id, int gameMode) {
+        if (gameMode != 3 || packetReceiver.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) return gameMode;
+        TabPlayer changed = TAB.getInstance().getPlayerByTabListUUID(id);
+        if (changed != packetReceiver && changed.getServer().equals(packetReceiver.getServer())) return 0;
+        return gameMode;
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.Scoreboard
+import me.neznamy.tab.api.tablist.TabList
 import me.neznamy.tab.api.bossbar.BarColor
 import me.neznamy.tab.api.bossbar.BarStyle
 import me.neznamy.tab.api.chat.IChatBaseComponent
@@ -31,6 +32,7 @@ class KryptonTabPlayer(
     private val delegate = delegate as KryptonPlayer
     private val bossBars = mutableMapOf<UUID, BossBar>()
     private val scoreboard = KryptonScoreboard(this)
+    private val tabList = KryptonTabList(this)
 
     fun connection(): NettyConnection = delegate.connection
 
@@ -110,5 +112,9 @@ class KryptonTabPlayer(
 
     override fun getScoreboard(): Scoreboard {
         return scoreboard
+    }
+
+    override fun getTabList(): TabList {
+        return tabList
     }
 }

@@ -3,7 +3,7 @@ package me.neznamy.tab.api;
 import java.util.*;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
 
 /**
  * Abstract class representing a core feature of the plugin.
@@ -64,8 +64,6 @@ public abstract class TabFeature {
                 methodOverrides.add("onObjective");
                 TabAPI.getInstance().getFeatureManager().markObjective();
             }
-            if (getClass().getMethod("onPlayerInfo", TabPlayer.class, PacketPlayOutPlayerInfo.class).getDeclaringClass() != TabFeature.class)
-                methodOverrides.add("onPlayerInfo");
             if (getClass().getMethod("onPacketReceive", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onPacketReceive");
             if (getClass().getMethod("onPacketSend", TabPlayer.class, Object.class).getDeclaringClass() != TabFeature.class)
@@ -74,6 +72,12 @@ public abstract class TabFeature {
                 methodOverrides.add("refresh");
             if (getClass().getMethod("onVanishStatusChange", TabPlayer.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onVanishStatusChange");
+            if (getClass().getMethod("onGameModeChange", TabPlayer.class, UUID.class, int.class).getDeclaringClass() != TabFeature.class)
+                methodOverrides.add("onGameModeChange");
+            if (getClass().getMethod("onLatencyChange", TabPlayer.class, UUID.class, int.class).getDeclaringClass() != TabFeature.class)
+                methodOverrides.add("onLatencyChange");
+            if (getClass().getMethod("onEntryAdd", TabPlayer.class, UUID.class, String.class).getDeclaringClass() != TabFeature.class)
+                methodOverrides.add("onEntryAdd");
         } catch (NoSuchMethodException e) {
             //this will never happen
         }
@@ -216,18 +220,6 @@ public abstract class TabFeature {
     }
 
     /**
-     * Processes the packet send and possibly modifies it
-     *
-     * @param   receiver
-     *          player receiving packet
-     * @param   info
-     *          received packet
-     */
-    public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        //empty by default
-    }
-
-    /**
      * Processes raw packet sent by client
      *
      * @param   sender
@@ -275,6 +267,22 @@ public abstract class TabFeature {
      *          Player who changed vanish status
      */
     public void onVanishStatusChange(TabPlayer player) {
+        //empty by default
+    }
+
+    public int onGameModeChange(TabPlayer packetReceiver, UUID id, int gameMode) {
+        return gameMode;
+    }
+
+    public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
+        return latency;
+    }
+
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
+        return displayName;
+    }
+
+    public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
         //empty by default
     }
 

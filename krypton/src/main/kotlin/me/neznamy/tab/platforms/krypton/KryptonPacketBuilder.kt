@@ -2,28 +2,20 @@ package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.chat.IChatBaseComponent
-import me.neznamy.tab.api.protocol.*
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData
+import me.neznamy.tab.api.protocol.PacketBuilder
+import me.neznamy.tab.api.protocol.TabPacket
 import me.neznamy.tab.api.util.BiFunctionWithException
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import org.kryptonmc.api.auth.GameProfile
-import org.kryptonmc.api.auth.ProfileProperty
-import org.kryptonmc.api.world.GameMode
 import org.kryptonmc.krypton.entity.KryptonEntityType
 import org.kryptonmc.krypton.entity.metadata.MetadataHolder
-import org.kryptonmc.krypton.entity.player.PlayerPublicKey
-import org.kryptonmc.krypton.network.chat.RemoteChatSession
-import org.kryptonmc.krypton.packet.out.play.*
-import java.util.*
+import org.kryptonmc.krypton.packet.out.play.PacketOutSetEntityMetadata
+import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnEntity
 
 // All build functions that just return the packet parameter will be passed through to be handled in KryptonTabPlayer.
 object KryptonPacketBuilder : PacketBuilder() {
-
-    private val GAME_MODES = GameMode.values()
 
     init {
         buildMap[PacketPlayOutEntityMetadata::class.java] =
@@ -42,37 +34,6 @@ object KryptonPacketBuilder : PacketBuilder() {
         return GsonComponentSerializer.gson().deserialize(IChatBaseComponent.optimizedComponent(text).toString(clientVersion))
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun build(packet: PacketPlayOutPlayerInfo, clientVersion: ProtocolVersion): Any {
-        if (packet.actions.contains(EnumPlayerInfoAction.REMOVE_PLAYER)) {
-            return PacketOutPlayerInfoRemove(packet.entries.map { it.uniqueId })
-        }
-
-        val actions = EnumSet.noneOf(PacketOutPlayerInfoUpdate.Action::class.java)
-        packet.actions.forEach { PacketOutPlayerInfoUpdate.Action.fromId(it.ordinal) }
-
-        val entries = packet.entries.map { data ->
-            val displayName = data.displayName?.toString(clientVersion)
-            val skin = if (data.skin != null) listOf(ProfileProperty.of("textures", data.skin!!.value, data.skin!!.signature)) else emptyList()
-
-            val sessionId = data.chatSessionId
-            val publicKey = data.profilePublicKey as? PlayerPublicKey.Data
-            val session = if (sessionId != null && publicKey != null) RemoteChatSession.Data(sessionId, publicKey) else null
-
-            PacketOutPlayerInfoUpdate.Entry(
-                data.uniqueId,
-                GameProfile.of(data.name ?: "", data.uniqueId, skin),
-                data.isListed,
-                data.latency,
-                GAME_MODES[data.gameMode.ordinal - 1],
-                displayName?.let { GsonComponentSerializer.gson().deserialize(it) },
-                session
-            )
-        }
-
-        return PacketOutPlayerInfoUpdate(actions, entries)
-    }
-
     private fun build(packet: PacketPlayOutEntityMetadata): Any {
         return PacketOutSetEntityMetadata(packet.entityId, (packet.dataWatcher as MetadataHolder).collectAll())
     }
@@ -82,9 +43,9 @@ object KryptonPacketBuilder : PacketBuilder() {
             packet.x, packet.y, packet.z, 0, 0, 0, 0, 0, 0, 0)
     }
 
-    override fun readPlayerInfo(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutPlayerInfo? {
+    /*override fun readPlayerInfo(packet: Any?, clientVersion: ProtocolVersion?): PacketPlayOutPlayerInfo? {
         if (packet is PacketOutPlayerInfoRemove) {
-            return PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, packet.profileIds.map { PlayerInfoData(it) })
+            return PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, packet.profileIds.map { TabListEntry(it) })
         }
         if (packet !is PacketOutPlayerInfoUpdate) return null
 
@@ -96,13 +57,13 @@ object KryptonPacketBuilder : PacketBuilder() {
             val serializedListName = if (displayName != null) GsonComponentSerializer.gson().serialize(displayName) else null
             val textures = entry.profile.properties.firstOrNull { it.name == "textures" } ?: return null
 
-            PlayerInfoData(
-                entry.profile.name,
+            TabListEntry(
                 entry.profile.uuid,
+                entry.profile.name,
                 Skin(textures.value, textures.signature),
                 entry.listed,
                 entry.latency,
-                PacketPlayOutPlayerInfo.EnumGamemode.VALUES[entry.gameMode.ordinal + 1],
+                entry.gameMode.ordinal,
                 if (serializedListName != null) IChatBaseComponent.deserialize(serializedListName) else null,
                 entry.chatSession?.sessionId,
                 entry.chatSession?.publicKey
@@ -110,5 +71,5 @@ object KryptonPacketBuilder : PacketBuilder() {
         }
 
         return PacketPlayOutPlayerInfo(actions, entries)
-    }
+    }*/
 }

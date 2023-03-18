@@ -91,6 +91,8 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     public abstract boolean isLogin(Object packet);
 
+    public abstract void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException;
+
     /**
      * Removes all real players from team if packet does not come from TAB and reports this to override log
      *
@@ -126,10 +128,8 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
                     TAB.getInstance().getFeatureManager().onLoginPacket(player);
                     return;
                 }
-                if (isPlayerInfo(packet)) {
-                    super.write(context, TAB.getInstance().getFeatureManager().onPacketPlayOutPlayerInfo(player, packet), channelPromise);
-                    return;
-                }
+                if (isPlayerInfo(packet) && player.getVersion().getMinorVersion() >= 8)
+                                                onPlayerInfo(player, packet);
                 if (isDisplayObjective(packet)) onDisplayObjective(player, packet);
                 if (isObjective(packet))        onObjective(player, packet);
                 if (antiOverrideTeams && isTeam(packet)) {

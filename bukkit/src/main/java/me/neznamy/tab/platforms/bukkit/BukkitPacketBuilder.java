@@ -1,8 +1,10 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.protocol.*;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.api.protocol.PacketBuilder;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityMetadataStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityTeleportStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
 import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
@@ -15,15 +17,5 @@ public class BukkitPacketBuilder extends PacketBuilder {
         buildMap.put(PacketPlayOutEntityTeleport.class, (packet, version) -> PacketPlayOutEntityTeleportStorage.build((PacketPlayOutEntityTeleport) packet));
         buildMap.put(PacketPlayOutEntityDestroy.class, (packet, version) -> PacketPlayOutEntityDestroyStorage.build((PacketPlayOutEntityDestroy) packet));
         buildMap.put(PacketPlayOutSpawnEntityLiving.class, (packet, version) -> PacketPlayOutSpawnEntityLivingStorage.build((PacketPlayOutSpawnEntityLiving) packet));
-    }
-
-    @Override
-    public Object build(PacketPlayOutPlayerInfo packet, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return PacketPlayOutPlayerInfoStorage.build(packet, clientVersion);
-    }
-
-    @Override
-    public PacketPlayOutPlayerInfo readPlayerInfo(Object nmsPacket, ProtocolVersion clientVersion) throws ReflectiveOperationException {
-        return PacketPlayOutPlayerInfoStorage.read(nmsPacket);
     }
 }

@@ -2,13 +2,12 @@ package me.neznamy.tab.shared.features.redis;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.event.EventHandler;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.BelowName;
 import me.neznamy.tab.shared.features.PlayerList;
@@ -46,8 +45,6 @@ public abstract class RedisSupport extends TabFeature {
     @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
 
     private final UUID EMPTY_ID = new UUID(0, 0);
-
-    private final Map<RedisPlayer, Long> lastServerSwitch = new WeakHashMap<>();
 
     private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
 
@@ -198,16 +195,15 @@ public abstract class RedisSupport extends TabFeature {
                         target.setServer(server);
                         return;
                     }
-                    lastServerSwitch.put(target, System.currentTimeMillis());
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                         if (viewer.getVersion().getMinorVersion() < 8) continue;
                         boolean before = shouldSee(viewer, target.getServer(), target.isVanished());
                         boolean after = shouldSee(viewer, server, target.isVanished());
                         if (!before && after) {
-                            viewer.sendCustomPacket(target.getAddPacket());
+                            viewer.getTabList().addEntry(target.getEntry());
                         }
                         if (before && !after) {
-                            viewer.sendCustomPacket(target.getRemovePacket());
+                            viewer.getTabList().removeEntry(target.getUniqueId());
                         }
                     }
                     target.setServer(server);
@@ -217,7 +213,9 @@ public abstract class RedisSupport extends TabFeature {
                     if (target == null) break;
                     target.setTabFormat((String) message.get("tabformat"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                        if (viewer.getVersion().getMinorVersion() >= 8) viewer.sendCustomPacket(target.getUpdatePacket());
+                        if (viewer.getVersion().getMinorVersion() >= 8) {
+                            viewer.getTabList().updateDisplayName(target.getUniqueId(), target.isDisabledPlayerList() ? null : IChatBaseComponent.optimizedComponent(target.getTabFormat()));
+                        }
                     }
                     break;
                 case "nametag":
@@ -261,7 +259,7 @@ public abstract class RedisSupport extends TabFeature {
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         all.getScoreboard().unregisterTeam(target.getTeamName());
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        if (!target.getServer().equals(all.getServer())) all.sendCustomPacket(target.getRemovePacket());
+                        if (!target.getServer().equals(all.getServer())) all.getTabList().removeEntry(target.getUniqueId());
                     }
                     redisPlayers.remove(id.toString());
                     break;
@@ -284,14 +282,16 @@ public abstract class RedisSupport extends TabFeature {
             all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
             if (all.getVersion().getMinorVersion() < 8) continue;
             if (global == null) {
-                if (all.getServer().equals(target.getServer())) all.sendCustomPacket(target.getUpdatePacket());
+                if (all.getServer().equals(target.getServer())) {
+                    all.getTabList().updateDisplayName(target.getUniqueId(), target.isDisabledPlayerList() ? null : IChatBaseComponent.optimizedComponent(target.getTabFormat()));
+                }
                 continue;
             }
             if (shouldSee(all, target.getServer(), target.isVanished())) {
                 if (!all.getServer().equals(target.getServer())) {
-                    all.sendCustomPacket(target.getAddPacket());
+                    all.getTabList().addEntry(target.getEntry());
                 } else {
-                    all.sendCustomPacket(target.getUpdatePacket());
+                    all.getTabList().updateDisplayName(target.getUniqueId(), target.isDisabledPlayerList() ? null : IChatBaseComponent.optimizedComponent(target.getTabFormat()));
                 }
             }
         }
@@ -362,9 +362,9 @@ public abstract class RedisSupport extends TabFeature {
             if (global == null) continue;
             if (shouldSee(p, redis.getServer(), redis.isVanished())) {
                 if (!p.getServer().equals(redis.getServer())) {
-                    p.sendCustomPacket(redis.getAddPacket());
+                    p.getTabList().addEntry(redis.getEntry());
                 } else {
-                    p.sendCustomPacket(redis.getUpdatePacket());
+                    p.getTabList().updateDisplayName(redis.getUniqueId(), redis.isDisabledPlayerList() ? null : IChatBaseComponent.optimizedComponent(redis.getTabFormat()));
                 }
             }
         }
@@ -383,10 +383,10 @@ public abstract class RedisSupport extends TabFeature {
             boolean before = shouldSee(p, from, redis.getServer(), redis.isVanished());
             boolean after = shouldSee(p, to, redis.getServer(), redis.isVanished());
             if (!before && after) {
-                p.sendCustomPacket(redis.getAddPacket());
+                p.getTabList().addEntry(redis.getEntry());
             }
             if (before && !after) {
-                p.sendCustomPacket(redis.getRemovePacket());
+                p.getTabList().removeEntry(redis.getUniqueId());
             }
         }
     }
@@ -401,27 +401,12 @@ public abstract class RedisSupport extends TabFeature {
     }
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, PacketPlayOutPlayerInfo info) {
-        if (info.getActions().contains(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) && global != null) {
-            boolean packetFromTAB = info.getEntries().stream().anyMatch(data -> data.getUniqueId().equals(EMPTY_ID));
-            for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
-                RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
-                if (packetPlayer != null && !packetFromTAB && !packetPlayer.isVanished() &&
-                        (System.currentTimeMillis()-lastServerSwitch.getOrDefault(packetPlayer, 0L) < 500)) {
-                    //remove packet not coming from tab
-                    //changing to random non-existing player, the easiest way to cancel the removal
-                    playerInfoData.setUniqueId(UUID.randomUUID());
-                }
-            }
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
+        RedisPlayer packetPlayer = redisPlayers.get(id.toString());
+        if (packetPlayer != null && !packetPlayer.isDisabledPlayerList()) {
+            return IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat());
         }
-        if (info.getActions().contains(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE)) {
-            for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData : info.getEntries()) {
-                RedisPlayer packetPlayer = redisPlayers.get(playerInfoData.getUniqueId().toString());
-                if (packetPlayer != null && !packetPlayer.isDisabledPlayerList()) {
-                    playerInfoData.setDisplayName(IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat()));
-                }
-            }
-        }
+        return displayName;
     }
 
     @Override

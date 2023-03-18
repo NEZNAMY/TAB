@@ -4,7 +4,7 @@ import java.util.*;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
+import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -47,8 +47,8 @@ public class ParentGroup {
         }
     }
     
-    public List<PlayerInfoData> getSlots(TabPlayer p) {
-        List<PlayerInfoData> data = new ArrayList<>();
+    public List<TabListEntry> getSlots(TabPlayer p) {
+        List<TabListEntry> data = new ArrayList<>();
         playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
         return data;
     }

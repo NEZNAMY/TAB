@@ -5,11 +5,8 @@ import lombok.Setter;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumGamemode;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.shared.TAB;
 import org.json.simple.JSONObject;
 
@@ -29,7 +26,7 @@ public class RedisPlayer {
     @Getter @Setter private String tabFormat;
     @Getter private String teamName;
     @Getter private boolean vanished;
-    private Skin skin;
+    @Getter private Skin skin;
     @Setter @Getter private String tagPrefix;
     @Setter @Getter private String tagSuffix;
     @Getter private boolean nameVisibility;
@@ -116,19 +113,9 @@ public class RedisPlayer {
         return json;
     }
 
-    public PacketPlayOutPlayerInfo getAddPacket() {
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new PlayerInfoData(nickname, uniqueId, skin, true, 0, EnumGamemode.SURVIVAL,
-                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat), null, null));
-    }
-
-    public PacketPlayOutPlayerInfo getUpdatePacket() {
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, new PlayerInfoData(uniqueId, disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat)));
-    }
-
-    public PacketPlayOutPlayerInfo getRemovePacket() {
-        PlayerInfoData data = new PlayerInfoData(uniqueId);
-        data.setName(nickname); //making null check not kill own packets
-        return new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, data);
+    public TabListEntry getEntry() {
+        return new TabListEntry(uniqueId, nickname, skin, true, 0, 0,
+                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat), null);
     }
 
     public int getBelowName() {
@@ -147,7 +134,7 @@ public class RedisPlayer {
                     disabledPlayerList = false;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        all.sendCustomPacket(getUpdatePacket());
+                        all.getTabList().updateDisplayName(uniqueId, IChatBaseComponent.optimizedComponent(tabFormat));
                     }
                 }
             } else {
@@ -155,7 +142,7 @@ public class RedisPlayer {
                     disabledPlayerList = true;
                     for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                         if (all.getVersion().getMinorVersion() < 8) continue;
-                        all.sendCustomPacket(getUpdatePacket());
+                        all.getTabList().updateDisplayName(uniqueId, null);
                     }
                 }
             }

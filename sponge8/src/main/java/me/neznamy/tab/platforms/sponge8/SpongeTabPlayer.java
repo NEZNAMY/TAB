@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -34,6 +35,8 @@ public final class SpongeTabPlayer extends ITabPlayer {
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
     @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
+
+    @Getter private final TabList tabList = new SpongeTabList(this);
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),

@@ -7,11 +7,7 @@ import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import me.neznamy.tab.api.protocol.PacketPlayOutPlayerInfo.PlayerInfoData;
 import me.neznamy.tab.api.protocol.Skin;
-import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -22,9 +18,6 @@ import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.entity.living.player.tab.TabList;
-import org.spongepowered.api.entity.living.player.tab.TabListEntry;
-import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -33,21 +26,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public final class SpongeTabPlayer extends ITabPlayer {
 
     private static final ComponentCache<IChatBaseComponent, Text> textCache = new ComponentCache<>(10000,
             (component, version) -> TextSerializers.JSON.deserialize(component.toString(version)));
 
-    private final Map<Class<? extends TabPacket>, Consumer<TabPacket>> packetMethods = new HashMap<>();
-    {
-        packetMethods.put(PacketPlayOutPlayerInfo.class, packet -> handle((PacketPlayOutPlayerInfo) packet));
-    }
-
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
 
     @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
+
+    @Getter private final me.neznamy.tab.api.tablist.TabList tabList = new SpongeTabList(this);
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
@@ -66,79 +55,12 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     @Override
     public void sendPacket(final Object packet) {
-        if (packet == null) return;
-        packetMethods.get(packet.getClass()).accept((TabPacket) packet);
+        throw new IllegalStateException("No longer supported");
     }
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
         getPlayer().sendMessage(textCache.get(message, getVersion()));
-    }
-
-    private void handle(final PacketPlayOutPlayerInfo packet) {
-        final TabList list = getPlayer().getTabList();
-        for (final PlayerInfoData data : packet.getEntries()) {
-            for (final EnumPlayerInfoAction action : packet.getActions()) {
-                switch (action) {
-                    case ADD_PLAYER:
-                        if (list.getEntry(data.getUniqueId()).isPresent()) continue;
-
-                        final GameProfile profile = GameProfile.of(data.getUniqueId(), data.getName());
-                        if (data.getSkin() != null) {
-                            profile.addProperty(ProfileProperty.of("textures", data.getSkin().getValue(), data.getSkin().getSignature()));
-                        }
-
-                        final TabListEntry entry = TabListEntry.builder()
-                                .list(list)
-                                .displayName(textCache.get(data.getDisplayName(), getVersion()))
-                                .gameMode(convertGameMode(data.getGameMode()))
-                                .profile(profile)
-                                .latency(data.getLatency())
-                                .build();
-                        list.addEntry(entry);
-                        break;
-                    case REMOVE_PLAYER:
-                        list.removeEntry(data.getUniqueId());
-                        break;
-                    case UPDATE_DISPLAY_NAME:
-                        list.getEntry(data.getUniqueId()).ifPresent(e -> e.setDisplayName(textCache.get(data.getDisplayName(), getVersion())));
-                        break;
-                    case UPDATE_LATENCY:
-                        list.getEntry(data.getUniqueId()).ifPresent(e -> e.setLatency(data.getLatency()));
-                        break;
-                    case UPDATE_GAME_MODE:
-                        list.getEntry(data.getUniqueId()).ifPresent(e -> e.setGameMode(convertGameMode(data.getGameMode())));
-                        break;
-                    // Neither of these are supported in 1.12
-                    case UPDATE_LISTED:
-                    case INITIALIZE_CHAT:
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    private static GameMode convertGameMode(final PacketPlayOutPlayerInfo.EnumGamemode mode) {
-        switch (mode) {
-            case NOT_SET:
-                return GameModes.NOT_SET;
-            case SURVIVAL:
-                return GameModes.SURVIVAL;
-            case CREATIVE:
-                return GameModes.CREATIVE;
-            case ADVENTURE:
-                return GameModes.ADVENTURE;
-            case SPECTATOR:
-                return GameModes.SPECTATOR;
-            default:
-                throw new IllegalArgumentException("Unknown gamemode: " + mode);
-        }
-    }
-
-    private static String cutToLength(String text, final int maxLength) {
-        if (text.length() > maxLength) text = text.substring(0, maxLength);
-        return text;
     }
 
     @Override
