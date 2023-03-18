@@ -43,14 +43,14 @@ public class VelocityTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(me.neznamy.tab.api.tablist.TabListEntry entry) {
+    public void addEntry(me.neznamy.tab.api.tablist.@NonNull TabListEntry entry) {
         player.getPlayer().getTabList().addEntry(TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
                         entry.getUniqueId(),
                         entry.getName() == null ? "" : entry.getName(),
                         entry.getSkin() == null ? Collections.emptyList() : Collections.singletonList(
-                                new GameProfile.Property("textures", entry.getSkin().getValue(), entry.getSkin().getSignature()))
+                                new GameProfile.Property("textures", entry.getSkin().getValue(), Objects.requireNonNull(entry.getSkin().getSignature())))
                 ))
                 .listed(entry.isListed())
                 .latency(entry.getLatency())

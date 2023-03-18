@@ -4,7 +4,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.TAB;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -94,19 +93,13 @@ public class PacketPlayOutScoreboardTeamStorage {
         try {
             NMSStorage nms = NMSStorage.getInstance();
             Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);
-            String finalPrefix = prefix;
-            String finalSuffix = suffix;
-            if (clientVersion.getMinorVersion() < 13) {
-                finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
-                finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
-            }
             ((Collection<String>)ScoreboardTeam_getPlayerNameSet.invoke(team)).addAll(players);
             ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
             ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
             if (nms.getMinorVersion() >= 13) {
-                createTeamModern(team, clientVersion, finalPrefix, finalSuffix, visibility, collision);
+                createTeamModern(team, clientVersion, prefix, suffix, visibility, collision);
             } else {
-                createTeamLegacy(team, finalPrefix, finalSuffix, visibility, collision);
+                createTeamLegacy(team, prefix, suffix, visibility, collision);
             }
             if (nms.getMinorVersion() >= 17) {
                 return Constructor_ofBoolean.invoke(null, team, true);
@@ -135,18 +128,12 @@ public class PacketPlayOutScoreboardTeamStorage {
         try {
             NMSStorage nms = NMSStorage.getInstance();
             Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);
-            String finalPrefix = prefix;
-            String finalSuffix = suffix;
-            if (clientVersion.getMinorVersion() < 13) {
-                finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
-                finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
-            }
             ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
             ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);
             if (nms.getMinorVersion() >= 13) {
-                createTeamModern(team, clientVersion, finalPrefix, finalSuffix, visibility, collision);
+                createTeamModern(team, clientVersion, prefix, suffix, visibility, collision);
             } else {
-                createTeamLegacy(team, finalPrefix, finalSuffix, visibility, collision);
+                createTeamLegacy(team, prefix, suffix, visibility, collision);
             }
             if (nms.getMinorVersion() >= 17) {
                 return Constructor_ofBoolean.invoke(null, team, false);

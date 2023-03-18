@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.Location;
 
@@ -10,7 +9,7 @@ import java.lang.reflect.Field;
 /**
  * Custom class for holding data used in PacketPlayOutEntityTeleport minecraft packet.
  */
-public class PacketPlayOutEntityTeleportStorage implements TabPacket {
+public class PacketPlayOutEntityTeleportStorage {
 
     /** NMS Fields */
     public static Class<?> CLASS;

@@ -32,7 +32,7 @@ public abstract class SingleUpdateTabList implements TabList {
         entries.forEach(this::updateGameMode);
     }
 
-    public void addEntries(Collection<TabListEntry> entries) {
+    public void addEntries(@NonNull Collection<TabListEntry> entries) {
         entries.forEach(this::addEntry);
     }
 }

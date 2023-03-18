@@ -157,7 +157,7 @@ public class BungeeTabList extends BulkUpdateTabList {
     }
 
     @Override
-    public void addEntries(Collection<TabListEntry> entries) {
+    public void addEntries(@NonNull Collection<TabListEntry> entries) {
         if (player.getVersion().getMinorVersion() >= 8) {
             List<Item> items = new ArrayList<>();
             for (TabListEntry data : entries) {

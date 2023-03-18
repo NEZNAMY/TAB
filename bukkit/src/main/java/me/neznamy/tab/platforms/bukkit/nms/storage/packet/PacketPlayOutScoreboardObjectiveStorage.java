@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.TAB;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -43,15 +42,14 @@ public class PacketPlayOutScoreboardObjectiveStorage {
     public static Object buildSilent(int action, String objectiveName, String title, boolean hearts, ProtocolVersion clientVersion) {
         try {
             NMSStorage nms = NMSStorage.getInstance();
-            String displayName = clientVersion.getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title;
             if (nms.getMinorVersion() >= 13) {
                 return CONSTRUCTOR.newInstance(newScoreboardObjective.newInstance(null, objectiveName, null,
-                        nms.toNMSComponent(IChatBaseComponent.optimizedComponent(displayName), clientVersion),
+                        nms.toNMSComponent(IChatBaseComponent.optimizedComponent(title), clientVersion),
                         asDisplayType(hearts)), action);
             }
             Object nmsPacket = CONSTRUCTOR.newInstance();
             OBJECTIVE_NAME.set(nmsPacket, objectiveName);
-            DISPLAY_NAME.set(nmsPacket, displayName);
+            DISPLAY_NAME.set(nmsPacket, title);
             if (nms.getMinorVersion() >= 8) {
                 RENDER_TYPE.set(nmsPacket, asDisplayType(hearts));
             }

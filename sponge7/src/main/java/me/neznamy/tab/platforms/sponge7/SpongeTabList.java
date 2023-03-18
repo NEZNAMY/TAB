@@ -47,7 +47,7 @@ public class SpongeTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(TabListEntry entry) {
+    public void addEntry(@NonNull TabListEntry entry) {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.addProperty(ProfileProperty.of(
                 "textures", entry.getSkin().getValue(), entry.getSkin().getSignature()));

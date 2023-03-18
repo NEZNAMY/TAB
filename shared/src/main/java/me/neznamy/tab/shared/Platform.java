@@ -6,7 +6,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.features.*;
 import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
@@ -179,6 +178,4 @@ public abstract class Platform {
     public abstract @Nullable RedisSupport getRedisSupport();
 
     public abstract @Nullable TabFeature getPerWorldPlayerlist();
-
-    public abstract PacketBuilder getPacketBuilder();
 }

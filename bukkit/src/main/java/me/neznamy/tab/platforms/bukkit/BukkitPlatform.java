@@ -10,7 +10,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
@@ -47,7 +46,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class BukkitPlatform extends BackendPlatform {
 
-    @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
     @Getter private final BukkitPipelineInjector pipelineInjector = NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
 
     /** Plugin instance for registering tasks and events */

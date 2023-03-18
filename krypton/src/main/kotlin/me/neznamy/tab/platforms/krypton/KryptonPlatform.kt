@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.TabFeature
-import me.neznamy.tab.api.protocol.PacketBuilder
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.backend.BackendPlatform
@@ -15,7 +14,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
 
     private val server = plugin.server
-    private val packetBuilder = KryptonPacketBuilder
 
     override fun sendConsoleMessage(message: String, translateColors: Boolean) {
         val component = if (translateColors) LegacyComponentSerializer.legacyAmpersand().deserialize(message) else Component.text(message)
@@ -55,9 +53,5 @@ class KryptonPlatform(private val plugin: Main) : BackendPlatform() {
 
     override fun getPerWorldPlayerlist(): TabFeature? {
         return null
-    }
-
-    override fun getPacketBuilder(): PacketBuilder {
-        return packetBuilder
     }
 }

@@ -26,7 +26,7 @@ public interface TabList {
 
     void updateGameModes(@NonNull Map<UUID, Integer> entries);
 
-    void addEntry(TabListEntry entry);
+    void addEntry(@NonNull TabListEntry entry);
 
-    void addEntries(Collection<TabListEntry> entries);
+    void addEntries(@NonNull Collection<TabListEntry> entries);
 }

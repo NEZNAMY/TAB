@@ -6,7 +6,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabScoreboard;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
@@ -86,7 +85,7 @@ public class BungeeScoreboard extends TabScoreboard {
         if (clientVersion.getMinorVersion() >= 13) {
             return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
         } else {
-            return TAB.getInstance().getPlatform().getPacketBuilder().cutTo(text, length);
+            return cutTo(text, length);
         }
     }
 

@@ -7,7 +7,6 @@ import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
-import me.neznamy.tab.api.protocol.*;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -192,16 +191,6 @@ public abstract class ITabPlayer implements TabPlayer {
     public void forceRefresh() {
         if (!loaded) return;
         TAB.getInstance().getFeatureManager().refresh(this, true);
-    }
-
-    @Override
-    public void sendCustomPacket(TabPacket packet) {
-        if (packet == null) return;
-        try {
-            sendPacket(TAB.getInstance().getPlatform().getPacketBuilder().build(packet, getVersion()));
-        } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("An error occurred when creating " + packet.getClass().getSimpleName(), e);
-        }
     }
 
     @Override

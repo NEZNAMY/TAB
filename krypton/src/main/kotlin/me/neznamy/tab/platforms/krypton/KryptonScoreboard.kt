@@ -80,8 +80,8 @@ class KryptonScoreboard(player: TabPlayer) : TabScoreboard(player) {
         var finalPrefix = prefix
         var finalSuffix = suffix
         if (player.version.minorVersion < 13) {
-            finalPrefix = KryptonPacketBuilder.cutTo(finalPrefix, 16)
-            finalSuffix = KryptonPacketBuilder.cutTo(finalSuffix, 16)
+            finalPrefix = cutTo(finalPrefix, 16)
+            finalSuffix = cutTo(finalSuffix, 16)
         }
         return PacketOutUpdateTeams.Parameters(
             Component.text(name),

@@ -6,7 +6,6 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.util.ComponentCache;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabScoreboard;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -44,7 +43,7 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = player.getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title;
+        String displayName = player.getVersion().getMinorVersion() < 13 ? cutTo(title, 32) : title;
         player.sendPacket(new ClientboundSetObjectivePacket(
                 new Objective(
                         dummyScoreboard,
@@ -63,7 +62,7 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = player.getVersion().getMinorVersion() < 13 ? TAB.getInstance().getPlatform().getPacketBuilder().cutTo(title, 32) : title;
+        String displayName = player.getVersion().getMinorVersion() < 13 ? cutTo(title, 32) : title;
         player.sendPacket(new ClientboundSetObjectivePacket(
                 new Objective(
                         dummyScoreboard,
@@ -84,8 +83,8 @@ public class SpongeScoreboard extends TabScoreboard {
         String finalPrefix = prefix;
         String finalSuffix = suffix;
         if (player.getVersion().getMinorVersion() < 13) {
-            finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
-            finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
+            finalPrefix = cutTo(finalPrefix, 16);
+            finalSuffix = cutTo(finalSuffix, 16);
         }
         if (collision != null)
             team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
@@ -113,8 +112,8 @@ public class SpongeScoreboard extends TabScoreboard {
         String finalPrefix = prefix;
         String finalSuffix = suffix;
         if (player.getVersion().getMinorVersion() < 13) {
-            finalPrefix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalPrefix, 16);
-            finalSuffix = TAB.getInstance().getPlatform().getPacketBuilder().cutTo(finalSuffix, 16);
+            finalPrefix = cutTo(finalPrefix, 16);
+            finalSuffix = cutTo(finalSuffix, 16);
         }
         if (collision != null)
             team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));

@@ -17,7 +17,6 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -66,7 +65,6 @@ public class VelocityTAB extends ProxyPlatform {
 
     /** Variables for getters for Platform implementation */
     @Getter private final PipelineInjector pipelineInjector = null;
-    @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
     @Getter private final RedisSupport redisSupport = null; // Not available on Velocity
 
     /**

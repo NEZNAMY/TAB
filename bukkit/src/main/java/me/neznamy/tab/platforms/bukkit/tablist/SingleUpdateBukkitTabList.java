@@ -64,7 +64,7 @@ public class SingleUpdateBukkitTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(TabListEntry entry) {
+    public void addEntry(@NonNull TabListEntry entry) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER",
                 Collections.singletonList(new TabListEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(),
                         entry.getLatency(), entry.getGameMode(), entry.getDisplayName(), entry.getChatSession())),

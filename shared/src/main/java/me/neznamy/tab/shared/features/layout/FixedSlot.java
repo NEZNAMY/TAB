@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabListEntry;
 
 import java.util.UUID;

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.Constructor;
@@ -9,7 +8,7 @@ import java.lang.reflect.Field;
 /**
  * Custom class for holding data used in PacketPlayOutEntityDestroy minecraft packet.
  */
-public class PacketPlayOutEntityDestroyStorage implements TabPacket {
+public class PacketPlayOutEntityDestroyStorage {
 
     /** NMS Fields */
     public static Class<?> CLASS;

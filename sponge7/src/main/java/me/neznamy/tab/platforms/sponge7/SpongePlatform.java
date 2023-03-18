@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -19,7 +18,6 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature petFix = null;
     @Getter private final TabFeature perWorldPlayerlist = null;
-    @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
 
     @Override
     public String getPluginVersion(String plugin) {

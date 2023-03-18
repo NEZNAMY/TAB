@@ -35,7 +35,7 @@ public abstract class BulkUpdateTabList implements TabList {
     }
 
     @Override
-    public void addEntry(TabListEntry entry) {
+    public void addEntry(@NonNull TabListEntry entry) {
         addEntries(Collections.singletonList(entry));
     }
 }

@@ -6,8 +6,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.Skin;
-import me.neznamy.tab.api.protocol.TabPacket;
+import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
 
 /**
@@ -78,14 +77,6 @@ public interface TabPlayer {
      * @return  true if player has permission, false if not
      */
     boolean hasPermission(String permission);
-
-    /**
-     * Sends the player a custom universal packet
-     *
-     * @param   packet
-     *          packet to send
-     */
-    void sendCustomPacket(TabPacket packet);
 
     /**
      * Sends the player a platform-specific packet

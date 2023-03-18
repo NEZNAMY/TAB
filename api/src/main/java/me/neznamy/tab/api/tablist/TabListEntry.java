@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.Skin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;

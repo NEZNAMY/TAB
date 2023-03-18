@@ -9,7 +9,7 @@ import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;

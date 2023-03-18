@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.protocol.PacketBuilder;
 import me.neznamy.tab.platforms.sponge8.features.PetFix;
 import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.TAB;
@@ -25,7 +24,6 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature perWorldPlayerlist = null;
-    @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
 
     @Override
     public String getPluginVersion(String plugin) {
