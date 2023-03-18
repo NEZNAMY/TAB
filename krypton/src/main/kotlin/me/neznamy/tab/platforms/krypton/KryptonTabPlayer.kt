@@ -2,26 +2,34 @@ package me.neznamy.tab.platforms.krypton
 
 import me.neznamy.tab.api.ProtocolVersion
 import me.neznamy.tab.api.Scoreboard
-import me.neznamy.tab.api.tablist.TabList
 import me.neznamy.tab.api.bossbar.BarColor
 import me.neznamy.tab.api.bossbar.BarStyle
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.protocol.Skin
+import me.neznamy.tab.api.tablist.TabList
 import me.neznamy.tab.api.util.ComponentCache
-import me.neznamy.tab.shared.ITabPlayer
+import me.neznamy.tab.shared.backend.BackendTabPlayer
+import me.neznamy.tab.shared.backend.EntityData
+import me.neznamy.tab.shared.backend.Location
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.bossbar.BossBar.*
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.entity.player.Player
+import org.kryptonmc.krypton.entity.KryptonEntityType
+import org.kryptonmc.krypton.entity.metadata.MetadataHolder
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
 import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
+import org.kryptonmc.krypton.packet.out.play.PacketOutRemoveEntities
+import org.kryptonmc.krypton.packet.out.play.PacketOutSetEntityMetadata
+import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnEntity
+import org.kryptonmc.krypton.packet.out.play.PacketOutTeleportEntity
 import java.util.*
 
 class KryptonTabPlayer(
     delegate: Player,
     protocolVersion: Int
-) : ITabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion, true) {
+) : BackendTabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion, true) {
 
     /** Component cache to save CPU when creating components  */
     private val componentCache = ComponentCache(10000) {
@@ -116,5 +124,26 @@ class KryptonTabPlayer(
 
     override fun getTabList(): TabList {
         return tabList
+    }
+
+    override fun spawnEntity(entityId: Int, id: UUID, entityType: Any, location: Location, data: EntityData) {
+        sendPacket(
+            PacketOutSpawnEntity(entityId, id, entityType as KryptonEntityType<*>,
+            location.x, location.y, location.z, (location.yaw / 360 * 256).toInt().toByte(),
+                (location.pitch / 360 * 256).toInt().toByte(), 0, 0, 0, 0, 0)
+        )
+    }
+
+    override fun updateEntityMetadata(entityId: Int, data: EntityData) {
+        sendPacket(PacketOutSetEntityMetadata(entityId, (data.build() as MetadataHolder).collectAll()))
+    }
+
+    override fun teleportEntity(entityId: Int, location: Location) {
+        sendPacket(PacketOutTeleportEntity(entityId, location.x, location.y, location.z,
+            (location.yaw / 360 * 256).toInt().toByte(), (location.pitch / 360 * 256).toInt().toByte(), false))
+    }
+
+    override fun destroyEntities(vararg entities: Int) {
+        sendPacket(PacketOutRemoveEntities(entities))
     }
 }

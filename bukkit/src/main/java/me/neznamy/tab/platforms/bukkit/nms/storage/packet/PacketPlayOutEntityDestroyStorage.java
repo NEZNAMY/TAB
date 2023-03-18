@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -32,30 +31,6 @@ public class PacketPlayOutEntityDestroyStorage implements TabPacket {
         } catch (NoSuchMethodException e) {
             //1.17.0
             CONSTRUCTOR = CLASS.getConstructor(int.class);
-        }
-    }
-
-    /**
-     * Converts this class into NMS packet
-     *
-     * @return  NMS packet
-     * @throws  ReflectiveOperationException
-     *          If something went wrong
-     */
-    public static Object build(PacketPlayOutEntityDestroy packet) throws ReflectiveOperationException {
-        if (CONSTRUCTOR.getParameterTypes()[0] != int.class) {
-            return CONSTRUCTOR.newInstance(new Object[]{packet.getEntities()});
-        } else {
-            //1.17.0
-            return CONSTRUCTOR.newInstance(packet.getEntities()[0]);
-        }
-    }
-
-    public static Object buildSilent(PacketPlayOutEntityDestroy packet) {
-        try {
-            return build(packet);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
         }
     }
 }

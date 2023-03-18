@@ -3,7 +3,8 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Constructor;
@@ -97,7 +98,7 @@ public class PacketPlayOutSpawnEntityLivingStorage implements TabPacket {
      * @throws  ReflectiveOperationException
      *          If something went wrong
      */
-    public static Object build(PacketPlayOutSpawnEntityLiving packet) throws ReflectiveOperationException {
+    public static Object build(int entityId, UUID id, Object entityType, Location location, EntityData data) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
@@ -105,26 +106,26 @@ public class PacketPlayOutSpawnEntityLivingStorage implements TabPacket {
         } else {
             nmsPacket = CONSTRUCTOR.newInstance();
         }
-        ENTITY_ID.set(nmsPacket, packet.getEntityId());
-        YAW.set(nmsPacket, (byte)(packet.getYaw() * 256.0f / 360.0f));
-        PITCH.set(nmsPacket, (byte)(packet.getPitch() * 256.0f / 360.0f));
+        ENTITY_ID.set(nmsPacket, entityId);
+        YAW.set(nmsPacket, (byte)(location.getYaw() * 256.0f / 360.0f));
+        PITCH.set(nmsPacket, (byte)(location.getPitch() * 256.0f / 360.0f));
         if (nms.getMinorVersion() <= 14) {
-            DATA_WATCHER.set(nmsPacket, ((DataWatcher)packet.getDataWatcher()).build());
+            DATA_WATCHER.set(nmsPacket, data.build());
         }
         if (nms.getMinorVersion() >= 9) {
-            UUID.set(nmsPacket, packet.getUniqueId());
-            X.set(nmsPacket, packet.getX());
-            Y.set(nmsPacket, packet.getY());
-            Z.set(nmsPacket, packet.getZ());
+            UUID.set(nmsPacket, id);
+            X.set(nmsPacket, location.getX());
+            Y.set(nmsPacket, location.getY());
+            Z.set(nmsPacket, location.getZ());
         } else {
-            X.set(nmsPacket, floor(packet.getX()*32));
-            Y.set(nmsPacket, floor(packet.getY()*32));
-            Z.set(nmsPacket, floor(packet.getZ()*32));
+            X.set(nmsPacket, floor(location.getX()*32));
+            Y.set(nmsPacket, floor(location.getY()*32));
+            Z.set(nmsPacket, floor(location.getZ()*32));
         }
         if (nms.getMinorVersion() >= 19) {
             ENTITY_TYPE.set(nmsPacket, EntityTypes_ARMOR_STAND); // :(
         } else {
-            ENTITY_TYPE.set(nmsPacket, entityIds.get((EntityType) packet.getEntityType()));
+            ENTITY_TYPE.set(nmsPacket, entityIds.get((EntityType) entityType));
         }
         return nmsPacket;
     }
@@ -132,13 +133,5 @@ public class PacketPlayOutSpawnEntityLivingStorage implements TabPacket {
     private static int floor(double paramDouble) {
         int i = (int)paramDouble;
         return paramDouble < i ? i - 1 : i;
-    }
-
-    public static Object buildSilent(PacketPlayOutSpawnEntityLiving packet) {
-        try {
-            return build(packet);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

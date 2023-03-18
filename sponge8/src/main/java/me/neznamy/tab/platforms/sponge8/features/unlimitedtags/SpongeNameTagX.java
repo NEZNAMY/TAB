@@ -7,6 +7,9 @@ import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.sponge8.Sponge8TAB;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
+import me.neznamy.tab.platforms.sponge8.nms.WrappedEntityData;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.*;
@@ -63,13 +66,13 @@ public class SpongeNameTagX extends BackendNameTagX {
         if (receiver.getVersion().getMinorVersion() < 8) return;
         if (!receiver.isLoaded() || isDisabledPlayer(receiver) || getDisabledUnlimitedPlayers().contains(receiver)) return;
         if (packet instanceof ClientboundMoveEntityPacket && !(packet instanceof ClientboundMoveEntityPacket.Rot)) {
-             packetListener.onEntityMove(receiver, nms.ClientboundMoveEntityPacket_ENTITYID.getInt(packet));
+             packetListener.onEntityMove((BackendTabPlayer) receiver, nms.ClientboundMoveEntityPacket_ENTITYID.getInt(packet));
         } else if (packet instanceof ClientboundTeleportEntityPacket) {
-            packetListener.onEntityMove(receiver, nms.ClientboundTeleportEntityPacket_ENTITYID.getInt(packet));
+            packetListener.onEntityMove((BackendTabPlayer) receiver, nms.ClientboundTeleportEntityPacket_ENTITYID.getInt(packet));
         } else if (packet instanceof ClientboundAddPlayerPacket) {
-            packetListener.onEntitySpawn(receiver, nms.ClientboundAddPlayerPacket_ENTITYID.getInt(packet));
+            packetListener.onEntitySpawn((BackendTabPlayer) receiver, nms.ClientboundAddPlayerPacket_ENTITYID.getInt(packet));
         } else if (packet instanceof ClientboundRemoveEntitiesPacket) {
-            packetListener.onEntityDestroy(receiver, (int[]) nms.ClientboundRemoveEntitiesPacket_ENTITIES.get(packet));
+            packetListener.onEntityDestroy((BackendTabPlayer) receiver, (int[]) nms.ClientboundRemoveEntitiesPacket_ENTITIES.get(packet));
         }
     }
 
@@ -162,7 +165,7 @@ public class SpongeNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public Object createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag) {
+    public EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag) {
         SynchedEntityData dataWatcher = new SynchedEntityData(null);
         dataWatcher.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
         dataWatcher.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT),
@@ -170,6 +173,6 @@ public class SpongeNameTagX extends BackendNameTagX {
                         IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion())));
         dataWatcher.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
         if (markerFlag) dataWatcher.define(new EntityDataAccessor<>(14, EntityDataSerializers.BYTE), (byte)16);
-        return dataWatcher;
+        return new WrappedEntityData(dataWatcher);
     }
 }

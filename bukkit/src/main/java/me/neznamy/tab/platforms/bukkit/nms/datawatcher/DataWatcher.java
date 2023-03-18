@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.backend.EntityData;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -16,7 +17,7 @@ import java.util.Map;
  * A class representing the n.m.s.DataWatcher class to make work with it much easier
  */
 @ToString
-public class DataWatcher {
+public class DataWatcher implements EntityData {
 
     /** NMS Fields */
     public static Class<?> CLASS;
@@ -87,23 +88,25 @@ public class DataWatcher {
      * Converts the class into an instance of NMS.DataWatcher
      *
      * @return  an instance of NMS.DataWatcher with same data
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object build() throws ReflectiveOperationException {
-        NMSStorage nms = NMSStorage.getInstance();
-        Object nmsWatcher;
-        if (CONSTRUCTOR.getParameterCount() == 1) { //1.7+
-            nmsWatcher = CONSTRUCTOR.newInstance(new Object[] {null});
-        } else {
-            nmsWatcher = CONSTRUCTOR.newInstance();
+    public Object build() {
+        try {
+            NMSStorage nms = NMSStorage.getInstance();
+            Object nmsWatcher;
+            if (CONSTRUCTOR.getParameterCount() == 1) { //1.7+
+                nmsWatcher = CONSTRUCTOR.newInstance(new Object[] {null});
+            } else {
+                nmsWatcher = CONSTRUCTOR.newInstance();
+            }
+            for (DataWatcherItem item : dataValues.values()) {
+                Object nmsObject = item.getType().build();
+                REGISTER.invoke(nmsWatcher, nmsObject, item.getValue());
+                if (nms.is1_19_3Plus()) markDirty.invoke(nmsWatcher, nmsObject);
+            }
+            return nmsWatcher;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
-        for (DataWatcherItem item : dataValues.values()) {
-            Object nmsObject = item.getType().build();
-            REGISTER.invoke(nmsWatcher, nmsObject, item.getValue());
-            if (nms.is1_19_3Plus()) markDirty.invoke(nmsWatcher, nmsObject);
-        }
-        return nmsWatcher;
     }
 
     /**

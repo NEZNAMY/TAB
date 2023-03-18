@@ -11,12 +11,23 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.protocol.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
@@ -27,10 +38,12 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.*;
 
-public final class SpongeTabPlayer extends ITabPlayer {
+public final class SpongeTabPlayer extends BackendTabPlayer {
 
     private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
+
+    private static final ArmorStand dummyEntity = new ArmorStand(EntityType.ARMOR_STAND, null);
 
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
 
@@ -155,5 +168,31 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     public void setPlayer(final ServerPlayer player) {
         this.player = player;
+    }
+
+    @Override
+    public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
+        sendPacket(new ClientboundAddEntityPacket(entityId, id, location.getX(), location.getY(), location.getZ(),
+                location.getYaw(), location.getPitch(), Registry.ENTITY_TYPE.byId((Integer) entityType), 0, Vec3.ZERO));
+    }
+
+    @Override
+    public void updateEntityMetadata(int entityId, EntityData data) {
+        sendPacket(new ClientboundSetEntityDataPacket(entityId, (SynchedEntityData) data.build(), true));
+    }
+
+    @Override
+    public void teleportEntity(int entityId, Location location) {
+        // While the entity is shared, packets are build in a single thread, so no risk of concurrent access
+        dummyEntity.setId(entityId);
+        dummyEntity.setPos(location.getX(), location.getY(), location.getZ());
+        dummyEntity.xRot = location.getYaw();
+        dummyEntity.yRot = location.getPitch();
+        sendPacket(new ClientboundTeleportEntityPacket(dummyEntity));
+    }
+
+    @Override
+    public void destroyEntities(int... entities) {
+        sendPacket(new ClientboundRemoveEntitiesPacket(entities));
     }
 }

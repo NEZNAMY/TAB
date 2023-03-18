@@ -25,7 +25,7 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature perWorldPlayerlist = null;
-    @Getter private final PacketBuilder packetBuilder = new SpongePacketBuilder();
+    @Getter private final PacketBuilder packetBuilder = new PacketBuilder();
 
     @Override
     public String getPluginVersion(String plugin) {

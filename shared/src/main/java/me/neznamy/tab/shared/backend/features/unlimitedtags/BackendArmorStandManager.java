@@ -2,8 +2,7 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import me.neznamy.tab.api.*;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
 import java.util.*;
@@ -21,17 +20,10 @@ public class BackendArmorStandManager implements ArmorStandManager {
     private BackendArmorStand[] armorStandArray;
 
     /** Players in entity tracking range of owner */
-    private final List<TabPlayer> nearbyPlayerList = new ArrayList<>();
+    private final List<BackendTabPlayer> nearbyPlayerList = new ArrayList<>();
 
     /** Nearby players in an array for speed while iterating */
-    @Getter private TabPlayer[] nearbyPlayers = new TabPlayer[0];
-
-    /**
-     * Packets to destroy armor stands. On 1.17 it's a list of individual armor stands
-     * due to packet only containing one entity, on all other server versions
-     * it's a single packet with all armor stand ids.
-     */
-    private final PacketPlayOutEntityDestroy[] destroyPackets;
+    @Getter private BackendTabPlayer[] nearbyPlayers = new BackendTabPlayer[0];
 
     /**
      * Constructs new instance with given parameters and loads armor stands.
@@ -57,14 +49,6 @@ public class BackendArmorStandManager implements ArmorStandManager {
         }
         armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
         fixArmorStandHeights();
-
-        List<PacketPlayOutEntityDestroy> destroyPackets = new ArrayList<>();
-        if (TabAPI.getInstance().getServerVersion() == ProtocolVersion.V1_17) { // Mojank
-            armorStands.values().forEach(as -> destroyPackets.add(new PacketPlayOutEntityDestroy(as.getEntityId())));
-        } else {
-            destroyPackets.add(new PacketPlayOutEntityDestroy(armorStands.values().stream().mapToInt(BackendArmorStand::getEntityId).toArray()));
-        }
-        this.destroyPackets = destroyPackets.toArray(new PacketPlayOutEntityDestroy[0]);
     }
 
     /**
@@ -73,15 +57,15 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to teleport armor stands for
      */
-    public void teleport(TabPlayer viewer) {
-        for (ArmorStand a : armorStandArray) a.teleport(viewer);
+    public void teleport(BackendTabPlayer viewer) {
+        for (BackendArmorStand a : armorStandArray) a.teleport(viewer);
     }
 
     /**
      * Teleports armor stands to player's current location for all nearby players
      */
     public void teleport() {
-        for (ArmorStand a : armorStandArray) a.teleport();
+        for (BackendArmorStand a : armorStandArray) a.teleport();
     }
 
     /**
@@ -91,7 +75,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      *          Player to check for
      * @return  {@code true} if player nearby, {@code false} if not
      */
-    public boolean isNearby(TabPlayer viewer) {
+    public boolean isNearby(BackendTabPlayer viewer) {
         return nearbyPlayerList.contains(viewer);
     }
 
@@ -120,7 +104,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
     public void sneak(boolean sneaking) {
         if (this.sneaking == sneaking) return;
         this.sneaking = sneaking;
-        for (TabPlayer viewer : nearbyPlayers) {
+        for (BackendTabPlayer viewer : nearbyPlayers) {
             if (viewer.getVersion().getMinorVersion() == 14 && !nameTagX.isArmorStandsAlwaysVisible()) {
                 //1.14.x client sided bug, de-spawning completely
                 if (sneaking) {
@@ -139,19 +123,19 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * Performs respawn operation on all armor stands to skip teleport animation
      */
     public void respawn() {
-        for (TabPlayer viewer : nearbyPlayers) {
+        for (BackendTabPlayer viewer : nearbyPlayers) {
             respawn(viewer);
         }
     }
 
-    public void respawn(TabPlayer viewer) {
+    public void respawn(BackendTabPlayer viewer) {
         // 1.8.0 will not see entity that respawned in the same tick
         // creating new delayed task every time someone sneaks can be abused and cause OOM
         // RIP 1.8.0
-        for (PacketPlayOutEntityDestroy packet : destroyPackets) {
-            viewer.sendCustomPacket(packet);
+        for (ArmorStand as : armorStandArray) {
+            viewer.destroyEntities(as.getEntityId());
         }
-        for (ArmorStand a : armorStandArray) {
+        for (BackendArmorStand a : armorStandArray) {
             a.spawn(viewer);
         }
     }
@@ -162,11 +146,11 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to spawn armor stands for
      */
-    public void spawn(TabPlayer viewer) {
+    public void spawn(BackendTabPlayer viewer) {
         nearbyPlayerList.add(viewer);
-        nearbyPlayers = nearbyPlayerList.toArray(new TabPlayer[0]);
+        nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
         if (viewer.getVersion().getMinorVersion() < 8) return;
-        for (ArmorStand a : armorStandArray) a.spawn(viewer);
+        for (BackendArmorStand a : armorStandArray) a.spawn(viewer);
     }
 
     /**
@@ -194,7 +178,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
     public void addArmorStand(String name, BackendArmorStand as) {
         armorStands.put(name, as);
         armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
-        for (TabPlayer p : nearbyPlayers) as.spawn(p);
+        for (BackendTabPlayer p : nearbyPlayers) as.spawn(p);
     }
 
     /**
@@ -203,8 +187,8 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to remove
      */
-    public void unregisterPlayer(TabPlayer viewer) {
-        if (nearbyPlayerList.remove(viewer)) nearbyPlayers = nearbyPlayerList.toArray(new TabPlayer[0]);
+    public void unregisterPlayer(BackendTabPlayer viewer) {
+        if (nearbyPlayerList.remove(viewer)) nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
     }
 
     public void updateVisibility(boolean force) {
@@ -217,22 +201,22 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to destroy armor stands for
      */
-    public void destroy(TabPlayer viewer) {
-        for (PacketPlayOutEntityDestroy packet : destroyPackets) {
-            viewer.sendCustomPacket(packet);
+    public void destroy(BackendTabPlayer viewer) {
+        for (ArmorStand as : armorStandArray) {
+            viewer.destroyEntities(as.getEntityId());
         }
         unregisterPlayer(viewer);
     }
 
     @Override
     public void destroy() {
-        for (TabPlayer viewer : nearbyPlayers) {
-            for (PacketPlayOutEntityDestroy packet : destroyPackets) {
-                viewer.sendCustomPacket(packet);
+        for (BackendTabPlayer viewer : nearbyPlayers) {
+            for (ArmorStand as : armorStandArray) {
+                viewer.destroyEntities(as.getEntityId());
             }
         }
         nearbyPlayerList.clear();
-        nearbyPlayers = new TabPlayer[0];
+        nearbyPlayers = new BackendTabPlayer[0];
     }
 
     @Override
@@ -247,9 +231,9 @@ public class BackendArmorStandManager implements ArmorStandManager {
         if (fix) fixArmorStandHeights();
     }
 
-    public void updateMetadata(TabPlayer viewer) {
+    public void updateMetadata(BackendTabPlayer viewer) {
         for (BackendArmorStand a : armorStandArray) {
-            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(a.getEntityId(), a.createDataWatcher(a.getProperty().getFormat(viewer), viewer)));
+            viewer.updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
         }
     }
 }

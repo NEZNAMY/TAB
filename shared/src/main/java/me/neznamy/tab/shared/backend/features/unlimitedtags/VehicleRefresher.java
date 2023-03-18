@@ -6,6 +6,7 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +49,7 @@ public class VehicleRefresher extends TabFeature {
                     }
                     for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
                         if (feature.isPreviewingNametag(p)) {
-                            feature.getArmorStandManager(p).teleport(p);
+                            feature.getArmorStandManager(p).teleport((BackendTabPlayer) p);
                         }
                     }
                 });

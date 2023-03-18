@@ -5,6 +5,8 @@ import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.platforms.krypton.KryptonPacketBuilder
 import me.neznamy.tab.platforms.krypton.Main
 import me.neznamy.tab.shared.TAB
+import me.neznamy.tab.shared.backend.BackendTabPlayer
+import me.neznamy.tab.shared.backend.EntityData
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX
 import org.kryptonmc.api.entity.Entity
 import org.kryptonmc.api.entity.player.Player
@@ -52,10 +54,10 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         when (packet) {
             is MovementPacket -> {
                 if (packet !is EntityPacket) return
-                packetListener.onEntityMove(receiver, (packet as EntityPacket).entityId)
+                packetListener.onEntityMove(receiver as BackendTabPlayer?, (packet as EntityPacket).entityId)
             }
-            is PacketOutSpawnPlayer -> packetListener.onEntitySpawn(receiver, packet.entityId)
-            is PacketOutRemoveEntities -> packet.ids.forEach { packetListener.onEntityDestroy(receiver, it) }
+            is PacketOutSpawnPlayer -> packetListener.onEntitySpawn(receiver as BackendTabPlayer?, packet.entityId)
+            is PacketOutRemoveEntities -> packet.ids.forEach { packetListener.onEntityDestroy(receiver as BackendTabPlayer, it) }
         }
     }
 
@@ -133,7 +135,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         return (player as Player).position.z
     }
 
-    override fun createDataWatcher(viewer: TabPlayer, flags: Byte, displayName: String, nameVisible: Boolean, markerFlag: Boolean): Any {
+    override fun createDataWatcher(viewer: TabPlayer, flags: Byte, displayName: String, nameVisible: Boolean, markerFlag: Boolean): EntityData {
         val viewerPlayer = viewer.player as KryptonPlayer
         val holder = MetadataHolder(viewerPlayer).apply {
             define(MetadataKeys.Entity.FLAGS, 0)
@@ -144,7 +146,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         holder.set(MetadataKeys.Entity.CUSTOM_NAME, KryptonPacketBuilder.toComponent(displayName, viewer.version))
         holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, nameVisible)
         if (markerFlag) holder.define(MetadataKeys.ArmorStand.FLAGS, 16.toByte())
-        return holder
+        return WrappedEntityData(holder)
     }
 
     companion object {

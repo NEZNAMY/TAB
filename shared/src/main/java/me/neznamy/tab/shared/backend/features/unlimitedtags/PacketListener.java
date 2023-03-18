@@ -6,6 +6,7 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +57,7 @@ public class PacketListener extends TabFeature {
      * @param   entityId
      *          spawned entity
      */
-    public void onEntitySpawn(TabPlayer receiver, int entityId) {
+    public void onEntitySpawn(BackendTabPlayer receiver, int entityId) {
         TabPlayer spawnedPlayer = entityIdMap.get(entityId);
         if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
             TabAPI.getInstance().getThreadManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
@@ -75,7 +76,7 @@ public class PacketListener extends TabFeature {
      * @param   entityId
      *          entity that moved
      */
-    public void onEntityMove(TabPlayer receiver, int entityId) {
+    public void onEntityMove(BackendTabPlayer receiver, int entityId) {
         TabPlayer pl = entityIdMap.get(entityId);
         if (pl != null) {
             //player moved
@@ -103,7 +104,7 @@ public class PacketListener extends TabFeature {
      * @param   entities
      *          de-spawned entities
      */
-    public void onEntityDestroy(TabPlayer receiver, List<Integer> entities) {
+    public void onEntityDestroy(BackendTabPlayer receiver, List<Integer> entities) {
         for (int entity : entities) {
             onEntityDestroy(receiver, entity);
         }
@@ -118,7 +119,7 @@ public class PacketListener extends TabFeature {
      * @param   entities
      *          de-spawned entities
      */
-    public void onEntityDestroy(TabPlayer receiver, int... entities) {
+    public void onEntityDestroy(BackendTabPlayer receiver, int... entities) {
         for (int entity : entities) {
             onEntityDestroy(receiver, entity);
         }
@@ -133,7 +134,7 @@ public class PacketListener extends TabFeature {
      * @param   entity
      *          de-spawned entity
      */
-    public void onEntityDestroy(TabPlayer receiver, int entity) {
+    public void onEntityDestroy(BackendTabPlayer receiver, int entity) {
         TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
         if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
             BackendArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);

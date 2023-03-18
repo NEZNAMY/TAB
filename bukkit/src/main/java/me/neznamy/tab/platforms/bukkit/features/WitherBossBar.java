@@ -5,7 +5,7 @@ import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -49,7 +49,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
                 if (!line.containsPlayer(p)) continue;
                 Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
                 if (loc.getY() < 1) loc.setY(1);
-                p.sendCustomPacket(new PacketPlayOutEntityTeleport(line.getUniqueId().hashCode(), loc.getX(), loc.getY(), loc.getZ(), 0, 0));
+                ((BackendTabPlayer)p).teleportEntity(line.getUniqueId().hashCode(), new me.neznamy.tab.shared.backend.Location(loc.getX(), loc.getY(), loc.getZ(), 0, 0));
             }
         }
     }

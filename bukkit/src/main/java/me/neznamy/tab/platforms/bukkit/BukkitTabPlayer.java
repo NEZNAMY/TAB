@@ -8,10 +8,10 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.protocol.Skin;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
@@ -19,11 +19,10 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.platforms.bukkit.tablist.BulkUpdateBukkitTabList;
 import me.neznamy.tab.platforms.bukkit.tablist.SingleUpdateBukkitTabList;
-import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityDestroy;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
@@ -45,7 +44,7 @@ import java.util.UUID;
  * TabPlayer implementation for Bukkit platform
  */
 @SuppressWarnings("deprecation")
-public class BukkitTabPlayer extends ITabPlayer {
+public class BukkitTabPlayer extends BackendTabPlayer {
 
     /** Spigot check */
     private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
@@ -235,7 +234,7 @@ public class BukkitTabPlayer extends ITabPlayer {
             w.getHelper().setCustomName(title, getVersion());
             w.getHelper().setEntityFlags((byte) 32);
             w.getHelper().setWitherInvulnerableTime(880); // Magic number
-            sendPacket(PacketPlayOutSpawnEntityLivingStorage.buildSilent(new PacketPlayOutSpawnEntityLiving(id.hashCode(), new UUID(0, 0), EntityType.WITHER, 0, 0, 0, 0, 0, w)));
+            spawnEntity(id.hashCode(), new UUID(0, 0), EntityType.WITHER, new Location(0, 0, 0, 0, 0), w);
         }
     }
 
@@ -250,7 +249,7 @@ public class BukkitTabPlayer extends ITabPlayer {
         } else {
             DataWatcher w = new DataWatcher();
             w.getHelper().setCustomName(title, getVersion());
-            sendPacket(PacketPlayOutEntityMetadataStorage.buildSilent(new PacketPlayOutEntityMetadata(id.hashCode(), w)));
+            updateEntityMetadata(id.hashCode(), w);
         }
     }
 
@@ -265,7 +264,7 @@ public class BukkitTabPlayer extends ITabPlayer {
             float health = 300*progress;
             if (health == 0) health = 1;
             w.getHelper().setHealth(health);
-            sendPacket(PacketPlayOutEntityMetadataStorage.buildSilent(new PacketPlayOutEntityMetadata(id.hashCode(), w)));
+            updateEntityMetadata(id.hashCode(), w);
         }
     }
 
@@ -294,7 +293,58 @@ public class BukkitTabPlayer extends ITabPlayer {
         } else if (getVersion().getMinorVersion() >= 9) {
             viaBossBars.remove(id).removePlayer(getPlayer().getUniqueId());
         } else {
-            sendPacket(PacketPlayOutEntityDestroyStorage.buildSilent(new PacketPlayOutEntityDestroy(id.hashCode())));
+            destroyEntities(id.hashCode());
+        }
+    }
+
+    @Override
+    public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
+        try {
+            sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
+            if (TAB.getInstance().getServerVersion().getMinorVersion() < 15) {
+                updateEntityMetadata(entityId, data);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateEntityMetadata(int entityId, EntityData data) {
+        try {
+            if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
+                //1.19.3+
+                sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, DataWatcher.packDirty.invoke(data.build())));
+            } else {
+                sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, data.build(), true));
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void teleportEntity(int entityId, Location location) {
+        try {
+            sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void destroyEntities(int... entities) {
+        try {
+            if (PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.getParameterTypes()[0] != int.class) {
+                sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(new Object[]{entities}));
+            } else {
+                //1.17.0 Mojank
+                for (int entity : entities) {
+                    sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(entity));
+                }
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 }

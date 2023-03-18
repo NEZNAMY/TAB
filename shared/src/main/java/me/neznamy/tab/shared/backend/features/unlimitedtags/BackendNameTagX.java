@@ -2,6 +2,8 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import me.neznamy.tab.api.*;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
 import java.util.Collections;
@@ -31,7 +33,7 @@ public abstract class BackendNameTagX extends NameTagX {
             @Override
             public void refresh(TabPlayer viewer, boolean force) {
                 for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
-                    getArmorStandManager(target).updateMetadata(viewer);
+                    getArmorStandManager(target).updateMetadata((BackendTabPlayer) viewer);
                 }
             }
         };
@@ -105,14 +107,14 @@ public abstract class BackendNameTagX extends NameTagX {
         if (target == viewer || isPlayerDisabled(target)) return;
         if (!areInSameWorld(viewer, target)) return;
         if (getDistance(viewer, target) <= 48 && canSee(viewer, target) && !target.isVanished())
-            getArmorStandManager(target).spawn(viewer);
+            getArmorStandManager(target).spawn((BackendTabPlayer) viewer);
     }
 
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         super.onQuit(disconnectedPlayer);
         for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
-            getArmorStandManager(all).unregisterPlayer(disconnectedPlayer);
+            getArmorStandManager(all).unregisterPlayer((BackendTabPlayer) disconnectedPlayer);
         }
         armorStandManagerMap.get(disconnectedPlayer).destroy();
         armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
@@ -129,9 +131,9 @@ public abstract class BackendNameTagX extends NameTagX {
     @Override
     public void setNameTagPreview(TabPlayer player, boolean status) {
         if (status) {
-            getArmorStandManager(player).spawn(player);
+            getArmorStandManager(player).spawn((BackendTabPlayer) player);
         } else {
-            getArmorStandManager(player).destroy(player);
+            getArmorStandManager(player).destroy((BackendTabPlayer) player);
         }
     }
 
@@ -157,12 +159,12 @@ public abstract class BackendNameTagX extends NameTagX {
             updateTeamData(p);
         }
         if (isPreviewingNametag(p)) {
-            getArmorStandManager(p).spawn(p);
+            getArmorStandManager(p).spawn((BackendTabPlayer) p);
         }
         //for some reason this is needed for some users
         for (TabPlayer viewer : TabAPI.getInstance().getOnlinePlayers()) {
             if (viewer.getWorld().equals(from)) {
-                getArmorStandManager(p).destroy(viewer);
+                getArmorStandManager(p).destroy((BackendTabPlayer) viewer);
             }
         }
     }
@@ -214,5 +216,5 @@ public abstract class BackendNameTagX extends NameTagX {
 
     public abstract double getZ(TabPlayer player);
 
-    public abstract Object createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag);
+    public abstract EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag);
 }

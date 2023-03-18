@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,29 +33,5 @@ public class PacketPlayOutEntityMetadataStorage implements TabPacket {
             CONSTRUCTOR = CLASS.getConstructor(int.class, DataWatcher.CLASS, boolean.class);
         }
         LIST = nms.getFields(CLASS, List.class).get(0);
-    }
-
-    /**
-     * Converts this class into NMS packet
-     *
-     * @return  NMS packet
-     * @throws  ReflectiveOperationException
-     *          If something went wrong
-     */
-    public static Object build(PacketPlayOutEntityMetadata packet) throws ReflectiveOperationException {
-        if (CONSTRUCTOR.getParameterCount() == 2) {
-            //1.19.3+
-            return CONSTRUCTOR.newInstance(packet.getEntityId(), DataWatcher.packDirty.invoke(((DataWatcher)packet.getDataWatcher()).build()));
-        } else {
-            return CONSTRUCTOR.newInstance(packet.getEntityId(), ((DataWatcher)packet.getDataWatcher()).build(), true);
-        }
-    }
-
-    public static Object buildSilent(PacketPlayOutEntityMetadata packet) {
-        try {
-            return build(packet);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

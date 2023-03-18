@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
 import me.neznamy.tab.api.protocol.TabPacket;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
+import me.neznamy.tab.shared.backend.Location;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -57,7 +57,7 @@ public class PacketPlayOutEntityTeleportStorage implements TabPacket {
      * @throws  ReflectiveOperationException
      *          If something went wrong
      */
-    public static Object build(PacketPlayOutEntityTeleport packet) throws ReflectiveOperationException {
+    public static Object build(int entityId, Location location) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
@@ -65,18 +65,18 @@ public class PacketPlayOutEntityTeleportStorage implements TabPacket {
         } else {
             nmsPacket = CONSTRUCTOR.newInstance();
         }
-        ENTITY_ID.set(nmsPacket, packet.getEntityId());
+        ENTITY_ID.set(nmsPacket, entityId);
         if (nms.getMinorVersion() >= 9) {
-            X.set(nmsPacket, packet.getX());
-            Y.set(nmsPacket, packet.getY());
-            Z.set(nmsPacket, packet.getZ());
+            X.set(nmsPacket, location.getX());
+            Y.set(nmsPacket, location.getY());
+            Z.set(nmsPacket, location.getZ());
         } else {
-            X.set(nmsPacket, floor(packet.getX()*32));
-            Y.set(nmsPacket, floor(packet.getY()*32));
-            Z.set(nmsPacket, floor(packet.getZ()*32));
+            X.set(nmsPacket, floor(location.getX()*32));
+            Y.set(nmsPacket, floor(location.getY()*32));
+            Z.set(nmsPacket, floor(location.getZ()*32));
         }
-        YAW.set(nmsPacket, (byte) (packet.getYaw()/360*256));
-        PITCH.set(nmsPacket, (byte) (packet.getPitch()/360*256));
+        YAW.set(nmsPacket, (byte) (location.getYaw()/360*256));
+        PITCH.set(nmsPacket, (byte) (location.getPitch()/360*256));
         return nmsPacket;
     }
 

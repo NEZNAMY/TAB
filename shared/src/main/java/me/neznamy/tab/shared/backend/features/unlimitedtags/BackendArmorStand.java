@@ -1,13 +1,14 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.*;
+import me.neznamy.tab.api.ArmorStand;
+import me.neznamy.tab.api.Property;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.protocol.TabPacket;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityMetadata;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutEntityTeleport;
-import me.neznamy.tab.shared.backend.protocol.PacketPlayOutSpawnEntityLiving;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
 
 import java.util.UUID;
 
@@ -75,7 +76,7 @@ public class BackendArmorStand implements ArmorStand {
     public void setOffset(double offset) {
         if (this.offset == offset) return;
         this.offset = offset;
-        for (TabPlayer all : asm.getNearbyPlayers()) {
+        for (BackendTabPlayer all : asm.getNearbyPlayers()) {
             sendTeleportPacket(all);
         }
     }
@@ -95,15 +96,13 @@ public class BackendArmorStand implements ArmorStand {
         }
     }
 
-    @Override
     public void teleport() {
-        for (TabPlayer all : asm.getNearbyPlayers()) {
+        for (BackendTabPlayer all : asm.getNearbyPlayers()) {
             sendTeleportPacket(all);
         }
     }
 
-    @Override
-    public void teleport(TabPlayer viewer) {
+    public void teleport(BackendTabPlayer viewer) {
         if (!asm.isNearby(viewer) && viewer != owner) {
             asm.spawn(viewer);
         } else {
@@ -111,11 +110,11 @@ public class BackendArmorStand implements ArmorStand {
         }
     }
 
-    @Override
-    public void spawn(TabPlayer viewer) {
-        for (TabPacket packet : getSpawnPackets(viewer)) {
-            viewer.sendCustomPacket(packet);
-        }
+    public void spawn(BackendTabPlayer viewer) {
+        visible = calculateVisibility();
+        viewer.spawnEntity(entityId, uuid, manager.getArmorStandType(),
+                new Location(manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0),
+                createDataWatcher(property.getFormat(viewer), viewer));
     }
 
     /**
@@ -181,8 +180,8 @@ public class BackendArmorStand implements ArmorStand {
      * Updates armor stand's metadata for everyone
      */
     public void updateMetadata() {
-        for (TabPlayer viewer : asm.getNearbyPlayers()) {
-            viewer.sendCustomPacket(new PacketPlayOutEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer)));
+        for (BackendTabPlayer viewer : asm.getNearbyPlayers()) {
+            viewer.updateEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer));
         }
     }
 
@@ -192,26 +191,8 @@ public class BackendArmorStand implements ArmorStand {
                 (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3);
     }
 
-    public TabPacket[] getSpawnPackets(TabPlayer viewer) {
-        visible = calculateVisibility();
-        Object dataWatcher = createDataWatcher(property.getFormat(viewer), viewer);
-        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 15) {
-            return new TabPacket[] {
-                    new PacketPlayOutSpawnEntityLiving(entityId, uuid, manager.getArmorStandType(),
-                            manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0, null),
-                    new PacketPlayOutEntityMetadata(entityId, dataWatcher)
-            };
-        } else {
-            return new TabPacket[] {
-                    new PacketPlayOutSpawnEntityLiving(entityId, uuid, manager.getArmorStandType(),
-                            manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0, dataWatcher),
-            };
-        }
-    }
-
-    public void sendTeleportPacket(TabPlayer viewer) {
-        viewer.sendCustomPacket(new PacketPlayOutEntityTeleport(entityId, manager.getX(owner), getYLocation(viewer),
-                        manager.getZ(owner), 0, 0));
+    public void sendTeleportPacket(BackendTabPlayer viewer) {
+        viewer.teleportEntity(entityId, new Location(manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0));
     }
 
     /**
@@ -223,7 +204,7 @@ public class BackendArmorStand implements ArmorStand {
      *          player to apply checks against
      * @return  DataWatcher for viewer
      */
-    public Object createDataWatcher(String displayName, TabPlayer viewer) {
+    public EntityData createDataWatcher(String displayName, TabPlayer viewer) {
         byte flags = (byte) (asm.isSneaking() ? 34 : 32);
         boolean nameVisible = !shouldBeInvisibleFor(viewer, displayName) && visible;
         boolean marker = viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x();
