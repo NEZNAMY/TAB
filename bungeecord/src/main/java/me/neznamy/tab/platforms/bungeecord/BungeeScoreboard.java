@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;

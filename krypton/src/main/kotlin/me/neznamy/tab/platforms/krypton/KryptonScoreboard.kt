@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
-import me.neznamy.tab.api.DisplaySlot
+import me.neznamy.tab.api.Scoreboard.DisplaySlot
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.shared.TabScoreboard

@@ -1,10 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.DisplaySlot;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
@@ -59,7 +56,7 @@ public class YellowNumber extends TabFeature {
             }
             if (loaded.isBedrockPlayer()) continue;
             loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            loaded.getScoreboard().setDisplaySlot(DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+            loaded.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
@@ -86,7 +83,7 @@ public class YellowNumber extends TabFeature {
         }
         if (!connectedPlayer.isBedrockPlayer()) {
             connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            connectedPlayer.getScoreboard().setDisplaySlot(DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+            connectedPlayer.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         }
         int value = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -139,7 +136,7 @@ public class YellowNumber extends TabFeature {
     public void onLoginPacket(TabPlayer packetReceiver) {
         if (isDisabledPlayer(packetReceiver) || packetReceiver.isBedrockPlayer()) return;
         packetReceiver.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-        packetReceiver.getScoreboard().setDisplaySlot(DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+        packetReceiver.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.isLoaded()) {
                 packetReceiver.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));

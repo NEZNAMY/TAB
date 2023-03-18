@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
-import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -132,7 +131,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         players.add(p);
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(), false);
-        p.getScoreboard().setDisplaySlot(DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
+        p.getScoreboard().setDisplaySlot(me.neznamy.tab.api.Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }

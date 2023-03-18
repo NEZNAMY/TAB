@@ -78,4 +78,9 @@ public interface Scoreboard {
             return legacyText.substring(0, length);
         }
     }
+
+    enum DisplaySlot {
+
+        PLAYER_LIST, SIDEBAR, BELOW_NAME
+    }
 }

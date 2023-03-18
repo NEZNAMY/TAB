@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;

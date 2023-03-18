@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
-import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
@@ -194,7 +193,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onDisplayObjective(TabPlayer receiver, int slot, String objective) {
-        if (respectOtherPlugins && slot == DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
+        if (respectOtherPlugins && slot == me.neznamy.tab.api.Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             otherPluginScoreboards.put(receiver, objective);
             ScoreboardImpl sb = activeScoreboards.get(receiver);

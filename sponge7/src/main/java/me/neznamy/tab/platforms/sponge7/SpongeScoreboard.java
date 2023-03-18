@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.TabScoreboard;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
-import org.spongepowered.api.scoreboard.displayslot.DisplaySlot;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
@@ -28,11 +27,11 @@ public class SpongeScoreboard extends TabScoreboard {
     }
 
     @Override
-    public void setDisplaySlot(me.neznamy.tab.api.DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
         spongePlayer.getScoreboard().updateDisplaySlot(objectives.get(objective), convertDisplaySlot(slot));
     }
 
-    private static DisplaySlot convertDisplaySlot(me.neznamy.tab.api.DisplaySlot slot) {
+    private static org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
         switch (slot) {
             case PLAYER_LIST: return DisplaySlots.LIST;
             case SIDEBAR: return DisplaySlots.SIDEBAR;
