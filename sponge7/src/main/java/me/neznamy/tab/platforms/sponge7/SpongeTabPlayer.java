@@ -8,7 +8,6 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.boss.*;
@@ -19,8 +18,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.profile.property.ProfileProperty;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,9 +25,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class SpongeTabPlayer extends ITabPlayer {
-
-    private static final ComponentCache<IChatBaseComponent, Text> textCache = new ComponentCache<>(10000,
-            (component, version) -> TextSerializers.JSON.deserialize(component.toString(version)));
 
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
 
@@ -60,7 +54,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(textCache.get(message, getVersion()));
+        getPlayer().sendMessage(Sponge7TAB.getTextCache().get(message, getVersion()));
     }
 
     @Override
@@ -109,13 +103,13 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().getTabList().setHeaderAndFooter(textCache.get(header, version), textCache.get(footer, version));
+        getPlayer().getTabList().setHeaderAndFooter(Sponge7TAB.getTextCache().get(header, version), Sponge7TAB.getTextCache().get(footer, version));
     }
 
     @Override
     public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         ServerBossBar bar = ServerBossBar.builder()
-                .name(textCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()))
+                .name(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()))
                 .color(convertBossBarColor(color))
                 .overlay(convertOverlay(style))
                 .percent(progress)
@@ -126,7 +120,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     @Override
     public void updateBossBar(@NonNull UUID id, @NonNull String title) {
-        bossBars.get(id).setName(textCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()));
+        bossBars.get(id).setName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()));
     }
 
     @Override

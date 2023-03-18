@@ -5,19 +5,15 @@ import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.tablist.SingleUpdateTabList;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class VelocityTabList extends SingleUpdateTabList {
-
-    /** Component cache to save CPU when creating components */
-    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     /** Player this TabList belongs to */
     private final VelocityTabPlayer player;
@@ -29,7 +25,7 @@ public class VelocityTabList extends SingleUpdateTabList {
 
     @Override
     public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
-        getEntry(id).setDisplayName(componentCache.get(displayName, player.getVersion()));
+        getEntry(id).setDisplayName(VelocityTAB.getComponentCache().get(displayName, player.getVersion()));
     }
 
     @Override
@@ -55,7 +51,7 @@ public class VelocityTabList extends SingleUpdateTabList {
                 .listed(entry.isListed())
                 .latency(entry.getLatency())
                 .gameMode(entry.getGameMode())
-                .displayName(componentCache.get(entry.getDisplayName(), player.getVersion()))
+                .displayName(VelocityTAB.getComponentCache().get(entry.getDisplayName(), player.getVersion()))
                 //.chatSession(new RemoteChatSession(entry.getChatSessionId(), entry.getProfilePublicKey())) // RemoteChatSession is in proxy module
                 .build()
         );

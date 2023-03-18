@@ -4,10 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.TabListEntry;
-import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.tablist.SingleUpdateTabList;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.profile.GameProfile;
@@ -17,9 +14,6 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 public class SpongeTabList extends SingleUpdateTabList {
-
-    private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     /** Player this TabList belongs to */
     private final SpongeTabPlayer player;
@@ -32,7 +26,7 @@ public class SpongeTabList extends SingleUpdateTabList {
     @Override
     public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
         player.getPlayer().tabList().entry(id).ifPresent(
-                entry -> entry.setDisplayName(adventureCache.get(displayName, player.getVersion())));
+                entry -> entry.setDisplayName(Sponge8TAB.getAdventureCache().get(displayName, player.getVersion())));
     }
 
     @Override
@@ -55,7 +49,7 @@ public class SpongeTabList extends SingleUpdateTabList {
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))
-                .displayName(adventureCache.get(entry.getDisplayName(), player.getVersion()))
+                .displayName(Sponge8TAB.getAdventureCache().get(entry.getDisplayName(), player.getVersion()))
                 .build());
     }
 

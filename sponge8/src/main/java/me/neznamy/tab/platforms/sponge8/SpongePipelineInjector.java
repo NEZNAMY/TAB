@@ -6,7 +6,6 @@ import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.WrappedChatComponent;
-import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
@@ -29,9 +28,6 @@ import java.util.List;
  * Pipeline injection for sponge
  */
 public class SpongePipelineInjector extends NettyPipelineInjector {
-
-    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> net.minecraft.network.chat.Component.Serializer.fromJson(component.toString(clientVersion)));
 
     private static Field channelField;
 
@@ -126,7 +122,7 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, data.getProfile().getId(), data.getProfile().getName());
             }
             Component component = displayName instanceof WrappedChatComponent ?
-                    (Component) ((WrappedChatComponent) displayName).getOriginalComponent() : componentCache.get(displayName, receiver.getVersion());
+                    (Component) ((WrappedChatComponent) displayName).getOriginalComponent() : Sponge8TAB.getComponentCache().get(displayName, receiver.getVersion());
             updatedList.add(info.new PlayerUpdate(data.getProfile(), ping, GameType.byId(gameMode), component));
         }
         // Easiest way to update entries without using reflection

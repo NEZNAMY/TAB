@@ -1,10 +1,13 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import com.google.inject.Inject;
+import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -35,6 +38,10 @@ import java.util.List;
         authors = {TabConstants.PLUGIN_AUTHOR}
 )
 public class Sponge7TAB {
+
+    @Getter private static final ComponentCache<IChatBaseComponent, Text> textCache = new ComponentCache<>(10000,
+            (component, version) -> TextSerializers.JSON.deserialize(component.toString(version)));
+
 
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private File configDir;

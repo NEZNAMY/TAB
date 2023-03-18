@@ -5,19 +5,16 @@ import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.util.ComponentCache;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -39,9 +36,6 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import java.util.*;
 
 public final class SpongeTabPlayer extends BackendTabPlayer {
-
-    private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     private static final ArmorStand dummyEntity = new ArmorStand(EntityType.ARMOR_STAND, null);
 
@@ -81,7 +75,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(adventureCache.get(message, getVersion()));
+        getPlayer().sendMessage(Sponge8TAB.getAdventureCache().get(message, getVersion()));
     }
 
     @Override
@@ -129,13 +123,13 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().tabList().setHeaderAndFooter(adventureCache.get(header, version), adventureCache.get(footer, version));
+        getPlayer().tabList().setHeaderAndFooter(Sponge8TAB.getAdventureCache().get(header, version), Sponge8TAB.getAdventureCache().get(footer, version));
     }
 
     @Override
     public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
-        BossBar bar = BossBar.bossBar(adventureCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()),
+        BossBar bar = BossBar.bossBar(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()),
                 progress, BossBar.Color.valueOf(color.toString()), BossBar.Overlay.valueOf(style.toString()));
         bossBars.put(id, bar);
         getPlayer().showBossBar(bar);
@@ -143,7 +137,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public void updateBossBar(@NonNull UUID id, @NonNull String title) {
-        bossBars.get(id).name(adventureCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()));
+        bossBars.get(id).name(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()));
     }
 
     @Override

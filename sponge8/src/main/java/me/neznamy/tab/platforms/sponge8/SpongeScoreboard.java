@@ -5,10 +5,8 @@ import me.neznamy.tab.api.DisplaySlot;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TabScoreboard;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
@@ -28,9 +26,6 @@ public class SpongeScoreboard extends TabScoreboard {
 
     private static final Scoreboard dummyScoreboard = new Scoreboard();
 
-    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> net.minecraft.network.chat.Component.Serializer.fromJson(component.toString(clientVersion)));
-
     public SpongeScoreboard(TabPlayer player) {
         super(player);
     }
@@ -49,7 +44,7 @@ public class SpongeScoreboard extends TabScoreboard {
                         dummyScoreboard,
                         objectiveName,
                         null,
-                        componentCache.get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()),
+                        Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()),
                         hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
                 ), 0
         ));
@@ -68,7 +63,7 @@ public class SpongeScoreboard extends TabScoreboard {
                         dummyScoreboard,
                         objectiveName,
                         null,
-                        componentCache.get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()),
+                        Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()),
                         hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
                 ), 2
         ));
@@ -91,9 +86,9 @@ public class SpongeScoreboard extends TabScoreboard {
         if (visibility != null)
             team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
         if (finalPrefix != null)
-            team.setPlayerPrefix(componentCache.get(IChatBaseComponent.optimizedComponent(finalPrefix), player.getVersion()));
+            team.setPlayerPrefix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalPrefix), player.getVersion()));
         if (finalSuffix != null)
-            team.setPlayerSuffix(componentCache.get(IChatBaseComponent.optimizedComponent(finalSuffix), player.getVersion()));
+            team.setPlayerSuffix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalSuffix), player.getVersion()));
         team.getPlayers().addAll(players);
         player.sendPacket(new ClientboundSetPlayerTeamPacket(team, 0));
     }
@@ -120,9 +115,9 @@ public class SpongeScoreboard extends TabScoreboard {
         if (visibility != null)
             team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
         if (finalPrefix != null)
-            team.setPlayerPrefix(componentCache.get(IChatBaseComponent.optimizedComponent(finalPrefix), player.getVersion()));
+            team.setPlayerPrefix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalPrefix), player.getVersion()));
         if (finalSuffix != null)
-            team.setPlayerSuffix(componentCache.get(IChatBaseComponent.optimizedComponent(finalSuffix), player.getVersion()));
+            team.setPlayerSuffix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalSuffix), player.getVersion()));
         player.sendPacket(new ClientboundSetPlayerTeamPacket(team, 2));
     }
 

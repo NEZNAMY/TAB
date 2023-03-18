@@ -10,13 +10,10 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
-import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +23,6 @@ import java.util.UUID;
  * TabPlayer implementation for Velocity
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
-
-    /** Component cache to save CPU when creating components */
-    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     /** BossBars currently displayed to this player */
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
@@ -65,7 +58,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(componentCache.get(message, getVersion()));
+        getPlayer().sendMessage(VelocityTAB.getComponentCache().get(message, getVersion()));
     }
 
     @Override
@@ -94,13 +87,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().sendPlayerListHeaderAndFooter(componentCache.get(header, version), componentCache.get(footer, version));
+        getPlayer().sendPlayerListHeaderAndFooter(VelocityTAB.getComponentCache().get(header, version), VelocityTAB.getComponentCache().get(footer, version));
     }
 
     @Override
     public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
-        BossBar bar = BossBar.bossBar(componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()),
+        BossBar bar = BossBar.bossBar(VelocityTAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()),
                 progress, Color.valueOf(color.toString()), Overlay.valueOf(style.toString()));
         bossBars.put(id, bar);
         getPlayer().showBossBar(bar);
@@ -108,7 +101,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void updateBossBar(@NonNull UUID id, @NonNull String title) {
-        bossBars.get(id).name(componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()));
+        bossBars.get(id).name(VelocityTAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()));
     }
 
     @Override
