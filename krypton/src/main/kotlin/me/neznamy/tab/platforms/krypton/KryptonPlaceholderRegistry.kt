@@ -16,7 +16,7 @@ class KryptonPlaceholderRegistry(private val plugin: Main) : UniversalPlaceholde
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100) { ceil((it.player as Player).health) }
 
         // Spark placeholders, registered if Spark is present
-        registerSparkPlaceholders(manager)
+        if (plugin.server.pluginManager.isLoaded("spark")) registerSparkPlaceholders(manager)
         super.registerPlaceholders(manager)
     }
 

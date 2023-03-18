@@ -18,7 +18,6 @@ import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.KryptonEntityType
 import org.kryptonmc.krypton.entity.metadata.MetadataHolder
 import org.kryptonmc.krypton.entity.player.KryptonPlayer
-import org.kryptonmc.krypton.network.NettyConnection
 import org.kryptonmc.krypton.packet.Packet
 import org.kryptonmc.krypton.packet.out.play.PacketOutRemoveEntities
 import org.kryptonmc.krypton.packet.out.play.PacketOutSetEntityMetadata
@@ -41,8 +40,6 @@ class KryptonTabPlayer(
     private val bossBars = mutableMapOf<UUID, BossBar>()
     private val scoreboard = KryptonScoreboard(this)
     private val tabList = KryptonTabList(this)
-
-    fun connection(): NettyConnection = delegate.connection
 
     override fun hasPermission(permission: String): Boolean = delegate.hasPermission(permission)
 
@@ -71,7 +68,7 @@ class KryptonTabPlayer(
         return Skin(textures.value, textures.signature)
     }
 
-    override fun getPlayer(): Player = delegate
+    override fun getPlayer(): KryptonPlayer = delegate
 
     override fun isOnline(): Boolean = delegate.isOnline()
 

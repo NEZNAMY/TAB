@@ -54,9 +54,9 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
         when (packet) {
             is MovementPacket -> {
                 if (packet !is EntityPacket) return
-                packetListener.onEntityMove(receiver as BackendTabPlayer?, (packet as EntityPacket).entityId)
+                packetListener.onEntityMove(receiver as? BackendTabPlayer, (packet as EntityPacket).entityId)
             }
-            is PacketOutSpawnPlayer -> packetListener.onEntitySpawn(receiver as BackendTabPlayer?, packet.entityId)
+            is PacketOutSpawnPlayer -> packetListener.onEntitySpawn(receiver as? BackendTabPlayer, packet.entityId)
             is PacketOutRemoveEntities -> packet.ids.forEach { packetListener.onEntityDestroy(receiver as BackendTabPlayer, it) }
         }
     }
@@ -104,15 +104,15 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
     }
 
     override fun isSneaking(player: TabPlayer): Boolean {
-        return (player as Player).isSneaking
+        return (player.player as Player).isSneaking
     }
 
-    override fun isSwimming(player: TabPlayer?): Boolean {
-        return (player as Player).isSwimming
+    override fun isSwimming(player: TabPlayer): Boolean {
+        return (player.player as Player).isSwimming
     }
 
-    override fun isGliding(player: TabPlayer?): Boolean {
-        return (player as Player).isGliding
+    override fun isGliding(player: TabPlayer): Boolean {
+        return (player.player as Player).isGliding
     }
 
     override fun isSleeping(player: TabPlayer?): Boolean {
@@ -124,7 +124,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
     }
 
     override fun getX(player: TabPlayer): Double {
-        return (player as Player).position.x
+        return (player.player as Player).position.x
     }
 
     override fun getY(entity: Any): Double {
@@ -132,7 +132,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
     }
 
     override fun getZ(player: TabPlayer): Double {
-        return (player as Player).position.z
+        return (player.player as Player).position.z
     }
 
     override fun createDataWatcher(viewer: TabPlayer, flags: Byte, displayName: String, nameVisible: Boolean, markerFlag: Boolean): EntityData {

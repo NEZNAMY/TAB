@@ -5,7 +5,6 @@ import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.chat.EnumChatFormat
 import me.neznamy.tab.shared.TabScoreboard
 import net.kyori.adventure.text.Component
-import org.kryptonmc.krypton.adventure.KryptonAdventure
 import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective
 import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateObjectives
 import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore
@@ -86,10 +85,10 @@ class KryptonScoreboard(player: TabPlayer) : TabScoreboard(player) {
         }
         return PacketOutUpdateTeams.Parameters(
             Component.text(name),
-            options,
+            options.toByte(),
             visibility,
             collision,
-            KryptonAdventure.getColorFromId(EnumChatFormat.lastColorsOf(finalPrefix).ordinal),
+            EnumChatFormat.lastColorsOf(finalPrefix).ordinal,
             KryptonPacketBuilder.toComponent(finalPrefix, player.version),
             KryptonPacketBuilder.toComponent(finalSuffix, player.version)
         )
