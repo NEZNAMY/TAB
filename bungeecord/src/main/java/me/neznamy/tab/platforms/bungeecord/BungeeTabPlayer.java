@@ -11,6 +11,9 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.util.ComponentCache;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -57,8 +60,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     /** Player's scoreboard */
     @Getter private final Scoreboard scoreboard = new BungeeScoreboard(this);
 
-    /** Player's tablist */
-    @Getter private final TabList tabList = new BungeeTabList(this);
+    /** Player's tablist based on version */
+    private final TabList tabList1_7 = new BungeeTabList1_7(this);
+    private final TabList tabList1_8 = new BungeeTabList1_8(this);
+    private final TabList tabList1_19_3 = new BungeeTabList1_19_3(this);
+
 
     /**
      * Constructs new instance for given player
@@ -125,6 +131,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         }
     }
 
+    /**
+     * If ViaVersion is installed on BungeeCord, it changes protocol to match version
+     * of server to which player is connected to. For that reason, we need to retrieve
+     * the field more often than just on join.
+     *
+     * @return  Player's current protocol version
+     */
     @Override
     public ProtocolVersion getVersion() {
         return ProtocolVersion.fromNetworkId(getPlayer().getPendingConnection().getVersion());
@@ -204,6 +217,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public void removeBossBar(@NonNull UUID id) {
         if (getVersion().getMinorVersion() < 9) return;
         getPlayer().unsafe().sendPacket(new BossBar(id, 1));
+    }
+
+    @Override
+    public TabList getTabList() {
+        return getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ?
+                tabList1_19_3 : getVersion().getMinorVersion() >= 8 ? tabList1_8 : tabList1_7;
     }
 
     @Override
