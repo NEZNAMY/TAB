@@ -25,6 +25,8 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
+        if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
+
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(PlayerListItem.Action.REMOVE_PLAYER);
         PlayerListItem.Item item = new PlayerListItem.Item();
@@ -40,6 +42,8 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
+
         // Remove old entry
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(PlayerListItem.Action.REMOVE_PLAYER);
@@ -64,6 +68,8 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
+        if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
+
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(PlayerListItem.Action.UPDATE_LATENCY);
         PlayerListItem.Item item = new PlayerListItem.Item();
