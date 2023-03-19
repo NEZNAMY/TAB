@@ -227,7 +227,7 @@ public class FeatureManagerImpl implements FeatureManager {
             if (!f.overridesMethod("onPacketReceive")) continue;
             long time = System.nanoTime();
             try {
-                cancel = f.onPacketReceive(sender, packet);
+                if (f.onPacketReceive(sender, packet)) cancel = true;
             } catch (ReflectiveOperationException e) {
                 TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
             }
