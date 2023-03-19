@@ -152,7 +152,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard {
         if (!players.contains(p)) return; //not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
-            p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
+            if (((ScoreboardLine)line).isShownTo(p))
+                p.getScoreboard().unregisterTeam(((ScoreboardLine)line).getTeamName());
         }
         players.remove(p);
         manager.getActiveScoreboards().remove(p);

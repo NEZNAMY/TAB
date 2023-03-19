@@ -9,6 +9,8 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 
 import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Abstract class representing a line of scoreboard
@@ -32,6 +34,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     
     //forced player name start to make lines unique & sort them by names
     @Getter protected final String playerName;
+
+    private final Set<TabPlayer> shownPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     
     /**
      * Constructs new instance with given parameters
@@ -117,6 +121,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     protected void addLine(TabPlayer p, String fakePlayer, String prefix, String suffix) {
         p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
         p.getScoreboard().registerTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0);
+        shownPlayers.add(p);
     }
     
     /**
@@ -130,6 +135,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
     protected void removeLine(TabPlayer p, String fakePlayer) {
         p.getScoreboard().removeScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
         p.getScoreboard().unregisterTeam(teamName);
+        shownPlayers.remove(p);
     }
 
     /**
@@ -179,5 +185,9 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
             suffixValue = nameSuffix[1];
         }
         return new String[]{prefixValue, nameValue, suffixValue};
+    }
+
+    public boolean isShownTo(TabPlayer player) {
+        return shownPlayers.contains(player);
     }
 }
