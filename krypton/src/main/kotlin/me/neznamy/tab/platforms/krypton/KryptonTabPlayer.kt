@@ -28,7 +28,7 @@ import java.util.*
 class KryptonTabPlayer(
     delegate: Player,
     protocolVersion: Int
-) : BackendTabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion, true) {
+) : BackendTabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion) {
 
     /** Component cache to save CPU when creating components  */
     private val componentCache = ComponentCache(10000) {

@@ -15,10 +15,9 @@ public abstract class BackendTabPlayer extends ITabPlayer {
      * @param server          Player's server
      * @param world           Player's world
      * @param protocolVersion Player's game version
-     * @param useRealId       Whether tablist should use player's online uuid or not
      */
-    protected BackendTabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion, boolean useRealId) {
-        super(player, uniqueId, name, server, world, protocolVersion, useRealId);
+    protected BackendTabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion) {
+        super(player, uniqueId, name, server, world, protocolVersion, true);
     }
 
     public abstract void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data);

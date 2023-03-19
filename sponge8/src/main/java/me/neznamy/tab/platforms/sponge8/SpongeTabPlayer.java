@@ -47,7 +47,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
-                player.world().key().value(), getProtocolVersion(player), true);
+                player.world().key().value(), getProtocolVersion(player));
     }
 
     private static int getProtocolVersion(ServerPlayer player) {
