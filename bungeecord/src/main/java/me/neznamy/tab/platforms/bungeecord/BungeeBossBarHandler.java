@@ -8,12 +8,18 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import net.md_5.bungee.protocol.packet.BossBar;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 public class BungeeBossBarHandler implements BossBarHandler {
     
     private final BungeeTabPlayer player;
+
+    /** Both are included in the same action, need to remember and write them both */
+    private final Map<UUID, Integer> colors = new HashMap<>();
+    private final Map<UUID, Integer> styles = new HashMap<>();
 
     @Override
     public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
@@ -24,6 +30,9 @@ public class BungeeBossBarHandler implements BossBarHandler {
         bossbar.setColor(color.ordinal());
         bossbar.setDivision(style.ordinal());
         player.getPlayer().unsafe().sendPacket(bossbar);
+
+        colors.put(id, color.ordinal());
+        styles.put(id, style.ordinal());
     }
 
     @Override
@@ -47,20 +56,29 @@ public class BungeeBossBarHandler implements BossBarHandler {
         if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 4);
         bossbar.setDivision(style.ordinal());
+        bossbar.setColor(colors.get(id));
         player.getPlayer().unsafe().sendPacket(bossbar);
+
+        styles.put(id, style.ordinal());
     }
 
     @Override
     public void update(@NonNull UUID id, @NonNull BarColor color) {
         if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 4);
-        bossbar.setDivision(color.ordinal());
+        bossbar.setDivision(styles.get(id));
+        bossbar.setColor(color.ordinal());
         player.getPlayer().unsafe().sendPacket(bossbar);
+
+        colors.put(id, color.ordinal());
     }
 
     @Override
     public void remove(@NonNull UUID id) {
         if (player.getVersion().getMinorVersion() < 9) return;
         player.getPlayer().unsafe().sendPacket(new BossBar(id, 1));
+
+        colors.remove(id);
+        styles.remove(id);
     }
 }
