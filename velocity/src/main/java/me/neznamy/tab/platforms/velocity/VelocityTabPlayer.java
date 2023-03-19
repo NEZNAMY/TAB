@@ -4,32 +4,21 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.api.BossBarHandler;
 import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.bossbar.BarColor;
-import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.bossbar.BossBar.Color;
-import net.kyori.adventure.bossbar.BossBar.Overlay;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * TabPlayer implementation for Velocity
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    /** BossBars currently displayed to this player */
-    private final Map<UUID, BossBar> bossBars = new HashMap<>();
-
     @Getter private final Scoreboard scoreboard = new VelocityScoreboard(this);
-
     @Getter private final TabList tabList = new VelocityTabList(this);
+    @Getter private final BossBarHandler bossBarHandler = new VelocityBossBarHandler(this);
 
     /**
      * Constructs new instance for given player
@@ -88,40 +77,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().sendPlayerListHeaderAndFooter(VelocityTAB.getComponentCache().get(header, version), VelocityTAB.getComponentCache().get(footer, version));
-    }
-
-    @Override
-    public void sendBossBar(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
-        if (bossBars.containsKey(id)) return;
-        BossBar bar = BossBar.bossBar(VelocityTAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()),
-                progress, Color.valueOf(color.toString()), Overlay.valueOf(style.toString()));
-        bossBars.put(id, bar);
-        getPlayer().showBossBar(bar);
-    }
-
-    @Override
-    public void updateBossBar(@NonNull UUID id, @NonNull String title) {
-        bossBars.get(id).name(VelocityTAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(title), getVersion()));
-    }
-
-    @Override
-    public void updateBossBar(@NonNull UUID id, float progress) {
-        bossBars.get(id).progress(progress);
-    }
-
-    @Override
-    public void updateBossBar(@NonNull UUID id, @NonNull BarStyle style) {
-        bossBars.get(id).overlay(Overlay.valueOf(style.toString()));
-    }
-
-    @Override
-    public void updateBossBar(@NonNull UUID id, @NonNull BarColor color) {
-        bossBars.get(id).color(Color.valueOf(color.toString()));
-    }
-
-    @Override
-    public void removeBossBar(@NonNull UUID id) {
-        getPlayer().hideBossBar(bossBars.remove(id));
     }
 
     @Override

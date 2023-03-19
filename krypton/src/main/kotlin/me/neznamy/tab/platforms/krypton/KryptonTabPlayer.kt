@@ -1,18 +1,13 @@
 package me.neznamy.tab.platforms.krypton
 
-import me.neznamy.tab.api.ProtocolVersion
+import me.neznamy.tab.api.BossBarHandler
 import me.neznamy.tab.api.Scoreboard
-import me.neznamy.tab.api.bossbar.BarColor
-import me.neznamy.tab.api.bossbar.BarStyle
 import me.neznamy.tab.api.chat.IChatBaseComponent
 import me.neznamy.tab.api.tablist.Skin
 import me.neznamy.tab.api.tablist.TabList
-import me.neznamy.tab.api.util.ComponentCache
 import me.neznamy.tab.shared.backend.BackendTabPlayer
 import me.neznamy.tab.shared.backend.EntityData
 import me.neznamy.tab.shared.backend.Location
-import net.kyori.adventure.bossbar.BossBar
-import net.kyori.adventure.bossbar.BossBar.*
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.kryptonmc.api.entity.player.Player
 import org.kryptonmc.krypton.entity.KryptonEntityType
@@ -30,16 +25,10 @@ class KryptonTabPlayer(
     protocolVersion: Int
 ) : BackendTabPlayer(delegate, delegate.uuid, delegate.profile.name, "N/A", delegate.world.name, protocolVersion) {
 
-    /** Component cache to save CPU when creating components  */
-    private val componentCache = ComponentCache(10000) {
-            component: IChatBaseComponent, clientVersion: ProtocolVersion ->
-        GsonComponentSerializer.gson().deserialize(component.toString(clientVersion))
-    }
-
     private val delegate = delegate as KryptonPlayer
-    private val bossBars = mutableMapOf<UUID, BossBar>()
     private val scoreboard = KryptonScoreboard(this)
     private val tabList = KryptonTabList(this)
+    private val bossBarHandler = KryptonBossBarHandler(this)
 
     override fun hasPermission(permission: String): Boolean = delegate.hasPermission(permission)
 
@@ -55,7 +44,7 @@ class KryptonTabPlayer(
     }
 
     override fun sendMessage(message: IChatBaseComponent) {
-        delegate.sendMessage(componentCache.get(message, version))
+        delegate.sendMessage(GsonComponentSerializer.gson().deserialize(message.toString(version)))
     }
 
     override fun hasInvisibilityPotion(): Boolean = false
@@ -77,42 +66,10 @@ class KryptonTabPlayer(
     override fun getGamemode(): Int = delegate.gameMode.ordinal
 
     override fun setPlayerListHeaderFooter(header: IChatBaseComponent, footer: IChatBaseComponent) {
-        delegate.sendPlayerListHeaderAndFooter(componentCache.get(header, version), componentCache.get(footer, version))
-    }
-
-    override fun sendBossBar(id: UUID, title: String, progress: Float, color: BarColor, style: BarStyle) {
-        if (bossBars.containsKey(id)) return
-        val bar = bossBar(
-            componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()),
-            progress,
-            Color.valueOf(color.toString()),
-            Overlay.valueOf(style.toString())
+        delegate.sendPlayerListHeaderAndFooter(
+            GsonComponentSerializer.gson().deserialize(header.toString(version)),
+            GsonComponentSerializer.gson().deserialize(footer.toString(version))
         )
-        bossBars[id] = bar
-        delegate.showBossBar(bar)
-    }
-
-    override fun updateBossBar(id: UUID, title: String) {
-        bossBars[id]?.name(componentCache.get(IChatBaseComponent.optimizedComponent(title), getVersion()))
-    }
-
-    override fun updateBossBar(id: UUID, progress: Float) {
-        bossBars[id]?.progress(progress)
-    }
-
-    override fun updateBossBar(id: UUID, style: BarStyle) {
-        val bar = bossBars[id] ?: return
-        bar.overlay(Overlay.valueOf(style.toString()))
-    }
-
-    override fun updateBossBar(id: UUID, color: BarColor) {
-        val bar = bossBars[id] ?: return
-        bar.color(Color.valueOf(color.toString()))
-    }
-
-    override fun removeBossBar(id: UUID) {
-        delegate.hideBossBar(bossBars[id] ?: return)
-        bossBars.remove(id)
     }
 
     override fun getScoreboard(): Scoreboard {
@@ -121,6 +78,10 @@ class KryptonTabPlayer(
 
     override fun getTabList(): TabList {
         return tabList
+    }
+
+    override fun getBossBarHandler(): BossBarHandler {
+        return bossBarHandler
     }
 
     override fun spawnEntity(entityId: Int, id: UUID, entityType: Any, location: Location, data: EntityData) {
