@@ -58,6 +58,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         packet.setAction(PlayerListItem.Action.ADD_PLAYER);
         item = new PlayerListItem.Item();
         item.setDisplayName(displayName == null ? userNames.get(entry) : displayName.toLegacyText());
+        if (item.getDisplayName().length() > 16) item.setDisplayName(item.getDisplayName().substring(0, 16)); // 16 character limit
         item.setPing(0); // Avoid NPE
         packet.setItems(new PlayerListItem.Item[]{item});
         player.sendPacket(packet);
@@ -87,6 +88,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         PlayerListItem.Item item = new PlayerListItem.Item();
         if (entry.getDisplayName() != null) {
             item.setDisplayName(entry.getDisplayName().toLegacyText());
+            if (item.getDisplayName().length() > 16) item.setDisplayName(item.getDisplayName().substring(0, 16)); // 16 character limit
         } else {
             item.setDisplayName(entry.getName());
         }
