@@ -42,8 +42,9 @@ public class PacketPlayOutPlayerInfoStorage {
     }
 
     public static Object createPacket(String action, Collection<TabListEntry> entries, ProtocolVersion clientVersion) {
+        NMSStorage nms = NMSStorage.getInstance();
+        if (nms.getMinorVersion() < 8) return null;
         try {
-            NMSStorage nms = NMSStorage.getInstance();
             Object packet;
             List<Object> players = new ArrayList<>();
             if (NMSStorage.getInstance().is1_19_3Plus()) {
