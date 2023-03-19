@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.nametags;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabFeature;
@@ -156,64 +157,64 @@ public class NameTag extends TabFeature implements TeamManager {
     }
 
     @Override
-    public void hideNametag(TabPlayer player) {
+    public void hideNametag(@NonNull TabPlayer player) {
         if (hiddenNameTag.contains(player)) return;
         hiddenNameTag.add(player);
         updateTeamData(player);
     }
     
     @Override
-    public void hideNametag(TabPlayer player, TabPlayer viewer) {
+    public void hideNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
         if (hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).add(viewer);
         updateTeamData(player, viewer);
     }
 
     @Override
-    public void showNametag(TabPlayer player) {
+    public void showNametag(@NonNull TabPlayer player) {
         if (!hiddenNameTag.contains(player)) return;
         hiddenNameTag.remove(player);
         updateTeamData(player);
     }
     
     @Override
-    public void showNametag(TabPlayer player, TabPlayer viewer) {
+    public void showNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
         if (!hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).remove(viewer);
         updateTeamData(player, viewer);
     }
 
     @Override
-    public boolean hasHiddenNametag(TabPlayer player) {
+    public boolean hasHiddenNametag(@NonNull TabPlayer player) {
         return hiddenNameTag.contains(player);
     }
 
     @Override
-    public boolean hasHiddenNametag(TabPlayer player, TabPlayer viewer) {
+    public boolean hasHiddenNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
         return hiddenNameTagFor.containsKey(player) && hiddenNameTagFor.get(player).contains(viewer);
     }
 
     @Override
-    public void pauseTeamHandling(TabPlayer player) {
+    public void pauseTeamHandling(@NonNull TabPlayer player) {
         if (teamHandlingPaused.contains(player)) return;
         if (!isDisabledPlayer(player)) unregisterTeam(player, sorting.getShortTeamName(player));
         teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
     }
 
     @Override
-    public void resumeTeamHandling(TabPlayer player) {
+    public void resumeTeamHandling(@NonNull TabPlayer player) {
         if (!teamHandlingPaused.contains(player)) return;
         teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
         if (!isDisabledPlayer(player)) registerTeam(player);
     }
 
     @Override
-    public boolean hasTeamHandlingPaused(TabPlayer player) {
+    public boolean hasTeamHandlingPaused(@NonNull TabPlayer player) {
         return teamHandlingPaused.contains(player);
     }
 
     @Override
-    public void forceTeamName(TabPlayer player, String name) {
+    public void forceTeamName(@NonNull TabPlayer player, String name) {
         if (Objects.equals(forcedTeamName.get(player), name)) return;
         if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
         unregisterTeam(player, sorting.getShortTeamName(player));
@@ -224,22 +225,22 @@ public class NameTag extends TabFeature implements TeamManager {
     }
 
     @Override
-    public String getForcedTeamName(TabPlayer player) {
+    public String getForcedTeamName(@NonNull TabPlayer player) {
         return forcedTeamName.get(player);
     }
 
     @Override
-    public void setCollisionRule(TabPlayer player, Boolean collision) {
+    public void setCollisionRule(@NonNull TabPlayer player, Boolean collision) {
         collisionManager.setCollisionRule(player, collision);
     }
 
     @Override
-    public Boolean getCollisionRule(TabPlayer player) {
+    public Boolean getCollisionRule(@NonNull TabPlayer player) {
         return collisionManager.getCollisionRule(player);
     }
     
     @Override
-    public void updateTeamData(TabPlayer p) {
+    public void updateTeamData(@NonNull TabPlayer p) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             updateTeamData(p, viewer);
         }
@@ -291,59 +292,59 @@ public class NameTag extends TabFeature implements TeamManager {
     }
 
     @Override
-    public void setPrefix(TabPlayer player, String prefix) {
+    public void setPrefix(@NonNull TabPlayer player, String prefix) {
         Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
         updateTeamData(player);
     }
 
     @Override
-    public void setSuffix(TabPlayer player, String suffix) {
+    public void setSuffix(@NonNull TabPlayer player, String suffix) {
         Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
         updateTeamData(player);
     }
 
     @Override
-    public void resetPrefix(TabPlayer player) {
+    public void resetPrefix(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(null);
         updateTeamData(player);
     }
 
     @Override
-    public void resetSuffix(TabPlayer player) {
+    public void resetSuffix(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         player.getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(null);
         updateTeamData(player);
     }
 
     @Override
-    public String getCustomPrefix(TabPlayer player) {
+    public String getCustomPrefix(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGPREFIX).getTemporaryValue();
     }
 
     @Override
-    public String getCustomSuffix(TabPlayer player) {
+    public String getCustomSuffix(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGSUFFIX).getTemporaryValue();
     }
 
     @Override
-    public String getOriginalPrefix(TabPlayer player) {
+    public @NonNull String getOriginalPrefix(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGPREFIX).getOriginalRawValue();
     }
 
     @Override
-    public String getOriginalSuffix(TabPlayer player) {
+    public @NonNull String getOriginalSuffix(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return player.getProperty(TabConstants.Property.TAGSUFFIX).getOriginalRawValue();
     }
 
     @Override
-    public void toggleNameTagVisibilityView(TabPlayer player, boolean sendToggleMessage) {
+    public void toggleNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage) {
         if (playersWithInvisibleNameTagView.contains(player)) {
             playersWithInvisibleNameTagView.remove(player);
             if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNameTagsShown(), true);
@@ -358,7 +359,7 @@ public class NameTag extends TabFeature implements TeamManager {
     }
 
     @Override
-    public boolean hasHiddenNameTagVisibilityView(TabPlayer player) {
+    public boolean hasHiddenNameTagVisibilityView(@NonNull TabPlayer player) {
         return playersWithInvisibleNameTagView.contains(player);
     }
 }

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.nametags.unlimited;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.ArmorStandManager;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
@@ -171,7 +172,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     /* NameTag override */
 
     @Override
-    public void hideNametag(TabPlayer player, TabPlayer viewer) {
+    public void hideNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
         if (hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).add(viewer);
         updateTeamData(player, viewer);
@@ -179,7 +180,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void showNametag(TabPlayer player, TabPlayer viewer) {
+    public void showNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer) {
         if (!hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).remove(viewer);
         updateTeamData(player, viewer);
@@ -281,35 +282,35 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     /* TeamManager override */
 
     @Override
-    public void setPrefix(TabPlayer player, String prefix) {
+    public void setPrefix(@NonNull TabPlayer player, String prefix) {
         super.setPrefix(player, prefix);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
     }
 
     @Override
-    public void setSuffix(TabPlayer player, String suffix) {
+    public void setSuffix(@NonNull TabPlayer player, String suffix) {
         super.setSuffix(player, suffix);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
     }
 
     @Override
-    public void resetPrefix(TabPlayer player) {
+    public void resetPrefix(@NonNull TabPlayer player) {
         super.resetPrefix(player);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
     }
 
     @Override
-    public void resetSuffix(TabPlayer player) {
+    public void resetSuffix(@NonNull TabPlayer player) {
         super.resetSuffix(player);
         rebuildNameTagLine(player);
         getArmorStandManager(player).refresh(true);
     }
 
     @Override
-    public void pauseTeamHandling(TabPlayer player) {
+    public void pauseTeamHandling(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         if (teamHandlingPaused.contains(player)) return;
         if (!isDisabledPlayer(player)) unregisterTeam(player, getSorting().getShortTeamName(player));
@@ -318,7 +319,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void resumeTeamHandling(TabPlayer player) {
+    public void resumeTeamHandling(@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         if (!teamHandlingPaused.contains(player)) return;
         teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
@@ -327,7 +328,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void toggleNameTagVisibilityView(TabPlayer player, boolean sendToggleMessage) {
+    public void toggleNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage) {
         super.toggleNameTagVisibilityView(player, sendToggleMessage);
         updateNameTagVisibilityView(player);
     }

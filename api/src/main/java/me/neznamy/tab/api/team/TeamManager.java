@@ -1,6 +1,8 @@
 package me.neznamy.tab.api.team;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 public interface TeamManager {
 
@@ -12,7 +14,7 @@ public interface TeamManager {
      * @see     #showNametag(TabPlayer)
      * @see     #hasHiddenNametag(TabPlayer)
      */
-    void hideNametag(TabPlayer player);
+    void hideNametag(@NonNull TabPlayer player);
 
     /**
      * Hides player's NameTag for specified player until it's shown again
@@ -22,7 +24,7 @@ public interface TeamManager {
      * @param   viewer
      *          player to hide NameTag for
      */
-    void hideNametag(TabPlayer player, TabPlayer viewer);
+    void hideNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
 
     /**
      * Makes player's NameTag visible again
@@ -32,7 +34,7 @@ public interface TeamManager {
      * @see     #hideNametag(TabPlayer)
      * @see     #hasHiddenNametag(TabPlayer)
      */
-    void showNametag(TabPlayer player);
+    void showNametag(@NonNull TabPlayer player);
 
     /**
      * Shows player's NameTag for specified viewer if it was hidden before
@@ -42,7 +44,7 @@ public interface TeamManager {
      * @param   viewer
      *          player to show NameTag back for
      */
-    void showNametag(TabPlayer player, TabPlayer viewer);
+    void showNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
 
     /**
      * Return whether player has hidden NameTag or not
@@ -53,7 +55,7 @@ public interface TeamManager {
      * @see     #hideNametag(TabPlayer)
      * @see     #showNametag(TabPlayer)
      */
-    boolean hasHiddenNametag(TabPlayer player);
+    boolean hasHiddenNametag(@NonNull TabPlayer player);
 
     /**
      * Returns true if NameTag is hidden for specified viewer, false if not
@@ -64,7 +66,7 @@ public interface TeamManager {
      *          player to check visibility status for
      * @return  true if hidden, false if not
      */
-    boolean hasHiddenNametag(TabPlayer player, TabPlayer viewer);
+    boolean hasHiddenNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
 
     /**
      * Unregisters player's team and no longer handles it, as well as disables anti-override for teams.
@@ -73,7 +75,7 @@ public interface TeamManager {
      * @param   player
      *          player to pause team handling of
      */
-    void pauseTeamHandling(TabPlayer player);
+    void pauseTeamHandling(@NonNull TabPlayer player);
 
     /**
      * Resumes team handling if it was before paused using pauseTeamHandling(), if not, nothing happens
@@ -81,7 +83,7 @@ public interface TeamManager {
      * @param   player
      *          player to resume team handling of
      */
-    void resumeTeamHandling(TabPlayer player);
+    void resumeTeamHandling(@NonNull TabPlayer player);
 
     /**
      * Returns true if team handling is paused for this player using pauseTeamHandling(), false if not, or
@@ -91,7 +93,7 @@ public interface TeamManager {
      *          player to check handling status of
      * @return  true if paused, false if not
      */
-    boolean hasTeamHandlingPaused(TabPlayer player);
+    boolean hasTeamHandlingPaused(@NonNull TabPlayer player);
 
     /**
      * Forces new team name for the player until this method is called again with null argument and
@@ -102,7 +104,7 @@ public interface TeamManager {
      * @param   teamName
      *          forced team name
      */
-    void forceTeamName(TabPlayer player, String teamName);
+    void forceTeamName(@NonNull TabPlayer player, @Nullable String teamName);
 
     /**
      * Returns forced team name of player or null if not forced
@@ -111,7 +113,7 @@ public interface TeamManager {
      *          player to check forced team name of
      * @return  forced team name of player or null if not forced
      */
-    String getForcedTeamName(TabPlayer player);
+    @Nullable String getForcedTeamName(@NonNull TabPlayer player);
 
 
     /**
@@ -122,7 +124,7 @@ public interface TeamManager {
      * @param   collision
      *          forced collision rule
      */
-    void setCollisionRule(TabPlayer player, Boolean collision);
+    void setCollisionRule(@NonNull TabPlayer player, @Nullable Boolean collision);
 
     /**
      * Returns forced collision rule or null if collision is not forced using setCollisionRule
@@ -131,7 +133,7 @@ public interface TeamManager {
      *          player to get forced collision of
      * @return  forced value or null if not forced
      */
-    Boolean getCollisionRule(TabPlayer player);
+    @Nullable Boolean getCollisionRule(@NonNull TabPlayer player);
 
     /**
      * Sends update team's properties packet of player's team to everyone
@@ -139,23 +141,23 @@ public interface TeamManager {
      * @param   player
      *          player to update team data of
      */
-    void updateTeamData(TabPlayer player);
+    void updateTeamData(@NonNull TabPlayer player);
 
-    void setPrefix(TabPlayer player, String prefix);
+    void setPrefix(@NonNull TabPlayer player, @Nullable String prefix);
 
-    void setSuffix(TabPlayer player, String suffix);
+    void setSuffix(@NonNull TabPlayer player, @Nullable String suffix);
 
-    void resetPrefix(TabPlayer player);
+    void resetPrefix(@NonNull TabPlayer player);
 
-    void resetSuffix(TabPlayer player);
+    void resetSuffix(@NonNull TabPlayer player);
 
-    String getCustomPrefix(TabPlayer player);
+    @Nullable String getCustomPrefix(@NonNull TabPlayer player);
 
-    String getCustomSuffix(TabPlayer player);
+    @Nullable String getCustomSuffix(@NonNull TabPlayer player);
 
-    String getOriginalPrefix(TabPlayer player);
+    @NonNull String getOriginalPrefix(@NonNull TabPlayer player);
 
-    String getOriginalSuffix(TabPlayer player);
+    @NonNull String getOriginalSuffix(@NonNull TabPlayer player);
 
     /**
      * Toggles nametag visibility view on all players for specified player.
@@ -167,7 +169,7 @@ public interface TeamManager {
      * @param   sendToggleMessage
      *          {@code true} if configured toggle message should be sent, {@code false} if not
      */
-    void toggleNameTagVisibilityView(TabPlayer player, boolean sendToggleMessage);
+    void toggleNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage);
 
     /**
      * Returns {@code true} if player has hidden nametags by either calling
@@ -178,5 +180,5 @@ public interface TeamManager {
      *          player to check
      * @return  {@code true} if hidden, {@code false} if not
      */
-    boolean hasHiddenNameTagVisibilityView(TabPlayer player);
+    boolean hasHiddenNameTagVisibilityView(@NonNull TabPlayer player);
 }
