@@ -90,6 +90,7 @@ class KryptonTabPlayer(
             location.x, location.y, location.z, (location.yaw / 360 * 256).toInt().toByte(),
                 (location.pitch / 360 * 256).toInt().toByte(), 0, 0, 0, 0, 0)
         )
+        updateEntityMetadata(entityId, data)
     }
 
     override fun updateEntityMetadata(entityId: Int, data: EntityData) {

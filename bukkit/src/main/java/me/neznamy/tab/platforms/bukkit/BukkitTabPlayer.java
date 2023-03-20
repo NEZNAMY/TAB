@@ -187,7 +187,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
         try {
             sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
-            if (TAB.getInstance().getServerVersion().getMinorVersion() < 15) {
+            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
                 updateEntityMetadata(entityId, data);
             }
         } catch (ReflectiveOperationException e) {

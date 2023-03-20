@@ -132,6 +132,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
     public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
         sendPacket(new ClientboundAddEntityPacket(entityId, id, location.getX(), location.getY(), location.getZ(),
                 location.getYaw(), location.getPitch(), Registry.ENTITY_TYPE.byId((Integer) entityType), 0, Vec3.ZERO));
+        updateEntityMetadata(entityId, data);
     }
 
     @Override
