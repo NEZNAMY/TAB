@@ -29,8 +29,6 @@ public class NMSStorage {
 
     public final Field ClientboundRemoveEntitiesPacket_ENTITIES = setAccessible(ClientboundRemoveEntitiesPacket.class.getDeclaredFields()[0]);
 
-    public final Field ServerboundInteractPacket_ENTITYID = getFields(ServerboundInteractPacket.class, int.class).get(0);
-
     public final Field ClientboundTeleportEntityPacket_ENTITYID = getFields(ClientboundTeleportEntityPacket.class, int.class).get(0);
 
     public final Field ClientboundSetPlayerTeamPacket_NAME = getFields(ClientboundSetPlayerTeamPacket.class, String.class).get(0);

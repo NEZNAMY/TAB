@@ -137,7 +137,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX(), PacketRecei
         return (player.player as Player).position.z
     }
 
-    override fun createDataWatcher(viewer: TabPlayer, flags: Byte, displayName: String, nameVisible: Boolean, markerFlag: Boolean): EntityData {
+    override fun createDataWatcher(viewer: TabPlayer, flags: Byte, displayName: String, nameVisible: Boolean): EntityData {
         val viewerPlayer = viewer.player as KryptonPlayer
         val holder = MetadataHolder(viewerPlayer).apply {
             define(MetadataKeys.Entity.FLAGS, 0)
@@ -147,7 +147,7 @@ class KryptonNameTagX(private val plugin: Main) : BackendNameTagX(), PacketRecei
         holder.set(MetadataKeys.Entity.FLAGS, flags)
         holder.set(MetadataKeys.Entity.CUSTOM_NAME, KryptonPacketBuilder.toComponent(displayName, viewer.version))
         holder.set(MetadataKeys.Entity.CUSTOM_NAME_VISIBILITY, nameVisible)
-        if (markerFlag) holder.define(MetadataKeys.ArmorStand.FLAGS, 16.toByte())
+        holder.define(MetadataKeys.ArmorStand.FLAGS, 16.toByte())
         return WrappedEntityData(holder)
     }
 

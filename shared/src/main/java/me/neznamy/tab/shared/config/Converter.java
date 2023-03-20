@@ -118,7 +118,6 @@ public class Converter {
             newConfig.set("scoreboard-teams.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.nametag", Collections.singletonList("disabledserver")));
         } else {
             newConfig.set("scoreboard-teams.unlimited-nametag-mode.enabled", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.enabled", false));
-            newConfig.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.use-marker-tag-for-1-8-x-clients", false));
             newConfig.set("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.disable-on-boats", true));
             newConfig.set("scoreboard-teams.unlimited-nametag-mode.space-between-lines", oldConfig.getBoolean("unlimited-nametag-prefix-suffix-mode.space-between-lines", true));
             newConfig.set("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", oldConfig.getStringList("disable-features-in-worlds.unlimited-nametags", Collections.singletonList("disabledworld")));
@@ -381,6 +380,9 @@ public class Converter {
     public void removeOldOptions(ConfigurationFile config) {
         if (config.hasConfigOption("placeholders.remove-strings")) {
             config.set("placeholders.remove-strings", null);
+        }
+        if (config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
+            config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
         }
     }
 }

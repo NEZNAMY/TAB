@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.feature.PacketReceiveListener;
 import me.neznamy.tab.api.feature.PacketSendListener;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
  * The core class for unlimited NameTag mode on Bukkit
  */
 @RequiredArgsConstructor
-public class BukkitNameTagX extends BackendNameTagX implements PacketReceiveListener, PacketSendListener {
+public class BukkitNameTagX extends BackendNameTagX implements PacketSendListener {
 
     /** Reference to NMS storage for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();
@@ -45,24 +44,6 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketReceiveList
     public void load() {
         Bukkit.getPluginManager().registerEvents(eventListener, plugin);
         super.load();
-    }
-
-    @Override
-    public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
-        if (sender.getVersion().getMinorVersion() == 8 && nms.PacketPlayInUseEntity.isInstance(packet)) {
-            int entityId = nms.PacketPlayInUseEntity_ENTITY.getInt(packet);
-            TabPlayer attacked = null;
-            for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
-                if (all.isLoaded() && getArmorStandManager(all).hasArmorStandWithID(entityId)) {
-                    attacked = all;
-                    break;
-                }
-            }
-            if (attacked != null && attacked != sender) {
-                nms.PacketPlayInUseEntity_ENTITY.set(packet, getEntityId(attacked));
-            }
-        }
-        return false;
     }
 
     @SuppressWarnings("unchecked")
@@ -195,12 +176,12 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketReceiveList
     }
 
     @Override
-    public EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag) {
+    public EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible) {
         DataWatcher datawatcher = new DataWatcher();
         datawatcher.getHelper().setEntityFlags(flags);
         datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());
         datawatcher.getHelper().setCustomNameVisible(nameVisible);
-        if (markerFlag) datawatcher.getHelper().setArmorStandFlags((byte)16);
+        datawatcher.getHelper().setArmorStandFlags((byte)16);
         return datawatcher;
     }
 }

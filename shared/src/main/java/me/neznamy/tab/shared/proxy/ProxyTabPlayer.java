@@ -81,7 +81,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
         boolean enabled = nametagx != null && !nametagx.getDisabledUnlimitedServers().contains(getServer());
         args.add(enabled);
         if (enabled) {
-            args.add(nametagx.isMarkerFor18x());
+            args.add(true);
             args.add(0.26d);
             args.add(nametagx.isDisableOnBoats());
             args.add(nametagx.isArmorStandsAlwaysVisible());

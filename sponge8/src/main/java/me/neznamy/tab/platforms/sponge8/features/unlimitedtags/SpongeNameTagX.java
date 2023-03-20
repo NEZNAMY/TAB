@@ -5,7 +5,6 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.feature.PacketReceiveListener;
 import me.neznamy.tab.api.feature.PacketSendListener;
 import me.neznamy.tab.platforms.sponge8.Sponge8TAB;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
@@ -30,7 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class SpongeNameTagX extends BackendNameTagX implements PacketReceiveListener, PacketSendListener {
+public class SpongeNameTagX extends BackendNameTagX implements PacketSendListener {
 
     private final NMSStorage nms = NMSStorage.getInstance();
 
@@ -43,24 +42,6 @@ public class SpongeNameTagX extends BackendNameTagX implements PacketReceiveList
     public void load() {
         Sponge.eventManager().registerListeners(plugin.getContainer(), eventListener);
         super.load();
-    }
-
-    @Override
-    public boolean onPacketReceive(TabPlayer sender, Object packet) throws ReflectiveOperationException {
-        if (sender.getVersion().getMinorVersion() == 8 && packet instanceof ServerboundInteractPacket) {
-            int entityId = nms.ServerboundInteractPacket_ENTITYID.getInt(packet);
-            TabPlayer attacked = null;
-            for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
-                if (all.isLoaded() && getArmorStandManager(all).hasArmorStandWithID(entityId)) {
-                    attacked = all;
-                    break;
-                }
-            }
-            if (attacked != null && attacked != sender) {
-                nms.ServerboundInteractPacket_ENTITYID.set(packet, getEntityId(attacked));
-            }
-        }
-        return false;
     }
 
     @Override
@@ -167,14 +148,14 @@ public class SpongeNameTagX extends BackendNameTagX implements PacketReceiveList
     }
 
     @Override
-    public EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag) {
+    public EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible) {
         SynchedEntityData dataWatcher = new SynchedEntityData(null);
         dataWatcher.define(new EntityDataAccessor<>(0, EntityDataSerializers.BYTE), flags);
         dataWatcher.define(new EntityDataAccessor<>(2, EntityDataSerializers.OPTIONAL_COMPONENT),
                 Optional.ofNullable(Sponge8TAB.getComponentCache().get(
                         IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion())));
         dataWatcher.define(new EntityDataAccessor<>(3, EntityDataSerializers.BOOLEAN), nameVisible);
-        if (markerFlag) dataWatcher.define(new EntityDataAccessor<>(14, EntityDataSerializers.BYTE), (byte)16);
+        dataWatcher.define(new EntityDataAccessor<>(14, EntityDataSerializers.BYTE), (byte)16);
         return new WrappedEntityData(dataWatcher);
     }
 }

@@ -172,7 +172,6 @@ public class BackendArmorStand implements ArmorStand {
         } else {
             y += viewer.getVersion().getMinorVersion() >= 9 ? 0.2 : 0.26; // Sleeping
         }
-        if (viewer.getVersion().getMinorVersion() == 8 && !manager.isMarkerFor18x()) y -= 2;
         return y;
     }
 
@@ -207,8 +206,7 @@ public class BackendArmorStand implements ArmorStand {
     public EntityData createDataWatcher(String displayName, TabPlayer viewer) {
         byte flags = (byte) (asm.isSneaking() ? 34 : 32);
         boolean nameVisible = !shouldBeInvisibleFor(viewer, displayName) && visible;
-        boolean marker = viewer.getVersion().getMinorVersion() > 8 || manager.isMarkerFor18x();
-        return manager.createDataWatcher(viewer, flags, displayName, nameVisible, marker);
+        return manager.createDataWatcher(viewer, flags, displayName, nameVisible);
     }
 
     /**

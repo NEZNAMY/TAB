@@ -201,5 +201,5 @@ public abstract class BackendNameTagX extends NameTagX {
 
     public abstract double getZ(TabPlayer player);
 
-    public abstract EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible, boolean markerFlag);
+    public abstract EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible);
 }

@@ -71,7 +71,6 @@ public abstract class NMSStorage {
     public Class<?> PacketPlayInUseEntity;
     public Class<?> PacketPlayInUseEntity$d;
     protected Class<Enum> EnumEntityUseAction;
-    public Field PacketPlayInUseEntity_ENTITY;
     public Field PacketPlayInUseEntity_ACTION;
 
     public Class<?> PacketPlayOutEntity;
@@ -144,7 +143,6 @@ public abstract class NMSStorage {
         PacketPlayOutEntity_ENTITYID = getFields(PacketPlayOutEntity, int.class).get(0);
         PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         if (minorVersion >= 7) {
-            PacketPlayInUseEntity_ENTITY = getFields(PacketPlayInUseEntity, int.class).get(0);
             PacketPlayInUseEntity_ACTION = getFields(PacketPlayInUseEntity, EnumEntityUseAction).get(0);
         }
     }
