@@ -149,13 +149,13 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         } else {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE) {
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
                 }
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY) {
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
                 }
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME) {
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
                     displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
                     item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));

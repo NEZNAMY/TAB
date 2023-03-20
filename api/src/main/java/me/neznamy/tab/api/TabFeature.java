@@ -78,6 +78,8 @@ public abstract class TabFeature {
                 methodOverrides.add("onLatencyChange");
             if (getClass().getMethod("onEntryAdd", TabPlayer.class, UUID.class, String.class).getDeclaringClass() != TabFeature.class)
                 methodOverrides.add("onEntryAdd");
+            if (getClass().getMethod("onDisplayNameChange", TabPlayer.class, UUID.class, IChatBaseComponent.class).getDeclaringClass() != TabFeature.class)
+                methodOverrides.add("onDisplayNameChange");
         } catch (NoSuchMethodException e) {
             //this will never happen
         }

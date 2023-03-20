@@ -100,17 +100,17 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             int gameMode = 0;
             int latency = 0;
             IChatBaseComponent displayName = null;
-            if (actions.contains("UPDATE_GAME_MODE")) {
+            if (actions.contains("UPDATE_GAME_MODE") || actions.contains("ADD_PLAYER")) {
                 gameMode = PacketPlayOutPlayerInfoStorage.gameMode2Int(PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData));
                 gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, profile.getId(), gameMode);
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_GameMode.set(nmsData, PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode));
             }
-            if (actions.contains("UPDATE_LATENCY")) {
+            if (actions.contains("UPDATE_LATENCY") || actions.contains("ADD_PLAYER")) {
                 latency = PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData);
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_Latency.set(nmsData, latency);
             }
-            if (actions.contains("UPDATE_DISPLAY_NAME")) {
+            if (actions.contains("UPDATE_DISPLAY_NAME") || actions.contains("ADD_PLAYER")) {
                 Object nmsComponent = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
                 displayName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
                 displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId(), displayName);
