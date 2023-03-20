@@ -55,6 +55,7 @@ public class VelocityTabList extends SingleUpdateTabList {
 
     @Override
     public void addEntry(me.neznamy.tab.api.tablist.@NonNull TabListEntry entry) {
+        if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         player.getPlayer().getTabList().addEntry(TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
