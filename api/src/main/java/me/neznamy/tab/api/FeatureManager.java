@@ -1,5 +1,7 @@
 package me.neznamy.tab.api;
 
+import me.neznamy.tab.api.feature.TabFeature;
+
 import java.util.UUID;
 
 /**
@@ -90,22 +92,6 @@ public interface FeatureManager {
      * @return  {@code true} if some feature marked the command for cancel, {@code false} if not
      */
     boolean onCommand(TabPlayer sender, String command);
-
-    /**
-     * Internal function that marks objective packet deserialization
-     * when at least 1 feature uses it.
-     * <p>
-     * Internal use only.
-     */
-    void markObjective();
-
-    /**
-     * Internal function that marks display objective packet deserialization
-     * when at least 1 feature uses it.
-     * <p>
-     * Internal use only.
-     */
-    void markDisplayObjective();
 
     /**
      * Returns array of all currently enabled features

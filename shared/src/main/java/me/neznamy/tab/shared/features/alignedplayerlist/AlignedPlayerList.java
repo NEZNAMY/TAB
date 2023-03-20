@@ -1,10 +1,12 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
 import lombok.Getter;
+import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.feature.QuitListener;
+import me.neznamy.tab.api.feature.VanishListener;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 
 import java.io.BufferedReader;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Additional code for PlayerList class to secure alignment
  */
-public class AlignedPlayerList extends PlayerList {
+public class AlignedPlayerList extends PlayerList implements QuitListener, VanishListener {
 
     private final Map<TabPlayer, PlayerView> playerViews = new HashMap<>();
     @Getter private final byte[] widths = loadWidths();
@@ -86,7 +88,6 @@ public class AlignedPlayerList extends PlayerList {
 
     @Override
     public void onQuit(TabPlayer p) {
-        super.onQuit(p);
         playerViews.values().forEach(v -> v.processPlayerQuit(p));
         playerViews.remove(p);
     }

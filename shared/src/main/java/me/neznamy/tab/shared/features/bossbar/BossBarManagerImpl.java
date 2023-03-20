@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 /**
  * Class for handling BossBar feature
  */
-public class BossBarManagerImpl extends TabFeature implements BossBarManager {
+public class BossBarManagerImpl extends TabFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();

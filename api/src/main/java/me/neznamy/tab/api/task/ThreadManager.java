@@ -2,7 +2,7 @@ package me.neznamy.tab.api.task;
 
 import java.util.concurrent.Future;
 
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.TabFeature;
 
 /**
  * Manager for scheduling and executing tasks in TAB's

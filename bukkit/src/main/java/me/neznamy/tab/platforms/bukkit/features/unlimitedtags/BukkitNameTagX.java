@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.feature.PacketReceiveListener;
+import me.neznamy.tab.api.feature.PacketSendListener;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
  * The core class for unlimited NameTag mode on Bukkit
  */
 @RequiredArgsConstructor
-public class BukkitNameTagX extends BackendNameTagX {
+public class BukkitNameTagX extends BackendNameTagX implements PacketReceiveListener, PacketSendListener {
 
     /** Reference to NMS storage for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();

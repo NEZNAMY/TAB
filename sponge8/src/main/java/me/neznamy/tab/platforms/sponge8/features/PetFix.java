@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.sponge8.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.PacketReceiveListener;
+import me.neznamy.tab.api.feature.PacketSendListener;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
-public class PetFix extends TabFeature {
+public class PetFix extends TabFeature implements PacketReceiveListener, PacketSendListener {
 
     /** NMS Storage reference for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();

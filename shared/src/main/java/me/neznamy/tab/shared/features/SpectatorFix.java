@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
@@ -15,7 +15,7 @@ import java.util.UUID;
  * the bottom of TabList with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
-public class SpectatorFix extends TabFeature {
+public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable {
 
     @Getter private final String featureName = "Spectator fix";
 

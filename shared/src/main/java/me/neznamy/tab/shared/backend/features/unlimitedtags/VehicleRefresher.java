@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * and therefore manual teleporting of armor stands is required.
  */
 @RequiredArgsConstructor
-public class VehicleRefresher extends TabFeature {
+public class VehicleRefresher extends TabFeature implements JoinListener, QuitListener, Loadable, Refreshable {
 
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Refreshing vehicles";

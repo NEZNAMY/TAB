@@ -5,6 +5,8 @@ import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.feature.PacketReceiveListener;
+import me.neznamy.tab.api.feature.PacketSendListener;
 import me.neznamy.tab.platforms.sponge8.Sponge8TAB;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.platforms.sponge8.nms.WrappedEntityData;
@@ -28,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class SpongeNameTagX extends BackendNameTagX {
+public class SpongeNameTagX extends BackendNameTagX implements PacketReceiveListener, PacketSendListener {
 
     private final NMSStorage nms = NMSStorage.getInstance();
 

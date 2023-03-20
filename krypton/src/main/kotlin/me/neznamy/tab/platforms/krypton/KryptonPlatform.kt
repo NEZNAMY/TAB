@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.krypton
 
-import me.neznamy.tab.api.TabFeature
+import me.neznamy.tab.api.feature.TabFeature
 import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX
 import me.neznamy.tab.shared.TAB
 import me.neznamy.tab.shared.backend.BackendPlatform

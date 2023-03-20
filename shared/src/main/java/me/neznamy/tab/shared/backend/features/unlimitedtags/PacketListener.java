@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.JoinListener;
+import me.neznamy.tab.api.feature.Loadable;
+import me.neznamy.tab.api.feature.QuitListener;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 
@@ -21,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * periodic / move-triggered distance checks would cause high CPU usage.
  */
 @RequiredArgsConstructor
-public class PacketListener extends TabFeature {
+public class PacketListener extends TabFeature implements JoinListener, QuitListener, Loadable {
 
     @Getter private final String featureName = "Unlimited NameTags";
 

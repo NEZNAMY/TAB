@@ -2,6 +2,8 @@ package me.neznamy.tab.platforms.krypton.features.unlimitedtags
 
 import me.neznamy.tab.api.TabConstants
 import me.neznamy.tab.api.TabPlayer
+import me.neznamy.tab.api.feature.PacketReceiveListener
+import me.neznamy.tab.api.feature.PacketSendListener
 import me.neznamy.tab.platforms.krypton.KryptonPacketBuilder
 import me.neznamy.tab.platforms.krypton.Main
 import me.neznamy.tab.shared.TAB
@@ -22,7 +24,7 @@ import org.kryptonmc.krypton.packet.out.play.PacketOutRemoveEntities
 import org.kryptonmc.krypton.packet.out.play.PacketOutSpawnPlayer
 import kotlin.math.sqrt
 
-class KryptonNameTagX(private val plugin: Main) : BackendNameTagX() {
+class KryptonNameTagX(private val plugin: Main) : BackendNameTagX(), PacketReceiveListener, PacketSendListener {
 
     private val eventListener = EventListener(this)
 

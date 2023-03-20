@@ -5,7 +5,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
@@ -48,7 +47,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             return text;
         }
         if (identifier.startsWith("placeholder_")) {
-            TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", (TabFeature) TabAPI.getInstance().getPlaceholderManager());
+            TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", TabAPI.getInstance().getPlaceholderManager());
         }
         return values.get(player).get(identifier);
     }

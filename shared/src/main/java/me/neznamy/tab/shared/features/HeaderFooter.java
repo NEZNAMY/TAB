@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import me.neznamy.tab.api.HeaderFooterManager;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
@@ -14,7 +14,8 @@ import java.util.List;
 /**
  * Feature handler for header and footer
  */
-public class HeaderFooter extends TabFeature implements HeaderFooterManager {
+public class HeaderFooter extends TabFeature implements HeaderFooterManager, JoinListener, Loadable, UnLoadable,
+        WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     @Getter private final String featureName = "Header/Footer";
     @Getter private final String refreshDisplayName = "Updating header/footer";

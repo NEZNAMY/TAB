@@ -5,6 +5,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
@@ -14,7 +15,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  *   1.5.x - 1.12.x: 28 - 32 characters (depending on used magic codes)
  *   1.13+: unlimited
  */
-public class StableDynamicLine extends ScoreboardLine {
+public class StableDynamicLine extends ScoreboardLine implements Refreshable {
 
     private final String[] EMPTY_ARRAY = new String[0];
 

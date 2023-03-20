@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.Preconditions;
@@ -14,7 +14,8 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.*;
 
-public class NameTag extends TabFeature implements TeamManager {
+public class NameTag extends TabFeature implements TeamManager, JoinListener, QuitListener, LoginPacketListener,
+        Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Updating prefix/suffix";

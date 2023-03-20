@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.util.Preconditions;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.layout.Layout;
@@ -17,7 +18,8 @@ import java.util.UUID;
 /**
  * Feature handler for TabList display names
  */
-public class PlayerList extends TabFeature implements TablistFormatManager {
+public class PlayerList extends TabFeature implements TablistFormatManager, JoinListener, DisplayNameListener, Loadable,
+        UnLoadable, ServerSwitchListener, WorldSwitchListener, Refreshable {
 
     @Getter private final String featureName = "Tablist name formatting";
     @Getter private final String refreshDisplayName = "Updating TabList format";

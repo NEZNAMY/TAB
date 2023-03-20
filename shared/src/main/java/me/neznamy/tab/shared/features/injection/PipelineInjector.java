@@ -1,8 +1,11 @@
 package me.neznamy.tab.shared.features.injection;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.JoinListener;
+import me.neznamy.tab.api.feature.Loadable;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.api.feature.UnLoadable;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -15,7 +18,7 @@ import me.neznamy.tab.shared.TAB;
  * PingSpoof - full feature functionality
  * Unlimited name tags - replacement for bukkit events with much better accuracy and reliability
  */
-public abstract class PipelineInjector extends TabFeature {
+public abstract class PipelineInjector extends TabFeature implements JoinListener, Loadable, UnLoadable {
 
     @Getter private final String featureName = "Pipeline injection";
 

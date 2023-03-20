@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.redis;
 import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.event.EventHandler;
@@ -28,7 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * multiple proxies connected with a redis plugin.
  */
 @SuppressWarnings("unchecked")
-public abstract class RedisSupport extends TabFeature {
+public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener, LoginPacketListener,
+        DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener {
 
     @Getter private final String featureName = "RedisSupport";
 

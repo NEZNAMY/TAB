@@ -6,13 +6,16 @@ import java.util.WeakHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.JoinListener;
+import me.neznamy.tab.api.feature.Loadable;
+import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.api.TabConstants;
 
 @RequiredArgsConstructor
-public class CollisionManager extends TabFeature {
+public class CollisionManager extends TabFeature implements JoinListener, Loadable, Refreshable {
 
     @Getter private final String featureName = "NameTags";
     @Getter private final String refreshDisplayName = "Updating collision";

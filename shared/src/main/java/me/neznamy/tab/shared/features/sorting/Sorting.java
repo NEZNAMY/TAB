@@ -5,7 +5,10 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.JoinListener;
+import me.neznamy.tab.api.feature.Loadable;
+import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.ITabPlayer;
@@ -27,7 +30,7 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
 /**
  * Class for handling player sorting rules
  */
-public class Sorting extends TabFeature {
+public class Sorting extends TabFeature implements JoinListener, Loadable, Refreshable {
 
     @Getter private final String featureName = "Team name refreshing";
     @Getter private final String refreshDisplayName = "Updating team name";

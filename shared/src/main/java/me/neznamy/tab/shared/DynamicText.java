@@ -5,7 +5,7 @@ import java.util.List;
 
 import lombok.Getter;
 import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
@@ -26,7 +26,7 @@ public class DynamicText implements Property {
      * Feature defining this text, which will receive refresh function
      * if any of placeholders used in it change value.
      */
-    private final TabFeature listener;
+    private final Refreshable listener;
     
     /** Player this text belongs to */
     private final TabPlayer owner;
@@ -74,7 +74,7 @@ public class DynamicText implements Property {
      * @param   source
      *          Source of the text used in debug command
      */
-    public DynamicText(String name, TabFeature listener, TabPlayer owner, String rawValue, String source) {
+    public DynamicText(String name, Refreshable listener, TabPlayer owner, String rawValue, String source) {
         this.name = name;
         this.listener = listener;
         this.owner = owner;

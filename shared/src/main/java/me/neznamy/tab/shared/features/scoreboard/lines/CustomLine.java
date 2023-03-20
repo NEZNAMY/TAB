@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
@@ -9,7 +10,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  * "Custom|prefix|name|suffix|number" where even name supports placeholders, however has a chance to flicker on refresh
  * Not for public use
  */
-public class CustomLine extends ScoreboardLine {
+public class CustomLine extends ScoreboardLine implements Refreshable {
 
     //configured prefix
     private String prefix;

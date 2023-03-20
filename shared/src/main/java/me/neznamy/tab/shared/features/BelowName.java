@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.*;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
@@ -13,7 +14,8 @@ import java.util.Objects;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName extends TabFeature {
+public class BelowName extends TabFeature implements JoinListener, LoginPacketListener, Loadable, UnLoadable,
+        WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
@@ -21,7 +23,7 @@ public class BelowName extends TabFeature {
     @Getter private final String featureName = "BelowName";
     private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
-    private final TabFeature textRefresher = new TextRefresher(this);
+    private final TextRefresher textRefresher = new TextRefresher(this);
 
     private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
@@ -152,7 +154,7 @@ public class BelowName extends TabFeature {
     }
 
     @RequiredArgsConstructor
-    public static class TextRefresher extends TabFeature {
+    public static class TextRefresher extends TabFeature implements Refreshable {
 
         @Getter private final String refreshDisplayName = "Updating BelowName text";
         @Getter private final String featureName = "BelowName";

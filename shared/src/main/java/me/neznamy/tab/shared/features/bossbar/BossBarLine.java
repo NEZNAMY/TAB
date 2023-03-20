@@ -3,7 +3,8 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -44,10 +45,10 @@ public class BossBarLine implements BossBar {
     private final Set<TabPlayer> players = Collections.newSetFromMap(new WeakHashMap<>());
 
     //refreshers
-    private final TabFeature textRefresher;
-    private final TabFeature progressRefresher;
-    private final TabFeature colorRefresher;
-    private final TabFeature styleRefresher;
+    private final TextRefresher textRefresher;
+    private final ProgressRefresher progressRefresher;
+    private final ColorRefresher colorRefresher;
+    private final StyleRefresher styleRefresher;
 
     //property names
     private final String propertyTitle;
@@ -90,53 +91,13 @@ public class BossBarLine implements BossBar {
         propertyColor = TabConstants.Property.bossbarColor(name);
         propertyStyle = TabConstants.Property.bossbarStyle(name);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarTitle(name),
-                textRefresher = new TabFeature() {
-
-            @Getter private final String featureName = "BossBar";
-            @Getter private final String refreshDisplayName = "Updating text";
-
-            @Override
-            public void refresh(TabPlayer refreshed, boolean force) {
-                if (!players.contains(refreshed)) return;
-                refreshed.getBossBarHandler().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
-            }
-        });
+                textRefresher = new TextRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarProgress(name),
-                progressRefresher = new TabFeature() {
-
-            @Getter private final String featureName = "BossBar";
-            @Getter private final String refreshDisplayName = "Updating progress";
-
-            @Override
-            public void refresh(TabPlayer refreshed, boolean force) {
-                if (!players.contains(refreshed)) return;
-                refreshed.getBossBarHandler().update(uniqueId, parseProgress(refreshed.getProperty(propertyProgress).updateAndGet())/100);
-            }
-        });
+                progressRefresher = new ProgressRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarColor(name),
-                colorRefresher = new TabFeature() {
-
-            @Getter private final String featureName = "BossBar";
-            @Getter private final String refreshDisplayName = "Updating color";
-
-            @Override
-            public void refresh(TabPlayer refreshed, boolean force) {
-                if (!players.contains(refreshed)) return;
-                refreshed.getBossBarHandler().update(uniqueId, parseColor(refreshed.getProperty(propertyColor).updateAndGet()));
-            }
-        });
+                colorRefresher = new ColorRefresher());
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.bossBarStyle(name),
-                styleRefresher = new TabFeature() {
-
-            @Getter private final String featureName = "BossBar";
-            @Getter private final String refreshDisplayName = "Updating style";
-
-            @Override
-            public void refresh(TabPlayer refreshed, boolean force) {
-                if (!players.contains(refreshed)) return;
-                refreshed.getBossBarHandler().update(uniqueId, parseStyle(refreshed.getProperty(propertyStyle).updateAndGet()));
-            }
-        });
+                styleRefresher = new StyleRefresher());
     }
 
     /**
@@ -283,5 +244,53 @@ public class BossBarLine implements BossBar {
     @Override
     public boolean containsPlayer(TabPlayer player) {
         return players.contains(player);
+    }
+
+    public class TextRefresher extends TabFeature implements Refreshable {
+
+        @Getter private final String featureName = "BossBar";
+        @Getter private final String refreshDisplayName = "Updating text";
+
+        @Override
+        public void refresh(TabPlayer refreshed, boolean force) {
+            if (!players.contains(refreshed)) return;
+            refreshed.getBossBarHandler().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
+        }
+    }
+
+    public class ProgressRefresher extends TabFeature implements Refreshable {
+
+        @Getter private final String featureName = "BossBar";
+        @Getter private final String refreshDisplayName = "Updating progress";
+
+        @Override
+        public void refresh(TabPlayer refreshed, boolean force) {
+            if (!players.contains(refreshed)) return;
+            refreshed.getBossBarHandler().update(uniqueId, parseProgress(refreshed.getProperty(propertyProgress).updateAndGet())/100);
+        }
+    }
+
+    public class ColorRefresher extends TabFeature implements Refreshable {
+
+        @Getter private final String featureName = "BossBar";
+        @Getter private final String refreshDisplayName = "Updating color";
+
+        @Override
+        public void refresh(TabPlayer refreshed, boolean force) {
+            if (!players.contains(refreshed)) return;
+            refreshed.getBossBarHandler().update(uniqueId, parseColor(refreshed.getProperty(propertyColor).updateAndGet()));
+        }
+    }
+
+    public class StyleRefresher extends TabFeature implements Refreshable {
+
+        @Getter private final String featureName = "BossBar";
+        @Getter private final String refreshDisplayName = "Updating style";
+
+        @Override
+        public void refresh(TabPlayer refreshed, boolean force) {
+            if (!players.contains(refreshed)) return;
+            refreshed.getBossBarHandler().update(uniqueId, parseStyle(refreshed.getProperty(propertyStyle).updateAndGet()));
+        }
     }
 }

@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
@@ -76,11 +76,11 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         String s = getReplacements().findReplacement(value == null ? lastValue == null ? identifier : lastValue : value.toString());
         if (s.equals(lastValue) && !force) return;
         lastValue = s;
-        Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
+        Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
         for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
             if (!player.isLoaded()) continue;
-            for (TabFeature f : usage) {
+            for (Refreshable f : usage) {
                 long time = System.nanoTime();
                 f.refresh(player, false);
                 TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);

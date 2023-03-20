@@ -2,7 +2,8 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
@@ -15,7 +16,7 @@ import java.util.*;
 /**
  * A class representing a scoreboard configured in config
  */
-public class ScoreboardImpl extends TabFeature implements Scoreboard {
+public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshable {
 
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Updating Scoreboard title";

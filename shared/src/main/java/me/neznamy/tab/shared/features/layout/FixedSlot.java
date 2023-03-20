@@ -2,7 +2,8 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
@@ -11,7 +12,7 @@ import me.neznamy.tab.api.tablist.TabListEntry;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class FixedSlot extends TabFeature {
+public class FixedSlot extends TabFeature implements Refreshable {
 
     @Getter private final String featureName = "Layout";
     @Getter private final String refreshDisplayName = "Updating fixed slots";

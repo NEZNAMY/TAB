@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import me.neznamy.tab.api.*;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 
@@ -9,7 +10,8 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends TabFeature {
+public class YellowNumber extends TabFeature implements JoinListener, LoginPacketListener, Loadable, UnLoadable,
+        WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     @Getter private final String featureName = "Yellow Number";
     @Getter private final String refreshDisplayName = "Updating value";

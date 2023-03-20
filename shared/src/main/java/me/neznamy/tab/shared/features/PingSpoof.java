@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Sets ping of all players in the packet to configured value to prevent hacked clients from seeing exact ping value of each player
  */
-public class PingSpoof extends TabFeature {
+public class PingSpoof extends TabFeature implements JoinListener, LatencyListener, Loadable, UnLoadable {
 
     //fake ping value
     private final int value = TAB.getInstance().getConfiguration().getConfig().getInt("ping-spoof.value", 0);

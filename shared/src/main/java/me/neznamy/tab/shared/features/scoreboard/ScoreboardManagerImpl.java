@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
@@ -14,7 +14,9 @@ import java.util.Map.Entry;
 /**
  * Feature handler for scoreboard feature
  */
-public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager {
+public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener, LoginPacketListener,
+        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, WorldSwitchListener,
+        ServerSwitchListener, Refreshable {
 
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 

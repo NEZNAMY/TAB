@@ -1,12 +1,13 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.*;
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
-import java.util.Collections;
 import java.util.List;
 
 public abstract class BackendNameTagX extends NameTagX {
@@ -21,23 +22,7 @@ public abstract class BackendNameTagX extends NameTagX {
         super(BackendArmorStandManager::new);
         TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
         TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
-        TabFeature gamemode = new TabFeature() {
-
-            @Getter private final String featureName = "Unlimited NameTags";
-            @Getter private final String refreshDisplayName = "Gamemode listener";
-
-            {
-                addUsedPlaceholders(Collections.singletonList("%gamemode%"));
-            }
-
-            @Override
-            public void refresh(TabPlayer viewer, boolean force) {
-                for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
-                    getArmorStandManager(target).updateMetadata((BackendTabPlayer) viewer);
-                }
-            }
-        };
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, gamemode);
+        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, new GameModeRefresher(this));
     }
 
     /**

@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -15,7 +15,8 @@ import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
-public class LayoutManager extends TabFeature {
+public class LayoutManager extends TabFeature implements JoinListener, QuitListener, VanishListener, Loadable,
+        UnLoadable, Refreshable {
 
     private final Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
     @Getter private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");

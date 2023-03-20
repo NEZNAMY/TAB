@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -115,7 +116,7 @@ public abstract class ITabPlayer implements TabPlayer {
      * @return  {@code true} if property did not exist or existed with different raw value,
      *          {@code false} if property existed with the same raw value already.
      */
-    private boolean setProperty(TabFeature feature, String identifier, String rawValue, String source, boolean exposeInExpansion) {
+    private boolean setProperty(Refreshable feature, String identifier, String rawValue, String source, boolean exposeInExpansion) {
         DynamicText p = (DynamicText) getProperty(identifier);
         if (p == null) {
             properties.put(identifier, new DynamicText(exposeInExpansion ? identifier : null, feature, this, rawValue, source));
@@ -130,7 +131,7 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public boolean setProperty(TabFeature feature, String identifier, String rawValue) {
+    public boolean setProperty(Refreshable feature, String identifier, String rawValue) {
         return setProperty(feature, identifier, rawValue, null, false);
     }
 
@@ -204,12 +205,12 @@ public abstract class ITabPlayer implements TabPlayer {
     }
 
     @Override
-    public boolean loadPropertyFromConfig(TabFeature feature, String property) {
+    public boolean loadPropertyFromConfig(Refreshable feature, String property) {
         return loadPropertyFromConfig(feature, property, "");
     }
 
     @Override
-    public boolean loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet) {
+    public boolean loadPropertyFromConfig(Refreshable feature, String property, String ifNotSet) {
         String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
         if (value.length == 0) {
             value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);

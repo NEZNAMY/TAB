@@ -5,10 +5,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.TabPlayer;
 
-public interface PlaceholderManager {
+public interface PlaceholderManager extends Refreshable {
 
     /**
      * Registers a server placeholder (placeholder with same output for all players)
@@ -43,7 +43,7 @@ public interface PlaceholderManager {
      * @param   feature
      *          feature using the placeholder
      */
-    void addUsedPlaceholder(String identifier, TabFeature feature);
+    void addUsedPlaceholder(String identifier, Refreshable feature);
 
     String findReplacement(String placeholder, String output);
 

@@ -1,7 +1,8 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.QuitListener;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
@@ -9,7 +10,7 @@ import me.neznamy.tab.shared.TAB;
 /**
  * A small class fixing bugs in other plugins
  */
-public class GhostPlayerFix extends TabFeature {
+public class GhostPlayerFix extends TabFeature implements QuitListener {
 
     @Getter private final String featureName = "Ghost player fix";
 

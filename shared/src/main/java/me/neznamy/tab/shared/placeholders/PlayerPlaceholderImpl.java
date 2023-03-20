@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.*;
 import java.util.function.Function;
 
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
@@ -92,9 +92,9 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
             }
             return;
         }
-        Set<TabFeature> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
+        Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
-        for (TabFeature f : usage) {
+        for (Refreshable f : usage) {
             long time = System.nanoTime();
             f.refresh(player, false);
             TAB.getInstance().getCPUManager().addTime(f.getFeatureName(), f.getRefreshDisplayName(), System.nanoTime()-time);

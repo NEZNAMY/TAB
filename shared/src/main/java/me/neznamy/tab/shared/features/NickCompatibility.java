@@ -2,7 +2,8 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.EntryAddListener;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
-public class NickCompatibility extends TabFeature {
+public class NickCompatibility extends TabFeature implements EntryAddListener {
 
     @Getter private final String featureName = "Nick compatibility";
     private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
 
@@ -145,7 +146,7 @@ public interface TabPlayer {
      *          new raw value
      * @return  {@code true} if value changed / did not exist, {@code false} if value did not change
      */
-    boolean setProperty(TabFeature feature, String identifier, String rawValue);
+    boolean setProperty(Refreshable feature, String identifier, String rawValue);
 
     /**
      * Loads property from config using standard property loading algorithm
@@ -154,7 +155,7 @@ public interface TabPlayer {
      *          property name to load
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    boolean loadPropertyFromConfig(TabFeature feature, String property);
+    boolean loadPropertyFromConfig(Refreshable feature, String property);
 
     /**
      * Loads property from config using standard property loading algorithm. If the property is
@@ -166,7 +167,7 @@ public interface TabPlayer {
      *          value to use if property is not defined in config
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    boolean loadPropertyFromConfig(TabFeature feature, String property, String ifNotSet);
+    boolean loadPropertyFromConfig(Refreshable feature, String property, String ifNotSet);
 
     /**
      * Returns name of player's scoreboard team or {@code null} if NameTag feature is disabled

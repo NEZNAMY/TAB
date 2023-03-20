@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabFeature;
+import me.neznamy.tab.api.feature.PacketReceiveListener;
+import me.neznamy.tab.api.feature.PacketSendListener;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityMetadataStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutSpawnEntityLivingStorage;
@@ -23,7 +25,7 @@ import java.util.WeakHashMap;
  * Since 1.16 this results in client sending entity use packet twice,
  * so we must cancel the 2nd one to prevent double toggle.
  */
-public class PetFix extends TabFeature {
+public class PetFix extends TabFeature implements PacketReceiveListener, PacketSendListener {
 
     /** NMS Storage reference for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();
