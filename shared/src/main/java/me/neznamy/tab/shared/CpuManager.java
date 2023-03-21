@@ -3,7 +3,6 @@ package me.neznamy.tab.shared;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -210,25 +209,6 @@ public class CpuManager implements ThreadManager {
             return diff == 0 ? 1 : diff; //otherwise, entries with duplicate values are lost
         };
         Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
-        sortedByValues.putAll(map);
-        return sortedByValues;
-    }
-
-    /**
-     * Sorts map by value from highest to lowest
-     *
-     * @param   <K>
-     *          map key type
-     * @param   map
-     *          map to sort
-     * @return  sorted map
-     */
-    private <K> Map<K, AtomicInteger> sortByValue1(Map<K, AtomicInteger> map) {
-        Comparator<K> valueComparator = (k1, k2) -> {
-            int diff = map.get(k2).get() - map.get(k1).get();
-            return diff == 0 ? 1 : diff; //otherwise, entries with duplicate values are lost
-        };
-        Map<K, AtomicInteger> sortedByValues = new TreeMap<>(valueComparator);
         sortedByValues.putAll(map);
         return sortedByValues;
     }
