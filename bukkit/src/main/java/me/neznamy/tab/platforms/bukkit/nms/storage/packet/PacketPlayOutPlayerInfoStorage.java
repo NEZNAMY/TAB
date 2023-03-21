@@ -131,12 +131,12 @@ public class PacketPlayOutPlayerInfoStorage {
             if (nms.getMinorVersion() < 8) return;
             newPlayerInfoData = CLASS.getConstructors()[0];
             PlayerInfoData_getProfile = nms.getMethods(CLASS, GameProfile.class).get(0);
-            (PlayerInfoData_Latency = nms.getFields(CLASS, int.class).get(0)).setAccessible(true);
-            (PlayerInfoData_GameMode = nms.getFields(CLASS, EnumGamemodeClass).get(0)).setAccessible(true);
-            (PlayerInfoData_DisplayName = nms.getFields(CLASS, nms.IChatBaseComponent).get(0)).setAccessible(true);
+            PlayerInfoData_Latency = nms.getFields(CLASS, int.class).get(0);
+            PlayerInfoData_GameMode = nms.getFields(CLASS, EnumGamemodeClass).get(0);
+            PlayerInfoData_DisplayName = nms.getFields(CLASS, nms.IChatBaseComponent).get(0);
             if (nms.is1_19_3Plus()) {
-                (PlayerInfoData_Listed = nms.getFields(CLASS, boolean.class).get(0)).setAccessible(true);
-                (PlayerInfoData_RemoteChatSession = nms.getFields(CLASS, RemoteChatSession$Data).get(0)).setAccessible(true);
+                PlayerInfoData_Listed = nms.getFields(CLASS, boolean.class).get(0);
+                PlayerInfoData_RemoteChatSession = nms.getFields(CLASS, RemoteChatSession$Data).get(0);
             }
         }
     }
