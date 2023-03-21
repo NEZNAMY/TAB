@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungeecord;
+package me.neznamy.tab.platforms.bungeecord.bossbar;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -6,6 +6,7 @@ import me.neznamy.tab.api.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 import java.util.HashMap;
@@ -23,7 +24,6 @@ public class BungeeBossBarHandler implements BossBarHandler {
 
     @Override
     public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
-        if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 0);
         bossbar.setHealth(progress);
         bossbar.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
@@ -37,7 +37,6 @@ public class BungeeBossBarHandler implements BossBarHandler {
 
     @Override
     public void update(@NonNull UUID id, @NonNull String title) {
-        if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 3);
         bossbar.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
         player.getPlayer().unsafe().sendPacket(bossbar);
@@ -45,7 +44,6 @@ public class BungeeBossBarHandler implements BossBarHandler {
 
     @Override
     public void update(@NonNull UUID id, float progress) {
-        if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 2);
         bossbar.setHealth(progress);
         player.getPlayer().unsafe().sendPacket(bossbar);
@@ -53,7 +51,6 @@ public class BungeeBossBarHandler implements BossBarHandler {
 
     @Override
     public void update(@NonNull UUID id, @NonNull BarStyle style) {
-        if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 4);
         bossbar.setDivision(style.ordinal());
         bossbar.setColor(colors.get(id));
@@ -64,7 +61,6 @@ public class BungeeBossBarHandler implements BossBarHandler {
 
     @Override
     public void update(@NonNull UUID id, @NonNull BarColor color) {
-        if (player.getVersion().getMinorVersion() < 9) return;
         BossBar bossbar = new BossBar(id, 4);
         bossbar.setDivision(styles.get(id));
         bossbar.setColor(color.ordinal());
@@ -75,7 +71,6 @@ public class BungeeBossBarHandler implements BossBarHandler {
 
     @Override
     public void remove(@NonNull UUID id) {
-        if (player.getVersion().getMinorVersion() < 9) return;
         player.getPlayer().unsafe().sendPacket(new BossBar(id, 1));
 
         colors.remove(id);
