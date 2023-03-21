@@ -42,7 +42,6 @@ public class Sponge7TAB {
     @Getter private static final ComponentCache<IChatBaseComponent, Text> textCache = new ComponentCache<>(10000,
             (component, version) -> TextSerializers.JSON.deserialize(component.toString(version)));
 
-
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private File configDir;
     @Inject private Logger logger;
@@ -50,7 +49,6 @@ public class Sponge7TAB {
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
         String version = game.getPlatform().getMinecraftVersion().getName();
-        game.getServer().getConsole().sendMessage(Text.of("[TAB] Server version: " + version));
         TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
         game.getEventManager().registerListeners(this, new SpongeEventListener());
         TAB.getInstance().load();
@@ -62,7 +60,7 @@ public class Sponge7TAB {
 
     @Listener
     public void onServerStop(GameStoppedServerEvent event) {
-        if (TAB.getInstance() != null) TAB.getInstance().unload();
+        TAB.getInstance().unload();
     }
 
     private @NotNull CommandResult executeCommand(CommandSource source, CommandContext context) {

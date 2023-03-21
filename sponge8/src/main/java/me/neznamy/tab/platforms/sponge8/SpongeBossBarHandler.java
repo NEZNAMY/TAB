@@ -52,5 +52,4 @@ public class SpongeBossBarHandler implements BossBarHandler {
     public void remove(@NonNull UUID id) {
         player.getPlayer().hideBossBar(bossBars.remove(id));
     }
-
 }

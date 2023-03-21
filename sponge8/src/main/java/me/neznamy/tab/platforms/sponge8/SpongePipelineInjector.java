@@ -51,9 +51,8 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
 
     @Override
     protected Channel getChannel(TabPlayer player) {
-        final SpongeTabPlayer sponge = (SpongeTabPlayer) player;
         try {
-            return (Channel) channelField.get(((ServerPlayer) sponge.getPlayer()).connection.connection);
+            return (Channel) channelField.get(((ServerPlayer) player.getPlayer()).connection.connection);
         } catch (final ReflectiveOperationException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to get channel for " + player.getName(), exception);
         }

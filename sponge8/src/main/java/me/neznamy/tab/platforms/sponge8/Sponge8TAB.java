@@ -61,14 +61,9 @@ public class Sponge8TAB {
     @Listener
     public void onServerStart(StartingEngineEvent<Server> event) {
         String version = game.platform().minecraftVersion().name();
-        event.game().systemSubject().sendMessage(Component.text("[TAB] Server version: " + version));
         TAB.setInstance(new TAB(new SpongePlatform(this), ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
         game.eventManager().registerListeners(container, new SpongeEventListener());
         TAB.getInstance().load();
-        setupMetrics();
-    }
-
-    private void setupMetrics() {
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> TAB.getInstance().getServerVersion().getFriendlyName()));
     }
@@ -80,7 +75,7 @@ public class Sponge8TAB {
 
     @Listener
     public void onServerStop(StoppingEngineEvent<Server> event) {
-        if (TAB.getInstance() != null) TAB.getInstance().unload();
+        TAB.getInstance().unload();
     }
 
     private static class TABCommand implements Command.Raw {

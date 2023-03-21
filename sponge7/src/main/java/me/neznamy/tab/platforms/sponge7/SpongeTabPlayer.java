@@ -7,6 +7,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.shared.ITabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.data.key.Keys;
@@ -22,7 +23,7 @@ import java.util.Collection;
 public final class SpongeTabPlayer extends ITabPlayer {
 
     @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
-    @Getter private final me.neznamy.tab.api.tablist.TabList tabList = new SpongeTabList(this);
+    @Getter private final TabList tabList = new SpongeTabList(this);
     @Getter private final BossBarHandler bossBarHandler = new SpongeBossBarHandler(this);
 
     public SpongeTabPlayer(final Player player) {
@@ -41,8 +42,8 @@ public final class SpongeTabPlayer extends ITabPlayer {
     }
 
     @Override
-    public void sendPacket(final Object packet) {
-        throw new IllegalStateException("No longer supported");
+    public void sendPacket(Object packet) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
