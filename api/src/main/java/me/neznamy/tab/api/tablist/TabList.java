@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public interface TabList {
 
+    String TEXTURES_PROPERTY = "textures";
+
     void removeEntry(@NonNull UUID entry);
 
     void removeEntries(@NonNull Collection<UUID> entries);

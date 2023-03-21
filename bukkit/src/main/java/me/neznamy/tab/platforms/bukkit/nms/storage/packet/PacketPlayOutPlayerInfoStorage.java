@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
@@ -57,8 +58,8 @@ public class PacketPlayOutPlayerInfoStorage {
                 packet = CONSTRUCTOR.newInstance(actions, Collections.emptyList());
                 for (TabListEntry entry : entries) {
                     GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
-                    if (entry.getSkin() != null) profile.getProperties().put("textures",
-                            new Property("textures", entry.getSkin().getValue(), entry.getSkin().getSignature()));
+                    if (entry.getSkin() != null) profile.getProperties().put(TabList.TEXTURES_PROPERTY,
+                            new Property(TabList.TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
                     players.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(
                             entry.getUniqueId(),
                             profile,
@@ -74,8 +75,8 @@ public class PacketPlayOutPlayerInfoStorage {
                         Array.newInstance(NMSStorage.getInstance().EntityPlayer, 0));
                 for (TabListEntry entry : entries) {
                     GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
-                    if (entry.getSkin() != null) profile.getProperties().put("textures",
-                            new Property("textures", entry.getSkin().getValue(), entry.getSkin().getSignature()));
+                    if (entry.getSkin() != null) profile.getProperties().put(TabList.TEXTURES_PROPERTY,
+                            new Property(TabList.TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
                     List<Object> parameters = new ArrayList<>();
                     if (PlayerInfoDataStorage.newPlayerInfoData.getParameterTypes()[0] == CLASS) {
                         parameters.add(packet);

@@ -62,7 +62,7 @@ public class VelocityTabList extends SingleUpdateTabList {
                         entry.getUniqueId(),
                         entry.getName() == null ? "" : entry.getName(),
                         entry.getSkin() == null ? Collections.emptyList() : Collections.singletonList(
-                                new GameProfile.Property("textures", entry.getSkin().getValue(), Objects.requireNonNull(entry.getSkin().getSignature())))
+                                new GameProfile.Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), Objects.requireNonNull(entry.getSkin().getSignature())))
                 ))
                 .listed(entry.isListed())
                 .latency(entry.getLatency())

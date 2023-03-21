@@ -134,7 +134,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public Skin getSkin() {
         try {
-            Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get("textures");
+            Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
             if (col.isEmpty()) return null; //offline mode
             Property property = col.iterator().next();
             return new Skin(property.getValue(), property.getSignature());

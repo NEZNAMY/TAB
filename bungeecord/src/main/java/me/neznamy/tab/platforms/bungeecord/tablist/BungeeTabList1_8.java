@@ -86,7 +86,7 @@ public class BungeeTabList1_8 extends BulkUpdateTabList {
             item.setGamemode(data.getGameMode());
             item.setPing(data.getLatency());
             if (data.getSkin() != null) {
-                item.setProperties(new Property[]{new Property("textures", data.getSkin().getValue(), data.getSkin().getSignature())});
+                item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, data.getSkin().getValue(), data.getSkin().getSignature())});
             } else {
                 item.setProperties(new Property[0]);
             }

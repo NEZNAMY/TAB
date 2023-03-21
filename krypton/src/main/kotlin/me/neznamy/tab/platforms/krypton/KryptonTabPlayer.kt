@@ -52,7 +52,7 @@ class KryptonTabPlayer(
     override fun isDisguised(): Boolean = false
 
     override fun getSkin(): Skin {
-        val textures = delegate.profile.properties.firstOrNull { it.name == "textures" }
+        val textures = delegate.profile.properties.firstOrNull { it.name == TabList.TEXTURES_PROPERTY }
             ?: throw IllegalStateException("User does not have any skin data!")
         return Skin(textures.value, textures.signature)
     }

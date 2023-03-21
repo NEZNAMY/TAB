@@ -65,7 +65,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     @Override
     public Skin getSkin() {
-        final Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get("textures");
+        final Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; //offline mode
         final ProfileProperty property = properties.iterator().next();
         return new Skin(property.getValue(), property.getSignature().orElse(null));
