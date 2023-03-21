@@ -155,7 +155,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         return getPlayer().getMetadata("vanished").stream().anyMatch(MetadataValue::asBoolean);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getGamemode() {
         return getPlayer().getGameMode().getValue();
