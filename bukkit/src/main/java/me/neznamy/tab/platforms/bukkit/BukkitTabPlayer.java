@@ -11,6 +11,9 @@ import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.api.util.ReflectionUtils;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_8;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_9;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
@@ -49,7 +52,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Getter private final Scoreboard scoreboard = new BukkitScoreboard(this);
     @Getter private final TabList tabList = new BukkitTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new BukkitBossBarHandler(this);
+    @Getter private final BossBarHandler bossBarHandler = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+            new BukkitBossBar1_9(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar1_8(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version
