@@ -2,17 +2,19 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.feature.Refreshable;
 import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Permission group manager retrieving groups from permission plugin
  */
-public class GroupManager extends TabFeature {
+public class GroupManager extends TabFeature implements Refreshable {
 
     /** Detected permission plugin to take groups from */
     @Getter private final PermissionPlugin plugin;
@@ -24,21 +26,18 @@ public class GroupManager extends TabFeature {
     private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
     @Getter private final String featureName = "Permission group refreshing";
+    @Getter private final String refreshDisplayName = "Processing group change";
 
     /**
-     * Constructs new instance with given permission plugin, loads
-     * event listeners and registers group placeholder.
+     * Constructs new instance with given permission plugin and registers group placeholder.
      *
      * @param   plugin
      *          Detected permission plugin
      */
     public GroupManager(PermissionPlugin plugin) {
         this.plugin = plugin;
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(1000, this, TabConstants.CpuUsageCategory.GROUP_REFRESHING, () -> {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                ((ITabPlayer)all).setGroup(detectPermissionGroup(all));
-            }
-        });
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, 1000, this::detectPermissionGroup);
+        addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GROUP));
     }
 
     /**
@@ -85,5 +84,10 @@ public class GroupManager extends TabFeature {
             }
         }
         return TabConstants.NO_GROUP;
+    }
+
+    @Override
+    public void refresh(TabPlayer refreshed, boolean force) {
+        ((ITabPlayer)refreshed).setGroup(TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP).getLastValue(refreshed));
     }
 }

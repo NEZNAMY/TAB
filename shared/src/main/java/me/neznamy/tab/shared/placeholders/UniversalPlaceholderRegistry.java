@@ -27,7 +27,6 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
     @Override
     public void registerPlaceholders(PlaceholderManager manager) {
         manager.registerServerPlaceholder("%%", -1, () -> "%");
-        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, -1, TabPlayer::getGroup);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, TabPlayer::isVanished);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, TabPlayer::getWorld);
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD_ONLINE, 1000, p -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> p.getWorld().equals(all.getWorld()) && !all.isVanished()).count());

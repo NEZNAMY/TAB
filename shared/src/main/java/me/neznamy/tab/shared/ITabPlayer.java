@@ -7,7 +7,6 @@ import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -155,7 +154,6 @@ public abstract class ITabPlayer implements TabPlayer {
     public void setGroup(@NonNull String permissionGroup) {
         if (this.permissionGroup.equals(permissionGroup)) return;
         this.permissionGroup = permissionGroup;
-        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(this, permissionGroup);
         forceRefresh();
     }
 
