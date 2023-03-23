@@ -54,14 +54,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private Placeholder[] usedPlaceholders = new Placeholder[0];
 
     @Getter private final AtomicInteger loopTime = new AtomicInteger();
-    private int refreshInterval = 10000;
-    private Future<?> refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(refreshInterval, this, "Refreshing placeholders", this::refresh);
+    private final Future<?> refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, "Refreshing placeholders", this::refresh);
 
     @Getter @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", false) ?
             TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
 
     private void refresh() {
-        int loopTime = this.loopTime.addAndGet(refreshInterval);
+        int loopTime = this.loopTime.addAndGet(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
         int size = TAB.getInstance().getOnlinePlayers().length;
         Map<TabPlayer, Set<Refreshable>> update = new HashMap<>(size);
         Map<TabPlayer, Set<Refreshable>> forceUpdate = new HashMap<>(size);
@@ -237,23 +236,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
             }
-            if (p.getRefresh() % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL == 0 && p.getRefresh() > 0) {
-                int refresh = gcd(p.getRefresh(), refreshInterval);
-                if (refreshInterval != refresh) {
-                    TAB.getInstance().debug("Decreasing refresh interval of placeholder refreshing task to " + refresh + "ms due to placeholder " + identifier);
-                    if (refreshTask != null) refreshTask.cancel(true);
-                    refreshInterval = refresh;
-                    refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(refreshInterval, this, "Refreshing placeholders", this::refresh);
-                    loopTime.set(0);
-                }
-            }
         }
     }
 
-    private int gcd(int a, int b) {
-        return b == 0 ? a : gcd(b, a % b);
-    }
-    
     public void recalculateUsedPlaceholders() {
         usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).distinct().toArray(Placeholder[]::new);
     }
