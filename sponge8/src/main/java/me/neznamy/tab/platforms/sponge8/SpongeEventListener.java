@@ -9,6 +9,8 @@ import org.spongepowered.api.event.entity.ChangeEntityWorldEvent;
 import org.spongepowered.api.event.entity.living.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
+import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.scoreboard.Team;
 
 public final class SpongeEventListener {
 
@@ -17,11 +19,20 @@ public final class SpongeEventListener {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(event.player().uniqueId())));
+
+        // Clear created mess, so it doesn't get saved into scoreboard.dat
+        Scoreboard sb = event.player().scoreboard();
+        sb.teams().forEach(Team::unregister);
+        sb.objectives().forEach(sb::removeObjective);
     }
 
     @Listener
     public void onJoin(final ServerSideConnectionEvent.Join event) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
+
+        // Make sure each player is in different scoreboard for per-player view
+        event.player().setScoreboard(Scoreboard.builder().build());
+
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onJoin(new SpongeTabPlayer(event.player())));
     }

@@ -94,7 +94,7 @@ public class SpongeScoreboard extends TabScoreboard {
         if (team == null) return;
         team.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()));
         team.setPrefix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(prefix, 16)), player.getVersion()));
-        team.setSuffix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(prefix, 16)), player.getVersion()));
+        team.setSuffix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(suffix, 16)), player.getVersion()));
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
         team.setCollisionRule(convertCollisionRule(collision));

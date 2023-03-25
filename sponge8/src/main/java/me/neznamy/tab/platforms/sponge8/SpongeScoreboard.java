@@ -1,132 +1,132 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TabScoreboard;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
-import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
-import net.minecraft.server.ServerScoreboard;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Scoreboard;
-import net.minecraft.world.scores.Team;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.scoreboard.*;
+import org.spongepowered.api.scoreboard.criteria.Criteria;
+import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
+import org.spongepowered.api.scoreboard.objective.Objective;
+import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 
 import java.util.Collection;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SpongeScoreboard extends TabScoreboard {
 
-    private static final Scoreboard dummyScoreboard = new Scoreboard();
+    private final Map<String, Objective> objectives = new HashMap<>();
 
-    public SpongeScoreboard(TabPlayer player) {
+    private final ServerPlayer spongePlayer;
+    
+    public SpongeScoreboard(SpongeTabPlayer player) {
         super(player);
+        spongePlayer = player.getPlayer();
     }
 
     @Override
     public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
-        player.sendPacket(new ClientboundSetDisplayObjectivePacket(slot.ordinal(),
-                new Objective(new Scoreboard(), objective, null, TextComponent.EMPTY, null)));
+        spongePlayer.scoreboard().updateDisplaySlot(objectives.get(objective), convertDisplaySlot(slot));
+    }
+
+    private static org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
+        switch (slot) {
+            case PLAYER_LIST: return DisplaySlots.LIST.get();
+            case SIDEBAR: return DisplaySlots.SIDEBAR.get();
+            default: return DisplaySlots.BELOW_NAME.get();
+        }
     }
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = player.getVersion().getMinorVersion() < 13 ? cutTo(title, 32) : title;
-        player.sendPacket(new ClientboundSetObjectivePacket(
-                new Objective(
-                        dummyScoreboard,
-                        objectiveName,
-                        null,
-                        Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()),
-                        hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
-                ), 0
-        ));
+        String displayName = cutTo(title, 32);
+        org.spongepowered.api.scoreboard.objective.Objective objective = org.spongepowered.api.scoreboard.objective.Objective.builder()
+                .name(objectiveName)
+                .displayName(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()))
+                .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
+                .criterion(Criteria.DUMMY)
+                .build();
+        objectives.put(objectiveName, objective);
+        spongePlayer.scoreboard().addObjective(objective);
     }
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPacket(new ClientboundSetObjectivePacket(new Objective(dummyScoreboard, objectiveName, null, TextComponent.EMPTY, null), 1));
+        spongePlayer.scoreboard().removeObjective(objectives.get(objectiveName));
     }
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = player.getVersion().getMinorVersion() < 13 ? cutTo(title, 32) : title;
-        player.sendPacket(new ClientboundSetObjectivePacket(
-                new Objective(
-                        dummyScoreboard,
-                        objectiveName,
-                        null,
-                        Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()),
-                        hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
-                ), 2
-        ));
+        String displayName = cutTo(title, 32);
+        Objective obj = objectives.get(objectiveName);
+        obj.setDisplayName(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()));
+        obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS.get() : ObjectiveDisplayModes.INTEGER.get());
     }
 
     @Override
     public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
-        team.setAllowFriendlyFire((options & 0x01) > 0);
-        team.setSeeFriendlyInvisibles((options & 0x02) > 0);
-        team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
-        String finalPrefix = prefix;
-        String finalSuffix = suffix;
-        if (player.getVersion().getMinorVersion() < 13) {
-            finalPrefix = cutTo(finalPrefix, 16);
-            finalSuffix = cutTo(finalSuffix, 16);
+        org.spongepowered.api.scoreboard.Team team = org.spongepowered.api.scoreboard.Team.builder()
+                .name(name)
+                .displayName(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()))
+                .prefix(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(cutTo(prefix, 16)), player.getVersion()))
+                .suffix(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(cutTo(suffix, 16)), player.getVersion()))
+                .allowFriendlyFire((options & 0x01) != 0)
+                .canSeeFriendlyInvisibles((options & 0x02) != 0)
+                .collisionRule(convertCollisionRule(collision))
+                .nameTagVisibility(convertVisibility(visibility))
+                .build();
+        for (String member : players) {
+            team.addMember(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(member), player.getVersion()));
         }
-        if (collision != null)
-            team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
-        if (visibility != null)
-            team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
-        if (finalPrefix != null)
-            team.setPlayerPrefix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalPrefix), player.getVersion()));
-        if (finalSuffix != null)
-            team.setPlayerSuffix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalSuffix), player.getVersion()));
-        team.getPlayers().addAll(players);
-        player.sendPacket(new ClientboundSetPlayerTeamPacket(team, 0));
+        spongePlayer.scoreboard().registerTeam(team);
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        player.sendPacket(new ClientboundSetPlayerTeamPacket(new PlayerTeam(dummyScoreboard, name), 1));
+        spongePlayer.scoreboard().team(name).ifPresent(org.spongepowered.api.scoreboard.Team::unregister);
     }
 
     @Override
     public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
-        team.setAllowFriendlyFire((options & 0x01) > 0);
-        team.setSeeFriendlyInvisibles((options & 0x02) > 0);
-        team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
-        String finalPrefix = prefix;
-        String finalSuffix = suffix;
-        if (player.getVersion().getMinorVersion() < 13) {
-            finalPrefix = cutTo(finalPrefix, 16);
-            finalSuffix = cutTo(finalSuffix, 16);
+        Team team = spongePlayer.scoreboard().team(name).orElse(null);
+        if (team == null) return;
+        team.setDisplayName(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()));
+        team.setPrefix(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(cutTo(prefix, 16)), player.getVersion()));
+        team.setSuffix(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(cutTo(suffix, 16)), player.getVersion()));
+        team.setAllowFriendlyFire((options & 0x01) != 0);
+        team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
+        team.setCollisionRule(convertCollisionRule(collision));
+        team.setNameTagVisibility(convertVisibility(visibility));
+    }
+
+    private static CollisionRule convertCollisionRule(String rule) {
+        switch (rule) {
+            case "always": return CollisionRules.ALWAYS.get();
+            case "never": return CollisionRules.NEVER.get();
+            case "pushOtherTeams": return CollisionRules.PUSH_OTHER_TEAMS.get();
+            case "pushOwnTeam": return CollisionRules.PUSH_OWN_TEAM.get();
+            default: throw new IllegalArgumentException();
         }
-        if (collision != null)
-            team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
-        if (visibility != null)
-            team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
-        if (finalPrefix != null)
-            team.setPlayerPrefix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalPrefix), player.getVersion()));
-        if (finalSuffix != null)
-            team.setPlayerSuffix(Sponge8TAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(finalSuffix), player.getVersion()));
-        player.sendPacket(new ClientboundSetPlayerTeamPacket(team, 2));
+    }
+
+    private static Visibility convertVisibility(String visibility) {
+        switch (visibility) {
+            case "always": return Visibilities.ALWAYS.get();
+            case "never": return Visibilities.NEVER.get();
+            case "hideForOtherTeams": return Visibilities.HIDE_FOR_OTHER_TEAMS.get();
+            case "hideForOwnTeam": return Visibilities.HIDE_FOR_OWN_TEAM.get();
+            default: throw new IllegalArgumentException();
+        }
     }
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
-        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objective, playerName, score));
+        objectives.get(objective).findOrCreateScore(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(playerName), player.getVersion())).setScore(score);
     }
 
     @Override
     public void removeScore0(@NonNull String objective, @NonNull String playerName) {
-        player.sendPacket(new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objective, playerName, 0));
+        objectives.get(objective).removeScore(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(playerName), player.getVersion()));
     }
 }

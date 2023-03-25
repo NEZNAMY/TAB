@@ -18,16 +18,19 @@ public final class SpongeEventListener {
         if (TabAPI.getInstance().isPluginDisabled()) return;
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(event.getTargetEntity().getUniqueId())));
+
+        // Clear created mess, so it doesn't get saved into scoreboard.dat
+        Scoreboard sb = event.getTargetEntity().getScoreboard();
+        sb.getTeams().forEach(Team::unregister);
+        sb.getObjectives().forEach(sb::removeObjective);
     }
 
     @Listener
     public void onJoin(final ClientConnectionEvent.Join event) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
 
-        // Remove teams & objectives because they get saved into the world when using APIs
-        Scoreboard sb = event.getTargetEntity().getScoreboard();
-        sb.getTeams().forEach(Team::unregister);
-        sb.getObjectives().forEach(sb::removeObjective);
+        // Make sure each player is in different scoreboard for per-player view
+        event.getTargetEntity().setScoreboard(Scoreboard.builder().build());
 
         TabAPI.getInstance().getThreadManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onJoin(new SpongeTabPlayer(event.getTargetEntity())));
