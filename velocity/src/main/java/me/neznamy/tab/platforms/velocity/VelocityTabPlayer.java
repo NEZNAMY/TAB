@@ -42,7 +42,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     
     @Override
     public void sendPacket(Object packet) {
-        throw new IllegalStateException("No longer supported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
