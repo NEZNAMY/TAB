@@ -61,6 +61,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         item.setDisplayName(displayName == null ? userNames.get(entry) : displayName.toLegacyText());
         if (item.getDisplayName().length() > 16) item.setDisplayName(item.getDisplayName().substring(0, 16)); // 16 character limit
         item.setPing(0); // Avoid NPE
+        item.setUsername(userNames.get(entry));
         packet.setItems(new PlayerListItem.Item[]{item});
         ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
 
