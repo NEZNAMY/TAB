@@ -256,6 +256,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
         for (Placeholder p : usedPlaceholders) {
+            long startTime = System.nanoTime();
             if (p instanceof RelationalPlaceholderImpl) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     ((RelationalPlaceholderImpl)p).update(connectedPlayer, all);
@@ -268,6 +269,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             if (p instanceof ServerPlaceholder) { // server placeholders don't update on join
                 tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholder) p).getLastValue());
             }
+            TAB.getInstance().getCPUManager().addPlaceholderTime(p.getIdentifier(), System.nanoTime()-startTime);
         }
     }
 
