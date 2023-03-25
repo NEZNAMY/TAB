@@ -78,10 +78,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean hasPermission0(@NonNull String permission) {
-        long time = System.nanoTime();
-        boolean value = getPlayer().hasPermission(permission);
-        TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
-        return value;
+        return getPlayer().hasPermission(permission);
     }
 
     @Override
@@ -91,9 +88,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPacket(Object nmsPacket) {
-        long time = System.nanoTime();
-        if (nmsPacket != null && getPlayer().isConnected()) getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
-        TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
+        getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
     }
 
     @Override

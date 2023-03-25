@@ -75,10 +75,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean hasPermission(@NonNull String permission) {
-        long time = System.nanoTime();
-        boolean value = getPlayer().hasPermission(permission);
-        TAB.getInstance().getCPUManager().addMethodTime("hasPermission", System.nanoTime()-time);
-        return value;
+        return getPlayer().hasPermission(permission);
     }
 
     @Override
@@ -95,13 +92,11 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public void sendPacket(Object nmsPacket) {
         if (nmsPacket == null || !getPlayer().isOnline()) return;
-        long time = System.nanoTime();
         try {
             NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
         }
-        TAB.getInstance().getCPUManager().addMethodTime("sendPacket", System.nanoTime()-time);
     }
 
     @Override

@@ -24,17 +24,11 @@ public class CpuManager implements ThreadManager {
     /** Active time in current time period saved as nanoseconds from placeholders */
     private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
 
-    /** Active time in current time period saved as nanoseconds from chosen methods */
-    private Map<String, AtomicLong> methodUsageCurrent = new ConcurrentHashMap<>();
-
     /** Active time in previous time period saved as nanoseconds from features */
     private Map<String, Map<String, AtomicLong>> featureUsagePrevious = new HashMap<>();
 
     /** Active time in previous time period saved as nanoseconds from placeholders */
     private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
-
-    /** Active time in previous time period saved as nanoseconds from chosen methods */
-    private Map<String, AtomicLong> methodUsagePrevious = new HashMap<>();
 
     /** TAB's main thread where all tasks are executed */
     private final ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
@@ -56,11 +50,9 @@ public class CpuManager implements ThreadManager {
         startRepeatingTask(BUFFER_SIZE_MILLIS, () -> {
             featureUsagePrevious = featureUsageCurrent;
             placeholderUsagePrevious = placeholderUsageCurrent;
-            methodUsagePrevious = methodUsageCurrent;
 
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
-            methodUsageCurrent = new ConcurrentHashMap<>();
         });
     }
 
@@ -118,15 +110,6 @@ public class CpuManager implements ThreadManager {
      */
     public Map<String, Float> getPlaceholderUsage() {
         return getUsage(placeholderUsagePrevious);
-    }
-
-    /**
-     * Returns cpu usage map of methods previous time period
-     *
-     * @return  cpu usage map of methods
-     */
-    public Map<String, Float> getMethodUsage() {
-        return getUsage(methodUsagePrevious);
     }
 
     /**
@@ -281,18 +264,6 @@ public class CpuManager implements ThreadManager {
      */
     public void addPlaceholderTime(String placeholder, long nanoseconds) {
         addTime(placeholderUsageCurrent, placeholder, nanoseconds);
-    }
-
-    /**
-     * Adds method time to specified method
-     *
-     * @param   method
-     *          method to add time to
-     * @param   nanoseconds
-     *          time to add
-     */
-    public void addMethodTime(String method, long nanoseconds) {
-        addTime(methodUsageCurrent, method, nanoseconds);
     }
 
     @Override

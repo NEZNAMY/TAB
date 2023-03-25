@@ -179,7 +179,6 @@ public class DynamicText implements Property {
     @Override
     public boolean update() {
         if (placeholders.length == 0) return false;
-        long time = System.nanoTime();
         String string;
         if ("%s".equals(rawFormattedValue)) {
             string = TAB.getInstance().getPlaceholderManager().getPlaceholder(placeholders[0]).set(placeholders[0], owner);
@@ -196,10 +195,8 @@ public class DynamicText implements Property {
             if (name != null) {
                 TAB.getInstance().getPlaceholderManager().getTabExpansion().setPropertyValue(owner, name, lastReplacedValue);
             }
-            TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
             return true;
         }
-        TAB.getInstance().getCPUManager().addMethodTime("Property#update", System.nanoTime()-time);
         return false;
     }
 

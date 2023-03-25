@@ -48,9 +48,6 @@ public class CpuCommand extends SubCommand {
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6Top 5 placeholders:");
         printPlaceholders(sender, tab.getCPUManager().getPlaceholderUsage());
         sendMessage(sender, SEPARATOR);
-        sendMessage(sender, "&8&l" + LINE_CHAR + " &6Some internal separately measured methods:");
-        printMethods(sender);
-        sendMessage(sender, SEPARATOR);
         if (sender != null) {
             sendToPlayer(sender, features);
         } else {
@@ -73,12 +70,6 @@ public class CpuCommand extends SubCommand {
             if (p != null && p.getRefresh() != -1) refresh = " &8(" + p.getRefresh() + ")&7";
             String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
             sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
-        }
-    }
-
-    private void printMethods(TabPlayer sender) {
-        for (Entry<String, Float> entry : TAB.getInstance().getCPUManager().getMethodUsage().entrySet()) {
-            sendMessage(sender, String.format("&8&l%s &7%s: %s%%", LINE_CHAR, entry.getKey(), colorize(decimal3.format(entry.getValue()), 5, 2)));
         }
     }
 
