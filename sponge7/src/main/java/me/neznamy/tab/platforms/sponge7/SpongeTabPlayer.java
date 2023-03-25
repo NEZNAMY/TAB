@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.sponge7;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
@@ -28,7 +27,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
-                player.getWorld().getName(), ProtocolVersion.V1_12_2.getNetworkId(), true);
+                player.getWorld().getName(), TAB.getInstance().getServerVersion().getNetworkId(), true);
     }
 
     @Override
