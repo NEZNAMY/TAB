@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.api.feature.ServerSwitchListener;
 import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class Layout extends TabFeature implements Refreshable {
+public class Layout extends TabFeature implements Refreshable, ServerSwitchListener {
 
     @Getter private final String featureName = "Layout";
     @Getter private final String refreshDisplayName = "Updating player groups";
@@ -84,5 +85,10 @@ public class Layout extends TabFeature implements Refreshable {
             }
         }
         return null;
+    }
+
+    @Override
+    public void onServerChange(TabPlayer changed, String from, String to) {
+        if (viewers.remove(changed)) sendTo(changed);
     }
 }

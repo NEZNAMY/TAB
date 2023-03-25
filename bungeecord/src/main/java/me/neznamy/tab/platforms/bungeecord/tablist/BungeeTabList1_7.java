@@ -6,6 +6,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.tablist.SingleUpdateTabList;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         item.setDisplayName(displayNames.get(entry));
         item.setPing(0);
         packet.setItems(new PlayerListItem.Item[]{item});
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
 
         // Remove from map
         userNames.remove(entry);
@@ -51,7 +52,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         item.setDisplayName(displayNames.get(entry));
         item.setPing(0); // Avoid NPE
         packet.setItems(new PlayerListItem.Item[]{item});
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
 
         // Add new entry
         packet = new PlayerListItem();
@@ -61,7 +62,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         if (item.getDisplayName().length() > 16) item.setDisplayName(item.getDisplayName().substring(0, 16)); // 16 character limit
         item.setPing(0); // Avoid NPE
         packet.setItems(new PlayerListItem.Item[]{item});
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
 
         // Update in map
         displayNames.put(entry, item.getDisplayName());
@@ -77,7 +78,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         item.setDisplayName(displayNames.get(entry));
         item.setPing(latency);
         packet.setItems(new PlayerListItem.Item[]{item});
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 
     @Override
@@ -92,11 +93,12 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         } else {
             item.setDisplayName(entry.getName());
         }
+        item.setUsername(entry.getName());
         item.setPing(entry.getLatency());
-        PlayerListItem bungeePacket = new PlayerListItem();
-        bungeePacket.setAction(PlayerListItem.Action.ADD_PLAYER);
-        bungeePacket.setItems(new PlayerListItem.Item[]{item});
-        player.sendPacket(bungeePacket);
+        PlayerListItem packet = new PlayerListItem();
+        packet.setAction(PlayerListItem.Action.ADD_PLAYER);
+        packet.setItems(new PlayerListItem.Item[]{item});
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
 
         // Add to map
         userNames.put(entry.getUniqueId(), entry.getName());

@@ -96,23 +96,20 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     @Override
     public void onServerChange(TabPlayer changed, String from, String to) {
         // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
-        List<TabListEntry> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all == changed) continue;
-            if (shouldSee(changed, all)) {
-                entries.add(getAddInfoData(all, changed));
-            } else {
-                changed.getTabList().removeEntry(all.getTablistId());
+            // Ignore players on the same server, since the server already sends add packet
+            if (!all.getServer().equals(changed.getServer()) && shouldSee(changed, all)) {
+                changed.getTabList().addEntry(getAddInfoData(all, changed));
             }
         }
-        if (!entries.isEmpty()) changed.getTabList().addEntries(entries);
 
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         TAB.getInstance().getCPUManager().runTaskLater(200, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == changed) continue;
                 if (shouldSee(all, changed)) {
-                    all.getTabList().addEntry(getAddInfoData(changed, all));
+                    if (!all.getServer().equals(changed.getServer()))
+                        all.getTabList().addEntry(getAddInfoData(changed, all));
                 } else {
                     all.getTabList().removeEntry(changed.getTablistId());
                 }

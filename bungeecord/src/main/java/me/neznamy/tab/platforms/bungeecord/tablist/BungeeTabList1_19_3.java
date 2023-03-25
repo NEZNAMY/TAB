@@ -6,6 +6,7 @@ import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.tablist.BulkUpdateTabList;
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.PlayerPublicKey;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -24,7 +25,7 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
     public void removeEntries(@NonNull Collection<UUID> entries) {
         PlayerListItemRemove remove = new PlayerListItemRemove();
         remove.setUuids(entries.toArray(new UUID[0]));
-        player.sendPacket(remove);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(remove);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
         packet.setActions(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
         packet.setItems(items.toArray(new Item[0]));
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
         packet.setActions(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_LATENCY));
         packet.setItems(items.toArray(new Item[0]));
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
         PlayerListItemUpdate packet = new PlayerListItemUpdate();
         packet.setActions(EnumSet.of(PlayerListItemUpdate.Action.UPDATE_GAMEMODE));
         packet.setItems(items.toArray(new Item[0]));
-        player.sendPacket(packet);
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 
     @Override
@@ -94,9 +95,9 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
             }
             items.add(item);
         }
-        PlayerListItemUpdate bungeePacket = new PlayerListItemUpdate();
-        bungeePacket.setActions(EnumSet.allOf(PlayerListItemUpdate.Action.class));
-        bungeePacket.setItems(items.toArray(new Item[0]));
-        player.sendPacket(bungeePacket);
+        PlayerListItemUpdate packet = new PlayerListItemUpdate();
+        packet.setActions(EnumSet.allOf(PlayerListItemUpdate.Action.class));
+        packet.setItems(items.toArray(new Item[0]));
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 }
