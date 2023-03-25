@@ -86,12 +86,7 @@ public class VelocityTabList extends SingleUpdateTabList {
         }
         //return dummy entry to not cause NPE
         //possibly add logging into the future to see when this happens
-        return TabListEntry.builder()
-                .tabList(player.getPlayer().getTabList())
-                .displayName(Component.empty())
-                .gameMode(0)
-                .profile(new GameProfile(id, "", Collections.emptyList()))
-                .latency(0)
-                .build();
+        return TabListEntry.builder().tabList(player.getPlayer().getTabList())
+                .profile(new GameProfile(id, "", Collections.emptyList())).build();
     }
 }
