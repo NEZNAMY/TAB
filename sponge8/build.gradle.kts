@@ -25,7 +25,7 @@ minecraft {
 }
 
 sponge {
-    apiVersion("8.0.0")
+    apiVersion(libs.sponge8.get().version)
     loader {
         name(PluginLoaders.JAVA_PLAIN)
         version("1.0")
