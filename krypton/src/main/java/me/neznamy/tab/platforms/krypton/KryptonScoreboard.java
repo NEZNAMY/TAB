@@ -61,15 +61,9 @@ public class KryptonScoreboard extends TabScoreboard {
     }
 
     private PacketOutUpdateTeams.Parameters createParameters(String name, String prefix, String suffix, String visibility, String collision, int options) {
-        String finalPrefix = prefix;
-        String finalSuffix = suffix;
-        if (player.getVersion().getMinorVersion() < 13) {
-            finalPrefix = cutTo(finalPrefix, 16);
-            finalSuffix = cutTo(finalSuffix, 16);
-        }
         return new PacketOutUpdateTeams.Parameters(Component.text(name), (byte)options, visibility, collision,
-                EnumChatFormat.lastColorsOf(finalPrefix).ordinal(), Main.toComponent(finalPrefix, player.getVersion()),
-                Main.toComponent(finalSuffix, player.getVersion()));
+                EnumChatFormat.lastColorsOf(prefix).ordinal(), Main.toComponent(prefix, player.getVersion()),
+                Main.toComponent(suffix, player.getVersion()));
     }
 
     @Override

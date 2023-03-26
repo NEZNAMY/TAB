@@ -26,7 +26,7 @@ public class BungeeScoreboard extends TabScoreboard {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, player.getVersion(), 32), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 0));
+        player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 0));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class BungeeScoreboard extends TabScoreboard {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrCut(title, player.getVersion(), 32), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 2));
+        player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 2));
     }
 
     @Override
@@ -45,8 +45,8 @@ public class BungeeScoreboard extends TabScoreboard {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.sendPacket(new Team(name, (byte) 0, jsonOrCut(name, player.getVersion(), 16),
-                jsonOrCut(prefix, player.getVersion(), 16), jsonOrCut(suffix, player.getVersion(), 16),
+        player.sendPacket(new Team(name, (byte) 0, jsonOrRaw(name, player.getVersion()),
+                jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
                 visibility, collision, color, (byte)options, players.toArray(new String[0])));
     }
 
@@ -61,8 +61,8 @@ public class BungeeScoreboard extends TabScoreboard {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.sendPacket(new Team(name, (byte) 2, jsonOrCut(name, player.getVersion(), 16),
-                jsonOrCut(prefix, player.getVersion(), 16), jsonOrCut(suffix, player.getVersion(), 16),
+        player.sendPacket(new Team(name, (byte) 2, jsonOrRaw(name, player.getVersion()),
+                jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
                 visibility, collision, color, (byte)options, null));
     }
 
@@ -70,8 +70,7 @@ public class BungeeScoreboard extends TabScoreboard {
      * If {@code clientVersion} is &gt;= 1.13, creates a component from given text and returns
      * it as a serialized component, which BungeeCord uses.
      * <p>
-     * If {@code clientVersion} is &lt; 1.12, the text is cut to {@code length} characters if
-     * needed and returned.
+     * If {@code clientVersion} is &lt; 1.12, the text is returned
      *
      * @param   text
      *          Text to convert
@@ -79,12 +78,12 @@ public class BungeeScoreboard extends TabScoreboard {
      *          Version of player to convert text for
      * @return  serialized component for 1.13+ clients, cut string for 1.12-
      */
-    private String jsonOrCut(String text, ProtocolVersion clientVersion, int length) {
+    private String jsonOrRaw(String text, ProtocolVersion clientVersion) {
         if (text == null) return null;
         if (clientVersion.getMinorVersion() >= 13) {
             return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
         } else {
-            return cutTo(text, length);
+            return text;
         }
     }
 

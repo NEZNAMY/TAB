@@ -23,7 +23,6 @@ public class BukkitScoreboard extends TabScoreboard {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        if (player.getVersion().getMinorVersion() < 13) objectiveName = cutTo(objectiveName, 32);
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, player.getVersion()));
     }
 
@@ -34,16 +33,11 @@ public class BukkitScoreboard extends TabScoreboard {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        if (player.getVersion().getMinorVersion() < 13) objectiveName = cutTo(objectiveName, 32);
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
     public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        if (player.getVersion().getMinorVersion() < 13) {
-            prefix = cutTo(prefix, 16);
-            suffix = cutTo(suffix, 16);
-        }
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, player.getVersion()));
     }
 
@@ -54,10 +48,6 @@ public class BukkitScoreboard extends TabScoreboard {
 
     @Override
     public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        if (player.getVersion().getMinorVersion() < 13) {
-            prefix = cutTo(prefix, 16);
-            suffix = cutTo(suffix, 16);
-        }
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, player.getVersion()));
     }
 

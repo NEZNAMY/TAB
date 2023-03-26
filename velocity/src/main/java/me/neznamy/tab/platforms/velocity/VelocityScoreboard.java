@@ -24,8 +24,7 @@ public class VelocityScoreboard extends TabScoreboard {
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
         ((VelocityTabPlayer)player).sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 0,
-                player.getVersion().getMinorVersion() < 13 ? cutTo(title, 32) : title,
-                IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
+                title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
     }
 
     @Override
@@ -36,8 +35,7 @@ public class VelocityScoreboard extends TabScoreboard {
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
         ((VelocityTabPlayer)player).sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 2,
-                player.getVersion().getMinorVersion() < 13 ? cutTo(title, 32) : title,
-                IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
+                title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
     }
 
     @Override
@@ -48,12 +46,10 @@ public class VelocityScoreboard extends TabScoreboard {
         args.add(0);
         args.add(players.size());
         args.addAll(players);
-        String finalPrefix = player.getVersion().getMinorVersion() < 13 ? cutTo(prefix, 16) : prefix;
-        String finalSuffix = player.getVersion().getMinorVersion() < 13 ? cutTo(suffix, 16) : suffix;
-        args.add(finalPrefix);
-        args.add(IChatBaseComponent.optimizedComponent(finalPrefix).toString(player.getVersion()));
-        args.add(finalSuffix);
-        args.add(IChatBaseComponent.optimizedComponent(finalSuffix).toString(player.getVersion()));
+        args.add(prefix);
+        args.add(IChatBaseComponent.optimizedComponent(prefix).toString(player.getVersion()));
+        args.add(suffix);
+        args.add(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion()));
         args.add(options);
         args.add(visibility);
         args.add(collision);
@@ -73,12 +69,10 @@ public class VelocityScoreboard extends TabScoreboard {
         args.add(name);
         args.add(2);
         args.add(0);
-        String finalPrefix = player.getVersion().getMinorVersion() < 13 ? cutTo(prefix, 16) : prefix;
-        String finalSuffix = player.getVersion().getMinorVersion() < 13 ? cutTo(suffix, 16) : suffix;
-        args.add(finalPrefix);
-        args.add(IChatBaseComponent.optimizedComponent(finalPrefix).toString(player.getVersion()));
-        args.add(finalSuffix);
-        args.add(IChatBaseComponent.optimizedComponent(finalSuffix).toString(player.getVersion()));
+        args.add(prefix);
+        args.add(IChatBaseComponent.optimizedComponent(prefix).toString(player.getVersion()));
+        args.add(suffix);
+        args.add(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion()));
         args.add(options);
         args.add(visibility);
         args.add(collision);

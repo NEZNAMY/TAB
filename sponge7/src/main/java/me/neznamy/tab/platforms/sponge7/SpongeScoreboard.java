@@ -41,10 +41,9 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = cutTo(title, 32);
         Objective objective = Objective.builder()
                 .name(objectiveName)
-                .displayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()))
+                .displayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()))
                 .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -59,9 +58,8 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        String displayName = cutTo(title, 32);
         Objective obj = objectives.get(objectiveName);
-        obj.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(displayName), player.getVersion()));
+        obj.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
         obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER);
     }
 
@@ -70,8 +68,8 @@ public class SpongeScoreboard extends TabScoreboard {
         Team team = Team.builder()
                 .name(name)
                 .displayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()))
-                .prefix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(prefix, 16)), player.getVersion()))
-                .suffix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(suffix, 16)), player.getVersion()))
+                .prefix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()))
+                .suffix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()))
                 .allowFriendlyFire((options & 0x01) != 0)
                 .canSeeFriendlyInvisibles((options & 0x02) != 0)
                 .collisionRule(convertCollisionRule(collision))
@@ -93,8 +91,8 @@ public class SpongeScoreboard extends TabScoreboard {
         Team team = spongePlayer.getScoreboard().getTeam(name).orElse(null);
         if (team == null) return;
         team.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()));
-        team.setPrefix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(prefix, 16)), player.getVersion()));
-        team.setSuffix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(cutTo(suffix, 16)), player.getVersion()));
+        team.setPrefix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+        team.setSuffix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
         team.setCollisionRule(convertCollisionRule(collision));
