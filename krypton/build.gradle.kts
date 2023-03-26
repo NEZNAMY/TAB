@@ -1,10 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
-plugins {
-    kotlin("jvm") version "1.8.0"
-    kotlin("kapt") version "1.8.0"
-}
-
 dependencies {
     implementation(projects.shared)
     compileOnly(libs.krypton.api)
@@ -16,13 +9,9 @@ dependencies {
         exclude("org.kryptonmc", "serialization-gson")
         exclude("org.kryptonmc", "serialization-nbt")
     }
-    compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.spark)
-    kapt(libs.krypton.annotationProcessor)
+    annotationProcessor(libs.krypton.annotationProcessor)
 }
-
-tasks {
-    compileKotlin {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
-    }
+tasks.compileJava {
+    options.release.set(17)
 }
