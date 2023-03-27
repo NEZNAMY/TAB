@@ -3,12 +3,14 @@ package me.neznamy.tab.shared;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.task.ThreadManager;
+
+
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -19,37 +21,42 @@ public class CpuManager implements ThreadManager {
     private final int BUFFER_SIZE_MILLIS = 10000;
 
     /** Active time in current time period saved as nanoseconds from features */
-    private Map<String, Map<String, AtomicLong>> featureUsageCurrent = new ConcurrentHashMap<>();
+    private volatile Map<String, Map<String, LongAdder>> featureUsageCurrent
+            = new ConcurrentHashMap<>();
 
     /** Active time in current time period saved as nanoseconds from placeholders */
-    private Map<String, AtomicLong> placeholderUsageCurrent = new ConcurrentHashMap<>();
+    private volatile Map<String, LongAdder> placeholderUsageCurrent
+            = new ConcurrentHashMap<>();
 
     /** Active time in previous time period saved as nanoseconds from features */
-    private Map<String, Map<String, AtomicLong>> featureUsagePrevious = new HashMap<>();
+    private volatile Map<String, Map<String, LongAdder>> featureUsagePrevious
+            = new HashMap<>();
 
     /** Active time in previous time period saved as nanoseconds from placeholders */
-    private Map<String, AtomicLong> placeholderUsagePrevious = new HashMap<>();
+    private volatile Map<String, LongAdder> placeholderUsagePrevious
+            = new HashMap<>();
 
     /** TAB's main thread where all tasks are executed */
     private final ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
-    private final ScheduledThreadPoolExecutor threadPool = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(20,
+    private final ScheduledThreadPoolExecutor threadPool = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(
+            4,
             new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
 
     /** Tasks submitted to main thread before plugin was fully enabled */
-    private final List<Runnable> taskQueue = new ArrayList<>();
+    private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
 
     /** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
-    private boolean enabled = false;
+    private volatile boolean enabled = false;
 
     /**
      * Constructs new instance and starts repeating task that resets values in configured interval
      */
     public CpuManager() {
         startRepeatingTask(BUFFER_SIZE_MILLIS, () -> {
-            featureUsagePrevious = featureUsageCurrent;
-            placeholderUsagePrevious = placeholderUsageCurrent;
+            featureUsagePrevious = Collections.unmodifiableMap(featureUsageCurrent);
+            placeholderUsagePrevious = Collections.unmodifiableMap(placeholderUsageCurrent);
 
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
@@ -69,8 +76,11 @@ public class CpuManager implements ThreadManager {
      */
     public void enable() {
         enabled = true;
-        new ArrayList<>(taskQueue).forEach(this::submit);
-        taskQueue.clear();
+
+        Runnable r;
+        while ((r = taskQueue.poll()) != null) {
+            submit(r);
+        }
     }
 
     /**
@@ -119,13 +129,13 @@ public class CpuManager implements ThreadManager {
      *          map to convert
      * @return  converted and sorted map
      */
-    private Map<String, Float> getUsage(Map<String, AtomicLong> map) {
+    private Map<String, Float> getUsage(Map<String, LongAdder> map) {
         Map<String, Long> nanoMap = new HashMap<>();
         String key;
-        for (Entry<String, AtomicLong> nanos : map.entrySet()) {
+        for (Entry<String, LongAdder> nanos : map.entrySet()) {
             key = nanos.getKey();
             nanoMap.putIfAbsent(key, 0L);
-            nanoMap.put(key, nanoMap.get(key)+nanos.getValue().get());
+            nanoMap.put(key, nanoMap.get(key)+nanos.getValue().sum());
         }
         Map<String, Float> percentMap = new HashMap<>();
         for (Entry<String, Long> entry : nanoMap.entrySet()) {
@@ -141,13 +151,13 @@ public class CpuManager implements ThreadManager {
      */
     public Map<String, Map<String, Float>> getFeatureUsage() {
         Map<String, Map<String, Long>> total = new HashMap<>();
-        for (Entry<String, Map<String, AtomicLong>> nanos : featureUsagePrevious.entrySet()) {
+        for (Entry<String, Map<String, LongAdder>> nanos : featureUsagePrevious.entrySet()) {
             String key = nanos.getKey();
             total.putIfAbsent(key, new HashMap<>());
             Map<String, Long> usage = total.get(key);
-            for (Entry<String, AtomicLong> entry : nanos.getValue().entrySet()) {
+            for (Entry<String, LongAdder> entry : nanos.getValue().entrySet()) {
                 usage.putIfAbsent(entry.getKey(), 0L);
-                usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().get());
+                usage.put(entry.getKey(), usage.get(entry.getKey()) + entry.getValue().sum());
             }
         }
         Map<String, Map<String, Float>> sorted = new LinkedHashMap<>();
@@ -237,7 +247,9 @@ public class CpuManager implements ThreadManager {
      *          time to add
      */
     public void addTime(String feature, String type, long nanoseconds) {
-        featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).computeIfAbsent(type, t -> new AtomicLong()).addAndGet(nanoseconds);
+        featureUsageCurrent
+                .computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
+                .computeIfAbsent(type, t -> new LongAdder()).add(nanoseconds);
     }
 
     /**
@@ -250,8 +262,8 @@ public class CpuManager implements ThreadManager {
      * @param   time
      *          nanoseconds to add
      */
-    private void addTime(Map<String, AtomicLong> map, String key, long time) {
-        map.computeIfAbsent(key, k -> new AtomicLong()).addAndGet(time);
+    private void addTime(Map<String, LongAdder> map, String key, long time) {
+        map.computeIfAbsent(key, k -> new LongAdder()).add(time);
     }
 
     /**
