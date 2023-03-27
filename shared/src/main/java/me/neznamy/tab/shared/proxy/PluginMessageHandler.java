@@ -60,7 +60,7 @@ public class PluginMessageHandler {
                         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
                     }
                     if ("Group".equals(subChannel)) {
-                        player.setGroup(in.readUTF());
+                        ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(player, in.readUTF());
                     }
                     if ("Boat".equals(subChannel)) {
                         player.setOnBoat(in.readBoolean());
