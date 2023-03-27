@@ -40,7 +40,7 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        org.spongepowered.api.scoreboard.objective.Objective objective = org.spongepowered.api.scoreboard.objective.Objective.builder()
+        Objective objective = Objective.builder()
                 .name(objectiveName)
                 .displayName(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()))
                 .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
@@ -64,7 +64,7 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        org.spongepowered.api.scoreboard.Team team = org.spongepowered.api.scoreboard.Team.builder()
+        Team team = Team.builder()
                 .name(name)
                 .displayName(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()))
                 .prefix(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()))
@@ -82,7 +82,7 @@ public class SpongeScoreboard extends TabScoreboard {
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        spongePlayer.scoreboard().team(name).ifPresent(org.spongepowered.api.scoreboard.Team::unregister);
+        spongePlayer.scoreboard().team(name).ifPresent(Team::unregister);
     }
 
     @Override
