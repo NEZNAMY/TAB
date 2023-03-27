@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -54,10 +53,13 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private Placeholder[] usedPlaceholders = new Placeholder[0];
 
     @Getter private final AtomicInteger loopTime = new AtomicInteger();
-    private final Future<?> refreshTask = TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, "Refreshing placeholders", this::refresh);
 
     @Getter @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", false) ?
             TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
+
+    public PlaceholderManagerImpl() {
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, "Refreshing placeholders", this::refresh);
+    }
 
     private void refresh() {
         int loopTime = this.loopTime.addAndGet(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
