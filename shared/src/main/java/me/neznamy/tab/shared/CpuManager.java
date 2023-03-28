@@ -13,13 +13,15 @@ import me.neznamy.tab.api.feature.TabFeature;
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
 public class CpuManager {
+    private static final int UPDATE_RATE_SECONDS = 10;
 
     private static final long TIME_PERCENT
-            = TimeUnit.SECONDS.toNanos(1) / 10;
+            = TimeUnit.SECONDS.toNanos(1) / UPDATE_RATE_SECONDS;
     /**
      * Data reset interval in milliseconds
      */
-    private static final int BUFFER_SIZE_MILLIS = 10000;
+    private static final int BUFFER_SIZE_MILLIS =
+            (int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS);
 
     /**
      * Active time in current time period saved as nanoseconds from features
