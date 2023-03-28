@@ -153,9 +153,10 @@ public class CpuManager {
      * @return usage in % (0-100)
      */
     private static float nanosToPercent(long nanos) {
-        return TimeUnit.SECONDS.toNanos(nanos);
+        float percent = (float) nanos / BUFFER_SIZE_MILLIS / 1000000; //relative usage (0-1)
+        percent *= 100; //relative into %
+        return percent;
     }
-
     /**
      * Adds cpu time to specified feature and usage type
      *
