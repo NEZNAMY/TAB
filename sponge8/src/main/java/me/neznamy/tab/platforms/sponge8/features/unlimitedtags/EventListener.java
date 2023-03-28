@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.value.Value;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,7 +19,7 @@ public class EventListener {
 
     @Listener
     public void onRespawn(final RespawnPlayerEvent.Post event) {
-        TabAPI.getInstance().getThreadManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
             TabPlayer respawned = TabAPI.getInstance().getPlayer(event.entity().uniqueId());
             if (feature.isPlayerDisabled(respawned)) return;
             feature.getArmorStandManager(respawned).teleport();
@@ -38,7 +39,7 @@ public class EventListener {
 
                 TabPlayer p = TabAPI.getInstance().getPlayer(player.uniqueId());
                 if (p == null || feature.isPlayerDisabled(p)) return;
-                TabAPI.getInstance().getThreadManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(value));
+                TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(value));
             }
         });
     }

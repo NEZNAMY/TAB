@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
@@ -29,7 +30,7 @@ public abstract class BackendNameTagX extends NameTagX {
      * Starts task checking for player visibility to hide armor stands of invisible players.
      */
     private void startVisibilityRefreshTask() {
-        TabAPI.getInstance().getThreadManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
             for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
                 if (isPlayerDisabled(p)) continue;

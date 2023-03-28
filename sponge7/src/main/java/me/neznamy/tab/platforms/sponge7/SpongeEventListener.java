@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
@@ -16,7 +17,7 @@ public final class SpongeEventListener {
     @Listener
     public void onQuit(final ClientConnectionEvent.Disconnect event) {
         if (TabAPI.getInstance().isPluginDisabled()) return;
-        TabAPI.getInstance().getThreadManager().runTask(() ->
+        TAB.getInstance().getCPUManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(event.getTargetEntity().getUniqueId())));
 
         // Clear created mess, so it doesn't get saved into scoreboard.dat
@@ -32,7 +33,7 @@ public final class SpongeEventListener {
         // Make sure each player is in different scoreboard for per-player view
         event.getTargetEntity().setScoreboard(Scoreboard.builder().build());
 
-        TabAPI.getInstance().getThreadManager().runTask(() ->
+        TAB.getInstance().getCPUManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onJoin(new SpongeTabPlayer(event.getTargetEntity())));
     }
 
@@ -42,7 +43,7 @@ public final class SpongeEventListener {
         final World fromWorld = event.getFromTransform().getExtent();
         final World toWorld = event.getToTransform().getExtent();
         if (fromWorld.getUniqueId().equals(toWorld.getUniqueId())) return;
-        TabAPI.getInstance().getThreadManager().runTask(() ->
+        TAB.getInstance().getCPUManager().runTask(() ->
                 TabAPI.getInstance().getFeatureManager().onWorldChange(event.getTargetEntity().getUniqueId(), event.getTargetEntity().getWorld().getName()));
     }
 

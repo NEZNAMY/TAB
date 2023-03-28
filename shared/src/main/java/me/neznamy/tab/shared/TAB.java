@@ -153,7 +153,6 @@ public class TAB extends TabAPI {
             command = new TabCommand();
             featureManager.load();
             for (TabPlayer p : onlinePlayers) ((ITabPlayer)p).markAsLoaded(false);
-            cpu.enable();
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
@@ -292,11 +291,6 @@ public class TAB extends TabAPI {
     @Override
     public ConfigurationFile getConfig() {
         return configuration.getConfig();
-    }
-    
-    @Override
-    public CpuManager getThreadManager() {
-        return getCPUManager();
     }
 
     @Override

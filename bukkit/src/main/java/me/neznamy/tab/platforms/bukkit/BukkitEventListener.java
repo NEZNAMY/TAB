@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.shared.TAB;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,8 +28,8 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
-        TabAPI.getInstance().getThreadManager().runTask(() -> TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+        if (TAB.getInstance().isPluginDisabled()) return;
+        TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
     
     /**
@@ -39,9 +40,9 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
-        TabAPI.getInstance().getThreadManager().runTask(() ->
-                TabAPI.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer()))));
+        if (TAB.getInstance().isPluginDisabled()) return;
+        TAB.getInstance().getCPUManager().runTask(() ->
+                TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer()))));
     }
 
     /**
@@ -52,9 +53,9 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onWorldChange(PlayerChangedWorldEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
-        TabAPI.getInstance().getThreadManager().runTask(() ->
-                TabAPI.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));
+        if (TAB.getInstance().isPluginDisabled()) return;
+        TAB.getInstance().getCPUManager().runTask(() ->
+                TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));
     }
 
     /**

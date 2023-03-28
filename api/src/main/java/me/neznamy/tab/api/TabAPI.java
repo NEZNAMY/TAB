@@ -7,7 +7,6 @@ import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.event.EventBus;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
-import me.neznamy.tab.api.task.ThreadManager;
 import me.neznamy.tab.api.team.TeamManager;
 
 /**
@@ -142,13 +141,6 @@ public abstract class TabAPI {
      *          {@code true} if colors should be translated, {@code false} if not
      */
     public abstract void sendConsoleMessage(String message, boolean translateColors);
-
-    /**
-     * Returns TAB's Thread manager, which allows task submitting
-     *
-     * @return  ThreadManager instance
-     */
-    public abstract ThreadManager getThreadManager();
 
     /**
      * Returns TAB's cache file used to store player toggle data

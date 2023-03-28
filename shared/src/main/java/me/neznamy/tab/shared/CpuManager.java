@@ -8,14 +8,12 @@ import java.util.concurrent.atomic.LongAdder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.task.ThreadManager;
-
 
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
-public class CpuManager implements ThreadManager {
+public class CpuManager {
 
     /** Data reset interval in milliseconds */
     private final int BUFFER_SIZE_MILLIS = 10000;
@@ -36,19 +34,9 @@ public class CpuManager implements ThreadManager {
     private volatile Map<String, LongAdder> placeholderUsagePrevious
             = new HashMap<>();
 
-    /** TAB's main thread where all tasks are executed */
-    private final ExecutorService thread = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
-
-    /** Thread pool for delayed and repeating tasks to perform sleep before submitting task to main thread */
-    private final ScheduledThreadPoolExecutor threadPool = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(
-            4,
-            new ThreadFactoryBuilder().setNameFormat("TAB Repeating / Delayed Thread %d").build());
-
-    /** Tasks submitted to main thread before plugin was fully enabled */
-    private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
-
-    /** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
-    private volatile boolean enabled = false;
+    // Scheduler for scheduling delayed and repeating tasks
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+            new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
     /**
      * Constructs new instance and starts repeating task that resets values in configured interval
@@ -67,20 +55,7 @@ public class CpuManager implements ThreadManager {
      * Cancels all tasks and shuts down thread pools
      */
     public void cancelAllTasks() {
-        thread.shutdownNow();
-        threadPool.shutdownNow();
-    }
-
-    /**
-     * Marks cpu manager as loaded and submits all queued tasks
-     */
-    public void enable() {
-        enabled = true;
-
-        Runnable r;
-        while ((r = taskQueue.poll()) != null) {
-            submit(r);
-        }
+        scheduler.shutdownNow();
     }
 
     /**
@@ -89,28 +64,16 @@ public class CpuManager implements ThreadManager {
      *
      * @param   task
      *          task to execute
-     * @return  future returned by executor service
      */
-    @SuppressWarnings("unchecked")
-    private Future<Void> submit(Runnable task) {
-        if (!enabled) {
-            taskQueue.add(task);
-            return null;
-        }
-        if (thread.isShutdown()) return null;
-        try {
-            return (Future<Void>) thread.submit(() -> {
-                try {
-                    task.run();
-                } catch (Exception | LinkageError | StackOverflowError e) {
-                    TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
-                }
-            });
-        } catch (OutOfMemoryError e) {
-            TAB.getInstance().getErrorManager().criticalError("Failed to schedule task due to " + e.getClass().getName() +
-                    ": " + e.getMessage() + ". Threads created by TAB: " + (threadPool.getActiveCount()+1), null);
-            return null;
-        }
+    private void submit(Runnable task) {
+        if (scheduler.isShutdown()) return;
+        scheduler.submit(() -> {
+            try {
+                task.run();
+            } catch (Exception | LinkageError | StackOverflowError e) {
+                TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
+            }
+        });
     }
 
     /**
@@ -278,46 +241,34 @@ public class CpuManager implements ThreadManager {
         addTime(placeholderUsageCurrent, placeholder, nanoseconds);
     }
 
-    @Override
-    public Future<Void> runMeasuredTask(TabFeature feature, String type, Runnable task) {
-        return runMeasuredTask(feature.getFeatureName(), type, task);
+    public void runMeasuredTask(TabFeature feature, String type, Runnable task) {
+        runMeasuredTask(feature.getFeatureName(), type, task);
     }
 
-    @Override
-    public Future<Void> runMeasuredTask(String feature, String type, Runnable task) {
-        return submit(() -> {
+    public void runMeasuredTask(String feature, String type, Runnable task) {
+        submit(() -> {
             long time = System.nanoTime();
             task.run();
             addTime(feature, type, System.nanoTime()-time);
         });
     }
 
-    @Override
-    public Future<Void> runTask(Runnable task) {
-        return submit(task);
+    public void runTask(Runnable task) {
+        submit(task);
     }
 
-    @Override
-    public Future<?> startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
-        if (threadPool.isShutdown()) return null;
-        return threadPool.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
+    public void startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
+        if (scheduler.isShutdown()) return;
+        scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public Future<?> startRepeatingTask(int intervalMilliseconds, Runnable task) {
-        if (threadPool.isShutdown()) return null;
-        return threadPool.scheduleAtFixedRate(() -> runTask(task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
+    public void startRepeatingTask(int intervalMilliseconds, Runnable task) {
+        if (scheduler.isShutdown()) return;
+        scheduler.scheduleAtFixedRate(() -> runTask(task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public Future<?> runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
-        if (threadPool.isShutdown()) return null;
-        return threadPool.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public Future<?> runTaskLater(int delayMilliseconds, Runnable task) {
-        if (threadPool.isShutdown()) return null;
-        return threadPool.schedule(() -> submit(task), delayMilliseconds, TimeUnit.MILLISECONDS);
+    public void runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
+        if (scheduler.isShutdown()) return;
+        scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 }

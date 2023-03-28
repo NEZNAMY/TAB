@@ -27,7 +27,7 @@ public class EventListener {
     private void onSneak(Player eventPlayer, boolean sneaking) {
         TabPlayer player = TAB.getInstance().getPlayer(eventPlayer.getUuid());
         if (player == null || feature.isPlayerDisabled(player)) return;
-        TAB.getInstance().getThreadManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
+        TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
                 () -> feature.getArmorStandManager(player).sneak(sneaking));
     }
 }
