@@ -37,7 +37,7 @@ public class TAB extends TabAPI {
     private final Map<UUID, TabPlayer> playersByTabListId = new ConcurrentHashMap<>();
     
     /** Online player array to avoid memory allocation when iterating */
-    @Getter private TabPlayer[] onlinePlayers = new TabPlayer[0];
+    @Getter private volatile TabPlayer[] onlinePlayers = new TabPlayer[0];
 
     /** Instance of plugin's main command */
     @Getter private TabCommand command;
@@ -115,6 +115,7 @@ public class TAB extends TabAPI {
         this.logger = logger;
         this.errorManager = new ErrorManager(this);
         try {
+
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {
             //1.7.10 or lower
