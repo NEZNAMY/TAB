@@ -46,7 +46,7 @@ public class CpuCommand extends SubCommand {
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6CPU stats from the last 10 seconds");
         sendMessage(sender, SEPARATOR);
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6Top 5 placeholders:");
-        printPlaceholders(sender, tab.getCPUManager().getPlaceholderUsage());
+        printPlaceholders(sender, placeholders);
         sendMessage(sender, SEPARATOR);
         if (sender != null) {
             sendToPlayer(sender, features);

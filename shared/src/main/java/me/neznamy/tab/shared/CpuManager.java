@@ -14,6 +14,8 @@ import me.neznamy.tab.api.feature.TabFeature;
  */
 public class CpuManager {
 
+    private static final long TIME_PERCENT
+            = TimeUnit.SECONDS.toNanos(1) / 10;
     /**
      * Data reset interval in milliseconds
      */
@@ -104,7 +106,6 @@ public class CpuManager {
                 .entrySet()
                 .stream()
                 .sorted(Entry.comparingByValue((o1, o2) -> Long.compare(o2, o1)))
-                .distinct()
                 .collect(LinkedHashMap::new,
                         (m, e) -> m.put(e.getKey(), nanosToPercent(e.getValue())),
                         Map::putAll
@@ -128,7 +129,6 @@ public class CpuManager {
             long sum = entries
                     .stream()
                     .sorted(Map.Entry.comparingByValue((o1, o2) -> Long.compare(o2, o1)))
-                    .distinct()
                     .peek(e -> percent.put(e.getKey(), nanosToPercent(e.getValue())))
                     .mapToLong(Map.Entry::getValue)
                     .sum();
@@ -153,9 +153,7 @@ public class CpuManager {
      * @return usage in % (0-100)
      */
     private static float nanosToPercent(long nanos) {
-        float percent = (float) nanos / BUFFER_SIZE_MILLIS / 1000000; //relative usage (0-1)
-        percent *= 100; //relative into %
-        return percent;
+        return (float) nanos / TIME_PERCENT;
     }
     /**
      * Adds cpu time to specified feature and usage type
@@ -178,7 +176,7 @@ public class CpuManager {
     public void addTime(String feature, String type, long nanoseconds) {
         featureUsageCurrent
                 .computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
-                .merge(type, nanoseconds, (k,v) -> v + nanoseconds);
+                .merge(type, nanoseconds, Long::sum);
     }
 
     /**
@@ -189,7 +187,7 @@ public class CpuManager {
      * @param time nanoseconds to add
      */
     private static void addTime(Map<String, Long> map, String key, long time) {
-        map.merge(key, time, (k,v) -> v + time);
+        map.merge(key, time, Long::sum);
     }
 
     /**
