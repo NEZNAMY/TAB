@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Scoreboard handler for Velocity. Because it does not have
+ * any scoreboard API, we need to use bridge to send the packets.
+ */
 public class VelocityScoreboard extends TabScoreboard {
 
     public VelocityScoreboard(TabPlayer player) {

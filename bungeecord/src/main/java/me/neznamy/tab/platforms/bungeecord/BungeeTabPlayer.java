@@ -11,7 +11,6 @@ import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.bungeecord.bossbar.BungeeBossBarHandler;
-import me.neznamy.tab.platforms.bungeecord.bossbar.EmptyBossBarHandler;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
@@ -64,7 +63,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     private final TabList tabList1_8 = new BungeeTabList1_8(this);
     private final TabList tabList1_19_3 = new BungeeTabList1_19_3(this);
 
-    private final BossBarHandler bossBarHandler = new BungeeBossBarHandler(this);
+    @Getter private final BossBarHandler bossBarHandler = new BungeeBossBarHandler(this);
 
     /**
      * Constructs new instance for given player
@@ -169,11 +168,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     public TabList getTabList() {
         return getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ?
                 tabList1_19_3 : getVersion().getMinorVersion() >= 8 ? tabList1_8 : tabList1_7;
-    }
-
-    @Override
-    public BossBarHandler getBossBarHandler() {
-        return getVersion().getMinorVersion() >= 9 ? bossBarHandler : EmptyBossBarHandler.getInstance();
     }
 
     @Override

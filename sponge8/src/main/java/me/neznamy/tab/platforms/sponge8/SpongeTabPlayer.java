@@ -52,7 +52,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
         if (Sponge.pluginManager().plugin(TabConstants.Plugin.VIAVERSION.toLowerCase()).isPresent()) {
             return ProtocolVersion.getPlayerVersionVia(player.uniqueId(), player.name());
         }
-        return ProtocolVersion.V1_16_5.getNetworkId();
+        return TAB.getInstance().getServerVersion().getNetworkId();
     }
 
     @Override

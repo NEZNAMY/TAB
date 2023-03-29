@@ -11,8 +11,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * TabList for 1.8+ players, which support modifying many entries at once
- * for significantly better performance.
+ * TabList which support modifying many entries at once
+ * for significantly better performance. For 1.7 players,
+ * ViaVersion properly splits the packet into multiple, so
+ * we don't need to worry about that here.
+ * <p>
+ * This class does not support server versions of 1.7 and
+ * below, because of the massive differences in tablist
+ * and packet fields.
  */
 @RequiredArgsConstructor
 public class BukkitTabList extends BulkUpdateTabList {

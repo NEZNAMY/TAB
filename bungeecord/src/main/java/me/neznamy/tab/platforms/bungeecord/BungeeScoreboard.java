@@ -13,6 +13,11 @@ import net.md_5.bungee.protocol.packet.Team;
 
 import java.util.Collection;
 
+/**
+ * Scoreboard handler for BungeeCord. Because it does not offer
+ * any Scoreboard API and the scoreboard class it has is just a
+ * downstream tracker, we need to use packets.
+ */
 public class BungeeScoreboard extends TabScoreboard {
 
     public BungeeScoreboard(TabPlayer player) {

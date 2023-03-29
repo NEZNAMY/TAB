@@ -14,6 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * TabList handler for 1.7 players, which has a completely different
+ * system. Entries are identified by display name, not uuids. Display
+ * names are changed by removing old entry and adding a new one, which
+ * requires further tracking than just the UUID.<p>
+ * Because BungeeCord does not have a TabList API, we need to use packets.
+ * They are sent using an internal BungeeCord method that keeps track of them,
+ * so they are removed on server switch to secure parity with Velocity.
+ * While BungeeCord itself does not support 1.7, some of its forks do.
+ * This was tested on FlameCord fork.
+ */
 @RequiredArgsConstructor
 public class BungeeTabList1_7 extends SingleUpdateTabList {
 
@@ -27,14 +38,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
     @Override
     public void removeEntry(@NonNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.REMOVE_PLAYER);
-        PlayerListItem.Item item = new PlayerListItem.Item();
-        item.setDisplayName(displayNames.get(entry));
-        item.setPing(0);
-        packet.setItems(new PlayerListItem.Item[]{item});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+        update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
 
         // Remove from map
         userNames.remove(entry);
@@ -44,42 +48,14 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-
-        // Remove old entry
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.REMOVE_PLAYER);
-        PlayerListItem.Item item = new PlayerListItem.Item();
-        item.setDisplayName(displayNames.get(entry));
-        item.setPing(0); // Avoid NPE
-        packet.setItems(new PlayerListItem.Item[]{item});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
-
-        // Add new entry
-        packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.ADD_PLAYER);
-        item = new PlayerListItem.Item();
-        item.setDisplayName(displayName == null ? userNames.get(entry) : displayName.toLegacyText());
-        if (item.getDisplayName().length() > 16) item.setDisplayName(item.getDisplayName().substring(0, 16)); // 16 character limit
-        item.setPing(0); // Avoid NPE
-        item.setUsername(userNames.get(entry));
-        packet.setItems(new PlayerListItem.Item[]{item});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
-
-        // Update in map
-        displayNames.put(entry, item.getDisplayName());
+        update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
+        addEntry(new TabListEntry.Builder(entry).displayName(displayName).name(userNames.get(entry)).build());
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
-
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.UPDATE_LATENCY);
-        PlayerListItem.Item item = new PlayerListItem.Item();
-        item.setDisplayName(displayNames.get(entry));
-        item.setPing(latency);
-        packet.setItems(new PlayerListItem.Item[]{item});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+        update(PlayerListItem.Action.UPDATE_LATENCY, createItem(null, displayNames.get(entry), latency));
     }
 
     @Override
@@ -87,22 +63,27 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
 
     @Override
     public void addEntry(@NonNull TabListEntry entry) {
-        PlayerListItem.Item item = new PlayerListItem.Item();
-        if (entry.getDisplayName() != null) {
-            item.setDisplayName(entry.getDisplayName().toLegacyText());
-            if (item.getDisplayName().length() > 16) item.setDisplayName(item.getDisplayName().substring(0, 16)); // 16 character limit
-        } else {
-            item.setDisplayName(entry.getName());
-        }
-        item.setUsername(entry.getName());
-        item.setPing(entry.getLatency());
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.ADD_PLAYER);
-        packet.setItems(new PlayerListItem.Item[]{item});
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+        String displayNameString = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
+        if (displayNameString.length() > 16) displayNameString = displayNameString.substring(0, 16); // 16 character limit
+        update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(), displayNameString, entry.getLatency()));
 
         // Add to map
         userNames.put(entry.getUniqueId(), entry.getName());
-        displayNames.put(entry.getUniqueId(), item.getDisplayName());
+        displayNames.put(entry.getUniqueId(), displayNameString);
+    }
+
+    private void update(PlayerListItem.Action action, PlayerListItem.Item item) {
+        PlayerListItem packet = new PlayerListItem();
+        packet.setAction(action);
+        packet.setItems(new PlayerListItem.Item[]{item});
+        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+    }
+
+    private PlayerListItem.Item createItem(String username, String displayName, int latency) {
+        PlayerListItem.Item item = new PlayerListItem.Item();
+        item.setUsername(username);
+        item.setDisplayName(displayName);
+        item.setPing(latency);
+        return item;
     }
 }
