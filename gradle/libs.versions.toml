@@ -3,7 +3,7 @@ metadata.format.version = "1.1"
 [versions]
 
 # API
-netty = "4.1.86.Final"
+netty = "4.1.90.Final"
 jsonSimple = "1.1.1"
 snakeyaml = "1.33"
 yamlAssist = "1.0.5"
@@ -14,7 +14,7 @@ minimessage = "4.12.0"
 luckperms = "5.4"
 guava = "31.1-jre"
 floodgate = "2.2.0-SNAPSHOT"
-kotlin = "1.8.0"
+kotlin = "1.8.10"
 event = "3.0.0"
 
 # Platforms
@@ -26,17 +26,17 @@ sponge7 = "5.0.0"
 sponge8 = "8.0.0"
 
 # Platform extras
-placeholderapi = "2.11.2"
+placeholderapi = "2.11.3"
 vault = "1.7"
-via = "4.5.1"
+via = "4.6.2"
 authlib = "1.5.25"
-bstats = "3.0.0"
-redisBungee = "0.10.1"
+bstats = "3.0.1"
+redisBungee = "0.10.2"
 spark = "0.1-SNAPSHOT"
 
 # Plugins
-shadow = "7.1.2"
-lombok = "6.6.1"
+shadow = "8.1.1"
+lombok = "8.0.0"
 
 [libraries]
 
@@ -82,5 +82,5 @@ bstats-velocity = { group = "org.bstats", name = "bstats-velocity", version.ref 
 bstats-sponge = { group = "org.bstats", name = "bstats-sponge", version.ref = "bstats" }
 
 # Plugins
-plugin-shadow = { group = "gradle.plugin.com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+plugin-shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
 plugin-lombok = { group = "io.freefair.gradle", name = "lombok-plugin", version.ref = "lombok"}

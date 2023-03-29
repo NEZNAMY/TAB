@@ -1,5 +1,5 @@
 plugins {
-    id("net.kyori.blossom") version "1.2.0"
+    id("net.kyori.blossom") version "1.3.1"
 }
 
 dependencies {
