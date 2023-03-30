@@ -54,8 +54,8 @@ public class FeatureManagerImpl implements FeatureManager {
             long time = System.currentTimeMillis();
             ((UnLoadable) f).unload();
             TAB.getInstance().debug("Feature " + f.getClass().getSimpleName() + " processed unload in " + (System.currentTimeMillis()-time) + "ms");
-
         }
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().unregister();
         if (TAB.getInstance().getPlatform() instanceof ProxyPlatform) {
             for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
                 ((ProxyTabPlayer)player).sendPluginMessage("Unload");

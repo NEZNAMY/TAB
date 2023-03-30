@@ -18,6 +18,12 @@ public class ProxyTabExpansion implements TabExpansion {
         ((ProxyTabPlayer)player).sendPluginMessage("Expansion", key, value);
     }
 
+    @Override
+    public boolean unregister() {
+        // Don't do anything on proxy side
+        return false;
+    }
+
     public void resendAllValues(TabPlayer player) {
         for (Map.Entry<String, String> entry : values.computeIfAbsent(player, p -> new HashMap<>()).entrySet()) {
             ((ProxyTabPlayer)player).sendPluginMessage("Expansion", entry.getKey(), entry.getValue());

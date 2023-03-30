@@ -37,4 +37,6 @@ public interface TabExpansion {
     }
 
     void setValue(TabPlayer player, String key, String value);
+
+    boolean unregister();
 }
