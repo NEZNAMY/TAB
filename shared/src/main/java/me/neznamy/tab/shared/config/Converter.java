@@ -18,19 +18,7 @@ import java.util.*;
  */
 public class Converter {
 
-    /**
-     * Converts animation file from old format with everything under "animations" key
-     * to new format which does not use the redundant key anymore.
-     * <p>
-     * The method contains a check if the conversion is necessary, so it is always safe
-     * to call this method, even if conversion is not needed.
-     * <p>
-     * This change was made from 2.8.10 -&gt; 2.9.0
-     *
-     * @param   animations
-     *          animation file to convert
-     */
-    public void convertAnimationFile(ConfigurationFile animations) {
+    public void convert2810to290(ConfigurationFile animations) {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
             TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.8.10 to 2.9.0", true);
             animations.setValues(animations.getConfigurationSection("animations"));
@@ -47,7 +35,7 @@ public class Converter {
      * @throws  IOException
      *          if an I/O operation with the files fails
      */
-    public void convertToV3(ConfigurationFile currentConfig) throws IOException {
+    public void convert292to300(ConfigurationFile currentConfig) throws IOException {
         if (!currentConfig.hasConfigOption("change-nametag-prefix-suffix")) return;
         TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.9.2 to 3.0.0",true);
 
@@ -366,19 +354,22 @@ public class Converter {
         return group.replace(oldSeparator, ";");
     }
 
-    public void removeOldOptions(ConfigurationFile config) {
-        if (config.hasConfigOption("placeholders.remove-strings")) {
-            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.0.1 to 3.0.2", true);
-            config.set("placeholders.remove-strings", null);
-        }
-        if (config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
-            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.1 to 3.3.2", true);
-            config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
-        }
-        if (config.hasConfigOption("ping-spoof.enabled")) {
-            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
-            config.set("ping-spoof", null);
-            config.set("fix-pet-names", null);
-        }
+    public void convert301to302(ConfigurationFile config) {
+        if (!config.hasConfigOption("placeholders.remove-strings")) return;
+        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.0.1 to 3.0.2", true);
+        config.set("placeholders.remove-strings", null);
+    }
+
+    public void convert331to332(ConfigurationFile config) {
+        if (!config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) return;
+        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.1 to 3.3.2", true);
+        config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
+    }
+
+    public void convert332to400(ConfigurationFile config) {
+        if (!config.hasConfigOption("ping-spoof.enabled")) return;
+        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
+        config.set("ping-spoof", null);
+        config.set("fix-pet-names", null);
     }
 }
