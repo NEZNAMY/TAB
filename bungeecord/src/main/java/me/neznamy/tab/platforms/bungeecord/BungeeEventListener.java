@@ -73,7 +73,7 @@ public class BungeeEventListener implements Listener {
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);
             ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
-                    ((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
+                    ((ProxiedPlayer) event.getReceiver()).getUniqueId(), ((ProxiedPlayer) event.getReceiver()).getName(), event.getData());
         }
     }
 }

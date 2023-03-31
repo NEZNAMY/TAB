@@ -30,11 +30,15 @@ public class PluginMessageHandler {
      *          incoming message
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void onPluginMessage(UUID uuid, byte[] bytes) {
+    public void onPluginMessage(UUID uuid, String name, byte[] bytes) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () -> {
                     ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
-                    if (player == null) return;
+                    if (player == null) {
+                        TAB.getInstance().getErrorManager().printError("Ignoring plugin message (" + new String(bytes) + ") for player " +
+                                name + ", because player was not found");
+                        return;
+                    }
                     ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
                     String subChannel = in.readUTF();
                     if ("Placeholder".equals(subChannel)) {

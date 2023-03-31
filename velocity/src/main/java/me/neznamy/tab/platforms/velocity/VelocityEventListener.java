@@ -83,7 +83,7 @@ public class VelocityEventListener {
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
             ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
-                    ((Player) event.getTarget()).getUniqueId(), event.getData());
+                    ((Player) event.getTarget()).getUniqueId(), ((Player) event.getTarget()).getUsername(), event.getData());
         }
     }
 }
