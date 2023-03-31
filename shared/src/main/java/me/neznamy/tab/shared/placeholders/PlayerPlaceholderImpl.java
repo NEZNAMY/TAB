@@ -59,7 +59,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
             lastValues.put(p, identifier);
         }
-        if (!lastValues.containsKey(p) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !lastValues.get(p).equals(newValue))) {
+        if (!lastValues.containsKey(p) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !newValue.equals(lastValues.getOrDefault(p, null)))) {
             lastValues.put(p, ERROR_VALUE.equals(newValue) ? identifier : newValue);
             updateParents(p);
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
