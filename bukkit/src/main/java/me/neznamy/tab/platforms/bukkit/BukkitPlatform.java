@@ -6,33 +6,27 @@ import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.permission.Vault;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
-import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.None;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
-import net.milkbowl.vault.permission.Permission;
+import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,19 +49,6 @@ public class BukkitPlatform extends BackendPlatform {
     @Getter @Setter private boolean libsDisguisesEnabled = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
     private final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
     private final boolean protocolSupport = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
-
-    @Override
-    public PermissionPlugin detectPermissionPlugin() {
-        if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LUCKPERMS)) {
-            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS));
-        } else if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VAULT)) {
-            RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
-            if (provider == null) return new None();
-            return new Vault(provider.getProvider(), getPluginVersion(TabConstants.Plugin.VAULT));
-        } else {
-            return new None();
-        }
-    }
 
     public BossBarManagerImpl getLegacyBossBar() {
         return new WitherBossBar(plugin);

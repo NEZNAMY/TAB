@@ -283,10 +283,6 @@ public class TabConstants {
         // Bukkit only
         public static final String TPS = "%tps%";
         public static final String MSPT = "%mspt%";
-        public static final String AFK = "%afk%";
-        public static final String ESSENTIALS_NICK = "%essentialsnick%";
-        public static final String VAULT_PREFIX = "%vault-prefix%";
-        public static final String VAULT_SUFFIX = "%vault-suffix%";
         public static final String HEALTH = "%health%";
 
         public static final int MINIMUM_REFRESH_INTERVAL = 50;
@@ -311,13 +307,11 @@ public class TabConstants {
     public static class Plugin {
 
         public static final String LUCKPERMS = "LuckPerms";
-        public static final String VAULT = "Vault";
         public static final String PLACEHOLDER_API = "PlaceholderAPI";
         public static final String LIBS_DISGUISES = "LibsDisguises";
         public static final String VIAREWIND = "ViaRewind";
         public static final String VIAVERSION = "ViaVersion";
         public static final String PROTOCOL_SUPPORT = "ProtocolSupport";
-        public static final String ESSENTIALS = "Essentials";
         public static final String REDIS_BUNGEE = "RedisBungee";
         public static final String PREMIUM_VANISH = "PremiumVanish";
     }

@@ -175,10 +175,6 @@ placeholder-output-replacements:
     "yes": "&7| Vanished"
     "no": ""
   # bukkit-only placeholders used in default groups.yml, doing this as a fix
-  "%afk%":
-    true: " &o[AFK]&r"
-    false: ""
-    "%afk%": "" # if attempting to use bukkit-only placeholder on bungeecord
   "%essentials_nickname%":
     "%essentials_nickname%": "%player%" # placeholder did not parse correctly, show real name instead
 

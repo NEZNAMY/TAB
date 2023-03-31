@@ -16,8 +16,8 @@ _DEFAULT_:
   tagprefix: "%luckperms-prefix%"
   customtabname: "%essentials_nickname%"
   customtagname: "%essentials_nickname%" # don't forget to enable unlimited nametag mode to make this one work
-  tabsuffix: "%luckperms-suffix%%afk%"
-  tagsuffix: "%luckperms-suffix%%afk%"
+  tabsuffix: "%luckperms-suffix%"
+  tagsuffix: "%luckperms-suffix%"
 
 per-world:
   world1:

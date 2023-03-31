@@ -308,10 +308,6 @@ public class Converter {
             newConfig.set("conditions.nick.yes", "%player%");
             newConfig.set("conditions.nick.no", "~%essentials_nickname%");
         }
-        if (TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) {
-            newConfig.set("placeholder-output-replacements.%afk%.true", placeholders.remove("afk-yes"));
-            newConfig.set("placeholder-output-replacements.%afk%.false", placeholders.remove("afk-no"));
-        }
 
         newConfig.set("placeholders", placeholders);
         newConfig.set("placeholderapi-refresh-intervals", oldConfig.getConfigurationSection("placeholderapi-refresh-intervals"));
