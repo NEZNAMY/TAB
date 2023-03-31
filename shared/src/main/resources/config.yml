@@ -106,10 +106,6 @@ bossbar:
   toggle-command: /bossbar
   remember-toggle-choice: false
   hidden-by-default: false
-  disable-in-worlds:
-    - disabledworld
-  disable-in-servers:
-    - disabledserver
   bars:
     ServerInfo:
       style: "PROGRESS" # for 1.9+: PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
@@ -127,10 +123,6 @@ scoreboard:
   static-number: 0
   delay-on-join-milliseconds: 0
   respect-other-plugins: true
-  disable-in-worlds:
-    - disabledworld
-  disable-in-servers:
-    - disabledserver
   scoreboards:
     admin:
       # Only players with tab.scoreboard.admin can see this scoreboard, others will see scoreboard1

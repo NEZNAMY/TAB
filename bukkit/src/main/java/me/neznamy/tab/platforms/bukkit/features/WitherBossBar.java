@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.api.feature.WorldSwitchListener;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
@@ -20,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * An additional class with additional code for &lt;1.9 servers due to an entity being required
  */
 @RequiredArgsConstructor
-public class WitherBossBar extends BossBarManagerImpl implements Listener {
+public class WitherBossBar extends BossBarManagerImpl implements Listener, WorldSwitchListener {
 
     /** Distance of the Wither in blocks */
     private static final int WITHER_DISTANCE = 60;
@@ -67,5 +68,13 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
     public void onRespawn(PlayerRespawnEvent e) {
         TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
                 () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+    }
+
+    @Override
+    public void onWorldChange(TabPlayer p, String from, String to) {
+        for (BossBar line : lineValues) {
+            line.removePlayer(p);
+        }
+        detectBossBarsAndSend(p);
     }
 }

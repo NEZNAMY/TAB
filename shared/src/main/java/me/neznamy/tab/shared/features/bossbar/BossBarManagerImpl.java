@@ -17,14 +17,14 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends TabFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
+        UnLoadable, Refreshable {
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();
 
     //registered BossBars
     @Getter private final Map<String, BossBar> registeredBossBars = new HashMap<>();
-    private BossBar[] lineValues;
+    protected BossBar[] lineValues;
 
     //config options
     @Getter private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
@@ -52,7 +52,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * Constructs new instance and loads configuration
      */
     public BossBarManagerImpl() {
-        super("bossbar");
         for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()) {
             BossBarLine line = loadFromConfig(bar.toString());
             registeredBossBars.put(bar.toString(), line);
@@ -104,7 +103,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void refresh(TabPlayer p, boolean force) {
-        if (!hasBossBarVisible(p) || isDisabledPlayer(p)) return;
+        if (!hasBossBarVisible(p)) return;
         for (BossBar line : lineValues) {
             line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
         }
@@ -114,8 +113,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void unload() {
-        for (BossBar line : lineValues) {
-            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            for (BossBar line : lineValues) {
                 line.removePlayer(p);
             }
         }
@@ -123,28 +122,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
-        }
         setBossBarVisible(connectedPlayer, hiddenByDefault == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
-    }
-
-    @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
-    }
-
-    @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
-        if (isDisabled(p.getServer(), p.getWorld())) {
-            addDisabledPlayer(p);
-        } else {
-            removeDisabledPlayer(p);
-        }
-        for (BossBar line : lineValues) {
-            line.removePlayer(p);
-        }
-        detectBossBarsAndSend(p);
     }
 
     @Override
@@ -163,7 +141,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      *          player to process
      */
     protected void detectBossBarsAndSend(TabPlayer p) {
-        if (isDisabledPlayer(p) || !hasBossBarVisible(p)) return;
+        if (!hasBossBarVisible(p)) return;
         showBossBars(p, defaultBars);
         showBossBars(p, announcedBossBars.stream().map(BossBar::getName).collect(Collectors.toList()));
     }
@@ -270,7 +248,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
-                p -> !isDisabledPlayer(p) && hasBossBarVisible(p)).collect(Collectors.toList());
+                this::hasBossBarVisible).collect(Collectors.toList());
         TAB.getInstance().getCPUManager().runTask(() -> {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.COUNTDOWN).markAsUsed();
             announcedBossBars.add(line);

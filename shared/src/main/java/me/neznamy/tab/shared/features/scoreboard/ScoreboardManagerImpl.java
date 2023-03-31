@@ -15,8 +15,7 @@ import java.util.Map.Entry;
  * Feature handler for scoreboard feature
  */
 public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener, LoginPacketListener,
-        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, WorldSwitchListener,
-        ServerSwitchListener, Refreshable {
+        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, Refreshable {
 
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
@@ -97,15 +96,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            if (hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName())) visiblePlayers.add(connectedPlayer);
-            addDisabledPlayer(connectedPlayer);
-            return;
-        }
         if (joinDelay > 0) {
             joinDelayed.add(connectedPlayer);
             TAB.getInstance().getCPUManager().runTaskLater(joinDelay, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
-
                 if (!otherPluginScoreboards.containsKey(connectedPlayer)) setScoreboardVisible(connectedPlayer, hiddenByDefault == sbOffPlayers.contains(connectedPlayer.getName()), false);
                 joinDelayed.remove(connectedPlayer);
             });
@@ -121,7 +114,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      *          player to send scoreboard to
      */
     public void sendHighestScoreboard(TabPlayer p) {
-        if (isDisabledPlayer(p) || !hasScoreboardVisible(p)) return;
+        if (!hasScoreboardVisible(p)) return;
         ScoreboardImpl scoreboard = (ScoreboardImpl) detectHighestScoreboard(p);
         ScoreboardImpl current = activeScoreboards.get(p);
         if (scoreboard != current) {
@@ -147,27 +140,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
         }
     }
 
-    @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
-    }
-
-    @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
-        boolean disabledBefore = isDisabledPlayer(p);
-        if (isDisabled(p.getServer(), p.getWorld())) {
-            addDisabledPlayer(p);
-            if (!disabledBefore) {
-                unregisterScoreboard(p);
-            }
-        } else {
-            removeDisabledPlayer(p);
-            if (disabledBefore) {
-                sendHighestScoreboard(p);
-            }
-        }
-    }
-
     /**
      * Returns currently the highest scoreboard in chain for specified player
      *
@@ -185,7 +157,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public boolean onCommand(TabPlayer sender, String message) {
-        if (isDisabledPlayer(sender)) return false;
         if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
             TAB.getInstance().getCommand().execute(sender, message.replace(toggleCommand, "scoreboard").split(" "));
             return true;
