@@ -150,8 +150,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return new ArrayList<>(registeredPlaceholders.values());
     }
 
-    public Placeholder registerPlaceholder(Placeholder placeholder) {
-        if (placeholder == null) throw new IllegalArgumentException("Placeholder cannot be null");
+    public Placeholder registerPlaceholder(@NonNull Placeholder placeholder) {
         boolean override = registeredPlaceholders.containsKey(placeholder.getIdentifier());
         registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
         recalculateUsedPlaceholders();

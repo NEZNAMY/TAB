@@ -3,6 +3,7 @@ package me.neznamy.tab.api.scoreboard;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
@@ -39,7 +40,7 @@ public interface ScoreboardManager {
      * @throws  NullPointerException
      *          if {@code name} or {@code lines} is {@code null}
      */
-    Scoreboard createScoreboard(String name, String title, List<String> lines);
+    Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines);
     
     /**
      * Returns map of registered scoreboards via config and API.
@@ -66,7 +67,7 @@ public interface ScoreboardManager {
      * @see     #hasCustomScoreboard(TabPlayer)
      * @see     #resetScoreboard(TabPlayer)
      */
-    void showScoreboard(TabPlayer player, Scoreboard scoreboard);
+    void showScoreboard(@NonNull TabPlayer player, @NonNull Scoreboard scoreboard);
     
     /**
      * Returns {@code true} if player has custom scoreboard set using

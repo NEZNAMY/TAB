@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
@@ -186,10 +187,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public Scoreboard createScoreboard(String name, String title, List<String> lines) {
-        if (name == null) throw new IllegalArgumentException("name cannot be null");
-        if (title == null) throw new IllegalArgumentException("title cannot be null");
-        if (lines == null) throw new IllegalArgumentException("lines cannot be null");
+    public Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines) {
         Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
         registeredScoreboards.put(name, sb);
         definedScoreboards = registeredScoreboards.values().toArray(new Scoreboard[0]);
@@ -197,9 +195,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void showScoreboard(TabPlayer player, Scoreboard scoreboard) {
-        if (player == null) throw new IllegalArgumentException("player cannot be null");
-        if (scoreboard == null) throw new IllegalArgumentException("scoreboard cannot be null");
+    public void showScoreboard(@NonNull TabPlayer player, @NonNull Scoreboard scoreboard) {
         if (forcedScoreboard.containsKey(player)) {
             forcedScoreboard.get(player).removePlayer(player);
         }
