@@ -181,9 +181,6 @@ public class Converter {
         newConfig.set("bossbar.toggle-command", bossBar.getString("bossbar-toggle-command", "/bossbar"));
         newConfig.set("bossbar.remember-toggle-choice", bossBar.getBoolean("remember-toggle-choice", false));
         newConfig.set("bossbar.hidden-by-default", bossBar.getBoolean("hidden-by-default", false));
-        newConfig.set("bossbar.disable-in-worlds", bossBar.getObject("disable-features-in-worlds.bossbar"));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
-            newConfig.set("bossbar.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.bossbar", Collections.singletonList("disabledserver")));
         Map<Object, Map<String, Object>> bars = bossBar.getConfigurationSection("bars");
         Map<String, List<Object>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
         List<Object> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
@@ -246,10 +243,6 @@ public class Converter {
         newConfig.set("scoreboard.static-number", 0);
         newConfig.set("scoreboard.delay-on-join-milliseconds", 0);
         newConfig.set("scoreboard.respect-other-plugins", true);
-        newConfig.set("scoreboard.disable-in-worlds", Collections.singletonList("disabledworld"));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
-            newConfig.set("scoreboard.disable-in-servers", Collections.singletonList("disabledserver"));
-        }
         newConfig.set("scoreboard.scoreboards.admin.display-condition", "permission:tab.scoreboard.admin");
         newConfig.set("scoreboard.scoreboards.admin.title", "Admin scoreboard");
         newConfig.set("scoreboard.scoreboards.admin.lines", Arrays.asList("%animation:MyAnimation1%", "&6Online:", "* &eOnline&7: &f%online%&7",
