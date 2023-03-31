@@ -48,13 +48,6 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Switching scoreboards";
 
-    /**
-     * Constructs new instance and loads configuration
-     */
-    public ScoreboardManagerImpl() {
-        super("scoreboard");
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public void load() {
