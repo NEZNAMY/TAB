@@ -32,9 +32,9 @@ public class Converter {
      */
     public void convertAnimationFile(ConfigurationFile animations) {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
+            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.8.10 to 2.9.0", true);
             animations.setValues(animations.getConfigurationSection("animations"));
             animations.save();
-            TAB.getInstance().sendConsoleMessage("&2Converted animations.yml to new format.", true);
         }
     }
 
@@ -49,11 +49,7 @@ public class Converter {
      */
     public void convertToV3(ConfigurationFile currentConfig) throws IOException {
         if (!currentConfig.hasConfigOption("change-nametag-prefix-suffix")) return;
-        TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
         TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.9.2 to 3.0.0",true);
-        TAB.getInstance().sendConsoleMessage("&ePlease note that this may not be 100% accurate",true);
-        TAB.getInstance().sendConsoleMessage("&eReview your configuration and verify everything is as you want it to be",true);
-        TAB.getInstance().sendConsoleMessage("&e--------------------------------------------------------------",true);
 
         File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();
@@ -379,10 +375,16 @@ public class Converter {
 
     public void removeOldOptions(ConfigurationFile config) {
         if (config.hasConfigOption("placeholders.remove-strings")) {
+            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.0.1 to 3.0.2", true);
             config.set("placeholders.remove-strings", null);
         }
         if (config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) {
+            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.1 to 3.3.2", true);
             config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
+        }
+        if (config.hasConfigOption("ping-spoof.enabled")) {
+            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
+            config.set("ping-spoof.enabled", null);
         }
     }
 }

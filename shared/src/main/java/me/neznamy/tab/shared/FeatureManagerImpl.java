@@ -87,16 +87,6 @@ public class FeatureManagerImpl implements FeatureManager {
         return gameMode;
     }
 
-    public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
-        for (TabFeature f : values) {
-            if (!(f instanceof LatencyListener)) continue;
-            long time = System.nanoTime();
-            latency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, latency);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
-        }
-        return latency;
-    }
-
     public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
         for (TabFeature f : values) {
             if (!(f instanceof DisplayNameListener)) continue;
