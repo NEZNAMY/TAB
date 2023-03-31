@@ -56,14 +56,11 @@ public abstract class ProxyPlatform extends Platform {
             return;
         }
         Placeholder placeholder;
-        int refresh;
+        int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
             placeholder = pl.registerRelationalPlaceholder(identifier, -1, (viewer, target) -> null);
-            refresh = pl.getRelationalRefresh(identifier);
         } else {
             placeholder = pl.registerPlayerPlaceholder(identifier, -1, player -> null);
-            refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier,
-                    pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
         }
         bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

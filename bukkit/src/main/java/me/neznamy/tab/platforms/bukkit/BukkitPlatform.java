@@ -117,15 +117,14 @@ public class BukkitPlatform extends BackendPlatform {
     @Override
     public void registerUnknownPlaceholder(String identifier) {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+        int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
             //relational placeholder
-            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> 
+            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRefreshInterval(identifier), (viewer, target) ->
                 placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
         } else {
             //normal placeholder
             if (identifier.startsWith("%sync:")) {
-                int refresh = pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier,
-                        pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
                 String syncedPlaceholder = "%" + identifier.substring(6, identifier.length()-1) + "%";
                 pl.registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, null) {
                     
@@ -141,12 +140,11 @@ public class BukkitPlatform extends BackendPlatform {
                 });
                 return;
             }
-            if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-                TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () ->
+            if (identifier.startsWith("%server_")) {
+                TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, refresh, () ->
                         placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
             } else {
-                int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh());
-                TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> 
+                TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p ->
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
             }
         }

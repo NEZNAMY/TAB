@@ -40,10 +40,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     @Getter private final String refreshDisplayName = "Updating placeholders";
     @Getter private final String featureName = "Refreshing placeholders";
-    @Getter private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 100);
-    @Getter private final Map<String, Integer> serverPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.server");
-    @Getter private final Map<String, Integer> playerPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.player");
-    private final Map<String, Integer> relationalPlaceholderRefreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals.relational");
+    @Getter private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 500);
+    @Getter private final Map<String, Integer> refreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals");
 
     //plugin internals + PAPI + API
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
@@ -142,8 +140,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return somethingChanged;
     }
 
-    public int getRelationalRefresh(String identifier) {
-        return relationalPlaceholderRefreshIntervals.getOrDefault(identifier, defaultRefresh);
+    public int getRefreshInterval(String identifier) {
+        return refreshIntervals.getOrDefault(identifier, defaultRefresh);
     }
 
     public Collection<Placeholder> getAllPlaceholders() {

@@ -205,6 +205,7 @@ public class Converter {
             bars.get(definedBossBar).put("announcement-bar", !activeBossBars.contains(definedBossBar));
             bars.get(definedBossBar).remove("permission-required");
         }
+        newConfig.set("bossbar.default-bars", null);
         newConfig.set("bossbar.bars", bars);
     }
 
@@ -371,5 +372,22 @@ public class Converter {
         TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
         config.set("ping-spoof", null);
         config.set("fix-pet-names", null);
+        config.set("bossbar.disable-in-worlds", null);
+        config.set("bossbar.disable-in-servers", null);
+        config.set("scoreboard.disable-in-worlds", null);
+        config.set("scoreboard.disable-in-servers", null);
+        if (config.hasConfigOption("placeholderapi-refresh-intervals.server")) {
+            Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
+            Map<String, Object> server = config.getConfigurationSection("placeholderapi-refresh-intervals.server");
+            Map<String, Object> player = config.getConfigurationSection("placeholderapi-refresh-intervals.player");
+            Map<String, Object> relational = config.getConfigurationSection("placeholderapi-refresh-intervals.relational");
+            intervals.remove("server");
+            intervals.remove("player");
+            intervals.remove("relational");
+            intervals.putAll(server);
+            intervals.putAll(player);
+            intervals.putAll(relational);
+            config.save();
+        }
     }
 }
