@@ -60,9 +60,6 @@ public abstract class Platform {
         if (configuration.getConfig().getBoolean("header-footer.enabled", true))
             featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
 
-        if (configuration.isRemoveGhostPlayers())
-            featureManager.registerFeature(TabConstants.Feature.GHOST_PLAYER_FIX, new GhostPlayerFix());
-
         if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
             featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
 

@@ -376,6 +376,7 @@ public class Converter {
         config.set("bossbar.disable-in-servers", null);
         config.set("scoreboard.disable-in-worlds", null);
         config.set("scoreboard.disable-in-servers", null);
+        config.set("remove-ghost-players", null);
         if (config.hasConfigOption("placeholderapi-refresh-intervals.server")) {
             Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
             Map<String, Object> server = config.getConfigurationSection("placeholderapi-refresh-intervals.server");

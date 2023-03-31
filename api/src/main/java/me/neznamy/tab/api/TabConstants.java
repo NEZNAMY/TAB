@@ -176,7 +176,6 @@ public class TabConstants {
 
         //universal features
         public static final String HEADER_FOOTER = "HeaderFooter";
-        public static final String GHOST_PLAYER_FIX = "GhostPlayerFix";
         public static final String PLAYER_LIST = "PlayerList";
         public static final String SPECTATOR_FIX = "SpectatorFix";
         public static final String YELLOW_NUMBER = "YellowNumber";
