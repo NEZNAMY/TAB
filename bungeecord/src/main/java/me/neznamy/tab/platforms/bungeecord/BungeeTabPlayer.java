@@ -178,7 +178,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendPluginMessage(byte[] message) {
-        if (getPlayer().getServer() == null) return;
+        if (getPlayer().getServer() == null) {
+            TAB.getInstance().getErrorManager().printError("Skipped plugin message send to " + getName() + ", because player is not" +
+                    "connected to any server (message=" + new String(message) + ")");
+            return;
+        }
         getPlayer().getServer().sendData(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME, message);
     }
 }

@@ -9,6 +9,7 @@ import me.neznamy.tab.api.Scoreboard;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.Skin;
 import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
@@ -87,9 +88,18 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public void sendPluginMessage(byte[] message) {
         try {
-            getPlayer().getCurrentServer().ifPresent(server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message));
+            getPlayer().getCurrentServer().ifPresentOrElse(
+                    server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message),
+                    () -> error(message)
+            );
         } catch (IllegalStateException VelocityBeingVelocityException) {
             // java.lang.IllegalStateException: Not connected to server!
+            error(message);
         }
+    }
+
+    private void error(byte[] message) {
+        TAB.getInstance().getErrorManager().printError("Skipped plugin message send to " + getName() + ", because player is not" +
+                "connected to any server (message=" + new String(message) + ")");
     }
 }

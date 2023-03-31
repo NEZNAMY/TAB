@@ -4,3 +4,6 @@ dependencies {
     compileOnly(libs.velocity)
     annotationProcessor(libs.velocity)
 }
+tasks.compileJava {
+    options.release.set(11)
+}
