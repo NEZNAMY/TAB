@@ -78,13 +78,6 @@ public class KryptonPipelineInjector extends PipelineInjector {
                         gameMode = GameModes.fromId(newGameMode);
                     }
                 }
-                if (actions.contains(PacketOutPlayerInfoUpdate.Action.UPDATE_LATENCY)) {
-                    int newLatency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.uuid(), latency);
-                    if (newLatency != latency) {
-                        updated = true;
-                        latency = newLatency;
-                    }
-                }
                 if (actions.contains(PacketOutPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME)) {
                     IChatBaseComponent input = displayName == null ? null : new WrappedChatComponent(displayName);
                     IChatBaseComponent output = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.uuid(), input);

@@ -163,15 +163,6 @@ scoreboard:
         - "* &bWorld&7: &f%world%"
         - "%animation:MyAnimation1%"
 
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Ping-Spoof
-ping-spoof:
-  enabled: false
-  value: 0
-
-# https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Pet-name-fix
-fix-pet-names:
-  enabled: false
-
 placeholders:
   date-format: "dd.MM.yyyy"
   time-format: "[HH:mm:ss / h:mm a]"

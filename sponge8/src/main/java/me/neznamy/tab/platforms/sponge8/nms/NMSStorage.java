@@ -35,8 +35,6 @@ public class NMSStorage {
     public final Field ClientboundSetPlayerTeamPacket_ACTION = getInstanceFields(ClientboundSetPlayerTeamPacket.class, int.class).get(0);
     public final Field ClientboundSetPlayerTeamPacket_PLAYERS = getFields(ClientboundSetPlayerTeamPacket.class, Collection.class).get(0);
 
-    public final Field ClientboundSetEntityDataPacket_data = getFields(ClientboundSetEntityDataPacket.class, List.class).get(0);
-
     /**
      * Returns all fields of class with defined class type
      *

@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A pipeline injector for Netty connections. As most servers use Netty, this avoids code duplication.
@@ -108,16 +107,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
         /** Injected player */
         protected final TabPlayer player;
-
-        @Override
-        public void channelRead(@NotNull ChannelHandlerContext context, @NotNull Object packet) {
-            try {
-                if (TAB.getInstance().getFeatureManager().onPacketReceive(player, packet)) return;
-                super.channelRead(context, packet);
-            } catch (Throwable e) {
-                TAB.getInstance().getErrorManager().printError("An error occurred when reading packets", e);
-            }
-        }
 
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {

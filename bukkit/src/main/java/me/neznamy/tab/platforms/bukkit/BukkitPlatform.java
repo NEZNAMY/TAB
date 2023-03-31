@@ -13,7 +13,6 @@ import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
-import me.neznamy.tab.platforms.bukkit.features.PetFix;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.unlimitedtags.BukkitNameTagX;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
@@ -105,11 +104,6 @@ public class BukkitPlatform extends BackendPlatform {
             return expansion;
         }
         return new EmptyTabExpansion();
-    }
-
-    @Override
-    public TabFeature getPetFix() {
-        return new PetFix();
     }
 
     @Override

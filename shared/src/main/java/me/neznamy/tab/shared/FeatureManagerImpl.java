@@ -189,30 +189,6 @@ public class FeatureManagerImpl implements FeatureManager {
     }
 
     /**
-     * Calls onPacketReceive(TabPlayer, Object) on all features
-     * 
-     * @param   sender
-     *          packet sender
-     * @param   packet
-     *          IN packet coming from player
-     * @return  {@code true} if packet should be cancelled, {@code false} if not
-     */
-    public boolean onPacketReceive(TabPlayer sender, Object packet) {
-        boolean cancel = false;
-        for (TabFeature f : values) {
-            if (!(f instanceof PacketReceiveListener)) continue;
-            long time = System.nanoTime();
-            try {
-                if (((PacketReceiveListener)f).onPacketReceive(sender, packet)) cancel = true;
-            } catch (ReflectiveOperationException e) {
-                TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
-            }
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_IN, System.nanoTime()-time);
-        }
-        return cancel;
-    }
-
-    /**
      * Calls onPacketSend(TabPlayer, Object) on all features
      * 
      * @param   receiver

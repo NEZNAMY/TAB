@@ -183,7 +183,6 @@ public class TabConstants {
         public static final String BELOW_NAME = "BelowName";
         public static final String BELOW_NAME_TEXT = "BelowNameText";
         public static final String SCOREBOARD = "ScoreBoard";
-        public static final String PING_SPOOF = "PingSpoof";
         public static final String SORTING = "sorting";
         public static final String LAYOUT = "layout";
         public static final String LAYOUT_LATENCY = "layout-latency";
@@ -195,7 +194,6 @@ public class TabConstants {
         public static final String NAME_TAGS_VISIBILITY = "NameTagVisibility";
         public static final String GROUP_MANAGER = "GroupManager";
         public static final String PLACEHOLDER_MANAGER = "PlaceholderManager";
-        public static final String PET_FIX = "PetFix";
         public static final String UNLIMITED_NAME_TAGS = "NameTagX";
         public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
         public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";

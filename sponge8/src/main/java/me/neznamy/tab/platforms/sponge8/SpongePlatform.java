@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.feature.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.sponge8.features.PetFix;
 import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -50,11 +49,6 @@ public final class SpongePlatform extends BackendPlatform {
     @Override
     public NameTag getUnlimitedNametags() {
         return new SpongeNameTagX(plugin);
-    }
-
-    @Override
-    public TabFeature getPetFix() {
-        return new PetFix();
     }
 
     @Override

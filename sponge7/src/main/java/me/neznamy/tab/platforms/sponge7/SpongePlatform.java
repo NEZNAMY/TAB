@@ -16,7 +16,6 @@ public final class SpongePlatform extends BackendPlatform {
 
     @Getter private final PipelineInjector pipelineInjector = null;
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
-    @Getter private final TabFeature petFix = null;
     @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override

@@ -106,13 +106,9 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
         List<ClientboundPlayerInfoPacket.PlayerUpdate> updatedList = new ArrayList<>();
         for (ClientboundPlayerInfoPacket.PlayerUpdate data : (List<ClientboundPlayerInfoPacket.PlayerUpdate>) nms.ClientboundPlayerInfoPacket_entries.get(packet)) {
             int gameMode = data.getGameMode().getId();
-            int ping = data.getLatency();
             IChatBaseComponent displayName = data.getDisplayName() == null ? null : new WrappedChatComponent(data.getDisplayName());
             if (action == ClientboundPlayerInfoPacket.Action.UPDATE_GAME_MODE) {
                 gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, data.getProfile().getId(), gameMode);
-            }
-            if (action == ClientboundPlayerInfoPacket.Action.UPDATE_LATENCY) {
-                ping = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, data.getProfile().getId(), ping);
             }
             if (action == ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME) {
                 displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, data.getProfile().getId(), displayName);
@@ -122,7 +118,7 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
             }
             Component component = displayName instanceof WrappedChatComponent ?
                     (Component) ((WrappedChatComponent) displayName).getOriginalComponent() : Sponge8TAB.getComponentCache().get(displayName, receiver.getVersion());
-            updatedList.add(info.new PlayerUpdate(data.getProfile(), ping, GameType.byId(gameMode), component));
+            updatedList.add(info.new PlayerUpdate(data.getProfile(), data.getLatency(), GameType.byId(gameMode), component));
         }
         // Easiest way to update entries without using reflection
         nms.ClientboundPlayerInfoPacket_entries.set(packet, updatedList);

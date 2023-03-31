@@ -295,7 +295,6 @@ public class Converter {
     }
 
     private void convertOtherOptions(ConfigurationFile oldConfig, ConfigurationFile newConfig, ConfigurationFile premiumConfig) {
-        newConfig.set("ping-spoof", oldConfig.getConfigurationSection("ping-spoof"));
         newConfig.set("prevent-spectator-effect.enabled", oldConfig.getBoolean("do-not-move-spectators",false));
 
         Map<String,Object> placeholders = oldConfig.getConfigurationSection("placeholders");
@@ -327,8 +326,6 @@ public class Converter {
         newConfig.set("mysql.database", "tab");
         newConfig.set("mysql.username", "user");
         newConfig.set("mysql.password", "password");
-
-        newConfig.set("fix-pet-names.enabled", oldConfig.getBoolean("fix-pet-names", false));
 
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
             newConfig.set("global-playerlist", oldConfig.getConfigurationSection("global-playerlist"));
@@ -384,7 +381,8 @@ public class Converter {
         }
         if (config.hasConfigOption("ping-spoof.enabled")) {
             TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
-            config.set("ping-spoof.enabled", null);
+            config.set("ping-spoof", null);
+            config.set("fix-pet-names", null);
         }
     }
 }

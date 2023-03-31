@@ -57,10 +57,6 @@ public abstract class Platform {
                     minorVersion >= 9 ? new BossBarManagerImpl() : getLegacyBossBar());
         }
 
-        if (minorVersion >= 9 && configuration.getConfig().getBoolean("fix-pet-names.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.PET_FIX, getPetFix());
-        }
-
         if (configuration.getConfig().getBoolean("header-footer.enabled", true))
             featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
 
@@ -169,8 +165,6 @@ public abstract class Platform {
     public abstract NameTag getUnlimitedNametags();
 
     public abstract @NonNull TabExpansion getTabExpansion();
-
-    public abstract @Nullable TabFeature getPetFix();
 
     public abstract @Nullable RedisSupport getRedisSupport();
 

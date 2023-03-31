@@ -116,15 +116,11 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         // Entities
         PacketPlayOutSpawnEntityLivingStorage.CLASS = getLegacyClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
         PacketPlayOutEntityTeleportStorage.CLASS = getLegacyClass("PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
-        PacketPlayInUseEntity = getLegacyClass("PacketPlayInUseEntity", "Packet7UseEntity");
         PacketPlayOutEntity = getLegacyClass("PacketPlayOutEntity", "Packet30Entity");
         PacketPlayOutEntityDestroyStorage.CLASS = getLegacyClass("PacketPlayOutEntityDestroy", "Packet29DestroyEntity");
         PacketPlayOutEntityLook = getLegacyClass("PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook");
         PacketPlayOutEntityMetadataStorage.CLASS = getLegacyClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
         PacketPlayOutNamedEntitySpawn = getLegacyClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
-        if (minorVersion >= 7) {
-            EnumEntityUseAction = (Class<Enum>) getLegacyClass("PacketPlayInUseEntity$EnumEntityUseAction", "EnumEntityUseAction");
-        }
 
         // Player Info
         if (minorVersion >= 8) {
