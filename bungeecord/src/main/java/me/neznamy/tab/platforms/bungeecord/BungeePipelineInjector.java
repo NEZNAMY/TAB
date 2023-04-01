@@ -122,7 +122,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     public void onPlayerInfo(TabPlayer receiver, Object packet) {
-        PlayerListItem.Item[] items;
         if (packet instanceof PlayerListItemUpdate) {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
