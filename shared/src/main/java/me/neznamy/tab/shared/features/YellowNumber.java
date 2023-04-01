@@ -98,6 +98,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
                 }
             }
         }
+        if (redis != null) redis.updateYellowNumber(connectedPlayer, value);
     }
 
     @Override
@@ -126,7 +127,6 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         }
         if (!disabledNow && disabledBefore) {
             onJoin(p);
-            if (redis != null) redis.updateYellowNumber(p, p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
         }
     }
 
@@ -137,6 +137,6 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
             if (isDisabledPlayer(all) || all.isBedrockPlayer()) continue;
             all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
         }
-        if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
+        if (redis != null) redis.updateYellowNumber(refreshed, value);
     }
 }

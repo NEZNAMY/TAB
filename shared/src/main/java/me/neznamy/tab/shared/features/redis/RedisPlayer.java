@@ -30,8 +30,8 @@ public class RedisPlayer {
     @Setter @Getter private String tagPrefix;
     @Setter @Getter private String tagSuffix;
     @Getter private boolean nameVisibility;
-    @Setter private String belowName;
-    @Setter private String yellowNumber;
+    @Getter @Setter private int belowName;
+    @Getter @Setter private int yellowNumber;
     @Getter private boolean staff;
 
     private RedisPlayer() {
@@ -55,8 +55,8 @@ public class RedisPlayer {
         player.tagPrefix = (String) json.get("tagprefix");
         player.tagSuffix = (String) json.get("tagsuffix");
         player.nameVisibility = (boolean) json.get("namevisibility");
-        player.belowName = (String) json.get("belowname");
-        player.yellowNumber = (String) json.get("yellow-number");
+        player.belowName = (int) json.get("belowname");
+        player.yellowNumber = (int) json.get("yellow-number");
         player.staff = (boolean) json.get("staff");
         player.disabledPlayerList = redis.getPlayerList() == null || redis.getPlayerList().isDisabled(player.server, null);
         player.disabledNameTags = redis.getNameTags() == null || redis.getNameTags().isDisabled(player.server, null);
@@ -98,10 +98,10 @@ public class RedisPlayer {
             json.put("namevisibility", true);
         }
         if (p.getProperty(TabConstants.Property.BELOWNAME_NUMBER) != null) {
-            json.put("belowname", p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
+            json.put("belowname", TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get(), 0));
         }
         if (p.getProperty(TabConstants.Property.YELLOW_NUMBER) != null) {
-            json.put("yellow-number", p.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
+            json.put("yellow-number", TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).get(), 0));
         }
         json.put("teamname", redis.getSorting() == null ? null : redis.getSorting().getShortTeamName(p));
         json.put("vanished", p.isVanished());
@@ -116,14 +116,6 @@ public class RedisPlayer {
     public TabListEntry getEntry() {
         return new TabListEntry(uniqueId, nickname, skin, true, 0, 0,
                 disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat), null);
-    }
-
-    public int getBelowName() {
-        return TAB.getInstance().getErrorManager().parseInteger(belowName, 0);
-    }
-
-    public int getYellowNumber() {
-        return TAB.getInstance().getErrorManager().parseInteger(yellowNumber, 0);
     }
 
     public void setServer(String server) {

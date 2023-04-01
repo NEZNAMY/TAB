@@ -97,7 +97,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   value
      *          New BelowName value
      */
-    public void updateBelowName(TabPlayer p, String value) {
+    public void updateBelowName(TabPlayer p, int value) {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "belowname");
@@ -115,7 +115,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   value
      *          New number value
      */
-    public void updateYellowNumber(TabPlayer p, String value) {
+    public void updateYellowNumber(TabPlayer p, int value) {
         JSONObject json = new JSONObject();
         json.put("proxy", proxy.toString());
         json.put("action", "yellow-number");
@@ -231,7 +231,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
                 case "belowname":
                     target = redisPlayers.get(id.toString());
                     if (target == null) break;
-                    target.setBelowName((String) message.get("belowname"));
+                    target.setBelowName((int) message.get("belowname"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                         viewer.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
                     }
@@ -239,7 +239,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
                 case "yellow-number":
                     target = redisPlayers.get(id.toString());
                     if (target == null) break;
-                    target.setYellowNumber((String) message.get("yellow-number"));
+                    target.setYellowNumber((int) message.get("yellow-number"));
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                         viewer.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
                     }

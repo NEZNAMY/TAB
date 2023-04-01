@@ -85,7 +85,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
             }
         }
-        if (redis != null) redis.updateBelowName(connectedPlayer, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
+        if (redis != null) redis.updateBelowName(connectedPlayer, number);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
             }
         }
-        if (redis != null) redis.updateBelowName(p, p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
+        if (redis != null) redis.updateBelowName(p, number);
     }
 
     public int getValue(TabPlayer p) {
@@ -143,7 +143,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), number);
             }
         }
-        if (redis != null) redis.updateBelowName(refreshed, refreshed.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
+        if (redis != null) redis.updateBelowName(refreshed, number);
     }
 
     private boolean sameServerAndWorld(TabPlayer player1, TabPlayer player2) {
