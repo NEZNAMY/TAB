@@ -56,7 +56,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
 
     public PlaceholderManagerImpl() {
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, "Refreshing placeholders", this::refresh);
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, this::refresh);
     }
 
     private void refresh() {

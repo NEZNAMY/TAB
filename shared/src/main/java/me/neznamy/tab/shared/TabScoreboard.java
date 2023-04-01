@@ -104,7 +104,7 @@ public abstract class TabScoreboard implements Scoreboard {
     }
 
     /**
-     * Clears maps of registered teams and objectives when Login packet is sent
+     * Clears maps of registered teams and objectives on server switch, as proxy sends Login packet
      */
     public void clearRegisteredObjectives() {
         registeredTeams.clear();

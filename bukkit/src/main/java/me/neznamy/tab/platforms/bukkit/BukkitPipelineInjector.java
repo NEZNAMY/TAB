@@ -79,11 +79,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public boolean isLogin(Object packet) {
-        return false;
-    }
-
-    @Override
     public void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         List<String> actions;

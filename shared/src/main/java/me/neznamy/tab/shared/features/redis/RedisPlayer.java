@@ -17,7 +17,7 @@ public class RedisPlayer {
 
     private RedisSupport redis;
     @Getter private boolean disabledPlayerList;
-    private boolean disabledNameTags;
+    @Getter private boolean disabledNameTags;
 
     @Getter private UUID uniqueId;
     @Getter private String name;

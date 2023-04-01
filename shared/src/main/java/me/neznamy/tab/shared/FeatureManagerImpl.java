@@ -163,9 +163,8 @@ public class FeatureManagerImpl implements FeatureManager {
         if (changed == null) return;
         String from = changed.getServer();
         ((ITabPlayer)changed).setServer(to);
+        ((TabScoreboard)changed.getScoreboard()).clearRegisteredObjectives();
         ((ProxyTabPlayer)changed).sendJoinPluginMessage();
-        if (!isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION) || changed.getVersion().getMinorVersion() < 8)
-            onLoginPacket(changed);
         for (TabFeature f : values) {
             if (!(f instanceof ServerSwitchListener)) continue;
             long time = System.nanoTime();
@@ -206,22 +205,6 @@ public class FeatureManagerImpl implements FeatureManager {
                 TAB.getInstance().getErrorManager().printError("Feature " + f.getFeatureName() + " failed to read packet", e);
             }
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
-        }
-    }
-
-    /**
-     * Calls onLoginPacket(TabPlayer) on all features
-     *
-     * @param   packetReceiver
-     *          player who received the packet
-     */
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        ((TabScoreboard)packetReceiver.getScoreboard()).clearRegisteredObjectives();
-        for (TabFeature f : values) {
-            if (!(f instanceof LoginPacketListener)) continue;
-            long time = System.nanoTime();
-            ((LoginPacketListener)f).onLoginPacket(packetReceiver);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_JOIN_GAME, System.nanoTime()-time);
         }
     }
 

@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * multiple proxies connected with a redis plugin.
  */
 @SuppressWarnings("unchecked")
-public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener, LoginPacketListener,
+public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
         DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener {
 
     @Getter private final String featureName = "RedisSupport";
@@ -379,6 +379,12 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         json.put("UUID", p.getTablistId().toString());
         json.put("server", to);
         sendMessage(json.toString());
+
+        for (RedisPlayer redis : redisPlayers.values()) {
+            if (!redis.isDisabledNameTags()) p.getScoreboard().registerTeam(redis.getTeamName(), redis.getTagPrefix(), redis.getTagSuffix(),
+                    redis.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(redis.getNickname()), 2);
+        }
+
         if (p.getVersion().getMinorVersion() < 8 || global == null) return;
         for (RedisPlayer redis : redisPlayers.values()) {
             boolean before = shouldSee(p, from, redis.getServer(), redis.isVanished());
@@ -408,14 +414,5 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             return IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat());
         }
         return displayName;
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        for (RedisPlayer p : redisPlayers.values()) {
-            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                all.getScoreboard().registerTeam(p.getTeamName(), p.getTagPrefix(), p.getTagSuffix(), p.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(p.getNickname()), 2);
-            }
-        }
     }
 }

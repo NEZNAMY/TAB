@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
  * Feature handler for scoreboard objective with
  * PLAYER_LIST display slot (in tablist).
  */
-public class YellowNumber extends TabFeature implements JoinListener, LoginPacketListener, Loadable, UnLoadable,
+public class YellowNumber extends TabFeature implements JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     @Getter private final String featureName = "Yellow Number";
@@ -103,6 +103,12 @@ public class YellowNumber extends TabFeature implements JoinListener, LoginPacke
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
         onWorldChange(p, null, null);
+        if (isDisabledPlayer(p) || p.isBedrockPlayer()) return;
+        p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
+        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+        }
     }
 
     @Override
@@ -132,17 +138,5 @@ public class YellowNumber extends TabFeature implements JoinListener, LoginPacke
             all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
         }
         if (redis != null) redis.updateYellowNumber(refreshed, refreshed.getProperty(TabConstants.Property.YELLOW_NUMBER).get());
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        if (isDisabledPlayer(packetReceiver) || packetReceiver.isBedrockPlayer()) return;
-        packetReceiver.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-        packetReceiver.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.isLoaded()) {
-                packetReceiver.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-            }
-        }
     }
 }

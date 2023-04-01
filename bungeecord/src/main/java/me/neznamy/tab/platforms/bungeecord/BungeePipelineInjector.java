@@ -121,11 +121,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public boolean isLogin(Object packet) {
-        return packet instanceof Login;
-    }
-
-    @Override
     public void onPlayerInfo(TabPlayer receiver, Object packet) {
         PlayerListItem.Item[] items;
         if (packet instanceof PlayerListItemUpdate) {

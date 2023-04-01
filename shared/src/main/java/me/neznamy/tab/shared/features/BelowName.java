@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * Feature handler for BelowName feature
  */
-public class BelowName extends TabFeature implements JoinListener, LoginPacketListener, Loadable, UnLoadable,
+public class BelowName extends TabFeature implements JoinListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -88,8 +88,16 @@ public class BelowName extends TabFeature implements JoinListener, LoginPacketLi
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
+    public void onServerChange(TabPlayer player, String from, String to) {
+        onWorldChange(player, null, null);
+        if (isDisabledPlayer(player)) return;
+        player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
+        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (sameServerAndWorld(all, player)) {
+                player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
+            }
+        }
     }
 
     @Override
@@ -135,18 +143,6 @@ public class BelowName extends TabFeature implements JoinListener, LoginPacketLi
             }
         }
         if (redis != null) redis.updateBelowName(refreshed, refreshed.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get());
-    }
-
-    @Override
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        if (isDisabledPlayer(packetReceiver)) return;
-        packetReceiver.getScoreboard().registerObjective(OBJECTIVE_NAME, packetReceiver.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        packetReceiver.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.isLoaded() && sameServerAndWorld(all, packetReceiver)) {
-                packetReceiver.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-            }
-        }
     }
 
     private boolean sameServerAndWorld(TabPlayer player1, TabPlayer player2) {

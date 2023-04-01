@@ -15,8 +15,9 @@ import java.util.Map.Entry;
 /**
  * Feature handler for scoreboard feature
  */
-public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener, LoginPacketListener,
-        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, Refreshable {
+public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManager, JoinListener,
+        CommandListener, DisplayObjectiveListener, ObjectiveListener, Loadable, UnLoadable, Refreshable,
+        ServerSwitchListener {
 
     public static final String OBJECTIVE_NAME = "TAB-Scoreboard";
 
@@ -298,12 +299,12 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        otherPluginScoreboards.remove(packetReceiver);
-        ScoreboardImpl scoreboard = activeScoreboards.get(packetReceiver);
+    public void onServerChange(TabPlayer changed, String from, String to) {
+        otherPluginScoreboards.remove(changed);
+        ScoreboardImpl scoreboard = activeScoreboards.get(changed);
         if (scoreboard != null) {
-            scoreboard.removePlayerFromSet(packetReceiver);
-            scoreboard.addPlayer(packetReceiver);
+            scoreboard.removePlayerFromSet(changed);
+            scoreboard.addPlayer(changed);
         }
     }
 }

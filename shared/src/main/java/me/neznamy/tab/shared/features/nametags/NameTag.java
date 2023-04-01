@@ -14,7 +14,7 @@ import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.*;
 
-public class NameTag extends TabFeature implements TeamManager, JoinListener, QuitListener, LoginPacketListener,
+public class NameTag extends TabFeature implements TeamManager, JoinListener, QuitListener,
         Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     @Getter private final String featureName = "NameTags";
@@ -76,14 +76,6 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onLoginPacket(TabPlayer packetReceiver) {
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!all.isLoaded()) continue;
-            if (!isDisabledPlayer(all)) registerTeam(all, packetReceiver);
-        }
-    }
-
-    @Override
     public void refresh(TabPlayer refreshed, boolean force) {
         if (isDisabledPlayer(refreshed)) return;
         boolean refresh;
@@ -135,6 +127,9 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
         onWorldChange(p, null, null);
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (!isDisabledPlayer(all)) registerTeam(all, p);
+        }
     }
 
     @Override

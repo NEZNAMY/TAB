@@ -93,11 +93,6 @@ public class SpongePipelineInjector extends NettyPipelineInjector {
         return packet instanceof ClientboundPlayerInfoPacket;
     }
 
-    @Override
-    public boolean isLogin(Object packet) {
-        return false;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {

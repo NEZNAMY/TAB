@@ -88,8 +88,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     public abstract boolean isPlayerInfo(Object packet);
 
-    public abstract boolean isLogin(Object packet);
-
     public abstract void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException;
 
     /**
@@ -111,12 +109,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         @Override
         public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
             try {
-                if (isLogin(packet)) {
-                    //making sure to not send own packets before login packet is actually sent
-                    super.write(context, packet, channelPromise);
-                    TAB.getInstance().getFeatureManager().onLoginPacket(player);
-                    return;
-                }
                 if (isPlayerInfo(packet) && player.getVersion().getMinorVersion() >= 8)
                                                 onPlayerInfo(player, packet);
                 if (isDisplayObjective(packet)) onDisplayObjective(player, packet);

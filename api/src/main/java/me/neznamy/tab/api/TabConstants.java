@@ -46,16 +46,13 @@ public class TabConstants {
         public static final String PACKET_PLAYER_INFO = "PacketPlayOutPlayerInfo";
         public static final String PACKET_DISPLAY_OBJECTIVE = "PacketPlayOutScoreboardDisplayObjective";
         public static final String PACKET_OBJECTIVE = "PacketPlayOutScoreboardObjective";
-        public static final String PACKET_JOIN_GAME = "Login Packet";
         public static final String PACKET_ENTITY_MOVE = "PacketPlayOutEntity";
         public static final String PACKET_ENTITY_MOVE_PASSENGER = "PacketPlayOutEntity (passenger)";
         public static final String PACKET_ENTITY_SPAWN = "PacketPlayOutNamedEntitySpawn";
         public static final String PACKET_ENTITY_DESTROY = "PacketPlayOutEntityDestroy";
-        public static final String RAW_PACKET_IN = "Packet reading (in)";
         public static final String RAW_PACKET_OUT = "Packet reading (out)";
 
         public static final String PLACEHOLDER_REFRESHING = "Refreshing placeholders";
-        public static final String GROUP_REFRESHING = "Refreshing groups";
 
         public static final String REFRESHING_NAME_TAG_VISIBILITY = "Refreshing NameTag visibility";
         public static final String SCOREBOARD_PACKET_CHECK = "Checking for other plugins";
