@@ -1,10 +1,8 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.Scoreboard;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
@@ -12,23 +10,17 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-public class SpongeScoreboard extends Scoreboard {
+public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
-    private final Map<String, Objective> objectives = new HashMap<>();
-    
-    private final Player spongePlayer;
-    
-    public SpongeScoreboard(TabPlayer player) {
+    public SpongeScoreboard(SpongeTabPlayer player) {
         super(player);
-        spongePlayer = (Player) player.getPlayer();
     }
 
     @Override
     public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
-        spongePlayer.getScoreboard().updateDisplaySlot(objectives.get(objective), convertDisplaySlot(slot));
+        player.getPlayer().getScoreboard().getObjective(objective).ifPresent(
+                o -> player.getPlayer().getScoreboard().updateDisplaySlot(o, convertDisplaySlot(slot)));
     }
 
     private static org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
@@ -47,18 +39,18 @@ public class SpongeScoreboard extends Scoreboard {
                 .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
                 .criterion(Criteria.DUMMY)
                 .build();
-        objectives.put(objectiveName, objective);
-        spongePlayer.getScoreboard().addObjective(objective);
+        player.getPlayer().getScoreboard().addObjective(objective);
     }
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        spongePlayer.getScoreboard().removeObjective(objectives.get(objectiveName));
+        player.getPlayer().getScoreboard().getObjective(objectiveName).ifPresent(o ->
+                player.getPlayer().getScoreboard().removeObjective(o));
     }
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        Objective obj = objectives.get(objectiveName);
+        Objective obj = player.getPlayer().getScoreboard().getObjective(objectiveName).orElseThrow(IllegalStateException::new);
         obj.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
         obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER);
     }
@@ -78,17 +70,17 @@ public class SpongeScoreboard extends Scoreboard {
         for (String member : players) {
             team.addMember(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(member), player.getVersion()));
         }
-        spongePlayer.getScoreboard().registerTeam(team);
+        player.getPlayer().getScoreboard().registerTeam(team);
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        spongePlayer.getScoreboard().getTeam(name).ifPresent(Team::unregister);
+        player.getPlayer().getScoreboard().getTeam(name).ifPresent(Team::unregister);
     }
 
     @Override
     public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        Team team = spongePlayer.getScoreboard().getTeam(name).orElse(null);
+        Team team = player.getPlayer().getScoreboard().getTeam(name).orElse(null);
         if (team == null) return;
         team.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()));
         team.setPrefix(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
@@ -121,11 +113,14 @@ public class SpongeScoreboard extends Scoreboard {
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
-        objectives.get(objective).getOrCreateScore(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(playerName), player.getVersion())).setScore(score);
+        player.getPlayer().getScoreboard().getObjective(objective).ifPresent(o -> o.getOrCreateScore(
+                Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(playerName),
+                        player.getVersion())).setScore(score));
     }
 
     @Override
     public void removeScore0(@NonNull String objective, @NonNull String playerName) {
-        objectives.get(objective).removeScore(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(playerName), player.getVersion()));
+        player.getPlayer().getScoreboard().getObjective(objective).ifPresent(o -> o.removeScore(
+                Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(playerName), player.getVersion())));
     }
 }

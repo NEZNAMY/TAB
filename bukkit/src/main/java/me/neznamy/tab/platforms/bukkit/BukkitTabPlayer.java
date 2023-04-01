@@ -50,7 +50,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     /** Player's connection for sending packets, preloading for speed */
     @Getter private Object playerConnection;
 
-    @Getter private final Scoreboard scoreboard = new BukkitScoreboard(this);
+    @Getter private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
     @Getter private final TabList tabList = new BukkitTabList(this);
     @Getter private final BossBarHandler bossBarHandler = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar1_9(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar1_8(this);

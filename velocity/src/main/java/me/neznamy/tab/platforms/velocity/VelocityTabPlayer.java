@@ -17,7 +17,7 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    @Getter private final Scoreboard scoreboard = new VelocityScoreboard(this);
+    @Getter private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
     @Getter private final TabList tabList = new VelocityTabList(this);
     @Getter private final BossBarHandler bossBarHandler = new VelocityBossBarHandler(this);
 

@@ -21,7 +21,7 @@ import java.util.Collection;
 
 public final class SpongeTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
+    @Getter private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     @Getter private final TabList tabList = new SpongeTabList(this);
     @Getter private final BossBarHandler bossBarHandler = new SpongeBossBarHandler(this);
 

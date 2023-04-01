@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class KryptonTabPlayer extends BackendTabPlayer {
 
-    @Getter private final Scoreboard scoreboard = new KryptonScoreboard(this);
+    @Getter private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
     @Getter private final TabList tabList = new KryptonTabList(this);
     @Getter private final BossBarHandler bossBarHandler = new KryptonBossBarHandler(this);
 

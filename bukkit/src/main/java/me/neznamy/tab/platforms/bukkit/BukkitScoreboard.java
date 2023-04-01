@@ -6,7 +6,6 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboar
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
 import me.neznamy.tab.shared.player.Scoreboard;
-import me.neznamy.tab.shared.player.TabPlayer;
 
 import java.util.Collection;
 
@@ -43,54 +42,54 @@ import java.util.Collection;
  *      requiring owners to properly clear scoreboards, which is not something
  *      everyone knows how to do.
  */
-public class BukkitScoreboard extends Scoreboard {
+public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
-    public BukkitScoreboard(TabPlayer player) {
+    public BukkitScoreboard(BukkitTabPlayer player) {
         super(player);
     }
 
     @Override
     public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot.ordinal(), objective));
+        player.sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot.ordinal(), objective));
     }
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(1, objectiveName, "", false, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(1, objectiveName, "", false, player.getVersion()));
     }
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
     public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, player.getVersion()));
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardTeamStorage.unregister(name));
+        player.sendPacket(PacketPlayOutScoreboardTeamStorage.unregister(name));
     }
 
     @Override
     public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, player.getVersion()));
     }
 
     @Override
     public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, playerName, score));
+        player.sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, playerName, score));
     }
 
     @Override
     public void removeScore0(@NonNull String objective, @NonNull String playerName) {
-        ((BukkitTabPlayer)player).sendPacket(PacketPlayOutScoreboardScoreStorage.remove(objective, playerName));
+        player.sendPacket(PacketPlayOutScoreboardScoreStorage.remove(objective, playerName));
     }
 }

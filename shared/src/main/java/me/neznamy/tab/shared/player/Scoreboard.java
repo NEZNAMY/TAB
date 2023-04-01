@@ -5,17 +5,16 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.player.TabPlayer;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public abstract class Scoreboard {
+public abstract class Scoreboard<T extends TabPlayer> {
 
     /** Player this scoreboard belongs to */
-    protected final TabPlayer player;
+    protected final T player;
 
     /** Scoreboard teams player has registered */
     private final Set<String> registeredTeams = new HashSet<>();
