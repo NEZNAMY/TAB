@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.shared.TAB;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -66,8 +65,8 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
-        if (TabAPI.getInstance().getFeatureManager().onCommand(
-                TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
+        if (TAB.getInstance().isPluginDisabled()) return;
+        if (TAB.getInstance().getFeatureManager().onCommand(
+                TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()), e.getMessage())) e.setCancelled(true);
     }
 }

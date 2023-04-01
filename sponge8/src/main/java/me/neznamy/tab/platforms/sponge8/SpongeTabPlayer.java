@@ -2,13 +2,13 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -65,9 +65,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
         return getPlayer().connection().latency();
     }
 
-    @Override
-    public void sendPacket(Object packet) {
-        if (packet == null) return;
+    public void sendPacket(@NonNull Object packet) {
         ((net.minecraft.server.level.ServerPlayer) getPlayer()).connection.send((Packet<?>) packet);
     }
 

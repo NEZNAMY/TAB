@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.krypton.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.feature.PacketSendListener;
+import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.platforms.krypton.Main;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;

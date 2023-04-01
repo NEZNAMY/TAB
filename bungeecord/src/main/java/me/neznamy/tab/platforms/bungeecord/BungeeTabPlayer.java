@@ -2,18 +2,18 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.platforms.bungeecord.bossbar.BungeeBossBarHandler;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
+import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -85,8 +85,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         return getPlayer().getPing();
     }
 
-    @Override
-    public void sendPacket(Object nmsPacket) {
+    public void sendPacket(@NonNull Object nmsPacket) {
         getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
     }
 

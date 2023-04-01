@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.tablist.TabListEntry;
+import me.neznamy.tab.shared.player.tablist.TabListEntry;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {

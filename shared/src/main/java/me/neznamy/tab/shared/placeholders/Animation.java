@@ -7,6 +7,7 @@ import lombok.Getter;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * A class representing an animation from animations.yml
@@ -38,7 +39,7 @@ public class Animation {
     
     /**
      * Constructs new instance with given arguments which are fixed if necessary, such as when
-     * refresh is not divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     * refresh is not divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *
      * @param   name
      *          animation's name

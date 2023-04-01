@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab cpu" subcommand

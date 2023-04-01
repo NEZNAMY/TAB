@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.command;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
 import java.util.*;

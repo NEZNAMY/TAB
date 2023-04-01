@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.Getter;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class MessageFile extends YamlConfigurationFile {

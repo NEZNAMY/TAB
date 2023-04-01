@@ -2,10 +2,13 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.api.*;
+import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
+import me.neznamy.tab.api.tablist.HeaderFooterManager;
+import me.neznamy.tab.api.tablist.TablistFormatManager;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.shared.command.DisabledCommand;
@@ -15,6 +18,7 @@ import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.player.TabPlayer;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -69,7 +73,7 @@ public class TAB extends TabAPI {
     @Getter private final ErrorManager errorManager;
 
     /** Feature manager forwarding events into all loaded features */
-    @Getter private FeatureManagerImpl featureManager;
+    @Getter private FeatureManager featureManager;
 
     /** Plugin's configuration files and values storage */
     @Getter private Configs configuration;
@@ -118,11 +122,11 @@ public class TAB extends TabAPI {
         this.logger = logger;
         this.errorManager = new ErrorManager(this);
         try {
-
             eventBus = new EventBusImpl();
         } catch (NoSuchMethodError e) {
             //1.7.10 or lower
         }
+        TabAPI.setInstance(this);
     }
 
     /**
@@ -148,7 +152,7 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             cpu = new CpuManager();
             configuration = new Configs();
-            featureManager = new FeatureManagerImpl();
+            featureManager = new FeatureManager();
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
             platform.registerPlaceholders();
@@ -156,7 +160,7 @@ public class TAB extends TabAPI {
             platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
-            for (TabPlayer p : onlinePlayers) ((ITabPlayer)p).markAsLoaded(false);
+            for (TabPlayer p : onlinePlayers) p.markAsLoaded(false);
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
@@ -277,7 +281,6 @@ public class TAB extends TabAPI {
         return data.get(uniqueId);
     }
 
-    @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
         platform.sendConsoleMessage(message, translateColors);
     }
@@ -287,24 +290,8 @@ public class TAB extends TabAPI {
         return (HeaderFooterManager) featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
     }
 
-    @Override
-    public ConfigurationFile getPlayerCache() {
-        return configuration.getPlayerDataFile();
-    }
-
-    @Override
     public ConfigurationFile getConfig() {
         return configuration.getConfig();
-    }
-
-    @Override
-    public PropertyConfiguration getGroups() {
-        return configuration.getGroups();
-    }
-
-    @Override
-    public PropertyConfiguration getUsers() {
-        return configuration.getUsers();
     }
 
     @Override
@@ -317,7 +304,6 @@ public class TAB extends TabAPI {
         return (TablistFormatManager) featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
     }
 
-    @Override
     public void debug(String message) {
         if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
     }

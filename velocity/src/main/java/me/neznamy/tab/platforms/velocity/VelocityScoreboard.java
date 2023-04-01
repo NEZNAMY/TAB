@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.velocity;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.TabScoreboard;
+import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.player.TabPlayer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.List;
  * Scoreboard handler for Velocity. Because it does not have
  * any scoreboard API, we need to use bridge to send the packets.
  */
-public class VelocityScoreboard extends TabScoreboard {
+public class VelocityScoreboard extends Scoreboard {
 
     public VelocityScoreboard(TabPlayer player) {
         super(player);

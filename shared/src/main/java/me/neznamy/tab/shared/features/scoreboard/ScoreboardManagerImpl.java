@@ -2,12 +2,12 @@ package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.*;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -42,9 +42,9 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     private Scoreboard announcement;
 
     private final Set<TabPlayer> joinDelayed = Collections.newSetFromMap(new WeakHashMap<>());
-    private final WeakHashMap<TabPlayer, ScoreboardImpl> forcedScoreboard = new WeakHashMap<>();
-    @Getter private final WeakHashMap<TabPlayer, ScoreboardImpl> activeScoreboards = new WeakHashMap<>();
-    private final Set<TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, ScoreboardImpl> forcedScoreboard = new WeakHashMap<>();
+    @Getter private final WeakHashMap<me.neznamy.tab.api.TabPlayer, ScoreboardImpl> activeScoreboards = new WeakHashMap<>();
+    private final Set<me.neznamy.tab.api.TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
     @Getter private final WeakHashMap<TabPlayer, String> otherPluginScoreboards = new WeakHashMap<>();
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Switching scoreboards";
@@ -155,7 +155,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
 
     @Override
     public void onDisplayObjective(TabPlayer receiver, int slot, String objective) {
-        if (respectOtherPlugins && slot == me.neznamy.tab.api.Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
+        if (respectOtherPlugins && slot == me.neznamy.tab.shared.player.Scoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             otherPluginScoreboards.put(receiver, objective);
             ScoreboardImpl sb = activeScoreboards.get(receiver);
@@ -183,42 +183,43 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void showScoreboard(@NonNull TabPlayer player, @NonNull Scoreboard scoreboard) {
+    public void showScoreboard(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull Scoreboard scoreboard) {
         if (forcedScoreboard.containsKey(player)) {
-            forcedScoreboard.get(player).removePlayer(player);
+            forcedScoreboard.get(player).removePlayer((TabPlayer) player);
         }
         if (activeScoreboards.containsKey(player)) {
-            activeScoreboards.get(player).removePlayer(player);
+            activeScoreboards.get(player).removePlayer((TabPlayer) player);
             activeScoreboards.remove(player);
         }
         forcedScoreboard.put(player, (ScoreboardImpl) scoreboard);
-        if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer(player);
+        if (hasScoreboardVisible(player)) ((ScoreboardImpl) scoreboard).addPlayer((TabPlayer) player);
     }
 
     @Override
-    public void resetScoreboard(TabPlayer player) {
+    public void resetScoreboard(me.neznamy.tab.api.TabPlayer player) {
         if (!forcedScoreboard.containsKey(player)) return;
-        forcedScoreboard.get(player).removePlayer(player);
+        forcedScoreboard.get(player).removePlayer((TabPlayer) player);
         forcedScoreboard.remove(player);
-        Scoreboard sb = detectHighestScoreboard(player);
+        Scoreboard sb = detectHighestScoreboard((TabPlayer) player);
         if (sb == null) return; //no scoreboard available
         activeScoreboards.put(player, (ScoreboardImpl) sb);
-        ((ScoreboardImpl) sb).addPlayer(player);
+        ((ScoreboardImpl) sb).addPlayer((TabPlayer) player);
         forcedScoreboard.remove(player);
     }
 
     @Override
-    public boolean hasScoreboardVisible(TabPlayer player) {
+    public boolean hasScoreboardVisible(me.neznamy.tab.api.TabPlayer player) {
         return visiblePlayers.contains(player);
     }
 
     @Override
-    public boolean hasCustomScoreboard(TabPlayer player) {
+    public boolean hasCustomScoreboard(me.neznamy.tab.api.TabPlayer player) {
         return forcedScoreboard.containsKey(player);
     }
 
     @Override
-    public void setScoreboardVisible(TabPlayer player, boolean visible, boolean sendToggleMessage) {
+    public void setScoreboardVisible(me.neznamy.tab.api.TabPlayer p, boolean visible, boolean sendToggleMessage) {
+        TabPlayer player = (TabPlayer) p;
         if (visiblePlayers.contains(player) == visible) return;
         if (visible) {
             visiblePlayers.add(player);
@@ -257,7 +258,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void toggleScoreboard(TabPlayer player, boolean sendToggleMessage) {
+    public void toggleScoreboard(me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
         setScoreboardVisible(player, !visiblePlayers.contains(player), sendToggleMessage);
     }
 
@@ -288,7 +289,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public Scoreboard getActiveScoreboard(TabPlayer player) {
+    public Scoreboard getActiveScoreboard(me.neznamy.tab.api.TabPlayer player) {
         return activeScoreboards.get(player);
     }
 

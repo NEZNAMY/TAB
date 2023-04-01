@@ -4,11 +4,12 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Implementation of RelationalPlaceholder interface
@@ -16,10 +17,10 @@ import me.neznamy.tab.shared.TAB;
 public class RelationalPlaceholderImpl extends TabPlaceholder implements RelationalPlaceholder {
 
     /** Placeholder function returning fresh output on request */
-    private final BiFunction<TabPlayer, TabPlayer, Object> function;
+    private final BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function;
 
     /** Last known values for each online player duo after applying replacements and nested placeholders */
-    private final WeakHashMap<TabPlayer, WeakHashMap<TabPlayer, String>> lastValues = new WeakHashMap<>();
+    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, WeakHashMap<me.neznamy.tab.api.TabPlayer, String>> lastValues = new WeakHashMap<>();
 
     /**
      * Constructs new instance with given parameters
@@ -27,12 +28,12 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
      * @param   identifier
      *          placeholder identifier, must start with {@code %rel_} and end with {@code %}
      * @param   refresh
-     *          refresh interval in milliseconds, must be divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
      * @param   function
      *          refresh function which returns new up-to-date output on request
      */
-    public RelationalPlaceholderImpl(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
+    public RelationalPlaceholderImpl(String identifier, int refresh, BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
         super(identifier, refresh);
         if (!identifier.startsWith("%rel_")) throw new IllegalArgumentException("Relational placeholder identifiers must start with \"rel_\"");
         this.function = function;
@@ -91,11 +92,20 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     }
 
     @Override
-    public void updateValue(TabPlayer viewer, TabPlayer target, Object value) {
-        updateValue(viewer, target, value, false);
+    public void updateValue(me.neznamy.tab.api.TabPlayer viewer, me.neznamy.tab.api.TabPlayer target, Object value) {
+        updateValue((TabPlayer) viewer, (TabPlayer) target, value, false);
     }
 
-    @Override
+    /**
+     * Returns last known value for given players. First player is viewer,
+     * second player is target.
+     *
+     * @param   viewer
+     *          viewer of the placeholder
+     * @param   target
+     *          target who is the text displayed on
+     * @return  last known value for entered player duo
+     */
     public String getLastValue(TabPlayer viewer, TabPlayer target) {
         if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target)) update(viewer, target);
         return setPlaceholders(replacements.findReplacement(EnumChatFormat.color(lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).get(target))), target);
@@ -113,7 +123,17 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         }
     }
 
-    @Override
+    /**
+     * Calls the placeholder request function and returns the output.
+     * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
+     * file and "ERROR" is returned.
+     *
+     * @param   viewer
+     *          player looking at output of the placeholder
+     * @param   target
+     *          player the placeholder is displayed on
+     * @return  value placeholder returned or "ERROR" if it threw an error
+     */
     public Object request(TabPlayer viewer, TabPlayer target) {
         try {
             return function.apply(viewer, target);

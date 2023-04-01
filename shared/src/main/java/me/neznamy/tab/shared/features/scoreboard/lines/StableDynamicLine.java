@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import me.neznamy.tab.api.Property;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.feature.Refreshable;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 

@@ -6,7 +6,7 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.BossBarHandler;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;

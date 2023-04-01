@@ -1,10 +1,7 @@
 package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
-import me.neznamy.tab.api.PropertyConfiguration;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;

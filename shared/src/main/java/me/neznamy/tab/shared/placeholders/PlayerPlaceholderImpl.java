@@ -3,10 +3,11 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.*;
 import java.util.function.Function;
 
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Implementation of the PlayerPlaceholder interface
@@ -20,7 +21,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     private final String ERROR_VALUE = "ERROR";
 
     /** Placeholder function returning fresh output on request */
-    private final Function<TabPlayer, Object> function;
+    private final Function<me.neznamy.tab.api.TabPlayer, Object> function;
 
     /** Last known values for each online player after applying replacements and nested placeholders */
     private final WeakHashMap<TabPlayer, String> lastValues = new WeakHashMap<>();
@@ -31,12 +32,12 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * @param   identifier
      *          placeholder's identifier, must start and end with %
      * @param   refresh
-     *          refresh interval in milliseconds, must be divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
      * @param   function
      *          refresh function which returns new up-to-date output on request
      */
-    public PlayerPlaceholderImpl(String identifier, int refresh, Function<TabPlayer, Object> function) {
+    public PlayerPlaceholderImpl(String identifier, int refresh, Function<me.neznamy.tab.api.TabPlayer, Object> function) {
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.function = function;
@@ -103,16 +104,14 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @Override
-    public void updateValue(TabPlayer player, Object value) {
-        updateValue(player, value, false);
+    public void updateValue(me.neznamy.tab.api.TabPlayer player, Object value) {
+        updateValue((TabPlayer) player, value, false);
     }
 
-    @Override
     public void updateFromNested(TabPlayer player) {
         updateValue(player, request(player), true);
     }
 
-    @Override
     public String getLastValue(TabPlayer p) {
         if (p == null) return identifier;
         if (!lastValues.containsKey(p)) {
@@ -122,7 +121,15 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         return lastValues.get(p);
     }
 
-    @Override
+    /**
+     * Calls the placeholder request function and returns the output.
+     * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
+     * file and "ERROR" is returned.
+     *
+     * @param   p
+     *          player to get placeholder value for
+     * @return  value placeholder returned or "ERROR" if it threw an error
+     */
     public Object request(TabPlayer p) {
         try {
             return function.apply(p);

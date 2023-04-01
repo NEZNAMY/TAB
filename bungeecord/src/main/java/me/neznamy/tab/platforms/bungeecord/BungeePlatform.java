@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;

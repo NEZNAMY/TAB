@@ -1,14 +1,14 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,7 +43,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     //time when BossBar announce ends, used for placeholder
     private long announceEndTime;
 
-    private final Set<TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<me.neznamy.tab.api.TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
 
     @Getter private final String featureName = "BossBar";
     @Getter private final String refreshDisplayName = "Updating display conditions";
@@ -179,17 +179,18 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void toggleBossBar(TabPlayer player, boolean sendToggleMessage) {
+    public void toggleBossBar(me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
         setBossBarVisible(player, !hasBossBarVisible(player), sendToggleMessage);
     }
 
     @Override
-    public boolean hasBossBarVisible(TabPlayer player) {
+    public boolean hasBossBarVisible(me.neznamy.tab.api.TabPlayer player) {
         return visiblePlayers.contains(player);
     }
 
     @Override
-    public void setBossBarVisible(TabPlayer player, boolean visible, boolean sendToggleMessage) {
+    public void setBossBarVisible(me.neznamy.tab.api.TabPlayer p, boolean visible, boolean sendToggleMessage) {
+        TabPlayer player = (TabPlayer) p;
         if (visiblePlayers.contains(player) == visible) return;
         if (visible) {
             visiblePlayers.add(player);
@@ -222,7 +223,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void sendBossBarTemporarily(TabPlayer player, String bossBar, int duration) {
+    public void sendBossBarTemporarily(me.neznamy.tab.api.TabPlayer player, String bossBar, int duration) {
         if (!hasBossBarVisible(player)) return;
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
@@ -238,7 +239,6 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
                 this::hasBossBarVisible).collect(Collectors.toList());
         TAB.getInstance().getCPUManager().runTask(() -> {
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.COUNTDOWN).markAsUsed();
             announcedBossBars.add(line);
             announceEndTime = System.currentTimeMillis() + duration* 1000L;
             for (TabPlayer all : players) {

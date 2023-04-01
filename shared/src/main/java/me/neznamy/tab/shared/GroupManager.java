@@ -1,11 +1,10 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.player.TabPlayer;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +35,8 @@ public class GroupManager extends TabFeature implements Refreshable {
      */
     public GroupManager(PermissionPlugin plugin) {
         this.plugin = plugin;
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, 1000, this::detectPermissionGroup);
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, 1000,
+                p -> detectPermissionGroup((TabPlayer) p));
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GROUP));
     }
 
@@ -88,6 +88,6 @@ public class GroupManager extends TabFeature implements Refreshable {
 
     @Override
     public void refresh(TabPlayer refreshed, boolean force) {
-        ((ITabPlayer)refreshed).setGroup(TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP).getLastValue(refreshed));
+        refreshed.setGroup(TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP).getLastValue(refreshed));
     }
 }

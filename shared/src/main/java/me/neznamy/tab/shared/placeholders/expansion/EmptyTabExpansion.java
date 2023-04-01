@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.placeholders.expansion;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 
 /**
  * Dummy implementation when expansion is disabled or not supported by platform

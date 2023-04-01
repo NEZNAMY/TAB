@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class YamlPropertyConfigurationFile extends YamlConfigurationFile implements PropertyConfiguration {

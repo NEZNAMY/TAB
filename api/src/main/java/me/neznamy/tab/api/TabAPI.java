@@ -2,11 +2,13 @@ package me.neznamy.tab.api;
 
 import java.util.UUID;
 
+import lombok.Setter;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.api.config.ConfigurationFile;
 import me.neznamy.tab.api.event.EventBus;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
+import me.neznamy.tab.api.tablist.HeaderFooterManager;
+import me.neznamy.tab.api.tablist.TablistFormatManager;
 import me.neznamy.tab.api.team.TeamManager;
 
 /**
@@ -15,14 +17,7 @@ import me.neznamy.tab.api.team.TeamManager;
 public abstract class TabAPI {
 
     /** Instance of the API */
-    private static TabAPI instance;
-
-    /**
-     * Constructs new instance and sets it as new API instance
-     */
-    public TabAPI() {
-        instance = this;
-    }
+    @Setter private static TabAPI instance;
 
     /**
      * Returns API instance. If instance was not set by the plugin, throws
@@ -105,13 +100,6 @@ public abstract class TabAPI {
     public abstract PlaceholderManager getPlaceholderManager();
 
     /**
-     * Returns feature manager instance
-     *
-     * @return  feature manager instance
-     */
-    public abstract FeatureManager getFeatureManager();
-
-    /**
      * Returns Tablist name format manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  Tablist name format manager
@@ -133,44 +121,6 @@ public abstract class TabAPI {
     public abstract ProtocolVersion getServerVersion();
 
     /**
-     * Prints message into console
-     *
-     * @param   message
-     *          message to print
-     * @param   translateColors
-     *          {@code true} if colors should be translated, {@code false} if not
-     */
-    public abstract void sendConsoleMessage(String message, boolean translateColors);
-
-    /**
-     * Returns TAB's cache file used to store player toggle data
-     *
-     * @return  TAB's player cache file
-     */
-    public abstract ConfigurationFile getPlayerCache();
-
-    /**
-     * Returns TAB's config.yml file
-     *
-     * @return  config.yml file
-     */
-    public abstract ConfigurationFile getConfig();
-
-    /**
-     * Returns TAB's group configuration
-     *
-     * @return  TAB's group configuration
-     */
-    public abstract PropertyConfiguration getGroups();
-
-    /**
-     * Returns TAB's user configuration
-     *
-     * @return  TAB's user configuration
-     */
-    public abstract PropertyConfiguration getUsers();
-
-    /**
      * Sends a debug message into console if the option
      * is enabled in config.
      *
@@ -188,22 +138,4 @@ public abstract class TabAPI {
      *          Thrown error
      */
     public abstract void logError(String message, Throwable t);
-
-    /**
-     * Sets name of file with syntax error, which prevented
-     * the plugin from enabling. Internal use only.
-     *
-     * @param   file
-     *          Name of file with syntax error
-     */
-    public abstract void setBrokenFile(String file);
-
-    /**
-     * Returns {@code true} if the plugin is currently disabled due to an error,
-     * either a yaml syntax error or an internal startup error. Returns {@code false}
-     * if the plugin is properly running.
-     *
-     * @return  {@code true} if disabled, {@code false} if running correctly
-     */
-    public abstract boolean isPluginDisabled();
 }

@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.tablist.TabList;
-import me.neznamy.tab.api.tablist.TabListEntry;
+import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.*;

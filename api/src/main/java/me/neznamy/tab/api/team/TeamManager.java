@@ -136,20 +136,32 @@ public interface TeamManager {
     @Nullable Boolean getCollisionRule(@NonNull TabPlayer player);
 
     /**
-     * Sends update team's properties packet of player's team to everyone
+     * Changes player's prefix to provided value. Supports placeholders,
+     * as well as any supported RGB formats. Use {@code null} to reset
+     * value back to original.
      *
      * @param   player
-     *          player to update team data of
+     *          player to change prefix of
+     * @param   prefix
+     *          new prefix value
+     * @see     #getCustomPrefix(TabPlayer)
+     * @see     #getOriginalPrefix(TabPlayer)
      */
-    void updateTeamData(@NonNull TabPlayer player);
-
     void setPrefix(@NonNull TabPlayer player, @Nullable String prefix);
 
+    /**
+     * Changes player's suffix to provided value. Supports placeholders,
+     * as well as any supported RGB formats. Use {@code null} to reset
+     * value back to original.
+     *
+     * @param   player
+     *          player to change prefix of
+     * @param   suffix
+     *          new suffix value
+     * @see     #getCustomSuffix(TabPlayer)
+     * @see     #getOriginalSuffix(TabPlayer)
+     */
     void setSuffix(@NonNull TabPlayer player, @Nullable String suffix);
-
-    void resetPrefix(@NonNull TabPlayer player);
-
-    void resetSuffix(@NonNull TabPlayer player);
 
     @Nullable String getCustomPrefix(@NonNull TabPlayer player);
 

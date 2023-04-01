@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.feature.TabFeature;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.TAB;

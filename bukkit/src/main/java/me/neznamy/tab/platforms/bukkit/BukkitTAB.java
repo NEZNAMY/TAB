@@ -1,9 +1,8 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.*;
 import me.neznamy.tab.shared.TAB;
@@ -115,7 +114,7 @@ public class BukkitTAB extends JavaPlugin {
 
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-            if (TabAPI.getInstance().isPluginDisabled()) {
+            if (TAB.getInstance().isPluginDisabled()) {
                 for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                     sender.sendMessage(EnumChatFormat.color(message));
                 }

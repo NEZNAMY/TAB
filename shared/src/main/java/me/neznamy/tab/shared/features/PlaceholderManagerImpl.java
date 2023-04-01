@@ -13,16 +13,16 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
@@ -34,7 +34,7 @@ import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
  * Messy class for placeholder management
  */
 public class PlaceholderManagerImpl extends TabFeature implements PlaceholderManager, JoinListener, Loadable,
-        UnLoadable {
+        Refreshable {
 
     private final Pattern placeholderPattern = Pattern.compile("%([^%]*)%");
 
@@ -154,7 +154,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         registeredPlaceholders.put(placeholder.getIdentifier(), placeholder);
         recalculateUsedPlaceholders();
         if (override && placeholderUsage.containsKey(placeholder.getIdentifier())) {
-            ((TabPlaceholder) placeholder).markAsUsed();
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (!p.isLoaded()) continue;
                 placeholderUsage.get(placeholder.getIdentifier()).forEach(f -> f.refresh(p, true));
@@ -174,11 +173,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             onJoin(p);
         }
     }
-    
-    @Override
-    public void unload() {
-        registeredPlaceholders.values().forEach(Placeholder::unload);
-    }
 
     @Override
     public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
@@ -186,16 +180,23 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
     
     @Override
-    public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<TabPlayer, Object> function) {
+    public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<me.neznamy.tab.api.TabPlayer, Object> function) {
         return (PlayerPlaceholder) registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
     }
 
     @Override
-    public RelationalPlaceholder registerRelationalPlaceholder(String identifier, int refresh, BiFunction<TabPlayer, TabPlayer, Object> function) {
+    public RelationalPlaceholder registerRelationalPlaceholder(
+            String identifier, int refresh, BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
         return (RelationalPlaceholder) registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
     }
 
-    @Override
+    /**
+     * Detects placeholders in text using %% pattern and returns list of all detected identifiers
+     *
+     * @param   text
+     *          text to detect placeholders in
+     * @return  list of detected identifiers
+     */
     public List<String> detectPlaceholders(String text) {
         if (text == null || !text.contains("%")) return Collections.emptyList();
         List<String> placeholders = new ArrayList<>();
@@ -227,12 +228,10 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         return p;
     }
 
-    @Override
     public void addUsedPlaceholder(String identifier, Refreshable feature) {
         if (placeholderUsage.computeIfAbsent(identifier, x -> new HashSet<>()).add(feature)) {
             recalculateUsedPlaceholders();
             TabPlaceholder p = getPlaceholder(identifier);
-            p.markAsUsed();
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 tabExpansion.setPlaceholderValue(all, p.getIdentifier(), p.getLastValue(all));
             }
@@ -243,12 +242,10 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         usedPlaceholders = placeholderUsage.keySet().stream().map(this::getPlaceholder).distinct().toArray(Placeholder[]::new);
     }
 
-    @Override
     public String findReplacement(String placeholder, String output) {
         return getPlaceholder(placeholder).getReplacements().findReplacement(output);
     }
 
-    @Override
     public List<String> getUsedPlaceholders() {
         return Arrays.stream(usedPlaceholders).map(Placeholder::getIdentifier).collect(Collectors.toList());
     }
@@ -266,8 +263,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             if (p instanceof PlayerPlaceholderImpl) {
                 ((PlayerPlaceholderImpl)p).update(connectedPlayer);
             }
-            if (p instanceof ServerPlaceholder) { // server placeholders don't update on join
-                tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholder) p).getLastValue());
+            if (p instanceof ServerPlaceholderImpl) { // server placeholders don't update on join
+                tabExpansion.setPlaceholderValue(connectedPlayer, p.getIdentifier(), ((ServerPlaceholderImpl) p).getLastValue());
             }
             TAB.getInstance().getCPUManager().addPlaceholderTime(p.getIdentifier(), System.nanoTime()-startTime);
         }

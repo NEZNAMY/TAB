@@ -4,10 +4,10 @@ import java.util.*;
 import java.util.function.Function;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.conditions.simple.*;
 
@@ -178,7 +178,8 @@ public class Condition {
             }
             Condition c = new Condition(type, "AnonymousCondition[" + string + "]", conditions, "true", "false");
             c.finishSetup();
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), c::getText);
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(),
+                    p -> c.getText((TabPlayer) p));
             return c;
         }
     }

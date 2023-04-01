@@ -4,11 +4,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.api.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_8;
@@ -17,6 +16,7 @@ import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -89,7 +89,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         }
     }
 
-    @Override
     public void sendPacket(Object nmsPacket) {
         if (nmsPacket == null || !getPlayer().isOnline()) return;
         try {

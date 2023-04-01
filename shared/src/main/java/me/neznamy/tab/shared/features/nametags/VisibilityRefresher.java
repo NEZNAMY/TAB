@@ -4,11 +4,11 @@ import java.util.Collections;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 
 @RequiredArgsConstructor
 public class VisibilityRefresher extends TabFeature implements Refreshable {
@@ -18,7 +18,8 @@ public class VisibilityRefresher extends TabFeature implements Refreshable {
     private final NameTag nameTags;
 
     {
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500, TabPlayer::hasInvisibilityPotion);
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.INVISIBLE, 500,
+                p -> ((TabPlayer)p).hasInvisibilityPotion());
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.INVISIBLE));
     }
 

@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 

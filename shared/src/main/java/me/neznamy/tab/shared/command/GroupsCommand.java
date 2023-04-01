@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.command;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Handler for "/tab groups" subcommand

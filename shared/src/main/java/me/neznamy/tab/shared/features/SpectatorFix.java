@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.*;
 
 import java.util.HashMap;
 import java.util.Map;

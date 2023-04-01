@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
-import me.neznamy.tab.api.tablist.Skin;
+import me.neznamy.tab.shared.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.TAB;
 
 public class SkinManager {

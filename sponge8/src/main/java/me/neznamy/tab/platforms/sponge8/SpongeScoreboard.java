@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.TabScoreboard;
+import me.neznamy.tab.shared.player.Scoreboard;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.criteria.Criteria;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpongeScoreboard extends TabScoreboard {
+public class SpongeScoreboard extends Scoreboard {
 
     private final Map<String, Objective> objectives = new HashMap<>();
 

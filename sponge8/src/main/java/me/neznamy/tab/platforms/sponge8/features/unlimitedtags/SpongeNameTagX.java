@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.feature.PacketSendListener;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.platforms.sponge8.Sponge8TAB;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;
 import me.neznamy.tab.platforms.sponge8.nms.WrappedEntityData;
@@ -88,7 +88,8 @@ public class SpongeNameTagX extends BackendNameTagX implements PacketSendListene
 
     @Override
     public void registerVehiclePlaceholder() {
-        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, this::getVehicle);
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100,
+                p -> getVehicle((TabPlayer) p));
     }
 
     @Override

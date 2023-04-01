@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.Data;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.TAB;
 
 import java.lang.reflect.Field;
 
@@ -48,7 +48,7 @@ public class DataWatcherItem {
     public static DataWatcherItem fromNMS(Object nmsItem) throws ReflectiveOperationException {
         Object value = VALUE.get(nmsItem);
         DataWatcherObject object;
-        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9) {
+        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 9) {
             Object nmsObject = TYPE.get(nmsItem);
             object = new DataWatcherObject(DataWatcherObject.SLOT.getInt(nmsObject), DataWatcherObject.SERIALIZER.get(nmsObject));
         } else {

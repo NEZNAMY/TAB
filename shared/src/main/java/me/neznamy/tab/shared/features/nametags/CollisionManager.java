@@ -6,13 +6,13 @@ import java.util.WeakHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.feature.JoinListener;
-import me.neznamy.tab.api.feature.Loadable;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.JoinListener;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 
 @RequiredArgsConstructor
 public class CollisionManager extends TabFeature implements JoinListener, Loadable, Refreshable {
@@ -22,7 +22,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     private final NameTag nameTags;
     private final boolean collisionRule;
     private final WeakHashMap<TabPlayer, Boolean> collision = new WeakHashMap<>();
-    private final WeakHashMap<TabPlayer, Boolean> forcedCollision = new WeakHashMap<>();
+    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, Boolean> forcedCollision = new WeakHashMap<>();
 
     public boolean getCollision(TabPlayer p) {
         return forcedCollision.getOrDefault(p, collision.getOrDefault(p, collisionRule));
@@ -36,8 +36,8 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
 
             if (forcedCollision.containsKey(p)) return forcedCollision.get(p);
-            boolean newCollision = !p.isDisguised();
-            collision.put(p, newCollision);
+            boolean newCollision = !((TabPlayer)p).isDisguised();
+            collision.put((TabPlayer) p, newCollision);
             return newCollision;
         });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.COLLISION));

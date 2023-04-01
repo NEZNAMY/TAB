@@ -6,7 +6,7 @@ import me.lucko.spark.api.statistic.StatisticWindow.*;
 import me.lucko.spark.api.statistic.misc.DoubleAverageInfo;
 import me.lucko.spark.api.statistic.types.DoubleStatistic;
 import me.lucko.spark.api.statistic.types.GenericStatistic;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import org.kryptonmc.api.entity.player.Player;

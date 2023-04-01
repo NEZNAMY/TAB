@@ -3,9 +3,9 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.TabListEntry;
+import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
-import me.neznamy.tab.shared.tablist.BulkUpdateTabList;
+import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
 
 import java.util.*;
 import java.util.stream.Collectors;

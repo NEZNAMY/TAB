@@ -7,9 +7,8 @@ import java.util.Map.Entry;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.feature.Loadable;
-import me.neznamy.tab.api.feature.UnLoadable;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.UnLoadable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,8 +18,8 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 
 /**
@@ -31,9 +30,9 @@ import me.neznamy.tab.shared.TAB;
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
 
     /** Config options */
-    private final boolean allowBypass = TabAPI.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
-    private final List<String> ignoredWorlds = TabAPI.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-    private final Map<String, List<String>> sharedWorlds = TabAPI.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+    private final boolean allowBypass = TAB.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+    private final List<String> ignoredWorlds = TAB.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
+    private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
     /** Plugin reference*/
     private final JavaPlugin plugin;

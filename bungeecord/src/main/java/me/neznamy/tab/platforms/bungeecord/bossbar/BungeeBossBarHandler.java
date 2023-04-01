@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord.bossbar;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.BossBarHandler;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.chat.IChatBaseComponent;

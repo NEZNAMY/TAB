@@ -3,14 +3,14 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 /**
@@ -213,7 +213,8 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void addPlayer(TabPlayer player) {
+    public void addPlayer(me.neznamy.tab.api.TabPlayer p) {
+        TabPlayer player = (TabPlayer) p;
         if (players.contains(player)) return;
         players.add(player);
         player.setProperty(textRefresher, propertyTitle, title);
@@ -230,20 +231,21 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void removePlayer(TabPlayer player) {
+    public void removePlayer(me.neznamy.tab.api.TabPlayer p) {
+        TabPlayer player = (TabPlayer) p;
         if (!players.contains(player)) return;
         players.remove(player);
         player.getBossBarHandler().remove(uniqueId);
     }
 
     @Override
-    public List<TabPlayer> getPlayers() {
+    public List<me.neznamy.tab.api.TabPlayer> getPlayers() {
         return new ArrayList<>(players);
     }
 
     @Override
-    public boolean containsPlayer(TabPlayer player) {
-        return players.contains(player);
+    public boolean containsPlayer(me.neznamy.tab.api.TabPlayer player) {
+        return players.contains((TabPlayer) player);
     }
 
     public class TextRefresher extends TabFeature implements Refreshable {

@@ -1,10 +1,8 @@
 package me.neznamy.tab.shared.features.redis;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.shared.TAB;
@@ -15,6 +13,7 @@ import me.neznamy.tab.shared.features.YellowNumber;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -339,7 +338,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished() && all.hasPermission(TabConstants.Permission.STAFF)).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished() && all.isStaff()).count());
-        TabAPI.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
+        TAB.getInstance().getEventBus().register(TabPlaceholderRegisterEvent.class, eventHandler);
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onJoin(p);
         sendMessage("{\"action\":\"loadrequest\",\"proxy\":\"" + proxy.toString() + "\"}");
     }
@@ -348,7 +347,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) onQuit(p);
         unregister();
-        TabAPI.getInstance().getEventBus().unregister(eventHandler);
+        TAB.getInstance().getEventBus().unregister(eventHandler);
     }
 
     @Override

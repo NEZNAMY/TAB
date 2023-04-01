@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -132,7 +132,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
         players.add(p);
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(), false);
-        p.getScoreboard().setDisplaySlot(me.neznamy.tab.api.Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
+        p.getScoreboard().setDisplaySlot(me.neznamy.tab.shared.player.Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }

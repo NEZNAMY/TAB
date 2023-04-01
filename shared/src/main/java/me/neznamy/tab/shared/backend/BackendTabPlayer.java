@@ -1,10 +1,10 @@
 package me.neznamy.tab.shared.backend;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 
 import java.util.UUID;
 
-public abstract class BackendTabPlayer extends ITabPlayer {
+public abstract class BackendTabPlayer extends TabPlayer {
 
     /**
      * Constructs new instance with given parameters

@@ -1,10 +1,9 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
@@ -21,9 +20,9 @@ public abstract class BackendNameTagX extends NameTagX {
 
     public BackendNameTagX() {
         super(BackendArmorStandManager::new);
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
-        TabAPI.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, new GameModeRefresher(this));
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, new GameModeRefresher(this));
     }
 
     /**
@@ -32,7 +31,7 @@ public abstract class BackendNameTagX extends NameTagX {
     private void startVisibilityRefreshTask() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
-            for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
+            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (isPlayerDisabled(p)) continue;
                 getArmorStandManager(p).updateVisibility(false);
             }
@@ -46,11 +45,11 @@ public abstract class BackendNameTagX extends NameTagX {
 
     @Override
     public void load() {
-        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, TabPlayer::getGamemode);
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, p -> ((TabPlayer)p).getGamemode());
         super.load();
-        for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isPlayerDisabled(all)) continue;
-            for (TabPlayer viewer : TabAPI.getInstance().getOnlinePlayers()) {
+            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 spawnArmorStands(viewer, all);
             }
         }
@@ -67,7 +66,7 @@ public abstract class BackendNameTagX extends NameTagX {
     public void onJoin(TabPlayer connectedPlayer) {
         super.onJoin(connectedPlayer);
         if (isPlayerDisabled(connectedPlayer)) return;
-        for (TabPlayer viewer : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             spawnArmorStands(viewer, connectedPlayer);
             spawnArmorStands(connectedPlayer, viewer);
         }
@@ -99,7 +98,7 @@ public abstract class BackendNameTagX extends NameTagX {
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
         super.onQuit(disconnectedPlayer);
-        for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(all).unregisterPlayer((BackendTabPlayer) disconnectedPlayer);
         }
         armorStandManagerMap.get(disconnectedPlayer).destroy();
@@ -109,7 +108,7 @@ public abstract class BackendNameTagX extends NameTagX {
     @Override
     public void resumeArmorStands(TabPlayer player) {
         if (isPlayerDisabled(player)) return;
-        for (TabPlayer viewer : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             spawnArmorStands(viewer, player);
         }
     }
@@ -130,7 +129,7 @@ public abstract class BackendNameTagX extends NameTagX {
 
     @Override
     public void updateNameTagVisibilityView(TabPlayer player) {
-        for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(all).updateVisibility(true);
         }
     }
@@ -148,7 +147,7 @@ public abstract class BackendNameTagX extends NameTagX {
             getArmorStandManager(p).spawn((BackendTabPlayer) p);
         }
         //for some reason this is needed for some users
-        for (TabPlayer viewer : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getWorld().equals(from)) {
                 getArmorStandManager(p).destroy((BackendTabPlayer) viewer);
             }

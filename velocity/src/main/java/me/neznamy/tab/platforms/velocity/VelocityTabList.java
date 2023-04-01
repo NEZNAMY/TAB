@@ -7,7 +7,7 @@ import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
 import net.kyori.adventure.text.Component;
 
 import java.util.Collections;
@@ -39,7 +39,7 @@ public class VelocityTabList extends SingleUpdateTabList {
              */
             String username = getEntry(id).getProfile().getName();
             removeEntry(id);
-            addEntry(new me.neznamy.tab.api.tablist.TabListEntry.Builder(id).name(username).displayName(displayName).build());
+            addEntry(new me.neznamy.tab.shared.player.tablist.TabListEntry.Builder(id).name(username).displayName(displayName).build());
         }
     }
 
@@ -54,7 +54,7 @@ public class VelocityTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(me.neznamy.tab.api.tablist.@NonNull TabListEntry entry) {
+    public void addEntry(me.neznamy.tab.shared.player.tablist.@NonNull TabListEntry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         player.getPlayer().getTabList().addEntry(TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())

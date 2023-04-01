@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import io.netty.channel.Channel;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.WrappedChatComponent;
 import me.neznamy.tab.platforms.sponge8.nms.NMSStorage;

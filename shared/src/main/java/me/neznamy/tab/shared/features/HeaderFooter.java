@@ -1,12 +1,14 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.HeaderFooterManager;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import lombok.NonNull;
+import me.neznamy.tab.api.tablist.HeaderFooterManager;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,40 +130,27 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void setHeader(TabPlayer player, String header) {
+    public void setHeader(@NonNull me.neznamy.tab.api.TabPlayer p, @Nullable String header) {
+        TabPlayer player = (TabPlayer) p;
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
+                player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
-    public void setFooter(TabPlayer player, String footer) {
+    public void setFooter(@NonNull me.neznamy.tab.api.TabPlayer p, @Nullable String footer) {
+        TabPlayer player = (TabPlayer) p;
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
+                player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 
     @Override
-    public void setHeaderAndFooter(TabPlayer player, String header, String footer) {
+    public void setHeaderAndFooter(@NonNull me.neznamy.tab.api.TabPlayer p, @Nullable String header, @Nullable String footer) {
+        TabPlayer player = (TabPlayer) p;
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
-    }
-
-    @Override
-    public void resetHeader(TabPlayer player) {
-        player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(null);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
-    }
-
-    @Override
-    public void resetFooter(TabPlayer player) {
-        player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(null);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
-    }
-
-    @Override
-    public void resetHeaderAndFooter(TabPlayer player) {
-        player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(null);
-        player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(null);
-        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(), player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
+        sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
+                player.getProperty(TabConstants.Property.FOOTER).updateAndGet());
     }
 }

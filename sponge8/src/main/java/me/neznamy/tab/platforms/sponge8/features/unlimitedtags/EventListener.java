@@ -1,9 +1,8 @@
 package me.neznamy.tab.platforms.sponge8.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.value.Value;
@@ -20,7 +19,7 @@ public class EventListener {
     @Listener
     public void onRespawn(final RespawnPlayerEvent.Post event) {
         TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
-            TabPlayer respawned = TabAPI.getInstance().getPlayer(event.entity().uniqueId());
+            TabPlayer respawned = TAB.getInstance().getPlayer(event.entity().uniqueId());
             if (feature.isPlayerDisabled(respawned)) return;
             feature.getArmorStandManager(respawned).teleport();
         });
@@ -37,7 +36,7 @@ public class EventListener {
                 if (change.key() != Keys.IS_SNEAKING) continue;
                 final boolean value = ((Value.Immutable<Boolean>) change).get();
 
-                TabPlayer p = TabAPI.getInstance().getPlayer(player.uniqueId());
+                TabPlayer p = TAB.getInstance().getPlayer(player.uniqueId());
                 if (p == null || feature.isPlayerDisabled(p)) return;
                 TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(value));
             }

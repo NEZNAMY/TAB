@@ -43,7 +43,7 @@ public class PacketPlayOutScoreboardTeamStorage {
     public static void load(NMSStorage nms) throws NoSuchMethodException {
         newScoreboardTeam = ScoreboardTeam.getConstructor(nms.Scoreboard, String.class);
         NAME = nms.getFields(CLASS, String.class).get(0);
-        ACTION = getInstanceFields(CLASS, int.class).get(0);
+        ACTION = getInstanceIntField(CLASS).get(0);
         PLAYERS = nms.getFields(CLASS, Collection.class).get(0);
         ScoreboardTeam_getPlayerNameSet = nms.getMethods(ScoreboardTeam, Collection.class).get(0);
         if (nms.getMinorVersion() >= 9) {
@@ -78,10 +78,10 @@ public class PacketPlayOutScoreboardTeamStorage {
         if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
     }
 
-    private static List<Field> getInstanceFields(Class<?> clazz, Class<?> type) {
+    private static List<Field> getInstanceIntField(Class<?> clazz) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType() == type && !Modifier.isStatic(field.getModifiers())) {
+            if (field.getType() == int.class && !Modifier.isStatic(field.getModifiers())) {
                 field.setAccessible(true);
                 list.add(field);
             }

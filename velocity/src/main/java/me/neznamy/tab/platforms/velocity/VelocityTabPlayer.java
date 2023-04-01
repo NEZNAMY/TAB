@@ -4,11 +4,11 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
@@ -28,7 +28,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          velocity player
      */
     public VelocityTabPlayer(Player p) {
-        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().get().getServerInfo().getName(), p.getProtocolVersion().getProtocol());
+        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
+                p.getCurrentServer().get().getServerInfo().getName() : "null", p.getProtocolVersion().getProtocol());
     }
     
     @Override
@@ -39,11 +40,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public int getPing() {
         return (int) getPlayer().getPing();
-    }
-    
-    @Override
-    public void sendPacket(Object packet) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

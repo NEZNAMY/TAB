@@ -2,8 +2,7 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabConstants.Placeholder;
+import me.neznamy.tab.shared.TabConstants.Placeholder;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 

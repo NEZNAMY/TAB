@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.DynamicText;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 

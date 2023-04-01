@@ -2,12 +2,12 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -19,7 +19,7 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.Collection;
 
-public final class SpongeTabPlayer extends ITabPlayer {
+public final class SpongeTabPlayer extends TabPlayer {
 
     @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
     @Getter private final TabList tabList = new SpongeTabList(this);
@@ -38,11 +38,6 @@ public final class SpongeTabPlayer extends ITabPlayer {
     @Override
     public int getPing() {
         return getPlayer().getConnection().getLatency();
-    }
-
-    @Override
-    public void sendPacket(Object packet) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

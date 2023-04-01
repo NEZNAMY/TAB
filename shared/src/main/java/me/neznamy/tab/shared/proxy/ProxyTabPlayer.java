@@ -6,9 +6,9 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
@@ -23,7 +23,7 @@ import java.util.UUID;
  * Abstract class for player on proxy containing variables and methods
  * shared between proxies.
  */
-public abstract class ProxyTabPlayer extends ITabPlayer {
+public abstract class ProxyTabPlayer extends TabPlayer {
 
     /** Player's vanish status from backend server */
     @Getter @Setter private boolean vanished;

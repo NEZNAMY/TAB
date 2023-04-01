@@ -1,11 +1,12 @@
 package me.neznamy.tab.platforms.krypton;
 
 import lombok.Getter;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
+import lombok.NonNull;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
@@ -44,7 +45,6 @@ public class KryptonTabPlayer extends BackendTabPlayer {
         return getPlayer().getConnection().latency();
     }
 
-    @Override
     public void sendPacket(Object packet) {
         getPlayer().getConnection().send((Packet) packet);
     }
@@ -92,7 +92,7 @@ public class KryptonTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(IChatBaseComponent header, IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().sendPlayerListHeaderAndFooter(
                 GsonComponentSerializer.gson().deserialize(header.toString(version)),
                 GsonComponentSerializer.gson().deserialize(footer.toString(version))

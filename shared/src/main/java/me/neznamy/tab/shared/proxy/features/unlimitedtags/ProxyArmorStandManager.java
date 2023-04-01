@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.proxy.features.unlimitedtags;
 
-import me.neznamy.tab.api.ArmorStandManager;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;

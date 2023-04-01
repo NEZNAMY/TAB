@@ -3,10 +3,9 @@ package me.neznamy.tab.platforms.bukkit.features;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -40,14 +39,14 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             do {
                 textBefore = text;
                 for (String placeholder : TAB.getInstance().getPlaceholderManager().detectPlaceholders(text)) {
-                    text = text.replace(placeholder, TabAPI.getInstance().getPlaceholderManager().findReplacement(placeholder,
+                    text = text.replace(placeholder, TAB.getInstance().getPlaceholderManager().findReplacement(placeholder,
                             PlaceholderAPI.setPlaceholders(player, placeholder)));
                 }
             } while (!textBefore.equals(text));
             return text;
         }
         if (identifier.startsWith("placeholder_")) {
-            TabAPI.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", TabAPI.getInstance().getPlaceholderManager());
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", TAB.getInstance().getPlaceholderManager());
         }
         return values.get(player).get(identifier);
     }

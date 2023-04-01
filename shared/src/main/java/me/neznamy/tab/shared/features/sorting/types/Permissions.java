@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
@@ -27,13 +27,14 @@ public class Permissions extends SortingType {
         for (String permission : sortedGroups.keySet()) {
             String placeholder = "%permission:" + permission + "%";
             placeholders.add(placeholder);
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(placeholder, 1000, p -> p.hasPermission(permission));
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(placeholder, 1000,
+                    p -> ((TabPlayer)p).hasPermission(permission));
         }
         sorting.addUsedPlaceholders(placeholders);
     }
 
     @Override
-    public String getChars(ITabPlayer p) {
+    public String getChars(TabPlayer p) {
         int position = 0;
         for (String permission : sortedGroups.keySet()) {
             if (p.hasPermission(permission)) {

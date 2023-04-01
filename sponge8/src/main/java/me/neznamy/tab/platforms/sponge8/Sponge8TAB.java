@@ -3,9 +3,8 @@ package me.neznamy.tab.platforms.sponge8;
 import com.google.inject.Inject;
 import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
@@ -84,7 +83,7 @@ public class Sponge8TAB {
         public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) {
             String[] args = arguments.input().split(" ");
 
-            if (TabAPI.getInstance().isPluginDisabled()) {
+            if (TAB.getInstance().isPluginDisabled()) {
                 boolean hasReloadPermission = cause.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
                 boolean hasAdminPermission = cause.hasPermission(TabConstants.Permission.COMMAND_ALL);
 

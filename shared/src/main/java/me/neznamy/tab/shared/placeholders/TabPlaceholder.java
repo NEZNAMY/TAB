@@ -1,9 +1,8 @@
 package me.neznamy.tab.shared.placeholders;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 
@@ -24,23 +23,6 @@ public abstract class TabPlaceholder implements Placeholder {
     /** Configured placeholder output replacements */
     @Getter protected final PlaceholderReplacementPattern replacements;
 
-    /** Boolean tracking whether this placeholder is actually used or not */
-    @Getter private boolean used;
-
-    /**
-     * Runnable to run when this placeholder becomes used and this is a trigger placeholder.
-     * This is typically registering an event listener so placeholders don't listen to
-     * events if they are not used at all. May be null if nothing should run.
-     */
-    private Runnable onActivation;
-
-    /**
-     * Runnable to run when this is a trigger placeholder and the plugin shuts down,
-     * which may just be a /tab reload. This is typically unregistering and event
-     * listener to avoid resource leak on reload. May be null if nothing should run.
-     */
-    private Runnable onDisable;
-
     /**
      * List of placeholders using this placeholder as a nested placeholder,
      * mutual tracking allows faster parent placeholder changes when a nested
@@ -54,7 +36,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   identifier
      *          placeholder's identifier, must start and end with %
      * @param   refresh
-     *          refresh interval in milliseconds, must be divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
      */
     protected TabPlaceholder(String identifier, int refresh) {
@@ -97,7 +79,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @return  List of nested placeholders in provided output
      */
     public List<String> getNestedPlaceholders(String output) {
-        return TabAPI.getInstance().getPlaceholderManager().detectPlaceholders(output);
+        return TAB.getInstance().getPlaceholderManager().detectPlaceholders(output);
     }
 
     /**
@@ -139,16 +121,6 @@ public abstract class TabPlaceholder implements Placeholder {
     }
 
     /**
-     * Marks this placeholder as used, which sets {@link #used} to true and if
-     * {@link #onActivation} is not null, runs it.
-     */
-    public void markAsUsed() {
-        if (used) return;
-        used = true;
-        if (onActivation != null) onActivation.run();
-    }
-
-    /**
      * Internal method used to mark placeholders as parents who use this placeholder
      * inside their outputs for faster updates.
      *
@@ -187,16 +159,4 @@ public abstract class TabPlaceholder implements Placeholder {
      * @return  last known value for specified player
      */
     public abstract String getLastValue(TabPlayer player);
-
-    @Override
-    public void unload() {
-        if (onDisable != null && used) onDisable.run();
-    }
-
-    @Override
-    public void enableTriggerMode(Runnable onActivation, Runnable onDisable) {
-        this.onActivation = onActivation;
-        this.onDisable = onDisable;
-        if (used && onActivation != null) onActivation.run();
-    }
 }

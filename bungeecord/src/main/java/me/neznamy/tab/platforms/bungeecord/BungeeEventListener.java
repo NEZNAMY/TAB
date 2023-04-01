@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -25,9 +24,9 @@ public class BungeeEventListener implements Listener {
      */
     @EventHandler
     public void onQuit(PlayerDisconnectEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
-                TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+                TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
 
     /**
@@ -38,12 +37,12 @@ public class BungeeEventListener implements Listener {
      */
     @EventHandler
     public void onSwitch(ServerSwitchEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() -> {
-            if (TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-                TabAPI.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
+            if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
+                TAB.getInstance().getFeatureManager().onJoin(new BungeeTabPlayer(e.getPlayer()));
             } else {
-                TabAPI.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
+                TAB.getInstance().getFeatureManager().onServerChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
             }
         });
     }
@@ -56,8 +55,8 @@ public class BungeeEventListener implements Listener {
      */
     @EventHandler
     public void onChat(ChatEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
-        if (e.isCommand() && TabAPI.getInstance().getFeatureManager().onCommand(TabAPI.getInstance().getPlayer(
+        if (TAB.getInstance().isPluginDisabled()) return;
+        if (e.isCommand() && TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(
                 ((ProxiedPlayer)e.getSender()).getUniqueId()), e.getMessage())) e.setCancelled(true);
     }
 

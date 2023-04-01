@@ -1,11 +1,10 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.EntryAddListener;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.EntryAddListener;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -27,7 +26,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
         if (packetPlayer != null && packetPlayer != packetReceiver && !packetPlayer.getNickname().equals(name)) {
-            ((ITabPlayer)packetPlayer).setNickname(name);
+            packetPlayer.setNickname(name);
             TAB.getInstance().debug("Processing name change of player " + packetPlayer.getName() + " to " + name);
             processNameChange(packetPlayer);
         }

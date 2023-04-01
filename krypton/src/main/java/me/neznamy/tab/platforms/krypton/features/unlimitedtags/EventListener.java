@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.krypton.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.kryptonmc.api.entity.player.Player;
 import org.kryptonmc.api.event.Listener;

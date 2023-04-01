@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import me.neznamy.tab.api.feature.TabFeature;
+import me.neznamy.tab.shared.features.types.TabFeature;
 
 
 /**

@@ -13,13 +13,12 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -90,7 +89,7 @@ public class VelocityTAB extends ProxyPlatform {
         server.getCommandManager().register(server.getCommandManager().metaBuilder("vtab").build(), cmd);
         TAB.getInstance().load();
         Metrics metrics = metricsFactory.make(this, 10533);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TabAPI.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
     
     /**
@@ -126,14 +125,14 @@ public class VelocityTAB extends ProxyPlatform {
         @Override
         public void execute(Invocation invocation) {
             CommandSource sender = invocation.source();
-            if (TabAPI.getInstance().isPluginDisabled()) {
+            if (TAB.getInstance().isPluginDisabled()) {
                 for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                     sender.sendMessage(Component.text(EnumChatFormat.color(message)));
                 }
             } else {
                 TabPlayer p = null;
                 if (sender instanceof Player) {
-                    p = TabAPI.getInstance().getPlayer(((Player)sender).getUniqueId());
+                    p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
                     if (p == null) return; //player not loaded correctly
                 }
                 TAB.getInstance().getCommand().execute(p, invocation.arguments());
@@ -144,7 +143,7 @@ public class VelocityTAB extends ProxyPlatform {
         public List<String> suggest(Invocation invocation) {
             TabPlayer p = null;
             if (invocation.source() instanceof Player) {
-                p = TabAPI.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
+                p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
                 if (p == null) return new ArrayList<>(); //player not loaded correctly
             }
             return TAB.getInstance().getCommand().complete(p, invocation.arguments());

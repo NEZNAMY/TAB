@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import me.neznamy.tab.api.*;
+import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
@@ -14,10 +16,10 @@ public class BackendArmorStandManager implements ArmorStandManager {
     @Getter private boolean sneaking;
 
     /** Map of registered armor stands by name */
-    private final Map<String, BackendArmorStand> armorStands = new LinkedHashMap<>();
+    private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
 
     /** Armor stands in an array for speed while iterating */
-    private BackendArmorStand[] armorStandArray;
+    private ArmorStand[] armorStandArray;
 
     /** Players in entity tracking range of owner */
     private final List<BackendTabPlayer> nearbyPlayerList = new ArrayList<>();
@@ -41,13 +43,13 @@ public class BackendArmorStandManager implements ArmorStandManager {
                 + owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
         double height = 0;
         for (String line : nameTagX.getDynamicLines()) {
-            armorStands.put(line, new BackendArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
+            armorStands.put(line, new ArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
             height += 0.26;
         }
         for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
-            armorStands.put(line.getKey(), new BackendArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
+            armorStands.put(line.getKey(), new ArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
         }
-        armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
+        armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
         fixArmorStandHeights();
     }
 
@@ -58,14 +60,14 @@ public class BackendArmorStandManager implements ArmorStandManager {
      *          player to teleport armor stands for
      */
     public void teleport(BackendTabPlayer viewer) {
-        for (BackendArmorStand a : armorStandArray) a.teleport(viewer);
+        for (ArmorStand a : armorStandArray) a.teleport(viewer);
     }
 
     /**
      * Teleports armor stands to player's current location for all nearby players
      */
     public void teleport() {
-        for (BackendArmorStand a : armorStandArray) a.teleport();
+        for (ArmorStand a : armorStandArray) a.teleport();
     }
 
     /**
@@ -135,7 +137,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         for (ArmorStand as : armorStandArray) {
             viewer.destroyEntities(as.getEntityId());
         }
-        for (BackendArmorStand a : armorStandArray) {
+        for (ArmorStand a : armorStandArray) {
             a.spawn(viewer);
         }
     }
@@ -150,7 +152,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         nearbyPlayerList.add(viewer);
         nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
         if (viewer.getVersion().getMinorVersion() < 8) return;
-        for (BackendArmorStand a : armorStandArray) a.spawn(viewer);
+        for (ArmorStand a : armorStandArray) a.spawn(viewer);
     }
 
     /**
@@ -175,9 +177,9 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   as
      *          Armor stand to add
      */
-    public void addArmorStand(String name, BackendArmorStand as) {
+    public void addArmorStand(String name, ArmorStand as) {
         armorStands.put(name, as);
-        armorStandArray = armorStands.values().toArray(new BackendArmorStand[0]);
+        armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
         for (BackendTabPlayer p : nearbyPlayers) as.spawn(p);
     }
 
@@ -232,7 +234,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
     }
 
     public void updateMetadata(BackendTabPlayer viewer) {
-        for (BackendArmorStand a : armorStandArray) {
+        for (ArmorStand a : armorStandArray) {
             viewer.updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
         }
     }

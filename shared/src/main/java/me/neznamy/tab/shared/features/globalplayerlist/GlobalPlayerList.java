@@ -4,20 +4,20 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.tablist.TabListEntry;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Feature handler for global PlayerList feature
  */
 public class GlobalPlayerList extends TabFeature implements JoinListener, QuitListener, VanishListener, GameModeListener,
-    Loadable, UnLoadable, ServerSwitchListener {
+        Loadable, UnLoadable, ServerSwitchListener {
 
     // config options
     private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));

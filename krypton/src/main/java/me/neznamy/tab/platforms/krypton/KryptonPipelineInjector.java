@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.krypton;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.WrappedChatComponent;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;

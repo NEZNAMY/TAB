@@ -2,7 +2,6 @@ package me.neznamy.tab.api.chat;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.util.Preconditions;
 
 /**
  * A class representing a component color, which can be either RGB or legacy code.
@@ -97,9 +96,6 @@ public class TextColor {
      *          if {@code red}, {@code green} or {@code blue} is out of range ({@code 0-255})
      */
     public TextColor(int red, int green, int blue) {
-        Preconditions.checkRange(red, 0, 255, "red");
-        Preconditions.checkRange(green, 0, 255, "green");
-        Preconditions.checkRange(blue, 0, 255, "blue");
         this.rgb = (red << 16) + (green << 8) + blue;
     }
 

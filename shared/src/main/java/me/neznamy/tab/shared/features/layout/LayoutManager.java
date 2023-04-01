@@ -4,15 +4,15 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class LayoutManager extends TabFeature implements JoinListener, QuitListener, VanishListener, Loadable,

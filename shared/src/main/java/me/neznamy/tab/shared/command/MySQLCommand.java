@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.command;
 
-import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.config.MySQL;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;

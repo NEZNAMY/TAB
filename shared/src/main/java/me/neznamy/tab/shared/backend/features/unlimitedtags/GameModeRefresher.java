@@ -2,10 +2,10 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class GameModeRefresher extends TabFeature implements Refreshable {
 
     @Override
     public void refresh(TabPlayer viewer, boolean force) {
-        for (TabPlayer target : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             nameTagX.getArmorStandManager(target).updateMetadata((BackendTabPlayer) viewer);
         }
     }

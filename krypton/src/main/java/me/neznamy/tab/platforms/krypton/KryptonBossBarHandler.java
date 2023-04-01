@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.BossBarHandler;
+import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import net.kyori.adventure.bossbar.BossBar;

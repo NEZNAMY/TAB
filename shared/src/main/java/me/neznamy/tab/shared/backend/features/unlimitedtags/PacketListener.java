@@ -2,13 +2,12 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.JoinListener;
-import me.neznamy.tab.api.feature.Loadable;
-import me.neznamy.tab.api.feature.QuitListener;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.JoinListener;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.QuitListener;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 
@@ -37,7 +36,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
 
     @Override
     public void load() {
-        for (TabPlayer all : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             entityIdMap.put(nameTagX.getEntityId(all), all);
         }
     }

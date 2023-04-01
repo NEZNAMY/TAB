@@ -4,10 +4,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import lombok.Getter;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Implementation of ServerPlaceholder interface
@@ -26,7 +27,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      * @param   identifier
      *          placeholder's identifier, must start and end with %
      * @param   refresh
-     *          refresh interval in milliseconds, must be divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
+     *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
      * @param   supplier
      *          supplier returning fresh output on request
@@ -105,7 +106,13 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         return lastValue;
     }
 
-    @Override
+    /**
+     * Calls the placeholder request function and returns the output.
+     * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
+     * file and "ERROR" is returned.
+     *
+     * @return  value placeholder returned or "ERROR" if it threw an error
+     */
     public Object request() {
         try {
             return supplier.get();

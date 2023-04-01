@@ -1,10 +1,8 @@
 package me.neznamy.tab.shared.config;
 
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.config.ConfigurationFile;
-import me.neznamy.tab.api.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 
 import java.io.File;
 import java.io.IOException;

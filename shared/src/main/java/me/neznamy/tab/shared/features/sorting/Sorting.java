@@ -5,15 +5,14 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import me.neznamy.tab.api.feature.JoinListener;
-import me.neznamy.tab.api.feature.Loadable;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.JoinListener;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.Refreshable;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.team.TeamManager;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
@@ -127,7 +126,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
         teamNameNotes.put(p, "");
         StringBuilder shortName = new StringBuilder();
         for (SortingType type : usedSortingTypes) {
-            shortName.append(type.getChars((ITabPlayer) p));
+            shortName.append(type.getChars(p));
         }
         StringBuilder fullName = new StringBuilder(shortName);
         if (layout != null) {

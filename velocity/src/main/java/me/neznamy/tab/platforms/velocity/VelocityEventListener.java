@@ -7,8 +7,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -27,9 +26,9 @@ public class VelocityEventListener {
      */
     @Subscribe
     public void onQuit(DisconnectEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
-                TabAPI.getInstance().getFeatureManager().onQuit(TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+                TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
     
     /**
@@ -39,14 +38,16 @@ public class VelocityEventListener {
      *          connect event
      */
     @Subscribe
+    @SuppressWarnings("UnstableApiUsage")
     public void onConnect(ServerPostConnectEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (TAB.getInstance().isPluginDisabled()) return;
         Player p = e.getPlayer();
         TAB.getInstance().getCPUManager().runTask(() -> {
-            if (TabAPI.getInstance().getPlayer(p.getUniqueId()) == null) {
-                TabAPI.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
+            if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
+                TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
             } else {
-                TabAPI.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().get().getServerInfo().getName());
+                TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().orElseThrow(
+                        () -> new IllegalStateException("Velocity does not work as described")).getServerInfo().getName());
             }
         });
     }
@@ -59,13 +60,13 @@ public class VelocityEventListener {
      */
     @Subscribe
     public void onCommand(CommandExecuteEvent e) {
-        if (TabAPI.getInstance().isPluginDisabled()) return;
+        if (TAB.getInstance().isPluginDisabled()) return;
         // Imagine not allowing to cancel a command while it works completely fine on BungeeCord and Bukkit and everywhere else
-        BossBarManagerImpl bossbar = (BossBarManagerImpl) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
+        BossBarManagerImpl bossbar = (BossBarManagerImpl) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
         if (bossbar != null && bossbar.getToggleCommand().substring(1).equals(e.getCommand())) {
             e.setResult(CommandResult.command("vtab bossbar"));
         }
-        ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TabAPI.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
+        ScoreboardManagerImpl scoreboard = (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
         if (scoreboard != null && scoreboard.getToggleCommand().substring(1).equals(e.getCommand())) {
             e.setResult(CommandResult.command("vtab scoreboard"));
         }

@@ -2,7 +2,9 @@ package me.neznamy.tab.api.team;
 
 import java.util.List;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 public interface UnlimitedNametagManager extends TeamManager {
 
@@ -12,13 +14,9 @@ public interface UnlimitedNametagManager extends TeamManager {
     
     boolean hasDisabledArmorStands(TabPlayer player);
 
-    void setName(TabPlayer player, String customName);
+    void setName(@NonNull TabPlayer player, @Nullable String customName);
     
-    void setLine(TabPlayer player, String line, String value);
-
-    void resetName(TabPlayer player);
-    
-    void resetLine(TabPlayer player, String line);
+    void setLine(@NonNull TabPlayer player, @NonNull String line, @Nullable String value);
 
     String getCustomName(TabPlayer player);
     

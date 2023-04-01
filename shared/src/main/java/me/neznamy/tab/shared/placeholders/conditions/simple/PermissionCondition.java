@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.placeholders.conditions.simple;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 
 /**
  * "permission:permission.node" condition where "permission.node" is the permission

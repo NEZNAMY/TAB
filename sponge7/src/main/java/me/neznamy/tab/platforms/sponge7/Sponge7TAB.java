@@ -3,9 +3,8 @@ package me.neznamy.tab.platforms.sponge7;
 import com.google.inject.Inject;
 import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
@@ -66,7 +65,7 @@ public class Sponge7TAB {
     private @NotNull CommandResult executeCommand(CommandSource source, CommandContext context) {
         String[] args = context.<String>getOne(Text.of("arguments")).orElse("").split(" ");
 
-        if (TabAPI.getInstance().isPluginDisabled()) {
+        if (TAB.getInstance().isPluginDisabled()) {
             boolean hasReloadPermission = source.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = source.hasPermission(TabConstants.Permission.COMMAND_ALL);
             List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);

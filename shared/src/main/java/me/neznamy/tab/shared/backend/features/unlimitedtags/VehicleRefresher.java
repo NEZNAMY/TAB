@@ -2,12 +2,11 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.features.types.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +47,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                         if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
-                    for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
+                    for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                         if (feature.isPreviewingNametag(p)) {
                             feature.getArmorStandManager(p).teleport((BackendTabPlayer) p);
                         }
@@ -56,7 +55,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                 });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
         feature.registerVehiclePlaceholder();
-        for (TabPlayer p : TabAPI.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
                 vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));

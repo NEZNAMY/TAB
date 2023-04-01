@@ -5,7 +5,6 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.chat.WrappedChatComponent;
 import me.neznamy.tab.api.util.ComponentCache;
@@ -14,6 +13,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Constructor;
@@ -269,7 +269,7 @@ public abstract class NMSStorage {
      */
     public Object newScoreboardObjective(String objectiveName) throws ReflectiveOperationException {
         if (minorVersion >= 13) {
-            return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TabAPI.getInstance().getServerVersion()), null);
+            return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
         }
         return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, IScoreboardCriteria_self.get(null));
     }

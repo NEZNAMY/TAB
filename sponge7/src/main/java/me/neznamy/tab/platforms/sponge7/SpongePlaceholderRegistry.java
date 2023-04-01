@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import org.spongepowered.api.Sponge;

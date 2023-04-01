@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 

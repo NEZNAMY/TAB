@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.permission;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Class to take groups from Vault on bukkit side

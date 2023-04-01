@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 
 public class SetCollisionCommand extends SubCommand {
 
@@ -32,7 +33,7 @@ public class SetCollisionCommand extends SubCommand {
                 return;
             }
             feature.setCollisionRule(target, Boolean.parseBoolean(args[1]));
-            feature.updateTeamData(target);
+            ((NameTag)feature).updateTeamData(target);
         } else {
             sendMessage(sender, getMessages().getCollisionCommandUsage());
         }

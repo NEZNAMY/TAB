@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import me.neznamy.tab.api.Property;
-import me.neznamy.tab.api.feature.Refreshable;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.api.chat.EnumChatFormat;
 import me.neznamy.tab.api.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
+import me.neznamy.tab.shared.player.TabPlayer;
 
 /**
  * A dynamic text with placeholder support. If any placeholder

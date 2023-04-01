@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.feature.PacketSendListener;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
@@ -86,7 +86,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
 
     @Override
     public boolean canSee(TabPlayer viewer, TabPlayer target) {
-        return ((Player)viewer.getPlayer()).canSee((Player)target.getPlayer());
+        return ((Player)viewer.getPlayer()).canSee((Player) target.getPlayer());
     }
 
     @Override
@@ -98,7 +98,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
     @Override
     public List<Integer> getPassengers(Object entity) {
         Entity vehicle = (Entity) entity;
-        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 11) {
+        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 11) {
             return vehicle.getPassengers().stream().map(Entity::getEntityId).collect(Collectors.toList());
         } else {
             if (vehicle.getPassenger() != null) {
@@ -111,7 +111,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
 
     @Override
     public void registerVehiclePlaceholder() {
-        TabAPI.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
             Entity v = ((Player)p.getPlayer()).getVehicle();
             //There's a bug in Bukkit 1.19.3 throwing NPE on .toString(), use default toString implementation
             return v == null ? "" : v.getClass().getName() + "@" + Integer.toHexString(v.hashCode());
@@ -141,13 +141,13 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
     @Override
     public boolean isSwimming(TabPlayer player) {
         Player p = (Player) player.getPlayer();
-        if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
-        return TabAPI.getInstance().getServerVersion().getMinorVersion() == 13 && p.isSwimming();
+        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
+        return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && p.isSwimming();
     }
 
     @Override
     public boolean isGliding(TabPlayer player) {
-        return TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
+        return TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
     }
 
     @Override
