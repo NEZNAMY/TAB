@@ -79,7 +79,7 @@ public class Main {
     }
 
     public final int getProtocolVersion(Player player) {
-        if (server.getPluginManager().isLoaded("ViaVersion".toLowerCase(Locale.ROOT)))
+        if (server.getPluginManager().isLoaded(TabConstants.Plugin.VIAVERSION.toLowerCase(Locale.ROOT)))
             return ProtocolVersion.getPlayerVersionVia(player.getUuid(), player.getProfile().name());
         return TAB.getInstance().getServerVersion().getNetworkId();
     }
