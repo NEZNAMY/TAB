@@ -53,7 +53,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         try {
             return Direction.valueOf(value);
         } catch (IllegalArgumentException e) {
-            TAB.getInstance().getErrorManager().startupWarn("\"&e" + value + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(Direction.values()) + ". &bUsing COLUMNS");
+            TAB.getInstance().getMisconfigurationHelper().invalidLayoutDirection(value);
             return Direction.COLUMNS;
         }
     }
@@ -86,7 +86,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
                     emptySlots.remove((Integer)slot);
                     if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
                 } catch (NumberFormatException e) {
-                    TAB.getInstance().getErrorManager().startupWarn("Layout \"" + layout.getKey() + "\"'s fixed slot line \"" + fixedSlot + "&c\" has invalid number as slot.");
+                    TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(layout.getKey().toString(), fixedSlot);
                 }
             }
             Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.get("groups");

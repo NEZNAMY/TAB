@@ -108,7 +108,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
         for (String element : options) {
             String[] arr = element.split(":");
             if (!types.containsKey(arr[0].toUpperCase())) {
-                TAB.getInstance().getErrorManager().startupWarn("\"&e" + arr[0].toUpperCase() + "&c\" is not a valid sorting type element. Valid options are: &e" + types.keySet() + ".");
+                TAB.getInstance().getMisconfigurationHelper().invalidSortingTypeElement(arr[0].toUpperCase(), types.keySet());
             } else {
                 list.add(types.get(arr[0].toUpperCase()).apply(this, arr.length == 1 ? "" : element.substring(arr[0].length() + 1)));
             }

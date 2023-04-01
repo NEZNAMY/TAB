@@ -61,9 +61,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     @Override
     public void load() {
         if (invisibleNameTags) {
-            TAB.getInstance().getErrorManager().startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.");
-            TAB.getInstance().getErrorManager().startupWarn("If you want nametags to be invisible, you don't need unlimited nametag mode at all.");
-            TAB.getInstance().getErrorManager().startupWarn("If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
+            TAB.getInstance().getMisconfigurationHelper().invisibleAndUnlimitedNameTagsAreMutuallyExclusive();
         }
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);

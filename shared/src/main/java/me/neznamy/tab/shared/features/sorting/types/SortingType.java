@@ -33,7 +33,7 @@ public abstract class SortingType {
         this.sorting = sorting;
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
-            TAB.getInstance().getErrorManager().startupWarn("\"" + sortingPlaceholder + "\" is not a valid placeholder for " + this + " sorting type");
+            TAB.getInstance().getMisconfigurationHelper().invalidSortingPlaceholder(sortingPlaceholder, this);
         } else {
             sorting.addUsedPlaceholders(Collections.singletonList(sortingPlaceholder));
             this.sortingPlaceholder = sortingPlaceholder;

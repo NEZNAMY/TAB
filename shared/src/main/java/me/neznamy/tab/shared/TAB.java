@@ -98,6 +98,9 @@ public class TAB extends TabAPI {
     /** File with YAML syntax error, which prevented plugin from loading */
     @Getter @Setter private String brokenFile;
 
+    /** Helper for detecting misconfiguration in configs and send it to user */
+    @Getter private final MisconfigurationHelper misconfigurationHelper = new MisconfigurationHelper();
+
     /**
      * Constructs new instance with given parameters and sets this
      * new instance as {@link me.neznamy.tab.api.TabAPI} instance.

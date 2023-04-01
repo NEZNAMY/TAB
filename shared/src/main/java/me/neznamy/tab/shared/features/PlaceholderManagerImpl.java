@@ -40,10 +40,9 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     @Getter private final String refreshDisplayName = "Updating placeholders";
     @Getter private final String featureName = "Refreshing placeholders";
-    @Getter private final int defaultRefresh = TAB.getInstance().getConfiguration().getConfig().getInt("placeholderapi-refresh-intervals.default-refresh-interval", 500);
-    @Getter private final Map<String, Integer> refreshIntervals = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholderapi-refresh-intervals");
+    @Getter private final Map<String, Integer> refreshIntervals = TAB.getInstance().getConfig().getConfigurationSection("placeholderapi-refresh-intervals");
+    @Getter private final int defaultRefresh;
 
-    //plugin internals + PAPI + API
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
     //map of String-Set of features using placeholder
@@ -57,6 +56,8 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     public PlaceholderManagerImpl() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, this::refresh);
+        TAB.getInstance().getMisconfigurationHelper().fixRefreshIntervals(refreshIntervals);
+        defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
     }
 
     private void refresh() {

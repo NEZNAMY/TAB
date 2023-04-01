@@ -49,7 +49,7 @@ public class SkinManager {
                 return new Skin(value.get(0), value.get(1));
             }
         }
-        TAB.getInstance().getErrorManager().startupWarn("Invalid skin definition: \"" + skin + "\"");
+        TAB.getInstance().getMisconfigurationHelper().invalidLayoutSkinDefinition(skin);
         return null;
     }
 }

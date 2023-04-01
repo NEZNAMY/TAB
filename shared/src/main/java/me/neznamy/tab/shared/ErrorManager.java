@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -235,74 +234,5 @@ public class ErrorManager {
         } catch (NumberFormatException e) {
             return defaultValue;
         }
-    }
-
-    /**
-     * Makes interval divisible by {@link me.neznamy.tab.api.TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
-     * and sends error message if it was not already or was 0 or less
-     *
-     * @param   name
-     *          name of animation used in error message
-     * @param   interval
-     *          configured change interval
-     * @return  fixed change interval
-     */
-    public int fixAnimationInterval(String name, int interval) {
-        if (interval == 0) {
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.", name));
-            return 1000;
-        }
-        if (interval < 0) {
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s. Refresh cannot be negative! &bUsing 1000.", name, interval));
-            return 1000;
-        }
-        if (interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
-            int newInterval = interval - interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
-            if (newInterval == 0) newInterval = TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s which is not divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL + "! &bUsing %s.", name, interval, newInterval));
-            return newInterval;
-        }
-        return interval;
-    }
-
-    /**
-     * Returns the list if not null, empty list and error message if null
-     *
-     * @param   name
-     *          name of animation used in error message
-     * @param   list
-     *          list of configured animation frames
-     * @return  the list if it's valid, singleton list with {@code "<Invalid Animation>"} otherwise
-     */
-    public List<String> fixAnimationFrames(String name, List<String> list) {
-        if (list == null) {
-            startupWarn("Animation \"&e" + name + "&c\" does not have any texts! &bIgnoring.");
-            return Collections.singletonList("<Invalid Animation>");
-        }
-        return list;
-    }
-
-    /**
-     * Sends a startup warn message into console
-     *
-     * @param   message
-     *          message to print into console
-     */
-    public void startupWarn(String message) {
-        TAB.getInstance().sendConsoleMessage("&c" + message, true);
-    }
-
-    /**
-     * Sends a startup warn about missing object parameter
-     *
-     * @param   objectType
-     *          object type missing parameter
-     * @param   objectName
-     *          name of object
-     * @param   attribute
-     *          missing parameter
-     */
-    public void missingAttribute(String objectType, Object objectName, String attribute) {
-        startupWarn(objectType + " \"&e" + objectName + "&c\" is missing \"&e" + attribute + "&c\" attribute!");
     }
 }

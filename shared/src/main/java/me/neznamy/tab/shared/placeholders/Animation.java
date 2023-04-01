@@ -49,8 +49,8 @@ public class Animation {
      */
     public Animation(String name, List<String> list, int interval) {
         this.name = name;
-        this.messages = TAB.getInstance().getErrorManager().fixAnimationFrames(name, list).toArray(new String[0]);
-        this.interval = TAB.getInstance().getErrorManager().fixAnimationInterval(name, interval);
+        this.messages = TAB.getInstance().getMisconfigurationHelper().fixAnimationFrames(name, list).toArray(new String[0]);
+        this.interval = TAB.getInstance().getMisconfigurationHelper().fixAnimationInterval(name, interval);
         int refresh = this.interval;
         List<String> nestedPlaceholders0 = new ArrayList<>();
         for (int i=0; i<messages.length; i++) {

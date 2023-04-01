@@ -30,6 +30,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public BelowName() {
         super("belowname-objective");
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
+        TAB.getInstance().getMisconfigurationHelper().checkBelowNameText(rawText);
     }
 
     @Override

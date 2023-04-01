@@ -70,26 +70,14 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     private BossBarLine loadFromConfig(String bar) {
         Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
         String condition = (String) bossBar.get("display-condition");
-        String style = (String) bossBar.get("style");
-        String color = (String) bossBar.get("color");
-        String progress = String.valueOf(bossBar.get("progress"));
-        String text = (String) bossBar.get("text");
-        if (style == null) {
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "style");
-            style = "PROGRESS";
-        }
-        if (color == null) {
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "color");
-            color = "WHITE";
-        }
-        if (progress == null) {
-            progress = "100";
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "progress");
-        }
-        if (text == null) {
-            text = "";
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "text");
-        }
+        String style = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "style", "PROGRESS",
+                "Bossbar \"" + bar + "\" is missing style!");
+        String color = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "color", "PURPLE",
+                "Bossbar \"" + bar + "\" is missing color!");
+        String progress = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "progress", "100",
+                "Bossbar \"" + bar + "\" is missing progress!");
+        String text = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "text", "<Text is not defined>",
+                "Bossbar \"" + bar + "\" is missing text!");
         return new BossBarLine(this, bar, condition, color, style, text, progress, (boolean) bossBar.getOrDefault("announcement-bar", false));
     }
 

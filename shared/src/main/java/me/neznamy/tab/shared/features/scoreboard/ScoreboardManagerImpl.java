@@ -50,21 +50,15 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Getter private final String refreshDisplayName = "Switching scoreboards";
 
     @Override
-    @SuppressWarnings("unchecked")
     public void load() {
         Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
             String condition = (String) entry.getValue().get("display-condition");
-            String title = (String) entry.getValue().get("title");
-            if (title == null) {
-                title = "<Title not defined>";
-                TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), entry.getKey(), "title");
-            }
-            List<String> lines = (List<String>) entry.getValue().get("lines");
-            if (lines == null) {
-                lines = Arrays.asList("scoreboard \"" + entry.getKey() +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?");
-                TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), entry.getKey(), "lines");
-            }
+            String title = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(entry.getValue(), "title", "<Title not defined>",
+                    "Scoreboard \"" + entry.getKey() + "\" is missing title!");
+            List<String> lines = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(entry.getValue(), "lines",
+                    Arrays.asList("scoreboard \"" + entry.getKey() +"\" is missing \"lines\" keyword!", "did you forget to configure it or just your spacing is wrong?"),
+                    "Scoreboard \"" + entry.getKey() + "\" is missing lines!");
             ScoreboardImpl sb = new ScoreboardImpl(this, entry.getKey(), title, lines, condition);
             registeredScoreboards.put(entry.getKey(), sb);
             TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(entry.getKey()), sb);

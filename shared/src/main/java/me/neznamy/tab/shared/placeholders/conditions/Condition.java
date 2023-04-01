@@ -81,7 +81,7 @@ public class Condition {
         this.yes = yes;
         this.no = no;
         if (conditions == null) {
-            TAB.getInstance().getErrorManager().startupWarn("Condition \"" + name + "\" is missing \"conditions\" section.");
+            TAB.getInstance().getMisconfigurationHelper().conditionHasNoConditions(name);
             return;
         }
         List<SimpleCondition> list = new ArrayList<>();
@@ -90,7 +90,7 @@ public class Condition {
             if (condition != null) {
                 list.add(condition);
             } else {
-                TAB.getInstance().getErrorManager().startupWarn("\"" + line + "\" is not a defined condition nor a condition pattern");
+                TAB.getInstance().getMisconfigurationHelper().invalidConditionPattern(name, line);
             }
         }
         subConditions = list.toArray(new SimpleCondition[0]);
