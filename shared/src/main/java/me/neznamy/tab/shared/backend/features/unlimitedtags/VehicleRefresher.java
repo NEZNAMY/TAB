@@ -27,7 +27,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Getter private final String refreshDisplayName = "Refreshing vehicles";
 
     /** Map of players currently in a vehicle */
-    private final WeakHashMap<TabPlayer, Object> playersInVehicle = new WeakHashMap<>();
+    private final HashMap<TabPlayer, Object> playersInVehicle = new HashMap<>();
 
     /** Map of vehicles carrying players */
     @Getter
@@ -44,7 +44,6 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
                 this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
-                        if (!inVehicle.isOnline() || feature.getArmorStandManager(inVehicle) == null) continue; // not removed from WeakHashMap yet
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
                     for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
@@ -75,7 +74,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
 
     @Override
     public void onQuit(TabPlayer disconnectedPlayer) {
-        if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.get(disconnectedPlayer)));
+        if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.remove(disconnectedPlayer)));
         for (List<Integer> entities : vehicles.values()) {
             entities.remove((Integer)feature.getEntityId(disconnectedPlayer));
         }
