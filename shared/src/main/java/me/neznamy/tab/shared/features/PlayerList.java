@@ -19,7 +19,7 @@ import java.util.UUID;
  * Feature handler for TabList display names
  */
 public class PlayerList extends TabFeature implements TablistFormatManager, JoinListener, DisplayNameListener, Loadable,
-        UnLoadable, ServerSwitchListener, WorldSwitchListener, Refreshable {
+        UnLoadable, ServerSwitchListener, WorldSwitchListener, Refreshable, VanishListener {
 
     @Getter private final String featureName = "Tablist name formatting";
     @Getter private final String refreshDisplayName = "Updating TabList format";
@@ -234,6 +234,14 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
             return getTabFormat(packetPlayer, packetReceiver);
         }
         return displayName;
+    }
+
+    @Override
+    public void onVanishStatusChange(TabPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
+        }
     }
 
     @Override

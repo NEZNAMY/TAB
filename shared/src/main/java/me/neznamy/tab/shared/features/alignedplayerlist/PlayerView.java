@@ -196,6 +196,8 @@ public class PlayerView {
         playerWidths.put(changed, getPlayerNameWidth(changed));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
+        } else if (!changed.isVanished()) {
+            viewer.getTabList().updateDisplayName(changed.getTablistId(), feature.getTabFormat(changed, viewer));
         }
     }
 }
