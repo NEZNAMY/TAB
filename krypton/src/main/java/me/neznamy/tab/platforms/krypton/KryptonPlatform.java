@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.krypton;
 
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.platforms.krypton.features.unlimitedtags.KryptonNameTagX;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -54,11 +53,11 @@ public class KryptonPlatform extends BackendPlatform {
     }
 
     public PipelineInjector getPipelineInjector() {
-        return new KryptonPipelineInjector();
+        return null;
     }
     
     public NameTag getUnlimitedNametags() {
-        return new KryptonNameTagX(plugin);
+        return new NameTag();
     }
 
     public @NotNull TabExpansion getTabExpansion() {
