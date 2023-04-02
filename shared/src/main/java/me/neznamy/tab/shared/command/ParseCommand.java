@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.DynamicText;
 import me.neznamy.tab.shared.TAB;

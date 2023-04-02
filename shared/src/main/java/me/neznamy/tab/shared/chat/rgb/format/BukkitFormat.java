@@ -1,9 +1,9 @@
-package me.neznamy.tab.api.chat.rgb.format;
+package me.neznamy.tab.shared.chat.rgb.format;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 
 /**
  * Formatter for &amp;x&amp;R&amp;R&amp;G&amp;G&amp;B&amp;B

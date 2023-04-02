@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;

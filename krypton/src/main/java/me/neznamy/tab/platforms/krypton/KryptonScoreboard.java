@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.krypton;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.player.Scoreboard;
 import net.kyori.adventure.text.Component;
 import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective;

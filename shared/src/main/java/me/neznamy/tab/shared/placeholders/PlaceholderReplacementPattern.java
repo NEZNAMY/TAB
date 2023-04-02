@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import lombok.Getter;
-import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 
 /**

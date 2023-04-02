@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.bossbar;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.player.BossBarHandler;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;

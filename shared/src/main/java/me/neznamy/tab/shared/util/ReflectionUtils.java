@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.util;
+package me.neznamy.tab.shared.util;
 
 /**
  * Utility class storing methods working with reflection

@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;

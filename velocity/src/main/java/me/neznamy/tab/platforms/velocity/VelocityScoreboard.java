@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.velocity;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.Scoreboard;
 
 import java.util.ArrayList;

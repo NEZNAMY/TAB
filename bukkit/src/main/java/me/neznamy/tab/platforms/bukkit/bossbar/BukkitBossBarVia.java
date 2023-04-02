@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 
 import java.util.HashMap;

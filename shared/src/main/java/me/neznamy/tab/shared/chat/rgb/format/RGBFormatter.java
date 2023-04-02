@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.chat.rgb.format;
+package me.neznamy.tab.shared.chat.rgb.format;
 
 /**
  * Abstract class for different RGB patterns

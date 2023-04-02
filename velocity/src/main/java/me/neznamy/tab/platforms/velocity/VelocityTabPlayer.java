@@ -5,7 +5,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.player.BossBarHandler;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.shared.player.Scoreboard;

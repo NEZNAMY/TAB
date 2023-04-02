@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.redis;
 import lombok.Getter;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;

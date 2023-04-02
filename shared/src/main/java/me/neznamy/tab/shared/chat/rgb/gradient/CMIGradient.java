@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.chat.rgb.gradient;
+package me.neznamy.tab.shared.chat.rgb.gradient;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

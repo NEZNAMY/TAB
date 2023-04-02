@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.chat;
+package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,8 +6,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.util.ComponentCache;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.util.ComponentCache;
 import org.json.simple.JSONObject;
 
 import java.util.*;

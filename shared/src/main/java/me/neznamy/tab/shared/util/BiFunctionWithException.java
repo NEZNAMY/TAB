@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.util;
+package me.neznamy.tab.shared.util;
 
 /**
  * An interface for BiFunction which can throw an exception.

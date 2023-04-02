@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 
 import java.io.BufferedReader;

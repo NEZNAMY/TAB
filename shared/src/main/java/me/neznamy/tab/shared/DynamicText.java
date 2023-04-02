@@ -5,8 +5,8 @@ import java.util.List;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.player.TabPlayer;

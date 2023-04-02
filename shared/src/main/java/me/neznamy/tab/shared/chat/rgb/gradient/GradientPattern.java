@@ -1,7 +1,7 @@
-package me.neznamy.tab.api.chat.rgb.gradient;
+package me.neznamy.tab.shared.chat.rgb.gradient;
 
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.TextColor;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TextColor;
 
 /**
  * Abstract class for applying different gradient patterns

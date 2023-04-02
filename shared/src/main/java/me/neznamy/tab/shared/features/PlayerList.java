@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.TablistFormatManager;
 import me.neznamy.tab.shared.util.Preconditions;
 import me.neznamy.tab.shared.Property;
@@ -16,7 +16,6 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

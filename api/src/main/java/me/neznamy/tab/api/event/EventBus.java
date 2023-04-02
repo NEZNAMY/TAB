@@ -10,7 +10,7 @@ public interface EventBus {
      * Scans the given listener for any method that is annotated with
      * {@link Subscribe} and registers it as a listener to this event bus.
      *
-     * All methods in this class that are annotated with {@link Subscribe}
+     * <p>All methods in this class that are annotated with {@link Subscribe}
      * must meet the following criteria:
      * <ul>
      *     <li>It must be <strong>public</strong>.</li>

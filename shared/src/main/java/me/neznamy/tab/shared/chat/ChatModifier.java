@@ -1,12 +1,11 @@
-package me.neznamy.tab.api.chat;
+package me.neznamy.tab.shared.chat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.chat.ChatClickable.EnumClickAction;
-import me.neznamy.tab.api.chat.ChatHoverable.EnumHoverAction;
+import me.neznamy.tab.shared.chat.ChatHoverable.EnumHoverAction;
 import org.json.simple.JSONObject;
 
 import java.util.UUID;
@@ -91,7 +90,7 @@ public class ChatModifier {
      *          url to open
      */
     public void onClickOpenUrl(@NonNull String url) {
-        clickEvent = new ChatClickable(EnumClickAction.OPEN_URL, url);
+        clickEvent = new ChatClickable(ChatClickable.EnumClickAction.OPEN_URL, url);
     }
 
     /**
@@ -101,7 +100,7 @@ public class ChatModifier {
      *          command to perform, might be without / to send a chat message
      */
     public void onClickRunCommand(@NonNull String command) {
-        clickEvent = new ChatClickable(EnumClickAction.RUN_COMMAND, command);
+        clickEvent = new ChatClickable(ChatClickable.EnumClickAction.RUN_COMMAND, command);
     }
 
     /**
@@ -111,7 +110,7 @@ public class ChatModifier {
      *          command to suggest
      */
     public void onClickSuggestCommand(@NonNull String command) {
-        clickEvent = new ChatClickable(EnumClickAction.SUGGEST_COMMAND, command);
+        clickEvent = new ChatClickable(ChatClickable.EnumClickAction.SUGGEST_COMMAND, command);
     }
 
     /**
@@ -122,7 +121,7 @@ public class ChatModifier {
      */
     public void onClickChangePage(int newPage) {
         if (TabAPI.getInstance().getServerVersion().getMinorVersion() < 8) throw new UnsupportedOperationException("change_page click action is not supported on <1.8");
-        clickEvent = new ChatClickable(EnumClickAction.CHANGE_PAGE, String.valueOf(newPage));
+        clickEvent = new ChatClickable(ChatClickable.EnumClickAction.CHANGE_PAGE, String.valueOf(newPage));
     }
 
     /**
@@ -132,10 +131,10 @@ public class ChatModifier {
      *          text to copy to clipboard on click
      */
     public void onClickCopyToClipBoard(@NonNull String text) {
-        clickEvent = new ChatClickable(EnumClickAction.COPY_TO_CLIPBOARD, text);
+        clickEvent = new ChatClickable(ChatClickable.EnumClickAction.COPY_TO_CLIPBOARD, text);
     }
 
-    public void onClick(@NonNull EnumClickAction action, @NonNull String value) {
+    public void onClick(@NonNull ChatClickable.EnumClickAction action, @NonNull String value) {
         clickEvent = new ChatClickable(action, value);
     }
 

@@ -2,13 +2,13 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import java.util.ArrayList;
 
-import me.neznamy.tab.api.util.ReflectionUtils;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import net.md_5.bungee.api.CommandSender;

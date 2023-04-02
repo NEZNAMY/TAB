@@ -1,7 +1,7 @@
-package me.neznamy.tab.api.chat;
+package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 
 /**
  * An enum containing all possible legacy color codes and magic codes. Also contains handy color-related methods.

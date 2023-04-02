@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.chat;
+package me.neznamy.tab.shared.chat;
 
 import lombok.Data;
 import lombok.NonNull;

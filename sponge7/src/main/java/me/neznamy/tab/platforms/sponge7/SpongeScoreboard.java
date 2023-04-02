@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.Scoreboard;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;

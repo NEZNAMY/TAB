@@ -1,20 +1,26 @@
-package me.neznamy.tab.api.chat.rgb;
+package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.chat.rgb.format.*;
-import me.neznamy.tab.api.chat.rgb.gradient.CMIGradient;
-import me.neznamy.tab.api.chat.rgb.gradient.CommonGradient;
-import me.neznamy.tab.api.chat.rgb.gradient.GradientPattern;
-import me.neznamy.tab.api.chat.rgb.gradient.KyoriGradient;
-import me.neznamy.tab.api.util.ReflectionUtils;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
+import me.neznamy.tab.shared.chat.rgb.format.HtmlFormat;
+import me.neznamy.tab.shared.chat.rgb.format.KyoriFormat;
+import me.neznamy.tab.shared.chat.rgb.format.MiniMessageFormat;
+import me.neznamy.tab.shared.chat.rgb.format.UnnamedFormat1;
+import me.neznamy.tab.shared.chat.rgb.gradient.CMIGradient;
+import me.neznamy.tab.shared.chat.rgb.gradient.CommonGradient;
+import me.neznamy.tab.shared.chat.rgb.gradient.GradientPattern;
+import me.neznamy.tab.shared.chat.rgb.gradient.KyoriGradient;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import me.neznamy.tab.shared.chat.rgb.format.CMIFormat;
+import me.neznamy.tab.shared.chat.rgb.format.RGBFormatter;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients

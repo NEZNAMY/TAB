@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.util;
+package me.neznamy.tab.shared.util;
 
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;

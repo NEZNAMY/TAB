@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.sponge7;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.player.BossBarHandler;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.shared.player.TabPlayer;

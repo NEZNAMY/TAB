@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.chat;
+package me.neznamy.tab.shared.chat;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -137,7 +137,7 @@ public class DeserializedChatComponent extends IChatBaseComponent {
                 String string = extra.toString();
                 //reverting .toString() removing "" for simple text
                 if (!string.startsWith("{")) string = "\"" + string + "\"";
-                addExtra(IChatBaseComponent.deserialize(string));
+                addExtra(deserialize(string));
             }
         }
     }

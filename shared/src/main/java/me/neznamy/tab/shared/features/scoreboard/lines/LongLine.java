@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;

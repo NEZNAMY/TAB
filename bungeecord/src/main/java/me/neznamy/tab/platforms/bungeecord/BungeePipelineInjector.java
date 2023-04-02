@@ -9,7 +9,7 @@ import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;

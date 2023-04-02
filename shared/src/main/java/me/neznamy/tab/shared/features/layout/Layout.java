@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.ServerSwitchListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 

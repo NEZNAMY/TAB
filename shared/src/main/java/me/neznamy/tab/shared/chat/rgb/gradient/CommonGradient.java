@@ -1,11 +1,11 @@
-package me.neznamy.tab.api.chat.rgb.gradient;
+package me.neznamy.tab.shared.chat.rgb.gradient;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.AllArgsConstructor;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.TextColor;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.TextColor;
 
 @AllArgsConstructor
 public class CommonGradient implements GradientPattern {

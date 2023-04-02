@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.chat.rgb.format;
+package me.neznamy.tab.shared.chat.rgb.format;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
