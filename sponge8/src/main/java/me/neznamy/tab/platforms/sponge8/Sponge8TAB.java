@@ -40,9 +40,6 @@ import java.util.stream.Collectors;
 
 public class Sponge8TAB {
 
-    @Getter private static final ComponentCache<IChatBaseComponent, net.minecraft.network.chat.Component> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> net.minecraft.network.chat.Component.Serializer.fromJson(component.toString(clientVersion)));
-
     @Getter private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
             (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
@@ -60,7 +57,7 @@ public class Sponge8TAB {
     @Listener
     public void onServerStart(StartingEngineEvent<Server> event) {
         String version = game.platform().minecraftVersion().name();
-        TAB.setInstance(new TAB(new SpongePlatform(this), ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
+        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
         game.eventManager().registerListeners(container, new SpongeEventListener());
         TAB.getInstance().load();
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));

@@ -11,7 +11,7 @@ val platforms = setOf(
     rootProject.projects.velocity,
     rootProject.projects.sponge7,
     rootProject.projects.sponge8,
-    rootProject.projects.fabric
+//    rootProject.projects.fabric
 ).map { it.dependencyProject }
 
 tasks {

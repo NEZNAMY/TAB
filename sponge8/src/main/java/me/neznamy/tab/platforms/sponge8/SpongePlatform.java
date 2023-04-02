@@ -1,10 +1,8 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.sponge8.features.unlimitedtags.SpongeNameTagX;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -13,14 +11,12 @@ import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
-@RequiredArgsConstructor
 public final class SpongePlatform extends BackendPlatform {
 
-    private final Sponge8TAB plugin;
-    @Getter private final PipelineInjector pipelineInjector = new SpongePipelineInjector();
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature perWorldPlayerlist = null;
 
@@ -47,8 +43,13 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
+    public @Nullable PipelineInjector getPipelineInjector() {
+        return null;
+    }
+
+    @Override
     public NameTag getUnlimitedNametags() {
-        return new SpongeNameTagX(plugin);
+        return new NameTag();
     }
 
     @Override
