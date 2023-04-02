@@ -124,9 +124,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         } else {
             removeDisabledPlayer(p);
         }
-        if (disabledNow && !disabledBefore) {
-            if (!p.isBedrockPlayer()) p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
-        }
+        if (disabledNow && !disabledBefore && !p.isBedrockPlayer()) p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         if (!disabledNow && disabledBefore) {
             onJoin(p);
         }
