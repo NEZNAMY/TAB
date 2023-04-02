@@ -35,6 +35,7 @@ spark = "0.1-SNAPSHOT"
 # Plugins
 shadow = "8.1.1"
 lombok = "8.0.1"
+loom = "1.1-SNAPSHOT"
 
 [libraries]
 
@@ -80,3 +81,4 @@ bstats-sponge = { group = "org.bstats", name = "bstats-sponge", version.ref = "b
 # Plugins
 plugin-shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
 plugin-lombok = { group = "io.freefair.gradle", name = "lombok-plugin", version.ref = "lombok"}
+plugin-loom = { group = "fabric-loom", name = "fabric-loom.gradle.plugin", version.ref = "loom" }
