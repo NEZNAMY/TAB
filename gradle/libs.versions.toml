@@ -14,7 +14,6 @@ minimessage = "4.12.0"
 luckperms = "5.4"
 guava = "31.1-jre"
 floodgate = "2.2.0-SNAPSHOT"
-kotlin = "1.8.0"
 event = "3.0.0"
 
 # Platforms
@@ -34,8 +33,8 @@ redisBungee = "0.10.1"
 spark = "0.1-SNAPSHOT"
 
 # Plugins
-shadow = "7.1.2"
-lombok = "6.6.1"
+shadow = "8.1.1"
+lombok = "8.0.1"
 
 [libraries]
 
@@ -53,7 +52,6 @@ adventureLegacy = { group = "net.kyori", name = "adventure-text-serializer-legac
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 floodgate = { group = "org.geysermc.floodgate", name = "api", version.ref = "floodgate" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 event = { group = "net.kyori", name = "event-method", version.ref = "event" }
 
 # Platforms
@@ -80,5 +78,5 @@ bstats-velocity = { group = "org.bstats", name = "bstats-velocity", version.ref 
 bstats-sponge = { group = "org.bstats", name = "bstats-sponge", version.ref = "bstats" }
 
 # Plugins
-plugin-shadow = { group = "gradle.plugin.com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+plugin-shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
 plugin-lombok = { group = "io.freefair.gradle", name = "lombok-plugin", version.ref = "lombok"}
