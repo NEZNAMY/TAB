@@ -36,8 +36,6 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
-    }
-    {
         Collections.reverse(dynamicLines);
     }
 
