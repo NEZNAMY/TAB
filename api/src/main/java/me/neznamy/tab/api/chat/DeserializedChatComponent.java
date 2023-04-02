@@ -112,9 +112,6 @@ public class DeserializedChatComponent extends IChatBaseComponent {
             TabAPI.getInstance().logError("Failed to deserialize json component " + json, e);
             return;
         }
- /*       if (jsonObject.containsKey("type")) {
-            return new ChatComponentEntity((String) jsonObject.get("type"), UUID.fromString((String) jsonObject.get("id")), IChatBaseComponent.deserialize(jsonObject.get("name").toString()).toFlatText());
-        }*/
         setText((String) jsonObject.get("text"));
         getModifier().setBold(getBoolean(jsonObject, "bold"));
         getModifier().setItalic(getBoolean(jsonObject, "italic"));
