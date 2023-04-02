@@ -74,11 +74,6 @@ public class BukkitTabList extends BulkUpdateTabList {
 
     @Override
     public void addEntries(@NonNull Collection<TabListEntry> entries) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER",
-                entries.stream().map(entry ->
-                        new TabListEntry(entry.getUniqueId(), entry.getName(), entry.getSkin(), entry.isListed(),
-                                entry.getLatency(), entry.getGameMode(), entry.getDisplayName(), entry.getChatSession())).collect(Collectors.toList()),
-                player.getVersion())
-        );
+        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER", entries, player.getVersion()));
     }
 }
