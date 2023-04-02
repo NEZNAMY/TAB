@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -252,6 +253,9 @@ public class FeatureManager {
         if (featureName == null || featureHandler == null) return;
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
+        if (featureHandler instanceof VanishListener) {
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
+        }
     }
 
     public void unregisterFeature(String featureName) {

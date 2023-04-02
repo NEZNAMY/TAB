@@ -53,7 +53,6 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
 
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             playerViews.put(all, new PlayerView(this, all));
