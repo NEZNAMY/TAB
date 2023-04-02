@@ -43,6 +43,8 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     @Getter private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
     @Getter private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
     @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    private boolean belownameEnabled;
+    private boolean yellowNumberEnabled;
 
     private final UUID EMPTY_ID = new UUID(0, 0);
 
@@ -231,6 +233,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
                     target = redisPlayers.get(id.toString());
                     if (target == null) break;
                     target.setBelowName((int) message.get("belowname"));
+                    if (!belownameEnabled) return;
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                         viewer.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
                     }
@@ -239,6 +242,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
                     target = redisPlayers.get(id.toString());
                     if (target == null) break;
                     target.setYellowNumber((int) message.get("yellow-number"));
+                    if (!yellowNumberEnabled) return;
                     for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                         viewer.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
                     }
@@ -278,8 +282,8 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     private void join(RedisPlayer target) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             all.getScoreboard().registerTeam(target.getTeamName(), target.getTagPrefix(), target.getTagSuffix(), target.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(target.getNickname()), 2);
-            all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
-            all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
+            if (belownameEnabled) all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, target.getNickname(), target.getBelowName());
+            if (yellowNumberEnabled) all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, target.getNickname(), target.getYellowNumber());
             if (all.getVersion().getMinorVersion() < 8) continue;
             if (global == null) {
                 if (all.getServer().equals(target.getServer())) {
@@ -322,6 +326,8 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
 
     @Override
     public void load() {
+        belownameEnabled = TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.BELOW_NAME);
+        yellowNumberEnabled = TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.YELLOW_NUMBER);
         eventHandler = event -> {
             String identifier = event.getIdentifier();
             if (identifier.startsWith("%online_")) {
@@ -357,8 +363,8 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         sendMessage(json.toString());
         for (RedisPlayer redis : redisPlayers.values()) {
             p.getScoreboard().registerTeam(redis.getTeamName(), redis.getTagPrefix(), redis.getTagSuffix(), redis.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(redis.getNickname()), 2);
-            p.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), redis.getBelowName());
-            p.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, redis.getNickname(), redis.getYellowNumber());
+            if (belownameEnabled) p.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), redis.getBelowName());
+            if (yellowNumberEnabled) p.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, redis.getNickname(), redis.getYellowNumber());
             if (global == null) continue;
             if (shouldSee(p, redis.getServer(), redis.isVanished())) {
                 if (!p.getServer().equals(redis.getServer())) {
