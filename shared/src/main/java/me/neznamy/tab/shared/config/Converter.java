@@ -62,7 +62,7 @@ public class Converter {
         convertTeamOptions(oldConfig, newConfig, premiumConfig);
         convertYellowNumber(oldConfig, newConfig);
         convertBelowName(oldConfig, newConfig);
-        convertBossBar(bossBar, oldConfig, newConfig);
+        convertBossBar(bossBar, newConfig);
         if (premiumConfig != null) {
             convertScoreboard(newConfig, premiumConfig);
         } else {
@@ -174,7 +174,7 @@ public class Converter {
             newConfig.set("belowname-objective.disable-in-servers", oldConfig.getStringList("disable-features-in-servers.belowname", Collections.singletonList("disabledserver")));
     }
 
-    private void convertBossBar(ConfigurationFile bossBar, ConfigurationFile oldConfig, ConfigurationFile newConfig) {
+    private void convertBossBar(ConfigurationFile bossBar, ConfigurationFile newConfig) {
         newConfig.set("bossbar.enabled", bossBar.getBoolean("bossbar-enabled", false));
         newConfig.set("bossbar.toggle-command", bossBar.getString("bossbar-toggle-command", "/bossbar"));
         newConfig.set("bossbar.remember-toggle-choice", bossBar.getBoolean("remember-toggle-choice", false));
