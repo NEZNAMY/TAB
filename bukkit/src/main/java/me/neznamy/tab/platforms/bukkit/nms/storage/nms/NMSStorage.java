@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.chat.WrappedChatComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
@@ -254,7 +253,6 @@ public abstract class NMSStorage {
      * @return  converted component or {@code null} if {@code component} is {@code null}
      */
     public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
-        if (component instanceof WrappedChatComponent) return ((WrappedChatComponent) component).getOriginalComponent();
         return componentCache.get(component, clientVersion);
     }
 

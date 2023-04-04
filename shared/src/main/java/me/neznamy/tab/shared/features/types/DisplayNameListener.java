@@ -17,9 +17,7 @@ public interface DisplayNameListener {
      *          Player who is about to receive the packet
      * @param   id
      *          Affected entry
-     * @param   displayName
-     *          Display name in the packet
-     * @return  New display name to write to the packet
+     * @return  New display name to write to the packet, {@code null} for keeping it
      */
-    IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName);
+    IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id);
 }

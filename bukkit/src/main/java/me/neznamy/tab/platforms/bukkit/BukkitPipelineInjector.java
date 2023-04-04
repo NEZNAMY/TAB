@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.chat.WrappedChatComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage;
@@ -93,34 +92,31 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         for (Object nmsData : (List<?>) PacketPlayOutPlayerInfoStorage.PLAYERS.get(packet)) {
             GameProfile profile = (GameProfile) PlayerInfoDataStorage.PlayerInfoData_getProfile.invoke(nmsData);
             int gameMode = 0;
-            int latency = PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData);
-            IChatBaseComponent displayName = null;
+            Object displayName = null;
             if (actions.contains("UPDATE_GAME_MODE") || actions.contains("ADD_PLAYER")) {
                 gameMode = PacketPlayOutPlayerInfoStorage.gameMode2Int(PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData));
                 gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, profile.getId(), gameMode);
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_GameMode.set(nmsData, PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode));
             }
             if (actions.contains("UPDATE_DISPLAY_NAME") || actions.contains("ADD_PLAYER")) {
-                Object nmsComponent = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
-                displayName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
-                displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId(), displayName);
-                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_DisplayName.set(nmsData, nms.toNMSComponent(displayName, receiver.getVersion()));
+                displayName = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
+                IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
+                if (newDisplayName != null) displayName = nms.toNMSComponent(newDisplayName, receiver.getVersion());
+                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
             if (actions.contains("ADD_PLAYER")) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
             }
             if (nms.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-                boolean listed = PlayerInfoDataStorage.PlayerInfoData_Listed.getBoolean(nmsData);
-                Object chatSession = PlayerInfoDataStorage.PlayerInfoData_RemoteChatSession.get(nmsData);
                 updatedList.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(
                         profile.getId(),
                         profile,
-                        listed,
-                        latency,
+                        PlayerInfoDataStorage.PlayerInfoData_Listed.getBoolean(nmsData),
+                        PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData),
                         PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode),
-                        nms.toNMSComponent(displayName, receiver.getVersion()),
-                        chatSession));
+                        displayName,
+                        PlayerInfoDataStorage.PlayerInfoData_RemoteChatSession.get(nmsData)));
             }
         }
         if (nms.is1_19_3Plus()) {

@@ -86,14 +86,16 @@ public class FeatureManager {
         return gameMode;
     }
 
-    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id) {
+        IChatBaseComponent newDisplayName = null;
         for (TabFeature f : values) {
             if (!(f instanceof DisplayNameListener)) continue;
             long time = System.nanoTime();
-            displayName = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id, displayName);
+            IChatBaseComponent value = ((DisplayNameListener) f).onDisplayNameChange(packetReceiver, id);
+            if (value != null) newDisplayName = value;
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
         }
-        return displayName;
+        return newDisplayName;
     }
 
     public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {

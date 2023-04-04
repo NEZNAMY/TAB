@@ -129,9 +129,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
-                    IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
-                    displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
-                    item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
+                    if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
                 }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
@@ -144,9 +143,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    IChatBaseComponent displayName = IChatBaseComponent.deserialize(item.getDisplayName());
-                    displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid(), displayName);
-                    item.setDisplayName(displayName == null ? null : displayName.toString(receiver.getVersion()));
+                    IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
+                    if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
                 }
             }
         }

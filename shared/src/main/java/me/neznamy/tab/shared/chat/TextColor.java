@@ -187,20 +187,4 @@ public class TextColor {
         }
         return "#" + getHexCode();
     }
-
-    /**
-     * Reads the string as it appears in chat component and turns it into the color object.
-     * If the entered string is null, returns null.
-     * If it's prefixed with '#', it's considered as a hex code.
-     * Otherwise, it is considered being a lowercase legacy color.
-     *
-     * @param   string
-     *          string from color field in chat component
-     * @return  An instance from specified string or null if string is null
-     */
-    public static TextColor fromString(String string) {
-        if (string == null) return null;
-        if (string.startsWith("#")) return new TextColor(string.substring(1));
-        return new TextColor(EnumChatFormat.valueOf(string.toUpperCase()));
-    }
 }

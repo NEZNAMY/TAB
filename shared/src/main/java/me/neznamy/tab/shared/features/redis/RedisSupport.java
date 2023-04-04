@@ -413,11 +413,11 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id) {
         RedisPlayer packetPlayer = redisPlayers.get(id.toString());
         if (packetPlayer != null && !packetPlayer.isDisabledPlayerList()) {
             return IChatBaseComponent.optimizedComponent(packetPlayer.getTabFormat());
         }
-        return displayName;
+        return null;
     }
 }

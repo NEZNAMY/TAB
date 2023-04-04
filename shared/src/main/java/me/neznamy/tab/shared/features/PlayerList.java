@@ -233,13 +233,13 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
-        if (disabling || !antiOverrideTabList) return displayName;
+    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id) {
+        if (disabling || !antiOverrideTabList) return null;
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
         if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {
             return getTabFormat(packetPlayer, packetReceiver);
         }
-        return displayName;
+        return null;
     }
 
     @Override
