@@ -118,9 +118,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          {@code false} if property existed with the same raw value already.
      */
     private boolean setProperty(Refreshable feature, String identifier, String rawValue, String source, boolean exposeInExpansion) {
-        DynamicText p = (DynamicText) getProperty(identifier);
+        Property p = getProperty(identifier);
         if (p == null) {
-            properties.put(identifier, new DynamicText(exposeInExpansion ? identifier : null, feature, this, rawValue, source));
+            properties.put(identifier, new Property(exposeInExpansion ? identifier : null, feature, this, rawValue, source));
             return true;
         } else {
             if (!p.getOriginalRawValue().equals(rawValue)) {

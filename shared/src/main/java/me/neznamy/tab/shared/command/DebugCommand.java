@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.DynamicText;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
@@ -199,7 +199,7 @@ public class DebugCommand extends SubCommand {
         if (disabled) {
             sendMessage(sender, "&a" + property + ": &cDisabled in player's world/server");
         } else {
-            DynamicText pr = (DynamicText) analyzed.getProperty(property);
+            Property pr = analyzed.getProperty(property);
             String rawValue = EnumChatFormat.decolor(pr.getCurrentRawValue());
             String value = String.format((EnumChatFormat.color("&a%s: &e\"&r%s&r&e\" &7(Source: %s)")), property, rawValue, pr.getSource());
             sendRawMessage(sender, value);
