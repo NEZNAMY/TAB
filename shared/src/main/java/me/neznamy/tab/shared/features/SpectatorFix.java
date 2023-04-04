@@ -33,7 +33,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         Map<UUID, Integer> map = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == target || target.getGamemode() != 3) continue;
-            map.put(target.getUniqueId(), realGameMode ? target.getGamemode() : 1);
+            map.put(target.getTablistId(), realGameMode ? target.getGamemode() : 1);
         }
         if (!map.isEmpty()) viewer.getTabList().updateGameModes(map);
     }
@@ -51,7 +51,8 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
 
     @Override
     public void onJoin(TabPlayer p) {
-        updatePlayer(p, false);
+        TAB.getInstance().getCPUManager().runTaskLater(100, this, TabConstants.CpuUsageCategory.PLAYER_JOIN,
+                () -> updatePlayer(p, false));
     }
 
     @Override
