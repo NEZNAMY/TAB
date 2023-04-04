@@ -12,12 +12,14 @@ import me.neznamy.tab.shared.player.Scoreboard;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
-import net.fabricmc.loader.api.FabricLoader;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FabricTabPlayer extends TabPlayer {
+
+    private static final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
 
     @Getter private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
     @Getter private final TabList tabList = new FabricTabList(this);
@@ -29,7 +31,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     private static int getProtocolVersion(ServerPlayer player) {
-        if (FabricLoader.getInstance().isModLoaded("viafabric-mc119")) {
+        if (viaVersion) {
             return ProtocolVersion.getPlayerVersionVia(player.getUUID(), player.getGameProfile().getName());
         }
         return TAB.getInstance().getServerVersion().getNetworkId();
