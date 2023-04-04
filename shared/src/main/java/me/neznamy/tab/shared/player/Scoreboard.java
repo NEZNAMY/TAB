@@ -22,36 +22,33 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Scoreboard objectives player has registered */
     private final Set<String> registeredObjectives = new HashSet<>();
 
-    public void setScore(@NonNull String objective, @NonNull String player, int score) {
+    public void setScore(@NonNull String objective, @NonNull String playerName, int score) {
         if (!registeredObjectives.contains(objective)) {
-            TAB.getInstance().getErrorManager().printError("Tried to update score (" + player +
-                    ") without the existence of its requested objective '" + objective + "' to player " + this.player.getName());
+            error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
         }
-        setScore0(objective, player, score);
+        setScore0(objective, playerName, score);
     }
 
-    public void removeScore(@NonNull String objective, @NonNull String player) {
+    public void removeScore(@NonNull String objective, @NonNull String playerName) {
         if (!registeredObjectives.contains(objective)) {
-            TAB.getInstance().getErrorManager().printError("Tried to update score (" + player +
-                    ") without the existence of its requested objective '" + objective + "' to player " + this.player.getName());
+            error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
         }
-        removeScore0(objective, player);
+        removeScore0(objective, playerName);
     }
 
     public void registerObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
         if (!registeredObjectives.add(objectiveName)) {
-            TAB.getInstance().getErrorManager().printError("Tried to register duplicated objective " + objectiveName + " to player " + this.player.getName());
+            error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        if (player.getVersion().getMinorVersion() < 13) title = cutTo(title, 32);
-        registerObjective0(objectiveName, title, hearts);
+        registerObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
     public void unregisterObjective(@NonNull String objectiveName) {
         if (!registeredObjectives.remove(objectiveName)) {
-            TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing objective " + objectiveName + " for player " + this.player.getName());
+            error("Tried to unregister non-existing objective %s for player ", objectiveName);
             return;
         }
         unregisterObjective0(objectiveName);
@@ -59,26 +56,24 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public void updateObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
         if (!registeredObjectives.contains(objectiveName)) {
-            TAB.getInstance().getErrorManager().printError("Tried to modify non-existing objective " + objectiveName + " for player " + this.player.getName());
+            error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        if (player.getVersion().getMinorVersion() < 13) title = cutTo(title, 32);
-        updateObjective0(objectiveName, title, hearts);
+        updateObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
-    public void registerTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+    public void registerTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision,
+                             Collection<String> players, int options) {
         if (!registeredTeams.add(name)) {
-            TAB.getInstance().getErrorManager().printError("Tried to register duplicated team " + name + " to player " + this.player.getName());
+            error("Tried to register duplicated team %s to player ", name);
             return;
         }
-        if (player.getVersion().getMinorVersion() < 13) prefix = cutTo(prefix, 16);
-        if (player.getVersion().getMinorVersion() < 13) suffix = cutTo(suffix, 16);
-        registerTeam0(name, prefix, suffix, visibility, collision, players, options);
+        registerTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, players, options);
     }
 
     public void unregisterTeam(@NonNull String name) {
         if (!registeredTeams.remove(name)) {
-            TAB.getInstance().getErrorManager().printError("Tried to unregister non-existing team " + name + " for player " + this.player.getName());
+            error("Tried to unregister non-existing team %s for player ", name);
             return;
         }
         unregisterTeam0(name);
@@ -86,12 +81,14 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public void updateTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
         if (!registeredTeams.contains(name)) {
-            TAB.getInstance().getErrorManager().printError("Tried to modify non-existing team " + name + " for player " + this.player.getName());
+            error("Tried to modify non-existing team %s for player ", name);
             return;
         }
-        if (player.getVersion().getMinorVersion() < 13) prefix = cutTo(prefix, 16);
-        if (player.getVersion().getMinorVersion() < 13) suffix = cutTo(suffix, 16);
-        updateTeam0(name, prefix, suffix, visibility, collision, options);
+        updateTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, options);
+    }
+
+    private void error(String format, Object... args) {
+        TAB.getInstance().getErrorManager().printError(String.format(format, args) + player.getName());
     }
 
     /**
@@ -115,6 +112,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
      * @return  string cut to {@code length} characters
      */
     private String cutTo(String string, int length) {
+        if (player.getVersion().getMinorVersion() >= 13) return string;
         if (string == null) return "";
         String legacyText = string;
         if (string.contains("#")) {
@@ -146,7 +144,8 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public abstract void unregisterTeam0(@NonNull String name);
 
-    public abstract void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options);
+    public abstract void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility,
+                                     String collision, int options);
 
     public enum DisplaySlot { PLAYER_LIST, SIDEBAR, BELOW_NAME }
 }
