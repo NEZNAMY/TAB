@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_8;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_9;
@@ -21,7 +20,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -39,10 +37,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     /** Spigot check */
     private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
-
-    /** Component cache to save CPU when creating components */
-    private static final ComponentCache<IChatBaseComponent, BaseComponent[]> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> ComponentSerializer.parse(component.toString(clientVersion)));
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
     private Object handle;
@@ -101,7 +95,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public void sendMessage(IChatBaseComponent message) {
         if (spigot) {
-            getPlayer().spigot().sendMessage(componentCache.get(message, version));
+            getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(version)));
         } else {
             getPlayer().sendMessage(message.toLegacyText());
         }
