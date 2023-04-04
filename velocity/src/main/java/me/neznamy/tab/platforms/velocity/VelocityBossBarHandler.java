@@ -25,7 +25,7 @@ public class VelocityBossBarHandler implements BossBarHandler {
     public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
         BossBar bar = BossBar.bossBar(
-                VelocityTAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
                 progress,
                 BossBar.Color.valueOf(color.toString()),
                 BossBar.Overlay.valueOf(style.toString())
@@ -36,7 +36,7 @@ public class VelocityBossBarHandler implements BossBarHandler {
 
     @Override
     public void update(@NonNull UUID id, @NonNull String title) {
-        bossBars.get(id).name(VelocityTAB.getComponentCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
+        bossBars.get(id).name(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
     }
 
     @Override

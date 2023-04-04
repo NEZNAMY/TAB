@@ -44,7 +44,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(VelocityTAB.getComponentCache().get(message, getVersion()));
+        getPlayer().sendMessage(message.toAdventureComponent());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().sendPlayerListHeaderAndFooter(VelocityTAB.getComponentCache().get(header, version), VelocityTAB.getComponentCache().get(footer, version));
+        getPlayer().sendPlayerListHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 
     @Override

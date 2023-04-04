@@ -28,7 +28,7 @@ public class VelocityTabList extends SingleUpdateTabList {
     @Override
     public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
         if (player.getVersion().getMinorVersion() >= 8) {
-            getEntry(id).setDisplayName(VelocityTAB.getComponentCache().get(displayName, player.getVersion()));
+            getEntry(id).setDisplayName(displayName.toAdventureComponent());
         } else {
             /**
              * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
@@ -67,7 +67,7 @@ public class VelocityTabList extends SingleUpdateTabList {
                 .listed(entry.isListed())
                 .latency(entry.getLatency())
                 .gameMode(entry.getGameMode())
-                .displayName(VelocityTAB.getComponentCache().get(entry.getDisplayName(), player.getVersion()))
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
                 //.chatSession(new RemoteChatSession(entry.getChatSessionId(), entry.getProfilePublicKey())) // RemoteChatSession is in proxy module
                 .build());
     }

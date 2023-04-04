@@ -26,7 +26,7 @@ public class SpongeTabList extends SingleUpdateTabList {
     @Override
     public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
         player.getPlayer().tabList().entry(id).ifPresent(
-                entry -> entry.setDisplayName(Sponge8TAB.getAdventureCache().get(displayName, player.getVersion())));
+                entry -> entry.setDisplayName(displayName.toAdventureComponent()));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SpongeTabList extends SingleUpdateTabList {
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))
-                .displayName(Sponge8TAB.getAdventureCache().get(entry.getDisplayName(), player.getVersion()))
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
                 .build());
     }
 

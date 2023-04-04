@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -19,7 +20,7 @@ public class KryptonBossBarHandler implements BossBarHandler {
 
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
-        BossBar bar = BossBar.bossBar(Main.toComponent(title, player.getVersion()),
+        BossBar bar = BossBar.bossBar(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
                 progress,
                 BossBar.Color.valueOf(color.toString()),
                 BossBar.Overlay.valueOf(style.toString()));
@@ -28,7 +29,7 @@ public class KryptonBossBarHandler implements BossBarHandler {
     }
 
     public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).name(Main.toComponent(title, player.getVersion()));
+        bossBars.get(id).name(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
     }
 
     public void update(@NotNull UUID id, float progress) {

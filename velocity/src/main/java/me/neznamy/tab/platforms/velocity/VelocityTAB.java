@@ -15,15 +15,12 @@ import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
@@ -48,10 +45,6 @@ import java.util.Locale;
         authors = {TabConstants.PLUGIN_AUTHOR}
 )
 public class VelocityTAB extends ProxyPlatform {
-
-    /** Component cache to save CPU when creating components */
-    @Getter private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     /** ProxyServer instance */
     @Inject @Getter private ProxyServer server;

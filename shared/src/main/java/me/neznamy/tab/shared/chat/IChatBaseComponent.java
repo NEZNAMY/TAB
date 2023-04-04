@@ -6,11 +6,16 @@ import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A class representing the n.m.s.IChatBaseComponent class to make work with it much easier
@@ -98,18 +103,6 @@ public class IChatBaseComponent {
     public void addExtra(@NonNull IChatBaseComponent child) {
         if (extra == null) extra = new ArrayList<>();
         extra.add(child);
-    }
-
-    /**
-     * Deserializes string and returns created component. If provided string is null, returns null.
-     *
-     * @param   json
-     *          serialized string
-     * @return  Deserialized component or null if input is null
-     */
-    public static IChatBaseComponent deserialize(String json) {
-        if (json == null) return null;
-        return new DeserializedChatComponent(json);
     }
 
     /**
@@ -353,5 +346,27 @@ public class IChatBaseComponent {
      */
     public static IChatBaseComponent optimizedComponent(String text) {
         return stringCache.get(text, null);
+    }
+
+    /**
+     * Converts this component to adventure component. RGB conversion to
+     * legacy codes is managed by the platform using adventure components.
+     *
+     * @return  Adventure component from this component.
+     */
+    public Component toAdventureComponent() {
+        if (modifier.getHoverEvent() != null || modifier.getClickEvent() != null) {
+            // Chat stuff is present, just do this instead of adding tons of code for converting every action
+            return GsonComponentSerializer.gson().deserialize(toString(TAB.getInstance().getServerVersion()));
+        }
+        net.kyori.adventure.text.format.TextColor color = modifier.getColor() == null ? null :
+                net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getRgb());
+        Set<TextDecoration> decorations = new HashSet<>();
+        if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
+        if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
+        if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
+        if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
+        if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
+        return Component.text(text, color, decorations).children(getExtra().stream().map(IChatBaseComponent::toAdventureComponent).collect(Collectors.toList()));
     }
 }

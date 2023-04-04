@@ -52,7 +52,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(Sponge8TAB.getAdventureCache().get(message, getVersion()));
+        getPlayer().sendMessage(message.toAdventureComponent());
     }
 
     @Override
@@ -100,7 +100,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().tabList().setHeaderAndFooter(Sponge8TAB.getAdventureCache().get(header, version), Sponge8TAB.getAdventureCache().get(footer, version));
+        getPlayer().tabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 
     public void setPlayer(final ServerPlayer player) {

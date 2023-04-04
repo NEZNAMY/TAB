@@ -8,7 +8,6 @@ import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.shared.player.Scoreboard;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.kryptonmc.api.auth.ProfileProperty;
 import org.kryptonmc.api.entity.player.Player;
 import org.kryptonmc.krypton.entity.player.KryptonPlayer;
@@ -42,7 +41,7 @@ public class KryptonTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(GsonComponentSerializer.gson().deserialize(message.toString(version)));
+        getPlayer().sendMessage(message.toAdventureComponent());
     }
 
     @Override
@@ -84,9 +83,6 @@ public class KryptonTabPlayer extends TabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().sendPlayerListHeaderAndFooter(
-                GsonComponentSerializer.gson().deserialize(header.toString(version)),
-                GsonComponentSerializer.gson().deserialize(footer.toString(version))
-        );
+        getPlayer().sendPlayerListHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 }

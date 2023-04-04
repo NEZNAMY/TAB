@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.krypton;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.Scoreboard;
 import net.kyori.adventure.text.Component;
 import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective;
@@ -26,7 +27,7 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)0, Main.toComponent(title, player.getVersion()),
+        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)0, IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
                 hearts ? 1 : 0));
     }
 
@@ -37,7 +38,7 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)2, Main.toComponent(title, player.getVersion()),
+        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)2, IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
                 hearts ? 1 : 0));
     }
 
@@ -61,8 +62,8 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
 
     private PacketOutUpdateTeams.Parameters createParameters(String name, String prefix, String suffix, String visibility, String collision, int options) {
         return new PacketOutUpdateTeams.Parameters(Component.text(name), (byte)options, visibility, collision,
-                EnumChatFormat.lastColorsOf(prefix).ordinal(), Main.toComponent(prefix, player.getVersion()),
-                Main.toComponent(suffix, player.getVersion()));
+                EnumChatFormat.lastColorsOf(prefix).ordinal(), IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent(),
+                IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent());
     }
 
     @Override

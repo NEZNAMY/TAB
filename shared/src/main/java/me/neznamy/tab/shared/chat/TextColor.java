@@ -13,7 +13,7 @@ public class TextColor {
      * It is only initialized if colors are actually used to avoid
      * unnecessary memory allocations with string operations.
      */
-    private int rgb = -1;
+    @Getter private int rgb = -1;
 
     /** Closest legacy color to this color object. */
     private EnumChatFormat legacyColor;

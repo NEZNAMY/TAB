@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.kryptonmc.api.auth.GameProfile;
 import org.kryptonmc.api.world.GameMode;
@@ -33,7 +32,7 @@ public class KryptonTabList extends BulkUpdateTabList {
                         false,
                         0,
                         GameMode.SURVIVAL,
-                        entry.getValue() == null ? null : GsonComponentSerializer.gson().deserialize(entry.getValue().toString(player.getVersion())),
+                        entry.getValue() == null ? null : entry.getValue().toAdventureComponent(),
                         null
                 )).collect(Collectors.toList())
         ));
@@ -78,7 +77,7 @@ public class KryptonTabList extends BulkUpdateTabList {
                         entry.isListed(),
                         entry.getLatency(),
                         GameMode.values()[entry.getGameMode()],
-                        entry.getDisplayName() == null ? null : GsonComponentSerializer.gson().deserialize(entry.getDisplayName().toString(player.getVersion())),
+                        entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(),
                         null //TODO chat session?
                 )).collect(Collectors.toList())
         ));

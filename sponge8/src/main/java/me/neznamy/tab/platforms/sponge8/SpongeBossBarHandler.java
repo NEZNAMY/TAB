@@ -22,7 +22,7 @@ public class SpongeBossBarHandler implements BossBarHandler {
     @Override
     public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
-        BossBar bar = BossBar.bossBar(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+        BossBar bar = BossBar.bossBar(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
                 progress, BossBar.Color.valueOf(color.toString()), BossBar.Overlay.valueOf(style.toString()));
         bossBars.put(id, bar);
         player.getPlayer().showBossBar(bar);
@@ -30,7 +30,7 @@ public class SpongeBossBarHandler implements BossBarHandler {
 
     @Override
     public void update(@NonNull UUID id, @NonNull String title) {
-        bossBars.get(id).name(Sponge8TAB.getAdventureCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
+        bossBars.get(id).name(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
     }
 
     @Override

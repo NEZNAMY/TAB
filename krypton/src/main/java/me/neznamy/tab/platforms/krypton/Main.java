@@ -5,10 +5,8 @@ import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.kryptonmc.api.Server;
 import org.kryptonmc.api.command.CommandMeta;
@@ -82,11 +80,6 @@ public class Main {
         if (server.getPluginManager().isLoaded(TabConstants.Plugin.VIAVERSION.toLowerCase(Locale.ROOT)))
             return ProtocolVersion.getPlayerVersionVia(player.getUuid(), player.getProfile().name());
         return TAB.getInstance().getServerVersion().getNetworkId();
-    }
-
-    public static Component toComponent(String text, ProtocolVersion clientVersion) {
-        if (text == null || text.length() == 0) return Component.empty();
-        return GsonComponentSerializer.gson().deserialize(IChatBaseComponent.optimizedComponent(text).toString(clientVersion));
     }
 
     public static class KryptonTABCommand implements SimpleCommand {

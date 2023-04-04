@@ -5,13 +5,10 @@ import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.bstats.charts.SimplePie;
@@ -39,9 +36,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sponge8TAB {
-
-    @Getter private static final ComponentCache<IChatBaseComponent, Component> adventureCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> GsonComponentSerializer.gson().deserialize(component.toString(clientVersion)));
 
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;

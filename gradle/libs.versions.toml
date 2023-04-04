@@ -48,6 +48,7 @@ slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j"}
 adventureMiniMessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "minimessage" }
 adventureApi = { group = "net.kyori", name = "adventure-api", version.ref = "minimessage" }
 adventureLegacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "minimessage" }
+adventureGson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "minimessage" }
 
 # General
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
