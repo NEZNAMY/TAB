@@ -22,7 +22,7 @@ public class PacketPlayOutScoreboardDisplayObjectiveStorage {
         try {
             return CONSTRUCTOR.newInstance(slot, NMSStorage.getInstance().newScoreboardObjective(objective));
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

@@ -105,7 +105,7 @@ public class DataWatcher implements EntityData {
             }
             return nmsWatcher;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

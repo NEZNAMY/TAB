@@ -176,7 +176,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         try {
             sendPacket(PacketPlayOutPlayerListHeaderFooterStorage.build(header, footer, version));
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -188,7 +188,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
                 updateEntityMetadata(entityId, data);
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -202,7 +202,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
                 sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, data.build(), true));
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -211,7 +211,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         try {
             sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -227,7 +227,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
                 }
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

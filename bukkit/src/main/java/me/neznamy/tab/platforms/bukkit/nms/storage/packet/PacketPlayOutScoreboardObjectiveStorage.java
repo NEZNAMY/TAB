@@ -56,7 +56,7 @@ public class PacketPlayOutScoreboardObjectiveStorage {
             METHOD.set(nmsPacket, action);
             return nmsPacket;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

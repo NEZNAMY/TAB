@@ -92,7 +92,7 @@ public class PacketPlayOutPlayerInfoStorage {
             PLAYERS.set(packet, players);
             return packet;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

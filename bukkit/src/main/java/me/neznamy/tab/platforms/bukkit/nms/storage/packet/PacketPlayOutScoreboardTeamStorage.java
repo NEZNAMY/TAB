@@ -106,7 +106,7 @@ public class PacketPlayOutScoreboardTeamStorage {
             }
             return CONSTRUCTOR.newInstance(team, 0);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -120,7 +120,7 @@ public class PacketPlayOutScoreboardTeamStorage {
                 return CONSTRUCTOR.newInstance(team, 1);
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -140,7 +140,7 @@ public class PacketPlayOutScoreboardTeamStorage {
             }
             return CONSTRUCTOR.newInstance(team, 2);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

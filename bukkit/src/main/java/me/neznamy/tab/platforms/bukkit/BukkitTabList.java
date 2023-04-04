@@ -33,7 +33,7 @@ public class BukkitTabList extends BulkUpdateTabList {
             try {
                 player.sendPacket(PacketPlayOutPlayerInfoStorage.newClientboundPlayerInfoRemovePacket.newInstance(new ArrayList<>(entries)));
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         } else {
             //1.19.2-

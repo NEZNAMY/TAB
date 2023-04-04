@@ -24,7 +24,7 @@ public class ComponentCache<K, V> {
             cache.put(key, value);
             return value;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }
