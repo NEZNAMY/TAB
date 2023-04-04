@@ -10,7 +10,7 @@ and is available to everyone for free. However, customer support is only provide
 customers who have purchased the plugin (see [Customer support](#customer-support)).  
 
 # Compiling
-Compilation requires JDK 8 and up.  
+Compilation requires JDK 17 and up.  
 To compile the plugin, run `./gradlew build` from the terminal.  
 Once the plugin compiles, grab the jar from `/jar/build/libs/` folder.  
 The universal jar contains all modules for all supported platforms.
