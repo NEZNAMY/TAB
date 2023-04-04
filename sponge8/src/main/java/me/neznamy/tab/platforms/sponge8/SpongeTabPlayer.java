@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.player.AdventureBossBarHandler;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -26,7 +26,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     @Getter private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     @Getter private final TabList tabList = new SpongeTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new SpongeBossBarHandler(this);
+    @Getter private final AdventureBossBarHandler bossBarHandler = new AdventureBossBarHandler(getPlayer());
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
@@ -105,5 +105,6 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     public void setPlayer(final ServerPlayer player) {
         this.player = player;
+        bossBarHandler.setAudience(player);
     }
 }

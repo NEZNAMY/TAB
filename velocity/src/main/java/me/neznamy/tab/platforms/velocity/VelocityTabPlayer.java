@@ -4,6 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.player.AdventureBossBarHandler;
 import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.Skin;
@@ -19,7 +20,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Getter private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
     @Getter private final TabList tabList = new VelocityTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new VelocityBossBarHandler(this);
+    @Getter private final BossBarHandler bossBarHandler = new AdventureBossBarHandler(getPlayer());
 
     /**
      * Constructs new instance for given player

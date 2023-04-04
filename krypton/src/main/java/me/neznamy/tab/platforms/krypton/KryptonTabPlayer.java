@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.krypton;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.player.AdventureBossBarHandler;
 import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.TabPlayer;
@@ -19,7 +20,7 @@ public class KryptonTabPlayer extends TabPlayer {
 
     @Getter private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
     @Getter private final TabList tabList = new KryptonTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new KryptonBossBarHandler(this);
+    @Getter private final BossBarHandler bossBarHandler = new AdventureBossBarHandler(getPlayer());
 
     public KryptonTabPlayer(Player player, int protocolVersion) {
         super(player, player.getUuid(), player.getProfile().name(), "N/A", player.getWorld().getName(), protocolVersion, true);
