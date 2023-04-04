@@ -13,7 +13,7 @@ public class TextColor {
      * It is only initialized if colors are actually used to avoid
      * unnecessary memory allocations with string operations.
      */
-    @Getter private int rgb = -1;
+    private int rgb = -1;
 
     /** Closest legacy color to this color object. */
     private EnumChatFormat legacyColor;
@@ -149,6 +149,16 @@ public class TextColor {
     public int getBlue() {
         if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
         return rgb & 0xFF;
+    }
+
+    /**
+     * Returns {@code rgb} value
+     *
+     * @return  rgb value
+     */
+    public int getRgb() {
+        if (rgb == -1) rgb = Integer.parseInt(hexCode, 16);
+        return rgb;
     }
 
     /**
