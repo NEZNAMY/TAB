@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.shared.util.ComponentCache;
-import me.neznamy.tab.platforms.bungeecord.bossbar.BungeeBossBarHandler;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;

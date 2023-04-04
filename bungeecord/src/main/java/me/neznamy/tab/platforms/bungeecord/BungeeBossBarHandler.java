@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bungeecord.bossbar;
+package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,6 @@ import me.neznamy.tab.shared.player.BossBarHandler;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import net.md_5.bungee.protocol.packet.BossBar;
 
 import java.util.HashMap;
