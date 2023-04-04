@@ -3,7 +3,7 @@ dependencies {
     api(libs.jsonSimple) {
         exclude("junit", "junit")
     }
-    compileOnlyApi(libs.snakeyaml)
+    api(libs.snakeyaml)
     api(libs.yamlAssist)
     compileOnlyApi(libs.adventureMiniMessage)
     compileOnlyApi(libs.adventureApi)
