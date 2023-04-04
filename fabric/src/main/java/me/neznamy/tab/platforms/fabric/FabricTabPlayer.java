@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabList;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +47,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendSystemMessage(Component.Serializer.fromJson(message.toString(version)));
+        getPlayer().sendSystemMessage(FabricTAB.toComponent(message, getVersion()));
     }
 
     @Override
@@ -95,8 +94,9 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        Component headerComponent = Component.Serializer.fromJson(header.toString(version));
-        Component footerComponent = Component.Serializer.fromJson(footer.toString(version));
-        getPlayer().connection.send(new ClientboundTabListPacket(headerComponent, footerComponent));
+        getPlayer().connection.send(new ClientboundTabListPacket(
+                FabricTAB.toComponent(header, getVersion()),
+                FabricTAB.toComponent(footer, getVersion()))
+        );
     }
 }

@@ -10,9 +10,12 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.util.ComponentCache;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -20,13 +23,15 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.Nullable;
 
 public class FabricTAB implements DedicatedServerModInitializer {
 
-    @Getter
-    private MinecraftServer server;
+    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(1000,
+            (text, version) -> Component.Serializer.fromJson(text.toString(version)));
+    @Getter private MinecraftServer server;
 
     @Override
     public void onInitializeServer() {
@@ -50,6 +55,11 @@ public class FabricTAB implements DedicatedServerModInitializer {
     private void onServerStop(MinecraftServer server) {
         TAB.getInstance().unload();
         this.server = null;
+    }
+
+    public static Component toComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
+        if (component == null) return null;
+        return componentCache.get(component, clientVersion);
     }
 
     private void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {

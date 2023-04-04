@@ -21,6 +21,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
+    private static final ObjectiveCriteria dummyCriteria = ObjectiveCriteria.DUMMY;
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
@@ -28,39 +29,66 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     @Override
     public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
-        player.sendPacket(new ClientboundSetDisplayObjectivePacket(slot.ordinal(),
-                new Objective(dummyScoreboard, objective, null, Component.empty(), null)));
+        player.sendPacket(
+                new ClientboundSetDisplayObjectivePacket(
+                        slot.ordinal(),
+                        new Objective(
+                                dummyScoreboard,
+                                objective,
+                                dummyCriteria,
+                                Component.empty(),
+                                ObjectiveCriteria.RenderType.INTEGER
+                        )
+                )
+        );
     }
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new ClientboundSetObjectivePacket(
-                new Objective(
-                        dummyScoreboard,
-                        objectiveName,
-                        null,
-                        Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion())),
-                        hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
-                ), 0
-        ));
+        player.sendPacket(
+                new ClientboundSetObjectivePacket(
+                        new Objective(
+                            dummyScoreboard,
+                            objectiveName,
+                            dummyCriteria,
+                            FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                            hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
+                        ),
+                        ClientboundSetObjectivePacket.METHOD_ADD
+                )
+        );
     }
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPacket(new ClientboundSetObjectivePacket(new Objective(dummyScoreboard, objectiveName, null, Component.empty(), null), 1));
+        player.sendPacket(
+                new ClientboundSetObjectivePacket(
+                        new Objective(
+                                dummyScoreboard,
+                                objectiveName,
+                                dummyCriteria,
+                                Component.empty(),
+                                ObjectiveCriteria.RenderType.INTEGER
+                        ),
+                        ClientboundSetObjectivePacket.METHOD_REMOVE
+                )
+        );
     }
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new ClientboundSetObjectivePacket(
-                new Objective(
-                        dummyScoreboard,
-                        objectiveName,
-                        null,
-                        Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion())),
-                        hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
-                ), 2
-        ));
+        player.sendPacket(
+                new ClientboundSetObjectivePacket(
+                        new Objective(
+                            dummyScoreboard,
+                            objectiveName,
+                            dummyCriteria,
+                            FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                            hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
+                        ),
+                        ClientboundSetObjectivePacket.METHOD_CHANGE
+                )
+        );
     }
 
     @Override
@@ -74,9 +102,9 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         if (visibility != null)
             team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
         if (prefix != null)
-            team.setPlayerPrefix(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(prefix).toString(player.getVersion())));
+            team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         if (suffix != null)
-            team.setPlayerSuffix(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion())));
+            team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
         player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
     }
@@ -97,9 +125,9 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         if (visibility != null)
             team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
         if (prefix != null)
-            team.setPlayerPrefix(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(prefix).toString(player.getVersion())));
+            team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         if (suffix != null)
-            team.setPlayerSuffix(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion())));
+            team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
     }
 

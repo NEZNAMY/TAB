@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,6 +69,7 @@ public final class FabricPlatform extends BackendPlatform {
     public void sendConsoleMessage(String message, boolean translateColors) {
         message = "[TAB] " + message;
         if (translateColors) message = EnumChatFormat.color(message);
-        plugin.getServer().sendSystemMessage(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
+        plugin.getServer().sendSystemMessage(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(message),
+                TAB.getInstance().getServerVersion()));
     }
 }
