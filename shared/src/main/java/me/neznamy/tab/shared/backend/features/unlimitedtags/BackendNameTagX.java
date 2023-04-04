@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.backend.features.unlimitedtags;
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.features.types.GameModeListener;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -10,7 +11,7 @@ import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 
 import java.util.List;
 
-public abstract class BackendNameTagX extends NameTagX {
+public abstract class BackendNameTagX extends NameTagX implements GameModeListener {
 
     /** Vehicle manager reference */
     @Getter private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
@@ -22,7 +23,6 @@ public abstract class BackendNameTagX extends NameTagX {
         super(BackendArmorStandManager::new);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER, vehicleManager);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_PACKET_LISTENER, packetListener);
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER, new GameModeRefresher(this));
     }
 
     /**
@@ -45,7 +45,6 @@ public abstract class BackendNameTagX extends NameTagX {
 
     @Override
     public void load() {
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder("%gamemode%", 500, p -> ((TabPlayer)p).getGamemode());
         super.load();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isPlayerDisabled(all)) continue;
@@ -151,6 +150,13 @@ public abstract class BackendNameTagX extends NameTagX {
             if (viewer.getWorld().equals(from)) {
                 getArmorStandManager(p).destroy((BackendTabPlayer) viewer);
             }
+        }
+    }
+
+    @Override
+    public void onGameModeChange(TabPlayer player) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            getArmorStandManager(player).updateMetadata((BackendTabPlayer) viewer);
         }
     }
 

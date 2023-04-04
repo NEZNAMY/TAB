@@ -125,9 +125,6 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         if (packet instanceof PlayerListItemUpdate) {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
-                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_GAMEMODE)) {
-                    item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
-                }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME)) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
@@ -139,12 +136,12 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         } else {
             PlayerListItem listItem = (PlayerListItem) packet;
             for (PlayerListItem.Item item : listItem.getItems()) {
-                if (listItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
-                    item.setGamemode(TAB.getInstance().getFeatureManager().onGameModeChange(receiver, item.getUuid(), item.getGamemode()));
-                }
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
                 }
             }
         }

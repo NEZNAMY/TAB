@@ -137,17 +137,12 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public int onGameModeChange(TabPlayer packetReceiver, UUID id, int gameMode) {
-        TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (packetPlayer != null && packetPlayer == packetReceiver) {
-            // Player changed gamemode, update on all servers
-            for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                if (!packetPlayer.getServer().equals(viewer.getServer())) {
-                    viewer.getTabList().updateGameMode(id, displayAsSpectators ? 3 : gameMode);
-                }
+    public void onGameModeChange(TabPlayer player) {
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (!player.getServer().equals(viewer.getServer())) {
+                viewer.getTabList().updateGameMode(player.getTablistId(), displayAsSpectators ? 3 : player.getGamemode());
             }
         }
-        return gameMode;
     }
 
     @Override

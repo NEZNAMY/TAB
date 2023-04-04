@@ -193,7 +193,6 @@ public class TabConstants {
         public static final String UNLIMITED_NAME_TAGS = "NameTagX";
         public static final String UNLIMITED_NAME_TAGS_PACKET_LISTENER = "nametagx-packet";
         public static final String UNLIMITED_NAME_TAGS_VEHICLE_REFRESHER = "nametagx-vehicle";
-        public static final String UNLIMITED_NAME_TAGS_GAMEMODE_LISTENER = "nametagx-gamemode";
 
         //Bukkit only
         public static final String PER_WORLD_PLAYER_LIST = "PerWorldPlayerList";
@@ -270,6 +269,7 @@ public class TabConstants {
         public static final String LUCKPERMS_PREFIX = "%luckperms-prefix%";
         public static final String LUCKPERMS_SUFFIX = "%luckperms-suffix%";
         public static final String COUNTDOWN = "%countdown%";
+        public static final String GAMEMODE = "%gamemode%";
 
         // Placeholders for internal use
         public static final String COLLISION = "%collision%";

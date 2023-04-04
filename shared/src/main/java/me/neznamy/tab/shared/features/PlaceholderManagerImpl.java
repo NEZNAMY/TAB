@@ -120,6 +120,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (placeholder.update(all)) {
                 if (placeholder.getIdentifier().equals(TabConstants.Placeholder.VANISHED)) TAB.getInstance().getFeatureManager().onVanishStatusChange(all);
+                if (placeholder.getIdentifier().equals(TabConstants.Placeholder.GAMEMODE)) TAB.getInstance().getFeatureManager().onGameModeChange(all);
                 update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
                 somethingChanged = true;
             }

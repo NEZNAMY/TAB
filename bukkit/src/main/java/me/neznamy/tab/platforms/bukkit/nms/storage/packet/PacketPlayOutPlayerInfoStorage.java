@@ -105,15 +105,6 @@ public class PacketPlayOutPlayerInfoStorage {
         }
     }
 
-    public static int gameMode2Int(Object gameMode) {
-        switch (String.valueOf(gameMode)) {
-            case "CREATIVE": return 1;
-            case "ADVENTURE": return 2;
-            case "SPECTATOR": return 3;
-            default: return 0;
-        }
-    }
-
     public static class PlayerInfoDataStorage {
 
         public static Class<?> CLASS;

@@ -48,6 +48,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
         manager.registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count());
         manager.registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
         manager.registerServerPlaceholder(TabConstants.Placeholder.NON_STAFF_ONLINE, 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
+        manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> ((TabPlayer)p).getGamemode());
         PermissionPlugin plugin = TAB.getInstance().getGroupManager().getPlugin();
         if (plugin instanceof LuckPerms) {
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, 1000,

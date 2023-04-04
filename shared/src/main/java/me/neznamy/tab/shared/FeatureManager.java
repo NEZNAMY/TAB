@@ -76,14 +76,13 @@ public class FeatureManager {
         }
     }
 
-    public int onGameModeChange(TabPlayer packetReceiver, UUID id, int gameMode) {
+    public void onGameModeChange(TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof GameModeListener)) continue;
             long time = System.nanoTime();
-            gameMode = ((GameModeListener) f).onGameModeChange(packetReceiver, id, gameMode);
+            ((GameModeListener) f).onGameModeChange(player);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
         }
-        return gameMode;
     }
 
     public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id) {
@@ -257,6 +256,9 @@ public class FeatureManager {
         values = features.values().toArray(new TabFeature[0]);
         if (featureHandler instanceof VanishListener) {
             TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VANISHED));
+        }
+        if (featureHandler instanceof GameModeListener) {
+            TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GAMEMODE));
         }
     }
 

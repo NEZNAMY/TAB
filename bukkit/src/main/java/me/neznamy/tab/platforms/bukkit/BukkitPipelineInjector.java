@@ -91,13 +91,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         List<Object> updatedList = new ArrayList<>();
         for (Object nmsData : (List<?>) PacketPlayOutPlayerInfoStorage.PLAYERS.get(packet)) {
             GameProfile profile = (GameProfile) PlayerInfoDataStorage.PlayerInfoData_getProfile.invoke(nmsData);
-            int gameMode = 0;
             Object displayName = null;
-            if (actions.contains("UPDATE_GAME_MODE") || actions.contains("ADD_PLAYER")) {
-                gameMode = PacketPlayOutPlayerInfoStorage.gameMode2Int(PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData));
-                gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, profile.getId(), gameMode);
-                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_GameMode.set(nmsData, PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode));
-            }
             if (actions.contains("UPDATE_DISPLAY_NAME") || actions.contains("ADD_PLAYER")) {
                 displayName = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
@@ -114,7 +108,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                         profile,
                         PlayerInfoDataStorage.PlayerInfoData_Listed.getBoolean(nmsData),
                         PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData),
-                        PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode),
+                        PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData),
                         displayName,
                         PlayerInfoDataStorage.PlayerInfoData_RemoteChatSession.get(nmsData)));
             }
