@@ -44,7 +44,7 @@ public class NameTagCommand extends SubCommand {
     private void preview(TabPlayer sender, TabPlayer target, boolean silent) {
         if (target == null) return;
 
-        NameTagX nameTagX = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+        NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
         if (nameTagX == null) {
             sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
             return;

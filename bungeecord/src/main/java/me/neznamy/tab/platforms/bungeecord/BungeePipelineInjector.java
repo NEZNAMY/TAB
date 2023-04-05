@@ -101,14 +101,14 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
         Collection<String> col = Lists.newArrayList(packet.getPlayers());
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
             if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
                     !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(sorting.getShortTeamName(p))) {
                 logTeamOverride(packet.getName(), p.getName(), sorting.getShortTeamName(p));
                 col.remove(p.getNickname());
             }
         }
-        RedisBungeeSupport redis = (RedisBungeeSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        RedisBungeeSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) {
             for (RedisPlayer p : redis.getRedisPlayers().values()) {
                 if (col.contains(p.getNickname()) && !packet.getName().equals(p.getTeamName())) {

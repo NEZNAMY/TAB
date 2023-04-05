@@ -235,7 +235,7 @@ public class TAB extends TabAPI {
      * @return  group manager instance
      */
     public GroupManager getGroupManager() {
-        return (GroupManager) featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
+        return featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
     }
 
     /**
@@ -249,23 +249,23 @@ public class TAB extends TabAPI {
 
     @Override
     public BossBarManager getBossBarManager() {
-        return (BossBarManager) featureManager.getFeature(TabConstants.Feature.BOSS_BAR);
+        return featureManager.getFeature(TabConstants.Feature.BOSS_BAR);
     }
 
     @Override
     public ScoreboardManager getScoreboardManager() {
-        return (ScoreboardManager) featureManager.getFeature(TabConstants.Feature.SCOREBOARD);
+        return featureManager.getFeature(TabConstants.Feature.SCOREBOARD);
     }
 
     @Override
     public TeamManager getTeamManager() {
-        if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return (NameTag) featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
-        return (NameTag) featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+        if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
+        return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
     }
 
     @Override
     public PlaceholderManagerImpl getPlaceholderManager() {
-        return (PlaceholderManagerImpl) featureManager.getFeature(TabConstants.Feature.PLACEHOLDER_MANAGER);
+        return featureManager.getFeature(TabConstants.Feature.PLACEHOLDER_MANAGER);
     }
 
     @Override
@@ -287,7 +287,7 @@ public class TAB extends TabAPI {
 
     @Override
     public HeaderFooterManager getHeaderFooterManager() {
-        return (HeaderFooterManager) featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
+        return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
     }
 
     public ConfigurationFile getConfig() {
@@ -301,7 +301,7 @@ public class TAB extends TabAPI {
 
     @Override
     public TablistFormatManager getTablistFormatManager() {
-        return (TablistFormatManager) featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
+        return featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
     }
 
     public void debug(String message) {

@@ -68,7 +68,7 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, getTeamName(analyzed));
         sendMessage(sender, getTeamNameNote(analyzed));
         if (tab.getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {
-            PlayerList playerlist = (PlayerList) tab.getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+            PlayerList playerlist = tab.getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
             boolean disabledPlayerlist = playerlist.isDisabled(analyzed.getServer(), analyzed.getWorld());
             showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, disabledPlayerlist);
             showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, disabledPlayerlist);
@@ -111,7 +111,7 @@ public class DebugCommand extends SubCommand {
      * @return  sorting type
      */
     private String getSortingType() {
-        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+        Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting != null) {
             return sorting.typesToString();
         } else {
@@ -141,7 +141,7 @@ public class DebugCommand extends SubCommand {
      * @return  team name of specified player
      */
     private String getTeamName(TabPlayer analyzed) {
-        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+        Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
                 ((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
@@ -159,7 +159,7 @@ public class DebugCommand extends SubCommand {
      * @return  team name note of specified player
      */
     private String getTeamNameNote(TabPlayer analyzed) {
-        Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+        Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
                 ((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {

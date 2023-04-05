@@ -134,7 +134,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
                 continue;
             }
-            Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
             if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
                     !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(sorting.getShortTeamName(p))) {
                 logTeamOverride(teamName, p.getName(), sorting.getShortTeamName(p));

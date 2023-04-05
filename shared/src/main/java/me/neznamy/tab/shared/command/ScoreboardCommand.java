@@ -126,7 +126,7 @@ public class ScoreboardCommand extends SubCommand {
     }
 
     private ScoreboardManagerImpl getScoreboardManager() {
-        return (ScoreboardManagerImpl) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
+        return TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
     }
 
     @Override

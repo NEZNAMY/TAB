@@ -34,14 +34,14 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     @Getter private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
     @Getter private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
-    private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     @Getter private PlayerList playerList;
     @Getter private final String featureName = "Layout";
     @Getter private final String refreshDisplayName = "Switching layouts";
 
     @Override
     public void load() {
-        playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+        playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);

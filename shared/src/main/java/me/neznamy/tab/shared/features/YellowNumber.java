@@ -30,7 +30,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     /** Display type, true for HEARTS, false for INTEGER */
     private final boolean displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) || "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue);
 
-    private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     /**
      * Constructs new instance and sends debug message that feature loaded.

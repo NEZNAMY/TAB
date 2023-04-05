@@ -32,7 +32,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
     protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
-    private final LayoutManager layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+    private final LayoutManager layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
 
     /**
@@ -127,7 +127,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
 
     @Override
     public void load() {
-        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             if (isDisabled(all.getServer(), all.getWorld())) {

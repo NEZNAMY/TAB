@@ -22,7 +22,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     protected final boolean invisibleNameTags = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.invisible-nametags", false);
     private final boolean collisionRule = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.enable-collision", true);
     private final boolean canSeeFriendlyInvisibles = TAB.getInstance().getConfig().getBoolean("scoreboard-teams.can-see-friendly-invisibles", false);
-    @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    @Getter private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     @Getter private final CollisionManager collisionManager = new CollisionManager(this, collisionRule);
     @Getter private final int teamOptions = canSeeFriendlyInvisibles ? 2 : 0;
 
@@ -46,7 +46,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     @Override
     public void load() {
         // RedisSupport is instantiated after NameTags, so must be loaded after
-        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (accepting18x) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_VISIBILITY, new VisibilityRefresher(this));
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS_COLLISION, collisionManager);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {

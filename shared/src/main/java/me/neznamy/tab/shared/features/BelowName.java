@@ -27,7 +27,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
     private final TextRefresher textRefresher = new TextRefresher(this);
 
-    private final RedisSupport redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
 
     public BelowName() {
         super("belowname-objective");

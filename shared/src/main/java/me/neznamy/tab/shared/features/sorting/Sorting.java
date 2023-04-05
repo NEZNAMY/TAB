@@ -85,8 +85,8 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     public void load() {
         // All of these features are instantiated after this one, so they must be detected later
         nameTags = (NameTag) TAB.getInstance().getTeamManager();
-        layout = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
-        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        layout = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             constructTeamNames(all);
         }

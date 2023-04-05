@@ -39,14 +39,12 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     protected final UUID proxy = UUID.randomUUID();
 
     /** Features this one hooks into */
-    protected final GlobalPlayerList global = (GlobalPlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
-    @Getter private final PlayerList playerList = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+    protected final GlobalPlayerList global = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST);
+    @Getter private final PlayerList playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
     @Getter private final NameTag nameTags = (NameTag) TAB.getInstance().getTeamManager();
-    @Getter private final Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+    @Getter private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     private boolean belownameEnabled;
     private boolean yellowNumberEnabled;
-
-    private final UUID EMPTY_ID = new UUID(0, 0);
 
     private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
 

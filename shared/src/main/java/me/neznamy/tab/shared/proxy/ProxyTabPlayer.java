@@ -77,7 +77,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
             args.add(entry.getKey());
             args.add(entry.getValue());
         }
-        NameTagX nametagx = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+        NameTagX nametagx = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
         boolean enabled = nametagx != null && !nametagx.getDisabledUnlimitedServers().contains(getServer());
         args.add(enabled);
         if (enabled) {

@@ -271,7 +271,8 @@ public class FeatureManager {
         return features.containsKey(name);
     }
 
-    public TabFeature getFeature(String name) {
-        return features.get(name);
+    @SuppressWarnings("unchecked")
+    public <T extends TabFeature> T getFeature(String name) {
+        return (T) features.get(name);
     }
 }
