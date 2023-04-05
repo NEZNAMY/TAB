@@ -114,8 +114,7 @@ public class RedisPlayer {
     }
 
     public TabListEntry getEntry() {
-        return new TabListEntry(uniqueId, nickname, skin, true, 0, 0,
-                disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat), null);
+        return new TabListEntry(uniqueId, nickname, skin, true, 0, 0, disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat));
     }
 
     public void setServer(String server) {

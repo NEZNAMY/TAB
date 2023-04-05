@@ -11,7 +11,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Feature handler for global PlayerList feature
@@ -130,8 +129,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 true,
                 p.getPing(),
                 vanishedAsSpectators && p.isVanished() ? 3 : p.getGamemode(),
-                viewer.getVersion().getMinorVersion() >= 8 ? format : null,
-                null
+                viewer.getVersion().getMinorVersion() >= 8 ? format : null
         );
     }
 

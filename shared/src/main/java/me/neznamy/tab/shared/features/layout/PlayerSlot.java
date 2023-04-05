@@ -40,8 +40,7 @@ public class PlayerSlot {
                     true,
                     player.getPing(),
                     0,
-                    playerList == null ? new IChatBaseComponent(player.getName()) : playerList.getTabFormat(player, p),
-                    null
+                    playerList == null ? new IChatBaseComponent(player.getName()) : playerList.getTabFormat(player, p)
             );
         } else {
             data = new TabListEntry(
@@ -51,8 +50,7 @@ public class PlayerSlot {
                     true,
                     layout.getManager().getEmptySlotPing(),
                     0,
-                    new IChatBaseComponent(text),
-                    null
+                    new IChatBaseComponent(text)
             );
         }
         return data;

@@ -39,8 +39,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 true,
                 ping,
                 0,
-                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet()), // maybe just get is fine?
-                null
+                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet()) // maybe just get is fine?
         );
     }
 }

@@ -37,7 +37,7 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
             list.add(slot.createEntry(p));
         }
         for (int slot : emptySlots) {
-            list.add(new TabListEntry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), 0, new IChatBaseComponent(""), null));
+            list.add(new TabListEntry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.getTabList().addEntries(list);
