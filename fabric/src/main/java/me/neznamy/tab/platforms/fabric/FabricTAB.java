@@ -32,7 +32,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(1000,
             (text, version) -> Component.Serializer.fromJson(text.toString(version)));
-    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded(FabricTabConstants.PERMISSIONS_API);
+    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
 
     @Getter private static MinecraftServer server;
 
