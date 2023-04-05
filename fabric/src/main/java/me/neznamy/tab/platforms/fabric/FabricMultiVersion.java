@@ -62,10 +62,10 @@ public class FabricMultiVersion {
         EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = action == FabricTabList.Action.ADD_PLAYER ?
                 EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class) :
                 EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.valueOf(action.name()));
-        return setEntries(new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList()), entries);
+        return setEntries(new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList()), list);
     }
 
-    // 1.19 - 1.19.2
+    // 1.19.2-
     /*public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
         // 1.19+
         List<?> list = entries.stream().map(entry ->
