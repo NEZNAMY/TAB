@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
 import java.util.Collection;
+
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
@@ -49,7 +50,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendSystemMessage(FabricTAB.toComponent(message, getVersion()));
+        FabricMultiVersion.sendMessage(this, message);
     }
 
     @Override

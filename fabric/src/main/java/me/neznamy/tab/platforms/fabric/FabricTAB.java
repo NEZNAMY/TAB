@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
@@ -35,30 +34,30 @@ public class FabricTAB implements DedicatedServerModInitializer {
             (text, version) -> Component.Serializer.fromJson(text.toString(version)));
     private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded(FabricTabConstants.PERMISSIONS_API);
 
-    @Getter private MinecraftServer server;
+    @Getter private static MinecraftServer server;
 
     @Override
     public void onInitializeServer() {
         ProtocolVersion protocolVersion = ProtocolVersion.fromNetworkId(SharedConstants.getProtocolVersion());
         String version = SharedConstants.getCurrentVersion().getName();
         File folder = FabricLoader.getInstance().getConfigDir().resolve("tab").toFile();
-        TAB.setInstance(new TAB(new FabricPlatform(this), protocolVersion, version, folder, null));
+        TAB.setInstance(new TAB(new FabricPlatform(), protocolVersion, version, folder, null));
 
         new FabricEventListener().register();
 
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStart);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onServerStop);
-        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> onRegisterCommands(dispatcher));
+        FabricMultiVersion.registerCommand();
     }
 
     private void onServerStart(MinecraftServer server) {
-        this.server = server;
+        FabricTAB.server = server;
         TAB.getInstance().load();
     }
 
     private void onServerStop(MinecraftServer server) {
         TAB.getInstance().unload();
-        this.server = null;
+        FabricTAB.server = null;
     }
 
     public static Component toComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
@@ -71,7 +70,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return fabricPermissionsApi && Permissions.check(source, permission);
     }
 
-    private void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralCommandNode<CommandSourceStack> command = Commands.literal("tab")
                 .executes(context -> executeCommand(context.getSource(), new String[0]))
                 .build();
@@ -83,7 +82,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         dispatcher.getRoot().addChild(command);
     }
 
-    private String[] getArguments(CommandContext<CommandSourceStack> context) {
+    private static String[] getArguments(CommandContext<CommandSourceStack> context) {
         String input = context.getInput();
         int firstSpace = input.indexOf(' ');
         if (firstSpace == -1) return new String[0];
@@ -91,19 +90,19 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return rawArgs.split(" ");
     }
 
-    private int executeCommand(CommandSourceStack source, String[] args) {
+    private static int executeCommand(CommandSourceStack source, String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             boolean hasReloadPermission = hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                source.sendSystemMessage(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
+                FabricMultiVersion.sendMessage(source, message);
             }
             return 0;
         }
 
         TabPlayer player = null;
-        if (source.isPlayer()) {
-            player = TAB.getInstance().getPlayer(source.getPlayer().getUUID());
+        if (source.getEntity() != null) {
+            player = TAB.getInstance().getPlayer(source.getEntity().getUUID());
             if (player == null) return 0;
         }
 
@@ -111,10 +110,10 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return 0;
     }
 
-    private CompletableFuture<Suggestions> getSuggestions(CommandSourceStack source, String[] args, SuggestionsBuilder builder) {
+    private static CompletableFuture<Suggestions> getSuggestions(CommandSourceStack source, String[] args, SuggestionsBuilder builder) {
         TabPlayer player = null;
-        if (source.isPlayer()) {
-            player = TAB.getInstance().getPlayer(source.getPlayer().getUUID());
+        if (source.getEntity() != null) {
+            player = TAB.getInstance().getPlayer(source.getEntity().getUUID());
             if (player == null) return Suggestions.empty();
         }
 

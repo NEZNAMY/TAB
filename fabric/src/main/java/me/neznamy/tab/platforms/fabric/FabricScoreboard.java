@@ -2,6 +2,8 @@ package me.neznamy.tab.platforms.fabric;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
+
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -22,6 +24,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
     private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
     private static final ObjectiveCriteria dummyCriteria = ObjectiveCriteria.DUMMY;
+    @NonNull private static final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
@@ -36,7 +39,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 dummyScoreboard,
                                 objective,
                                 dummyCriteria,
-                                Component.empty(),
+                                EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         )
                 )
@@ -67,7 +70,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 dummyScoreboard,
                                 objectiveName,
                                 dummyCriteria,
-                                Component.empty(),
+                                EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         ),
                         ClientboundSetObjectivePacket.METHOD_REMOVE

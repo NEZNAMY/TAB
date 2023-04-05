@@ -1,3 +1,22 @@
+// Fully supported versions:
+//      1.19.3, 1.19.4
+// Versions supported by build script, but require changes to FabricMultiVersion.java:
+//      1.17 - 1.19.2
+val minecraftVersion = "1.19.4"
+
+val fabricApiVersions = mapOf(
+    "1.19.4" to "0.77.0+1.19.4",
+    "1.19.3" to "0.76.0+1.19.3",
+    "1.19.2" to "0.76.0+1.19.2",
+    "1.19.1" to "0.58.5+1.19.1",
+    "1.19"   to "0.58.0+1.19",
+    "1.18.2" to "0.76.0+1.18.2",
+    "1.18.1" to "0.46.6+1.18",
+    "1.18"   to "0.46.6+1.18",
+    "1.17.1" to "0.46.1+1.17",
+    "1.17"   to "0.46.1+1.17",
+)
+
 plugins {
     id("fabric-loom")
 }
@@ -10,9 +29,6 @@ repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
-// Supported versions: 1.19.3, 1.19.4
-val minecraftVersion = "1.19.4"
-
 dependencies {
     implementation(projects.shared)
 
@@ -21,8 +37,9 @@ dependencies {
 
     modImplementation("net.fabricmc", "fabric-loader", "0.14.17")
     modImplementation("me.lucko", "fabric-permissions-api", "0.2-SNAPSHOT")
-    val apiModules = setOf("fabric-api-base", "fabric-command-api-v2", "fabric-lifecycle-events-v1", "fabric-networking-api-v1")
-    apiModules.forEach { modImplementation(fabricApi.module(it, "0.73.0+$minecraftVersion")) }
+    val commandApiVersion = if (minecraftVersion.split(".")[1].toInt() >= 19) "2" else "1"
+    val apiModules = setOf("fabric-api-base", "fabric-command-api-v$commandApiVersion", "fabric-lifecycle-events-v1", "fabric-networking-api-v1")
+    apiModules.forEach { modImplementation(fabricApi.module(it, fabricApiVersions[minecraftVersion])) }
 }
 
 tasks.compileJava {

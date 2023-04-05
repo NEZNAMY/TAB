@@ -1,11 +1,9 @@
 package me.neznamy.tab.platforms.fabric;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -16,10 +14,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-@RequiredArgsConstructor
 public final class FabricPlatform extends BackendPlatform {
-
-    private final FabricTAB plugin;
 
     @Override
     public String getPluginVersion(String plugin) {
@@ -35,7 +30,7 @@ public final class FabricPlatform extends BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (ServerPlayer player : PlayerLookup.all(plugin.getServer())) {
+        for (ServerPlayer player : PlayerLookup.all(FabricTAB.getServer())) {
             TAB.getInstance().addPlayer(new FabricTabPlayer(player));
         }
     }
@@ -69,7 +64,6 @@ public final class FabricPlatform extends BackendPlatform {
     public void sendConsoleMessage(String message, boolean translateColors) {
         message = "[TAB] " + message;
         if (translateColors) message = EnumChatFormat.color(message);
-        plugin.getServer().sendSystemMessage(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(message),
-                TAB.getInstance().getServerVersion()));
+        FabricMultiVersion.sendConsoleMessage(message);
     }
 }
