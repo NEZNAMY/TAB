@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,17 @@ import net.minecraft.world.level.GameType;
 
 @RequiredArgsConstructor
 public class FabricTabList extends BulkUpdateTabList {
+
+    private static Field PACKET_ENTRIES;
+
+    static {
+        for (Field field : ClientboundPlayerInfoUpdatePacket.class.getDeclaredFields()) {
+            if (field.getType() == List.class) {
+                field.setAccessible(true);
+                PACKET_ENTRIES = field;
+            }
+        }
+    }
 
     private final FabricTabPlayer player;
 
@@ -73,7 +85,11 @@ public class FabricTabList extends BulkUpdateTabList {
 
     private void sendPacket(EnumSet<Action> actions, Collection<Entry> entries) {
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
-        packet.entries().addAll(entries);
+        try {
+            PACKET_ENTRIES.set(packet, entries);
+        } catch (ReflectiveOperationException exception) {
+            throw new RuntimeException(exception);
+        }
         player.sendPacket(packet);
     }
 }
