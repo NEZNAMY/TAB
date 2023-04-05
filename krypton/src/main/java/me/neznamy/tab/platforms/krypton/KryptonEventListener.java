@@ -8,6 +8,7 @@ import org.kryptonmc.api.event.Listener;
 import org.kryptonmc.api.event.command.CommandExecuteEvent;
 import org.kryptonmc.api.event.player.PlayerJoinEvent;
 import org.kryptonmc.api.event.player.PlayerQuitEvent;
+import org.kryptonmc.api.scoreboard.Scoreboard;
 
 @RequiredArgsConstructor
 public class KryptonEventListener {
@@ -16,6 +17,7 @@ public class KryptonEventListener {
 
     @Listener
     public void onJoin(PlayerJoinEvent event) {
+        event.getPlayer().showScoreboard(Scoreboard.create());
         TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onJoin(
                 new KryptonTabPlayer(event.getPlayer(), plugin.getProtocolVersion(event.getPlayer()))));
     }
