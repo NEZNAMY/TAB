@@ -169,12 +169,6 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public Object getChatSession() {
-        LoginRequest login = ((InitialHandler)getPlayer().getPendingConnection()).getLoginRequest();
-        return new Object[]{login.getUuid(), login.getPublicKey()}; // BungeeCord has no single object for this
-    }
-
-    @Override
     public void sendPluginMessage(byte[] message) {
         if (getPlayer().getServer() == null) {
             TAB.getInstance().getErrorManager().printError("Skipped plugin message send to " + getName() + ", because player is not" +

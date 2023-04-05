@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.protocol.PlayerPublicKey;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
@@ -95,10 +94,6 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
             }
             item.setUsername(data.getName());
             item.setUuid(data.getUniqueId());
-            if (data.getChatSession() != null) {
-                item.setChatSessionId((UUID) ((Object[])data.getChatSession())[0]);
-                item.setPublicKey((PlayerPublicKey) ((Object[])data.getChatSession())[1]);
-            }
             items.add(item);
         }
         PlayerListItemUpdate packet = new PlayerListItemUpdate();

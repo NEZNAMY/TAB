@@ -128,13 +128,6 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      */
     public abstract void sendPluginMessage(byte[] message);
 
-    /**
-     * Returns player's chat signing key (1.19+), chat session (1.19.3+)
-     *
-     * @return  Player's chat session
-     */
-    public abstract Object getChatSession();
-
     @Override
     public boolean hasInvisibilityPotion() {
         return invisibilityPotion;

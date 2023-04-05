@@ -78,11 +78,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public Object getChatSession() {
-        return null; // not supported by Velocity
-    }
-
-    @Override
     public void sendPluginMessage(byte[] message) {
         try {
             getPlayer().getCurrentServer().ifPresentOrElse(

@@ -78,7 +78,7 @@ public class KryptonTabList extends BulkUpdateTabList {
                         entry.getLatency(),
                         GameMode.values()[entry.getGameMode()],
                         entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(),
-                        null //TODO chat session?
+                        null
                 )).collect(Collectors.toList())
         ));
     }

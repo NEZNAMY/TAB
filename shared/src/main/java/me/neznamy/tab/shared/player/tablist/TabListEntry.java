@@ -40,9 +40,6 @@ public class TabListEntry {
      */
     @Nullable private IChatBaseComponent displayName;
 
-    /** Player's chat signing key (1.19+), remote chat session (1.19.3+) */
-    @Nullable private Object chatSession;
-
     @RequiredArgsConstructor
     public static class Builder {
 
@@ -53,7 +50,6 @@ public class TabListEntry {
         private int latency;
         private int gameMode;
         @Nullable private IChatBaseComponent displayName;
-        @Nullable private Object chatSession;
 
         public Builder name(String name) { this.name = name; return this; }
         public Builder skin(Skin skin) { this.skin = skin; return this; }
@@ -61,10 +57,9 @@ public class TabListEntry {
         public Builder latency(int latency) { this.latency = latency; return this; }
         public Builder gameMode(int gameMode) { this.gameMode = gameMode; return this; }
         public Builder displayName(IChatBaseComponent displayName) { this.displayName = displayName; return this; }
-        public Builder chatSession(Object chatSession) { this.chatSession = chatSession; return this; }
 
         public TabListEntry build() {
-            return new TabListEntry(uniqueId, name, skin, listed, latency, gameMode, displayName, chatSession);
+            return new TabListEntry(uniqueId, name, skin, listed, latency, gameMode, displayName);
         }
     }
 }

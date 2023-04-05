@@ -25,7 +25,6 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     private final boolean displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
-    private final boolean fillProfileKey = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.fill-profile-key", false);
     private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
 
     private final PlayerList playerlist = (PlayerList) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
@@ -132,7 +131,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 p.getPing(),
                 vanishedAsSpectators && p.isVanished() ? 3 : p.getGamemode(),
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null,
-                fillProfileKey ? ((ProxyTabPlayer)p).getChatSession() : null
+                null
         );
     }
 

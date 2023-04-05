@@ -67,7 +67,7 @@ public class PacketPlayOutPlayerInfoStorage {
                             entry.getLatency(),
                             int2GameMode(entry.getGameMode()),
                             nms.toNMSComponent(entry.getDisplayName(), clientVersion),
-                            entry.getChatSession()
+                            null
                     ));
                 }
             } else {
@@ -85,7 +85,7 @@ public class PacketPlayOutPlayerInfoStorage {
                     parameters.add(entry.getLatency());
                     parameters.add(int2GameMode(entry.getGameMode()));
                     parameters.add(nms.toNMSComponent(entry.getDisplayName(), clientVersion));
-                    if (nms.getMinorVersion() >= 19) parameters.add(entry.getChatSession());
+                    if (nms.getMinorVersion() >= 19) parameters.add(null);
                     players.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(parameters.toArray()));
                 }
             }
