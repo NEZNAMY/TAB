@@ -12,7 +12,7 @@ import org.kryptonmc.api.event.player.PlayerQuitEvent;
 @RequiredArgsConstructor
 public class KryptonEventListener {
 
-    private final Main plugin;
+    private final KryptonTAB plugin;
 
     @Listener
     public void onJoin(PlayerJoinEvent event) {

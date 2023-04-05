@@ -19,10 +19,10 @@ import java.util.Locale;
 
 public class KryptonPlatform extends BackendPlatform {
     
-    private final Main plugin;
+    private final KryptonTAB plugin;
     private final Server server;
 
-    public KryptonPlatform(Main plugin) {
+    public KryptonPlatform(KryptonTAB plugin) {
         this.plugin = plugin;
         server = plugin.getServer();
     }

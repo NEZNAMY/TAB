@@ -41,15 +41,15 @@ import java.util.Locale;
                 @Dependency(id = "viaversion", optional = true)
         }
 )
-public class Main {
-    
+public class KryptonTAB {
+
     @Getter private final Server server;
     private final EventNode<Event> pluginEventNode;
     @Getter private final Path folder;
     @Getter private final EventNode<Event> eventNode;
 
     @Inject
-    public Main(Server server, EventNode<Event> pluginEventNode, @DataFolder Path folder) {
+    public KryptonTAB(Server server, EventNode<Event> pluginEventNode, @DataFolder Path folder) {
         this.server = server;
         this.pluginEventNode = pluginEventNode;
         this.folder = folder;

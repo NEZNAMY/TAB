@@ -14,7 +14,7 @@ import org.kryptonmc.api.entity.player.Player;
 @RequiredArgsConstructor
 public class KryptonPlaceholderRegistry extends UniversalPlaceholderRegistry {
 
-    private final Main plugin;
+    private final KryptonTAB plugin;
 
     @Override
     public void registerPlaceholders(PlaceholderManager manager) {
