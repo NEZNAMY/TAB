@@ -130,12 +130,16 @@ public class BukkitPlatform extends BackendPlatform {
                     
                     @Override
                     public Object request(TabPlayer p) {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            long time = System.nanoTime();
-                            updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
-                            TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
-                        });
-                        return null;
+                        try {
+                            Bukkit.getScheduler().runTask(plugin, () -> {
+                                long time = System.nanoTime();
+                                updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
+                                TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
+                            });
+                            return null;
+                        } catch (UnsupportedOperationException e) {
+                            return "<Folia does not support sync placeholders>";
+                        }
                     }
                 });
                 return;
