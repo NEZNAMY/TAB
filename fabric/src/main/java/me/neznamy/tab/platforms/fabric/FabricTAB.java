@@ -11,8 +11,10 @@ import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.NonNull;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.TabPlayer;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -31,6 +33,8 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(1000,
             (text, version) -> Component.Serializer.fromJson(text.toString(version)));
+    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded(FabricTabConstants.PERMISSIONS_API);
+
     @Getter private MinecraftServer server;
 
     @Override
@@ -62,6 +66,11 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return componentCache.get(component, clientVersion);
     }
 
+    public static boolean hasPermission(CommandSourceStack source, String permission) {
+        if (source.hasPermission(4)) return true;
+        return fabricPermissionsApi && Permissions.check(source, permission);
+    }
+
     private void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralCommandNode<CommandSourceStack> command = Commands.literal("tab")
                 .executes(context -> executeCommand(context.getSource(), new String[0]))
@@ -84,6 +93,11 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     private int executeCommand(CommandSourceStack source, String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
+            boolean hasReloadPermission = hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
+                source.sendSystemMessage(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
+            }
             return 0;
         }
 

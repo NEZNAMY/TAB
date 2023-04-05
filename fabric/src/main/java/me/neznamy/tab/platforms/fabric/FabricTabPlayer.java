@@ -39,7 +39,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public boolean hasPermission(String permission) {
-        return false;
+        return FabricTAB.hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
     @Override
