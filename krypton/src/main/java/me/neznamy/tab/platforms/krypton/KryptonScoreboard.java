@@ -1,18 +1,16 @@
 package me.neznamy.tab.platforms.krypton;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.Scoreboard;
-import net.kyori.adventure.text.Component;
-import org.kryptonmc.krypton.packet.out.play.PacketOutDisplayObjective;
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateObjectives;
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateScore;
-import org.kryptonmc.krypton.packet.out.play.PacketOutUpdateTeams;
+import org.kryptonmc.api.scoreboard.CollisionRule;
+import org.kryptonmc.api.scoreboard.Objective;
+import org.kryptonmc.api.scoreboard.ObjectiveRenderType;
+import org.kryptonmc.api.scoreboard.Team;
+import org.kryptonmc.api.scoreboard.Visibility;
+import org.kryptonmc.api.scoreboard.criteria.Criteria;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
 
@@ -21,58 +19,107 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
-        player.sendPacket(new PacketOutDisplayObjective(slot.ordinal(), objective));
+    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objectiveName) {
+        Objective objective = getScoreboard().getObjective(objectiveName);
+        if (objective != null) getScoreboard().updateSlot(objective, convertDisplaySlot(slot));
+    }
+
+    private static org.kryptonmc.api.scoreboard.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
+        return org.kryptonmc.api.scoreboard.DisplaySlot.values()[slot.ordinal()];
     }
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)0, IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
-                hearts ? 1 : 0));
+        getScoreboard().createObjectiveBuilder()
+                .name(objectiveName)
+                .criterion(Criteria.DUMMY.get())
+                .displayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent())
+                .renderType(hearts ? ObjectiveRenderType.HEARTS : ObjectiveRenderType.INTEGER)
+                .buildAndRegister();
     }
 
     @Override
     public void unregisterObjective0(@NonNull String objectiveName) {
-        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)1, Component.empty(), -1));
+        Objective objective = getScoreboard().getObjective(objectiveName);
+        if (objective != null) getScoreboard().removeObjective(objective);
     }
 
     @Override
     public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        player.sendPacket(new PacketOutUpdateObjectives(objectiveName, (byte)2, IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
-                hearts ? 1 : 0));
+        Objective objective = getScoreboard().getObjective(objectiveName);
+        if (objective == null) return;
+        objective.setDisplayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
+        objective.setRenderType(hearts ? ObjectiveRenderType.HEARTS : ObjectiveRenderType.INTEGER);
     }
 
     @Override
     public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
-        player.sendPacket(
-                new PacketOutUpdateTeams(name, PacketOutUpdateTeams.Action.CREATE,
-                        createParameters(name, prefix, suffix, visibility, collision, options), players.stream().map(Component::text).collect(Collectors.toList()))
-        );
+        Team team = getScoreboard().createTeamBuilder(name)
+                .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent())
+                .prefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent())
+                .suffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent())
+                .friendlyFire((options & 0x01) != 0)
+                .canSeeInvisibleMembers((options & 0x02) != 0)
+                .collisionRule(convertCollisionRule(collision))
+                .nameTagVisibility(convertVisibility(visibility))
+                .buildAndRegister();
+        for (String member : players) {
+            team.addMember(IChatBaseComponent.optimizedComponent(member).toAdventureComponent());
+        }
+    }
+
+    private static CollisionRule convertCollisionRule(String rule) {
+        switch (rule) {
+            case "always": return CollisionRule.ALWAYS;
+            case "never": return CollisionRule.NEVER;
+            case "pushOtherTeams": return CollisionRule.PUSH_OTHER_TEAMS;
+            case "pushOwnTeam": return CollisionRule.PUSH_OWN_TEAM;
+            default: throw new IllegalArgumentException();
+        }
+    }
+
+    private static Visibility convertVisibility(String visibility) {
+        switch (visibility) {
+            case "always": return Visibility.ALWAYS;
+            case "never": return Visibility.NEVER;
+            case "hideForOtherTeams": return Visibility.HIDE_FOR_OTHER_TEAMS;
+            case "hideForOwnTeam": return Visibility.HIDE_FOR_OWN_TEAM;
+            default: throw new IllegalArgumentException();
+        }
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        player.sendPacket(new PacketOutUpdateTeams(name, PacketOutUpdateTeams.Action.REMOVE, null, Collections.emptyList()));
+        Team team = getScoreboard().getTeam(name);
+        if (team != null) getScoreboard().removeTeam(team);
     }
 
     @Override
     public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
-        player.sendPacket(new PacketOutUpdateTeams(name, PacketOutUpdateTeams.Action.UPDATE_INFO, createParameters(name, prefix, suffix, visibility, collision, options), Collections.emptyList()));
-    }
-
-    private PacketOutUpdateTeams.Parameters createParameters(String name, String prefix, String suffix, String visibility, String collision, int options) {
-        return new PacketOutUpdateTeams.Parameters(Component.text(name), (byte)options, visibility, collision,
-                EnumChatFormat.lastColorsOf(prefix).ordinal(), IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent(),
-                IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent());
-    }
-
-    @Override
-    public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
-        player.sendPacket(new PacketOutUpdateScore(playerName, 0, objective, score));
+        Team team = getScoreboard().getTeam(name);
+        if (team == null) return;
+        team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent());
+        team.setPrefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent());
+        team.setSuffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent());
+        team.setAllowFriendlyFire((options & 0x01) != 0);
+        team.setCanSeeInvisibleMembers((options & 0x02) != 0);
+        team.setCollisionRule(convertCollisionRule(collision));
+        team.setNameTagVisibility(convertVisibility(visibility));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String playerName) {
-        player.sendPacket(new PacketOutUpdateScore(playerName, 1, objective, 0));
+    public void setScore0(@NonNull String objectiveName, @NonNull String playerName, int score) {
+        Objective objective = getScoreboard().getObjective(objectiveName);
+        if (objective != null) objective.getOrCreateScore(IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent()).setScore(score);
+    }
+
+    @Override
+    public void removeScore0(@NonNull String objectiveName, @NonNull String playerName) {
+        Objective objective = getScoreboard().getObjective(objectiveName);
+        if (objective != null) objective.removeScore(IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent());
+    }
+
+    private org.kryptonmc.api.scoreboard.Scoreboard getScoreboard() {
+        return player.getPlayer().getScoreboard();
     }
 }

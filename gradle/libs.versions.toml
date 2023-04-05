@@ -19,7 +19,7 @@ event = "3.0.0"
 # Platforms
 bukkit = "1.16.5-R0.1-SNAPSHOT"
 bungeecord = "1.19-R0.1-SNAPSHOT"
-krypton = "d45865ccf1" # Krypton uses commit-based versioning
+krypton = "117dfc549d" # Krypton uses commit-based versioning
 velocity = "3.1.2-SNAPSHOT"
 sponge7 = "5.0.0"
 sponge8 = "8.0.0"
