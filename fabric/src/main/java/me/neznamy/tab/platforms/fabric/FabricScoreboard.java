@@ -57,7 +57,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                             FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                             hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
                         ),
-                        ClientboundSetObjectivePacket.METHOD_ADD
+                        0
                 )
         );
     }
@@ -73,7 +73,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         ),
-                        ClientboundSetObjectivePacket.METHOD_REMOVE
+                        1
                 )
         );
     }
@@ -89,7 +89,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                             FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                             hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
                         ),
-                        ClientboundSetObjectivePacket.METHOD_CHANGE
+                        2
                 )
         );
     }

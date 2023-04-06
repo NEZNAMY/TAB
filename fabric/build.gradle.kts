@@ -1,7 +1,9 @@
-// Fully supported versions:
+// Versions that don't require any code changes:
 //      1.19.3, 1.19.4
-// Versions supported by build script, but require changes to FabricMultiVersion.java:
+// Versions that require changes to FabricMultiVersion.java:
 //      1.17 - 1.19.2
+// Versions that require deeper changes to source code:
+//      1.14 - 1.16.5
 val minecraftVersion = "1.19.4"
 
 val fabricApiVersions = mapOf(
@@ -15,6 +17,20 @@ val fabricApiVersions = mapOf(
     "1.18"   to "0.46.6+1.18",
     "1.17.1" to "0.46.1+1.17",
     "1.17"   to "0.46.1+1.17",
+    "1.16.5" to "0.42.0+1.16",
+    "1.16.4" to "0.42.0+1.16",
+    "1.16.3" to "0.42.0+1.16",
+    "1.16.2" to "0.42.0+1.16",
+    "1.16.1" to "0.42.0+1.16",
+    "1.16"   to "0.42.0+1.16",
+    "1.15.2" to "0.28.5+1.15",
+    "1.15.1" to "0.28.5+1.15",
+    "1.15"   to "0.28.5+1.15",
+    "1.14.4" to "0.28.5+1.14",
+    "1.14.3" to "0.28.5+1.14",
+    "1.14.2" to "0.28.5+1.14",
+    "1.14.1" to "0.28.5+1.14",
+    "1.14"   to "0.28.5+1.14",
 )
 
 plugins {
