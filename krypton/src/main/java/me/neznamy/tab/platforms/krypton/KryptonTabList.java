@@ -3,83 +3,64 @@ package me.neznamy.tab.platforms.krypton;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.player.tablist.TabListEntry;
-import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.auth.GameProfile;
+import org.kryptonmc.api.auth.ProfileProperty;
+import org.kryptonmc.api.entity.player.TabList;
 import org.kryptonmc.api.world.GameMode;
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoRemove;
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoUpdate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.UUID;
 
 @RequiredArgsConstructor
-public class KryptonTabList extends BulkUpdateTabList {
+public class KryptonTabList extends SingleUpdateTabList {
 
     private final KryptonTabPlayer player;
 
     @Override
-    public void removeEntries(@NonNull Collection<UUID> entries) {
-        player.sendPacket(new PacketOutPlayerInfoRemove(new ArrayList<>(entries)));
+    public void removeEntry(@NonNull UUID entryId) {
+        getTabList().removeEntry(entryId);
     }
 
     @Override
-    public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME),
-                entries.entrySet().stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getKey(),
-                        GameProfile.of("", entry.getKey()),
-                        false,
-                        0,
-                        GameMode.SURVIVAL,
-                        entry.getValue() == null ? null : entry.getValue().toAdventureComponent(),
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void updateDisplayName(@NonNull UUID entryId, @Nullable IChatBaseComponent displayName) {
+        org.kryptonmc.api.entity.player.TabListEntry entry = getTabList().getEntry(entryId);
+        if (entry != null) entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
     }
 
     @Override
-    public void updateLatencies(@NotNull Map<UUID, Integer> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.UPDATE_LATENCY),
-                entries.entrySet().stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getKey(),
-                        GameProfile.of("", entry.getKey()),
-                        false,
-                        entry.getValue(),
-                        GameMode.SURVIVAL,
-                        null,
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void updateLatency(@NonNull UUID entryId, int latency) {
+        org.kryptonmc.api.entity.player.TabListEntry entry = getTabList().getEntry(entryId);
+        if (entry != null) entry.setLatency(latency);
     }
 
     @Override
-    public void updateGameModes(@NotNull Map<UUID, Integer> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.UPDATE_GAME_MODE),
-                entries.entrySet().stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getKey(),
-                        GameProfile.of("", entry.getKey()),
-                        false,
-                        0,
-                        GameMode.values()[entry.getValue()],
-                        null,
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void updateGameMode(@NonNull UUID entryId, int gameMode) {
+        org.kryptonmc.api.entity.player.TabListEntry entry = getTabList().getEntry(entryId);
+        if (entry != null) entry.setGameMode(GameMode.values()[gameMode]);
     }
 
     @Override
-    public void addEntries(@NotNull Collection<TabListEntry> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.ADD_PLAYER),
-                entries.stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getUniqueId(),
-                        GameProfile.of(entry.getName() == null ? "" : entry.getName(), entry.getUniqueId()),
-                        entry.isListed(),
-                        entry.getLatency(),
-                        GameMode.values()[entry.getGameMode()],
-                        entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(),
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void addEntry(@NonNull TabListEntry entry) {
+        GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
+        getTabList().createEntryBuilder(entry.getUniqueId(), profile)
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
+                .gameMode(GameMode.values()[entry.getGameMode()])
+                .latency(entry.getLatency())
+                .listed(entry.isListed())
+                .buildAndRegister();
+    }
+
+    private GameProfile createGameProfile(UUID uuid, String name, Skin skin) {
+        String newName = name == null ? "" : name;
+        if (skin == null) return GameProfile.of(newName, uuid);
+        ProfileProperty property = ProfileProperty.of("textures", skin.getValue(), skin.getSignature());
+        return GameProfile.of(newName, uuid, Collections.singletonList(property));
+    }
+
+    private TabList getTabList() {
+        return player.getPlayer().getTabList();
     }
 }

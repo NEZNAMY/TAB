@@ -11,8 +11,6 @@ import me.neznamy.tab.shared.player.tablist.TabList;
 import me.neznamy.tab.shared.player.Scoreboard;
 import org.kryptonmc.api.auth.ProfileProperty;
 import org.kryptonmc.api.entity.player.Player;
-import org.kryptonmc.krypton.entity.player.KryptonPlayer;
-import org.kryptonmc.krypton.packet.Packet;
 
 import java.util.List;
 
@@ -33,11 +31,7 @@ public class KryptonTabPlayer extends TabPlayer {
 
     @Override
     public int getPing() {
-        return getPlayer().getConnection().latency();
-    }
-
-    public void sendPacket(Object packet) {
-        getPlayer().getConnection().send((Packet) packet);
+        return getPlayer().getPing();
     }
 
     @Override
@@ -63,8 +57,8 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public KryptonPlayer getPlayer() {
-        return (KryptonPlayer) player;
+    public Player getPlayer() {
+        return (Player) player;
     }
 
     @Override
