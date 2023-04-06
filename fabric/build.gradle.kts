@@ -42,6 +42,10 @@ dependencies {
     apiModules.forEach { modImplementation(fabricApi.module(it, fabricApiVersions[minecraftVersion])) }
 }
 
+loom {
+    accessWidenerPath.set(file("src/main/resources/tab.accesswidener"))
+}
+
 tasks.compileJava {
     options.release.set(17)
 }

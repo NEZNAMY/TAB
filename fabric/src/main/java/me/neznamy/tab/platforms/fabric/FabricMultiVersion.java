@@ -4,29 +4,15 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.world.level.GameType;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 public class FabricMultiVersion {
-
-    private static final Class<?> infoPacketClass = ClientboundPlayerInfoUpdatePacket.class; // 1.19.3+
-    //private static final Class<?> infoPacketClass = ClientboundPlayerInfoPacket.class; // 1.19.2-
-
-    private static Field PACKET_ENTRIES;
-
-    static {
-        for (Field field : infoPacketClass.getDeclaredFields()) {
-            if (field.getType() == List.class) {
-                field.setAccessible(true);
-                PACKET_ENTRIES = field;
-            }
-        }
-    }
 
     public static void sendMessage(FabricTabPlayer player, IChatBaseComponent message) {
         player.getPlayer().sendSystemMessage(FabricTAB.toComponent(message, player.getVersion())); // 1.19+
@@ -47,6 +33,9 @@ public class FabricMultiVersion {
 
     // 1.19.3+
     public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
+        if (action == FabricTabList.Action.REMOVE_PLAYER) {
+            return new ClientboundPlayerInfoRemovePacket(entries.stream().map(FabricTabList.Builder::getId).toList());
+        }
         List<ClientboundPlayerInfoUpdatePacket.Entry> list = entries.stream().map(entry ->
                 new ClientboundPlayerInfoUpdatePacket.Entry(
                         entry.getId(),
@@ -62,32 +51,29 @@ public class FabricMultiVersion {
         EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = action == FabricTabList.Action.ADD_PLAYER ?
                 EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class) :
                 EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.valueOf(action.name()));
-        return setEntries(new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList()), list);
+        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
+        packet.entries = list;
+        return packet;
     }
 
     // 1.19.2-
-    /*public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
+    /*
+    public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
         // 1.19+
-        List<?> list = entries.stream().map(entry ->
+        List<ClientboundPlayerInfoPacket.PlayerUpdate> list = entries.stream().map(entry ->
                 new ClientboundPlayerInfoPacket.PlayerUpdate(
                         entry.createProfile(),
                         entry.getLatency(),
                         GameType.byId(entry.getGameMode()),
                         entry.getDisplayName()
-                        //, null // 1.19 - 1.19.2
+                        , null // 1.19 - 1.19.2
                 )
         ).toList();
-        return setEntries(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()), Collections.emptyList()), list);
-    }*/
-
-    private static Packet<?> setEntries(Packet<?> packet, List<?> entries) {
-        try {
-            PACKET_ENTRIES.set(packet, entries);
-        } catch (ReflectiveOperationException exception) {
-            throw new RuntimeException(exception);
-        }
+        ClientboundPlayerInfoPacket packet = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()), Collections.emptyList());
+        packet.entries = list;
         return packet;
     }
+     */
 
     public static void registerCommand() {
         net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> FabricTAB.onRegisterCommands(dispatcher)); // 1.19+

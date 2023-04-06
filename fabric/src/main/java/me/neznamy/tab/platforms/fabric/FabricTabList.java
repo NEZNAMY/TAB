@@ -54,6 +54,8 @@ public class FabricTabList extends BulkUpdateTabList {
         for (TabListEntry entry : entries) {
             converted.add(new Builder(entry.getUniqueId())
                     .setName(entry.getName())
+                    .setSkin(entry.getSkin())
+                    .setListed(entry.isListed())
                     .setGameMode(entry.getGameMode())
                     .setLatency(entry.getLatency())
                     .setDisplayName(FabricTAB.toComponent(entry.getDisplayName(), player.getVersion())));
