@@ -46,6 +46,13 @@ loom {
     accessWidenerPath.set(file("src/main/resources/tab.accesswidener"))
 }
 
-tasks.compileJava {
-    options.release.set(17)
+tasks {
+    compileJava {
+        options.release.set(17)
+    }
+    validateAccessWidener {
+        // We don't want to validate the access wideners, as we have wideners for multiple versions, and the validation task will
+        // fail, as the classes for the old wideners don't exist in the new versions and vice versa.
+        enabled = false
+    }
 }
