@@ -25,7 +25,6 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

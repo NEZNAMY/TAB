@@ -69,23 +69,23 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     private static CollisionRule convertCollisionRule(String rule) {
-        switch (rule) {
-            case "always": return CollisionRule.ALWAYS;
-            case "never": return CollisionRule.NEVER;
-            case "pushOtherTeams": return CollisionRule.PUSH_OTHER_TEAMS;
-            case "pushOwnTeam": return CollisionRule.PUSH_OWN_TEAM;
-            default: throw new IllegalArgumentException();
-        }
+        return switch (rule) {
+            case "always" -> CollisionRule.ALWAYS;
+            case "never" -> CollisionRule.NEVER;
+            case "pushOtherTeams" -> CollisionRule.PUSH_OTHER_TEAMS;
+            case "pushOwnTeam" -> CollisionRule.PUSH_OWN_TEAM;
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     private static Visibility convertVisibility(String visibility) {
-        switch (visibility) {
-            case "always": return Visibility.ALWAYS;
-            case "never": return Visibility.NEVER;
-            case "hideForOtherTeams": return Visibility.HIDE_FOR_OTHER_TEAMS;
-            case "hideForOwnTeam": return Visibility.HIDE_FOR_OWN_TEAM;
-            default: throw new IllegalArgumentException();
-        }
+        return switch (visibility) {
+            case "always" -> Visibility.ALWAYS;
+            case "never" -> Visibility.NEVER;
+            case "hideForOtherTeams" -> Visibility.HIDE_FOR_OTHER_TEAMS;
+            case "hideForOwnTeam" -> Visibility.HIDE_FOR_OWN_TEAM;
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     @Override

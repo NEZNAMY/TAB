@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.config.Configs;
 import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.player.TabPlayer;
 import org.yaml.snakeyaml.error.YAMLException;
 
