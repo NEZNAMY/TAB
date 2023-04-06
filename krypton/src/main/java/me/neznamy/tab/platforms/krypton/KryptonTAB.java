@@ -64,10 +64,11 @@ public class KryptonTAB {
                 ProtocolVersion.fromNetworkId(this.server.getPlatform().protocolVersion()),
                 server.getPlatform().version(),
                 folder.toFile(),
-                null);
+                null
+        );
         TAB.setInstance(tab);
         eventNode.registerListeners(new KryptonEventListener(this));
-        server.getCommandManager().register(new KryptonTABCommand(), CommandMeta.Companion.builder("tab").build());
+        server.getCommandManager().register(new KryptonTABCommand(), CommandMeta.builder("tab").build());
         TAB.getInstance().load();
     }
 
@@ -77,8 +78,9 @@ public class KryptonTAB {
     }
 
     public final int getProtocolVersion(Player player) {
-        if (server.getPluginManager().isLoaded(TabConstants.Plugin.VIAVERSION.toLowerCase(Locale.ROOT)))
+        if (server.getPluginManager().isLoaded(TabConstants.Plugin.VIAVERSION.toLowerCase(Locale.ROOT))) {
             return ProtocolVersion.getPlayerVersionVia(player.getUuid(), player.getProfile().name());
+        }
         return TAB.getInstance().getServerVersion().getNetworkId();
     }
 

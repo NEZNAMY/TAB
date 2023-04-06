@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
 import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.auth.GameProfile;
 import org.kryptonmc.api.auth.ProfileProperty;
 import org.kryptonmc.api.entity.player.TabList;
+import org.kryptonmc.api.entity.player.TabListEntry;
 import org.kryptonmc.api.world.GameMode;
 import java.util.Collections;
 import java.util.UUID;
@@ -26,24 +26,24 @@ public class KryptonTabList extends SingleUpdateTabList {
 
     @Override
     public void updateDisplayName(@NonNull UUID entryId, @Nullable IChatBaseComponent displayName) {
-        org.kryptonmc.api.entity.player.TabListEntry entry = getTabList().getEntry(entryId);
+        TabListEntry entry = getTabList().getEntry(entryId);
         if (entry != null) entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
     }
 
     @Override
     public void updateLatency(@NonNull UUID entryId, int latency) {
-        org.kryptonmc.api.entity.player.TabListEntry entry = getTabList().getEntry(entryId);
+        TabListEntry entry = getTabList().getEntry(entryId);
         if (entry != null) entry.setLatency(latency);
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entryId, int gameMode) {
-        org.kryptonmc.api.entity.player.TabListEntry entry = getTabList().getEntry(entryId);
+        TabListEntry entry = getTabList().getEntry(entryId);
         if (entry != null) entry.setGameMode(GameMode.values()[gameMode]);
     }
 
     @Override
-    public void addEntry(@NonNull TabListEntry entry) {
+    public void addEntry(@NonNull me.neznamy.tab.shared.player.tablist.TabListEntry entry) {
         GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
         getTabList().createEntryBuilder(entry.getUniqueId(), profile)
                 .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
