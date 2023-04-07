@@ -21,7 +21,6 @@ public class ChatModifier {
     private Boolean obfuscated;
     private ChatClickable clickEvent;
     private ChatHoverable hoverEvent;
-    private String font;
     private ProtocolVersion targetVersion;
 
     public ChatModifier(@NonNull ChatModifier modifier) {
@@ -33,10 +32,8 @@ public class ChatModifier {
         this.obfuscated = modifier.obfuscated;
         this.clickEvent = modifier.clickEvent == null ? null : new ChatClickable(modifier.clickEvent.getAction(), modifier.clickEvent.getValue());
         this.hoverEvent = modifier.hoverEvent == null ? null : new ChatHoverable(modifier.hoverEvent.getAction(), modifier.hoverEvent.getValue());
-        this.font = modifier.font;
         this.targetVersion = modifier.targetVersion;
     }
-
 
     /**
      * Returns true if bold is defined and set to true, false otherwise
@@ -180,29 +177,13 @@ public class ChatModifier {
     public JSONObject serialize() {
         JSONObject json = new JSONObject();
         if (color != null) json.put("color", targetVersion.getMinorVersion() >= 16 ? color.toString() : color.getLegacyColor().toString().toLowerCase());
-        if (bold != null) json.put("bold", bold);
-        if (italic != null) json.put("italic", italic);
-        if (underlined != null) json.put("underlined", underlined);
-        if (strikethrough != null) json.put("strikethrough", strikethrough);
-        if (obfuscated != null) json.put("obfuscated", obfuscated);
-        if (clickEvent != null) {
-            JSONObject click = new JSONObject();
-            click.put("action", clickEvent.getAction().toString().toLowerCase());
-            click.put("value", clickEvent.getValue());
-            json.put("clickEvent", click);
-        }
-        if (hoverEvent != null) {
-            JSONObject hover = new JSONObject();
-            hover.put("action", hoverEvent.getAction().toString().toLowerCase());
-            if (TabAPI.getInstance().getServerVersion().getMinorVersion() >= 16) {
-                hover.put(hoverEvent.getAction().getPreferredKey(), hoverEvent.getValue());
-            } else {
-                hover.put("value", TabAPI.getInstance().getServerVersion().getMinorVersion() >= 9 ?
-                        hoverEvent.getValue() : hoverEvent.getValue().toRawText());
-            }
-            json.put("hoverEvent", hover);
-        }
-        if (font != null) json.put("font", font);
+        json.put("bold", bold);
+        json.put("italic", italic);
+        json.put("underlined", underlined);
+        json.put("strikethrough", strikethrough);
+        json.put("obfuscated", obfuscated);
+        if (clickEvent != null) json.put("clickEvent", clickEvent.serialize());
+        if (hoverEvent != null) json.put("hoverEvent", hoverEvent.serialize());
         return json;
     }
 

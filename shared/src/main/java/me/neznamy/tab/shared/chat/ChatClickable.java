@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.chat;
 
 import lombok.Data;
 import lombok.NonNull;
+import org.json.simple.JSONObject;
 
 /**
  * Class for click event action in chat component
@@ -14,6 +15,14 @@ public class ChatClickable {
 
     /** Click value */
     @NonNull private final String value;
+
+    @SuppressWarnings("unchecked")
+    public JSONObject serialize() {
+        JSONObject click = new JSONObject();
+        click.put("action", action.toString().toLowerCase());
+        click.put("value", value);
+        return click;
+    }
 
     /**
      * Enum for all possible click actions
