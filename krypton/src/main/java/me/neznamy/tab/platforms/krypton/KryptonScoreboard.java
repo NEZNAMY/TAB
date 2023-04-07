@@ -22,7 +22,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
         if (objective != null) getScoreboard().updateSlot(objective, convertDisplaySlot(slot));
     }
 
-    private static org.kryptonmc.api.scoreboard.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
+    private org.kryptonmc.api.scoreboard.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
         return org.kryptonmc.api.scoreboard.DisplaySlot.values()[slot.ordinal()];
     }
 
@@ -117,7 +117,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
         if (objective != null) objective.removeScore(IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent());
     }
 
-    private org.kryptonmc.api.scoreboard.Scoreboard getScoreboard() {
+    private Scoreboard getScoreboard() {
         return player.getPlayer().getScoreboard();
     }
 }
