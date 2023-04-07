@@ -34,50 +34,25 @@ public class GroupCommand extends PropertyCommand {
             }
             return;
         }
-        String group = args[0];
-        String type = args[1].toLowerCase();
-        String value = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-        String world = null;
-        String server = null;
-        if (args[args.length-2].equals("-w")) {
-            world = args[args.length-1];
-            value = value.startsWith("-w") ? "" : value.substring(0, value.length()-world.length()-4);
-        }
-        if (args[args.length-2].equals("-s")) {
-            server = args[args.length-1];
-            value = value.startsWith("-s") ? "" : value.substring(0, value.length()-server.length()-4);
-        }
-        if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-            value = value.substring(1, value.length()-1);
-        }
-        if ("remove".equals(type)) {
-            if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
-                TAB.getInstance().getConfiguration().getGroups().remove(group);
-                for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-                    if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
-                        pl.forceRefresh();
-                    }
-                }
-                sendMessage(sender, getMessages().getGroupDataRemoved(group));
-            } else {
-                sendMessage(sender, getMessages().getNoPermission());
-            }
+        if ("remove".equalsIgnoreCase(args[1])) {
+            remove(sender, args[0]);
             return;
         }
-        for (String property : getAllProperties()) {
-            if (type.equals(property)) {
-                if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
-                    saveGroup(sender, group, type, value, server, world);
-                    if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) {
-                        sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
-                    }
-                } else {
-                    sendMessage(sender, getMessages().getNoPermission());
+        trySaveEntity(sender, args);
+    }
+
+    private void remove(TabPlayer sender, String group) {
+        if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
+            TAB.getInstance().getConfiguration().getGroups().remove(group);
+            for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
+                if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
+                    pl.forceRefresh();
                 }
-                return;
             }
+            sendMessage(sender, getMessages().getGroupDataRemoved(group));
+        } else {
+            sendMessage(sender, getMessages().getNoPermission());
         }
-        help(sender);
     }
 
     private void sendGroupInfo(TabPlayer sender, String group) {
@@ -101,19 +76,8 @@ public class GroupCommand extends PropertyCommand {
         }
     }
 
-    /**
-     * Saves new group settings into config
-     *
-     * @param   sender
-     *          command sender or null if console
-     * @param   group
-     *          affected group
-     * @param   type
-     *          property type
-     * @param   value
-     *          new value
-     */
-    private void saveGroup(TabPlayer sender, String group, String type, String value, String server, String world) {
+    @Override
+    public void saveEntity(TabPlayer sender, String group, String type, String value, String server, String world) {
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getGroupValueAssigned(type, value, group));
         } else {
