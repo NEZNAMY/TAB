@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.platform;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 
 import java.util.UUID;
@@ -73,7 +74,9 @@ public class PlatformEventListener {
      *          The message
      */
     public void pluginMessage(UUID player, String playerName, byte[] message) {
-        ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, playerName, message);
+        TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
+                TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
+                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, playerName, message));
     }
 
     public boolean command(UUID player, String command) {
