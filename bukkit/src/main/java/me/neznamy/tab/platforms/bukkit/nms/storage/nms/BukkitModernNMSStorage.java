@@ -90,9 +90,6 @@ public class BukkitModernNMSStorage extends NMSStorage {
         }
 
         // Player Info
-        if (minorVersion >= 19) {
-            PacketPlayOutPlayerInfoStorage.ProfilePublicKey$a = Class.forName("net.minecraft.world.entity.player.ProfilePublicKey$a");
-        }
         if (is1_19_3Plus()) {
             PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
             PacketPlayOutPlayerInfoStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");

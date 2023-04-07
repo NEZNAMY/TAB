@@ -19,13 +19,11 @@ public class PacketPlayOutPlayerInfoStorage {
     public static Field PLAYERS;
     public static Class<Enum> EnumPlayerInfoActionClass;
     public static Class<Enum> EnumGamemodeClass;
-    public static Class<?> ProfilePublicKey$a;
 
     //1.19.3+
     public static Class<?> ClientboundPlayerInfoRemovePacket;
     public static Class<?> RemoteChatSession$Data;
     public static Constructor<?> newClientboundPlayerInfoRemovePacket;
-    public static Constructor<?> newRemoteChatSession$Data;
 
     public static void load(NMSStorage nms) throws ReflectiveOperationException {
         if (nms.getMinorVersion() < 8) return;
@@ -33,7 +31,6 @@ public class PacketPlayOutPlayerInfoStorage {
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
             CONSTRUCTOR = CLASS.getConstructor(EnumSet.class, Collection.class);
             ACTION = nms.getFields(CLASS, EnumSet.class).get(0);
-            newRemoteChatSession$Data = RemoteChatSession$Data.getConstructor(UUID.class, ProfilePublicKey$a);
          } else {
             CONSTRUCTOR = CLASS.getConstructor(EnumPlayerInfoActionClass, Array.newInstance(nms.EntityPlayer, 0).getClass());
             ACTION = nms.getFields(CLASS, EnumPlayerInfoActionClass).get(0);
