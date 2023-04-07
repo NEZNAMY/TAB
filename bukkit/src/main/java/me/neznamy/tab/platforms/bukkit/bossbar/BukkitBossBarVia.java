@@ -6,7 +6,7 @@ import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -20,7 +20,7 @@ import java.util.UUID;
  * Handler for 1.9+ players on 1.8 server using ViaVersion API.
  */
 @RequiredArgsConstructor
-public class BukkitBossBarVia implements BossBarHandler {
+public class BukkitBossBarVia implements PlatformBossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;

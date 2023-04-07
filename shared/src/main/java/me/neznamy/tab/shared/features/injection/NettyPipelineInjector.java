@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
  * A pipeline injector for Netty connections. As most servers use Netty, this avoids code duplication.

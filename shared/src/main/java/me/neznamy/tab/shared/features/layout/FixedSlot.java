@@ -2,12 +2,11 @@ package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 
 import java.util.UUID;
 
@@ -21,7 +20,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
     private final UUID id;
     private final String text;
     private final String propertyName;
-    private final Skin skin;
+    private final TabList.Skin skin;
     private final int ping;
 
     @Override
@@ -30,9 +29,9 @@ public class FixedSlot extends TabFeature implements Refreshable {
         p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()));
     }
 
-    public TabListEntry createEntry(TabPlayer viewer) {
+    public TabList.Entry createEntry(TabPlayer viewer) {
         viewer.setProperty(this, propertyName, text);
-        return new TabListEntry(
+        return new TabList.Entry(
                 id,
                 layout.getEntryName(viewer, id.getLeastSignificantBits()),
                 skin,

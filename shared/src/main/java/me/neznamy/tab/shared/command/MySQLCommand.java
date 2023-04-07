@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.config.PropertyConfiguration;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.Configs;

@@ -7,7 +7,7 @@ import com.velocitypowered.api.util.GameProfile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
 import net.kyori.adventure.text.Component;
 
 import java.util.Collections;
@@ -35,11 +35,11 @@ public class VelocityTabList extends SingleUpdateTabList {
              * You are supposed to be overriding
              * {@link TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
              * not the outdated {@link TabList#buildEntry(GameProfile, Component, int, int)},
-             * because {@link TabListEntry.Builder#build()} calls that method.
+             * because {@link Entry.Builder#build()} calls that method.
              */
             String username = getEntry(id).getProfile().getName();
             removeEntry(id);
-            addEntry(new me.neznamy.tab.shared.player.tablist.TabListEntry.Builder(id).name(username).displayName(displayName).build());
+            addEntry(new Entry.Builder(id).name(username).displayName(displayName).build());
         }
     }
 
@@ -54,7 +54,7 @@ public class VelocityTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(me.neznamy.tab.shared.player.tablist.@NonNull TabListEntry entry) {
+    public void addEntry(@NonNull me.neznamy.tab.shared.platform.tablist.TabList.Entry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         player.getPlayer().getTabList().addEntry(TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())

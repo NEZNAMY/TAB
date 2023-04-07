@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.injection;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.TabFeature;

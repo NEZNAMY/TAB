@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -45,7 +45,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 continue;
             }
             loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-            loaded.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+            loaded.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         }
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
@@ -79,7 +79,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
             return;
         }
         connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        connectedPlayer.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+        connectedPlayer.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         int number = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (sameServerAndWorld(all, connectedPlayer)) {
@@ -95,7 +95,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         onWorldChange(player, null, null);
         if (isDisabledPlayer(player)) return;
         player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+        player.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (sameServerAndWorld(all, player)) {
                 player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));

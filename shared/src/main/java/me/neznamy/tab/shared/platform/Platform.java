@@ -1,7 +1,10 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.platform;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.FeatureManager;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.config.Configs;

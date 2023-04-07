@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.player;
+package me.neznamy.tab.shared.platform;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -6,9 +6,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.*;
-import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -261,14 +261,14 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  scoreboard interface for calling scoreboard-related methods
      */
-    public abstract Scoreboard<? extends TabPlayer> getScoreboard();
+    public abstract PlatformScoreboard<? extends TabPlayer> getScoreboard();
 
     /**
      * Returns handler for calling bossbar-related methods
      *
      * @return  handler for calling bossbar-related methods
      */
-    public abstract BossBarHandler getBossBarHandler();
+    public abstract PlatformBossBar getBossBar();
 
     /**
      * Returns {@code true} if player is disguised using LibsDisguises, {@code false} if not
@@ -311,7 +311,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  player's skin
      */
-    public abstract Skin getSkin();
+    public abstract TabList.Skin getSkin();
 
     /**
      * Sets header and footer to specified values

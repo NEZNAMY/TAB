@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.player.tablist;
+package me.neznamy.tab.shared.platform.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -30,7 +30,7 @@ public abstract class SingleUpdateTabList implements TabList {
         entries.forEach(this::updateGameMode);
     }
 
-    public void addEntries(@NonNull Collection<TabListEntry> entries) {
+    public void addEntries(@NonNull Collection<Entry> entries) {
         entries.forEach(this::addEntry);
     }
 }

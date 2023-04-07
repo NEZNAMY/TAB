@@ -8,11 +8,10 @@ import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.BossBarHandler;
-import me.neznamy.tab.shared.player.Scoreboard;
-import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
@@ -22,9 +21,9 @@ public class FabricTabPlayer extends TabPlayer {
 
     private static final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
 
-    @Getter private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
+    @Getter private final PlatformScoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
     @Getter private final TabList tabList = new FabricTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new FabricBossBarHandler(this);
+    @Getter private final PlatformBossBar bossBar = new FabricBossBar(this);
 
     public FabricTabPlayer(ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), TAB.getInstance().getConfiguration().getServerName(),
@@ -64,11 +63,11 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null;
         Property skinProperty = properties.iterator().next();
-        return new Skin(skinProperty.getValue(), skinProperty.getSignature());
+        return new TabList.Skin(skinProperty.getValue(), skinProperty.getSignature());
     }
 
     @Override

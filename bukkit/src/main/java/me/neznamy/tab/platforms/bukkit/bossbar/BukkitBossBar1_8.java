@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.bossbar;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * separately, as this class does not handle it.
  */
 @RequiredArgsConstructor
-public class BukkitBossBar1_8 implements BossBarHandler {
+public class BukkitBossBar1_8 implements PlatformBossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;

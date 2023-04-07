@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.command.level2.SendBarCommand;
 
 /**

@@ -3,9 +3,8 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -79,9 +78,9 @@ public class BungeeTabList1_19_3 extends BulkUpdateTabList {
     }
 
     @Override
-    public void addEntries(@NonNull Collection<TabListEntry> entries) {
+    public void addEntries(@NonNull Collection<Entry> entries) {
         List<Item> items = new ArrayList<>();
-        for (TabListEntry data : entries) {
+        for (Entry data : entries) {
             Item item = new Item();
             if (data.getDisplayName() != null) item.setDisplayName(data.getDisplayName().toString(player.getVersion()));
             item.setGamemode(data.getGameMode());

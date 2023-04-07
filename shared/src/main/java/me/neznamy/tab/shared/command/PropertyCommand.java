@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 
 public abstract class PropertyCommand extends SubCommand {
 

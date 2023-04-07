@@ -2,11 +2,10 @@ package me.neznamy.tab.shared.features.redis;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.shared.TAB;
 import org.json.simple.JSONObject;
 
@@ -26,7 +25,7 @@ public class RedisPlayer {
     @Getter @Setter private String tabFormat;
     @Getter private String teamName;
     @Getter private boolean vanished;
-    @Getter private Skin skin;
+    @Getter private TabList.Skin skin;
     @Setter @Getter private String tagPrefix;
     @Setter @Getter private String tagSuffix;
     @Getter private boolean nameVisibility;
@@ -50,7 +49,7 @@ public class RedisPlayer {
         player.vanished = (boolean) json.get("vanished");
         String skinValue = (String) json.get("skin-value");
         if (skinValue != null) {
-            player.skin = new Skin(skinValue, (String) json.get("skin-signature"));
+            player.skin = new TabList.Skin(skinValue, (String) json.get("skin-signature"));
         }
         player.tagPrefix = (String) json.get("tagprefix");
         player.tagSuffix = (String) json.get("tagsuffix");
@@ -113,8 +112,8 @@ public class RedisPlayer {
         return json;
     }
 
-    public TabListEntry getEntry() {
-        return new TabListEntry(uniqueId, nickname, skin, true, 0, 0, disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat));
+    public TabList.Entry getEntry() {
+        return new TabList.Entry(uniqueId, nickname, skin, true, 0, 0, disabledPlayerList ? null : IChatBaseComponent.optimizedComponent(tabFormat));
     }
 
     public void setServer(String server) {

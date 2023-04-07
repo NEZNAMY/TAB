@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.command;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 

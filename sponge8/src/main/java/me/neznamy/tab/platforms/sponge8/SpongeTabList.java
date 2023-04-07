@@ -3,8 +3,8 @@ package me.neznamy.tab.platforms.sponge8;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
-import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.profile.GameProfile;
@@ -40,7 +40,7 @@ public class SpongeTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(@NonNull TabListEntry entry) {
+    public void addEntry(@NonNull TabList.Entry entry) {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));

@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.placeholders.expansion;
 
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 
 public interface TabExpansion {
 

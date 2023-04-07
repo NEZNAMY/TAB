@@ -3,9 +3,8 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
-import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ public class BukkitTabList extends BulkUpdateTabList {
             //1.19.2-
             player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("REMOVE_PLAYER",
                     entries.stream().map(id ->
-                            new TabListEntry.Builder(id).build()).collect(Collectors.toList()),
+                            new Entry.Builder(id).build()).collect(Collectors.toList()),
                     player.getVersion())
             );
         }
@@ -49,7 +48,7 @@ public class BukkitTabList extends BulkUpdateTabList {
     public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_DISPLAY_NAME",
                 entries.entrySet().stream().map(entry ->
-                        new TabListEntry.Builder(entry.getKey()).displayName(entry.getValue()).build()).collect(Collectors.toList()),
+                        new Entry.Builder(entry.getKey()).displayName(entry.getValue()).build()).collect(Collectors.toList()),
                 player.getVersion())
         );
     }
@@ -58,7 +57,7 @@ public class BukkitTabList extends BulkUpdateTabList {
     public void updateLatencies(@NonNull Map<UUID, Integer> entries) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_LATENCY",
                 entries.entrySet().stream().map(entry ->
-                        new TabListEntry.Builder(entry.getKey()).latency(entry.getValue()).build()).collect(Collectors.toList()),
+                        new Entry.Builder(entry.getKey()).latency(entry.getValue()).build()).collect(Collectors.toList()),
                 player.getVersion())
         );
     }
@@ -67,13 +66,13 @@ public class BukkitTabList extends BulkUpdateTabList {
     public void updateGameModes(@NonNull Map<UUID, Integer> entries) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_GAME_MODE",
                 entries.entrySet().stream().map(entry ->
-                        new TabListEntry.Builder(entry.getKey()).gameMode(entry.getValue()).build()).collect(Collectors.toList()),
+                        new Entry.Builder(entry.getKey()).gameMode(entry.getValue()).build()).collect(Collectors.toList()),
                 player.getVersion())
         );
     }
 
     @Override
-    public void addEntries(@NonNull Collection<TabListEntry> entries) {
+    public void addEntries(@NonNull Collection<Entry> entries) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER", entries, player.getVersion()));
     }
 }

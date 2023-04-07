@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * 1.9+ players, as dealing with entities would be simply impossible.
  */
 @RequiredArgsConstructor
-public class BungeeBossBarHandler implements BossBarHandler {
+public class BungeeBossBar implements PlatformBossBar {
     
     private final BungeeTabPlayer player;
 

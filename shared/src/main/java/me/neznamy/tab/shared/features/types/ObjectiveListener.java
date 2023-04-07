@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
  * Listener for features listening to objective packet.

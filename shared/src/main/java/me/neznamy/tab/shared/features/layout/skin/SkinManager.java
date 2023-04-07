@@ -11,13 +11,13 @@ import java.util.Map.Entry;
 import lombok.Getter;
 import me.neznamy.tab.shared.config.ConfigurationFile;
 import me.neznamy.tab.shared.config.YamlConfigurationFile;
-import me.neznamy.tab.shared.player.tablist.Skin;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 
 public class SkinManager {
 
     private final List<String> invalidSkins = new ArrayList<>();
-    @Getter private Skin defaultSkin;
+    @Getter private TabList.Skin defaultSkin;
     private final Map<String, SkinSource> sources = new HashMap<>();
 
     public SkinManager(String defaultSkin) {
@@ -37,7 +37,7 @@ public class SkinManager {
         }
     }
 
-    public Skin getSkin(String skin) {
+    public TabList.Skin getSkin(String skin) {
         if (invalidSkins.contains(skin)) return defaultSkin;
         for (Entry<String, SkinSource> entry : sources.entrySet()) {
             if (skin.startsWith(entry.getKey() + ":")) {
@@ -46,7 +46,7 @@ public class SkinManager {
                     invalidSkins.add(skin);
                     return defaultSkin;
                 }
-                return new Skin(value.get(0), value.get(1));
+                return new TabList.Skin(value.get(0), value.get(1));
             }
         }
         TAB.getInstance().getMisconfigurationHelper().invalidLayoutSkinDefinition(skin);

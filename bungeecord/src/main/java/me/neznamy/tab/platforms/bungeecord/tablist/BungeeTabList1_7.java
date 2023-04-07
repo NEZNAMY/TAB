@@ -3,9 +3,9 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +49,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
     public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
-        addEntry(new TabListEntry.Builder(entry).displayName(displayName).name(userNames.get(entry)).build());
+        addEntry(new Entry.Builder(entry).displayName(displayName).name(userNames.get(entry)).build());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
     public void updateGameMode(@NonNull UUID entry, int gameMode) {} // Added in 1.8
 
     @Override
-    public void addEntry(@NonNull TabListEntry entry) {
+    public void addEntry(@NonNull TabList.Entry entry) {
         String displayNameString = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
         if (displayNameString.length() > 16) displayNameString = displayNameString.substring(0, 16); // 16 character limit
         update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(), displayNameString, entry.getLatency()));

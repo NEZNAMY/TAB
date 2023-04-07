@@ -11,12 +11,12 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.platform.PlatformEventListener;
 
 /**
  * The core for velocity forwarding events into all enabled features
  */
-public class VelocityEventListener {
+public class VelocityEventListener extends PlatformEventListener {
 
     /**
      * Disconnect event listener to forward the event to all features
@@ -26,9 +26,7 @@ public class VelocityEventListener {
      */
     @Subscribe
     public void onQuit(DisconnectEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+        quit(e.getPlayer().getUniqueId());
     }
     
     /**
@@ -40,16 +38,13 @@ public class VelocityEventListener {
     @Subscribe
     @SuppressWarnings("UnstableApiUsage")
     public void onConnect(ServerPostConnectEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
         Player p = e.getPlayer();
-        TAB.getInstance().getCPUManager().runTask(() -> {
-            if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
-                TAB.getInstance().getFeatureManager().onJoin(new VelocityTabPlayer(p));
-            } else {
-                TAB.getInstance().getFeatureManager().onServerChange(p.getUniqueId(), p.getCurrentServer().orElseThrow(
-                        () -> new IllegalStateException("Velocity does not work as described")).getServerInfo().getName());
-            }
-        });
+        if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
+            join(new VelocityTabPlayer(p));
+        } else {
+            serverChange(p.getUniqueId(), p.getCurrentServer().orElseThrow(
+                    () -> new IllegalStateException("Velocity does not work as described")).getServerInfo().getName());
+        }
     }
 
     /**
@@ -83,8 +78,7 @@ public class VelocityEventListener {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
-            ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(
-                    ((Player) event.getTarget()).getUniqueId(), ((Player) event.getTarget()).getUsername(), event.getData());
+            pluginMessage(((Player) event.getTarget()).getUniqueId(), ((Player) event.getTarget()).getUsername(), event.getData());
         }
     }
 }

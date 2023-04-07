@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
@@ -11,10 +11,12 @@ import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMo
 
 import java.util.Collection;
 
-public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
+public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
 
     public SpongeScoreboard(SpongeTabPlayer player) {
         super(player);
+        // Make sure each player is in different scoreboard for per-player view
+        player.getPlayer().setScoreboard(Scoreboard.builder().build());
     }
 
     @Override

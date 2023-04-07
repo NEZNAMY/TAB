@@ -3,8 +3,7 @@ package me.neznamy.tab.platforms.krypton;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.SingleUpdateTabList;
-import me.neznamy.tab.shared.player.tablist.Skin;
+import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
 import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.auth.GameProfile;
 import org.kryptonmc.api.auth.ProfileProperty;
@@ -43,7 +42,7 @@ public class KryptonTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(@NonNull me.neznamy.tab.shared.player.tablist.TabListEntry entry) {
+    public void addEntry(@NonNull me.neznamy.tab.shared.platform.tablist.TabList.Entry entry) {
         GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
         getTabList().createEntryBuilder(entry.getUniqueId(), profile)
                 .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())

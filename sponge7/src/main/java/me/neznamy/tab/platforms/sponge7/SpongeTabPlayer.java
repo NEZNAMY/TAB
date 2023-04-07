@@ -2,12 +2,11 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
-import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -21,9 +20,9 @@ import java.util.Collection;
 
 public final class SpongeTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+    @Getter private final PlatformScoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     @Getter private final TabList tabList = new SpongeTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new SpongeBossBarHandler(this);
+    @Getter private final PlatformBossBar bossBar = new SpongeBossBar(this);
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
@@ -58,11 +57,11 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         final Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; //offline mode
         final ProfileProperty property = properties.iterator().next();
-        return new Skin(property.getValue(), property.getSignature().orElse(null));
+        return new TabList.Skin(property.getValue(), property.getSignature().orElse(null));
     }
 
     @Override

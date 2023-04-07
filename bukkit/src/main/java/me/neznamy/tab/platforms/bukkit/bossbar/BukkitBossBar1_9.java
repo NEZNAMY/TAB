@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.bossbar;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * to allow 1.8 players, it will handle the entity and teleporting by itself.
  */
 @RequiredArgsConstructor
-public class BukkitBossBar1_9 implements BossBarHandler {
+public class BukkitBossBar1_9 implements PlatformBossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;

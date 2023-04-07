@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 
 import java.util.UUID;
@@ -28,12 +28,12 @@ public class PlayerSlot {
         }
     }
 
-    public TabListEntry getSlot(TabPlayer p) {
-        TabListEntry data;
+    public TabList.Entry getSlot(TabPlayer p) {
+        TabList.Entry data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
             PlayerList playerList = layout.getManager().getPlayerList();
-            data = new TabListEntry(
+            data = new TabList.Entry(
                     uniqueId,
                     layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
                     player.getSkin(),
@@ -43,7 +43,7 @@ public class PlayerSlot {
                     playerList == null ? new IChatBaseComponent(player.getName()) : playerList.getTabFormat(player, p)
             );
         } else {
-            data = new TabListEntry(
+            data = new TabList.Entry(
                     uniqueId,
                     layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
                     layout.getManager().getSkinManager().getDefaultSkin(),

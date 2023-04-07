@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.player;
+package me.neznamy.tab.shared.platform.bossbar;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -6,7 +6,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 
 import java.util.UUID;
 
-public interface BossBarHandler {
+public interface PlatformBossBar {
 
     /**
      * Creates boss bar and sends it to the player

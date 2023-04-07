@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.PlatformEventListener;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -9,53 +10,33 @@ import org.spongepowered.api.event.entity.ChangeEntityWorldEvent;
 import org.spongepowered.api.event.entity.living.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
-import org.spongepowered.api.scoreboard.Scoreboard;
-import org.spongepowered.api.scoreboard.Team;
 
-public final class SpongeEventListener {
+public class SpongeEventListener extends PlatformEventListener {
 
     @Listener
-    public void onQuit(final ServerSideConnectionEvent.Disconnect event) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(event.player().uniqueId())));
-
-        // Clear created mess, so it doesn't get saved into scoreboard.dat
-        Scoreboard sb = event.player().scoreboard();
-        sb.teams().forEach(Team::unregister);
-        sb.objectives().forEach(sb::removeObjective);
+    public void onQuit(ServerSideConnectionEvent.Disconnect event) {
+        quit(event.player().uniqueId());
     }
 
     @Listener
-    public void onJoin(final ServerSideConnectionEvent.Join event) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-
-        // Make sure each player is in different scoreboard for per-player view
-        event.player().setScoreboard(Scoreboard.builder().build());
-
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onJoin(new SpongeTabPlayer(event.player())));
+    public void onJoin(ServerSideConnectionEvent.Join event) {
+        join(new SpongeTabPlayer(event.player()));
     }
 
     @Listener(order = Order.PRE)
-    public void onRespawn(final RespawnPlayerEvent.Recreate event) {
+    public void onRespawn(RespawnPlayerEvent.Recreate event) {
         if (TAB.getInstance().isPluginDisabled()) return;
-        final SpongeTabPlayer player = (SpongeTabPlayer) TAB.getInstance().getPlayer(event.recreatedPlayer().uniqueId());
+        SpongeTabPlayer player = (SpongeTabPlayer) TAB.getInstance().getPlayer(event.recreatedPlayer().uniqueId());
         player.setPlayer(event.recreatedPlayer());
     }
 
     @Listener
-    public void onWorldChange(final ChangeEntityWorldEvent event, @First Player player) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onWorldChange(event.entity().uniqueId(), event.destinationWorld().toString()));
+    public void onWorldChange(ChangeEntityWorldEvent event, @First Player player) {
+        worldChange(event.entity().uniqueId(), event.destinationWorld().toString());
     }
 
     @Listener
-    public void onCommand(final ExecuteCommandEvent.Pre event, @First Player player) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        if (TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player.uniqueId()), event.command())) {
-            event.setCancelled(true);
-        }
+    public void onCommand(ExecuteCommandEvent.Pre event, @First Player player) {
+        if (command(player.uniqueId(), event.command())) event.setCancelled(true);
     }
 }

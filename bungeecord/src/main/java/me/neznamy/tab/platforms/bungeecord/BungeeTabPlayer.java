@@ -2,17 +2,16 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.UserConnection;
@@ -54,14 +53,14 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     /** Player's scoreboard */
-    @Getter private final Scoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
+    @Getter private final PlatformScoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
 
     /** Player's tablist based on version */
     private final TabList tabList1_7 = new BungeeTabList1_7(this);
     private final TabList tabList1_8 = new BungeeTabList1_8(this);
     private final TabList tabList1_19_3 = new BungeeTabList1_19_3(this);
 
-    @Getter private final BossBarHandler bossBarHandler = new BungeeBossBarHandler(this);
+    @Getter private final PlatformBossBar bossBar = new BungeeBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -93,12 +92,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
         Property[] properties = loginResult.getProperties();
         if (properties == null || properties.length == 0) return null;
-        return new Skin(properties[0].getValue(), properties[0].getSignature());
+        return new TabList.Skin(properties[0].getValue(), properties[0].getSignature());
     }
 
     @Override

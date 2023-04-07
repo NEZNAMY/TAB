@@ -4,12 +4,11 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.AdventureBossBarHandler;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
@@ -18,9 +17,9 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    @Getter private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
+    @Getter private final PlatformScoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
     @Getter private final TabList tabList = new VelocityTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new AdventureBossBarHandler(getPlayer());
+    @Getter private final PlatformBossBar bossBar = new AdventureBossBar(getPlayer());
 
     /**
      * Constructs new instance for given player
@@ -49,9 +48,9 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         if (getPlayer().getGameProfile().getProperties().size() == 0) return null; //offline mode
-        return new Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
+        return new TabList.Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
     }
     
     @Override

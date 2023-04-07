@@ -47,7 +47,7 @@ public class KryptonPlatform extends BackendPlatform {
     @Override
     public void loadPlayers() {
         for (Player player : server.getPlayers()) {
-            TAB.getInstance().addPlayer(new KryptonTabPlayer(player, plugin.getProtocolVersion(player)));
+            TAB.getInstance().addPlayer(new KryptonTabPlayer(player));
         }
     }
 

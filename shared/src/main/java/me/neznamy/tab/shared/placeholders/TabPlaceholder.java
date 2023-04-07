@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.placeholders;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 

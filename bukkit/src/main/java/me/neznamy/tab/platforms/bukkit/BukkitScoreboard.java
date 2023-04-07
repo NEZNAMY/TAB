@@ -5,7 +5,7 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboar
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 
 import java.util.Collection;
 
@@ -32,17 +32,8 @@ import java.util.Collection;
  *      scoreboard, automatically destroying all visuals made by the
  *      plugin. They might also put all players into the same scoreboard,
  *      making per-player view of teams, especially sidebar not working.<p>
- * #4 - API made scoreboards get saved into the world folder and then
- *      resent on join with everything that was ever registered to it,
- *      which is very poor performance-wise, especially since it does
- *      that in the main server thread. It might also send conflicting
- *      information, such as putting a player into team they were on
- *      previously, but are not supposed to be anymore. Removing the plugin
- *      would cause all visuals to still be present on the server,
- *      requiring owners to properly clear scoreboards, which is not something
- *      everyone knows how to do.
  */
-public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
+public class BukkitScoreboard extends PlatformScoreboard<BukkitTabPlayer> {
 
     public BukkitScoreboard(BukkitTabPlayer player) {
         super(player);

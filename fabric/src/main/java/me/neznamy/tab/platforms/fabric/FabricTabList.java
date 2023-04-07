@@ -6,10 +6,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.BulkUpdateTabList;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
+import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import net.minecraft.network.chat.Component;
 
 import java.util.*;
@@ -49,9 +47,9 @@ public class FabricTabList extends BulkUpdateTabList {
     }
 
     @Override
-    public void addEntries(@NonNull Collection<TabListEntry> entries) {
+    public void addEntries(@NonNull Collection<Entry> entries) {
         List<Builder> converted = new ArrayList<>();
-        for (TabListEntry entry : entries) {
+        for (Entry entry : entries) {
             converted.add(new Builder(entry.getUniqueId())
                     .setName(entry.getName())
                     .setSkin(entry.getSkin())

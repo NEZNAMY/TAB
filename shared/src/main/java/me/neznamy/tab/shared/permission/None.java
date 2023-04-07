@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.permission;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 
 /**

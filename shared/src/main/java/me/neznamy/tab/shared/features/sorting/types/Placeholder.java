@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 import java.util.LinkedHashMap;

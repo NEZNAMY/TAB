@@ -2,20 +2,18 @@ package me.neznamy.tab.platforms.krypton;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.Scoreboard;
-import org.kryptonmc.api.scoreboard.CollisionRule;
-import org.kryptonmc.api.scoreboard.Objective;
-import org.kryptonmc.api.scoreboard.ObjectiveRenderType;
-import org.kryptonmc.api.scoreboard.Team;
-import org.kryptonmc.api.scoreboard.Visibility;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import org.kryptonmc.api.scoreboard.*;
 import org.kryptonmc.api.scoreboard.criteria.Criteria;
 
 import java.util.Collection;
 
-public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
+public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
 
     public KryptonScoreboard(@NonNull KryptonTabPlayer player) {
         super(player);
+        // Create a new, blank scoreboard for each player to avoid conflicts
+        player.getPlayer().showScoreboard(Scoreboard.create());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.player.tablist;
+package me.neznamy.tab.shared.platform.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -33,7 +33,7 @@ public abstract class BulkUpdateTabList implements TabList {
     }
 
     @Override
-    public void addEntry(@NonNull TabListEntry entry) {
+    public void addEntry(@NonNull TabList.Entry entry) {
         addEntries(Collections.singletonList(entry));
     }
 }

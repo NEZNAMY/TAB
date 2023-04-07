@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

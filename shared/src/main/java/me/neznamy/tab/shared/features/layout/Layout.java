@@ -3,12 +3,12 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.ServerSwitchListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 import java.util.*;
@@ -31,13 +31,13 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     public void sendTo(TabPlayer p) {
         if (viewers.contains(p)) return;
         viewers.add(p);
-        List<TabListEntry> list = new ArrayList<>();
+        List<TabList.Entry> list = new ArrayList<>();
         groups.forEach(g -> list.addAll(g.getSlots(p)));
         for (FixedSlot slot : fixedSlots.values()) {
             list.add(slot.createEntry(p));
         }
         for (int slot : emptySlots) {
-            list.add(new TabListEntry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
+            list.add(new TabList.Entry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.getTabList().addEntries(list);

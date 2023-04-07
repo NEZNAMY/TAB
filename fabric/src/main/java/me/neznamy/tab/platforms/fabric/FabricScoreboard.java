@@ -7,7 +7,7 @@ import java.util.Objects;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
@@ -17,12 +17,13 @@ import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
-public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
+public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
 
-    private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
+    private static final Scoreboard dummyScoreboard = new Scoreboard();
     private static final ObjectiveCriteria dummyCriteria = ObjectiveCriteria.DUMMY;
     @NonNull private static final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
 

@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.backend;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.Platform;
+import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;

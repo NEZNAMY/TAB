@@ -4,10 +4,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_8;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_9;
@@ -15,7 +14,7 @@ import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -44,9 +43,9 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     /** Player's connection for sending packets, preloading for speed */
     @Getter private Object playerConnection;
 
-    @Getter private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
+    @Getter private final PlatformScoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
     @Getter private final TabList tabList = new BukkitTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+    @Getter private final PlatformBossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar1_9(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar1_8(this);
 
     /**
@@ -120,12 +119,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         try {
             Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
             if (col.isEmpty()) return null; //offline mode
             Property property = col.iterator().next();
-            return new Skin(property.getValue(), property.getSignature());
+            return new TabList.Skin(property.getValue(), property.getSignature());
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
             return null;

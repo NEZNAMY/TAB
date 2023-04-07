@@ -2,13 +2,13 @@ package me.neznamy.tab.platforms.krypton;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.AdventureBossBarHandler;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import org.kryptonmc.api.auth.ProfileProperty;
 import org.kryptonmc.api.entity.player.Player;
 
@@ -16,12 +16,13 @@ import java.util.List;
 
 public class KryptonTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
+    @Getter private final PlatformScoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
     @Getter private final TabList tabList = new KryptonTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new AdventureBossBarHandler(getPlayer());
+    @Getter private final PlatformBossBar bossBar = new AdventureBossBar(getPlayer());
 
-    public KryptonTabPlayer(Player player, int protocolVersion) {
-        super(player, player.getUuid(), player.getProfile().name(), "N/A", player.getWorld().getName(), protocolVersion, true);
+    public KryptonTabPlayer(Player player) {
+        super(player, player.getUuid(), player.getProfile().name(), "N/A",
+                player.getWorld().getName(), TAB.getInstance().getServerVersion().getNetworkId(), true);
     }
 
     @Override
@@ -50,10 +51,10 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         List<ProfileProperty> list = getPlayer().getProfile().properties();
         if (list.isEmpty()) return null;
-        return new Skin(list.get(0).value(), list.get(0).signature());
+        return new TabList.Skin(list.get(0).value(), list.get(0).signature());
     }
 
     @Override

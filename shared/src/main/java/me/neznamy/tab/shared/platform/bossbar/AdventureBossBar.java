@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.player;
+package me.neznamy.tab.shared.platform.bossbar;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import org.jetbrains.annotations.NotNull;
 
 @AllArgsConstructor
-public class AdventureBossBarHandler implements BossBarHandler {
+public class AdventureBossBar implements PlatformBossBar {
 
     @Setter private Audience audience;
 

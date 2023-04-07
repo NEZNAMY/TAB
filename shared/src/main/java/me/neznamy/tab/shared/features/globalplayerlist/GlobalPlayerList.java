@@ -1,14 +1,13 @@
 package me.neznamy.tab.shared.features.globalplayerlist;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
+import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.types.*;
 
@@ -30,7 +29,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     @Getter private final String featureName = "Global PlayerList";
 
     public GlobalPlayerList() {
-        for (Entry<String, List<String>> entry : sharedServers.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : sharedServers.entrySet()) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.globalPlayerListGroup(entry.getKey()), 1000,
                     () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> entry.getValue().contains(p.getServer()) && !p.isVanished()).count());
         }
@@ -40,7 +39,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     public void load() {
         if (updateLatency) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST_LATENCY, new LatencyRefresher());
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            List<TabListEntry> entries = new ArrayList<>();
+            List<TabList.Entry> entries = new ArrayList<>();
             for (TabPlayer displayed : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getServer().equals(displayed.getServer())) continue;
                 if (shouldSee(viewer, displayed)) entries.add(getAddInfoData(displayed, viewer));
@@ -57,7 +56,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     public String getServerGroup(String serverName) {
-        for (Entry<String, List<String>> group : sharedServers.entrySet()) {
+        for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
             if (group.getValue().stream().anyMatch(serverName::equalsIgnoreCase)) return group.getKey();
         }
         return isolateUnlistedServers ? "isolated:" + serverName : "DEFAULT";
@@ -74,7 +73,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     @Override
     public void onJoin(TabPlayer connectedPlayer) {
-        List<TabListEntry> entries = new ArrayList<>();
+        List<TabList.Entry> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (connectedPlayer.getServer().equals(all.getServer())) continue;
             if (shouldSee(all, connectedPlayer)) {
@@ -117,12 +116,12 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         });
     }
 
-    public TabListEntry getAddInfoData(TabPlayer p, TabPlayer viewer) {
+    public TabList.Entry getAddInfoData(TabPlayer p, TabPlayer viewer) {
         IChatBaseComponent format = null;
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
         }
-        return new TabListEntry(
+        return new TabList.Entry(
                 p.getTablistId(),
                 p.getName(),
                 p.getSkin(),

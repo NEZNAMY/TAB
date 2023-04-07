@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class SpongeBossBarHandler implements BossBarHandler {
+public class SpongeBossBar implements PlatformBossBar {
 
     /** Player to send boss bars to */
     private final SpongeTabPlayer player;

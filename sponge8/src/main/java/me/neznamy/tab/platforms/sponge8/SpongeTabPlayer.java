@@ -2,14 +2,13 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.player.AdventureBossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.TabPlayer;
-import me.neznamy.tab.shared.player.tablist.Skin;
-import me.neznamy.tab.shared.player.tablist.TabList;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
@@ -24,9 +23,9 @@ import java.util.List;
 
 public final class SpongeTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+    @Getter private final PlatformScoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     @Getter private final TabList tabList = new SpongeTabList(this);
-    @Getter private final AdventureBossBarHandler bossBarHandler = new AdventureBossBarHandler(getPlayer());
+    @Getter private final AdventureBossBar bossBar = new AdventureBossBar(getPlayer());
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
@@ -69,10 +68,10 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         List<ProfileProperty> list = getPlayer().profile().properties();
         if (list.isEmpty()) return null;
-        return new Skin(list.get(0).value(), list.get(0).signature().orElse(null));
+        return new TabList.Skin(list.get(0).value(), list.get(0).signature().orElse(null));
     }
 
     @Override
@@ -105,6 +104,6 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     public void setPlayer(final ServerPlayer player) {
         this.player = player;
-        bossBarHandler.setAudience(player);
+        bossBar.setAudience(player);
     }
 }

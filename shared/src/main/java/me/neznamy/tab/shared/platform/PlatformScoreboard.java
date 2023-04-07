@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.player;
+package me.neznamy.tab.shared.platform;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public abstract class Scoreboard<T extends TabPlayer> {
+public abstract class PlatformScoreboard<T extends TabPlayer> {
 
     /** Player this scoreboard belongs to */
     protected final T player;

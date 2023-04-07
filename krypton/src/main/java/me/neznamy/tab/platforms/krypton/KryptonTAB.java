@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,6 @@ import org.kryptonmc.api.plugin.annotation.Plugin;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Main class for Krypton platform
@@ -67,7 +66,7 @@ public class KryptonTAB {
                 null
         );
         TAB.setInstance(tab);
-        eventNode.registerListeners(new KryptonEventListener(this));
+        eventNode.registerListeners(new KryptonEventListener());
         server.getCommandManager().register(new KryptonTABCommand(), CommandMeta.builder("tab").build());
         TAB.getInstance().load();
     }
@@ -75,13 +74,6 @@ public class KryptonTAB {
     @Listener
     public final void onStop(ServerStopEvent event) {
         TAB.getInstance().unload();
-    }
-
-    public final int getProtocolVersion(Player player) {
-        if (server.getPluginManager().isLoaded(TabConstants.Plugin.VIAVERSION.toLowerCase(Locale.ROOT))) {
-            return ProtocolVersion.getPlayerVersionVia(player.getUuid(), player.getProfile().name());
-        }
-        return TAB.getInstance().getServerVersion().getNetworkId();
     }
 
     public static class KryptonTABCommand implements SimpleCommand {

@@ -4,7 +4,7 @@ import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.Scoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
@@ -17,7 +17,7 @@ import java.util.Collection;
  * any Scoreboard API and the scoreboard class it has is just a
  * downstream tracker, we need to use packets.
  */
-public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
+public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
 
     public BungeeScoreboard(BungeeTabPlayer player) {
         super(player);

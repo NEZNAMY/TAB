@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.player.BossBarHandler;
+import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.BossEvent;
 
 @RequiredArgsConstructor
-public class FabricBossBarHandler implements BossBarHandler {
+public class FabricBossBar implements PlatformBossBar {
 
     private final FabricTabPlayer player;
     private final Map<UUID, ServerBossEvent> bars = new HashMap<>();

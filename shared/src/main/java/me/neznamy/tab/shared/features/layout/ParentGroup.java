@@ -3,8 +3,8 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.player.tablist.TabListEntry;
-import me.neznamy.tab.shared.player.TabPlayer;
+import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 public class ParentGroup {
@@ -47,8 +47,8 @@ public class ParentGroup {
         }
     }
     
-    public List<TabListEntry> getSlots(TabPlayer p) {
-        List<TabListEntry> data = new ArrayList<>();
+    public List<TabList.Entry> getSlots(TabPlayer p) {
+        List<TabList.Entry> data = new ArrayList<>();
         playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
         return data;
     }
