@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FabricTabPlayer extends TabPlayer {
@@ -27,7 +26,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     public FabricTabPlayer(ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), TAB.getInstance().getConfiguration().getServerName(),
-                player.getLevel().dimension().location().toString(), getProtocolVersion(player), true);
+                "N/A", getProtocolVersion(player), true);
     }
 
     private static int getProtocolVersion(ServerPlayer player) {
@@ -96,7 +95,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().connection.send(new ClientboundTabListPacket(
+        getPlayer().connection.send(FabricMultiVersion.setHeaderAndFooter.apply(
                 FabricTAB.toComponent(header, getVersion()),
                 FabricTAB.toComponent(footer, getVersion()))
         );

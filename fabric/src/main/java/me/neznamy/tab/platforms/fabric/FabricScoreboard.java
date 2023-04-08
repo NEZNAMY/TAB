@@ -12,7 +12,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.Objective;
@@ -110,12 +109,12 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
         if (suffix != null)
             team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+        player.sendPacket(FabricMultiVersion.registerTeam.apply(team));
     }
 
     @Override
     public void unregisterTeam0(@NonNull String name) {
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createRemovePacket(new PlayerTeam(dummyScoreboard, name)));
+        player.sendPacket(FabricMultiVersion.unregisterTeam.apply(new PlayerTeam(dummyScoreboard, name)));
     }
 
     @Override
@@ -132,7 +131,7 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
             team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         if (suffix != null)
             team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
-        player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
+        player.sendPacket(FabricMultiVersion.updateTeam.apply(team));
     }
 
     @Override

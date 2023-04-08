@@ -25,7 +25,7 @@ public class FabricBossBar implements PlatformBossBar {
                 BossEvent.BossBarColor.valueOf(color.name()),
                 BossEvent.BossBarOverlay.valueOf(style.name())
         );
-        bar.setProgress(progress);
+        FabricMultiVersion.setProgress.accept(bar, progress);
         bars.put(id, bar);
         bar.addPlayer(player.getPlayer());
     }
@@ -37,7 +37,7 @@ public class FabricBossBar implements PlatformBossBar {
 
     @Override
     public void update(@NonNull UUID id, float progress) {
-        bars.get(id).setProgress(progress);
+        FabricMultiVersion.setProgress.accept(bars.get(id), progress);
     }
 
     @Override

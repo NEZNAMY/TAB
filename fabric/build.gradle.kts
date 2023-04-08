@@ -1,9 +1,7 @@
 // Versions that don't require any code changes:
 //      1.19.3, 1.19.4
 // Versions that require changes to FabricMultiVersion.java:
-//      1.17 - 1.19.2
-// Versions that require deeper changes to source code:
-//      1.14 - 1.16.5
+//      1.14 - 1.19.2
 val minecraftVersion = "1.19.4"
 
 val fabricApiVersions = mapOf(
