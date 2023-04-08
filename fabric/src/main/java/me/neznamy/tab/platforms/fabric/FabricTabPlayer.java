@@ -49,7 +49,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        FabricMultiVersion.sendMessage(this, message);
+        FabricMultiVersion.sendMessage.accept(this, message);
     }
 
     @Override

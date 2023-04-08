@@ -3,6 +3,11 @@ accessWidener v1 named
 # 1.19.3+
 accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
 mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
+
 # 1.19.2-
 accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoPacket entries Ljava/util/List;
 mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoPacket entries Ljava/util/List;
+
+# 1.16.5-
+accessible field net/minecraft/network/protocol/game/ClientboundTabListPacket header Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/network/protocol/game/ClientboundTabListPacket footer Lnet/minecraft/network/chat/Component;

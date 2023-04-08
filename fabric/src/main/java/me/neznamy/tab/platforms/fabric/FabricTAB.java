@@ -47,7 +47,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStart);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onServerStop);
-        FabricMultiVersion.registerCommand();
+        FabricMultiVersion.registerCommand.run();
     }
 
     private void onServerStart(MinecraftServer server) {
@@ -95,7 +95,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
             boolean hasReloadPermission = hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                FabricMultiVersion.sendMessage(source, message);
+                FabricMultiVersion.sendMessage2.accept(source, Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
             }
             return 0;
         }

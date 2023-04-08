@@ -8,27 +8,40 @@ import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.world.level.GameType;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
+/**
+ * This class allows user to change methods based on target server version.
+ * All methods have several implementations, choose the one based on server version.
+ */
 public class FabricMultiVersion {
 
-    public static void sendMessage(FabricTabPlayer player, IChatBaseComponent message) {
-        player.getPlayer().sendSystemMessage(FabricTAB.toComponent(message, player.getVersion())); // 1.19+
-        //player.getPlayer().sendMessage(FabricTAB.toComponent(message, player.getVersion()), new UUID(0,0)); // 1.18.2-
-    }
+    private static final UUID SYSTEM_ID = new UUID(0, 0);
+    public static final BiConsumer<FabricTabPlayer, IChatBaseComponent> sendMessage;
+    public static final Consumer<Component> sendConsoleMessage;
+    public static final BiConsumer<CommandSourceStack, Component> sendMessage2;
+    public static final Runnable registerCommand;
 
-    public static void sendConsoleMessage(String message) {
-        Component component = Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString());
-        FabricTAB.getServer().sendSystemMessage(component); // 1.19+
-        //FabricTAB.getServer().sendMessage(component, new UUID(0,0)); // 1.18.2-
-    }
+    static {
+        // 1.19+
 
-    public static void sendMessage(CommandSourceStack source, String message) {
-        Component component = Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString());
-        source.sendSystemMessage(component); // 1.19+
-        //source.sendSuccess(component, false); // 1.18.2-
+        sendMessage = (player, message) -> player.getPlayer().sendSystemMessage(FabricTAB.toComponent(message, player.getVersion()));
+        sendConsoleMessage = message -> FabricTAB.getServer().sendSystemMessage(message);
+        sendMessage2 = CommandSourceStack::sendSystemMessage;
+        registerCommand = () -> net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register(
+                (dispatcher, $, $$) -> FabricTAB.onRegisterCommands(dispatcher));
+
+
+        // 1.17 - 1.18.2
+        /*
+        sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.toComponent(message, player.getVersion()), SYSTEM_ID);
+        sendConsoleMessage = message -> FabricTAB.getServer().sendMessage(message, SYSTEM_ID);
+        sendMessage2 = (source, message) -> source.sendSuccess(message, false);
+        registerCommand = () -> net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register(
+                (dispatcher, $) -> FabricTAB.onRegisterCommands(dispatcher));
+        */
     }
 
     // 1.19.3+
@@ -57,8 +70,7 @@ public class FabricMultiVersion {
     }
 
     // 1.19.2-
-    /*
-    public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
+    /*public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
         // 1.19+
         List<ClientboundPlayerInfoPacket.PlayerUpdate> list = entries.stream().map(entry ->
                 new ClientboundPlayerInfoPacket.PlayerUpdate(
@@ -66,17 +78,11 @@ public class FabricMultiVersion {
                         entry.getLatency(),
                         GameType.byId(entry.getGameMode()),
                         entry.getDisplayName()
-                        , null // 1.19 - 1.19.2
+                        //, null // 1.19 - 1.19.2
                 )
         ).toList();
         ClientboundPlayerInfoPacket packet = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()), Collections.emptyList());
         packet.entries = list;
         return packet;
-    }
-     */
-
-    public static void registerCommand() {
-        net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> FabricTAB.onRegisterCommands(dispatcher)); // 1.19+
-        //net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register((dispatcher, $) -> FabricTAB.onRegisterCommands(dispatcher)); // 1.18.2-
-    }
+    }*/
 }
