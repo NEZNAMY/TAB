@@ -232,4 +232,9 @@ public class CpuManager {
         if (scheduler.isShutdown()) return;
         scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
+
+    public void runTaskLater(int delayMilliseconds, Runnable task) {
+        if (scheduler.isShutdown()) return;
+        scheduler.schedule(() -> runTask(task), delayMilliseconds, TimeUnit.MILLISECONDS);
+    }
 }
