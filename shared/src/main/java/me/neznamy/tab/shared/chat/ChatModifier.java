@@ -177,11 +177,11 @@ public class ChatModifier {
     public JSONObject serialize() {
         JSONObject json = new JSONObject();
         if (color != null) json.put("color", targetVersion.getMinorVersion() >= 16 ? color.toString() : color.getLegacyColor().toString().toLowerCase());
-        json.put("bold", bold);
-        json.put("italic", italic);
-        json.put("underlined", underlined);
-        json.put("strikethrough", strikethrough);
-        json.put("obfuscated", obfuscated);
+        if (bold != null) json.put("bold", bold);
+        if (italic != null) json.put("italic", italic);
+        if (underlined != null) json.put("underlined", underlined);
+        if (strikethrough != null) json.put("strikethrough", strikethrough);
+        if (obfuscated != null) json.put("obfuscated", obfuscated);
         if (clickEvent != null) json.put("clickEvent", clickEvent.serialize());
         if (hoverEvent != null) json.put("hoverEvent", hoverEvent.serialize());
         return json;
