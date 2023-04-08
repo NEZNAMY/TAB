@@ -43,7 +43,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Getter private final Map<String, Integer> refreshIntervals = TAB.getInstance().getConfig().getConfigurationSection("placeholderapi-refresh-intervals");
     @Getter private final int defaultRefresh;
 
-    private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
+    @Getter private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
     //map of String-Set of features using placeholder
     @Getter private final Map<String, Set<Refreshable>> placeholderUsage = new ConcurrentHashMap<>();

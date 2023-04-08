@@ -55,7 +55,9 @@ public class PluginMessageHandler {
     }
 
     public void placeholder(ProxyTabPlayer player, ByteArrayDataInput in) {
-        Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(in.readUTF());
+        String identifier = in.readUTF();
+        if (!TAB.getInstance().getPlaceholderManager().getRegisteredPlaceholders().containsKey(identifier)) return;
+        Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
         if (placeholder instanceof RelationalPlaceholder) {
             ((RelationalPlaceholder)placeholder).updateValue(player, TAB.getInstance().getPlayer(in.readUTF()), in.readUTF());
         } else {
