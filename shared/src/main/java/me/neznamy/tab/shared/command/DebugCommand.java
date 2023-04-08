@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -64,6 +65,9 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, separator);
         if (analyzed == null) return;
         sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
+        if (analyzed instanceof ProxyTabPlayer) {
+            sendMessage(sender, "&eBridge connection: " + (((ProxyTabPlayer)analyzed).isBridgeConnected() ? "&aConnected" : "&cNot connected"));
+        }
         sendMessage(sender, getGroup(analyzed));
         sendMessage(sender, getTeamName(analyzed));
         sendMessage(sender, getTeamNameNote(analyzed));

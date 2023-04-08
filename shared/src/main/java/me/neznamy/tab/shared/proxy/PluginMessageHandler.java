@@ -119,6 +119,7 @@ public class PluginMessageHandler {
                 }
             }
         }
+        player.setBridgeConnected(true);
     }
 
     public void registerPlaceholder(ProxyTabPlayer player, ByteArrayDataInput in) {

@@ -37,6 +37,9 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     /** Player's boat vehicle status for unlimited NameTags */
     @Getter @Setter private boolean onBoat;
 
+    /** Flag for marking if this player has received join response from bridge or not */
+    @Getter @Setter private boolean bridgeConnected;
+
     /** Map of player's requested permissions */
     private final Map<String, Boolean> permissions = new HashMap<>();
 
@@ -65,6 +68,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * joined, containing all plugin configuration data.
      */
     public void sendJoinPluginMessage() {
+        bridgeConnected = false; // Reset on server switch
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
         List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge && !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
