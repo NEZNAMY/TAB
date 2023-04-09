@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.placeholders.conditions.simple.*;
 
 /**
  * The main condition class. It allows users to configure different
@@ -22,25 +21,28 @@ public class Condition {
     private static Map<String, Condition> registeredConditions = new HashMap<>();
 
     /** All supported sub-condition types */
-    @Getter private static final Map<String, Function<String, SimpleCondition>> conditionTypes =
-            new LinkedHashMap<String, Function<String, SimpleCondition>>() {{
-        put("permission:", PermissionCondition::new);
-        put("<-", ContainsCondition::new);
-        put("|-", StartsWithCondition::new);
-        put("-|", EndsWithCondition::new);
-        put(">=", MoreThanOrEqualsCondition::new);
-        put(">", MoreThanCondition::new);
-        put("<=", LessThanOrEqualsCondition::new);
-        put("<", LessThanCondition::new);
-        put("!=", NotEqualsCondition::new);
-        put("=", EqualsCondition::new);
+    @Getter private static final Map<String, Function<String, Function<TabPlayer, Boolean>>> conditionTypes =
+            new LinkedHashMap<String, Function<String, Function<TabPlayer, Boolean>>>() {{
+
+        put(">=", line -> new NumericCondition(line.split(">="), (left, right) -> left >= right)::isMet);
+        put(">", line -> new NumericCondition(line.split(">"), (left, right) -> left > right)::isMet);
+        put("<=", line -> new NumericCondition(line.split("<="), (left, right) -> left <= right)::isMet);
+        put("<", line -> new NumericCondition(line.split("<"), (left, right) -> left < right)::isMet);
+
+        put("<-", line -> new StringCondition(line.split("<-"), String::contains)::isMet);
+        put("|-", line -> new StringCondition(line.split("|-"), String::startsWith)::isMet);
+        put("-|", line -> new StringCondition(line.split("-|"), String::endsWith)::isMet);
+        put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
+        put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
+
+        put("permission:", line -> p -> p.hasPermission(line.split(":")[1]));
     }};
 
     /** Name of this condition defined in configuration */
     @Getter private final String name;
 
     /** All defined sub-conditions inside this conditions */
-    protected SimpleCondition[] subConditions;
+    protected List<Function<TabPlayer, Boolean>> subConditions = new ArrayList<>();
 
     /** Condition type, {@code true} for AND type and {@code false} for OR type */
     private final boolean type;
@@ -84,16 +86,14 @@ public class Condition {
             TAB.getInstance().getMisconfigurationHelper().conditionHasNoConditions(name);
             return;
         }
-        List<SimpleCondition> list = new ArrayList<>();
         for (String line : conditions) {
-            SimpleCondition condition = SimpleCondition.compile(line);
+            Function<TabPlayer, Boolean> condition = compile(line);
             if (condition != null) {
-                list.add(condition);
+                subConditions.add(condition);
             } else {
                 TAB.getInstance().getMisconfigurationHelper().invalidConditionPattern(name, line);
             }
         }
-        subConditions = list.toArray(new SimpleCondition[0]);
         PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
         for (String subCondition : conditions) {
             if (subCondition.startsWith("permission:")) {
@@ -141,13 +141,13 @@ public class Condition {
      */
     public boolean isMet(TabPlayer p) {
         if (type) {
-            for (SimpleCondition condition : subConditions) {
-                if (!condition.isMet(p)) return false;
+            for (Function<TabPlayer, Boolean> condition : subConditions) {
+                if (!condition.apply(p)) return false;
             }
             return true;
         } else {
-            for (SimpleCondition condition : subConditions) {
-                if (condition.isMet(p)) return true;
+            for (Function<TabPlayer, Boolean> condition : subConditions) {
+                if (condition.apply(p)) return true;
             }
             return false;
         }
@@ -198,5 +198,22 @@ public class Condition {
      */
     public static void finishSetups() {
         registeredConditions.values().forEach(Condition::finishSetup);
+    }
+
+    /**
+     * Compiles condition from condition line. This includes detection
+     * what kind of condition it is and creating it.
+     *
+     * @param   line
+     *          condition line
+     * @return  compiled condition or null if no valid pattern was found
+     */
+    private static Function<TabPlayer, Boolean> compile(String line) {
+        for (Map.Entry<String, Function<String, Function<TabPlayer, Boolean>>> entry : Condition.getConditionTypes().entrySet()) {
+            if (line.contains(entry.getKey())) {
+                return entry.getValue().apply(line);
+            }
+        }
+        return null;
     }
 }

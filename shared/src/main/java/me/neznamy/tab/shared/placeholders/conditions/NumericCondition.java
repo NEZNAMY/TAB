@@ -1,14 +1,16 @@
-package me.neznamy.tab.shared.placeholders.conditions.simple;
+package me.neznamy.tab.shared.placeholders.conditions;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 
+import java.util.function.BiFunction;
+
 /**
- * An abstract class handling numeric conditions to avoid
+ * A class handling numeric conditions to avoid
  * repeated number parsing for static numbers and therefore
  * reduce memory allocations and improve performance.
  */
-public abstract class NumericCondition extends SimpleCondition {
+public class NumericCondition extends SimpleCondition {
 
     /** {@code true} if left side is a static number, {@code false} if it has placeholders */
     private boolean leftSideStatic;
@@ -21,6 +23,26 @@ public abstract class NumericCondition extends SimpleCondition {
 
     /** If right side is static, value is stored here */
     private float rightSideValue;
+
+    /** Function that determines whether condition is met or not */
+    private final BiFunction<Double, Double, Boolean> function;
+
+    public NumericCondition(String[] arr, BiFunction<Double, Double, Boolean> function) {
+        super(arr);
+        this.function = function;
+        try {
+            leftSideValue = Float.parseFloat(leftSide);
+            leftSideStatic = true;
+        } catch (NumberFormatException e) {
+            //not a valid number
+        }
+        try {
+            rightSideValue = Float.parseFloat(rightSide);
+            rightSideStatic = true;
+        } catch (NumberFormatException e) {
+            //not a valid number
+        }
+    }
 
     /**
      * Returns left side of this condition. If it's a static number it is
@@ -53,19 +75,7 @@ public abstract class NumericCondition extends SimpleCondition {
     }
 
     @Override
-    protected void setSides(String leftSide, String rightSide) {
-        super.setSides(leftSide, rightSide);
-        try {
-            leftSideValue = Float.parseFloat(leftSide);
-            leftSideStatic = true;
-        } catch (NumberFormatException e) {
-            //not a valid number
-        }
-        try {
-            rightSideValue = Float.parseFloat(rightSide);
-            rightSideStatic = true;
-        } catch (NumberFormatException e) {
-            //not a valid number
-        }
+    public boolean isMet(TabPlayer p) {
+        return function.apply(getLeftSide(p), getRightSide(p));
     }
 }
