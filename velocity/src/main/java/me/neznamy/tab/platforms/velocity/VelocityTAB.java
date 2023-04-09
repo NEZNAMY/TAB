@@ -17,9 +17,6 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
@@ -28,13 +25,14 @@ import org.slf4j.Logger;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Main class for Velocity platform.
  * The velocity-plugin.json is manually deleted from releases and therefore
  * requires manual compilation. This avoids unnecessary complications
  * and bug reports from an unsupported platform.
+ * Most of the reasons why Velocity is not and will not be supported are listed at
+ * https://gist.github.com/NEZNAMY/21c1aabe57a0a462ee175386c510fdf8
  */
 @Plugin(
         id = TabConstants.PLUGIN_ID,
@@ -44,7 +42,7 @@ import java.util.Locale;
         url = TabConstants.PLUGIN_WEBSITE,
         authors = {TabConstants.PLUGIN_AUTHOR}
 )
-public class VelocityTAB extends ProxyPlatform {
+public class VelocityTAB {
 
     /** ProxyServer instance */
     @Inject @Getter private ProxyServer server;
@@ -62,10 +60,6 @@ public class VelocityTAB extends ProxyPlatform {
     @Getter private static final MinecraftChannelIdentifier minecraftChannelIdentifier =
             MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
-    /** Variables for getters for Platform implementation */
-    @Getter private final PipelineInjector pipelineInjector = null;
-    @Getter private final RedisSupport redisSupport = null; // Not available on Velocity
-
     /**
      * Initializes plugin for velocity
      *
@@ -75,7 +69,7 @@ public class VelocityTAB extends ProxyPlatform {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
-        TAB.setInstance(new TAB(this, ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
+        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
@@ -95,19 +89,6 @@ public class VelocityTAB extends ProxyPlatform {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         TAB.getInstance().unload();
-    }
-
-    @Override
-    public String getPluginVersion(String plugin) {
-        return server.getPluginManager().getPlugin(plugin.toLowerCase(Locale.US))
-                .flatMap(pluginContainer -> pluginContainer.getDescription().getVersion()).orElse(null);
-    }
-
-    @Override
-    public void loadPlayers() {
-        for (Player p : server.getAllPlayers()) {
-            TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
-        }
     }
 
     /**
