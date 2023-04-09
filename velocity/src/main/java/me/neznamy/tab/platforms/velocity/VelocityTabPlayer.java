@@ -28,8 +28,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          velocity player
      */
     public VelocityTabPlayer(Player p) {
-        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().isPresent() ?
-                p.getCurrentServer().get().getServerInfo().getName() : "null", p.getProtocolVersion().getProtocol());
+        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
+                s.getServerInfo().getName()).orElse("null"), p.getProtocolVersion().getProtocol());
     }
     
     @Override

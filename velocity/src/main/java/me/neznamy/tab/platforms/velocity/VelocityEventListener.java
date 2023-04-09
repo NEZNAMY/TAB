@@ -42,8 +42,7 @@ public class VelocityEventListener extends PlatformEventListener {
         if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
             join(new VelocityTabPlayer(p));
         } else {
-            serverChange(p.getUniqueId(), p.getCurrentServer().orElseThrow(
-                    () -> new IllegalStateException("Velocity does not work as described")).getServerInfo().getName());
+            serverChange(p.getUniqueId(), p.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null"));
         }
     }
 
