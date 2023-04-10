@@ -14,11 +14,11 @@ repositories {
 
 dependencies {
     implementation(projects.shared)
-    implementation(libs.bstats.sponge)
+    implementation("org.bstats:bstats-sponge:3.0.1")
 }
 
 sponge {
-    apiVersion(libs.sponge8.get().version)
+    apiVersion("8.0.0")
     loader {
         name(PluginLoaders.JAVA_PLAIN)
         version("1.0")

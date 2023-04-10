@@ -1,15 +1,6 @@
 dependencies {
-    compileOnlyApi(libs.netty)
-    api(libs.jsonSimple) {
-        exclude("junit", "junit")
-    }
-    api(libs.snakeyaml)
-    api(libs.yamlAssist)
-    compileOnlyApi(libs.adventureMiniMessage)
-    compileOnlyApi(libs.adventureApi)
-    compileOnlyApi(libs.adventureLegacy)
-    compileOnlyApi(libs.adventureGson)
-    compileOnlyApi(libs.via)
+    compileOnlyApi("org.jetbrains:annotations:24.0.1")
+    compileOnlyApi("com.viaversion:viaversion-api:4.5.1")
 }
 
 tasks.javadoc {

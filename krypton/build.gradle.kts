@@ -1,8 +1,8 @@
 dependencies {
     implementation(projects.shared)
-    compileOnly(libs.krypton.api)
-    compileOnly(libs.spark)
-    annotationProcessor(libs.krypton.annotationProcessor)
+    compileOnly("me.lucko:spark-api:0.1-SNAPSHOT")
+    compileOnly("org.kryptonmc:krypton-api:f93a12382f")
+    annotationProcessor("org.kryptonmc:krypton-annotation-processor:f93a12382f")
 }
 
 tasks.compileJava {

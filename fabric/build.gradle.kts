@@ -46,14 +46,15 @@ repositories {
 dependencies {
     implementation(projects.shared)
 
-    minecraft("com.mojang", "minecraft", minecraftVersion)
+    minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings(loom.officialMojangMappings())
 
     modImplementation("net.fabricmc", "fabric-loader", "0.14.17")
     modImplementation("me.lucko", "fabric-permissions-api", "0.2-SNAPSHOT")
-    val commandApiVersion = if (minecraftVersion.split(".")[1].toInt() >= 19) "2" else "1"
-    val apiModules = setOf("fabric-api-base", "fabric-command-api-v$commandApiVersion", "fabric-lifecycle-events-v1", "fabric-networking-api-v1")
-    apiModules.forEach { modImplementation(fabricApi.module(it, fabricApiVersions[minecraftVersion])) }
+    modImplementation(fabricApi.module("fabric-api-base", fabricApiVersions[minecraftVersion]))
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabricApiVersions[minecraftVersion]))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", fabricApiVersions[minecraftVersion]))
+    modImplementation(fabricApi.module("fabric-command-api-v${if (minecraftVersion.split(".")[1].toInt() >= 19) "2" else "1"}", fabricApiVersions[minecraftVersion]))
 }
 
 loom {
