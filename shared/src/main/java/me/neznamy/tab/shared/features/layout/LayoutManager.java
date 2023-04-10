@@ -18,12 +18,12 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 public class LayoutManager extends TabFeature implements JoinListener, QuitListener, VanishListener, Loadable,
         UnLoadable, Refreshable {
 
-    private final Direction direction = parseDirection(TAB.getInstance().getConfiguration().getLayout().getString("direction", "COLUMNS"));
-    @Getter private final String defaultSkin = TAB.getInstance().getConfiguration().getLayout().getString("default-skin", "mineskin:1753261242");
-    @Getter private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfiguration().getLayout().getBoolean("enable-remaining-players-text", true);
-    @Getter private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfiguration().getLayout().getString("remaining-players-text", "... and %s more"));
-    @Getter private final int emptySlotPing = TAB.getInstance().getConfiguration().getLayout().getInt("empty-slot-ping-value", 1000);
-    @Getter private final boolean hideVanishedPlayers = TAB.getInstance().getConfiguration().getLayout().getBoolean("hide-vanished-players", true);
+    private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
+    @Getter private final String defaultSkin = TAB.getInstance().getConfig().getString("layout.default-skin", "mineskin:1753261242");
+    @Getter private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfig().getBoolean("layout.enable-remaining-players-text", true);
+    @Getter private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfig().getString("layout.remaining-players-text", "... and %s more"));
+    @Getter private final int emptySlotPing = TAB.getInstance().getConfig().getInt("layout.empty-slot-ping-value", 1000);
+    @Getter private final boolean hideVanishedPlayers = TAB.getInstance().getConfig().getBoolean("layout.hide-vanished-players", true);
     @Getter private final SkinManager skinManager = new SkinManager(defaultSkin);
     @Getter private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
         for (int slot=1; slot<=80; slot++) {
@@ -60,7 +60,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     @SuppressWarnings("unchecked")
     private Map<String, Layout> loadLayouts() {
         Map<String, Layout> layoutMap = new LinkedHashMap<>();
-        for (Entry<Object, Object> layout : TAB.getInstance().getConfiguration().getLayout().getConfigurationSection("layouts").entrySet()) {
+        for (Entry<Object, Object> layout : TAB.getInstance().getConfig().getConfigurationSection("layouts").entrySet()) {
             Map<String, Object> map = (Map<String, Object>) layout.getValue();
             Condition displayCondition = Condition.getCondition((String) map.get("condition"));
             if (displayCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(displayCondition.getName())));

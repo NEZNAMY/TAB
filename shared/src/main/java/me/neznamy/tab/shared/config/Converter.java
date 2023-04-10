@@ -358,7 +358,7 @@ public class Converter {
         config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
     }
 
-    public void convert332to400(ConfigurationFile config) {
+    public void convert332to400(ConfigurationFile config) throws IOException {
         if (!config.hasConfigOption("ping-spoof.enabled")) return;
         TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
         config.set("ping-spoof", null);
@@ -381,6 +381,12 @@ public class Converter {
             intervals.putAll(player);
             intervals.putAll(relational);
             config.save();
+        }
+        File layoutFile = new File(TAB.getInstance().getDataFolder(), "layout.yml");
+        if (layoutFile.exists()) {
+            ConfigurationFile layout = new YamlConfigurationFile(null, layoutFile);
+            config.set("layout", layout.getValues());
+            Files.delete(layoutFile.toPath());
         }
     }
 }

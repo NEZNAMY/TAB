@@ -77,7 +77,7 @@ public abstract class Platform {
 
         // No requirements, but due to chicken vs egg, the feature uses NameTags, Layout and RedisBungee
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
-                configuration.getLayout().getBoolean("enabled", false)) {
+                configuration.getConfig().getBoolean("layout.enabled", false)) {
             featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
         }
 
@@ -91,7 +91,7 @@ public abstract class Platform {
         }
 
         // Must be loaded after: Sorting
-        if (minorVersion >= 8 && configuration.getLayout().getBoolean("enabled", false)) {
+        if (minorVersion >= 8 && configuration.getConfig().getBoolean("layout.enabled", false)) {
             featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
         }
 

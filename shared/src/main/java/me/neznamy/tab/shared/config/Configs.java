@@ -38,9 +38,6 @@ public class Configs {
     //playerdata.yml, used for bossbar & scoreboard toggle saving
     private ConfigurationFile playerdata;
 
-    @Getter private final ConfigurationFile layout = new YamlConfigurationFile(getClass().getClassLoader().getResourceAsStream("layout.yml"),
-            new File(TAB.getInstance().getDataFolder(), "layout.yml"));
-
     @Getter private PropertyConfiguration groups;
 
     @Getter private PropertyConfiguration users;
