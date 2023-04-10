@@ -3,7 +3,7 @@ version: @version@
 author: @author@
 main: me.neznamy.tab.platforms.bukkit.BukkitTAB
 api-version: 1.13
-softdepend: [PlaceholderAPI, Vault, LuckPerms, Essentials, LibsDisguises, ProtocolSupport, ViaVersion, floodgate]
+softdepend: [PlaceholderAPI, LuckPerms, LibsDisguises, ProtocolSupport, ViaVersion, floodgate]
 website: "@website@"
 description: @description@
 commands:
