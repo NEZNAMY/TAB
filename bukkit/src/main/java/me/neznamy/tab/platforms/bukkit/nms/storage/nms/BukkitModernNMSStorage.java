@@ -5,6 +5,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 /**
  * NMS loader for minecraft 1.17+ using Mojang packaging and bukkit names.
@@ -18,13 +19,13 @@ public class BukkitModernNMSStorage extends NMSStorage {
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         (PING = EntityPlayer.getDeclaredField("e")).setAccessible(true);
         ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-        DataWatcher.REGISTER = getMethod(DataWatcher.CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setAllowFriendlyFire = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setNameTagVisibility = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
+        DataWatcher.REGISTER = ReflectionUtils.getMethod(DataWatcher.CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
+        PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Bukkit, Bukkit 1.18+}
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
         DataWatcherHelper.DataWatcherSerializer_BYTE = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("a").get(null);
         DataWatcherHelper.DataWatcherSerializer_FLOAT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("c").get(null);
         DataWatcherHelper.DataWatcherSerializer_STRING = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("d").get(null);

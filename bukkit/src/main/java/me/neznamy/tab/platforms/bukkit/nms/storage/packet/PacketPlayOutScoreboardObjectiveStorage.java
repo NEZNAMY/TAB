@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -24,18 +25,18 @@ public class PacketPlayOutScoreboardObjectiveStorage {
 
     public static void load(NMSStorage nms) throws NoSuchMethodException {
         newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
-        OBJECTIVE_NAME = nms.getFields(CLASS, String.class).get(0);
-        List<Field> list = nms.getFields(CLASS, int.class);
+        OBJECTIVE_NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
+        List<Field> list = ReflectionUtils.getFields(CLASS, int.class);
         METHOD = list.get(list.size()-1);
         if (nms.getMinorVersion() >= 8) {
-            RENDER_TYPE = nms.getFields(CLASS, EnumScoreboardHealthDisplay).get(0);
+            RENDER_TYPE = ReflectionUtils.getFields(CLASS, EnumScoreboardHealthDisplay).get(0);
         }
         if (nms.getMinorVersion() >= 13) {
             CONSTRUCTOR = CLASS.getConstructor(ScoreboardObjective, int.class);
-            DISPLAY_NAME = nms.getFields(CLASS, nms.IChatBaseComponent).get(0);
+            DISPLAY_NAME = ReflectionUtils.getFields(CLASS, nms.IChatBaseComponent).get(0);
         } else {
             CONSTRUCTOR = CLASS.getConstructor();
-            DISPLAY_NAME = nms.getFields(CLASS, String.class).get(1);
+            DISPLAY_NAME = ReflectionUtils.getFields(CLASS, String.class).get(1);
         }
     }
 

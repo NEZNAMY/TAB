@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -12,10 +13,10 @@ public class PacketPlayOutScoreboardDisplayObjectiveStorage {
     public static Field POSITION;
     public static Field OBJECTIVE_NAME;
 
-    public static void load(NMSStorage nms) throws NoSuchMethodException {
+    public static void load() throws NoSuchMethodException {
         CONSTRUCTOR = CLASS.getConstructor(int.class, PacketPlayOutScoreboardObjectiveStorage.ScoreboardObjective);
-        POSITION = nms.getFields(CLASS, int.class).get(0);
-        OBJECTIVE_NAME = nms.getFields(CLASS, String.class).get(0);
+        POSITION = ReflectionUtils.getFields(CLASS, int.class).get(0);
+        OBJECTIVE_NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
     }
 
     public static Object buildSilent(int slot, String objective) {

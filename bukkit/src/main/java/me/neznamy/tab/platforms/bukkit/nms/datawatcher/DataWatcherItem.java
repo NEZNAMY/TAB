@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import lombok.Data;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
@@ -28,11 +29,11 @@ public class DataWatcherItem {
      *          NMS storage reference
      */
     public static void load(NMSStorage nms) {
-        VALUE = nms.getFields(CLASS, Object.class).get(0);
+        VALUE = ReflectionUtils.getFields(CLASS, Object.class).get(0);
         if (nms.getMinorVersion() >= 9) {
-            TYPE = nms.getFields(CLASS, DataWatcherObject.CLASS).get(0);
+            TYPE = ReflectionUtils.getFields(CLASS, DataWatcherObject.CLASS).get(0);
         } else {
-            TYPE = nms.getFields(CLASS, int.class).get(1);
+            TYPE = ReflectionUtils.getFields(CLASS, int.class).get(1);
         }
     }
 

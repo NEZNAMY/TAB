@@ -4,6 +4,7 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -42,20 +43,20 @@ public class PacketPlayOutScoreboardTeamStorage {
 
     public static void load(NMSStorage nms) throws NoSuchMethodException {
         newScoreboardTeam = ScoreboardTeam.getConstructor(nms.Scoreboard, String.class);
-        NAME = nms.getFields(CLASS, String.class).get(0);
+        NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
         ACTION = getInstanceIntField(CLASS).get(0);
-        PLAYERS = nms.getFields(CLASS, Collection.class).get(0);
-        ScoreboardTeam_getPlayerNameSet = nms.getMethods(ScoreboardTeam, Collection.class).get(0);
+        PLAYERS = ReflectionUtils.getFields(CLASS, Collection.class).get(0);
+        ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getMethods(ScoreboardTeam, Collection.class).get(0);
         if (nms.getMinorVersion() >= 9) {
-            ScoreboardTeam_setCollisionRule = nms.getMethods(ScoreboardTeam, void.class, EnumTeamPush).get(0);
+            ScoreboardTeam_setCollisionRule = ReflectionUtils.getMethods(ScoreboardTeam, void.class, EnumTeamPush).get(0);
         }
         if (nms.getMinorVersion() >= 13) {
-            ScoreboardTeam_setColor = nms.getMethods(ScoreboardTeam, void.class, nms.EnumChatFormat).get(0);
+            ScoreboardTeam_setColor = ReflectionUtils.getMethods(ScoreboardTeam, void.class, nms.EnumChatFormat).get(0);
         }
         if (nms.getMinorVersion() >= 17) {
-            Constructor_of = nms.getMethods(CLASS, CLASS, ScoreboardTeam).get(0);
-            Constructor_ofBoolean = nms.getMethods(CLASS, CLASS, ScoreboardTeam, boolean.class).get(0);
-            Constructor_ofString = nms.getMethods(CLASS, CLASS, ScoreboardTeam, String.class, PlayerAction).get(0);
+            Constructor_of = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam).get(0);
+            Constructor_ofBoolean = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam, boolean.class).get(0);
+            Constructor_ofString = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam, String.class, PlayerAction).get(0);
         } else {
             CONSTRUCTOR = CLASS.getConstructor(ScoreboardTeam, int.class);
         }

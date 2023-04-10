@@ -5,6 +5,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.util.Arrays;
 
@@ -52,14 +53,14 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true);
-        PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setAllowFriendlyFire = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setCanSeeFriendlyInvisibles = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
+        PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
+        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
         if (minorVersion >= 7) {
             ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
         }
         if (minorVersion >= 8) {
-            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setNameTagVisibility = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility); // {1.8.1+, 1.8}
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility); // {1.8.1+, 1.8}
         }
         if (minorVersion >= 9) {
             DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("register", DataWatcherObject.CLASS, Object.class);
@@ -79,8 +80,8 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
             PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = PacketPlayOutScoreboardTeamStorage.ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
             PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = PacketPlayOutScoreboardTeamStorage.ScoreboardTeam.getMethod("setSuffix", IChatBaseComponent);
         } else {
-            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
-            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
+            PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
         }
     }
 

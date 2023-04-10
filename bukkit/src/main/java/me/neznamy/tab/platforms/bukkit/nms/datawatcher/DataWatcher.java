@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.ToString;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -45,9 +46,9 @@ public class DataWatcher implements EntityData {
     public static void load(NMSStorage nms) {
         CONSTRUCTOR = CLASS.getConstructors()[0];
         if (nms.is1_19_3Plus()) {
-            markDirty = nms.getMethods(CLASS, void.class, DataWatcherObject.CLASS).get(0);
-            DataValue_POSITION = nms.getFields(DataValue, int.class).get(0);
-            DataValue_VALUE = nms.getFields(DataValue, Object.class).get(0);
+            markDirty = ReflectionUtils.getMethods(CLASS, void.class, DataWatcherObject.CLASS).get(0);
+            DataValue_POSITION = ReflectionUtils.getFields(DataValue, int.class).get(0);
+            DataValue_VALUE = ReflectionUtils.getFields(DataValue, Object.class).get(0);
         }
     }
     

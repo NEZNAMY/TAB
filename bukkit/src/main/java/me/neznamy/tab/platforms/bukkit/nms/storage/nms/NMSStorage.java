@@ -18,10 +18,6 @@ import org.bukkit.Bukkit;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Class holding all NMS classes, methods, fields and constructors used by TAB.
@@ -97,18 +93,18 @@ public abstract class NMSStorage {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
-            NETWORK_MANAGER = getFields(PlayerConnection, NetworkManager).get(0);
+            NETWORK_MANAGER = ReflectionUtils.getFields(PlayerConnection, NetworkManager).get(0);
         }
         if (minorVersion >= 8) {
-            CHANNEL = getFields(NetworkManager, Channel.class).get(0);
-            getProfile = getMethods(EntityHuman, GameProfile.class).get(0);
+            CHANNEL = ReflectionUtils.getFields(NetworkManager, Channel.class).get(0);
+            getProfile = ReflectionUtils.getMethods(EntityHuman, GameProfile.class).get(0);
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
-        PLAYER_CONNECTION = getFields(EntityPlayer, PlayerConnection).get(0);
+        PLAYER_CONNECTION = ReflectionUtils.getFields(EntityPlayer, PlayerConnection).get(0);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-        sendPacket = getMethods(PlayerConnection, void.class, Packet).get(0);
+        sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         newScoreboard = Scoreboard.getConstructor();
         emptyScoreboard = newScoreboard.newInstance();
         DataWatcher.load(this);
@@ -121,21 +117,13 @@ public abstract class NMSStorage {
         PacketPlayOutPlayerListHeaderFooterStorage.load(this);
         PacketPlayOutPlayerInfoStorage.load(this);
         PacketPlayOutScoreboardObjectiveStorage.load(this);
-        PacketPlayOutScoreboardDisplayObjectiveStorage.load(this);
-        otherEntity();
+        PacketPlayOutScoreboardDisplayObjectiveStorage.load();
         PacketPlayOutScoreboardTeamStorage.load(this);
         PacketPlayOutScoreboardScoreStorage.load(this);
-        IScoreboardCriteria_self = getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
+        IScoreboardCriteria_self = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
+        PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
+        PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         loadNamedFieldsAndMethods();
-    }
-
-    /**
-     * Loads fields for other entity packets
-     *
-     */
-    protected void otherEntity() {
-        PacketPlayOutEntity_ENTITYID = getFields(PacketPlayOutEntity, int.class).get(0);
-        PacketPlayOutNamedEntitySpawn_ENTITYID = getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
     }
 
     /**
@@ -154,92 +142,6 @@ public abstract class NMSStorage {
      *          If a field or method was not found
      */
     public abstract void loadNamedFieldsAndMethods() throws ReflectiveOperationException;
-
-    /**
-     * Returns method with specified possible names and parameters. Throws exception if no such method was found
-     *
-     * @param   clazz
-     *          lass to get method from
-     * @param   names
-     *          possible method names
-     * @param   parameterTypes
-     *          parameter types of the method
-     * @return  method with specified name and parameters
-     * @throws  NoSuchMethodException
-     *          if no such method exists
-     */
-    protected Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
-        for (String name : names) {
-            try {
-                return clazz.getMethod(name, parameterTypes);
-            } catch (NoSuchMethodException e) {
-                //not the first method in array
-            }
-        }
-        List<String> list = new ArrayList<>();
-        for (Method m : clazz.getMethods()) {
-            if (m.getParameterCount() != parameterTypes.length) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) list.add(m.getName());
-        }
-        throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " +
-                Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
-    }
-
-    /**
-     * Returns all methods from class which return specified class type and have specified parameter types.
-     *
-     * @param   clazz
-     *          Class to get methods from
-     * @param   returnType
-     *          Return type of methods
-     * @param   parameterTypes
-     *          Parameter types of methods
-     * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
-     */
-    public List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
-        List<Method> list = new ArrayList<>();
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) list.add(m);
-        }
-        return list;
-    }
-
-    /**
-     * Returns all fields of class with defined class type
-     *
-     * @param   clazz
-     *          class to check fields of
-     * @param   type
-     *          field type to check for
-     * @return  list of all fields with specified class type
-     */
-    public List<Field> getFields(Class<?> clazz, Class<?> type) {
-        List<Field> list = new ArrayList<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType() == type) {
-                field.setAccessible(true);
-                list.add(field);
-            }
-        }
-        return list;
-    }
 
     /**
      * Converts TAB's IChatBaseComponent into minecraft's component using String deserialization.

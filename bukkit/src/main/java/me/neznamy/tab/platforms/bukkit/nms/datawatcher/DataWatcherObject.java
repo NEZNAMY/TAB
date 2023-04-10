@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,8 +35,8 @@ public class DataWatcherObject {
     public static void load(NMSStorage nms) throws NoSuchMethodException {
         if (nms.getMinorVersion() < 9) return;
         CONSTRUCTOR = CLASS.getConstructor(int.class, DataWatcherHelper.DataWatcherSerializer);
-        SLOT = nms.getFields(CLASS, int.class).get(0);
-        SERIALIZER = nms.getFields(CLASS, DataWatcherHelper.DataWatcherSerializer).get(0);
+        SLOT = ReflectionUtils.getFields(CLASS, int.class).get(0);
+        SERIALIZER = ReflectionUtils.getFields(CLASS, DataWatcherHelper.DataWatcherSerializer).get(0);
     }
 
     /**

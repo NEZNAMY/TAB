@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -29,12 +30,12 @@ public class PacketPlayOutPlayerInfoStorage {
         if (nms.is1_19_3Plus()) {
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
             CONSTRUCTOR = CLASS.getConstructor(EnumSet.class, Collection.class);
-            ACTION = nms.getFields(CLASS, EnumSet.class).get(0);
+            ACTION = ReflectionUtils.getFields(CLASS, EnumSet.class).get(0);
          } else {
             CONSTRUCTOR = CLASS.getConstructor(EnumPlayerInfoActionClass, Array.newInstance(nms.EntityPlayer, 0).getClass());
-            ACTION = nms.getFields(CLASS, EnumPlayerInfoActionClass).get(0);
+            ACTION = ReflectionUtils.getFields(CLASS, EnumPlayerInfoActionClass).get(0);
         }
-        PLAYERS = nms.getFields(CLASS, List.class).get(0);
+        PLAYERS = ReflectionUtils.getFields(CLASS, List.class).get(0);
         PlayerInfoDataStorage.load(nms);
     }
 
@@ -115,15 +116,14 @@ public class PacketPlayOutPlayerInfoStorage {
         public static Field PlayerInfoData_RemoteChatSession;
 
         public static void load(NMSStorage nms) {
-            if (nms.getMinorVersion() < 8) return;
             newPlayerInfoData = CLASS.getConstructors()[0];
-            PlayerInfoData_getProfile = nms.getMethods(CLASS, GameProfile.class).get(0);
-            PlayerInfoData_Latency = nms.getFields(CLASS, int.class).get(0);
-            PlayerInfoData_GameMode = nms.getFields(CLASS, EnumGamemodeClass).get(0);
-            PlayerInfoData_DisplayName = nms.getFields(CLASS, nms.IChatBaseComponent).get(0);
+            PlayerInfoData_getProfile = ReflectionUtils.getMethods(CLASS, GameProfile.class).get(0);
+            PlayerInfoData_Latency = ReflectionUtils.getFields(CLASS, int.class).get(0);
+            PlayerInfoData_GameMode = ReflectionUtils.getFields(CLASS, EnumGamemodeClass).get(0);
+            PlayerInfoData_DisplayName = ReflectionUtils.getFields(CLASS, nms.IChatBaseComponent).get(0);
             if (nms.is1_19_3Plus()) {
-                PlayerInfoData_Listed = nms.getFields(CLASS, boolean.class).get(0);
-                PlayerInfoData_RemoteChatSession = nms.getFields(CLASS, RemoteChatSession$Data).get(0);
+                PlayerInfoData_Listed = ReflectionUtils.getFields(CLASS, boolean.class).get(0);
+                PlayerInfoData_RemoteChatSession = ReflectionUtils.getFields(CLASS, RemoteChatSession$Data).get(0);
             }
         }
     }
