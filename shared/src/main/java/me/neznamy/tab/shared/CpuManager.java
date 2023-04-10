@@ -220,12 +220,12 @@ public class CpuManager {
 
     public void startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public void startRepeatingTask(int intervalMilliseconds, Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> runTask(task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> runTask(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public void runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
