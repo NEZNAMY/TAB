@@ -23,12 +23,8 @@ public class BungeePlatform extends ProxyPlatform {
 
     @Override
     public @Nullable RedisSupport getRedisSupport() {
-        if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.REDIS_BUNGEE) != null) {
-            if (RedisBungeeAPI.getRedisBungeeApi() != null) {
-                return new RedisBungeeSupport(plugin);
-            } else {
-                TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
-            }
+        if (getPluginVersion(TabConstants.Plugin.REDIS_BUNGEE) != null && RedisBungeeAPI.getRedisBungeeApi() != null) {
+            return new RedisBungeeSupport(plugin);
         }
         return null;
     }
