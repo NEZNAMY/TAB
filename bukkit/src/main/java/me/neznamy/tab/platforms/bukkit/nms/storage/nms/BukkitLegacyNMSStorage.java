@@ -96,25 +96,8 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         EntityLiving = getLegacyClass("EntityLiving");
         PlayerConnection = getLegacyClass("PlayerConnection");
         NetworkManager = getLegacyClass("NetworkManager");
-        if (minorVersion >= 7) {
-            IChatBaseComponent = getLegacyClass("IChatBaseComponent");
-            ChatSerializer = getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
-        }
-        if (minorVersion >= 8) {
-            PacketPlayOutPlayerListHeaderFooterStorage.CLASS = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
-            EntityArmorStand = getLegacyClass("EntityArmorStand");
-        }
-
-        // DataWatcher
         DataWatcher.CLASS = getLegacyClass("DataWatcher");
         DataWatcherItem.CLASS = getLegacyClass("DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
-        if (minorVersion >= 9) {
-            DataWatcherObject.CLASS = getLegacyClass("DataWatcherObject");
-            DataWatcherHelper.DataWatcherRegistry = getLegacyClass("DataWatcherRegistry");
-            DataWatcherHelper.DataWatcherSerializer = getLegacyClass("DataWatcherSerializer");
-        }
-
-        // Entities
         PacketPlayOutSpawnEntityLivingStorage.CLASS = getLegacyClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
         PacketPlayOutEntityTeleportStorage.CLASS = getLegacyClass("PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
         PacketPlayOutEntity = getLegacyClass("PacketPlayOutEntity", "Packet30Entity");
@@ -122,16 +105,6 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         PacketPlayOutEntityLook = getLegacyClass("PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook");
         PacketPlayOutEntityMetadataStorage.CLASS = getLegacyClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
         PacketPlayOutNamedEntitySpawn = getLegacyClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
-
-        // Player Info
-        if (minorVersion >= 8) {
-            PacketPlayOutPlayerInfoStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo");
-            PacketPlayOutPlayerInfoStorage.EnumPlayerInfoActionClass = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
-            PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-            PacketPlayOutPlayerInfoStorage.EnumGamemodeClass = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
-        }
-
-        // Scoreboard
         PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
         PacketPlayOutScoreboardObjectiveStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
         PacketPlayOutScoreboardTeamStorage.CLASS = getLegacyClass("PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
@@ -141,12 +114,25 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
         PacketPlayOutScoreboardScoreStorage.ScoreboardScore = getLegacyClass("ScoreboardScore");
         IScoreboardCriteria = getLegacyClass("IScoreboardCriteria", "IObjective"); // 1.5.1+, 1.5
         PacketPlayOutScoreboardTeamStorage.ScoreboardTeam = getLegacyClass("ScoreboardTeam");
+        if (minorVersion >= 7) {
+            IChatBaseComponent = getLegacyClass("IChatBaseComponent");
+            ChatSerializer = getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
+        }
         if (minorVersion >= 8) {
+            PacketPlayOutPlayerListHeaderFooterStorage.CLASS = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
+            EntityArmorStand = getLegacyClass("EntityArmorStand");
+            PacketPlayOutPlayerInfoStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo");
+            PacketPlayOutPlayerInfoStorage.EnumPlayerInfoActionClass = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+            PacketPlayOutPlayerInfoStorage.EnumGamemodeClass = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
             PacketPlayOutScoreboardObjectiveStorage.EnumScoreboardHealthDisplay = (Class<Enum>) getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
             PacketPlayOutScoreboardScoreStorage.EnumScoreboardAction = (Class<Enum>) getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
             PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
         }
         if (minorVersion >= 9) {
+            DataWatcherObject.CLASS = getLegacyClass("DataWatcherObject");
+            DataWatcherHelper.DataWatcherRegistry = getLegacyClass("DataWatcherRegistry");
+            DataWatcherHelper.DataWatcherSerializer = getLegacyClass("DataWatcherSerializer");
             PacketPlayOutScoreboardTeamStorage.EnumTeamPush = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
         }
     }
