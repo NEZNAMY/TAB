@@ -7,7 +7,9 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * General collection of variables and functions shared between all placeholder types
@@ -46,7 +48,8 @@ public abstract class TabPlaceholder implements Placeholder {
             throw new IllegalArgumentException("Identifier must start and end with % (attempted to use \"" + identifier + "\")");
         this.identifier = identifier;
         this.refresh = refresh;
-        replacements = new PlaceholderReplacementPattern(identifier, TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements." + identifier));
+        Map<String, Map<Object, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("placeholder-output-replacements");
+        replacements = new PlaceholderReplacementPattern(identifier, map.getOrDefault(identifier, Collections.emptyMap()));
         for (String nested : getNestedPlaceholders("")) {
             TAB.getInstance().getPlaceholderManager().getPlaceholder(nested).addParent(identifier);
         }
