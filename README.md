@@ -17,28 +17,19 @@ The universal jar contains all modules for all supported platforms.
 
 # Customer support
 Unlike with other projects where requirements and level of support provided are unclear,
-we provide a clear answer to what kind of service you will or will not receive. Some don't
+we provide a clear answer to what kind of service you will or will not receive. Some projects don't
 even clearly state if they are free or paid. While they are listed as paid on spigot, they have
 a free download link in description, which can be confusing.  
-  
-Free plugins typically do have a support discord, however you will rarely receive
-official support from the developers, especially for large projects with tons of users, where
-helping everyone in the world (theoretically) would consume too much time, leaving authors
-no time left to actually work on the project.
-In the end, they are free, made by people in their free time, and they are allowed to choose
-what they do or don't want to do in their free time. They often leave support to other people,
-possibly staff members, who are, however, in the end just more volunteers who may not even know
-the answer.  
-  
-With paid plugins you are more likely to receive support, but unless explicitly said, nothing is
-guaranteed. There are lots of paid plugins where authors don't provide any support or redirect
-it to helpers, where again they are unpaid volunteers who might not even know the answer.  
-  
-In TAB, everything is clearly defined. The plugin is free to download for everyone.
+Support is also quite often "we have a discord server, but don't ping devs for support", suggesting
+there is no official support, just the community.
+
+In TAB, everything is clearly defined. **Downloads are free, but services are paid.**  
+The plugin is free to download for everyone. The only exception might be occasional update delays
+for free users once a year.  
 Customer support, however, is only provided to customers who have formally purchased a copy 
 of the plugin on any of the websites the plugin is being sold on:  
-* [BuiltByBit](https://builtbybit.com/resources/14009/) (accepts any payment method)  
-* [Polymart](https://polymart.org/resource/484) (only PayPal)
+* [BuiltByBit](https://builtbybit.com/resources/14009/)
+* [Polymart](https://polymart.org/resource/484)
   
 After purchasing, you can request assistance via either private messages on the website where you
 have purchased it, or using [TAB's Discord server](https://discord.gg/EaSvdk6) (which is highly 
@@ -55,13 +46,7 @@ most mods on most servers who only check it when they are really bored, give a w
 disappear again.
 * As the developer, I do not rely on helpers providing support instead of me. They are handy as
 I am obviously not available 24/7, but I do not intentionally leave anything to them. I reply
-whenever I am available without any intentional delays.  
-  
-The wiki contains everything about the plugin in one way or another, so support should not 
-even be needed. It also contains a few examples, but obviously cannot contain a pre-made config
-for every possible idea anyone can come up with.  
-Support is provided to people who decided paying for support is more time efficient than reading the wiki,
-especially for serious servers, where price of the plugin is nothing compared to other server costs.
+whenever I am available without any intentional delays.
 
 # Other links
 Download the plugin for free: 
@@ -69,8 +54,7 @@ Download the plugin for free:
 * [BuiltByBit](https://builtbybit.com/resources/20631/)
 * [Modrinth](https://modrinth.com/plugin/tab-was-taken)
   
-[Wiki](https://github.com/NEZNAMY/TAB/wiki)  
-[Donate](https://paypal.me/neznamy1) if you are feeling extra generous
+[Wiki](https://github.com/NEZNAMY/TAB/wiki)
 
 # Issues
 The [Issues](https://github.com/NEZNAMY/TAB/issues) section is **only** available for cases included in templates.
