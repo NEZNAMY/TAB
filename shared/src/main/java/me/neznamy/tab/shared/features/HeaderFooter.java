@@ -55,6 +55,11 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     @Override
     public void onServerChange(TabPlayer p, String from, String to) {
         onWorldChange(p, null, null);
+
+        // Velocity clears header/footer on server switch, which can be a problem without placeholders that change often
+        // Resend immediately instead of the next time a placeholder changes value
+        if (isDisabledPlayer(p)) return;
+        sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
     }
 
     @Override
