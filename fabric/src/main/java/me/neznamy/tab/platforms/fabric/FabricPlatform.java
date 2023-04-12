@@ -65,8 +65,7 @@ public final class FabricPlatform extends BackendPlatform {
 
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        message = "[TAB] " + message;
-        if (translateColors) message = EnumChatFormat.color(message);
-        MinecraftServer.LOGGER.info(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()).getString());
+        MinecraftServer.LOGGER.info(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(
+                            "[TAB] " + (translateColors ? EnumChatFormat.color(message) : message)).toString()).getString());
     }
 }

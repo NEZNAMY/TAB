@@ -54,11 +54,12 @@ public final class SpongePlatform extends BackendPlatform {
 
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        if (translateColors) message = EnumChatFormat.color(message);
-        final Component actualMessage = Component.text()
+        Sponge.systemSubject().sendMessage(
+                Component.text()
                 .append(Component.text("[TAB] "))
-                .append(LegacyComponentSerializer.legacySection().deserialize(message))
-                .build();
-        Sponge.systemSubject().sendMessage(actualMessage);
+                .append(LegacyComponentSerializer.legacySection().deserialize(
+                        translateColors ? EnumChatFormat.color(message) : message)
+                ).build()
+        );
     }
 }
