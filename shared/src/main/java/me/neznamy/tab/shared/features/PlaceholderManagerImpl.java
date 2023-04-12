@@ -272,5 +272,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {}
+    public void refresh(TabPlayer refreshed, boolean force) {
+        // Condition or placeholder only used in tab expansion, do nothing for now
+    }
 }

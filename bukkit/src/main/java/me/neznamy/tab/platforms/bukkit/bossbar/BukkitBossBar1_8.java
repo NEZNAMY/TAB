@@ -52,10 +52,10 @@ public class BukkitBossBar1_8 implements PlatformBossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarStyle style) {} // Added in 1.9
+    public void update(@NonNull UUID id, @NonNull BarStyle style) {/*Added in 1.9*/}
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarColor color) {} // Added in 1.9
+    public void update(@NonNull UUID id, @NonNull BarColor color) {/*Added in 1.9*/}
 
     @Override
     public void remove(@NonNull UUID id) {

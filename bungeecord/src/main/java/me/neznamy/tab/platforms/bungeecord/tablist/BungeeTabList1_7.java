@@ -59,7 +59,7 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID entry, int gameMode) {} // Added in 1.8
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {/*Added in 1.8*/}
 
     @Override
     public void addEntry(@NonNull TabList.Entry entry) {

@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 public class EmptyTabExpansion implements TabExpansion {
 
     @Override
-    public void setValue(TabPlayer player, String key, String value) {}
+    public void setValue(TabPlayer player, String key, String value) {/*Do nothing*/}
 
     @Override
     public boolean unregister() { return false; }
