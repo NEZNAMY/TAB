@@ -9,10 +9,7 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PacketPlayOutScoreboardTeamStorage {
@@ -44,7 +41,7 @@ public class PacketPlayOutScoreboardTeamStorage {
     public static void load(NMSStorage nms) throws NoSuchMethodException {
         newScoreboardTeam = ScoreboardTeam.getConstructor(nms.Scoreboard, String.class);
         NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
-        ACTION = getInstanceIntField(CLASS).get(0);
+        ACTION = ReflectionUtils.getInstanceIntFields(CLASS, int.class).get(0);
         PLAYERS = ReflectionUtils.getFields(CLASS, Collection.class).get(0);
         ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getMethods(ScoreboardTeam, Collection.class).get(0);
         if (nms.getMinorVersion() >= 9) {
@@ -77,17 +74,6 @@ public class PacketPlayOutScoreboardTeamStorage {
         if (suffix != null) ScoreboardTeam_setSuffix.invoke(team, suffix);
         if (nms.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
         if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
-    }
-
-    private static List<Field> getInstanceIntField(Class<?> clazz) {
-        List<Field> list = new ArrayList<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType() == int.class && !Modifier.isStatic(field.getModifiers())) {
-                field.setAccessible(true);
-                list.add(field);
-            }
-        }
-        return list;
     }
 
     public static Object register(String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options, ProtocolVersion clientVersion) {

@@ -14,6 +14,7 @@ import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -25,7 +26,6 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -43,10 +43,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     static {
         try {
-            Field f = Protocol.class.getDeclaredField("TO_CLIENT");
-            f.setAccessible(true);
-            directionData = f.get(Protocol.GAME);
-            (getId = directionData.getClass().getDeclaredMethod("getId", Class.class, int.class)).setAccessible(true);
+            directionData = ReflectionUtils.setAccessible(Protocol.class.getDeclaredField("TO_CLIENT")).get(Protocol.GAME);
+            getId = ReflectionUtils.setAccessible(directionData.getClass().getDeclaredMethod("getId", Class.class, int.class));
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", e);
         }

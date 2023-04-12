@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -47,8 +48,7 @@ public class ReflectionUtils {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type) {
-                field.setAccessible(true);
-                list.add(field);
+                list.add(setAccessible(field));
             }
         }
         return list;
@@ -118,5 +118,36 @@ public class ReflectionUtils {
             if (valid) list.add(m);
         }
         return list;
+    }
+
+    /**
+     * Returns list of instance fields matching class type
+     *
+     * @param   clazz
+     *          Class to get instance fields of
+     * @param   fieldType
+     *          Type of field
+     * @return  List of instance fields with defined class type
+     */
+    public static List<Field> getInstanceIntFields(Class<?> clazz, Class<?> fieldType) {
+        List<Field> list = new ArrayList<>();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType() == fieldType && !Modifier.isStatic(field.getModifiers())) {
+                list.add(setAccessible(field));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Makes object accessible.
+     *
+     * @param   o
+     *          Object to make accessible
+     * @return  Provided object
+     */
+    public static <T extends AccessibleObject> T setAccessible(T o) {
+        o.setAccessible(true);
+        return o;
     }
 }
