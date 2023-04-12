@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.nametags;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import lombok.Getter;
@@ -58,7 +59,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     }
     
     public void setCollisionRule(TabPlayer player, Boolean collision) {
-        if (forcedCollision.get(player) == collision) return;
+        if (Objects.equals(forcedCollision.get(player), collision)) return;
         if (collision == null) {
             forcedCollision.remove(player);
         } else {
