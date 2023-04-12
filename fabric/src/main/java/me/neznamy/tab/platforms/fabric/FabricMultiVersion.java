@@ -47,7 +47,7 @@ public class FabricMultiVersion {
         setHeaderAndFooter = ClientboundTabListPacket::new;
 
         // 1.17 - 1.18.2
-/*
+        /*
         sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.toComponent(message, player.getVersion()), SYSTEM_ID);
         sendMessage2 = (source, message) -> source.sendSuccess(message, false);
         registerCommand = () -> net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register(
@@ -57,9 +57,9 @@ public class FabricMultiVersion {
         unregisterTeam = ClientboundSetPlayerTeamPacket::createRemovePacket;
         updateTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false);
         setHeaderAndFooter = ClientboundTabListPacket::new;
-*/
+        */
         // 1.14 - 1.16.5
-/*
+        /*
         sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.toComponent(message, player.getVersion())
                 //, SYSTEM_ID // 1.16 - 1.16.5
         );
@@ -76,7 +76,7 @@ public class FabricMultiVersion {
             packet.footer = footer;
             return packet;
         };
-*/
+        */
     }
 
     // 1.19.3+
