@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -26,9 +27,9 @@ public class VelocityTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
+    public void updateDisplayName(@NonNull UUID id, @Nullable IChatBaseComponent displayName) {
         if (player.getVersion().getMinorVersion() >= 8) {
-            getEntry(id).setDisplayName(displayName.toAdventureComponent());
+            getEntry(id).setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
         } else {
             /**
              * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
@@ -54,7 +55,7 @@ public class VelocityTabList extends SingleUpdateTabList {
     }
 
     @Override
-    public void addEntry(@NonNull me.neznamy.tab.shared.platform.tablist.TabList.Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         player.getPlayer().getTabList().addEntry(TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())

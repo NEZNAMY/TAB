@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.platform.tablist;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public abstract class BulkUpdateTabList implements TabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, IChatBaseComponent displayName) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
         updateDisplayNames(Collections.singletonMap(entry, displayName));
     }
 
