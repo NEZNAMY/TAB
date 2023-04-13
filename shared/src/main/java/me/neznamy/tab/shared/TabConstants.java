@@ -66,44 +66,43 @@ public class TabConstants {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Permission {
 
-        public static final String COMMAND_ALL = "tab.admin";
-        public static final String COMMAND_RELOAD = "tab.reload";
-        public static final String COMMAND_BOSSBAR_ANNOUNCE = "tab.announce.bar";
-        public static final String COMMAND_BOSSBAR_TOGGLE = "tab.bossbar.toggle";
-        public static final String COMMAND_BOSSBAR_SEND = "tab.send.bar";
-        public static final String COMMAND_CPU = "tab.cpu";
-        public static final String COMMAND_DEBUG = "tab.debug";
-        public static final String COMMAND_GROUP_INFO = "tab.groupinfo";
-        public static final String COMMAND_GROUP_LIST = "tab.grouplist";
-        public static final String COMMAND_MYSQL_DOWNLOAD = "tab.mysql.download";
-        public static final String COMMAND_MYSQL_UPLOAD = "tab.mysql.upload";
-        public static final String COMMAND_NAMETAG_TOGGLE = "tab.nametag.toggle";
+        public static final String COMMAND_ALL                      = "tab.admin";
+        public static final String COMMAND_RELOAD                   = "tab.reload";
+        public static final String COMMAND_CPU                      = "tab.cpu";
+        public static final String COMMAND_DEBUG                    = "tab.debug";
+        public static final String COMMAND_GROUP_INFO               = "tab.groupinfo";
+        public static final String COMMAND_GROUP_LIST               = "tab.grouplist";
+        public static final String COMMAND_PARSE                    = "tab.parse";
+        public static final String COMMAND_SETCOLLISION             = "tab.setcollision";
+        public static final String COMMAND_AUTOCOMPLETE             = "tab.tabcomplete";
+        public static final String COMMAND_DATA_REMOVE              = "tab.remove";
+        public static final String COMMAND_PROPERTY_CHANGE_PREFIX   = "tab.change.";
+        public static final String COMMAND_WIDTH                    = "tab.width";
 
-        public static final String COMMAND_NAMETAG_TOGGLE_OTHER = "tab.nametag.toggle.other";
-        public static final String COMMAND_NAMETAG_PREVIEW = "tab.nametag.preview";
+        public static final String COMMAND_BOSSBAR_ANNOUNCE         = "tab.announce.bar";
+        public static final String COMMAND_BOSSBAR_TOGGLE           = "tab.bossbar.toggle";
+        public static final String COMMAND_BOSSBAR_SEND             = "tab.send.bar";
 
-        public static final String COMMAND_NAMETAG_PREVIEW_OTHER = "tab.nametag.preview.other";
-        public static final String COMMAND_PARSE = "tab.parse";
-        public static final String COMMAND_SCOREBOARD_ANNOUNCE = "tab.announce.scoreboard";
-        public static final String COMMAND_SCOREBOARD_TOGGLE = "tab.scoreboard.toggle";
-        public static final String COMMAND_SCOREBOARD_TOGGLE_OTHER = "tab.scoreboard.toggle.other";
-        public static final String COMMAND_SCOREBOARD_SHOW = "tab.scoreboard.show";
-        public static final String COMMAND_SCOREBOARD_SHOW_OTHER = "tab.scoreboard.show.other";
-        public static final String COMMAND_SETCOLLISION = "tab.setcollision";
-        public static final String COMMAND_AUTOCOMPLETE = "tab.tabcomplete";
-        public static final String COMMAND_DATA_REMOVE = "tab.remove";
-        public static final String COMMAND_PROPERTY_CHANGE_PREFIX = "tab.change.";
-        public static final String COMMAND_WIDTH = "tab.width";
+        public static final String COMMAND_MYSQL_DOWNLOAD           = "tab.mysql.download";
+        public static final String COMMAND_MYSQL_UPLOAD             = "tab.mysql.upload";
+        public static final String COMMAND_NAMETAG_TOGGLE           = "tab.nametag.toggle";
+        public static final String COMMAND_NAMETAG_TOGGLE_OTHER     = "tab.nametag.toggle.other";
+        public static final String COMMAND_NAMETAG_PREVIEW          = "tab.nametag.preview";
+        public static final String COMMAND_NAMETAG_PREVIEW_OTHER    = "tab.nametag.preview.other";
 
-        public static final String STAFF = "tab.staff";
+        public static final String COMMAND_SCOREBOARD_ANNOUNCE      = "tab.announce.scoreboard";
+        public static final String COMMAND_SCOREBOARD_TOGGLE        = "tab.scoreboard.toggle";
+        public static final String COMMAND_SCOREBOARD_TOGGLE_OTHER  = "tab.scoreboard.toggle.other";
+        public static final String COMMAND_SCOREBOARD_SHOW          = "tab.scoreboard.show";
+        public static final String COMMAND_SCOREBOARD_SHOW_OTHER    = "tab.scoreboard.show.other";
 
-        public static final String PER_WORLD_PLAYERLIST_BYPASS = "tab.bypass";
-        public static final String SEE_VANISHED = "tab.seevanished";
-        public static final String SPECTATOR_BYPASS = "tab.spectatorbypass";
+        public static final String STAFF                            = "tab.staff";
+        public static final String GROUP_PREFIX                     = "tab.group.";
+        public static final String PER_WORLD_PLAYERLIST_BYPASS      = "tab.bypass";
+        public static final String SEE_VANISHED                     = "tab.seevanished";
+        public static final String SPECTATOR_BYPASS                 = "tab.spectatorbypass";
 
-        public static final String TEST_PERMISSION = "tab.testpermission";
-
-        public static final String GROUP_PREFIX = "tab.group.";
+        public static final String TEST_PERMISSION                  = "tab.testpermission";
     }
 
     /**
