@@ -41,7 +41,7 @@ public class PacketPlayOutScoreboardTeamStorage {
     public static void load(NMSStorage nms) throws NoSuchMethodException {
         newScoreboardTeam = ScoreboardTeam.getConstructor(nms.Scoreboard, String.class);
         NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
-        ACTION = ReflectionUtils.getInstanceIntFields(CLASS, int.class).get(0);
+        ACTION = ReflectionUtils.getInstanceFields(CLASS, int.class).get(0);
         PLAYERS = ReflectionUtils.getFields(CLASS, Collection.class).get(0);
         ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getMethods(ScoreboardTeam, Collection.class).get(0);
         if (nms.getMinorVersion() >= 9) {

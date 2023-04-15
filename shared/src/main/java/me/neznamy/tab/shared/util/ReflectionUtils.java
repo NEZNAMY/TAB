@@ -129,7 +129,7 @@ public class ReflectionUtils {
      *          Type of field
      * @return  List of instance fields with defined class type
      */
-    public static List<Field> getInstanceIntFields(Class<?> clazz, Class<?> fieldType) {
+    public static List<Field> getInstanceFields(Class<?> clazz, Class<?> fieldType) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == fieldType && !Modifier.isStatic(field.getModifiers())) {
