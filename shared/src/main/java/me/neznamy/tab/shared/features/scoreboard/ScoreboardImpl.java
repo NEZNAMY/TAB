@@ -132,7 +132,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
         if (players.contains(p)) return; //already registered
         players.add(p);
         p.setProperty(this, titleProperty, title);
-        p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).get(), false);
+        p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).updateAndGet(), false);
         p.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
