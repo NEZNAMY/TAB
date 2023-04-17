@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.PlatformEventListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,12 +13,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  * The core for bukkit forwarding events into all enabled features
  */
-@RequiredArgsConstructor
 public class BukkitEventListener extends PlatformEventListener implements Listener {
 
-    /** Platform instance */
-    private final BukkitPlatform platform;
-    
     /**
      * Listener to PlayerQuitEvent to remove player data and forward the event to features
      *
@@ -38,7 +34,7 @@ public class BukkitEventListener extends PlatformEventListener implements Listen
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
-        join(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer())));
+        join(new BukkitTabPlayer(e.getPlayer(), ViaVersionHook.getInstance().getPlayerVersion(e.getPlayer().getUniqueId(), e.getPlayer().getName())));
     }
 
     /**

@@ -4,13 +4,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
@@ -47,8 +46,6 @@ public class BukkitPlatform extends BackendPlatform {
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
     @Getter @Setter private boolean libsDisguisesEnabled = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
-    private final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
-    private final boolean protocolSupport = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
 
     public BossBarManagerImpl getLegacyBossBar() {
         return new WitherBossBar(plugin);
@@ -63,7 +60,7 @@ public class BukkitPlatform extends BackendPlatform {
     @Override
     public void loadPlayers() {
         for (Player p : getOnlinePlayers()) {
-            TAB.getInstance().addPlayer(new BukkitTabPlayer(p, getProtocolVersion(p)));
+            TAB.getInstance().addPlayer(new BukkitTabPlayer(p, ViaVersionHook.getInstance().getPlayerVersion(p.getUniqueId(), p.getName())));
         }
     }
 
@@ -151,44 +148,6 @@ public class BukkitPlatform extends BackendPlatform {
                 TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p ->
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
             }
-        }
-    }
-
-    /**
-     * Gets protocol version of requested player and returns it.
-     *
-     * @param   player
-     *          Player to get protocol version of
-     * @return  protocol version of the player
-     */
-    public int getProtocolVersion(Player player) {
-        if (protocolSupport) {
-            int version = getProtocolVersionPS(player);
-            //some PS versions return -1 on unsupported server versions instead of throwing exception
-            if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
-        }
-        if (viaVersion) {
-            return ProtocolVersion.getPlayerVersionVia(player.getUniqueId(), player.getName());
-        }
-        return TAB.getInstance().getServerVersion().getNetworkId();
-    }
-
-    /**
-     * Returns protocol version of requested player using ProtocolSupport
-     *
-     * @param   player
-     *          Player to get protocol version of
-     * @return  protocol version of the player using ProtocolSupport
-     */
-    private int getProtocolVersionPS(Player player) {
-        try {
-            Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
-            int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
-            TAB.getInstance().debug("ProtocolSupport returned protocol version " + version + " for " + player.getName() + " (online=" + player.isOnline() + ")");
-            return version;
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ProtocolSupport", player.getName()), e);
-            return TAB.getInstance().getServerVersion().getNetworkId();
         }
     }
 

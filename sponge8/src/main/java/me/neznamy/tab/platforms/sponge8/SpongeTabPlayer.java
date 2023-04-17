@@ -2,15 +2,13 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -29,14 +27,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
-                player.world().key().value(), getProtocolVersion(player), true);
-    }
-
-    private static int getProtocolVersion(ServerPlayer player) {
-        if (Sponge.pluginManager().plugin(TabConstants.Plugin.VIAVERSION.toLowerCase()).isPresent()) {
-            return ProtocolVersion.getPlayerVersionVia(player.uniqueId(), player.name());
-        }
-        return TAB.getInstance().getServerVersion().getNetworkId();
+                player.world().key().value(), ViaVersionHook.getInstance().getPlayerVersion(player.uniqueId(), player.name()), true);
     }
 
     @Override

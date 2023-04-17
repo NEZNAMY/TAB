@@ -33,12 +33,11 @@ public class BukkitTAB extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        BukkitPlatform platform = new BukkitPlatform(this);
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version + " (" + serverPackage + ")", getDataFolder(), getLogger()));
+        TAB.setInstance(new TAB(new BukkitPlatform(this), ProtocolVersion.fromFriendlyName(version), version + " (" + serverPackage + ")", getDataFolder(), getLogger()));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }
-        Bukkit.getPluginManager().registerEvents(new BukkitEventListener(platform), this);
+        Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 5304);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));

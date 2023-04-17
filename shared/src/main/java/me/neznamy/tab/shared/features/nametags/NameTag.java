@@ -36,7 +36,6 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
 
     private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
             TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.VIAREWIND) != null ||
-            TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.PROTOCOL_SUPPORT) != null ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {

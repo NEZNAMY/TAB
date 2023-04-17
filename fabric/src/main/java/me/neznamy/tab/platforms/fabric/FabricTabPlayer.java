@@ -5,20 +5,17 @@ import java.util.Collection;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.tablist.TabList;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FabricTabPlayer extends TabPlayer {
-
-    private static final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
 
     @Getter private final PlatformScoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
     @Getter private final TabList tabList = new FabricTabList(this);
@@ -26,14 +23,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     public FabricTabPlayer(ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), TAB.getInstance().getConfiguration().getServerName(),
-                "N/A", getProtocolVersion(player), true);
-    }
-
-    private static int getProtocolVersion(ServerPlayer player) {
-        if (viaVersion) {
-            return ProtocolVersion.getPlayerVersionVia(player.getUUID(), player.getGameProfile().getName());
-        }
-        return TAB.getInstance().getServerVersion().getNetworkId();
+                "N/A", ViaVersionHook.getInstance().getPlayerVersion(player.getUUID(), player.getGameProfile().getName()), true);
     }
 
     @Override

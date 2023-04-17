@@ -306,7 +306,6 @@ public class TabConstants {
         public static final String LIBS_DISGUISES = "LibsDisguises";
         public static final String VIAREWIND = "ViaRewind";
         public static final String VIAVERSION = "ViaVersion";
-        public static final String PROTOCOL_SUPPORT = "ProtocolSupport";
         public static final String REDIS_BUNGEE = "RedisBungee";
         public static final String PREMIUM_VANISH = "PremiumVanish";
     }

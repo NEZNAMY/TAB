@@ -1,12 +1,10 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
 /**
@@ -109,13 +107,6 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      */
     private String[] split(TabPlayer p, String text) {
         int charLimit = 16;
-        if (TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY &&
-            TAB.getInstance().getServerVersion().getMinorVersion() >= 13 &&
-            p.getVersion().getMinorVersion() < 13) {
-            //ProtocolSupport bug
-            String lastColors = EnumChatFormat.getLastColors(text.substring(0, Math.min(16, text.length())));
-            charLimit -= lastColors.length() == 0 ? 2 : lastColors.length();
-        }
         if (text.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
             StringBuilder prefix = new StringBuilder(text);
             StringBuilder suffix = new StringBuilder(text);

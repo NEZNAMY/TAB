@@ -10,6 +10,7 @@ import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TablistFormatManager;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.command.DisabledCommand;
@@ -164,6 +165,7 @@ public class TAB extends TabAPI {
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
             cpu.enable();
+            ViaVersionHook.getInstance().printProxyWarn();
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
