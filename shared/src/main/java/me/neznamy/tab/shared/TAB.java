@@ -163,6 +163,7 @@ public class TAB extends TabAPI {
             for (TabPlayer p : onlinePlayers) p.markAsLoaded(false);
             if (eventBus != null) eventBus.fire(TabLoadEventImpl.getInstance());
             pluginDisabled = false;
+            cpu.enable();
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {

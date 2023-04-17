@@ -51,6 +51,12 @@ public class CpuManager {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
+    /** Tasks submitted to main thread before plugin was fully enabled */
+    private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
+
+    /** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
+    private volatile boolean enabled = false;
+
     /**
      * Constructs new instance and starts repeating task that resets values in configured interval
      */
@@ -72,6 +78,18 @@ public class CpuManager {
     }
 
     /**
+     * Marks cpu manager as loaded and submits all queued tasks
+     */
+    public void enable() {
+        enabled = true;
+
+        Runnable r;
+        while ((r = taskQueue.poll()) != null) {
+            submit(r);
+        }
+    }
+
+    /**
      * Submits task to TAB's main thread. If plugin is not enabled yet,
      * queues the task instead and executes once it's loaded.
      *
@@ -79,13 +97,11 @@ public class CpuManager {
      */
     private void submit(Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.submit(() -> {
-            try {
-                task.run();
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
-            }
-        });
+        if (!enabled) {
+            taskQueue.add(task);
+            return;
+        }
+        scheduler.submit(() -> run(task));
     }
 
     /**
@@ -225,7 +241,7 @@ public class CpuManager {
 
     public void startRepeatingTask(int intervalMilliseconds, Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> runTask(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public void runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
@@ -233,8 +249,11 @@ public class CpuManager {
         scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void runTaskLater(int delayMilliseconds, Runnable task) {
-        if (scheduler.isShutdown()) return;
-        scheduler.schedule(() -> runTask(task), delayMilliseconds, TimeUnit.MILLISECONDS);
+    private void run(Runnable task) {
+        try {
+            task.run();
+        } catch (Exception | LinkageError | StackOverflowError e) {
+            TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
+        }
     }
 }

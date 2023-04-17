@@ -144,7 +144,6 @@ public class FeatureManager {
         if (changed == null) return;
         String from = changed.getWorld();
         changed.setWorld(to);
-        if (!changed.isLoaded()) return; // Plugin message came back on reload too quickly and player is not loaded yet
         for (TabFeature f : values) {
             if (!(f instanceof WorldSwitchListener)) continue;
             long time = System.nanoTime();
