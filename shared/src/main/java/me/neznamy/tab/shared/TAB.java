@@ -166,6 +166,7 @@ public class TAB extends TabAPI {
             pluginDisabled = false;
             cpu.enable();
             ViaVersionHook.getInstance().printProxyWarn();
+            misconfigurationHelper.printWarnCount();
             sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {

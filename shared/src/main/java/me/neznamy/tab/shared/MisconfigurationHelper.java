@@ -12,6 +12,9 @@ import me.neznamy.tab.shared.features.sorting.types.SortingType;
  */
 public class MisconfigurationHelper {
 
+    /** Amount of logged warns on startup */
+    private int warnCount;
+
     /**
      * Checks if configured refresh intervals are non-negative, non-zero and
      * divisible by {@link Placeholder#MINIMUM_REFRESH_INTERVAL}. If not,
@@ -109,10 +112,10 @@ public class MisconfigurationHelper {
      *          Configured skin definition
      */
     public void invalidLayoutSkinDefinition(String definition) {
-        startupWarn("Invalid skin definition: \"" + definition + "\". Supported patterns are:");
-        startupWarn("#1 - \"player:<name>\" for skin of player with specified name");
-        startupWarn("#2 - \"mineskin:<id>\" for UUID of chosen skin from mineskin.org");
-        startupWarn("#3 - \"texture:<texture>\" for raw texture string");
+        startupWarn("Invalid skin definition: \"" + definition + "\". Supported patterns are:",
+                "#1 - \"player:<name>\" for skin of player with specified name",
+                "#2 - \"mineskin:<id>\" for UUID of chosen skin from mineskin.org",
+                "#3 - \"texture:<texture>\" for raw texture string");
     }
 
     /**
@@ -156,9 +159,9 @@ public class MisconfigurationHelper {
     }
 
     public void invisibleAndUnlimitedNameTagsAreMutuallyExclusive() {
-        startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.");
-        startupWarn("If you want nametags to be invisible, you don't need unlimited nametag mode at all.");
-        startupWarn("If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
+        startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.",
+                "If you want nametags to be invisible, you don't need unlimited nametag mode at all.",
+                "If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
     }
 
     public void invalidDateFormat(String format) {
@@ -178,10 +181,23 @@ public class MisconfigurationHelper {
     /**
      * Sends a startup warn message into console
      *
-     * @param   message
-     *          message to print into console
+     * @param   messages
+     *          messages to print into console
      */
-    private void startupWarn(String message) {
-        TAB.getInstance().sendConsoleMessage("&c" + message, true);
+    private void startupWarn(String... messages) {
+        warnCount++;
+        for (String message : messages) {
+            TAB.getInstance().sendConsoleMessage("&c[WARN] " + message, true);
+        }
+    }
+
+    /**
+     * Prints amount of warns logged into console previously, if more than 0.
+     */
+    public void printWarnCount() {
+        if (warnCount == 0) return;
+        TAB.getInstance().sendConsoleMessage("&eFound a total of " + warnCount + " issues.", true);
+        // Reset after printing to prevent count going up on each reload
+        warnCount = 0;
     }
 }
