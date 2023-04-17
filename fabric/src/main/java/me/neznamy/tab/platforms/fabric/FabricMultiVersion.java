@@ -23,7 +23,7 @@ import java.util.function.Function;
  */
 public class FabricMultiVersion {
 
-    private static final UUID SYSTEM_ID = new UUID(0, 0);
+    public static final UUID SYSTEM_ID = new UUID(0, 0);
     public static final BiConsumer<FabricTabPlayer, IChatBaseComponent> sendMessage;
     public static final BiConsumer<CommandSourceStack, Component> sendMessage2;
     public static final Runnable registerCommand;
