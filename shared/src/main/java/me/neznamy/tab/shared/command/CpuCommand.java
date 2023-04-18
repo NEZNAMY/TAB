@@ -90,16 +90,11 @@ public class CpuCommand extends SubCommand {
     }
 
     public void sendToPlayer(TabPlayer sender, Map<String, Map<String, Float>> features) {
-        sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
+        sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (execute from console for more info):");
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
-            List<String> messages = new ArrayList<>();
-            for (Entry<String, Float> type : entry.getValue().entrySet()) {
-                messages.add("&3" + type.getKey() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
-            }
             IChatBaseComponent message = new IChatBaseComponent(EnumChatFormat.color(core));
-            message.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color(String.join("\n", messages))));
             sender.sendMessage(message);
         }
     }

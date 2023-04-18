@@ -19,7 +19,6 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -94,7 +93,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public void sendMessage(IChatBaseComponent message) {
         if (spigot) {
-            getPlayer().spigot().sendMessage(ComponentSerializer.parse(message.toString(version)));
+            getPlayer().spigot().sendMessage(message.toBungeeComponent(getVersion()));
         } else {
             getPlayer().sendMessage(message.toLegacyText());
         }

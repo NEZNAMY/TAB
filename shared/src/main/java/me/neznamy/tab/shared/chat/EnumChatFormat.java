@@ -8,22 +8,22 @@ import me.neznamy.tab.shared.chat.rgb.RGBUtils;
  */
 public enum EnumChatFormat {
 
-    BLACK('0', "000000"),
-    DARK_BLUE('1', "0000AA"),
-    DARK_GREEN('2', "00AA00"),
-    DARK_AQUA('3', "00AAAA"),
-    DARK_RED('4', "AA0000"),
-    DARK_PURPLE('5', "AA00AA"),
-    GOLD('6', "FFAA00"),
-    GRAY('7', "AAAAAA"),
-    DARK_GRAY('8', "555555"),
-    BLUE('9', "5555FF"),
-    GREEN('a', "55FF55"),
-    AQUA('b', "55FFFF"),
-    RED('c', "FF5555"),
-    LIGHT_PURPLE('d', "FF55FF"),
-    YELLOW('e', "FFFF55"),
-    WHITE('f', "FFFFFF"),
+    BLACK('0', 0x000000),
+    DARK_BLUE('1', 0x0000AA),
+    DARK_GREEN('2', 0x00AA00),
+    DARK_AQUA('3', 0x00AAAA),
+    DARK_RED('4', 0xAA0000),
+    DARK_PURPLE('5', 0xAA00AA),
+    GOLD('6', 0xFFAA00),
+    GRAY('7', 0xAAAAAA),
+    DARK_GRAY('8', 0x555555),
+    BLUE('9', 0x5555FF),
+    GREEN('a', 0x55FF55),
+    AQUA('b', 0x55FFFF),
+    RED('c', 0xFF5555),
+    LIGHT_PURPLE('d', 0xFF55FF),
+    YELLOW('e', 0xFFFF55),
+    WHITE('f', 0xFFFFFF),
     OBFUSCATED('k'),
     BOLD('l'),
     STRIKETHROUGH('m'),
@@ -52,8 +52,8 @@ public enum EnumChatFormat {
     /** Blue value of this constant, 0 for magic codes */
     @Getter private final short blue;
 
-    /** Color as 6-digit hex code, null for magic codes */
-    @Getter private final String hexCode;
+    /** Color as a hex code, 0 for magic codes */
+    @Getter private final int hexCode;
 
     /** Color symbol followed by constant's character */
     @Getter private final String format;
@@ -64,16 +64,15 @@ public enum EnumChatFormat {
      * @param   character
      *          character which the color goes by
      * @param   hexCode
-     *          6-digit hex code of the color
+     *          hex code of the color
      */
-    EnumChatFormat(char character, String hexCode) {
+    EnumChatFormat(char character, int hexCode) {
         this.character = character;
-        this.format = String.valueOf(COLOR_CHAR) + character;
         this.hexCode = hexCode;
-        int hexColor = Integer.parseInt(hexCode, 16);
-        red = (short) ((hexColor >> 16) & 0xFF);
-        green = (short) ((hexColor >> 8) & 0xFF);
-        blue = (short) (hexColor & 0xFF);
+        format = String.valueOf(COLOR_CHAR) + character;
+        red = (short) ((hexCode >> 16) & 0xFF);
+        green = (short) ((hexCode >> 8) & 0xFF);
+        blue = (short) (hexCode & 0xFF);
     }
 
     /**
@@ -84,11 +83,11 @@ public enum EnumChatFormat {
      */
     EnumChatFormat(char character) {
         this.character = character;
-        this.format = String.valueOf(COLOR_CHAR) + character;
+        format = String.valueOf(COLOR_CHAR) + character;
         red = 0;
         green = 0;
         blue = 0;
-        hexCode = null;
+        hexCode = 0;
     }
 
     /**

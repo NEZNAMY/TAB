@@ -13,6 +13,7 @@ dependencies {
         exclude("com.google.guava", "guava")
         exclude("org.checkerframework", "checker-qual")
     }
+    compileOnlyApi("net.md-5:bungeecord-chat:1.19-R0.1-SNAPSHOT")
     compileOnlyApi("com.viaversion:viaversion-api:4.5.1")
     compileOnlyApi("io.netty:netty-all:4.1.90.Final")
     compileOnlyApi("net.luckperms:api:5.4")
@@ -21,7 +22,6 @@ dependencies {
     compileOnlyApi("org.slf4j:slf4j-api:2.0.6")
     compileOnlyApi("net.kyori:adventure-api:4.13.0")
     compileOnlyApi("net.kyori:adventure-text-serializer-legacy:4.13.0")
-    compileOnlyApi("net.kyori:adventure-text-serializer-gson:4.13.0")
     compileOnlyApi("net.kyori:adventure-text-minimessage:4.13.0")
 }
 

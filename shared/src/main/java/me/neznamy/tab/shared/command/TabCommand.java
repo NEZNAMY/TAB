@@ -8,8 +8,6 @@ import com.google.common.collect.Lists;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 
@@ -73,11 +71,7 @@ public class TabCommand extends SubCommand {
     private void help(TabPlayer sender) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {
             if (sender != null) {
-                IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("&3TAB v") + TabConstants.PLUGIN_VERSION);
-                component.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color("&aClick to visit plugin's page")));
-                component.getModifier().onClickOpenUrl("https://www.mc-market.org/resources/14009/");
-                component.addExtra(new IChatBaseComponent(EnumChatFormat.color("&0 by _NEZNAMY_")));
-                sender.sendMessage(component);
+                sender.sendMessage("&3TAB v" + TabConstants.PLUGIN_VERSION + "&0 by _NEZNAMY_", true);
             } else {
                 TAB.getInstance().sendConsoleMessage("&3TAB v" + TabConstants.PLUGIN_VERSION, true);
             }

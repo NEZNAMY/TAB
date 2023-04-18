@@ -7,7 +7,6 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.TabList;
-import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
@@ -17,9 +16,7 @@ import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -32,10 +29,6 @@ import java.lang.reflect.Method;
  * TabPlayer implementation for BungeeCord
  */
 public class BungeeTabPlayer extends ProxyTabPlayer {
-
-    /** Component cache to save CPU when creating components */
-    private static final ComponentCache<IChatBaseComponent, BaseComponent[]> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> ComponentSerializer.parse(component.toString(clientVersion)));
 
     /** Inaccessible bungee internals */
     private static Object directionData;
@@ -86,7 +79,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(componentCache.get(message, getVersion()));
+        getPlayer().sendMessage(message.toBungeeComponent(getVersion()));
     }
 
     @Override
@@ -155,7 +148,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().setTabHeader(componentCache.get(header, getVersion()), componentCache.get(footer, getVersion()));
+        getPlayer().setTabHeader(header.toBungeeComponent(getVersion()), footer.toBungeeComponent(getVersion()));
     }
 
     @Override

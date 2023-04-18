@@ -80,7 +80,7 @@ public class TextColor {
      */
     public TextColor(@NonNull EnumChatFormat legacyColor) {
         this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
-        this.hexCode = legacyColor.getHexCode();
+        this.hexCode = Integer.toHexString(legacyColor.getHexCode());
     }
 
     /**
@@ -189,7 +189,8 @@ public class TextColor {
      *
      * @return  the color serialized for use in chat component
      */
-    public String toString() {
+    public String toString(boolean rgbSupport) {
+        if (!rgbSupport) return getLegacyColor().toString().toLowerCase();
         EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRed(), getGreen(), getBlue());
         if (legacyEquivalent != null) {
             //not sending old colors as RGB to 1.16 clients if not needed as <1.16 servers will fail to apply color

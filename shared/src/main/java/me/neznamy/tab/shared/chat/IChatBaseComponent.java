@@ -5,13 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -33,8 +34,13 @@ public class IChatBaseComponent {
                     IChatBaseComponent.fromColoredText(text) : //contains RGB colors
                     new IChatBaseComponent(text); //no RGB
             });
+
     private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(10000,
             (component, clientVersion) -> component.toString());
+
+    /** Component cache for BungeeCord components */
+    private static final ComponentCache<IChatBaseComponent, BaseComponent> bungeeCache =
+            new ComponentCache<>(10000, IChatBaseComponent::toBungeeComponent0);
 
     /** Text of the component */
     @Getter @Setter private String text;
@@ -43,7 +49,9 @@ public class IChatBaseComponent {
     @Getter @Setter @NonNull private ChatModifier modifier = new ChatModifier();
 
     /** Extra components used in "extra" field */
-    private List<IChatBaseComponent> extra;
+    @Nullable private List<IChatBaseComponent> extra;
+
+    @Nullable private ProtocolVersion targetVersion;
 
     /**
      * Constructs a new component which is a clone of provided component
@@ -54,9 +62,8 @@ public class IChatBaseComponent {
     public IChatBaseComponent(@NonNull IChatBaseComponent component) {
         this.text = component.text;
         this.modifier = new ChatModifier(component.modifier);
-        for (IChatBaseComponent child : component.getExtra()) {
-            addExtra(new IChatBaseComponent(child));
-        }
+        this.extra = component.extra == null ? null : component.extra.stream().map(IChatBaseComponent::new).collect(Collectors.toList());
+        this.targetVersion = component.targetVersion;
     }
 
     /**
@@ -117,8 +124,7 @@ public class IChatBaseComponent {
     public String toString() {
         JSONObject json = new JSONObject();
         if (text != null) json.put("text", text);
-        if (modifier.getTargetVersion() == null) modifier.setTargetVersion(TabAPI.getInstance().getServerVersion()); //packet.toString() was called as a part of a debug message
-        json.putAll(modifier.serialize());
+        json.putAll(modifier.serialize(targetVersion == null || targetVersion.getMinorVersion() >= 16));
         if (extra != null) json.put("extra", extra);
         return json.toString();
     }
@@ -132,33 +138,13 @@ public class IChatBaseComponent {
      * @return  serialized string
      */
     public String toString(ProtocolVersion clientVersion) {
-        return toString(clientVersion, false);
-    }
-
-    /**
-     * Serializes this component with colors based on client version.
-     * If client version is &lt;1.16, HEX colors will be converted to legacy colors.
-     *
-     * @param   clientVersion
-     *          client version to adapt component for
-     * @param   sendTranslatableIfEmpty
-     *          whether empty translatable should be sent if text is empty or not
-     * @return  serialized string
-     */
-    public String toString(ProtocolVersion clientVersion, boolean sendTranslatableIfEmpty) {
         if (extra == null) {
             if (text == null) return null;
-            if (text.length() == 0) {
-                if (sendTranslatableIfEmpty) {
-                    return "{\"translate\":\"\"}";
-                } else {
-                    return "{\"text\":\"\"}";
-                }
-            }
+            if (text.length() == 0) return "{\"text\":\"\"}";
         }
-        modifier.setTargetVersion(clientVersion);
+        targetVersion = clientVersion;
         for (IChatBaseComponent child : getExtra()) {
-            child.modifier.setTargetVersion(clientVersion);
+            child.targetVersion = clientVersion;
         }
         return serializeCache.get(this, clientVersion);
     }
@@ -355,10 +341,6 @@ public class IChatBaseComponent {
      * @return  Adventure component from this component.
      */
     public Component toAdventureComponent() {
-        if (modifier.getHoverEvent() != null || modifier.getClickEvent() != null) {
-            // Chat stuff is present, just do this instead of adding tons of code for converting every action
-            return GsonComponentSerializer.gson().deserialize(toString(TAB.getInstance().getServerVersion()));
-        }
         net.kyori.adventure.text.format.TextColor color = modifier.getColor() == null ? null :
                 net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getRgb());
         Set<TextDecoration> decorations = new HashSet<>();
@@ -367,6 +349,37 @@ public class IChatBaseComponent {
         if (modifier.isObfuscated()) decorations.add(TextDecoration.OBFUSCATED);
         if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
-        return Component.text(text, color, decorations).children(getExtra().stream().map(IChatBaseComponent::toAdventureComponent).collect(Collectors.toList()));
+        return Component.text(text, color, decorations)
+                .children(getExtra().stream().map(IChatBaseComponent::toAdventureComponent).collect(Collectors.toList()));
+    }
+
+    /**
+     * Takes component from cache. If not present, it is created, inserted and returned.
+     *
+     * @param   clientVersion
+     *          Client version, used to decide colors based on if client supports RGB or not
+     * @return  BungeeCord component from this component.
+     */
+    public BaseComponent toBungeeComponent(@NonNull ProtocolVersion clientVersion) {
+        return bungeeCache.get(this, clientVersion);
+    }
+
+    /**
+     * Converts this component to bungeecord component.
+     *
+     * @param   clientVersion
+     *          Client version, used to decide colors based on if client supports RGB or not
+     * @return  BungeeCord component from this component.
+     */
+    private BaseComponent toBungeeComponent0(@NonNull ProtocolVersion clientVersion) {
+        TextComponent component = new TextComponent(text);
+        if (modifier.getColor() != null) component.setColor(ChatColor.of(modifier.getColor().toString(clientVersion.getMinorVersion() >= 16)));
+        if (modifier.isBold()) component.setBold(true);
+        if (modifier.isItalic()) component.setItalic(true);
+        if (modifier.isObfuscated()) component.setObfuscated(true);
+        if (modifier.isStrikethrough()) component.setStrikethrough(true);
+        if (modifier.isUnderlined()) component.setUnderlined(true);
+        if (extra != null) component.setExtra(getExtra().stream().map(c -> c.toBungeeComponent(clientVersion)).collect(Collectors.toList()));
+        return component;
     }
 }

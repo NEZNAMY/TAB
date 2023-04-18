@@ -188,12 +188,8 @@ public class WidthCommand extends SubCommand {
             pixelsRemaining -= 2;
             text.append('i');
         }
-        IChatBaseComponent component = new IChatBaseComponent(EnumChatFormat.color("|&b&k" + text + " &e|&b (" + width + " pixels) &7&l[Click to apply]"));
-        component.getModifier().onClickRunCommand("/tab width set " + c + " " + width);
-        component.getModifier().onHoverShowText(new IChatBaseComponent("Click to set width to " + width + " pixels"));
-        return component;
+        return new IChatBaseComponent(EnumChatFormat.color("|&b&k" + text + " &e|&b (" + width + " pixels)"));
     }
-
 
     @Override
     public List<String> complete(TabPlayer sender, String[] arguments) {

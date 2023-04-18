@@ -71,12 +71,7 @@ public class WidthCheckCommand extends SubCommand {
                 }
                 line.append("   ").append(row * COLUMNS + i).append("-").append((row + 1) * COLUMNS + i - 1).append("\n");
             }
-            IChatBaseComponent msg = IChatBaseComponent.fromColoredText(line + "§7§l[Previous]");
-            msg.getModifier().onClickRunCommand("/tab widthcheck " + (i-ROWS*COLUMNS));
-            IChatBaseComponent next = new IChatBaseComponent("                                    §7§l[Next]");
-            next.getModifier().onClickRunCommand("/tab widthcheck " + (i+ROWS*COLUMNS));
-            msg.addExtra(next);
-            sender.sendMessage(msg);
+            sender.sendMessage(IChatBaseComponent.fromColoredText(line.toString()));
         }
     }
 
