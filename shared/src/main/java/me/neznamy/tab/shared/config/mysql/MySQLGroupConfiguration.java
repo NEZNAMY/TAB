@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.config.mysql;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.config.MySQL;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;

@@ -8,7 +8,6 @@ import javax.sql.rowset.CachedRowSet;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.config.MySQL;
 
 public class MySQLUserConfiguration implements PropertyConfiguration {
 

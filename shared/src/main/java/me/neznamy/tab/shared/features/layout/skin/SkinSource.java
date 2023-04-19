@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.shared.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 
 public abstract class SkinSource {
 

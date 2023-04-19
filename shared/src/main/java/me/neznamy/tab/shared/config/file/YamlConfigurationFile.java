@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.config;
+package me.neznamy.tab.shared.config.file;
 
 import java.io.File;
 import java.io.FileInputStream;

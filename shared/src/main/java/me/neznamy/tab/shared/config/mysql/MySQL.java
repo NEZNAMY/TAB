@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.config;
+package me.neznamy.tab.shared.config.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -5,7 +5,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BossBarManager;
-import me.neznamy.tab.shared.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TablistFormatManager;

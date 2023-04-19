@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.config.ConfigurationFile;
-import me.neznamy.tab.shared.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 

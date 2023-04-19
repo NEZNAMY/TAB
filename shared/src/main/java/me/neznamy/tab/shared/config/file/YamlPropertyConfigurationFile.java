@@ -9,7 +9,6 @@ import me.neznamy.tab.shared.TabConstants;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import me.neznamy.tab.shared.config.PropertyConfiguration;
-import me.neznamy.tab.shared.config.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class YamlPropertyConfigurationFile extends YamlConfigurationFile implements PropertyConfiguration {

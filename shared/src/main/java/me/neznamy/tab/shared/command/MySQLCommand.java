@@ -5,7 +5,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.config.MySQL;
+import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
 import org.yaml.snakeyaml.error.YAMLException;
 
