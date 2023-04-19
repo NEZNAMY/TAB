@@ -60,7 +60,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     @SuppressWarnings("unchecked")
     private Map<String, Layout> loadLayouts() {
         Map<String, Layout> layoutMap = new LinkedHashMap<>();
-        for (Entry<Object, Object> layout : TAB.getInstance().getConfig().getConfigurationSection("layouts").entrySet()) {
+        for (Entry<Object, Object> layout : TAB.getInstance().getConfig().getConfigurationSection("layout.layouts").entrySet()) {
             Map<String, Object> map = (Map<String, Object>) layout.getValue();
             Condition displayCondition = Condition.getCondition((String) map.get("condition"));
             if (displayCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(displayCondition.getName())));
