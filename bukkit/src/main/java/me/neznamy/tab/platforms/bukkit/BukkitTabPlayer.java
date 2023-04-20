@@ -4,10 +4,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.TabList;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_8;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_9;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
@@ -32,9 +32,6 @@ import java.util.UUID;
  */
 @SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends BackendTabPlayer {
-
-    /** Spigot check */
-    private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
     private Object handle;
@@ -92,11 +89,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(IChatBaseComponent message) {
-        if (spigot) {
-            getPlayer().spigot().sendMessage(message.toBungeeComponent(getVersion()));
-        } else {
-            getPlayer().sendMessage(message.toLegacyText());
-        }
+        getPlayer().sendMessage(RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
+                getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
 
     @Override

@@ -9,9 +9,6 @@ import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
@@ -37,10 +34,6 @@ public class IChatBaseComponent {
 
     private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(10000,
             (component, clientVersion) -> component.toString());
-
-    /** Component cache for BungeeCord components */
-    private static final ComponentCache<IChatBaseComponent, BaseComponent> bungeeCache =
-            new ComponentCache<>(10000, IChatBaseComponent::toBungeeComponent0);
 
     /** Text of the component */
     @Getter @Setter private String text;
@@ -322,6 +315,22 @@ public class IChatBaseComponent {
     }
 
     /**
+     * Converts the component into flat text with used colors (including rgb) and magic codes
+     *
+     * @return  converted text
+     */
+    public String toFlatText() {
+        StringBuilder builder = new StringBuilder();
+        if (modifier.getColor() != null) builder.append("#").append(modifier.getColor().getHexCode());
+        builder.append(modifier.getMagicCodes());
+        if (text != null) builder.append(text);
+        for (IChatBaseComponent child : getExtra()) {
+            builder.append(child.toFlatText());
+        }
+        return builder.toString();
+    }
+
+    /**
      * Returns the most optimized component based on text. Returns null if text is null,
      * organized component if RGB colors are used or simple component with only text field
      * containing the whole text when no RGB colors are used
@@ -351,35 +360,5 @@ public class IChatBaseComponent {
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
         return Component.text(text, color, decorations)
                 .children(getExtra().stream().map(IChatBaseComponent::toAdventureComponent).collect(Collectors.toList()));
-    }
-
-    /**
-     * Takes component from cache. If not present, it is created, inserted and returned.
-     *
-     * @param   clientVersion
-     *          Client version, used to decide colors based on if client supports RGB or not
-     * @return  BungeeCord component from this component.
-     */
-    public BaseComponent toBungeeComponent(@NonNull ProtocolVersion clientVersion) {
-        return bungeeCache.get(this, clientVersion);
-    }
-
-    /**
-     * Converts this component to bungeecord component.
-     *
-     * @param   clientVersion
-     *          Client version, used to decide colors based on if client supports RGB or not
-     * @return  BungeeCord component from this component.
-     */
-    private BaseComponent toBungeeComponent0(@NonNull ProtocolVersion clientVersion) {
-        TextComponent component = new TextComponent(text);
-        if (modifier.getColor() != null) component.setColor(ChatColor.of(modifier.getColor().toString(clientVersion.getMinorVersion() >= 16)));
-        if (modifier.isBold()) component.setBold(true);
-        if (modifier.isItalic()) component.setItalic(true);
-        if (modifier.isObfuscated()) component.setObfuscated(true);
-        if (modifier.isStrikethrough()) component.setStrikethrough(true);
-        if (modifier.isUnderlined()) component.setUnderlined(true);
-        if (extra != null) component.setExtra(getExtra().stream().map(c -> c.toBungeeComponent(clientVersion)).collect(Collectors.toList()));
-        return component;
     }
 }
