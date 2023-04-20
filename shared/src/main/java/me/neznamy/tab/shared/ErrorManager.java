@@ -7,7 +7,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class ErrorManager {
      */
     public void printError(String message, Throwable t, boolean intoConsoleToo, File file) {
         Throwable error = t;
-        if (error instanceof InvocationTargetException) {
+        while (error != null && error.getCause() != null) {
             error = error.getCause();
         }
         List<String> lines = new ArrayList<>();
