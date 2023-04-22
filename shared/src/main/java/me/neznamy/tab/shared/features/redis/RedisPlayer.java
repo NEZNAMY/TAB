@@ -36,6 +36,7 @@ public class RedisPlayer {
     private RedisPlayer() {
     }
 
+    @SuppressWarnings("unchecked")
     public static RedisPlayer fromJson(RedisSupport redis, JSONObject json) {
         RedisPlayer player = new RedisPlayer();
         player.redis = redis;
@@ -54,8 +55,8 @@ public class RedisPlayer {
         player.tagPrefix = (String) json.get("tagprefix");
         player.tagSuffix = (String) json.get("tagsuffix");
         player.nameVisibility = (boolean) json.get("namevisibility");
-        player.belowName = (int) json.get("belowname");
-        player.yellowNumber = (int) json.get("yellow-number");
+        player.belowName = (int) json.getOrDefault("belowname", 0);
+        player.yellowNumber = (int) json.getOrDefault("yellow-number", 0);
         player.staff = (boolean) json.get("staff");
         player.disabledPlayerList = redis.getPlayerList() == null || redis.getPlayerList().isDisabled(player.server, null);
         player.disabledNameTags = redis.getNameTags() == null || redis.getNameTags().isDisabled(player.server, null);
