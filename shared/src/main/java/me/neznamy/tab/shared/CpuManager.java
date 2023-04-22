@@ -13,39 +13,22 @@ import me.neznamy.tab.shared.features.types.TabFeature;
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
 public class CpuManager {
-    private static final int UPDATE_RATE_SECONDS = 10;
 
-    private static final long TIME_PERCENT
-            = TimeUnit.SECONDS.toNanos(1) / UPDATE_RATE_SECONDS;
-    /**
-     * Data reset interval in milliseconds
-     */
-    private static final int BUFFER_SIZE_MILLIS =
-            (int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS);
+    private final int UPDATE_RATE_SECONDS = 10;
 
-    /**
-     * Active time in current time period saved as nanoseconds from features
-     */
-    private volatile Map<String, Map<String, Long>> featureUsageCurrent
-            = new ConcurrentHashMap<>();
+    private final long TIME_PERCENT = TimeUnit.SECONDS.toNanos(1) / UPDATE_RATE_SECONDS;
 
-    /**
-     * Active time in current time period saved as nanoseconds from placeholders
-     */
-    private volatile Map<String, Long> placeholderUsageCurrent
-            = new ConcurrentHashMap<>();
+    /** Active time in current time period saved as nanoseconds from features */
+    private volatile Map<String, Map<String, Long>> featureUsageCurrent = new ConcurrentHashMap<>();
 
-    /**
-     * Active time in previous time period saved as nanoseconds from features
-     */
-    private volatile Map<String, Map<String, Long>> featureUsagePrevious
-            = new HashMap<>();
+    /** Active time in current time period saved as nanoseconds from placeholders */
+    private volatile Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<>();
 
-    /**
-     * Active time in previous time period saved as nanoseconds from placeholders
-     */
-    private volatile Map<String, Long> placeholderUsagePrevious
-            = new HashMap<>();
+    /** Active time in previous time period saved as nanoseconds from features */
+    private volatile Map<String, Map<String, Long>> featureUsagePrevious = new HashMap<>();
+
+    /** Active time in previous time period saved as nanoseconds from placeholders */
+    private volatile Map<String, Long> placeholderUsagePrevious = new HashMap<>();
 
     // Scheduler for scheduling delayed and repeating tasks
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
@@ -61,7 +44,7 @@ public class CpuManager {
      * Constructs new instance and starts repeating task that resets values in configured interval
      */
     public CpuManager() {
-        startRepeatingTask(BUFFER_SIZE_MILLIS, () -> {
+        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
             featureUsagePrevious = Collections.unmodifiableMap(featureUsageCurrent);
             placeholderUsagePrevious = Collections.unmodifiableMap(placeholderUsageCurrent);
 
@@ -119,7 +102,7 @@ public class CpuManager {
      * @param map map to convert
      * @return converted and sorted map
      */
-    private static Map<String, Float> getUsage(Map<String, Long> map) {
+    private Map<String, Float> getUsage(Map<String, Long> map) {
         return map
                 .entrySet()
                 .stream()
@@ -170,9 +153,10 @@ public class CpuManager {
      * @param nanos nanoseconds of cpu time
      * @return usage in % (0-100)
      */
-    private static float nanosToPercent(long nanos) {
+    private float nanosToPercent(long nanos) {
         return (float) nanos / TIME_PERCENT;
     }
+
     /**
      * Adds cpu time to specified feature and usage type
      *
@@ -204,7 +188,7 @@ public class CpuManager {
      * @param key  usage key
      * @param time nanoseconds to add
      */
-    private static void addTime(Map<String, Long> map, String key, long time) {
+    private void addTime(Map<String, Long> map, String key, long time) {
         map.merge(key, time, Long::sum);
     }
 

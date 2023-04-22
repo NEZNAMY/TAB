@@ -25,7 +25,7 @@ public final class FabricPlatform extends BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (ServerPlayer player : PlayerLookup.all(FabricTAB.getServer())) {
+        for (ServerPlayer player : PlayerLookup.all(FabricTAB.getInstance().getServer())) {
             TAB.getInstance().addPlayer(new FabricTabPlayer(player));
         }
     }

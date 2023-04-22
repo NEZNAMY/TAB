@@ -28,7 +28,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public boolean hasPermission(String permission) {
-        return FabricTAB.hasPermission(getPlayer().createCommandSourceStack(), permission);
+        return FabricTAB.getInstance().hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
     @Override
@@ -86,8 +86,8 @@ public class FabricTabPlayer extends TabPlayer {
     @Override
     public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
         getPlayer().connection.send(FabricMultiVersion.setHeaderAndFooter.apply(
-                FabricTAB.toComponent(header, getVersion()),
-                FabricTAB.toComponent(footer, getVersion()))
+                FabricTAB.getInstance().toComponent(header, getVersion()),
+                FabricTAB.getInstance().toComponent(footer, getVersion()))
         );
     }
 }

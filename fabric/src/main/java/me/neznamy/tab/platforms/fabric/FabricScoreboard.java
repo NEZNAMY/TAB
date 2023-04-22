@@ -22,9 +22,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
 
-    private static final Scoreboard dummyScoreboard = new Scoreboard();
-    private static final ObjectiveCriteria dummyCriteria = ObjectiveCriteria.DUMMY;
-    @NonNull private static final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
+    private final Scoreboard dummyScoreboard = new Scoreboard();
+    private final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
@@ -38,7 +37,7 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
                         new Objective(
                                 dummyScoreboard,
                                 objective,
-                                dummyCriteria,
+                                ObjectiveCriteria.DUMMY,
                                 EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         )
@@ -53,8 +52,8 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
                         new Objective(
                             dummyScoreboard,
                             objectiveName,
-                            dummyCriteria,
-                            FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                            ObjectiveCriteria.DUMMY,
+                            FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                             hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
                         ),
                         0
@@ -69,7 +68,7 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
                         new Objective(
                                 dummyScoreboard,
                                 objectiveName,
-                                dummyCriteria,
+                                ObjectiveCriteria.DUMMY,
                                 EMPTY_COMPONENT,
                                 ObjectiveCriteria.RenderType.INTEGER
                         ),
@@ -85,8 +84,8 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
                         new Objective(
                             dummyScoreboard,
                             objectiveName,
-                            dummyCriteria,
-                            FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                            ObjectiveCriteria.DUMMY,
+                            FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                             hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
                         ),
                         2
@@ -105,9 +104,9 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
         if (visibility != null)
             team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
         if (prefix != null)
-            team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+            team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         if (suffix != null)
-            team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+            team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
         player.sendPacket(FabricMultiVersion.registerTeam.apply(team));
     }
@@ -128,9 +127,9 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
         if (visibility != null)
             team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
         if (prefix != null)
-            team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+            team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         if (suffix != null)
-            team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+            team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         player.sendPacket(FabricMultiVersion.updateTeam.apply(team));
     }
 

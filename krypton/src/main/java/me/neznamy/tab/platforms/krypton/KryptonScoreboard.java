@@ -71,7 +71,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
         }
     }
 
-    private static CollisionRule convertCollisionRule(String rule) {
+    private CollisionRule convertCollisionRule(String rule) {
         return switch (rule) {
             case "always" -> CollisionRule.ALWAYS;
             case "never" -> CollisionRule.NEVER;
@@ -81,7 +81,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
         };
     }
 
-    private static Visibility convertVisibility(String visibility) {
+    private Visibility convertVisibility(String visibility) {
         return switch (visibility) {
             case "always" -> Visibility.ALWAYS;
             case "never" -> Visibility.NEVER;

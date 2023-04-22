@@ -25,7 +25,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
                 o -> player.getPlayer().scoreboard().updateDisplaySlot(o, convertDisplaySlot(slot)));
     }
 
-    private static org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
+    private org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
         switch (slot) {
             case PLAYER_LIST: return DisplaySlots.LIST.get();
             case SIDEBAR: return DisplaySlots.SIDEBAR.get();
@@ -93,7 +93,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
         team.setNameTagVisibility(convertVisibility(visibility));
     }
 
-    private static CollisionRule convertCollisionRule(String rule) {
+    private CollisionRule convertCollisionRule(String rule) {
         switch (rule) {
             case "always": return CollisionRules.ALWAYS.get();
             case "never": return CollisionRules.NEVER.get();
@@ -103,7 +103,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
         }
     }
 
-    private static Visibility convertVisibility(String visibility) {
+    private Visibility convertVisibility(String visibility) {
         switch (visibility) {
             case "always": return Visibilities.ALWAYS.get();
             case "never": return Visibilities.NEVER.get();

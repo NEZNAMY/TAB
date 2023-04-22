@@ -36,10 +36,10 @@ public class FabricMultiVersion {
     static {
         // 1.19+
 
-        sendMessage = (player, message) -> player.getPlayer().sendSystemMessage(FabricTAB.toComponent(message, player.getVersion()));
+        sendMessage = (player, message) -> player.getPlayer().sendSystemMessage(FabricTAB.getInstance().toComponent(message, player.getVersion()));
         sendMessage2 = CommandSourceStack::sendSystemMessage;
         registerCommand = () -> net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register(
-                (dispatcher, $, $$) -> FabricTAB.onRegisterCommands(dispatcher));
+                (dispatcher, $, $$) -> FabricTAB.getInstance().onRegisterCommands(dispatcher));
         setProgress = ServerBossEvent::setProgress;
         registerTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
         unregisterTeam = ClientboundSetPlayerTeamPacket::createRemovePacket;
@@ -48,10 +48,10 @@ public class FabricMultiVersion {
 
         // 1.17 - 1.18.2
         /*
-        sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.toComponent(message, player.getVersion()), SYSTEM_ID);
+        sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.getInstance().toComponent(message, player.getVersion()), SYSTEM_ID);
         sendMessage2 = (source, message) -> source.sendSuccess(message, false);
         registerCommand = () -> net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register(
-                (dispatcher, $) -> FabricTAB.onRegisterCommands(dispatcher));
+                (dispatcher, $) -> FabricTAB.getInstance().onRegisterCommands(dispatcher));
         setProgress = ServerBossEvent::setProgress;
         registerTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
         unregisterTeam = ClientboundSetPlayerTeamPacket::createRemovePacket;
@@ -60,12 +60,12 @@ public class FabricMultiVersion {
         */
         // 1.14 - 1.16.5
         /*
-        sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.toComponent(message, player.getVersion())
+        sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.getInstance().toComponent(message, player.getVersion())
                 //, SYSTEM_ID // 1.16 - 1.16.5
         );
         sendMessage2 = (source, message) -> source.sendSuccess(message, false);
         registerCommand = () -> net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register(
-                (dispatcher, $) -> FabricTAB.onRegisterCommands(dispatcher));
+                (dispatcher, $) -> FabricTAB.getInstance().onRegisterCommands(dispatcher));
         setProgress = ServerBossEvent::setPercent;
         registerTeam = team -> new ClientboundSetPlayerTeamPacket(team, 0);
         unregisterTeam = team -> new ClientboundSetPlayerTeamPacket(team, 1);

@@ -30,14 +30,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class FabricTAB implements DedicatedServerModInitializer {
 
-    private static final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(1000,
+    private final ComponentCache<IChatBaseComponent, Component> componentCache = new ComponentCache<>(1000,
             (text, version) -> Component.Serializer.fromJson(text.toString(version)));
-    private static final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
 
-    @Getter private static MinecraftServer server;
+    @Getter private static FabricTAB instance;
+    private final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
+
+    @Getter private MinecraftServer server;
 
     @Override
     public void onInitializeServer() {
+        instance = this;
         ProtocolVersion protocolVersion = ProtocolVersion.fromNetworkId(SharedConstants.getCurrentVersion().getProtocolVersion());
         String version = SharedConstants.getCurrentVersion().getName();
         File folder = FabricLoader.getInstance().getConfigDir().resolve("tab").toFile();
@@ -51,26 +54,24 @@ public class FabricTAB implements DedicatedServerModInitializer {
     }
 
     private void onServerStart(MinecraftServer server) {
-        FabricTAB.server = server;
+        this.server = server;
         TAB.getInstance().load();
     }
 
     private void onServerStop(MinecraftServer server) {
         TAB.getInstance().unload();
-        FabricTAB.server = null;
     }
 
-    public static Component toComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
-        if (component == null) return null;
+    public Component toComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
     }
 
-    public static boolean hasPermission(CommandSourceStack source, String permission) {
+    public boolean hasPermission(CommandSourceStack source, String permission) {
         if (source.hasPermission(4)) return true;
         return fabricPermissionsApi && Permissions.check(source, permission);
     }
 
-    public static void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralCommandNode<CommandSourceStack> command = Commands.literal("tab")
                 .executes(context -> executeCommand(context.getSource(), new String[0]))
                 .build();
@@ -82,7 +83,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         dispatcher.getRoot().addChild(command);
     }
 
-    private static String[] getArguments(CommandContext<CommandSourceStack> context) {
+    private String[] getArguments(CommandContext<CommandSourceStack> context) {
         String input = context.getInput();
         int firstSpace = input.indexOf(' ');
         if (firstSpace == -1) return new String[0];
@@ -90,7 +91,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return rawArgs.split(" ");
     }
 
-    private static int executeCommand(CommandSourceStack source, String[] args) {
+    private int executeCommand(CommandSourceStack source, String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             boolean hasReloadPermission = hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = hasPermission(source, TabConstants.Permission.COMMAND_ALL);
@@ -110,7 +111,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return 0;
     }
 
-    private static CompletableFuture<Suggestions> getSuggestions(CommandSourceStack source, String[] args, SuggestionsBuilder builder) {
+    private CompletableFuture<Suggestions> getSuggestions(CommandSourceStack source, String[] args, SuggestionsBuilder builder) {
         TabPlayer player = null;
         if (source.getEntity() != null) {
             player = TAB.getInstance().getPlayer(source.getEntity().getUUID());

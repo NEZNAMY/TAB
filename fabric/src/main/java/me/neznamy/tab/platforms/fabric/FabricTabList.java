@@ -28,7 +28,7 @@ public class FabricTabList extends BulkUpdateTabList {
     @Override
     public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
         player.sendPacket(FabricMultiVersion.build(Action.UPDATE_DISPLAY_NAME, entries.entrySet().stream()
-                .map(entry -> new Builder(entry.getKey()).setDisplayName(FabricTAB.toComponent(entry.getValue(), player.getVersion())))
+                .map(entry -> new Builder(entry.getKey()).setDisplayName(FabricTAB.getInstance().toComponent(entry.getValue(), player.getVersion())))
                 .collect(Collectors.toList())));
     }
 
@@ -56,7 +56,7 @@ public class FabricTabList extends BulkUpdateTabList {
                     .setListed(entry.isListed())
                     .setGameMode(entry.getGameMode())
                     .setLatency(entry.getLatency())
-                    .setDisplayName(FabricTAB.toComponent(entry.getDisplayName(), player.getVersion())));
+                    .setDisplayName(FabricTAB.getInstance().toComponent(entry.getDisplayName(), player.getVersion())));
         }
         player.sendPacket(FabricMultiVersion.build(Action.ADD_PLAYER, converted));
     }
