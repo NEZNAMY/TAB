@@ -69,7 +69,7 @@ public class VelocityTAB {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
-        TAB.setInstance(new TAB(new VelocityPlatform(server), ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
+        TAB.setInstance(new TAB(new VelocityPlatform(this, server), ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
         server.getEventManager().register(this, new VelocityEventListener());
         VelocityTABCommand cmd = new VelocityTABCommand();
         server.getCommandManager().register(server.getCommandManager().metaBuilder("btab").build(), cmd);
