@@ -6,16 +6,12 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 /**
  * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
  * the bottom of TabList with transparent name. Does not work on self as that would result
  * in players not being able to clip through walls.
  */
-public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable {
+public class SpectatorFix extends TabFeature implements JoinListener, GameModeListener, Loadable, UnLoadable, ServerSwitchListener {
 
     @Getter private final String featureName = "Spectator fix";
 
@@ -30,12 +26,10 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
      */
     private void updatePlayer(TabPlayer viewer, boolean realGameMode) {
         if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) return;
-        Map<UUID, Integer> map = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == target || target.getGamemode() != 3) continue;
-            map.put(target.getTablistId(), realGameMode ? target.getGamemode() : 1);
+            viewer.getTabList().updateGameMode(target.getTablistId(), realGameMode ? target.getGamemode() : 1);
         }
-        if (!map.isEmpty()) viewer.getTabList().updateGameModes(map);
     }
 
     @Override
@@ -67,5 +61,21 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             updatePlayer(viewer, true);
         }
+    }
+
+    @Override
+    public void onServerChange(TabPlayer changed, String from, String to) {
+        // 200ms delay for global playerlist, taking extra time
+        TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
+            for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                if (changed == all) continue;
+                if (changed.getGamemode() == 3 && !all.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) {
+                    all.getTabList().updateGameMode(changed.getTablistId(), 0);
+                }
+                if (all.getGamemode() == 3 && !changed.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) {
+                    changed.getTabList().updateGameMode(all.getTablistId(), 0);
+                }
+            }
+        });
     }
 }
