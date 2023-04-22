@@ -10,9 +10,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 @AllArgsConstructor
 public abstract class PermissionPlugin {
 
-    /** Version of the permission plugin */
-    @Getter private final String version;
-
     /** Permission plugin's name */
     @Getter private final String name = getClass().getSimpleName();
 

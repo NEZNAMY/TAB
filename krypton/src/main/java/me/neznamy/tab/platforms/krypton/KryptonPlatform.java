@@ -12,9 +12,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.kryptonmc.api.Server;
 import org.kryptonmc.api.entity.player.Player;
-import org.kryptonmc.api.plugin.PluginContainer;
-
-import java.util.Locale;
 
 public class KryptonPlatform extends BackendPlatform {
     
@@ -36,12 +33,6 @@ public class KryptonPlatform extends BackendPlatform {
     @Override
     public void registerUnknownPlaceholder(String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> "");
-    }
-
-    @Override
-    public String getPluginVersion(String plugin) {
-        PluginContainer container = server.getPluginManager().getPlugin(plugin.toLowerCase(Locale.ROOT));
-        return container == null ? null : container.getDescription().version();
     }
 
     @Override

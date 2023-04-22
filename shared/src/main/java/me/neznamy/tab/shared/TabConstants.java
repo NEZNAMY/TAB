@@ -296,21 +296,6 @@ public class TabConstants {
     }
 
     /**
-     * All plugins TAB hooks into
-     */
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Plugin {
-
-        public static final String LUCKPERMS = "LuckPerms";
-        public static final String PLACEHOLDER_API = "PlaceholderAPI";
-        public static final String LIBS_DISGUISES = "LibsDisguises";
-        public static final String VIAREWIND = "ViaRewind";
-        public static final String VIAVERSION = "ViaVersion";
-        public static final String REDIS_BUNGEE = "RedisBungee";
-        public static final String PREMIUM_VANISH = "PremiumVanish";
-    }
-
-    /**
      * TAB's custom metrics charts
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

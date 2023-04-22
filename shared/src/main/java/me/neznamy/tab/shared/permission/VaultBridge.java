@@ -11,12 +11,6 @@ import me.neznamy.tab.shared.TabConstants;
 public class VaultBridge extends PermissionPlugin {
 
     @Getter private final String name = "Vault through BukkitBridge";
-    /**
-     * Constructs new instance
-     */
-    public VaultBridge() {
-        super(null);
-    }
 
     @Override
     public String getPrimaryGroup(TabPlayer p) {

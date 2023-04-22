@@ -6,7 +6,6 @@ import java.util.WeakHashMap;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
@@ -33,7 +32,6 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     public void load() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() < 9) return; //cannot control collision anyway
         if (!collisionRule) return; //no need to refresh disguise status since collision is disabled
-        if (TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.LIBS_DISGUISES) == null && TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return; //no disguise plugin available
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.COLLISION, 500, p -> {
 
             if (forcedCollision.containsKey(p)) return forcedCollision.get(p);

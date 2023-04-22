@@ -11,10 +11,6 @@ public class None extends PermissionPlugin {
 
     @Getter private final String name = "Unknown/None";
 
-    public None() {
-        super(null);
-    }
-
     @Override
     public String getPrimaryGroup(TabPlayer p) {
         return TabConstants.NO_GROUP;

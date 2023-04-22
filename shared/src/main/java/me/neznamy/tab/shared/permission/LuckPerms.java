@@ -14,22 +14,9 @@ import net.luckperms.api.query.QueryOptions;
  */
 public class LuckPerms extends PermissionPlugin {
 
-    private final String UPDATE_MESSAGE = "Upgrade to LuckPerms 5";
-
-    /**
-     * Constructs new instance with given parameter
-     *
-     * @param   version
-     *          LuckPerms version
-     */
-    public LuckPerms(String version) {
-        super(version);
-    }
-
     @Override
     public String getPrimaryGroup(TabPlayer p) {
         try {
-            if (getVersion().startsWith("4")) return UPDATE_MESSAGE;
             net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
             User user = api.getUserManager().getUser(p.getUniqueId());
             if (user == null) return TabConstants.NO_GROUP; //pretend like nothing is wrong
@@ -73,7 +60,6 @@ public class LuckPerms extends PermissionPlugin {
      */
     private String getValue(TabPlayer p, boolean prefix) {
         try {
-            if (getVersion().startsWith("4")) return UPDATE_MESSAGE;
             net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
             User user = api.getUserManager().getUser(p.getUniqueId());
             if (user == null) return "";

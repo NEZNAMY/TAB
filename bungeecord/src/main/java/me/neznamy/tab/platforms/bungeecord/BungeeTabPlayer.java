@@ -17,7 +17,6 @@ import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -116,7 +115,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         try {
             return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz + " with client version " + getPlayer().getPendingConnection().getVersion(), e);
+            TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz +
+                    " with client version " + getPlayer().getPendingConnection().getVersion(), e);
             return -1;
         }
     }
@@ -136,11 +136,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public boolean isVanished() {
         try {
-            if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.PREMIUM_VANISH) != null &&
-                    (boolean) Class.forName("de.myzelyam.api.vanish.BungeeVanishAPI").getMethod("isInvisible", ProxiedPlayer.class).invoke(null, getPlayer())) return true;
+            if (ReflectionUtils.classExists("de.myzelyam.api.vanish.BungeeVanishAPI") &&
+                    (boolean) Class.forName("de.myzelyam.api.vanish.BungeeVanishAPI")
+                            .getMethod("isInvisible", ProxiedPlayer.class).invoke(null, getPlayer()))
+                return true;
         } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("PremiumVanish v" + TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.PREMIUM_VANISH) +
-                    " generated an error when retrieving vanish status of " + getName(), e);
+            TAB.getInstance().getErrorManager().printError("PremiumVanish generated an error when retrieving vanish status of " + getName(), e);
         }
         return super.isVanished();
     }
@@ -183,13 +184,15 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      */
     private static TextComponent toBungeeComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
         TextComponent textComponent = new TextComponent(component.getText());
-        if (component.getModifier().getColor() != null) textComponent.setColor(ChatColor.of(component.getModifier().getColor().toString(clientVersion.getMinorVersion() >= 16)));
+        if (component.getModifier().getColor() != null) textComponent.setColor(ChatColor.of(
+                component.getModifier().getColor().toString(clientVersion.getMinorVersion() >= 16)));
         if (component.getModifier().isBold()) textComponent.setBold(true);
         if (component.getModifier().isItalic()) textComponent.setItalic(true);
         if (component.getModifier().isObfuscated()) textComponent.setObfuscated(true);
         if (component.getModifier().isStrikethrough()) textComponent.setStrikethrough(true);
         if (component.getModifier().isUnderlined()) textComponent.setUnderlined(true);
-        if (!component.getExtra().isEmpty()) textComponent.setExtra(component.getExtra().stream().map(c -> bungeeCache.get(c, clientVersion)).collect(Collectors.toList()));
+        if (!component.getExtra().isEmpty()) textComponent.setExtra(
+                component.getExtra().stream().map(c -> bungeeCache.get(c, clientVersion)).collect(Collectors.toList()));
         return textComponent;
     }
 }

@@ -139,16 +139,6 @@ public abstract class Platform {
     public abstract void registerUnknownPlaceholder(String identifier);
 
     /**
-     * Performs platform-specific plugin manager call and returns the result.
-     * If plugin is not installed, returns {@code null}.
-     *
-     * @param   plugin
-     *          Plugin to check version of
-     * @return  Version string if plugin is installed, {@code null} if not
-     */
-    public abstract String getPluginVersion(String plugin);
-
-    /**
      * Creates instance for all online players and adds them to the plugin
      */
     public abstract void loadPlayers();

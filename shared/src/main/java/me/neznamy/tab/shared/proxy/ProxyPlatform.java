@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -14,6 +13,7 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -38,8 +38,8 @@ public abstract class ProxyPlatform extends Platform {
     public PermissionPlugin detectPermissionPlugin() {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             return new VaultBridge();
-        } else if (getPluginVersion(TabConstants.Plugin.LUCKPERMS) != null) {
-            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS));
+        } else if (ReflectionUtils.classExists("net.luckperms.api.LuckPerms")) {
+            return new LuckPerms();
         } else {
             return new VaultBridge();
         }

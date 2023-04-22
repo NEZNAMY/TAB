@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     private RedisSupport redis;
 
     private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
-            TAB.getInstance().getPlatform().getPluginVersion(TabConstants.Plugin.VIAREWIND) != null ||
+            ReflectionUtils.classExists("de.gerrygames.viarewind.ViaRewind") ||
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {

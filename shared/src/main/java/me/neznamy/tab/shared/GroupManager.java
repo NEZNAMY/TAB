@@ -63,7 +63,7 @@ public class GroupManager extends TabFeature implements Refreshable {
             String group = plugin.getPrimaryGroup(player);
             return group == null ? TabConstants.NO_GROUP : group;
         } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + plugin.getName() + " v" + plugin.getVersion(), e);
+            TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + plugin.getName(), e);
             return TabConstants.NO_GROUP;
         }
     }

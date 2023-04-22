@@ -21,11 +21,6 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
-    public String getPluginVersion(String plugin) {
-        return Sponge.pluginManager().plugin(plugin.toLowerCase()).map(container -> container.metadata().version().toString()).orElse(null);
-    }
-
-    @Override
     public void registerUnknownPlaceholder(String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
@@ -54,12 +49,9 @@ public final class SpongePlatform extends BackendPlatform {
 
     @Override
     public void sendConsoleMessage(String message, boolean translateColors) {
-        Sponge.systemSubject().sendMessage(
-                Component.text()
-                .append(Component.text("[TAB] "))
-                .append(LegacyComponentSerializer.legacySection().deserialize(
-                        translateColors ? EnumChatFormat.color(message) : message)
-                ).build()
+        Sponge.systemSubject().sendMessage(Component.text()
+                .append(Component.text("[TAB] ")).append(LegacyComponentSerializer.legacySection().deserialize(
+                        translateColors ? EnumChatFormat.color(message) : message)).build()
         );
     }
 }

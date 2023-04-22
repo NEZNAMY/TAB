@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.None;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 public abstract class BackendPlatform extends Platform {
 
@@ -14,8 +15,8 @@ public abstract class BackendPlatform extends Platform {
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
-        if (getPluginVersion(TabConstants.Plugin.LUCKPERMS) != null) {
-            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS));
+        if (ReflectionUtils.classExists("net.luckperms.api.LuckPerms")) {
+            return new LuckPerms();
         }
         return new None();
     }

@@ -3,10 +3,10 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -23,16 +23,11 @@ public class BungeePlatform extends ProxyPlatform {
 
     @Override
     public @Nullable RedisSupport getRedisSupport() {
-        if (getPluginVersion(TabConstants.Plugin.REDIS_BUNGEE) != null && RedisBungeeAPI.getRedisBungeeApi() != null) {
+        if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
+                RedisBungeeAPI.getRedisBungeeApi() != null) {
             return new RedisBungeeSupport(plugin);
         }
         return null;
-    }
-
-    @Override
-    public String getPluginVersion(String plugin) {
-        Plugin pl = ProxyServer.getInstance().getPluginManager().getPlugin(plugin);
-        return pl == null ? null : pl.getDescription().getVersion();
     }
 
     @Override
