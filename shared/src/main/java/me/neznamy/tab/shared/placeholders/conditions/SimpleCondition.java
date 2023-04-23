@@ -10,13 +10,13 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 public abstract class SimpleCondition {
 
     /** Text on the left side of condition */
-    protected String leftSide;
+    protected final String leftSide;
     
     /** Placeholders used on the left side */
     private final String[] leftSidePlaceholders;
 
     /** Text on the right side of condition */
-    protected String rightSide;
+    protected final String rightSide;
 
     /** Placeholders used on the right side */
     private final String[] rightSidePlaceholders;

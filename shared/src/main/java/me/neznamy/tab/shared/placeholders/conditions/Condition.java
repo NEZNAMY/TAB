@@ -40,7 +40,7 @@ public class Condition {
     @Getter private final String name;
 
     /** All defined sub-conditions inside this conditions */
-    protected List<Function<TabPlayer, Boolean>> subConditions = new ArrayList<>();
+    protected final List<Function<TabPlayer, Boolean>> subConditions = new ArrayList<>();
 
     /** Condition type, {@code true} for AND type and {@code false} for OR type */
     private final boolean type;
