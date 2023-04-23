@@ -157,7 +157,7 @@ public class WidthCommand extends SubCommand {
         messages.add(new IChatBaseComponent(EnumChatFormat.color("&b[TAB] Click the line with closest width &7(ID: &f" + (int) character + "&7)")));
 
         for (int i = 1; i <= amount; i++) {
-            messages.add(getText(i, character));
+            messages.add(getText(i));
             if (i % 2 != 0) {
                 messages.add(charMessage);
             }
@@ -173,11 +173,9 @@ public class WidthCommand extends SubCommand {
      *
      * @param   width
      *          with to display
-     * @param   c
-     *          character to set click action to
      * @return  line of text with characters that build specified text width
      */
-    private IChatBaseComponent getText(int width, int c) {
+    private IChatBaseComponent getText(int width) {
         StringBuilder text = new StringBuilder();
         int pixelsRemaining = width + 1;
         while (pixelsRemaining % 2 != 0) {
