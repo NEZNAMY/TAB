@@ -80,7 +80,7 @@ public class TextColor {
      */
     public TextColor(@NonNull EnumChatFormat legacyColor) {
         this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
-        this.hexCode = Integer.toHexString(legacyColor.getHexCode());
+        this.hexCode = String.format("%06X", legacyColor.getHexCode());
     }
 
     /**
