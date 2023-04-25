@@ -18,7 +18,7 @@ public class ViaVersionHook {
     @Getter private static final ViaVersionHook instance = new ViaVersionHook();
 
     /** Flag tracking if ViaVersion is installed or not */
-    @Getter private final boolean installed = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
+    private final boolean installed = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
 
     /**
      * Gets player's network version using ViaVersion API

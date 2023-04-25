@@ -12,7 +12,6 @@ import me.neznamy.tab.api.tablist.TablistFormatManager;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.Platform;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;
 import me.neznamy.tab.shared.config.Configs;
@@ -87,9 +86,6 @@ public class TAB extends TabAPI {
 
     /** Minecraft version the server is running on, always using the latest on proxies */
     @Getter private final ProtocolVersion serverVersion;
-
-    /** Boolean checking floodgate plugin presence for hook */
-    @Getter private final boolean floodgateInstalled = ReflectionUtils.classExists("org.geysermc.floodgate.api.FloodgateApi");
 
     /** Version string defined by the server */
     @Getter private final String serverVersionString;

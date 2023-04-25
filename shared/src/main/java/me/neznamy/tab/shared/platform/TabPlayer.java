@@ -5,12 +5,12 @@ import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
-import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -92,7 +92,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.server = server;
         this.world = world;
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
-        this.bedrockPlayer = TAB.getInstance().isFloodgateInstalled() && FloodgateApi.getInstance() != null && FloodgateApi.getInstance().isFloodgatePlayer(uniqueId);
+        this.bedrockPlayer = FloodgateHook.getInstance().isFloodgatePlayer(uniqueId, name);
         this.permissionGroup = TAB.getInstance().getGroupManager().detectPermissionGroup(this);
         UUID offlineId = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
         this.tablistId = useRealId ? getUniqueId() : offlineId;
