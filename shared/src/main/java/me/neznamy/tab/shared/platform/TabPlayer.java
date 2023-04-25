@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.platform;
 
-import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -57,9 +56,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Player's game version */
     @Getter protected final ProtocolVersion version;
-
-    /** Player's network channel */
-    @Getter @Setter protected Channel channel;
 
     /**
      * Player's load status, {@code true} when player is fully loaded,

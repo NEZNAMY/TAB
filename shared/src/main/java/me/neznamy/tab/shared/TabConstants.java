@@ -44,8 +44,6 @@ public class TabConstants {
 
         public static final String BYTE_BUF = "ByteBuf";
         public static final String PACKET_PLAYER_INFO = "PacketPlayOutPlayerInfo";
-        public static final String PACKET_DISPLAY_OBJECTIVE = "PacketPlayOutScoreboardDisplayObjective";
-        public static final String PACKET_OBJECTIVE = "PacketPlayOutScoreboardObjective";
         public static final String PACKET_ENTITY_MOVE = "PacketPlayOutEntity";
         public static final String PACKET_ENTITY_MOVE_PASSENGER = "PacketPlayOutEntity (passenger)";
         public static final String PACKET_ENTITY_SPAWN = "PacketPlayOutNamedEntitySpawn";
@@ -202,7 +200,6 @@ public class TabConstants {
         public static final String GLOBAL_PLAYER_LIST_LATENCY = "GlobalPlayerList-Latency";
 
         //additional info displayed in cpu command
-        public static final String PACKET_SERIALIZING = "Packet serializing";
         public static final String PACKET_DESERIALIZING = "Packet deserializing";
 
         public static String scoreboardLine(String line) {
