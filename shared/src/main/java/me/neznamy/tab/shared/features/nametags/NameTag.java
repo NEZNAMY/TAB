@@ -217,7 +217,10 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         forcedTeamName.put(player, name);
         registerTeam((TabPlayer) player);
         if (name != null) sorting.setTeamNameNote((TabPlayer) player, "Set using API");
-        if (redis != null) redis.updateTeamName((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player));
+        if (redis != null) redis.updateTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player),
+                ((TabPlayer) player).getProperty(TabConstants.Property.TAGPREFIX).get(),
+                ((TabPlayer) player).getProperty(TabConstants.Property.TAGSUFFIX).get(),
+                translate(getTeamVisibility((TabPlayer) player, (TabPlayer) player)));
     }
 
     @Override
@@ -239,7 +242,10 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             updateTeamData(p, viewer);
         }
-        if (redis != null) redis.updateNameTag(p, p.getProperty(TabConstants.Property.TAGPREFIX).get(), p.getProperty(TabConstants.Property.TAGSUFFIX).get());
+        if (redis != null) redis.updateTeam(p, sorting.getShortTeamName(p),
+                p.getProperty(TabConstants.Property.TAGPREFIX).get(),
+                p.getProperty(TabConstants.Property.TAGSUFFIX).get(),
+                translate(getTeamVisibility(p, p)));
     }
 
     public void updateTeamData(TabPlayer p, TabPlayer viewer) {

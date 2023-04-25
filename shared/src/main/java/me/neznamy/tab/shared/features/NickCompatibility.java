@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
 import me.neznamy.tab.shared.features.types.EntryAddListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -31,7 +32,7 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
             processNameChange(packetPlayer);
         }
         if (redis != null) {
-            RedisPlayer redisPlayer = redis.getRedisPlayers().get(id.toString());
+            RedisPlayer redisPlayer = redis.getRedisPlayers().get(id);
             if (redisPlayer == null) return;
             if (!redisPlayer.getNickname().equals(name)) {
                 redisPlayer.setNickname(name);
@@ -73,23 +74,25 @@ public class NickCompatibility extends TabFeature implements EntryAddListener {
     private void processNameChange(RedisPlayer player) {
         TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, () -> {
 
-            if (nameTags != null) {
+            RedisTeams teams = redis.getRedisTeams();
+            if (teams != null) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    viewer.getScoreboard().unregisterTeam(player.getTeamName());
-                    viewer.getScoreboard().registerTeam(player.getTeamName(), player.getTagPrefix(), player.getTagSuffix(),
-                            player.isNameVisibility() ? "always" : "never", "always", Collections.singletonList(player.getNickname()), 2);
+                    viewer.getScoreboard().unregisterTeam(teams.getTeamNames().get(player));
+                    viewer.getScoreboard().registerTeam(teams.getTeamNames().get(player),
+                            teams.getPrefixes().get(player), teams.getSuffixes().get(player),
+                            teams.getNameVisibilities().get(player), "always", Collections.singletonList(player.getNickname()), 2);
                 }
             }
-            if (belowname != null) {
+            if (redis.getRedisBelowName() != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     if (Objects.equals(all.getServer(), player.getServer())) {
-                        all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), player.getBelowName());
+                        all.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), redis.getRedisBelowName().getValues().get(player));
                     }
                 }
             }
-            if (yellownumber != null) {
+            if (redis.getRedisYellowNumber() != null) {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), player.getYellowNumber());
+                    all.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), redis.getRedisYellowNumber().getValue(player));
                 }
             }
         });

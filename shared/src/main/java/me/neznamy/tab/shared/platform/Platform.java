@@ -75,6 +75,12 @@ public abstract class Platform {
             featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, getPerWorldPlayerlist());
         }
 
+        if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
+            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
+
+        if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
+            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
+
         // No requirements, but due to chicken vs egg, the feature uses NameTags, Layout and RedisBungee
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
                 configuration.getConfig().getBoolean("layout.enabled", false)) {
@@ -110,16 +116,8 @@ public abstract class Platform {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
         }
 
-        // Must be loaded after: Global PlayerList, PlayerList, NameTags
+        // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, getRedisSupport());
-
-        // Must be loaded after: RedisBungee
-        if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
-
-        // Must be loaded after: RedisBungee
-        if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
 
         // Must be loaded after: NameTags, BelowName, YellowNumber, RedisBungee
         featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());

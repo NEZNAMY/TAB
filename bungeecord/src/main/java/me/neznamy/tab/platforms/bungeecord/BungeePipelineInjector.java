@@ -7,6 +7,9 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
+
+import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -108,12 +111,15 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                 col.remove(p.getNickname());
             }
         }
-        RedisBungeeSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         if (redis != null) {
-            for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                if (col.contains(p.getNickname()) && !packet.getName().equals(p.getTeamName())) {
-                    logTeamOverride(packet.getName(), p.getName(), p.getTeamName());
-                    col.remove(p.getNickname());
+            RedisTeams teams = redis.getRedisTeams();
+            if (teams != null) {
+                for (RedisPlayer p : redis.getRedisPlayers().values()) {
+                    if (col.contains(p.getNickname()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
+                        logTeamOverride(packet.getName(), p.getName(), teams.getTeamNames().get(p));
+                        col.remove(p.getNickname());
+                    }
                 }
             }
         }

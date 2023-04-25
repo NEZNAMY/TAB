@@ -19,17 +19,16 @@ public class RedisBungeeSupport extends RedisSupport implements Listener {
     /** Plugin reference for registering listener */
     private final Plugin plugin;
 
-    @Override
-    public void load() {
-        ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
-        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
-        super.load();
-    }
-
     @EventHandler
     public void onMessage(PubSubMessageEvent e) {
         if (!e.getChannel().equals(TabConstants.REDIS_CHANNEL_NAME)) return;
         processMessage(e.getMessage());
+    }
+
+    @Override
+    public void register() {
+        ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
+        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels(TabConstants.REDIS_CHANNEL_NAME);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     @Getter private final String refreshDisplayName = "Updating TabList format";
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
-    protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
+    @Getter protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
     private final LayoutManager layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;

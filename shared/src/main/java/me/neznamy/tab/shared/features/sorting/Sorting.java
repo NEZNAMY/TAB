@@ -163,7 +163,8 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
         }
         if (redis != null) {
             for (RedisPlayer all : redis.getRedisPlayers().values()) {
-                if (all.getTeamName() != null && all.getTeamName().equals(potentialTeamName)) {
+                assert redis.getRedisTeams() != null;
+                if (redis.getRedisTeams().getTeamNames().get(all).equals(potentialTeamName)) {
                     return checkTeamName(p, currentName, id+1);
                 }
             }

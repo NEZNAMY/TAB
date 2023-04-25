@@ -27,7 +27,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
     private final TextRefresher textRefresher = new TextRefresher(this);
 
-    private final RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+    private RedisSupport redis;
 
     public BelowName() {
         super("belowname-objective");
@@ -37,6 +37,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
     @Override
     public void load() {
+        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
             loaded.setProperty(this, TabConstants.Property.BELOWNAME_NUMBER, rawNumber);
             loaded.setProperty(textRefresher, TabConstants.Property.BELOWNAME_TEXT, rawText);
