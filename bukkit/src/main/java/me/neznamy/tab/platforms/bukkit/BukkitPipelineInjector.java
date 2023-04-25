@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public class BukkitPipelineInjector extends NettyPipelineInjector {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /**
      * Constructs new instance

@@ -20,7 +20,7 @@ public class BukkitEventListener implements Listener {
     /** Platform instance */
     private final BukkitPlatform platform;
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
     
     /**
      * Listener to PlayerQuitEvent to remove player data and forward the event to features

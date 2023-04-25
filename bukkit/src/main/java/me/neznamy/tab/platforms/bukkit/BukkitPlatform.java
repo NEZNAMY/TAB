@@ -51,18 +51,19 @@ public class BukkitPlatform extends BackendPlatform {
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
     private final TAB instance = TAB.getInstance();
+	private final PluginManager pluginManager = Bukkit.getPluginManager();
 
     /** Variables checking presence of other plugins to hook into */
-    private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
-    @Getter @Setter private boolean libsDisguisesEnabled = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
+    private final boolean placeholderAPI = pluginManager.isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
+    @Getter @Setter private boolean libsDisguisesEnabled = pluginManager.isPluginEnabled(TabConstants.Plugin.LIBS_DISGUISES);
     private final boolean viaVersion = ReflectionUtils.classExists("com.viaversion.viaversion.api.Via");
-    private final boolean protocolSupport = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
+    private final boolean protocolSupport = pluginManager.isPluginEnabled(TabConstants.Plugin.PROTOCOL_SUPPORT);
 
     @Override
     public PermissionPlugin detectPermissionPlugin() {
-        if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.LUCKPERMS)) {
+        if (pluginManager.isPluginEnabled(TabConstants.Plugin.LUCKPERMS)) {
             return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS));
-        } else if (Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.VAULT)) {
+        } else if (pluginManager.isPluginEnabled(TabConstants.Plugin.VAULT)) {
             RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
             if (provider == null) return new None();
             return new Vault(provider.getProvider(), getPluginVersion(TabConstants.Plugin.VAULT));
@@ -77,7 +78,7 @@ public class BukkitPlatform extends BackendPlatform {
 
     @Override
     public String getPluginVersion(String plugin) {
-        Plugin pl = Bukkit.getPluginManager().getPlugin(plugin);
+        Plugin pl = pluginManager.getPlugin(plugin);
         return pl == null ? null : pl.getDescription().getVersion();
     }
 

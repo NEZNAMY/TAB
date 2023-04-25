@@ -37,7 +37,7 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends BackendTabPlayer {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /** Spigot check */
     private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");

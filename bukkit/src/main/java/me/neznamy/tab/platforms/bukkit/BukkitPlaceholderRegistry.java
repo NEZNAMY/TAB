@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /** Vault Chat hook */
     private Chat chat;

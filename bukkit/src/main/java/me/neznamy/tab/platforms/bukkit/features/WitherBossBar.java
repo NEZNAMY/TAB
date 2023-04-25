@@ -28,7 +28,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener {
     /** Reference to plugin for registering listener */
     private final JavaPlugin plugin;
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     @Override
     public void load() {

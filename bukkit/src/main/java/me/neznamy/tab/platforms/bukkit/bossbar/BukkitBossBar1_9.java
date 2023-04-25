@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BukkitBossBar1_9 implements BossBarHandler {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;

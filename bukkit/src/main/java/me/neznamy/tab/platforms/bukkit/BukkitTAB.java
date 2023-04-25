@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
  */
 public class BukkitTAB extends JavaPlugin {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     @Override
     public void onEnable() {
