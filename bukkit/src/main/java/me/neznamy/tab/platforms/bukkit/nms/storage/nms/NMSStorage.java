@@ -73,7 +73,6 @@ public abstract class NMSStorage {
 
     /** Scoreboard objectives */
     public Class<?> Scoreboard;
-    protected Constructor<?> newScoreboard;
     protected Class<?> IScoreboardCriteria;
     public Field IScoreboardCriteria_self;
     public Object emptyScoreboard;
@@ -105,8 +104,7 @@ public abstract class NMSStorage {
         PLAYER_CONNECTION = ReflectionUtils.getFields(EntityPlayer, PlayerConnection).get(0);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
         sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
-        newScoreboard = Scoreboard.getConstructor();
-        emptyScoreboard = newScoreboard.newInstance();
+        emptyScoreboard = Scoreboard.getConstructor().newInstance();
         DataWatcher.load(this);
         DataWatcherItem.load(this);
         DataWatcherObject.load(this);
