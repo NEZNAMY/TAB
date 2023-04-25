@@ -52,7 +52,7 @@ public class BukkitPlatform extends BackendPlatform {
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
     private final TAB instance = TAB.getInstance();
-	private final PluginManager pluginManager = Bukkit.getPluginManager();
+    private final PluginManager pluginManager = Bukkit.getPluginManager();
 
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = pluginManager.isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
