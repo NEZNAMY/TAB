@@ -20,7 +20,7 @@ import java.util.WeakHashMap;
  */
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /** Map holding all values for all players for easy and high-performance access */
     private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();

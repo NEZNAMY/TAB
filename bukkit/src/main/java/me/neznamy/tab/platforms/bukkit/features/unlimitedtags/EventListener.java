@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 @RequiredArgsConstructor
 public class EventListener implements Listener {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /** Reference to the main feature */
     private final BukkitNameTagX feature;

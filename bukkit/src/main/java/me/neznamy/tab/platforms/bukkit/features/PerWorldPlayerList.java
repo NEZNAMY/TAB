@@ -30,7 +30,7 @@ import me.neznamy.tab.shared.TAB;
 @RequiredArgsConstructor
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
 	
-	private final TAB instance = TAB.getInstance();
+    private final TAB instance = TAB.getInstance();
 
     /** Config options */
     private final boolean allowBypass = TabAPI.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
