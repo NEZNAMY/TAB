@@ -114,6 +114,9 @@ public abstract class Platform {
         if (configuration.getConfig().getBoolean("global-playerlist.enabled", false) &&
                 TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
             featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
+            if (configuration.getConfig().getBoolean("layout.enabled", false)) {
+                TAB.getInstance().getMisconfigurationHelper().bothGlobalPlayerListAndLayoutEnabled();
+            }
         }
 
         // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName

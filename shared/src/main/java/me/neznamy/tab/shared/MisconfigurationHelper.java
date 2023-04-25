@@ -168,6 +168,13 @@ public class MisconfigurationHelper {
         startupWarn("Format \"" + format + "\" is not a valid date/time format. Did you try to use color codes?");
     }
 
+    public void bothGlobalPlayerListAndLayoutEnabled() {
+        startupWarn("Both global playerlist and layout features are enabled, but layout makes global playerlist redundant.",
+                "Layout automatically works with all connected players on the proxy and replaces real player entries with" +
+                        " fake players, making global playerlist completely useless.",
+                "Disable global playerlist for the same result, but with better performance.");
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T fromMapOrElse(Map<String, Object> map, String key, T defaultValue, String warnMessage) {
         if (map.containsKey(key)) {
