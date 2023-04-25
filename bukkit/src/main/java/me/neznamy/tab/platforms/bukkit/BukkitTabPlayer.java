@@ -36,6 +36,8 @@ import java.util.UUID;
  */
 @SuppressWarnings("deprecation")
 public class BukkitTabPlayer extends BackendTabPlayer {
+	
+	private final TAB instance = TAB.getInstance();
 
     /** Spigot check */
     private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
@@ -52,7 +54,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Getter private final Scoreboard scoreboard = new BukkitScoreboard(this);
     @Getter private final TabList tabList = new BukkitTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+    @Getter private final BossBarHandler bossBarHandler = instance.getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar1_9(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar1_8(this);
 
     /**
@@ -64,12 +66,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      *          Player's protocol network id
      */
     public BukkitTabPlayer(Player p, int protocolVersion) {
-        super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(), p.getWorld().getName(), protocolVersion);
+        super(p, p.getUniqueId(), p.getName(), instance.getConfiguration().getServerName(), p.getWorld().getName(), protocolVersion);
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);
             playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
+            instance.getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
         }
     }
 
@@ -95,7 +97,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         try {
             NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
+            instance.getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
         }
     }
 
@@ -116,12 +118,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isDisguised() {
         try {
-            if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsDisguisesEnabled()) return false;
+            if (!((BukkitPlatform)instance.getPlatform()).isLibsDisguisesEnabled()) return false;
             return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, getPlayer());
         } catch (LinkageError | ReflectiveOperationException e) {
             //java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
-            TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
-            ((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsDisguisesEnabled(false);
+            instance.getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
+            ((BukkitPlatform)instance.getPlatform()).setLibsDisguisesEnabled(false);
             return false;
         }
     }
@@ -134,7 +136,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
             Property property = col.iterator().next();
             return new Skin(property.getValue(), property.getSignature());
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
+            instance.getErrorManager().printError("Failed to get skin of " + getName(), e);
             return null;
         }
     }
@@ -165,11 +167,11 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         // Using it would cause high CPU usage and massive memory allocations on RGB & animations
         // Send packet instead for performance & older server version support
 
-        /*if (TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_13_1.getNetworkId()) {
+        /*if (instance.getServerVersion().getNetworkId() >= ProtocolVersion.V1_13_1.getNetworkId()) {
             String bukkitHeader = RGBUtils.getInstance().convertToBukkitFormat(header.toFlatText(),
-                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+                    getVersion().getMinorVersion() >= 16 && instance.getServerVersion().getMinorVersion() >= 16);
             String bukkitFooter = RGBUtils.getInstance().convertToBukkitFormat(footer.toFlatText(),
-                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+                    getVersion().getMinorVersion() >= 16 && instance.getServerVersion().getMinorVersion() >= 16);
             getPlayer().setPlayerListHeaderFooter(bukkitHeader, bukkitFooter);
             return;
         }*/
@@ -185,7 +187,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
         try {
             sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
-            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
+            if (instance.getServerVersion().getMinorVersion() >= 15) {
                 updateEntityMetadata(entityId, data);
             }
         } catch (ReflectiveOperationException e) {

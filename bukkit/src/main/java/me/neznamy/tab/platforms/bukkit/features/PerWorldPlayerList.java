@@ -29,6 +29,8 @@ import me.neznamy.tab.shared.TAB;
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
+	
+	private final TAB instance = TAB.getInstance();
 
     /** Config options */
     private final boolean allowBypass = TabAPI.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
@@ -60,14 +62,14 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     public void onJoin(PlayerJoinEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+        instance.getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
     }
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
+        instance.getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
     }
 
     /**

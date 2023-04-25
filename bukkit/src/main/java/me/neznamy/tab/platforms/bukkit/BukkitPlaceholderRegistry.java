@@ -19,6 +19,8 @@ import java.util.UUID;
  * Bukkit registry to register bukkit-only and universal placeholders
  */
 public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
+	
+	private final TAB instance = TAB.getInstance();
 
     /** Vault Chat hook */
     private Chat chat;
@@ -84,7 +86,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
                     Object user = essentials.getClass().getMethod("getUser", UUID.class).invoke(essentials, p.getUniqueId());
                     if ((boolean) user.getClass().getMethod("isAfk").invoke(user)) return true;
                 } catch (ReflectiveOperationException e) {
-                    TAB.getInstance().getErrorManager().printError("Failed to get AFK status of " + p.getName() + " using Essentials", e);
+                    instance.getErrorManager().printError("Failed to get AFK status of " + p.getName() + " using Essentials", e);
                 }
             }
             return purpurIsAfk != null && ((Player)p.getPlayer()).isAfk();

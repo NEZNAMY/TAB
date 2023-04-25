@@ -19,6 +19,8 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 public class BukkitBossBar1_9 implements BossBarHandler {
+	
+	private final TAB instance = TAB.getInstance();
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;
@@ -31,7 +33,7 @@ public class BukkitBossBar1_9 implements BossBarHandler {
         if (bossBars.containsKey(id)) return;
         BossBar bar = Bukkit.createBossBar(
                 RGBUtils.getInstance().convertToBukkitFormat(title,
-                        player.getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16),
+                        player.getVersion().getMinorVersion() >= 16 && instance.getServerVersion().getMinorVersion() >= 16),
                 org.bukkit.boss.BarColor.valueOf(color.name()),
                 org.bukkit.boss.BarStyle.valueOf(style.getBukkitName()));
         bar.setProgress(progress);
@@ -42,7 +44,7 @@ public class BukkitBossBar1_9 implements BossBarHandler {
     @Override
     public void update(@NonNull UUID id, @NonNull String title) {
         bossBars.get(id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(title,
-                player.getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+                player.getVersion().getMinorVersion() >= 16 && instance.getServerVersion().getMinorVersion() >= 16));
     }
 
     @Override

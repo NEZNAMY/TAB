@@ -50,6 +50,7 @@ public class BukkitPlatform extends BackendPlatform {
 
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
+    private final TAB instance = TAB.getInstance();
 
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API);
@@ -83,13 +84,13 @@ public class BukkitPlatform extends BackendPlatform {
     @Override
     public void loadPlayers() {
         for (Player p : getOnlinePlayers()) {
-            TAB.getInstance().addPlayer(new BukkitTabPlayer(p, getProtocolVersion(p)));
+            instance.addPlayer(new BukkitTabPlayer(p, getProtocolVersion(p)));
         }
     }
 
     @Override
     public void registerPlaceholders() {
-        new BukkitPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+        new BukkitPlaceholderRegistry().registerPlaceholders(instance.getPlaceholderManager());
     }
 
     @Override
@@ -134,17 +135,17 @@ public class BukkitPlatform extends BackendPlatform {
                 return ((Collection<Player>)players).toArray(new Player[0]); 
             }
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
+            instance.getErrorManager().printError("Failed to get online players", e);
             return new Player[0];
         }
     }
 
     @Override
     public void registerUnknownPlaceholder(String identifier) {
-        PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
+        PlaceholderManagerImpl pl = instance.getPlaceholderManager();
         if (identifier.startsWith("%rel_")) {
             //relational placeholder
-            TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> 
+            instance.getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRelationalRefresh(identifier), (viewer, target) -> 
                 placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
         } else {
             //normal placeholder
@@ -159,7 +160,7 @@ public class BukkitPlatform extends BackendPlatform {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             long time = System.nanoTime();
                             updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
-                            TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
+                            instance.getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
                         });
                         return null;
                     }
@@ -167,11 +168,11 @@ public class BukkitPlatform extends BackendPlatform {
                 return;
             }
             if (pl.getServerPlaceholderRefreshIntervals().containsKey(identifier)) {
-                TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () ->
+                instance.getPlaceholderManager().registerServerPlaceholder(identifier, pl.getServerPlaceholderRefreshIntervals().get(identifier), () ->
                         placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
             } else {
                 int refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh());
-                TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> 
+                instance.getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> 
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
             }
         }
@@ -188,12 +189,12 @@ public class BukkitPlatform extends BackendPlatform {
         if (protocolSupport) {
             int version = getProtocolVersionPS(player);
             //some PS versions return -1 on unsupported server versions instead of throwing exception
-            if (version != -1 && version < TAB.getInstance().getServerVersion().getNetworkId()) return version;
+            if (version != -1 && version < instance.getServerVersion().getNetworkId()) return version;
         }
         if (viaVersion) {
             return ProtocolVersion.getPlayerVersionVia(player.getUniqueId(), player.getName());
         }
-        return TAB.getInstance().getServerVersion().getNetworkId();
+        return instance.getServerVersion().getNetworkId();
     }
 
     /**
@@ -207,11 +208,11 @@ public class BukkitPlatform extends BackendPlatform {
         try {
             Object protocolVersion = Class.forName("protocolsupport.api.ProtocolSupportAPI").getMethod("getProtocolVersion", Player.class).invoke(null, player);
             int version = (int) protocolVersion.getClass().getMethod("getId").invoke(protocolVersion);
-            TAB.getInstance().debug("ProtocolSupport returned protocol version " + version + " for " + player.getName() + " (online=" + player.isOnline() + ")");
+            instance.debug("ProtocolSupport returned protocol version " + version + " for " + player.getName() + " (online=" + player.isOnline() + ")");
             return version;
         } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError(String.format("Failed to get protocol version of %s using ProtocolSupport", player.getName()), e);
-            return TAB.getInstance().getServerVersion().getNetworkId();
+            instance.getErrorManager().printError(String.format("Failed to get protocol version of %s using ProtocolSupport", player.getName()), e);
+            return instance.getServerVersion().getNetworkId();
         }
     }
 
@@ -229,7 +230,7 @@ public class BukkitPlatform extends BackendPlatform {
     public void sendConsoleMessage(String message, boolean translateColors) {
         Bukkit.getConsoleSender().sendMessage("[TAB] " + (translateColors ?
                 EnumChatFormat.color(RGBUtils.getInstance().convertToBukkitFormat(message,
-                        TAB.getInstance().getServerVersion().getMinorVersion() >= 16))
+                        instance.getServerVersion().getMinorVersion() >= 16))
                 : message));
     }
 }

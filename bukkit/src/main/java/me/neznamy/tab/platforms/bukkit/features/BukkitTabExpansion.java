@@ -19,6 +19,8 @@ import java.util.WeakHashMap;
  * TAB's expansion for PlaceholderAPI
  */
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
+	
+	private final TAB instance = TAB.getInstance();
 
     /** Map holding all values for all players for easy and high-performance access */
     private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();
@@ -39,7 +41,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
             String textBefore;
             do {
                 textBefore = text;
-                for (String placeholder : TAB.getInstance().getPlaceholderManager().detectPlaceholders(text)) {
+                for (String placeholder : instance.getPlaceholderManager().detectPlaceholders(text)) {
                     text = text.replace(placeholder, TabAPI.getInstance().getPlaceholderManager().findReplacement(placeholder,
                             PlaceholderAPI.setPlaceholders(player, placeholder)));
                 }

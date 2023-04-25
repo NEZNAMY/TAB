@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
  * Pipeline injection for bukkit
  */
 public class BukkitPipelineInjector extends NettyPipelineInjector {
+	
+	private final TAB instance = TAB.getInstance();
 
     /**
      * Constructs new instance
@@ -39,21 +41,21 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         try {
             if (nms.CHANNEL != null) return (Channel) nms.CHANNEL.get(nms.NETWORK_MANAGER.get(bukkit.getPlayerConnection()));
         } catch (final IllegalAccessException exception) {
-            TAB.getInstance().getErrorManager().printError("Failed to get channel of " + bukkit.getName(), exception);
+            instance.getErrorManager().printError("Failed to get channel of " + bukkit.getName(), exception);
         }
         return null;
     }
 
     @Override
     public void onDisplayObjective(TabPlayer player, Object packet) throws IllegalAccessException {
-        TAB.getInstance().getFeatureManager().onDisplayObjective(player,
+        instance.getFeatureManager().onDisplayObjective(player,
                 PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
                 (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
     }
 
     @Override
     public void onObjective(TabPlayer player, Object packet) throws IllegalAccessException {
-        TAB.getInstance().getFeatureManager().onObjective(player,
+        instance.getFeatureManager().onObjective(player,
                 PacketPlayOutScoreboardObjectiveStorage.METHOD.getInt(packet),
                 (String) PacketPlayOutScoreboardObjectiveStorage.OBJECTIVE_NAME.get(packet));
     }
@@ -102,22 +104,22 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             IChatBaseComponent displayName = null;
             if (actions.contains("UPDATE_GAME_MODE") || actions.contains("ADD_PLAYER")) {
                 gameMode = PacketPlayOutPlayerInfoStorage.gameMode2Int(PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData));
-                gameMode = TAB.getInstance().getFeatureManager().onGameModeChange(receiver, profile.getId(), gameMode);
+                gameMode = instance.getFeatureManager().onGameModeChange(receiver, profile.getId(), gameMode);
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_GameMode.set(nmsData, PacketPlayOutPlayerInfoStorage.int2GameMode(gameMode));
             }
             if (actions.contains("UPDATE_LATENCY") || actions.contains("ADD_PLAYER")) {
                 latency = PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData);
-                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
+                latency = instance.getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_Latency.set(nmsData, latency);
             }
             if (actions.contains("UPDATE_DISPLAY_NAME") || actions.contains("ADD_PLAYER")) {
                 Object nmsComponent = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
                 displayName = nmsComponent == null ? null : new WrappedChatComponent(nmsComponent);
-                displayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId(), displayName);
+                displayName = instance.getFeatureManager().onDisplayNameChange(receiver, profile.getId(), displayName);
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_DisplayName.set(nmsData, nms.toNMSComponent(displayName, receiver.getVersion()));
             }
             if (actions.contains("ADD_PLAYER")) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
+                instance.getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
             }
             if (nms.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
@@ -154,9 +156,9 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
                 continue;
             }
-            Sorting sorting = (Sorting) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(sorting.getShortTeamName(p))) {
+            Sorting sorting = (Sorting) instance.getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            if (!((TabFeature)instance.getTeamManager()).isDisabledPlayer(p) &&
+                    !instance.getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(sorting.getShortTeamName(p))) {
                 logTeamOverride(teamName, p.getName(), sorting.getShortTeamName(p));
             } else {
                 newList.add(entry);

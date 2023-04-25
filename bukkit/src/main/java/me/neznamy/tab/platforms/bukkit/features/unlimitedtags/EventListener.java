@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
  */
 @RequiredArgsConstructor
 public class EventListener implements Listener {
+	
+	private final TAB instance = TAB.getInstance();
 
     /** Reference to the main feature */
     private final BukkitNameTagX feature;
@@ -31,7 +33,7 @@ public class EventListener implements Listener {
     public void onSneak(PlayerToggleSneakEvent e) {
         TabPlayer p = TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId());
         if (p == null || feature.isPlayerDisabled(p)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(e.isSneaking()));
+        instance.getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_SNEAK, () -> feature.getArmorStandManager(p).sneak(e.isSneaking()));
     }
 
     /**
@@ -42,7 +44,7 @@ public class EventListener implements Listener {
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
+        instance.getCPUManager().runMeasuredTask(feature, TabConstants.CpuUsageCategory.PLAYER_RESPAWN, () -> {
             TabPlayer respawned = TabAPI.getInstance().getPlayer(e.getPlayer().getUniqueId());
             if (feature.isPlayerDisabled(respawned)) return;
             feature.getArmorStandManager(respawned).teleport();

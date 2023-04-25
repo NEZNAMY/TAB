@@ -24,6 +24,8 @@ import java.util.concurrent.Callable;
  * Main class for Bukkit platform
  */
 public class BukkitTAB extends JavaPlugin {
+	
+	private final TAB instance = TAB.getInstance();
 
     @Override
     public void onEnable() {
@@ -36,16 +38,16 @@ public class BukkitTAB extends JavaPlugin {
         }
         BukkitPlatform platform = new BukkitPlatform(this);
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version + " (" + serverPackage + ")", getDataFolder(), getLogger()));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
+        if (instance.getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }
         Bukkit.getPluginManager().registerEvents(new BukkitEventListener(platform), this);
-        TAB.getInstance().load();
+        instance.load();
         Metrics metrics = new Metrics(this, 5304);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> instance.getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PLACEHOLDER_API, () -> Bukkit.getPluginManager().isPluginEnabled(TabConstants.Plugin.PLACEHOLDER_API) ? "Yes" : "No"));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> instance.getGroupManager().getPlugin().getName()));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + instance.getServerVersion().getMinorVersion() + ".x"));
         PluginCommand cmd = Bukkit.getPluginCommand("tab");
         if (cmd == null) return;
         TABCommand command = new TABCommand();
@@ -56,7 +58,7 @@ public class BukkitTAB extends JavaPlugin {
     @Override
     public void onDisable() {
         //null check due to compatibility check making instance not get set on unsupported versions
-        if (TAB.getInstance() != null) TAB.getInstance().unload();
+        if (instance != null) instance.unload();
     }
     
     /**
@@ -116,16 +118,16 @@ public class BukkitTAB extends JavaPlugin {
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
             if (TabAPI.getInstance().isPluginDisabled()) {
-                for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
+                for (String message : instance.getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                     sender.sendMessage(EnumChatFormat.color(message));
                 }
             } else {
                 TabPlayer p = null;
                 if (sender instanceof Player) {
-                    p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+                    p = instance.getPlayer(((Player)sender).getUniqueId());
                     if (p == null) return true; //player not loaded correctly
                 }
-                TAB.getInstance().getCommand().execute(p, args);
+                instance.getCommand().execute(p, args);
             }
             return false;
         }
@@ -134,10 +136,10 @@ public class BukkitTAB extends JavaPlugin {
         public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
             TabPlayer p = null;
             if (sender instanceof Player) {
-                p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
+                p = instance.getPlayer(((Player)sender).getUniqueId());
                 if (p == null) return new ArrayList<>(); //player not loaded correctly
             }
-            return TAB.getInstance().getCommand().complete(p, args);
+            return instance.getCommand().complete(p, args);
         }
     }
 }

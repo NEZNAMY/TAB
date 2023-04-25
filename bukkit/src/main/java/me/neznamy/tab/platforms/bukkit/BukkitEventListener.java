@@ -19,6 +19,8 @@ public class BukkitEventListener implements Listener {
 
     /** Platform instance */
     private final BukkitPlatform platform;
+	
+	private final TAB instance = TAB.getInstance();
     
     /**
      * Listener to PlayerQuitEvent to remove player data and forward the event to features
@@ -28,8 +30,8 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() -> TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+        if (instance.isPluginDisabled()) return;
+        instance.getCPUManager().runTask(() -> instance.getFeatureManager().onQuit(instance.getPlayer(e.getPlayer().getUniqueId())));
     }
     
     /**
@@ -40,9 +42,9 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer()))));
+        if (instance.isPluginDisabled()) return;
+        instance.getCPUManager().runTask(() ->
+                instance.getFeatureManager().onJoin(new BukkitTabPlayer(e.getPlayer(), platform.getProtocolVersion(e.getPlayer()))));
     }
 
     /**
@@ -53,9 +55,9 @@ public class BukkitEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onWorldChange(PlayerChangedWorldEvent e) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));
+        if (instance.isPluginDisabled()) return;
+        instance.getCPUManager().runTask(() ->
+                instance.getFeatureManager().onWorldChange(e.getPlayer().getUniqueId(), e.getPlayer().getWorld().getName()));
     }
 
     /**
