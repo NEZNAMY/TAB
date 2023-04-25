@@ -95,17 +95,6 @@ public class IChatBaseComponent {
     }
 
     /**
-     * Appends provided component as extra component
-     *
-     * @param   child
-     *          component to append
-     */
-    public void addExtra(@NonNull IChatBaseComponent child) {
-        if (extra == null) extra = new ArrayList<>();
-        extra.add(child);
-    }
-
-    /**
      * Converts the component to a string representing the serialized component.
      * This method is only used internally by json library since it's missing
      * protocol version field used by the method.

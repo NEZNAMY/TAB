@@ -26,18 +26,19 @@ public class VelocityTabList extends SingleUpdateTabList {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
+    /**
+     * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
+     * You are supposed to be overriding
+     * {@link TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
+     * not the outdated {@link TabList#buildEntry(GameProfile, Component, int, int)},
+     * because {@link Entry.Builder#build()} calls that method. Manually removing the
+     * entry and adding it again to avoid this bug.
+     */
     @Override
     public void updateDisplayName(@NonNull UUID id, @Nullable IChatBaseComponent displayName) {
         if (player.getVersion().getMinorVersion() >= 8) {
             getEntry(id).setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
         } else {
-            /**
-             * https://github.com/PaperMC/Velocity/blob/b0862d2d16c4ba7560d3f24c824d78793ac3d9e0/proxy/src/main/java/com/velocitypowered/proxy/tablist/VelocityTabListLegacy.java#L129-L133
-             * You are supposed to be overriding
-             * {@link TabList#buildEntry(GameProfile, Component, int, int, ChatSession, boolean)},
-             * not the outdated {@link TabList#buildEntry(GameProfile, Component, int, int)},
-             * because {@link Entry.Builder#build()} calls that method.
-             */
             String username = getEntry(id).getProfile().getName();
             removeEntry(id);
             addEntry(new Entry.Builder(id).name(username).displayName(displayName).build());

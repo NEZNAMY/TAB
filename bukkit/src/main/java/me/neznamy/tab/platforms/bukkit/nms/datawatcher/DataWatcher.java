@@ -8,10 +8,8 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,10 +24,6 @@ public class DataWatcher implements EntityData {
     public static Method REGISTER;
     public static Method markDirty;
     public static Method packDirty;
-
-    public static Class<?> DataValue;
-    public static Field DataValue_POSITION;
-    public static Field DataValue_VALUE;
     
     /** Watched data */
     private final Map<Integer, DataWatcherItem> dataValues = new HashMap<>();
@@ -47,8 +41,6 @@ public class DataWatcher implements EntityData {
         CONSTRUCTOR = CLASS.getConstructors()[0];
         if (nms.is1_19_3Plus()) {
             markDirty = ReflectionUtils.getMethods(CLASS, void.class, DataWatcherObject.CLASS).get(0);
-            DataValue_POSITION = ReflectionUtils.getFields(DataValue, int.class).get(0);
-            DataValue_VALUE = ReflectionUtils.getFields(DataValue, Object.class).get(0);
         }
     }
     
@@ -62,27 +54,6 @@ public class DataWatcher implements EntityData {
      */
     public void setValue(@NonNull DataWatcherObject type, @NonNull Object value) {
         dataValues.put(type.getPosition(), new DataWatcherItem(type, value));
-    }
-
-    /**
-     * Removes value by position
-     *
-     * @param   position
-     *          position of value to remove
-     */
-    public void removeValue(int position) {
-        dataValues.remove(position);
-    }
-
-    /**
-     * Returns item with given position
-     *
-     * @param   position
-     *          position of item
-     * @return  item or null if not set
-     */
-    public DataWatcherItem getItem(int position) {
-        return dataValues.get(position);
     }
 
     /**
@@ -108,27 +79,5 @@ public class DataWatcher implements EntityData {
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    /**
-     * Reads NMS data watcher and returns and instance of this class with same data
-     *
-     * @param   nmsWatcher
-     *          NMS DataWatcher to read
-     * @return  an instance of this class with same values
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
-     */
-    @SuppressWarnings("unchecked")
-    public static DataWatcher fromNMS(@NonNull Object nmsWatcher) throws ReflectiveOperationException {
-        DataWatcher watcher = new DataWatcher();
-        List<Object> items = (List<Object>) nmsWatcher.getClass().getMethod("c").invoke(nmsWatcher);
-        if (items != null) {
-            for (Object watchableObject : items) {
-                DataWatcherItem w = DataWatcherItem.fromNMS(watchableObject);
-                watcher.setValue(w.getType(), w.getValue());
-            }
-        }
-        return watcher;
     }
 }

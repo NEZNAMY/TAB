@@ -9,7 +9,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -245,10 +244,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     public String findReplacement(String placeholder, String output) {
         return getPlaceholder(placeholder).getReplacements().findReplacement(output);
-    }
-
-    public List<String> getUsedPlaceholders() {
-        return Arrays.stream(usedPlaceholders).map(Placeholder::getIdentifier).collect(Collectors.toList());
     }
 
     @Override

@@ -110,7 +110,7 @@ public abstract class NMSStorage {
         DataWatcher.load(this);
         DataWatcherItem.load(this);
         DataWatcherObject.load(this);
-        PacketPlayOutEntityDestroyStorage.load(this);
+        PacketPlayOutEntityDestroyStorage.load();
         PacketPlayOutEntityMetadataStorage.load(this);
         PacketPlayOutEntityTeleportStorage.load(this);
         PacketPlayOutSpawnEntityLivingStorage.load(this);

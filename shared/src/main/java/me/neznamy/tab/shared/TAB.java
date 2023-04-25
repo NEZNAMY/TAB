@@ -299,15 +299,17 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public void logError(String message, Throwable t) {
-        errorManager.printError(message, t);
-    }
-
-    @Override
     public TablistFormatManager getTablistFormatManager() {
         return featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
     }
 
+    /**
+     * Sends a debug message into console if the option
+     * is enabled in config.
+     *
+     * @param   message
+     *          Message to send
+     */
     public void debug(String message) {
         if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
     }

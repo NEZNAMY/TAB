@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.config.file;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.shared.TAB;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,15 +61,6 @@ public abstract class ConfigurationFile {
     public abstract void save();
 
     /**
-     * Returns simple name of the file
-     *
-     * @return  simple name of the file
-     */
-    public String getName() {
-        return file.getName();
-    }
-
-    /**
      * Gets config option with specified path. If the option is not present and
      * {@code defaultValue} is not {@code null}, value is inserted, {@link #save()}
      * called and {@code defaultValue} returned.
@@ -90,7 +81,7 @@ public abstract class ConfigurationFile {
             value = getIgnoreCase((Map<Object, Object>) value, section);
         }
         if (value == null && defaultValue != null) {
-            TabAPI.getInstance().debug("Inserting missing config option \"" + path + "\" with value \"" + defaultValue + "\" into " + file.getName());
+            TAB.getInstance().debug("Inserting missing config option \"" + path + "\" with value \"" + defaultValue + "\" into " + file.getName());
             set(path, defaultValue);
             return defaultValue;
         }

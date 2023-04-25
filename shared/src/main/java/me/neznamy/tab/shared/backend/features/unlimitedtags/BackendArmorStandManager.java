@@ -15,11 +15,8 @@ public class BackendArmorStandManager implements ArmorStandManager {
 
     @Getter private boolean sneaking;
 
-    /** Map of registered armor stands by name */
-    private final Map<String, ArmorStand> armorStands = new LinkedHashMap<>();
-
     /** Armor stands in an array for speed while iterating */
-    private ArmorStand[] armorStandArray;
+    private final ArmorStand[] armorStandArray;
 
     /** Players in entity tracking range of owner */
     private final List<BackendTabPlayer> nearbyPlayerList = new ArrayList<>();
@@ -42,14 +39,15 @@ public class BackendArmorStandManager implements ArmorStandManager {
                 + owner.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue()
                 + owner.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
         double height = 0;
+        List<ArmorStand> armorStands = new ArrayList<>();
         for (String line : nameTagX.getDynamicLines()) {
-            armorStands.put(line, new ArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
+            armorStands.add(new ArmorStand((BackendNameTagX) nameTagX, this, owner, line, height, false));
             height += 0.26;
         }
         for (Map.Entry<String, Object> line : nameTagX.getStaticLines().entrySet()) {
-            armorStands.put(line.getKey(), new ArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
+            armorStands.add(new ArmorStand((BackendNameTagX) nameTagX, this, owner, line.getKey(), Double.parseDouble(line.getValue().toString()), true));
         }
-        armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
+        armorStandArray = armorStands.toArray(new ArmorStand[0]);
         fixArmorStandHeights();
     }
 
@@ -79,22 +77,6 @@ public class BackendArmorStandManager implements ArmorStandManager {
      */
     public boolean isNearby(BackendTabPlayer viewer) {
         return nearbyPlayerList.contains(viewer);
-    }
-
-    /**
-     * Returns {@code true} if manager contains armor stand with specified entity id, {@code false} if not
-     *
-     * @param   entityId
-     *          entity id
-     * @return  {@code true} if armor stand with specified entity id exists, {@code false} if not
-     */
-    public boolean hasArmorStandWithID(int entityId) {
-        for (ArmorStand a : armorStandArray) {
-            if (a.getEntityId() == entityId) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -167,20 +149,6 @@ public class BackendArmorStandManager implements ArmorStandManager {
                 as.setOffset(currentY);
             }
         }
-    }
-
-    /**
-     * Adds armor stand to list and registers it to all nearby players
-     *
-     * @param   name
-     *          Unique identifier of the text line
-     * @param   as
-     *          Armor stand to add
-     */
-    public void addArmorStand(String name, ArmorStand as) {
-        armorStands.put(name, as);
-        armorStandArray = armorStands.values().toArray(new ArmorStand[0]);
-        for (BackendTabPlayer p : nearbyPlayers) as.spawn(p);
     }
 
     /**

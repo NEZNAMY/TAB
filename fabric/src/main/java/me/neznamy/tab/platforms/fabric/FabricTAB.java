@@ -49,17 +49,13 @@ public class FabricTAB implements DedicatedServerModInitializer {
         new FabricEventListener().register();
 
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStart);
-        ServerLifecycleEvents.SERVER_STOPPING.register(this::onServerStop);
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
         FabricMultiVersion.registerCommand.run();
     }
 
     private void onServerStart(MinecraftServer server) {
         this.server = server;
         TAB.getInstance().load();
-    }
-
-    private void onServerStop(MinecraftServer server) {
-        TAB.getInstance().unload();
     }
 
     public Component toComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {

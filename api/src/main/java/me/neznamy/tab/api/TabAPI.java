@@ -112,30 +112,4 @@ public abstract class TabAPI {
      * @return  the event bus
      */
     public abstract EventBus getEventBus();
-
-    /**
-     * Returns server version. On proxy installation returns PROXY.
-     *
-     * @return  server version
-     */
-    public abstract ProtocolVersion getServerVersion();
-
-    /**
-     * Sends a debug message into console if the option
-     * is enabled in config.
-     *
-     * @param   message
-     *          Message to send
-     */
-    public abstract void debug(String message);
-
-    /**
-     * Logs an error into errors.log file
-     *
-     * @param   message
-     *          Error message
-     * @param   t
-     *          Thrown error
-     */
-    public abstract void logError(String message, Throwable t);
 }

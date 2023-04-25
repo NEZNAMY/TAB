@@ -75,7 +75,6 @@ public class BukkitModernNMSStorage extends NMSStorage {
         PacketPlayOutScoreboardTeamStorage.ScoreboardTeam = Class.forName("net.minecraft.world.scores.ScoreboardTeam");
         PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility");
         PacketPlayOutScoreboardTeamStorage.EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush");
-        PacketPlayOutScoreboardTeamStorage.PlayerAction = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam$a");
         DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher");
         DataWatcherItem.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
         DataWatcherObject.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
@@ -95,7 +94,6 @@ public class BukkitModernNMSStorage extends NMSStorage {
             PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
         }
         if (is1_19_3Plus()) {
-            DataWatcher.DataValue = Class.forName("net.minecraft.network.syncher.DataWatcher$b");
             PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
             PacketPlayOutPlayerInfoStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
             PacketPlayOutPlayerInfoStorage.EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");

@@ -18,11 +18,9 @@ public class PacketPlayOutScoreboardTeamStorage {
     public static Constructor<?> CONSTRUCTOR;
     public static Method Constructor_of;
     public static Method Constructor_ofBoolean;
-    public static Method Constructor_ofString;
     public static Field NAME;
     public static Field ACTION;
     public static Field PLAYERS;
-    public static Class<Enum> PlayerAction;
 
     public static Class<Enum> EnumNameTagVisibility;
     public static Class<Enum> EnumTeamPush;
@@ -53,7 +51,6 @@ public class PacketPlayOutScoreboardTeamStorage {
         if (nms.getMinorVersion() >= 17) {
             Constructor_of = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam).get(0);
             Constructor_ofBoolean = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam, boolean.class).get(0);
-            Constructor_ofString = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam, String.class, PlayerAction).get(0);
         } else {
             CONSTRUCTOR = CLASS.getConstructor(ScoreboardTeam, int.class);
         }

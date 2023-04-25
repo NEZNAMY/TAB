@@ -81,7 +81,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
 
     @Override
     public boolean areInSameWorld(TabPlayer player1, TabPlayer player2) {
-        return ((Player) player1.getPlayer()).getWorld() == ((Player) player1.getPlayer()).getWorld();
+        return ((Player) player1.getPlayer()).getWorld() == ((Player) player2.getPlayer()).getWorld();
     }
 
     @Override
