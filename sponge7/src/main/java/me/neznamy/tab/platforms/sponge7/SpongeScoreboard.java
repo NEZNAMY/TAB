@@ -20,7 +20,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
         player.getPlayer().getScoreboard().getObjective(objective).ifPresent(
                 o -> player.getPlayer().getScoreboard().updateDisplaySlot(o, convertDisplaySlot(slot)));
     }
@@ -58,7 +58,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
         Team team = Team.builder()
                 .name(name)
                 .displayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()))
@@ -81,7 +81,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
         Team team = player.getPlayer().getScoreboard().getTeam(name).orElse(null);
         if (team == null) return;
         team.setDisplayName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(name), player.getVersion()));

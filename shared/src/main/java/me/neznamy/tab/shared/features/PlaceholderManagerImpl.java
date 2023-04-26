@@ -28,6 +28,7 @@ import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.TabPlaceholder;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Messy class for placeholder management
@@ -175,18 +176,18 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
 
     @Override
-    public ServerPlaceholder registerServerPlaceholder(String identifier, int refresh, Supplier<Object> supplier) {
+    public @NotNull ServerPlaceholder registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier) {
         return (ServerPlaceholder) registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
     }
     
     @Override
-    public PlayerPlaceholder registerPlayerPlaceholder(String identifier, int refresh, Function<me.neznamy.tab.api.TabPlayer, Object> function) {
+    public @NotNull PlayerPlaceholder registerPlayerPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, Object> function) {
         return (PlayerPlaceholder) registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
     }
 
     @Override
-    public RelationalPlaceholder registerRelationalPlaceholder(
-            String identifier, int refresh, BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
+    public @NotNull RelationalPlaceholder registerRelationalPlaceholder(
+            @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
         return (RelationalPlaceholder) registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
     }
 
@@ -208,7 +209,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
 
     @Override
-    public TabPlaceholder getPlaceholder(String identifier) {
+    public @NotNull TabPlaceholder getPlaceholder(@NonNull String identifier) {
         TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
         if (p == null) {
             TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);

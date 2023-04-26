@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.shared.TAB;
@@ -15,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 @RequiredArgsConstructor
 public class VelocityPlatform extends ProxyPlatform {
 
-    private final VelocityTAB plugin;
-    private final ProxyServer server;
+    @NonNull private final VelocityTAB plugin;
+    @NonNull private final ProxyServer server;
 
     @Override
     public void loadPlayers() {

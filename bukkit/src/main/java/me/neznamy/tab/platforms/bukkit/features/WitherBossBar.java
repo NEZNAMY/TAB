@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -27,7 +28,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     private static final int WITHER_DISTANCE = 60;
 
     /** Reference to plugin for registering listener */
-    private final JavaPlugin plugin;
+    private final @NonNull JavaPlugin plugin;
 
     @Override
     public void load() {

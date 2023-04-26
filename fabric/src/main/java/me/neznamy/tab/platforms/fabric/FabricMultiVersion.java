@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -23,15 +24,15 @@ import java.util.function.Function;
  */
 public class FabricMultiVersion {
 
-    public static final UUID SYSTEM_ID = new UUID(0, 0);
-    public static final BiConsumer<FabricTabPlayer, IChatBaseComponent> sendMessage;
-    public static final BiConsumer<CommandSourceStack, Component> sendMessage2;
-    public static final Runnable registerCommand;
-    public static final BiConsumer<ServerBossEvent, Float> setProgress;
-    public static final Function<PlayerTeam, ClientboundSetPlayerTeamPacket> registerTeam;
-    public static final Function<PlayerTeam, ClientboundSetPlayerTeamPacket> unregisterTeam;
-    public static final Function<PlayerTeam, ClientboundSetPlayerTeamPacket> updateTeam;
-    public static final BiFunction<Component, Component, Packet<?>> setHeaderAndFooter;
+    public static final @NonNull UUID SYSTEM_ID = new UUID(0, 0);
+    public static final @NonNull BiConsumer<FabricTabPlayer, IChatBaseComponent> sendMessage;
+    public static final @NonNull BiConsumer<CommandSourceStack, Component> sendMessage2;
+    public static final @NonNull Runnable registerCommand;
+    public static final @NonNull BiConsumer<ServerBossEvent, Float> setProgress;
+    public static final @NonNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> registerTeam;
+    public static final @NonNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> unregisterTeam;
+    public static final @NonNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> updateTeam;
+    public static final @NonNull BiFunction<Component, Component, Packet<?>> setHeaderAndFooter;
 
     static {
         // 1.19+

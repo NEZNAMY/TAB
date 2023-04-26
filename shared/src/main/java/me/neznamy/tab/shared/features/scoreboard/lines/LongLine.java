@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
@@ -69,7 +70,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void setText(String text) {
+    public void setText(@NonNull String text) {
         this.text = text;
         for (TabPlayer p : parent.getPlayers()) {
             p.setProperty(this, textProperty, text);

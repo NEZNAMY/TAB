@@ -103,7 +103,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   message
      *          message to send
      */
-    public abstract void sendMessage(String message);
+    public abstract void sendMessage(@NonNull String message);
 
     /**
      * Registers event and redis message listeners

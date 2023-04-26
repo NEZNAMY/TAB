@@ -47,22 +47,22 @@ public final class EventBusImpl implements EventBus {
     }
 
     @Override
-    public void register(Object listener) {
+    public void register(@lombok.NonNull Object listener) {
         methodAdapter.register(listener);
     }
 
     @Override
-    public <E extends TabEvent> void register(Class<E> type, EventHandler<E> handler) {
+    public <E extends TabEvent> void register(@lombok.NonNull Class<E> type, @lombok.NonNull EventHandler<E> handler) {
         bus.register(type, new HandlerWrapper<>(handler));
     }
 
     @Override
-    public void unregister(Object listener) {
+    public void unregister(@lombok.NonNull Object listener) {
         methodAdapter.unregister(listener);
     }
 
     @Override
-    public <E extends TabEvent> void unregister(EventHandler<E> handler) {
+    public <E extends TabEvent> void unregister(@lombok.NonNull EventHandler<E> handler) {
         bus.unregister(subscriber -> subscriber instanceof HandlerWrapper && ((HandlerWrapper<?>) subscriber).handler == handler);
     }
 

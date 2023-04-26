@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -125,7 +126,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void setText(String text) {
+    public void setText(@NonNull String text) {
         this.text = text;
         for (TabPlayer p : parent.getPlayers()) {
             p.setProperty(this, parent.getName() + "-" + teamName, text);

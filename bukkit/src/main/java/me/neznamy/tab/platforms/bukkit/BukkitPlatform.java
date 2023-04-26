@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -46,14 +46,14 @@ public class BukkitPlatform extends BackendPlatform {
     @Getter private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
     @Getter @Setter private boolean libsDisguisesEnabled = ReflectionUtils.classExists("me.libraryaddict.disguise.DisguiseAPI");
 
-    public BossBarManagerImpl getLegacyBossBar() {
+    public @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new WitherBossBar(plugin);
     }
 
     @Override
     public void loadPlayers() {
         for (Player p : getOnlinePlayers()) {
-            TAB.getInstance().addPlayer(new BukkitTabPlayer(p, ViaVersionHook.getInstance().getPlayerVersion(p.getUniqueId(), p.getName())));
+            TAB.getInstance().addPlayer(new BukkitTabPlayer(p));
         }
     }
 
@@ -63,7 +63,7 @@ public class BukkitPlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNametags() {
         return new BukkitNameTagX(plugin);
     }
 
@@ -88,7 +88,7 @@ public class BukkitPlatform extends BackendPlatform {
      * @return  online players from Bukkit API
      */
     @SuppressWarnings("unchecked")
-    private Player[] getOnlinePlayers() {
+    private @NotNull Player[] getOnlinePlayers() {
         try {
             Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
             if (players instanceof Player[]) {
@@ -105,7 +105,7 @@ public class BukkitPlatform extends BackendPlatform {
     }
 
     @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NonNull String identifier) {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
@@ -155,7 +155,7 @@ public class BukkitPlatform extends BackendPlatform {
      *          Whether color codes should be translated or not
      */
     @Override
-    public void sendConsoleMessage(String message, boolean translateColors) {
+    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
         Bukkit.getConsoleSender().sendMessage("[TAB] " + (translateColors ?
                 EnumChatFormat.color(RGBUtils.getInstance().convertToBukkitFormat(message,
                         TAB.getInstance().getServerVersion().getMinorVersion() >= 16))

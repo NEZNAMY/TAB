@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -75,7 +76,7 @@ public class StaticLine extends ScoreboardLine {
     }
 
     @Override
-    public void setText(String text) {
+    public void setText(@NonNull String text) {
         for (TabPlayer p : parent.getPlayers()) {
             unregister(p);
         }

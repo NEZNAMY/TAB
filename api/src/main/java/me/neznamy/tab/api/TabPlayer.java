@@ -1,5 +1,8 @@
 package me.neznamy.tab.api;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 /**
@@ -12,28 +15,28 @@ public interface TabPlayer {
      *
      * @return  Player's name
      */
-    String getName();
+    @NotNull String getName();
 
     /**
      * Returns player's UUID
      *
      * @return  Player's UUID
      */
-    UUID getUniqueId();
+    @NotNull UUID getUniqueId();
 
     /**
      * Returns player's protocol version
      *
      * @return  player's protocol version
      */
-    ProtocolVersion getVersion();
+    @NotNull ProtocolVersion getVersion();
 
     /**
      * Returns platform-specific entity
      *
      * @return  an instance of bukkit/bungee player depending on platform
      */
-    Object getPlayer();
+    @NotNull Object getPlayer();
 
     /**
      * Returns true once the player is successfully loaded (onJoin method ran through all methods)
@@ -49,35 +52,25 @@ public interface TabPlayer {
      *
      * @return  player's primary permission group
      */
-    String getGroup();
+    @NotNull String getGroup();
 
     /**
      * Temporarily overrides player's group and applies all changes coming from new group.
      * This includes all properties and sorting, if used.
+     * Set to {@code null} to reset back.
      *
      * @param   group
      *          New group to use
      * @see     #hasTemporaryGroup()
-     * @see     #resetTemporaryGroup()
      */
-    void setTemporaryGroup(String group);
+    void setTemporaryGroup(@Nullable String group);
 
     /**
-     * Returns temporary group applied to the player using {@link #setTemporaryGroup(String)}.
-     * If no group was set, returns {@code null}
+     * Returns {@code true} if a temporary group was applied to the player using {@link #setTemporaryGroup(String)}.
+     * If no group was set, returns {@code false}
      *
-     * @return  Temporary group assigned to player or {@code null} if not set
+     * @return  {@code true} if group is set, {@code false} if not
      * @see     #setTemporaryGroup(String)
-     * @see     #resetTemporaryGroup()
      */
     boolean hasTemporaryGroup();
-
-    /**
-     * Resets temporary group assigned using {@link #setTemporaryGroup(String)}.
-     * If no temporary group is set, doesn't do anything.
-     *
-     * @see     #setTemporaryGroup(String)
-     * @see     #hasTemporaryGroup()
-     */
-    void resetTemporaryGroup();
 }

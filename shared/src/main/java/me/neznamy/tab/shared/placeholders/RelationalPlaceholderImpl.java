@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -92,7 +93,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     }
 
     @Override
-    public void updateValue(me.neznamy.tab.api.TabPlayer viewer, me.neznamy.tab.api.TabPlayer target, Object value) {
+    public void updateValue(me.neznamy.tab.api.@NonNull TabPlayer viewer, me.neznamy.tab.api.@NonNull TabPlayer target, @NonNull Object value) {
         updateValue((TabPlayer) viewer, (TabPlayer) target, value, false);
     }
 

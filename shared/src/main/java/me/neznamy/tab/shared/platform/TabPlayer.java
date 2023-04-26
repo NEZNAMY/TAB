@@ -11,6 +11,8 @@ import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -179,11 +181,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         return temporaryGroup != null;
     }
 
-    @Override
-    public void resetTemporaryGroup() {
-        setTemporaryGroup(null);
-    }
-
     /**
      * Sends a message to the player
      *
@@ -213,7 +210,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     }
 
     @Override
-    public String getGroup() {
+    public @NotNull String getGroup() {
         return temporaryGroup != null ? temporaryGroup : permissionGroup;
     }
 
@@ -257,14 +254,14 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  scoreboard interface for calling scoreboard-related methods
      */
-    public abstract PlatformScoreboard<? extends TabPlayer> getScoreboard();
+    public abstract @NotNull PlatformScoreboard<? extends TabPlayer> getScoreboard();
 
     /**
      * Returns handler for calling bossbar-related methods
      *
      * @return  handler for calling bossbar-related methods
      */
-    public abstract PlatformBossBar getBossBar();
+    public abstract @NotNull PlatformBossBar getBossBar();
 
     /**
      * Returns {@code true} if player is disguised using LibsDisguises, {@code false} if not
@@ -307,7 +304,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  player's skin
      */
-    public abstract TabList.Skin getSkin();
+    public abstract @Nullable TabList.Skin getSkin();
 
     /**
      * Sets header and footer to specified values
@@ -332,7 +329,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @param   message
      *          message to send
      */
-    public abstract void sendMessage(IChatBaseComponent message);
+    public abstract void sendMessage(@NonNull IChatBaseComponent message);
 
     /**
      * Performs platform-specific API call to check for permission and returns the result
@@ -341,7 +338,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          the permission to check for
      * @return  true if player has permission, false if not
      */
-    public abstract boolean hasPermission(String permission);
+    public abstract boolean hasPermission(@NonNull String permission);
 
     /**
      * Calls platform-specific method and returns the result

@@ -138,7 +138,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@NonNull String permission) {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             sendPluginMessage("Permission", permission);
             return permissions != null && permissions.getOrDefault(permission, false);

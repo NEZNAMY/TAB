@@ -26,7 +26,6 @@ public class PacketPlayOutPlayerInfoStorage {
     public static Constructor<?> newClientboundPlayerInfoRemovePacket;
 
     public static void load(NMSStorage nms) throws ReflectiveOperationException {
-        if (nms.getMinorVersion() < 8) return;
         if (nms.is1_19_3Plus()) {
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
             CONSTRUCTOR = CLASS.getConstructor(EnumSet.class, Collection.class);

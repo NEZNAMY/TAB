@@ -3,7 +3,9 @@ package me.neznamy.tab.api.bossbar;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An interface representing a BossBar line.
@@ -26,7 +28,7 @@ public interface BossBar {
      *
      * @return  name of BossBar
      */
-    String getName();
+    @NotNull String getName();
 
     /**
      * Returns randomly generated uuid of this BossBar used internally to match
@@ -34,7 +36,7 @@ public interface BossBar {
      *
      * @return  uuid of this BossBar
      */
-    UUID getUniqueId();
+    @NotNull UUID getUniqueId();
 
     /**
      * Changes BossBar title to specified string, supporting placeholders.
@@ -48,7 +50,7 @@ public interface BossBar {
      * @param   title
      *          New title to display in this BossBar
      */
-    void setTitle(String title);
+    void setTitle(@NonNull String title);
 
     /**
      * Changes BossBar progress to specified string, supporting placeholders.
@@ -64,7 +66,7 @@ public interface BossBar {
      * @param   progress
      *          New progress to use in this BossBar
      */
-    void setProgress(String progress);
+    void setProgress(@NonNull String progress);
 
     /**
      * Changes BossBar progress to specified value ranging from 0 to 100.
@@ -90,7 +92,7 @@ public interface BossBar {
      * @param   color
      *          New color to use in this BossBar
      */
-    void setColor(String color);
+    void setColor(@NonNull String color);
 
     /**
      * Changes BossBar color to specified enum constant.
@@ -100,7 +102,7 @@ public interface BossBar {
      * @param   color
      *          New color to use in this BossBar
      */
-    void setColor(BarColor color);
+    void setColor(@NonNull BarColor color);
 
     /**
      * Changes BossBar style to specified string, supporting placeholders.
@@ -116,7 +118,7 @@ public interface BossBar {
      * @param   style
      *          New style to use in this BossBar
      */
-    void setStyle(String style);
+    void setStyle(@NonNull String style);
 
     /**
      * Changes BossBar style to specified enum constant.
@@ -126,7 +128,7 @@ public interface BossBar {
      * @param   style
      *          New style to use in this BossBar
      */
-    void setStyle(BarStyle style);
+    void setStyle(@NonNull BarStyle style);
 
     /**
      * Returns current title of the BossBar in raw format. If it contains placeholders,
@@ -134,7 +136,7 @@ public interface BossBar {
      *
      * @return  title of the BossBar
      */
-    String getTitle();
+    @NotNull String getTitle();
 
     /**
      * Returns progress of the BossBar as a string, which is either entered string
@@ -142,7 +144,7 @@ public interface BossBar {
      *
      * @return  entered progress as a string
      */
-    String getProgress();
+    @NotNull String getProgress();
 
     /**
      * Returns color of the BossBar as a string, which is either entered string
@@ -150,7 +152,7 @@ public interface BossBar {
      *
      * @return  entered color as a string
      */
-    String getColor();
+    @NotNull String getColor();
 
     /**
      * Returns style of the BossBar as a string, which is either entered string
@@ -158,7 +160,7 @@ public interface BossBar {
      *
      * @return  entered style as a string
      */
-    String getStyle();
+    @NotNull String getStyle();
 
     /**
      * Registers this BossBar to specified player.
@@ -168,7 +170,7 @@ public interface BossBar {
      * @param   player
      *          Player to register this BossBar to
      */
-    void addPlayer(TabPlayer player);
+    void addPlayer(@NonNull TabPlayer player);
 
     /**
      * Unregisters this BossBar from specified player.
@@ -178,7 +180,7 @@ public interface BossBar {
      * @param   player
      *          Player to unregister this BossBar from
      */
-    void removePlayer(TabPlayer player);
+    void removePlayer(@NonNull TabPlayer player);
 
     /**
      * Returns list of players who can see this BossBar.
@@ -189,7 +191,7 @@ public interface BossBar {
      *
      * @return  List of players seeing this BossBar
      */
-    List<TabPlayer> getPlayers();
+    @NotNull List<TabPlayer> getPlayers();
 
     /**
      * Returns {@code true} if specified player can see this BossBar, {@code false} if not
@@ -198,7 +200,7 @@ public interface BossBar {
      *          Player to check for
      * @return  {@code true} if contains, {@code false} if not
      */
-    boolean containsPlayer(TabPlayer player);
+    boolean containsPlayer(@NonNull TabPlayer player);
 
     /**
      * Returns {@code true} if this bossbar in configured as announcement-only bar,

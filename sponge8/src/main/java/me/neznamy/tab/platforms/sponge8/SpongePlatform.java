@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
@@ -11,6 +12,7 @@ import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -21,7 +23,7 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NonNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
@@ -43,12 +45,12 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNametags() {
         return new NameTag();
     }
 
     @Override
-    public void sendConsoleMessage(String message, boolean translateColors) {
+    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
         Sponge.systemSubject().sendMessage(Component.text()
                 .append(Component.text("[TAB] ")).append(LegacyComponentSerializer.legacySection().deserialize(
                         translateColors ? EnumChatFormat.color(message) : message)).build()

@@ -14,12 +14,13 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class FabricPlatform extends BackendPlatform {
 
     @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NonNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
@@ -36,7 +37,7 @@ public final class FabricPlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNametags() {
         return new NameTag();
     }
 
@@ -56,7 +57,7 @@ public final class FabricPlatform extends BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(String message, boolean translateColors) {
+    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
         MinecraftServer.LOGGER.info(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(
                             "[TAB] " + (translateColors ? EnumChatFormat.color(message) : message)).toString()).getString());
     }

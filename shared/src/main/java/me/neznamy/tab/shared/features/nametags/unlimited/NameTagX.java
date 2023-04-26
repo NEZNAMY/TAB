@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -185,7 +186,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     /* UnlimitedNametagManager implementation */
 
     @Override
-    public void disableArmorStands(me.neznamy.tab.api.TabPlayer player) {
+    public void disableArmorStands(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         if (playersDisabledWithAPI.contains(player)) return;
         playersDisabledWithAPI.add(player);
@@ -194,7 +195,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void enableArmorStands(me.neznamy.tab.api.TabPlayer player) {
+    public void enableArmorStands(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         if (!playersDisabledWithAPI.contains(player)) return;
         playersDisabledWithAPI.remove(player);
@@ -203,7 +204,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public boolean hasDisabledArmorStands(me.neznamy.tab.api.TabPlayer player) {
+    public boolean hasDisabledArmorStands(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return playersDisabledWithAPI.contains(player);
     }
 
@@ -224,31 +225,31 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public String getCustomName(me.neznamy.tab.api.TabPlayer player) {
+    public String getCustomName(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTAGNAME).getTemporaryValue();
     }
 
     @Override
-    public String getCustomLineValue(me.neznamy.tab.api.TabPlayer player, String line) {
+    public String getCustomLineValue(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull String line) {
         Preconditions.checkLoaded(player);
         return ((TabPlayer)player).getProperty(line).getTemporaryValue();
     }
 
     @Override
-    public String getOriginalName(me.neznamy.tab.api.TabPlayer player) {
+    public @NotNull String getOriginalName(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
         return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTAGNAME).getOriginalRawValue();
     }
 
     @Override
-    public String getOriginalLineValue(me.neznamy.tab.api.TabPlayer player, String line) {
+    public @NotNull String getOriginalLineValue(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull String line) {
         Preconditions.checkLoaded(player);
         return ((TabPlayer)player).getProperty(line).getOriginalRawValue();
     }
 
     @Override
-    public List<String> getDefinedLines() {
+    public @NotNull List<String> getDefinedLines() {
         List<String> lines = new ArrayList<>(dynamicLines);
         lines.addAll(staticLines.keySet());
         return lines;

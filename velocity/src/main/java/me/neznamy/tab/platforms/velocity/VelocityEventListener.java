@@ -18,23 +18,11 @@ import me.neznamy.tab.shared.platform.PlatformEventListener;
  */
 public class VelocityEventListener extends PlatformEventListener {
 
-    /**
-     * Disconnect event listener to forward the event to all features
-     *
-     * @param   e
-     *          disconnect event
-     */
     @Subscribe
     public void onQuit(DisconnectEvent e) {
         quit(e.getPlayer().getUniqueId());
     }
-    
-    /**
-     * Listener to join / server switch to forward the event to all features
-     *
-     * @param   e
-     *          connect event
-     */
+
     @Subscribe
     @SuppressWarnings("UnstableApiUsage")
     public void onConnect(ServerPostConnectEvent e) {
@@ -46,12 +34,6 @@ public class VelocityEventListener extends PlatformEventListener {
         }
     }
 
-    /**
-     * Listener to commands to forward the event to all features
-     *
-     * @param   e
-     *          command event
-     */
     @Subscribe
     public void onCommand(CommandExecuteEvent e) {
         if (TAB.getInstance().isPluginDisabled()) return;
@@ -66,12 +48,6 @@ public class VelocityEventListener extends PlatformEventListener {
         }
     }
 
-    /**
-     * Listener to plugin message event to process messages coming from bridge
-     *
-     * @param   event
-     *          plugin message event
-     */
     @Subscribe
     public void onPluginMessageEvent(PluginMessageEvent event) {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;

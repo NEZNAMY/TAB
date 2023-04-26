@@ -1,7 +1,9 @@
 package me.neznamy.tab.api;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Enum class representing all possibly used protocol versions
@@ -70,9 +72,6 @@ public enum ProtocolVersion {
     V1_4_7  (51),
     V1_4_6  (51);
 
-    /** Value array to iterate over to avoid array creations on each call */
-    public static final ProtocolVersion[] VALUES = values();
-
     /** Version's network id found at https://wiki.vg/Protocol_version_numbers */
     @Getter private final int networkId;
 
@@ -83,7 +82,7 @@ public enum ProtocolVersion {
     @Getter @Setter private int minorVersion;
 
     /** Version's friendly name displayed in %player-version% placeholder */
-    @Getter private final String friendlyName;
+    @Getter @NotNull private final String friendlyName;
 
     /**
      * Constructs new instance with given network id
@@ -103,7 +102,7 @@ public enum ProtocolVersion {
      * @param   friendlyName
      *          friendly name to display
      */
-    ProtocolVersion(String friendlyName) {
+    ProtocolVersion(@NotNull String friendlyName) {
         this.networkId = 999;
         this.minorVersion = 18;
         this.friendlyName = friendlyName;
@@ -116,7 +115,7 @@ public enum ProtocolVersion {
      *          friendly name of the version
      * @return  version or UNKNOWN_SERVER_VERSION if version is unknown
      */
-    public static ProtocolVersion fromFriendlyName(String friendlyName) {
+    public static @NotNull ProtocolVersion fromFriendlyName(@NonNull String friendlyName) {
         if (friendlyName.startsWith("1.8")) return V1_8;
         try {
             return valueOf("V" + friendlyName.replace(".", "_"));
@@ -132,8 +131,8 @@ public enum ProtocolVersion {
      *          network id of protocol version
      * @return  version from given network id
      */
-    public static ProtocolVersion fromNetworkId(int networkId) {
-        for (ProtocolVersion v : VALUES) {
+    public static @NotNull ProtocolVersion fromNetworkId(int networkId) {
+        for (ProtocolVersion v : values()) {
             if (networkId == v.getNetworkId()) return v;
         }
         return UNKNOWN_CLIENT_VERSION;

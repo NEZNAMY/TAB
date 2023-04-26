@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.shared.TabConstants;
@@ -9,6 +10,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +34,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
+    public String onPlaceholderRequest(@Nullable Player player, @NotNull String identifier) {
         if (identifier.startsWith("replace_")) {
             String text = "%" + identifier.substring(8) + "%";
             String textBefore;
@@ -52,7 +54,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     }
 
     @Override
-    public void setValue(TabPlayer player, String key, String value) {
+    public void setValue(@NonNull TabPlayer player, @NonNull String key, @NonNull String value) {
         values.computeIfAbsent((Player) player.getPlayer(), p -> new HashMap<>()).put(key, value);
     }
 }

@@ -20,6 +20,7 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -29,7 +30,7 @@ import org.slf4j.Logger;
  */
 public abstract class Platform {
 
-    public void sendConsoleMessage(String message, boolean translateColors) {
+    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
         Object logger = TAB.getInstance().getLogger();
         if (logger instanceof java.util.logging.Logger) {
             ((java.util.logging.Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
@@ -43,7 +44,7 @@ public abstract class Platform {
      *
      * @return  the interface representing the permission hook
      */
-    public abstract PermissionPlugin detectPermissionPlugin();
+    public abstract @NotNull PermissionPlugin detectPermissionPlugin();
 
     /**
      * Loads features
@@ -126,7 +127,7 @@ public abstract class Platform {
         featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
     }
 
-    public BossBarManagerImpl getLegacyBossBar() {
+    public @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new BossBarManagerImpl();
     }
 
@@ -137,7 +138,7 @@ public abstract class Platform {
      * @param   identifier
      *          placeholder's identifier
      */
-    public abstract void registerUnknownPlaceholder(String identifier);
+    public abstract void registerUnknownPlaceholder(@NonNull String identifier);
 
     /**
      * Creates instance for all online players and adds them to the plugin
@@ -151,7 +152,7 @@ public abstract class Platform {
 
     public abstract @Nullable PipelineInjector getPipelineInjector();
 
-    public abstract NameTag getUnlimitedNametags();
+    public abstract @NotNull NameTag getUnlimitedNametags();
 
     public abstract @NonNull TabExpansion getTabExpansion();
 

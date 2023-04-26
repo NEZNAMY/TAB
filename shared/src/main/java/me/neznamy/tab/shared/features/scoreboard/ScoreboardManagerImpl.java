@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -176,7 +177,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines) {
+    public @NotNull Scoreboard createScoreboard(@NonNull String name, @NonNull String title, @NonNull List<String> lines) {
         Scoreboard sb = new ScoreboardImpl(this, name, title, lines, true);
         registeredScoreboards.put(name, sb);
         definedScoreboards = registeredScoreboards.values().toArray(new Scoreboard[0]);
@@ -197,7 +198,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void resetScoreboard(me.neznamy.tab.api.TabPlayer player) {
+    public void resetScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player) {
         if (!forcedScoreboard.containsKey(player)) return;
         forcedScoreboard.get(player).removePlayer((TabPlayer) player);
         forcedScoreboard.remove(player);
@@ -209,17 +210,17 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public boolean hasScoreboardVisible(me.neznamy.tab.api.TabPlayer player) {
+    public boolean hasScoreboardVisible(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return visiblePlayers.contains(player);
     }
 
     @Override
-    public boolean hasCustomScoreboard(me.neznamy.tab.api.TabPlayer player) {
+    public boolean hasCustomScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return forcedScoreboard.containsKey(player);
     }
 
     @Override
-    public void setScoreboardVisible(me.neznamy.tab.api.TabPlayer p, boolean visible, boolean sendToggleMessage) {
+    public void setScoreboardVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
         TabPlayer player = (TabPlayer) p;
         if (visiblePlayers.contains(player) == visible) return;
         if (visible) {
@@ -259,12 +260,12 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void toggleScoreboard(me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
+    public void toggleScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player, boolean sendToggleMessage) {
         setScoreboardVisible(player, !visiblePlayers.contains(player), sendToggleMessage);
     }
 
     @Override
-    public void announceScoreboard(String scoreboard, int duration) {
+    public void announceScoreboard(@NonNull String scoreboard, int duration) {
         if (duration < 0) throw new IllegalArgumentException("Duration cannot be negative");
         ScoreboardImpl sb = (ScoreboardImpl) registeredScoreboards.get(scoreboard);
         if (sb == null) throw new IllegalArgumentException("No registered scoreboard found with name " + scoreboard);
@@ -290,7 +291,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public Scoreboard getActiveScoreboard(me.neznamy.tab.api.TabPlayer player) {
+    public @NotNull Scoreboard getActiveScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return activeScoreboards.get(player);
     }
 

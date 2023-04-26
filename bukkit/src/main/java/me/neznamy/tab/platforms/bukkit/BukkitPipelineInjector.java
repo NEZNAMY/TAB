@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -32,7 +33,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    protected Channel getChannel(TabPlayer player) {
+    protected Channel getChannel(@NonNull TabPlayer player) {
         BukkitTabPlayer bukkit = (BukkitTabPlayer) player;
         NMSStorage nms = NMSStorage.getInstance();
         try {
@@ -44,41 +45,41 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onDisplayObjective(TabPlayer player, Object packet) throws IllegalAccessException {
+    public void onDisplayObjective(@NonNull TabPlayer player, @NonNull Object packet) throws IllegalAccessException {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                 PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
                 (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
     }
 
     @Override
-    public void onObjective(TabPlayer player, Object packet) throws IllegalAccessException {
+    public void onObjective(@NonNull TabPlayer player, @NonNull Object packet) throws IllegalAccessException {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 PacketPlayOutScoreboardObjectiveStorage.METHOD.getInt(packet),
                 (String) PacketPlayOutScoreboardObjectiveStorage.OBJECTIVE_NAME.get(packet));
     }
 
     @Override
-    public boolean isDisplayObjective(Object packet) {
+    public boolean isDisplayObjective(@NonNull Object packet) {
         return PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS.isInstance(packet);
     }
 
     @Override
-    public boolean isObjective(Object packet) {
+    public boolean isObjective(@NonNull Object packet) {
         return PacketPlayOutScoreboardObjectiveStorage.CLASS.isInstance(packet);
     }
 
     @Override
-    public boolean isTeam(Object packet) {
+    public boolean isTeam(@NonNull Object packet) {
         return PacketPlayOutScoreboardTeamStorage.CLASS.isInstance(packet);
     }
 
     @Override
-    public boolean isPlayerInfo(Object packet) {
+    public boolean isPlayerInfo(@NonNull Object packet) {
         return PacketPlayOutPlayerInfoStorage.CLASS.isInstance(packet);
     }
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
+    public void onPlayerInfo(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         List<String> actions;
         if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
@@ -120,7 +121,8 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void modifyPlayers(Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
+    public void modifyPlayers(@NonNull Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
+        if (TAB.getInstance().getTeamManager() == null) return;
         int action = PacketPlayOutScoreboardTeamStorage.ACTION.getInt(packetPlayOutScoreboardTeam);
         if (action == 1 || action == 2 || action == 4) return;
         Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeamStorage.PLAYERS.get(packetPlayOutScoreboardTeam);

@@ -9,6 +9,8 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.auth.ProfileProperty;
 import org.kryptonmc.api.entity.player.Player;
 
@@ -26,7 +28,7 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@NonNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -36,7 +38,7 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NonNull IChatBaseComponent message) {
         getPlayer().sendMessage(message.toAdventureComponent());
     }
 
@@ -51,14 +53,14 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public TabList.Skin getSkin() {
+    public @Nullable TabList.Skin getSkin() {
         List<ProfileProperty> list = getPlayer().getProfile().properties();
         if (list.isEmpty()) return null;
         return new TabList.Skin(list.get(0).value(), list.get(0).signature());
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return (Player) player;
     }
 

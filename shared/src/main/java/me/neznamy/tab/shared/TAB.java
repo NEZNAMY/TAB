@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
@@ -19,6 +20,7 @@ import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -264,12 +266,12 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public PlaceholderManagerImpl getPlaceholderManager() {
+    public @NotNull PlaceholderManagerImpl getPlaceholderManager() {
         return featureManager.getFeature(TabConstants.Feature.PLACEHOLDER_MANAGER);
     }
 
     @Override
-    public TabPlayer getPlayer(String name) {
+    public TabPlayer getPlayer(@NonNull String name) {
         for (TabPlayer p : data.values()) {
             if (p.getName().equalsIgnoreCase(name)) return p;
         }
@@ -277,7 +279,7 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public TabPlayer getPlayer(UUID uniqueId) {
+    public TabPlayer getPlayer(@NonNull UUID uniqueId) {
         return data.get(uniqueId);
     }
 

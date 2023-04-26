@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
 
-    private final Plugin plugin;
+    private final @NonNull Plugin plugin;
     @Getter private final BungeePipelineInjector pipelineInjector = new BungeePipelineInjector();
 
     @Override

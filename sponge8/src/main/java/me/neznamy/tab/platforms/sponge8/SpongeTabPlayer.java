@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -31,7 +32,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@NonNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -41,7 +42,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NonNull IChatBaseComponent message) {
         getPlayer().sendMessage(message.toAdventureComponent());
     }
 
@@ -66,7 +67,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public ServerPlayer getPlayer() {
+    public @NotNull ServerPlayer getPlayer() {
         return (ServerPlayer) player;
     }
 

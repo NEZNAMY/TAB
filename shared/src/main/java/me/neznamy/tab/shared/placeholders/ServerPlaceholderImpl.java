@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
@@ -91,7 +92,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     }
 
     @Override
-    public void updateValue(Object value) {
+    public void updateValue(@NonNull Object value) {
         updateValue(value, false);
     }
 

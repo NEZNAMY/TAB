@@ -67,7 +67,7 @@ public class CpuCommand extends SubCommand {
             if (printCounter++ == 5) break;
             String refresh = "";
             Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey());
-            if (p != null && p.getRefresh() != -1) refresh = " &8(" + p.getRefresh() + ")&7";
+            if (p.getRefresh() != -1) refresh = " &8(" + p.getRefresh() + ")&7";
             String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
             sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
         }

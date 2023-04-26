@@ -62,7 +62,7 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
-    public void registerTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision,
+    public void registerTeam(@NonNull String name, String prefix, String suffix, @NonNull String visibility, @NonNull String collision,
                              Collection<String> players, int options) {
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
@@ -127,7 +127,7 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         }
     }
 
-    public abstract void setDisplaySlot(DisplaySlot slot, @NonNull String objective);
+    public abstract void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective);
 
     public abstract void setScore0(@NonNull String objective, @NonNull String player, int score);
 
@@ -139,13 +139,13 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
 
     public abstract void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
 
-    public abstract void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility,
-                                                 String collision, Collection<String> players, int options);
+    public abstract void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
+                                                 @NonNull String collision, @NonNull Collection<String> players, int options);
 
     public abstract void unregisterTeam0(@NonNull String name);
 
-    public abstract void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility,
-                                     String collision, int options);
+    public abstract void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
+                                     @NonNull String collision, int options);
 
     public enum DisplaySlot { PLAYER_LIST, SIDEBAR, BELOW_NAME }
 }

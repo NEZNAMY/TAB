@@ -43,7 +43,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
             changed.forceRefresh();
-            sendMessage(sender, getMessages().getPlayerDataRemoved(changed.getName() + "(" + changed.getUniqueId().toString() + ")"));
+            sendMessage(sender, getMessages().getPlayerDataRemoved(changed.getName() + "(" + changed.getUniqueId() + ")"));
         } else {
             sendMessage(sender, getMessages().getNoPermission());
         }
@@ -53,9 +53,9 @@ public class PlayerUUIDCommand extends PropertyCommand {
     public void saveEntity(TabPlayer sender, String playerName, String type, String value, String server, String world) {
         TabPlayer player = TAB.getInstance().getPlayer(playerName);
         if (value.length() > 0) {
-            sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player.getName() + "(" + player.getUniqueId().toString() + ")"));
+            sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, playerName + "(" + player.getUniqueId() + ")"));
         } else {
-            sendMessage(sender, getMessages().getPlayerValueRemoved(type, player.getName() + "(" + player.getUniqueId().toString() + ")"));
+            sendMessage(sender, getMessages().getPlayerValueRemoved(type, playerName + "(" + player.getUniqueId() + ")"));
         }
         String[] property = TAB.getInstance().getConfiguration().getUsers().getProperty(player.getUniqueId().toString(), type, server, world);
         if (property.length > 0 && String.valueOf(value.length() == 0 ? null : value).equals(String.valueOf(property[0]))) return;

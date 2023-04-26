@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
@@ -42,7 +43,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void registerPlaceholders(PlaceholderManager manager) {
+    public void registerPlaceholders(@NonNull PlaceholderManager manager) {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500, p -> ((Player) p.getPlayer()).getDisplayName());
         if (paperTps != null) {
             manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000, () -> formatTPS(Bukkit.getTPS()[0]));

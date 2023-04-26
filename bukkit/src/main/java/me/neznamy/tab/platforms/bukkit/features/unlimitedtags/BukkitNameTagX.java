@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -20,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +41,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
     private final EventListener eventListener = new EventListener(this);
 
     /** Plugin reference */
-    private final JavaPlugin plugin;
+    @NonNull private final JavaPlugin plugin;
 
     @Override
     public void load() {
@@ -73,19 +76,19 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
     }
 
     @Override
-    public double getDistance(TabPlayer player1, TabPlayer player2) {
+    public double getDistance(@NonNull TabPlayer player1, @NonNull TabPlayer player2) {
         Location loc1 = ((Player) player1.getPlayer()).getLocation();
         Location loc2 = ((Player) player2.getPlayer()).getLocation();
         return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
     }
 
     @Override
-    public boolean areInSameWorld(TabPlayer player1, TabPlayer player2) {
+    public boolean areInSameWorld(@NonNull TabPlayer player1, @NonNull TabPlayer player2) {
         return ((Player) player1.getPlayer()).getWorld() == ((Player) player2.getPlayer()).getWorld();
     }
 
     @Override
-    public boolean canSee(TabPlayer viewer, TabPlayer target) {
+    public boolean canSee(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
         return ((Player)viewer.getPlayer()).canSee((Player) target.getPlayer());
     }
 
@@ -96,7 +99,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
 
     @SuppressWarnings("deprecation")
     @Override
-    public List<Integer> getPassengers(Object entity) {
+    public @NotNull List<Integer> getPassengers(@NonNull Object entity) {
         Entity vehicle = (Entity) entity;
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 11) {
             return vehicle.getPassengers().stream().map(Entity::getEntityId).collect(Collectors.toList());
@@ -119,64 +122,64 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
     }
 
     @Override
-    public Object getVehicle(TabPlayer player) {
+    public @Nullable Object getVehicle(@NonNull TabPlayer player) {
         return ((Player)player.getPlayer()).getVehicle();
     }
 
     @Override
-    public int getEntityId(Object entity) {
+    public int getEntityId(@NonNull Object entity) {
         return ((Entity)entity).getEntityId();
     }
 
     @Override
-    public String getEntityType(Object entity) {
+    public @NotNull String getEntityType(@NonNull Object entity) {
         return ((Entity) entity).getType().toString().toLowerCase();
     }
 
     @Override
-    public boolean isSneaking(TabPlayer player) {
+    public boolean isSneaking(@NonNull TabPlayer player) {
         return ((Player)player.getPlayer()).isSneaking();
     }
 
     @Override
-    public boolean isSwimming(TabPlayer player) {
+    public boolean isSwimming(@NonNull TabPlayer player) {
         Player p = (Player) player.getPlayer();
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
         return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && p.isSwimming();
     }
 
     @Override
-    public boolean isGliding(TabPlayer player) {
+    public boolean isGliding(@NonNull TabPlayer player) {
         return TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
     }
 
     @Override
-    public boolean isSleeping(TabPlayer player) {
+    public boolean isSleeping(@NonNull TabPlayer player) {
         return ((Player)player.getPlayer()).isSleeping();
     }
 
     @Override
-    public Object getArmorStandType() {
+    public @NotNull Object getArmorStandType() {
         return EntityType.ARMOR_STAND;
     }
 
     @Override
-    public double getX(TabPlayer player) {
+    public double getX(@NonNull TabPlayer player) {
         return ((Player)player.getPlayer()).getLocation().getX();
     }
 
     @Override
-    public double getY(Object entity) {
+    public double getY(@NonNull Object entity) {
         return ((Entity)entity).getLocation().getY();
     }
 
     @Override
-    public double getZ(TabPlayer player) {
+    public double getZ(@NonNull TabPlayer player) {
         return ((Player)player.getPlayer()).getLocation().getZ();
     }
 
     @Override
-    public EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible) {
+    public EntityData createDataWatcher(@NonNull TabPlayer viewer, byte flags, @NonNull String displayName, boolean nameVisible) {
         DataWatcher datawatcher = new DataWatcher();
         datawatcher.getHelper().setEntityFlags(flags);
         datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());

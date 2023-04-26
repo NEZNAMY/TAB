@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 
 /**
@@ -16,5 +17,5 @@ public interface PlaceholderRegistry {
      * @param   manager
      *          placeholder manager to register placeholders to
      */
-    void registerPlaceholders(PlaceholderManager manager);
+    void registerPlaceholders(@NonNull PlaceholderManager manager);
 }

@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,12 +67,12 @@ public class FabricTabList extends BulkUpdateTabList {
     public static class Builder {
 
         @NonNull private final UUID id;
-        private String name;
-        private Skin skin;
+        @Nullable private String name;
+        @Nullable private Skin skin;
         private boolean listed;
         private int latency;
         private int gameMode;
-        private Component displayName;
+        @Nullable private Component displayName;
 
         public Builder setName(String name) { this.name = name; return this; }
         public Builder setSkin(Skin skin) { this.skin = skin; return this; }

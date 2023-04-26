@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 @RequiredArgsConstructor
 public class VelocityTabList extends SingleUpdateTabList {
 

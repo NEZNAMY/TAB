@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TabPlayer implementation for Velocity
@@ -43,7 +44,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NonNull IChatBaseComponent message) {
         getPlayer().sendMessage(message.toAdventureComponent());
     }
 
@@ -54,7 +55,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
     
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return (Player) player;
     }
     

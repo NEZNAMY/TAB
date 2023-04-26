@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -14,6 +15,7 @@ import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -35,7 +37,7 @@ public abstract class ProxyPlatform extends Platform {
     @Getter private final ProxyTabExpansion tabExpansion = new ProxyTabExpansion();
 
     @Override
-    public PermissionPlugin detectPermissionPlugin() {
+    public @NotNull PermissionPlugin detectPermissionPlugin() {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             return new VaultBridge();
         } else if (ReflectionUtils.classExists("net.luckperms.api.LuckPerms")) {
@@ -46,7 +48,7 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NonNull String identifier) {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         //internal dynamic %online_<server>% placeholder
         if (identifier.startsWith("%online_")) {
@@ -74,7 +76,7 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNametags() {
         return new ProxyNameTagX();
     }
 }

@@ -25,6 +25,8 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.Protocol;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.stream.Collectors;
@@ -35,11 +37,11 @@ import java.util.stream.Collectors;
 public class BungeeTabPlayer extends ProxyTabPlayer {
 
     /** Inaccessible bungee internals */
-    private static Object directionData;
-    private static Method getId;
+    private static @Nullable Object directionData;
+    private static @Nullable Method getId;
 
     /** Component cache for BungeeCord components */
-    private static final ComponentCache<IChatBaseComponent, BaseComponent> bungeeCache =
+    private static final @NotNull ComponentCache<IChatBaseComponent, BaseComponent> bungeeCache =
             new ComponentCache<>(10000, BungeeTabPlayer::toBungeeComponent);
 
     static {
@@ -52,14 +54,14 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     /** Player's scoreboard */
-    @Getter private final PlatformScoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
+    @Getter private final @NotNull PlatformScoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
 
     /** Player's tablist based on version */
-    private final TabList tabList1_7 = new BungeeTabList1_7(this);
-    private final TabList tabList1_8 = new BungeeTabList1_8(this);
-    private final TabList tabList1_19_3 = new BungeeTabList1_19_3(this);
+    private final @NotNull TabList tabList1_7 = new BungeeTabList1_7(this);
+    private final @NotNull TabList tabList1_8 = new BungeeTabList1_8(this);
+    private final @NotNull TabList tabList1_19_3 = new BungeeTabList1_19_3(this);
 
-    @Getter private final PlatformBossBar bossBar = new BungeeBossBar(this);
+    @Getter private final @NotNull PlatformBossBar bossBar = new BungeeBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -67,7 +69,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      * @param   p
      *          BungeeCord player
      */
-    public BungeeTabPlayer(ProxiedPlayer p) {
+    public BungeeTabPlayer(@NonNull ProxiedPlayer p) {
         super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
     }
 
@@ -86,12 +88,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NonNull IChatBaseComponent message) {
         getPlayer().sendMessage(bungeeCache.get(message, getVersion()));
     }
 
     @Override
-    public TabList.Skin getSkin() {
+    public @Nullable TabList.Skin getSkin() {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
         Property[] properties = loginResult.getProperties();
@@ -100,7 +102,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public ProxiedPlayer getPlayer() {
+    public @NotNull ProxiedPlayer getPlayer() {
         return (ProxiedPlayer) player;
     }
 
@@ -112,6 +114,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      * @return  packet ID
      */
     public int getPacketId(@NonNull Class<? extends DefinedPacket> clazz) {
+        if (getId == null) return -1;
         try {
             return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());
         } catch (ReflectiveOperationException e) {
@@ -129,7 +132,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      * @return  Player's current protocol version
      */
     @Override
-    public ProtocolVersion getVersion() {
+    public @NotNull ProtocolVersion getVersion() {
         return ProtocolVersion.fromNetworkId(getPlayer().getPendingConnection().getVersion());
     }
 
@@ -162,7 +165,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public TabList getTabList() {
+    public @NotNull TabList getTabList() {
         return getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ?
                 tabList1_19_3 : getVersion().getMinorVersion() >= 8 ? tabList1_8 : tabList1_7;
     }
@@ -182,7 +185,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *
      * @return  BungeeCord component from this component.
      */
-    private static TextComponent toBungeeComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
+    private static TextComponent toBungeeComponent(@NonNull IChatBaseComponent component, ProtocolVersion clientVersion) {
         TextComponent textComponent = new TextComponent(component.getText());
         if (component.getModifier().getColor() != null) textComponent.setColor(ChatColor.of(
                 component.getModifier().getColor().toString(clientVersion.getMinorVersion() >= 16)));

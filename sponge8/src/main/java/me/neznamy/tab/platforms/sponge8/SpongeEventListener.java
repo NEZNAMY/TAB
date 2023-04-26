@@ -27,6 +27,7 @@ public class SpongeEventListener extends PlatformEventListener {
     public void onRespawn(RespawnPlayerEvent.Recreate event) {
         if (TAB.getInstance().isPluginDisabled()) return;
         SpongeTabPlayer player = (SpongeTabPlayer) TAB.getInstance().getPlayer(event.recreatedPlayer().uniqueId());
+        if (player == null) return;
         player.setPlayer(event.recreatedPlayer());
     }
 

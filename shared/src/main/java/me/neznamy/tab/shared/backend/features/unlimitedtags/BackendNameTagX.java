@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.types.GameModeListener;
@@ -8,6 +9,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -86,7 +89,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      * @param   target
      *          Target player with armor stands
      */
-    private void spawnArmorStands(TabPlayer viewer, TabPlayer target) {
+    private void spawnArmorStands(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (target == viewer || isPlayerDisabled(target)) return;
         if (!areInSameWorld(viewer, target)) return;
@@ -160,7 +163,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
         }
     }
 
-    public int getEntityId(TabPlayer player) {
+    public int getEntityId(@NonNull TabPlayer player) {
         return getEntityId(player.getPlayer());
     }
 
@@ -173,39 +176,39 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      *          second player
      * @return  flat distance in blocks
      */
-    public abstract double getDistance(TabPlayer player1, TabPlayer player2);
+    public abstract double getDistance(@NonNull TabPlayer player1, @NonNull TabPlayer player2);
 
-    public abstract boolean areInSameWorld(TabPlayer player1, TabPlayer player2);
+    public abstract boolean areInSameWorld(@NonNull TabPlayer player1, @NonNull TabPlayer player2);
 
-    public abstract boolean canSee(TabPlayer viewer, TabPlayer target);
+    public abstract boolean canSee(@NonNull TabPlayer viewer, @NonNull TabPlayer target);
 
     public abstract void unregisterListener();
 
-    public abstract List<Integer> getPassengers(Object vehicle);
+    public abstract @NotNull List<Integer> getPassengers(@NonNull Object vehicle);
 
     public abstract void registerVehiclePlaceholder();
 
-    public abstract Object getVehicle(TabPlayer player);
+    public abstract @Nullable Object getVehicle(@NonNull TabPlayer player);
 
-    public abstract int getEntityId(Object entity);
+    public abstract int getEntityId(@NonNull Object entity);
 
-    public abstract String getEntityType(Object entity);
+    public abstract @NotNull String getEntityType(@NonNull Object entity);
 
-    public abstract boolean isSneaking(TabPlayer player);
+    public abstract boolean isSneaking(@NonNull TabPlayer player);
 
-    public abstract boolean isSwimming(TabPlayer player);
+    public abstract boolean isSwimming(@NonNull TabPlayer player);
 
-    public abstract boolean isGliding(TabPlayer player);
+    public abstract boolean isGliding(@NonNull TabPlayer player);
 
-    public abstract boolean isSleeping(TabPlayer player);
+    public abstract boolean isSleeping(@NonNull TabPlayer player);
 
-    public abstract Object getArmorStandType();
+    public abstract @NotNull Object getArmorStandType();
 
-    public abstract double getX(TabPlayer player);
+    public abstract double getX(@NonNull TabPlayer player);
 
-    public abstract double getY(Object entity);
+    public abstract double getY(@NonNull Object entity);
 
-    public abstract double getZ(TabPlayer player);
+    public abstract double getZ(@NonNull TabPlayer player);
 
-    public abstract EntityData createDataWatcher(TabPlayer viewer, byte flags, String displayName, boolean nameVisible);
+    public abstract EntityData createDataWatcher(@NonNull TabPlayer viewer, byte flags, @NonNull String displayName, boolean nameVisible);
 }

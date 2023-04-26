@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.placeholders;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
@@ -25,7 +26,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerPlaceholders(PlaceholderManager manager) {
+    public void registerPlaceholders(@NonNull PlaceholderManager manager) {
         manager.registerServerPlaceholder("%%", -1, () -> "%");
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> ((TabPlayer)p).isVanished());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).getWorld());

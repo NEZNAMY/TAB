@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.bossbar;
 import java.util.*;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -12,6 +13,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Class representing a BossBar from configuration
@@ -158,7 +160,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void setTitle(String title) {
+    public void setTitle(@NonNull String title) {
         if (this.title.equals(title)) return;
         this.title = title;
         for (TabPlayer p : players) {
@@ -168,7 +170,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void setProgress(String progress) {
+    public void setProgress(@NonNull String progress) {
         if (this.progress.equals(progress)) return;
         this.progress = progress;
         for (TabPlayer p : players) {
@@ -183,7 +185,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void setColor(String color) {
+    public void setColor(@NonNull String color) {
         if (this.color.equals(color)) return;
         this.color = color;
         for (TabPlayer p : players) {
@@ -193,12 +195,12 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void setColor(BarColor color) {
+    public void setColor(@NonNull BarColor color) {
         setColor(color.toString());
     }
 
     @Override
-    public void setStyle(String style) {
+    public void setStyle(@NonNull String style) {
         if (this.style.equals(style)) return;
         this.style = style;
         for (TabPlayer p : players) {
@@ -208,12 +210,12 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void setStyle(BarStyle style) {
+    public void setStyle(@NonNull BarStyle style) {
         setStyle(style.toString());
     }
 
     @Override
-    public void addPlayer(me.neznamy.tab.api.TabPlayer p) {
+    public void addPlayer(me.neznamy.tab.api.@NonNull TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (players.contains(player)) return;
         players.add(player);
@@ -231,7 +233,7 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public void removePlayer(me.neznamy.tab.api.TabPlayer p) {
+    public void removePlayer(me.neznamy.tab.api.@NonNull TabPlayer p) {
         TabPlayer player = (TabPlayer) p;
         if (!players.contains(player)) return;
         players.remove(player);
@@ -239,12 +241,12 @@ public class BossBarLine implements BossBar {
     }
 
     @Override
-    public List<me.neznamy.tab.api.TabPlayer> getPlayers() {
+    public @NotNull List<me.neznamy.tab.api.TabPlayer> getPlayers() {
         return new ArrayList<>(players);
     }
 
     @Override
-    public boolean containsPlayer(me.neznamy.tab.api.TabPlayer player) {
+    public boolean containsPlayer(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return players.contains((TabPlayer) player);
     }
 

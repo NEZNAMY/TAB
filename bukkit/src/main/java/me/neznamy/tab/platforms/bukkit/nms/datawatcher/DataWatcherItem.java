@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.Data;
+import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
@@ -18,8 +19,8 @@ public class DataWatcherItem {
     public static Field VALUE;
 
     /** Instance fields */
-    private final DataWatcherObject type;
-    private final Object value;
+    @NonNull private final DataWatcherObject type;
+    @NonNull private final Object value;
 
     /**
      * Loads all required Fields

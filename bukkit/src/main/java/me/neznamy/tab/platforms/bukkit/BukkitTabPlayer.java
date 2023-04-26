@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.TabList;
@@ -23,6 +24,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -49,11 +52,10 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      *
      * @param   p
      *          bukkit player
-     * @param   protocolVersion
-     *          Player's protocol network id
      */
-    public BukkitTabPlayer(Player p, int protocolVersion) {
-        super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(), p.getWorld().getName(), protocolVersion);
+    public BukkitTabPlayer(Player p) {
+        super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(),
+                p.getWorld().getName(), ViaVersionHook.getInstance().getPlayerVersion(p.getUniqueId(), p.getName()));
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);
             playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -78,7 +80,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         }
     }
 
-    public void sendPacket(Object nmsPacket) {
+    public void sendPacket(@Nullable Object nmsPacket) {
         if (nmsPacket == null || !getPlayer().isOnline()) return;
         try {
             NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
@@ -88,7 +90,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NonNull IChatBaseComponent message) {
         getPlayer().sendMessage(RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
                 getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
@@ -125,7 +127,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return (Player) player;
     }
 
@@ -167,7 +169,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
+    public void spawnEntity(int entityId, @NonNull UUID id, @NonNull Object entityType, @NonNull Location location, @NonNull EntityData data) {
         try {
             sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
             if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
@@ -179,7 +181,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void updateEntityMetadata(int entityId, EntityData data) {
+    public void updateEntityMetadata(int entityId, @NonNull EntityData data) {
         try {
             if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
                 //1.19.3+
@@ -193,7 +195,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void teleportEntity(int entityId, Location location) {
+    public void teleportEntity(int entityId, @NonNull Location location) {
         try {
             sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
         } catch (ReflectiveOperationException e) {

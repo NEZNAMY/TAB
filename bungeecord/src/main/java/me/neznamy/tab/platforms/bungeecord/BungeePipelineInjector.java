@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -23,6 +24,8 @@ import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -36,7 +39,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public class BungeePipelineInjector extends NettyPipelineInjector {
 
-    private static Field wrapperField;
+    private static @Nullable Field wrapperField;
 
     static {
         try {
@@ -56,7 +59,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    protected Channel getChannel(TabPlayer player) {
+    protected @Nullable Channel getChannel(@NonNull TabPlayer player) {
+        if (wrapperField == null) return null;
         final BungeeTabPlayer bungee = (BungeeTabPlayer) player;
         try {
             return ((ChannelWrapper) wrapperField.get(bungee.getPlayer().getPendingConnection())).getHandle();
@@ -67,39 +71,40 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onDisplayObjective(TabPlayer player, Object packet) {
+    public void onDisplayObjective(@NonNull TabPlayer player, @NonNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                 ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
     }
 
     @Override
-    public void onObjective(TabPlayer player, Object packet) {
+    public void onObjective(@NonNull TabPlayer player, @NonNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
     }
 
     @Override
-    public boolean isDisplayObjective(Object packet) {
+    public boolean isDisplayObjective(@NonNull Object packet) {
         return packet instanceof ScoreboardDisplay;
     }
 
     @Override
-    public boolean isObjective(Object packet) {
+    public boolean isObjective(@NonNull Object packet) {
         return packet instanceof ScoreboardObjective;
     }
 
     @Override
-    public boolean isTeam(Object packet) {
+    public boolean isTeam(@NonNull Object packet) {
         return packet instanceof Team;
     }
 
     @Override
-    public boolean isPlayerInfo(Object packet) {
+    public boolean isPlayerInfo(@NonNull Object packet) {
         return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
     }
 
     @Override
-    public void modifyPlayers(Object team) {
+    public void modifyPlayers(@NonNull Object team) {
+        if (TAB.getInstance().getTeamManager() == null) return;
         Team packet = (Team) team;
         if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
         Collection<String> col = Lists.newArrayList(packet.getPlayers());
@@ -127,7 +132,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onPlayerInfo(TabPlayer receiver, Object packet) {
+    public void onPlayerInfo(@NonNull TabPlayer receiver, @NonNull Object packet) {
         if (packet instanceof PlayerListItemUpdate) {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
@@ -193,7 +198,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          *          byte buf to deserialize
          * @return  deserialized packet or input byte buf if packet is not tracked
          */
-        private Object deserialize(ByteBuf buf) {
+        private @NotNull Object deserialize(@NonNull ByteBuf buf) {
             int marker = buf.readerIndex();
             try {
                 int packetId = buf.readByte();

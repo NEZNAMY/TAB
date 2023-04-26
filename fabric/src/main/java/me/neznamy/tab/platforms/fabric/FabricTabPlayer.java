@@ -14,6 +14,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FabricTabPlayer extends TabPlayer {
 
@@ -27,7 +29,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@NonNull String permission) {
         return FabricTAB.getInstance().hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
@@ -37,7 +39,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NonNull IChatBaseComponent message) {
         FabricMultiVersion.sendMessage.accept(this, message);
     }
 
@@ -52,7 +54,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public TabList.Skin getSkin() {
+    public @Nullable TabList.Skin getSkin() {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null;
         Property skinProperty = properties.iterator().next();
@@ -60,7 +62,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public ServerPlayer getPlayer() {
+    public @NotNull ServerPlayer getPlayer() {
         return (ServerPlayer) player;
     }
 

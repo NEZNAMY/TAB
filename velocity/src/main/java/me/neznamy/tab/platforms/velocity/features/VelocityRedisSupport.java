@@ -17,8 +17,8 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 public class VelocityRedisSupport extends RedisSupport {
 
     /** Plugin reference for registering listener */
-    private final VelocityTAB plugin;
-    private final ProxyServer server;
+    @NonNull private final VelocityTAB plugin;
+    @NonNull private final ProxyServer server;
 
     @Subscribe
     public void onMessage(PubSubMessageEvent e) {

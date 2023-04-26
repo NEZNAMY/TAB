@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -8,6 +9,7 @@ import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -18,7 +20,7 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NonNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
@@ -35,7 +37,7 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNametags() {
         return new NameTag();
     }
 }

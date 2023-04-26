@@ -1,5 +1,7 @@
 package me.neznamy.tab.api.event;
 
+import lombok.NonNull;
+
 /**
  * The event bus. This is used to register event listeners/handlers for
  * handling events that may be fired by TAB.
@@ -24,7 +26,7 @@ public interface EventBus {
      * @param listener the listener to register
      * @throws RuntimeException if a method does not meet the criteria
      */
-    void register(Object listener);
+    void register(@NonNull Object listener);
 
     /**
      * Registers the given handler to this event bus.
@@ -33,7 +35,7 @@ public interface EventBus {
      * @param handler the handler to register
      * @param <E> the type of the event
      */
-    <E extends TabEvent> void register(Class<E> type, EventHandler<E> handler);
+    <E extends TabEvent> void register(@NonNull Class<E> type, @NonNull EventHandler<E> handler);
 
     /**
      * Scans the given listener for any method that is annotated with
@@ -41,7 +43,7 @@ public interface EventBus {
      *
      * @param listener the listener to unregister
      */
-    void unregister(Object listener);
+    void unregister(@NonNull Object listener);
 
     /**
      * Unregisters the given handler from this event bus.
@@ -49,5 +51,5 @@ public interface EventBus {
      * @param handler the handler to unregister
      * @param <E> the type of the event
      */
-    <E extends TabEvent> void unregister(EventHandler<E> handler);
+    <E extends TabEvent> void unregister(@NonNull EventHandler<E> handler);
 }

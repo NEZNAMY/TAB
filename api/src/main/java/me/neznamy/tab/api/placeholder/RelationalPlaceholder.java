@@ -1,8 +1,9 @@
 package me.neznamy.tab.api.placeholder;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
 public interface RelationalPlaceholder extends Placeholder {
 
-    void updateValue(TabPlayer viewer, TabPlayer target, Object value);
+    void updateValue(@NonNull TabPlayer viewer, @NonNull TabPlayer target, @NonNull Object value);
 }

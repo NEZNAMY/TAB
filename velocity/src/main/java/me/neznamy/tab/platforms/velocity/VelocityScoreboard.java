@@ -20,7 +20,7 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
         player.sendPluginMessage("PacketPlayOutScoreboardDisplayObjective", slot.ordinal(), objective);
     }
 
@@ -42,7 +42,7 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);
@@ -66,7 +66,7 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);

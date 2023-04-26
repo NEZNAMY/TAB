@@ -1,5 +1,8 @@
 package me.neznamy.tab.api.scoreboard;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An interface allowing to work with a line of
  * text in scoreboard.
@@ -13,7 +16,7 @@ public interface Line {
      * 
      * @return  raw text of this line
      */
-    String getText();
+    @NotNull String getText();
     
     /**
      * Changes text to new value. Supports placeholders, which are
@@ -25,5 +28,5 @@ public interface Line {
      * @param   text
      *          Raw text to display in the line
      */
-    void setText(String text);
+    void setText(@NonNull String text);
 }

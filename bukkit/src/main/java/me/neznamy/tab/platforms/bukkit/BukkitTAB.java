@@ -93,7 +93,7 @@ public class BukkitTAB extends JavaPlugin {
         return false;
     }
 
-    private NMSStorage getNMSLoader() {
+    private @NotNull NMSStorage getNMSLoader() {
         List<Callable<NMSStorage>> loaders = new ArrayList<>();
         loaders.add(BukkitLegacyNMSStorage::new);
         loaders.add(BukkitModernNMSStorage::new);

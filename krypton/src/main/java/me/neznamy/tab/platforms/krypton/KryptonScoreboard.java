@@ -33,7 +33,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
 
     @Override
     public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
-        getScoreboard().createObjectiveBuilder()
+        Objective ignored = getScoreboard().createObjectiveBuilder()
                 .name(objectiveName)
                 .criterion(Criteria.DUMMY.get())
                 .displayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent())

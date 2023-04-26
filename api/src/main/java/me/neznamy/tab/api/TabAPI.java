@@ -2,6 +2,7 @@ package me.neznamy.tab.api;
 
 import java.util.UUID;
 
+import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.event.EventBus;
@@ -10,6 +11,8 @@ import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TablistFormatManager;
 import me.neznamy.tab.api.team.TeamManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The primary API class to get instances of other API classes
@@ -29,7 +32,7 @@ public abstract class TabAPI {
      * @throws  IllegalStateException
      *          If instance is {@code null}
      */
-    public static TabAPI getInstance() {
+    public static @NotNull TabAPI getInstance() {
         if (instance == null) throw new IllegalStateException("The API instance is null. This can have 2 possible causes: \n" +
                 "#1 - API was called before TAB was loaded. This means your plugin was loaded before TAB was. To make sure your " +
                 "plugin loads after TAB, add it as a depend or softdepend of your plugin.\n" +
@@ -46,7 +49,7 @@ public abstract class TabAPI {
      *          Player UUID
      * @return  player object from given UUID
      */
-    public abstract TabPlayer getPlayer(UUID id);
+    public abstract @Nullable TabPlayer getPlayer(@NonNull UUID id);
 
     /**
      * Returns player object from given name
@@ -55,61 +58,61 @@ public abstract class TabAPI {
      *          Player name
      * @return  player object from given name
      */
-    public abstract TabPlayer getPlayer(String name);
+    public abstract @Nullable TabPlayer getPlayer(@NonNull String name);
 
     /**
      * Returns collection of all online players. Will return empty list if plugin is disabled (due to a broken configuration file for example).
      *
      * @return  collection of online players
      */
-    public abstract TabPlayer[] getOnlinePlayers();
+    public abstract @NotNull TabPlayer[] getOnlinePlayers();
 
     /**
      * Return BossBar manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  BossBar manager
      */
-    public abstract BossBarManager getBossBarManager();
+    public abstract @Nullable BossBarManager getBossBarManager();
 
     /**
      * Returns scoreboard manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  scoreboard manager
      */
-    public abstract ScoreboardManager getScoreboardManager();
+    public abstract @Nullable ScoreboardManager getScoreboardManager();
 
     /**
      * Returns team manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  team manager
      */
-    public abstract TeamManager getTeamManager();
+    public abstract @Nullable TeamManager getTeamManager();
 
     /**
      * Returns header/footer manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  Header/footer manager
      */
-    public abstract HeaderFooterManager getHeaderFooterManager();
+    public abstract @Nullable HeaderFooterManager getHeaderFooterManager();
 
     /**
      * Returns PlaceholderManager instance
      *
      * @return  PlaceholderManager instance
      */
-    public abstract PlaceholderManager getPlaceholderManager();
+    public abstract @NotNull PlaceholderManager getPlaceholderManager();
 
     /**
      * Returns Tablist name format manager instance if the feature is enabled. If not, returns {@code null}.
      *
      * @return  Tablist name format manager
      */
-    public abstract TablistFormatManager getTablistFormatManager();
+    public abstract @Nullable TablistFormatManager getTablistFormatManager();
 
     /**
      * Gets the event bus for registering listeners for TAB events.
      *
      * @return  the event bus
      */
-    public abstract EventBus getEventBus();
+    public abstract @Nullable EventBus getEventBus();
 }

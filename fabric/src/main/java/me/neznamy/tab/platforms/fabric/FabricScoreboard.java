@@ -19,18 +19,19 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.Team;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import org.jetbrains.annotations.NotNull;
 
 public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
 
-    private final Scoreboard dummyScoreboard = new Scoreboard();
-    private final Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
+    private final @NotNull Scoreboard dummyScoreboard = new Scoreboard();
+    private final @NotNull Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);
     }
 
     @Override
-    public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
         player.sendPacket(
                 new ClientboundSetDisplayObjectivePacket(
                         slot.ordinal(),
@@ -94,19 +95,15 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
         PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
         team.setAllowFriendlyFire((options & 0x01) > 0);
         team.setSeeFriendlyInvisibles((options & 0x02) > 0);
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
-        if (collision != null)
-            team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
-        if (visibility != null)
-            team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
-        if (prefix != null)
-            team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
-        if (suffix != null)
-            team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+        team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
+        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
+        team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+        team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
         player.sendPacket(FabricMultiVersion.registerTeam.apply(team));
     }
@@ -117,19 +114,15 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
         PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
         team.setAllowFriendlyFire((options & 0x01) > 0);
         team.setSeeFriendlyInvisibles((options & 0x02) > 0);
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
-        if (collision != null)
-            team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
-        if (visibility != null)
-            team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
-        if (prefix != null)
-            team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
-        if (suffix != null)
-            team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+        team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
+        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
+        team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+        team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         player.sendPacket(FabricMultiVersion.updateTeam.apply(team));
     }
 

@@ -16,7 +16,6 @@ public class PacketPlayOutPlayerListHeaderFooterStorage {
     public static Field FOOTER;
 
     public static void load(NMSStorage nms) throws NoSuchMethodException {
-        if (nms.getMinorVersion() < 8) return;
         if (nms.getMinorVersion() >= 17) {
             CONSTRUCTOR = CLASS.getConstructor(nms.IChatBaseComponent, nms.IChatBaseComponent);
         } else {

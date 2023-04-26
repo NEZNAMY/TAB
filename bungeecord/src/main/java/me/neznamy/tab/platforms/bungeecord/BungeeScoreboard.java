@@ -24,7 +24,7 @@ public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
         player.sendPacket(new ScoreboardDisplay((byte)slot.ordinal(), objective));
     }
 
@@ -44,7 +44,7 @@ public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
@@ -60,7 +60,7 @@ public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
@@ -82,8 +82,7 @@ public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
      *          Version of player to convert text for
      * @return  serialized component for 1.13+ clients, cut string for 1.12-
      */
-    private String jsonOrRaw(String text, ProtocolVersion clientVersion) {
-        if (text == null) return null;
+    private String jsonOrRaw(@NonNull String text, @NonNull ProtocolVersion clientVersion) {
         if (clientVersion.getMinorVersion() >= 13) {
             return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
         } else {

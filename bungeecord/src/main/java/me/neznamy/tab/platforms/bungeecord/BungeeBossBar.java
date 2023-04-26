@@ -7,6 +7,7 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.md_5.bungee.protocol.packet.BossBar;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BungeeBossBar implements PlatformBossBar {
     
-    private final BungeeTabPlayer player;
+    private final @NotNull BungeeTabPlayer player;
 
     /** Both are included in the same action, need to remember and write them both */
     private final Map<UUID, Integer> colors = new HashMap<>();

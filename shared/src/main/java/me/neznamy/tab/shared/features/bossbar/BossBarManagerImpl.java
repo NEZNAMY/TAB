@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -9,6 +10,7 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -152,12 +154,12 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public BossBar createBossBar(String title, float progress, BarColor color, BarStyle style) {
+    public @NotNull BossBar createBossBar(@NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         return createBossBar(title, String.valueOf(progress), color.toString(), style.toString());
     }
 
     @Override
-    public BossBar createBossBar(String title, String progress, String color, String style) {
+    public @NotNull BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style) {
         UUID id = UUID.randomUUID();
         BossBar bar = new BossBarLine(this, id.toString(), null, color, style, title, progress, true);
         registeredBossBars.put(id.toString(), bar);
@@ -166,30 +168,22 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public BossBar getBossBar(String name) {
+    public BossBar getBossBar(@NonNull String name) {
         return registeredBossBars.get(name);
     }
 
     @Override
-    public BossBar getBossBar(UUID id) {
-        for (BossBar line : lineValues) {
-            if (line.getUniqueId() == id) return line;
-        }
-        return null;
-    }
-
-    @Override
-    public void toggleBossBar(me.neznamy.tab.api.TabPlayer player, boolean sendToggleMessage) {
+    public void toggleBossBar(me.neznamy.tab.api.@NonNull TabPlayer player, boolean sendToggleMessage) {
         setBossBarVisible(player, !hasBossBarVisible(player), sendToggleMessage);
     }
 
     @Override
-    public boolean hasBossBarVisible(me.neznamy.tab.api.TabPlayer player) {
+    public boolean hasBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return visiblePlayers.contains(player);
     }
 
     @Override
-    public void setBossBarVisible(me.neznamy.tab.api.TabPlayer p, boolean visible, boolean sendToggleMessage) {
+    public void setBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
         TabPlayer player = (TabPlayer) p;
         if (visiblePlayers.contains(player) == visible) return;
         if (visible) {
@@ -223,7 +217,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void sendBossBarTemporarily(me.neznamy.tab.api.TabPlayer player, String bossBar, int duration) {
+    public void sendBossBarTemporarily(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull String bossBar, int duration) {
         if (!hasBossBarVisible(player)) return;
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
@@ -233,7 +227,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void announceBossBar(String bossBar, int duration) {
+    public void announceBossBar(@NonNull String bossBar, int duration) {
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(

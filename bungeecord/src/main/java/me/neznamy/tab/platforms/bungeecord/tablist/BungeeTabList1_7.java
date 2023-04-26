@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.UUID;
 public class BungeeTabList1_7 extends SingleUpdateTabList {
 
     /** Player this TabList belongs to */
-    private final BungeeTabPlayer player;
+    private final @NotNull BungeeTabPlayer player;
 
     /** Because entries are identified by names and not uuids on 1.7 */
     private final Map<UUID, String> userNames = new HashMap<>();
@@ -72,14 +73,14 @@ public class BungeeTabList1_7 extends SingleUpdateTabList {
         displayNames.put(entry.getUniqueId(), displayNameString);
     }
 
-    private void update(PlayerListItem.Action action, PlayerListItem.Item item) {
+    private void update(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(action);
         packet.setItems(new PlayerListItem.Item[]{item});
         ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 
-    private PlayerListItem.Item createItem(String username, String displayName, int latency) {
+    private PlayerListItem.Item createItem(@Nullable String username, @NonNull String displayName, int latency) {
         PlayerListItem.Item item = new PlayerListItem.Item();
         item.setUsername(username);
         item.setDisplayName(displayName);

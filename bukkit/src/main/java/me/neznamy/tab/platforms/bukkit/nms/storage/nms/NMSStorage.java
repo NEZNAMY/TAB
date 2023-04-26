@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -14,6 +15,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -100,6 +102,11 @@ public abstract class NMSStorage {
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
+            PacketPlayOutPlayerListHeaderFooterStorage.load(this);
+            PacketPlayOutPlayerInfoStorage.load(this);
+        }
+        if (minorVersion >= 9) {
+            DataWatcherObject.load();
         }
         PLAYER_CONNECTION = ReflectionUtils.getFields(EntityPlayer, PlayerConnection).get(0);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
@@ -107,13 +114,10 @@ public abstract class NMSStorage {
         emptyScoreboard = Scoreboard.getConstructor().newInstance();
         DataWatcher.load(this);
         DataWatcherItem.load(this);
-        DataWatcherObject.load(this);
         PacketPlayOutEntityDestroyStorage.load();
         PacketPlayOutEntityMetadataStorage.load(this);
         PacketPlayOutEntityTeleportStorage.load(this);
         PacketPlayOutSpawnEntityLivingStorage.load(this);
-        PacketPlayOutPlayerListHeaderFooterStorage.load(this);
-        PacketPlayOutPlayerInfoStorage.load(this);
         PacketPlayOutScoreboardObjectiveStorage.load(this);
         PacketPlayOutScoreboardDisplayObjectiveStorage.load();
         PacketPlayOutScoreboardTeamStorage.load(this);
@@ -152,7 +156,7 @@ public abstract class NMSStorage {
      *          client version used to decide RGB conversion
      * @return  converted component or {@code null} if {@code component} is {@code null}
      */
-    public Object toNMSComponent(IChatBaseComponent component, ProtocolVersion clientVersion) {
+    public @Nullable Object toNMSComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
     }
 
@@ -165,7 +169,7 @@ public abstract class NMSStorage {
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
-    public Object newScoreboardObjective(String objectiveName) throws ReflectiveOperationException {
+    public Object newScoreboardObjective(@NonNull String objectiveName) throws ReflectiveOperationException {
         if (minorVersion >= 13) {
             return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
         }

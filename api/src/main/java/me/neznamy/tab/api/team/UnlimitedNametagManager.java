@@ -4,27 +4,28 @@ import java.util.List;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface UnlimitedNametagManager extends TeamManager {
 
-    void disableArmorStands(TabPlayer player);
+    void disableArmorStands(@NonNull TabPlayer player);
     
-    void enableArmorStands(TabPlayer player);
+    void enableArmorStands(@NonNull TabPlayer player);
     
-    boolean hasDisabledArmorStands(TabPlayer player);
+    boolean hasDisabledArmorStands(@NonNull TabPlayer player);
 
     void setName(@NonNull TabPlayer player, @Nullable String customName);
     
     void setLine(@NonNull TabPlayer player, @NonNull String line, @Nullable String value);
 
-    String getCustomName(TabPlayer player);
+    @Nullable String getCustomName(@NonNull TabPlayer player);
     
-    String getCustomLineValue(TabPlayer player, String line);
+    @Nullable String getCustomLineValue(@NonNull TabPlayer player, @NonNull String line);
 
-    String getOriginalName(TabPlayer player);
+    @NotNull String getOriginalName(@NonNull TabPlayer player);
     
-    String getOriginalLineValue(TabPlayer player, String line);
+    @NotNull String getOriginalLineValue(@NonNull TabPlayer player, @NonNull String line);
     
-    List<String> getDefinedLines();
+    @NotNull List<String> getDefinedLines();
 }

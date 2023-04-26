@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.backend;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 import java.util.UUID;
@@ -20,11 +21,11 @@ public abstract class BackendTabPlayer extends TabPlayer {
         super(player, uniqueId, name, server, world, protocolVersion, true);
     }
 
-    public abstract void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data);
+    public abstract void spawnEntity(int entityId, @NonNull UUID id, @NonNull Object entityType, @NonNull Location location, @NonNull EntityData data);
 
-    public abstract void updateEntityMetadata(int entityId, EntityData data);
+    public abstract void updateEntityMetadata(int entityId, @NonNull EntityData data);
 
-    public abstract void teleportEntity(int entityId, Location location);
+    public abstract void teleportEntity(int entityId, @NonNull Location location);
 
     public abstract void destroyEntities(int... entities);
 }

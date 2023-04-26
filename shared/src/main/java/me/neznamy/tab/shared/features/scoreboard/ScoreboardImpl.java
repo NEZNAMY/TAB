@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -169,7 +170,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
     }
 
     @Override
-    public void setTitle(String title) {
+    public void setTitle(@NonNull String title) {
         this.title = title;
         for (TabPlayer p : players) {
             p.setProperty(this, titleProperty, title);
@@ -178,7 +179,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
     }
 
     @Override
-    public void addLine(String text) {
+    public void addLine(@NonNull String text) {
         StableDynamicLine line = new StableDynamicLine(this, lines.size()+1, text);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.scoreboardLine(name, lines.size()), line);
         lines.add(line);

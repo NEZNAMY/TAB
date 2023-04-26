@@ -3,6 +3,7 @@ package me.neznamy.tab.api.tablist;
 import lombok.NonNull;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -67,7 +68,7 @@ public interface TablistFormatManager {
      * @see     #setPrefix(TabPlayer, String)
      * @see     #getOriginalPrefix(TabPlayer)
      */
-    String getCustomPrefix(TabPlayer player);
+    @Nullable String getCustomPrefix(@NonNull TabPlayer player);
 
     /**
      * Returns custom name assigned using {@link #setName(TabPlayer, String)} method.
@@ -79,7 +80,7 @@ public interface TablistFormatManager {
      * @see     #setName(TabPlayer, String)
      * @see     #getOriginalName(TabPlayer)
      */
-    String getCustomName(TabPlayer player);
+    @Nullable String getCustomName(@NonNull TabPlayer player);
 
     /**
      * Returns suffix assigned using {@link #setSuffix(TabPlayer, String)} method.
@@ -91,7 +92,7 @@ public interface TablistFormatManager {
      * @see     #setSuffix(TabPlayer, String)
      * @see     #getOriginalSuffix(TabPlayer)
      */
-    String getCustomSuffix(TabPlayer player);
+    @Nullable String getCustomSuffix(@NonNull TabPlayer player);
 
     /**
      * Returns player's original prefix applied using plugin's internal logic.
@@ -103,7 +104,7 @@ public interface TablistFormatManager {
      * @see     #setPrefix(TabPlayer, String)
      * @see     #getCustomPrefix(TabPlayer)
      */
-    String getOriginalPrefix(TabPlayer player);
+    @NotNull String getOriginalPrefix(@NonNull TabPlayer player);
 
     /**
      * Returns player's original name applied using plugin's internal logic.
@@ -115,7 +116,7 @@ public interface TablistFormatManager {
      * @see     #setName(TabPlayer, String)
      * @see     #getCustomName(TabPlayer)
      */
-    String getOriginalName(TabPlayer player);
+    @NotNull String getOriginalName(@NonNull TabPlayer player);
 
     /**
      * Returns player's original suffix applied using plugin's internal logic.
@@ -127,5 +128,5 @@ public interface TablistFormatManager {
      * @see     #setSuffix(TabPlayer, String)
      * @see     #getCustomSuffix(TabPlayer)
      */
-    String getOriginalSuffix(TabPlayer player);
+    @NotNull String getOriginalSuffix(@NonNull TabPlayer player);
 }

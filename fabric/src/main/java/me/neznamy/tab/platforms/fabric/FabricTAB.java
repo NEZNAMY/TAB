@@ -26,6 +26,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FabricTAB implements DedicatedServerModInitializer {
@@ -62,12 +63,12 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return componentCache.get(component, clientVersion);
     }
 
-    public boolean hasPermission(CommandSourceStack source, String permission) {
+    public boolean hasPermission(@NonNull CommandSourceStack source, @NonNull String permission) {
         if (source.hasPermission(4)) return true;
         return fabricPermissionsApi && Permissions.check(source, permission);
     }
 
-    public void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public void onRegisterCommands(@NonNull CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralCommandNode<CommandSourceStack> command = Commands.literal("tab")
                 .executes(context -> executeCommand(context.getSource(), new String[0]))
                 .build();
@@ -79,7 +80,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         dispatcher.getRoot().addChild(command);
     }
 
-    private String[] getArguments(CommandContext<CommandSourceStack> context) {
+    private String[] getArguments(@NonNull CommandContext<CommandSourceStack> context) {
         String input = context.getInput();
         int firstSpace = input.indexOf(' ');
         if (firstSpace == -1) return new String[0];
@@ -87,27 +88,26 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return rawArgs.split(" ");
     }
 
-    private int executeCommand(CommandSourceStack source, String[] args) {
+    private int executeCommand(@NonNull CommandSourceStack source, @NonNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             boolean hasReloadPermission = hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
                 FabricMultiVersion.sendMessage2.accept(source, Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
             }
-            return 0;
-        }
+        } else {
+            TabPlayer player = null;
+            if (source.getEntity() != null) {
+                player = TAB.getInstance().getPlayer(source.getEntity().getUUID());
+                if (player == null) return 0;
+            }
 
-        TabPlayer player = null;
-        if (source.getEntity() != null) {
-            player = TAB.getInstance().getPlayer(source.getEntity().getUUID());
-            if (player == null) return 0;
+            TAB.getInstance().getCommand().execute(player, args);
         }
-
-        TAB.getInstance().getCommand().execute(player, args);
         return 0;
     }
 
-    private CompletableFuture<Suggestions> getSuggestions(CommandSourceStack source, String[] args, SuggestionsBuilder builder) {
+    private @NotNull CompletableFuture<Suggestions> getSuggestions(@NonNull CommandSourceStack source, @NonNull String[] args, @NonNull SuggestionsBuilder builder) {
         TabPlayer player = null;
         if (source.getEntity() != null) {
             player = TAB.getInstance().getPlayer(source.getEntity().getUUID());

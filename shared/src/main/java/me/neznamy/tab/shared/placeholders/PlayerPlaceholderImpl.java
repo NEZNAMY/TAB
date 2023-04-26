@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.placeholders;
 import java.util.*;
 import java.util.function.Function;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
@@ -98,7 +99,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @Override
-    public void updateValue(me.neznamy.tab.api.TabPlayer player, Object value) {
+    public void updateValue(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull Object value) {
         updateValue((TabPlayer) player, value, false);
     }
 
