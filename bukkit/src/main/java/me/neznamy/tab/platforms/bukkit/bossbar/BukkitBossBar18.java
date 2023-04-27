@@ -18,7 +18,7 @@ import java.util.UUID;
  * separately, as this class does not handle it.
  */
 @RequiredArgsConstructor
-public class BukkitBossBar1_8 implements PlatformBossBar {
+public class BukkitBossBar18 implements PlatformBossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;

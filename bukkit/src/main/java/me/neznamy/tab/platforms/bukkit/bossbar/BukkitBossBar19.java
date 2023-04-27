@@ -18,7 +18,7 @@ import java.util.UUID;
  * to allow 1.8 players, it will handle the entity and teleporting by itself.
  */
 @RequiredArgsConstructor
-public class BukkitBossBar1_9 implements PlatformBossBar {
+public class BukkitBossBar19 implements PlatformBossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;

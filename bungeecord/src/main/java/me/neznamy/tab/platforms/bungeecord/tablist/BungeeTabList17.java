@@ -27,7 +27,7 @@ import java.util.UUID;
  * This was tested on FlameCord fork.
  */
 @RequiredArgsConstructor
-public class BungeeTabList1_7 extends SingleUpdateTabList {
+public class BungeeTabList17 extends SingleUpdateTabList {
 
     /** Player this TabList belongs to */
     private final @NotNull BungeeTabPlayer player;

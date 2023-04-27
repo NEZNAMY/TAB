@@ -7,9 +7,9 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.TabList;
-import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_19_3;
-import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_7;
-import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1_8;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
+import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
@@ -57,9 +57,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Getter private final @NotNull PlatformScoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
 
     /** Player's tablist based on version */
-    private final @NotNull TabList tabList1_7 = new BungeeTabList1_7(this);
-    private final @NotNull TabList tabList1_8 = new BungeeTabList1_8(this);
-    private final @NotNull TabList tabList1_19_3 = new BungeeTabList1_19_3(this);
+    private final @NotNull TabList tabList1_7 = new BungeeTabList17(this);
+    private final @NotNull TabList tabList1_8 = new BungeeTabList18(this);
+    private final @NotNull TabList tabList1_19_3 = new BungeeTabList1193(this);
 
     @Getter private final @NotNull PlatformBossBar bossBar = new BungeeBossBar(this);
 
