@@ -67,10 +67,6 @@ public class RedisYellowNumber extends RedisFeature {
         values.put(player, in.readInt());
     }
 
-    public int getValue(RedisPlayer player) {
-        return values.get(player);
-    }
-
     @NoArgsConstructor
     @AllArgsConstructor
     public class Update extends RedisMessage {

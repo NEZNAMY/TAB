@@ -97,15 +97,6 @@ public class FeatureManager {
         return newDisplayName;
     }
 
-    public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
-        for (TabFeature f : values) {
-            if (!(f instanceof EntryAddListener)) continue;
-            long time = System.nanoTime();
-            ((EntryAddListener) f).onEntryAdd(packetReceiver, id, name);
-            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
-        }
-    }
-
     public void onQuit(TabPlayer disconnectedPlayer) {
         if (disconnectedPlayer == null) return;
         long millis = System.currentTimeMillis();

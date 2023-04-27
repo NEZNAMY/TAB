@@ -122,9 +122,6 @@ public abstract class Platform {
 
         // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, getRedisSupport());
-
-        // Must be loaded after: NameTags, BelowName, YellowNumber, RedisBungee
-        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
     }
 
     public @NotNull BossBarManagerImpl getLegacyBossBar() {

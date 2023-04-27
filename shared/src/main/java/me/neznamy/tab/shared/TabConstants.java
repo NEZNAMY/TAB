@@ -179,7 +179,6 @@ public class TabConstants {
         public static final String SORTING = "sorting";
         public static final String LAYOUT = "layout";
         public static final String LAYOUT_LATENCY = "layout-latency";
-        public static final String NICK_COMPATIBILITY = "nick";
         public static final String PIPELINE_INJECTION = "injection";
         public static final String BOSS_BAR = "BossBar";
         public static final String NAME_TAGS = "NameTag16";

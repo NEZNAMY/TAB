@@ -99,9 +99,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 if (newDisplayName != null) displayName = nms.toNMSComponent(newDisplayName, receiver.getVersion());
                 if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
-            if (actions.contains("ADD_PLAYER")) {
-                TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
-            }
             if (nms.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
                 updatedList.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(
