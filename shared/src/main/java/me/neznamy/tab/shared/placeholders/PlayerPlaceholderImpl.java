@@ -90,6 +90,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, s);
         Set<Refreshable> usage = TAB.getInstance().getPlaceholderManager().getPlaceholderUsage().get(identifier);
         if (usage == null) return;
+        if (!player.isLoaded()) return; // Placeholder updated from nested on join before features loaded the player
         for (Refreshable f : usage) {
             long time = System.nanoTime();
             f.refresh(player, false);
