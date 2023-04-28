@@ -1,7 +1,6 @@
-package me.neznamy.tab.platforms.bukkit.features.unlimitedtags;
+package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -19,7 +18,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,22 +35,29 @@ import java.util.stream.Collectors;
 /**
  * The core class for unlimited NameTag mode on Bukkit
  */
-@RequiredArgsConstructor
-public class BukkitNameTagX extends BackendNameTagX implements PacketSendListener {
+public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketSendListener {
 
     /** Reference to NMS storage for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();
 
-    /** Bukkit event listener */
-    private final EventListener eventListener = new EventListener(this);
+    public BukkitNameTagX(@NonNull JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
-    /** Plugin reference */
-    @NonNull private final JavaPlugin plugin;
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSneak(PlayerToggleSneakEvent e) {
+        TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+        if (p == null || isPlayerDisabled(p)) return;
+        TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
+                () -> getArmorStandManager(p).sneak(e.isSneaking()));
+    }
 
-    @Override
-    public void load() {
-        Bukkit.getPluginManager().registerEvents(eventListener, plugin);
-        super.load();
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e) {
+        TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+        if (respawned == null || isPlayerDisabled(respawned)) return;
+        TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+                () -> getArmorStandManager(respawned).teleport());
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +105,7 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
 
     @Override
     public void unregisterListener() {
-        HandlerList.unregisterAll(eventListener);
+        HandlerList.unregisterAll(this);
     }
 
     @SuppressWarnings("deprecation")
@@ -110,15 +121,6 @@ public class BukkitNameTagX extends BackendNameTagX implements PacketSendListene
                 return Collections.emptyList();
             }
         }
-    }
-
-    @Override
-    public void registerVehiclePlaceholder() {
-        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
-            Entity v = ((Player)p.getPlayer()).getVehicle();
-            //There's a bug in Bukkit 1.19.3 throwing NPE on .toString(), use default toString implementation
-            return v == null ? "" : v.getClass().getName() + "@" + Integer.toHexString(v.hashCode());
-        });
     }
 
     @Override

@@ -186,8 +186,6 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
 
     public abstract @NotNull List<Integer> getPassengers(@NonNull Object vehicle);
 
-    public abstract void registerVehiclePlaceholder();
-
     public abstract @Nullable Object getVehicle(@NonNull TabPlayer player);
 
     public abstract int getEntityId(@NonNull Object entity);

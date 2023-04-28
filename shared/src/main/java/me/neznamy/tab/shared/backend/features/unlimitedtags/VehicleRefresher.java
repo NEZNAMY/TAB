@@ -53,7 +53,11 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                     }
                 });
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.VEHICLE));
-        feature.registerVehiclePlaceholder();
+        TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.VEHICLE, 100, p -> {
+            Object v = feature.getVehicle((TabPlayer) p);
+            //There's a bug in Bukkit 1.19.3 throwing NPE on .toString(), use default toString implementation
+            return v == null ? "" : v.getClass().getName() + "@" + Integer.toHexString(v.hashCode());
+        });
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
