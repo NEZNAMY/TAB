@@ -81,47 +81,40 @@ public class FabricMultiVersion {
     }
 
     // 1.19.3+
-    public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
+    public static Packet<?> build(FabricTabList.Action action, FabricTabList.Builder entry) {
         if (action == FabricTabList.Action.REMOVE_PLAYER) {
-            return new ClientboundPlayerInfoRemovePacket(entries.stream().map(FabricTabList.Builder::getId).toList());
+            return new ClientboundPlayerInfoRemovePacket(Collections.singletonList(entry.getId()));
         }
-        List<ClientboundPlayerInfoUpdatePacket.Entry> list = entries.stream().map(entry ->
-                new ClientboundPlayerInfoUpdatePacket.Entry(
-                        entry.getId(),
-                        entry.createProfile(),
-                        entry.isListed(),
-                        entry.getLatency(),
-                        GameType.byId(entry.getGameMode()),
-                        entry.getDisplayName(),
-                        null
-                )
-        ).toList();
-
         EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions = action == FabricTabList.Action.ADD_PLAYER ?
                 EnumSet.allOf(ClientboundPlayerInfoUpdatePacket.Action.class) :
                 EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.valueOf(action.name()));
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
-        packet.entries = list;
+        packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
+                entry.getId(),
+                entry.createProfile(),
+                true,
+                entry.getLatency(),
+                GameType.byId(entry.getGameMode()),
+                entry.getDisplayName(),
+                null
+        ));
         return packet;
     }
 
     // 1.19.2-
-    /*public static Packet<?> build(FabricTabList.Action action, List<FabricTabList.Builder> entries) {
-        List<ClientboundPlayerInfoPacket.PlayerUpdate> list = entries.stream().map(entry ->
-                new ClientboundPlayerInfoPacket
-                        //() // 1.16.5-
-                        .
-                        //new // 1.16.5-
-                        PlayerUpdate(
-                        entry.createProfile(),
-                        entry.getLatency(),
-                        GameType.byId(entry.getGameMode()),
-                        entry.getDisplayName()
-                        //, null // 1.19 - 1.19.2
-                )
-        ).toList();
+    /*public static Packet<?> build(FabricTabList.Action action, FabricTabList.Builder entry) {
         ClientboundPlayerInfoPacket packet = new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.valueOf(action.name()), Collections.emptyList());
-        packet.entries = list;
+        packet.entries = Collections.singletonList(new ClientboundPlayerInfoPacket
+                //() // 1.16.5-
+                .
+                //new // 1.16.5-
+                PlayerUpdate(
+                entry.createProfile(),
+                entry.getLatency(),
+                GameType.byId(entry.getGameMode()),
+                entry.getDisplayName()
+                //, null // 1.19 - 1.19.2
+        ));
         return packet;
     }*/
 }

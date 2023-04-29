@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ import java.util.List;
 public final class SpongeTabPlayer extends TabPlayer {
 
     @Getter private final PlatformScoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
-    @Getter private final TabList tabList = new SpongeTabList(this);
+    @Getter private final TabList tabList = new SpongeTabList(getPlayer());
     @Getter private final AdventureBossBar bossBar = new AdventureBossBar(getPlayer());
 
     public SpongeTabPlayer(ServerPlayer player) {

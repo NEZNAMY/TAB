@@ -6,60 +6,46 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class FabricTabList extends BulkUpdateTabList {
+public class FabricTabList implements TabList {
 
     private final FabricTabPlayer player;
 
     @Override
-    public void removeEntries(@NonNull Collection<UUID> entries) {
-        player.sendPacket(FabricMultiVersion.build(Action.REMOVE_PLAYER, entries.stream()
-                .map(Builder::new)
-                .collect(Collectors.toList())));
+    public void removeEntry(@NonNull UUID entry) {
+        player.sendPacket(FabricMultiVersion.build(Action.REMOVE_PLAYER, new Builder(entry)));
     }
 
     @Override
-    public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
-        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_DISPLAY_NAME, entries.entrySet().stream()
-                .map(entry -> new Builder(entry.getKey()).setDisplayName(entry.getValue() == null ? null : FabricTAB.getInstance().toComponent(entry.getValue(), player.getVersion())))
-                .collect(Collectors.toList())));
+    public void updateDisplayName(@NonNull UUID id, @Nullable IChatBaseComponent displayName) {
+        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_DISPLAY_NAME,
+                        new Builder(id).setDisplayName(displayName == null ? null : FabricTAB.getInstance().toComponent(displayName, player.getVersion()))));
     }
 
     @Override
-    public void updateLatencies(@NonNull Map<UUID, Integer> entries) {
-        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_LATENCY, entries.entrySet().stream()
-                .map(entry -> new Builder(entry.getKey()).setLatency(entry.getValue()))
-                .collect(Collectors.toList())));
+    public void updateLatency(@NonNull UUID id, int latency) {
+        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_LATENCY, new Builder(id).setLatency(latency)));
     }
 
     @Override
-    public void updateGameModes(@NonNull Map<UUID, Integer> entries) {
-        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_GAME_MODE, entries.entrySet().stream()
-                .map(entry -> new Builder(entry.getKey()).setGameMode(entry.getValue()))
-                .collect(Collectors.toList())));
+    public void updateGameMode(@NonNull UUID id, int gameMode) {
+        player.sendPacket(FabricMultiVersion.build(Action.UPDATE_GAME_MODE, new Builder(id).setGameMode(gameMode)));
     }
 
     @Override
-    public void addEntries(@NonNull Collection<Entry> entries) {
-        List<Builder> converted = new ArrayList<>();
-        for (Entry entry : entries) {
-            converted.add(new Builder(entry.getUniqueId())
-                    .setName(entry.getName())
-                    .setSkin(entry.getSkin())
-                    .setListed(entry.isListed())
-                    .setGameMode(entry.getGameMode())
-                    .setLatency(entry.getLatency())
-                    .setDisplayName(entry.getDisplayName() == null ? null : FabricTAB.getInstance().toComponent(entry.getDisplayName(), player.getVersion())));
-        }
-        player.sendPacket(FabricMultiVersion.build(Action.ADD_PLAYER, converted));
+    public void addEntry(@NonNull Entry entry) {
+        player.sendPacket(FabricMultiVersion.build(Action.ADD_PLAYER, new Builder(entry.getUniqueId())
+                .setName(entry.getName())
+                .setSkin(entry.getSkin())
+                .setGameMode(entry.getGameMode())
+                .setLatency(entry.getLatency())
+                .setDisplayName(entry.getDisplayName() == null ? null : FabricTAB.getInstance().toComponent(entry.getDisplayName(), player.getVersion()))));
     }
 
     @RequiredArgsConstructor
@@ -69,14 +55,12 @@ public class FabricTabList extends BulkUpdateTabList {
         @NonNull private final UUID id;
         @Nullable private String name;
         @Nullable private Skin skin;
-        private boolean listed;
         private int latency;
         private int gameMode;
         @Nullable private Component displayName;
 
         public Builder setName(String name) { this.name = name; return this; }
         public Builder setSkin(Skin skin) { this.skin = skin; return this; }
-        public Builder setListed(boolean listed) { this.listed = listed; return this; }
         public Builder setLatency(int latency) { this.latency = latency; return this; }
         public Builder setGameMode(int gameMode) { this.gameMode = gameMode; return this; }
         public Builder setDisplayName(Component displayName) { this.displayName = displayName; return this; }

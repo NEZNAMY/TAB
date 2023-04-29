@@ -2,23 +2,21 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.tablist.TablistFormatManager;
-import me.neznamy.tab.shared.util.Preconditions;
 import me.neznamy.tab.shared.Property;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -139,24 +137,21 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            Map<UUID, IChatBaseComponent> map = new HashMap<>();
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
                 if (isDisabledPlayer(target)) continue;
-                map.put(getTablistUUID(target, viewer), getTabFormat(target, viewer));
+                viewer.getTabList().updateDisplayName(getTablistUUID(target, viewer), getTabFormat(target, viewer));
             }
-            viewer.getTabList().updateDisplayNames(map);
         }
     }
 
     @Override
     public void unload() {
         disabling = true;
-        Map<UUID, IChatBaseComponent> updatedPlayers = new HashMap<>();
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (!isDisabledPlayer(p)) updatedPlayers.put(getTablistUUID(p, p), null);
-        }
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.getVersion().getMinorVersion() >= 8) all.getTabList().updateDisplayNames(updatedPlayers);
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) continue;
+            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+                if (!isDisabledPlayer(target)) viewer.getTabList().updateDisplayName(getTablistUUID(target, target), null);
+            }
         }
     }
 
@@ -223,12 +218,10 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
         Runnable r = () -> {
             refresh(connectedPlayer, true);
             if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
-            Map<UUID, IChatBaseComponent> map = new HashMap<>();
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; //already sent 4 lines above
-                map.put(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
+                connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
-            if (!map.isEmpty()) connectedPlayer.getTabList().updateDisplayNames(map);
         };
         r.run();
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled

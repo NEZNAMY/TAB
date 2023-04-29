@@ -7,7 +7,7 @@ import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

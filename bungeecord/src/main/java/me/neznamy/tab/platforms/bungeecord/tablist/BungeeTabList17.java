@@ -4,8 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ import java.util.UUID;
  * This was tested on FlameCord fork.
  */
 @RequiredArgsConstructor
-public class BungeeTabList17 extends SingleUpdateTabList {
+public class BungeeTabList17 implements TabList {
 
     /** Player this TabList belongs to */
     private final @NotNull BungeeTabPlayer player;

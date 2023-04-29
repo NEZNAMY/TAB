@@ -11,7 +11,7 @@ import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -101,7 +101,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     }
 
     private @NotNull TabList.Entry getEntry(@NonNull RedisPlayer player) {
-        return new TabList.Entry(player.getUniqueId(), player.getNickname(), skins.get(player), true, 0, 0,
+        return new TabList.Entry(player.getUniqueId(), player.getNickname(), skins.get(player), 0, 0,
                 redisSupport.getRedisPlayerList() == null || redisSupport.getRedisPlayerList().isDisabled(player) ? null :
                         IChatBaseComponent.optimizedComponent(redisSupport.getRedisPlayerList().getFormat(player)));
     }

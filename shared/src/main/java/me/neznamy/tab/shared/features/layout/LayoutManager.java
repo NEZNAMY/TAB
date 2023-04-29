@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -130,11 +129,9 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
 
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
-        Map<UUID, IChatBaseComponent> data = new HashMap<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            data.put(all.getTablistId(), null);
+            p.getTabList().updateDisplayName(all.getTablistId(), null);
         }
-        p.getTabList().updateDisplayNames(data);
     }
 
     @Override

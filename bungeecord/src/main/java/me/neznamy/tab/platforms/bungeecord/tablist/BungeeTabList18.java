@@ -4,10 +4,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
+import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -18,90 +20,62 @@ import java.util.*;
  * so they are removed on server switch to secure parity with Velocity.
  */
 @RequiredArgsConstructor
-public class BungeeTabList18 extends BulkUpdateTabList {
+public class BungeeTabList18 implements TabList {
 
     /** Player this TabList belongs to */
     private final BungeeTabPlayer player;
 
     @Override
-    public void removeEntries(@NonNull Collection<UUID> entries) {
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.REMOVE_PLAYER);
-        List<PlayerListItem.Item> items = new ArrayList<>();
-        for (UUID uuid : entries) {
-            PlayerListItem.Item item = new PlayerListItem.Item();
-            item.setUuid(uuid);
-            items.add(item);
-        }
-        packet.setItems(items.toArray(new PlayerListItem.Item[0]));
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+    public void removeEntry(@NonNull UUID entry) {
+        sendPacket(PlayerListItem.Action.REMOVE_PLAYER, item(entry));
     }
 
     @Override
-    public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
-        List<PlayerListItem.Item> items = new ArrayList<>();
-        for (Map.Entry<UUID, IChatBaseComponent> entry : entries.entrySet()) {
-            PlayerListItem.Item item = new PlayerListItem.Item();
-            item.setUuid(entry.getKey());
-            item.setDisplayName(entry.getValue() == null ? null : entry.getValue().toString(player.getVersion()));
-            items.add(item);
-        }
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.UPDATE_DISPLAY_NAME);
-        packet.setItems(items.toArray(new PlayerListItem.Item[0]));
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+    public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        PlayerListItem.Item item = item(entry);
+        item.setDisplayName(displayName == null ? null : displayName.toString(player.getVersion()));
+        sendPacket(PlayerListItem.Action.UPDATE_DISPLAY_NAME, item);
     }
 
     @Override
-    public void updateLatencies(@NonNull Map<UUID, Integer> entries) {
-        List<PlayerListItem.Item> items = new ArrayList<>();
-        for (Map.Entry<UUID, Integer> entry : entries.entrySet()) {
-            PlayerListItem.Item item = new PlayerListItem.Item();
-            item.setUuid(entry.getKey());
-            item.setPing(entry.getValue());
-            items.add(item);
-        }
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.UPDATE_LATENCY);
-        packet.setItems(items.toArray(new PlayerListItem.Item[0]));
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+    public void updateLatency(@NonNull UUID entry, int latency) {
+        PlayerListItem.Item item = item(entry);
+        item.setPing(latency);
+        sendPacket(PlayerListItem.Action.UPDATE_LATENCY, item);
     }
 
     @Override
-    public void updateGameModes(@NonNull Map<UUID, Integer> entries) {
-        List<PlayerListItem.Item> items = new ArrayList<>();
-        for (Map.Entry<UUID, Integer> entry : entries.entrySet()) {
-            PlayerListItem.Item item = new PlayerListItem.Item();
-            item.setUuid(entry.getKey());
-            item.setGamemode(entry.getValue());
-            items.add(item);
-        }
-        PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.UPDATE_GAMEMODE);
-        packet.setItems(items.toArray(new PlayerListItem.Item[0]));
-        ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
+        PlayerListItem.Item item = item(entry);
+        item.setGamemode(gameMode);
+        sendPacket(PlayerListItem.Action.UPDATE_GAMEMODE, item);
     }
 
     @Override
-    public void addEntries(@NonNull Collection<Entry> entries) {
-        List<PlayerListItem.Item> items = new ArrayList<>();
-        for (Entry data : entries) {
-            PlayerListItem.Item item = new PlayerListItem.Item();
-            if (data.getDisplayName() != null) item.setDisplayName(data.getDisplayName().toString(player.getVersion()));
-            item.setGamemode(data.getGameMode());
-            item.setPing(data.getLatency());
-            if (data.getSkin() != null) {
-                item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, data.getSkin().getValue(), data.getSkin().getSignature())});
-            } else {
-                item.setProperties(new Property[0]);
-            }
-            item.setUsername(data.getName());
-            item.setUuid(data.getUniqueId());
-            items.add(item);
+    public void addEntry(@NonNull Entry entry) {
+        PlayerListItem.Item item = item(entry.getUniqueId());
+        if (entry.getDisplayName() != null) item.setDisplayName(entry.getDisplayName().toString(player.getVersion()));
+        item.setGamemode(entry.getGameMode());
+        item.setPing(entry.getLatency());
+        if (entry.getSkin() != null) {
+            item.setProperties(new Property[]{new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature())});
+        } else {
+            item.setProperties(new Property[0]);
         }
+        item.setUsername(entry.getName());
+        sendPacket(PlayerListItem.Action.ADD_PLAYER, item);
+    }
+
+    private @NotNull PlayerListItem.Item item(@NonNull UUID id) {
+        PlayerListItem.Item item = new PlayerListItem.Item();
+        item.setUuid(id);
+        return item;
+    }
+
+    private void sendPacket(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {
         PlayerListItem packet = new PlayerListItem();
-        packet.setAction(PlayerListItem.Action.ADD_PLAYER);
-        packet.setItems(items.toArray(new PlayerListItem.Item[0]));
+        packet.setAction(action);
+        packet.setItems(new PlayerListItem.Item[]{item});
         ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 }

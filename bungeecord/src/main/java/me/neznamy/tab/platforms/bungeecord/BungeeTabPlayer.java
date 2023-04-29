@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList18;

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.ServerSwitchListener;
@@ -38,7 +38,7 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
             list.add(slot.createEntry(p));
         }
         for (int slot : emptySlots) {
-            list.add(new TabList.Entry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), true, manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
+            list.add(new TabList.Entry(manager.getUUID(slot), getEntryName(p, slot), manager.getSkinManager().getDefaultSkin(), manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
         }
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.getTabList().addEntries(list);

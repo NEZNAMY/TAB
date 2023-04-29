@@ -8,7 +8,7 @@ import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar18;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar19;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;

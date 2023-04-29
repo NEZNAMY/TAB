@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.layout;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -37,7 +37,6 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 id,
                 layout.getEntryName(viewer, id.getLeastSignificantBits()),
                 skin,
-                true,
                 ping,
                 0,
                 IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet()) // maybe just get is fine?

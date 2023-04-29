@@ -3,8 +3,7 @@ package me.neznamy.tab.platforms.sponge7;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -14,7 +13,7 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class SpongeTabList extends SingleUpdateTabList {
+public class SpongeTabList implements TabList {
 
     /** Player this TabList belongs to */
     private final SpongeTabPlayer player;

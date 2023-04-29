@@ -4,7 +4,7 @@ import java.util.*;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.platform.tablist;
+package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,32 +9,29 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 public interface TabList {
 
     String TEXTURES_PROPERTY = "textures";
 
-    void removeEntry(@NonNull UUID entry);
+    default void removeEntries(@NonNull Collection<UUID> entries) {
+        entries.forEach(this::removeEntry);
+    }
 
-    void removeEntries(@NonNull Collection<UUID> entries);
+    default void addEntries(@NonNull Collection<Entry> entries) {
+        entries.forEach(this::addEntry);
+    }
+
+    void removeEntry(@NonNull UUID entry);
 
     void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName);
 
-    void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries);
-
     void updateLatency(@NonNull UUID entry, int latency);
-
-    void updateLatencies(@NonNull Map<UUID, Integer> entries);
 
     void updateGameMode(@NonNull UUID entry, int gameMode);
 
-    void updateGameModes(@NonNull Map<UUID, Integer> entries);
-
     void addEntry(@NonNull TabList.Entry entry);
-
-    void addEntries(@NonNull Collection<Entry> entries);
 
     /**
      * A subclass representing player list entry
@@ -51,9 +48,6 @@ public interface TabList {
 
         /** Player's skin, null for empty skin */
         @Nullable private Skin skin;
-
-        /** If player should appear in tablist or not */
-        private boolean listed;
 
         /** Latency */
         private int latency;
@@ -73,20 +67,18 @@ public interface TabList {
             @NonNull private UUID uniqueId;
             @Nullable private String name;
             @Nullable private Skin skin;
-            private boolean listed;
             private int latency;
             private int gameMode;
             @Nullable private IChatBaseComponent displayName;
 
             public @NotNull Builder name(String name) { this.name = name; return this; }
             public @NotNull Builder skin(Skin skin) { this.skin = skin; return this; }
-            public @NotNull Builder listed(boolean listed) { this.listed = listed; return this; }
             public @NotNull Builder latency(int latency) { this.latency = latency; return this; }
             public @NotNull Builder gameMode(int gameMode) { this.gameMode = gameMode; return this; }
             public @NotNull Builder displayName(IChatBaseComponent displayName) { this.displayName = displayName; return this; }
 
             public @NotNull Entry build() {
-                return new Entry(uniqueId, name, skin, listed, latency, gameMode, displayName);
+                return new Entry(uniqueId, name, skin, latency, gameMode, displayName);
             }
         }
     }

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,6 @@ public class PlayerSlot {
                     uniqueId,
                     layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
                     player.getSkin(),
-                    true,
                     player.getPing(),
                     0,
                     playerList == null ? new IChatBaseComponent(player.getName()) : playerList.getTabFormat(player, p)
@@ -50,7 +49,6 @@ public class PlayerSlot {
                     uniqueId,
                     layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
                     layout.getManager().getSkinManager().getDefaultSkin(),
-                    true,
                     layout.getManager().getEmptySlotPing(),
                     0,
                     new IChatBaseComponent(text)

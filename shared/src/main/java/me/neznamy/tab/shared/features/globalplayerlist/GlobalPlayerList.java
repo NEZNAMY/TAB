@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
@@ -126,7 +126,6 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 p.getTablistId(),
                 p.getName(),
                 p.getSkin(),
-                true,
                 p.getPing(),
                 vanishedAsSpectators && p.isVanished() ? 3 : p.getGamemode(),
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null

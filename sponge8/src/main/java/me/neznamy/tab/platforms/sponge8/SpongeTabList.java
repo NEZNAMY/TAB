@@ -3,41 +3,41 @@ package me.neznamy.tab.platforms.sponge8;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.tablist.SingleUpdateTabList;
-import me.neznamy.tab.shared.platform.tablist.TabList;
+import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class SpongeTabList extends SingleUpdateTabList {
+public class SpongeTabList implements TabList {
 
     /** Player this TabList belongs to */
-    private final SpongeTabPlayer player;
+    private final ServerPlayer player;
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
-        player.getPlayer().tabList().removeEntry(entry);
+        player.tabList().removeEntry(entry);
     }
 
     @Override
     public void updateDisplayName(@NonNull UUID id, @Nullable IChatBaseComponent displayName) {
-        player.getPlayer().tabList().entry(id).ifPresent(
+        player.tabList().entry(id).ifPresent(
                 entry -> entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent()));
     }
 
     @Override
     public void updateLatency(@NonNull UUID id, int latency) {
-        player.getPlayer().tabList().entry(id).ifPresent(entry -> entry.setLatency(latency));
+        player.tabList().entry(id).ifPresent(entry -> entry.setLatency(latency));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID id, int gameMode) {
-        player.getPlayer().tabList().entry(id).ifPresent(entry -> entry.setGameMode(convertGameMode(gameMode)));
+        player.tabList().entry(id).ifPresent(entry -> entry.setGameMode(convertGameMode(gameMode)));
     }
 
     @Override
@@ -45,8 +45,8 @@ public class SpongeTabList extends SingleUpdateTabList {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
-        player.getPlayer().tabList().addEntry(org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
-                .list(player.getPlayer().tabList())
+        player.tabList().addEntry(org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
+                .list(player.tabList())
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))

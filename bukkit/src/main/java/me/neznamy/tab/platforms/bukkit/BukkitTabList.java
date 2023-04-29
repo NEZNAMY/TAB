@@ -4,10 +4,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
-import me.neznamy.tab.shared.platform.tablist.BulkUpdateTabList;
+import me.neznamy.tab.shared.platform.TabList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * TabList which support modifying many entries at once
@@ -20,59 +20,51 @@ import java.util.stream.Collectors;
  * and packet fields.
  */
 @RequiredArgsConstructor
-public class BukkitTabList extends BulkUpdateTabList {
+public class BukkitTabList implements TabList {
 
     /** Player this TabList belongs to */
     private final BukkitTabPlayer player;
 
     @Override
-    public void removeEntries(@NonNull Collection<UUID> entries) {
+    public void removeEntry(@NonNull UUID entry) {
         if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
             try {
-                player.sendPacket(PacketPlayOutPlayerInfoStorage.newClientboundPlayerInfoRemovePacket.newInstance(new ArrayList<>(entries)));
+                player.sendPacket(PacketPlayOutPlayerInfoStorage.newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
             } catch (ReflectiveOperationException e) {
                 throw new IllegalStateException(e);
             }
         } else {
             //1.19.2-
-            player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("REMOVE_PLAYER",
-                    entries.stream().map(id ->
-                            new Entry.Builder(id).build()).collect(Collectors.toList()),
-                    player.getVersion())
+            player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(
+                    "REMOVE_PLAYER", new Entry.Builder(entry).build(), player.getVersion())
             );
         }
     }
 
     @Override
-    public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
+    public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_DISPLAY_NAME",
-                entries.entrySet().stream().map(entry ->
-                        new Entry.Builder(entry.getKey()).displayName(entry.getValue()).build()).collect(Collectors.toList()),
-                player.getVersion())
+                new Entry.Builder(entry).displayName(displayName).build(), player.getVersion())
         );
     }
 
     @Override
-    public void updateLatencies(@NonNull Map<UUID, Integer> entries) {
+    public void updateLatency(@NonNull UUID entry, int latency) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_LATENCY",
-                entries.entrySet().stream().map(entry ->
-                        new Entry.Builder(entry.getKey()).latency(entry.getValue()).build()).collect(Collectors.toList()),
-                player.getVersion())
+                new Entry.Builder(entry).latency(latency).build(), player.getVersion())
         );
     }
 
     @Override
-    public void updateGameModes(@NonNull Map<UUID, Integer> entries) {
+    public void updateGameMode(@NonNull UUID entry, int gameMode) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_GAME_MODE",
-                entries.entrySet().stream().map(entry ->
-                        new Entry.Builder(entry.getKey()).gameMode(entry.getValue()).build()).collect(Collectors.toList()),
-                player.getVersion())
+                new Entry.Builder(entry).gameMode(gameMode).build(), player.getVersion())
         );
     }
 
     @Override
-    public void addEntries(@NonNull Collection<Entry> entries) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER", entries, player.getVersion()));
+    public void addEntry(@NonNull Entry entry) {
+        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER", entry, player.getVersion()));
     }
 }
