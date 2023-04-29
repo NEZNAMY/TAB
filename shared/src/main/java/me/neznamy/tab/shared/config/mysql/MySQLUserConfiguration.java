@@ -5,9 +5,12 @@ import java.util.*;
 
 import javax.sql.rowset.CachedRowSet;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MySQLUserConfiguration implements PropertyConfiguration {
 
@@ -17,13 +20,13 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     private final Map<String, WeakHashMap<TabPlayer, Map<String, Object>>> perWorld = new HashMap<>();
     private final Map<String, WeakHashMap<TabPlayer, Map<String, Object>>> perServer = new HashMap<>();
 
-    public MySQLUserConfiguration(MySQL mysql) throws SQLException {
+    public MySQLUserConfiguration(@NonNull MySQL mysql) throws SQLException {
         this.mysql = mysql;
         mysql.execute("create table if not exists tab_users (`user` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
     }
 
     @Override
-    public void setProperty(String user, String property, String server, String world, String value) {
+    public void setProperty(@NonNull String user, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
         TabPlayer p = getPlayer(user);
         String lowercaseUser = user.toLowerCase();
         try {
@@ -41,7 +44,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
         return isNull ? "is" : "=";
     }
 
-    private void setProperty0(TabPlayer user, String property, String server, String world, String value) {
+    private void setProperty0(@NonNull TabPlayer user, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
         if (world != null) {
             perWorld.computeIfAbsent(world, w -> new WeakHashMap<>()).computeIfAbsent(user, g -> new HashMap<>()).put(property, value);
         } else if (server != null) {
@@ -52,7 +55,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public String[] getProperty(String user, String property, String server, String world) {
+    public String[] getProperty(@NonNull String user, @NonNull String property, @Nullable String server, @Nullable String world) {
         TabPlayer p = getPlayer(user);
         Object value;
         if ((value = perWorld.getOrDefault(world, new WeakHashMap<>()).getOrDefault(p, new HashMap<>()).get(property)) != null) {
@@ -68,7 +71,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public void remove(String player) {
+    public void remove(@NonNull String player) {
         try {
             mysql.execute("delete from `tab_users` where `user` = ?", player);
         } catch (SQLException e) {
@@ -82,26 +85,26 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public Map<String, Object> getGlobalSettings(String name) {
+    public @NotNull Map<String, Object> getGlobalSettings(@NonNull String name) {
         throw new UnsupportedOperationException("Not supported for users");
     }
 
     @Override
-    public Map<String, Map<String, Object>> getPerWorldSettings(String name) {
+    public @NotNull Map<String, Map<String, Object>> getPerWorldSettings(@NonNull String name) {
         throw new UnsupportedOperationException("Not supported for users");
     }
 
     @Override
-    public Map<String, Map<String, Object>> getPerServerSettings(String name) {
+    public @NotNull Map<String, Map<String, Object>> getPerServerSettings(@NonNull String name) {
         throw new UnsupportedOperationException("Not supported for users");
     }
 
     @Override
-    public Set<String> getAllEntries() {
+    public @NotNull Set<String> getAllEntries() {
         throw new UnsupportedOperationException("Not supported for users");
     }
 
-    private TabPlayer getPlayer(String string) {
+    private TabPlayer getPlayer(@NonNull String string) {
         TabPlayer p = TAB.getInstance().getPlayer(string);
         if (p == null) {
             try {
@@ -113,7 +116,7 @@ public class MySQLUserConfiguration implements PropertyConfiguration {
         return p;
     }
 
-    public void load(TabPlayer player) {
+    public void load(@NonNull TabPlayer player) {
         TAB.getInstance().getCPUManager().runTask(() -> {
 
             try {

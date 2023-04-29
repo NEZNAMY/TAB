@@ -1,5 +1,8 @@
 package me.neznamy.tab.shared.chat.rgb.format;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Abstract class for different RGB patterns
  */
@@ -12,5 +15,5 @@ public interface RGBFormatter {
      *          text to format
      * @return  reformatted text
      */
-    String reformat(String text);
+    @NotNull String reformat(@NonNull String text);
 }

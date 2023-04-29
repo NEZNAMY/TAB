@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -17,5 +18,5 @@ public interface ServerSwitchListener {
      * @param   to
      *          Name of new server
      */
-    void onServerChange(TabPlayer changed, String from, String to);
+    void onServerChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to);
 }

@@ -35,12 +35,12 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     private final Set<TabPlayer> playersPreviewingNametag = Collections.newSetFromMap(new WeakHashMap<>());
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
 
-    public NameTagX(BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
+    public NameTagX(@NonNull BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
     }
 
-    public boolean isUnlimitedDisabled(String server, String world) {
+    public boolean isUnlimitedDisabled(@Nullable String server, @Nullable String world) {
         boolean contains = contains(disabledUnlimitedServersArray, server);
         if (unlimitedServerWhitelistMode) contains = !contains;
         if (contains) return true;
@@ -49,11 +49,11 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         return contains;
     }
 
-    public ArmorStandManager getArmorStandManager(TabPlayer player) {
+    public ArmorStandManager getArmorStandManager(@NonNull TabPlayer player) {
         return armorStandManagerMap.get(player);
     }
 
-    public boolean isPlayerDisabled(TabPlayer p) {
+    public boolean isPlayerDisabled(@NonNull TabPlayer p) {
         return isDisabledPlayer(p) || disabledUnlimitedPlayers.contains(p) || hasTeamHandlingPaused(p) || hasDisabledArmorStands(p);
     }
 
@@ -74,7 +74,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         if (isUnlimitedDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld()))
             disabledUnlimitedPlayers.add(connectedPlayer);
         super.onJoin(connectedPlayer);
@@ -83,7 +83,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         super.refresh(refreshed, force);
         if (isPlayerDisabled(refreshed)) return;
         getArmorStandManager(refreshed).refresh(force);
@@ -110,12 +110,12 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(player, isPreviewingNametag(player));
     }
 
-    public boolean isPreviewingNametag(TabPlayer player) {
+    public boolean isPreviewingNametag(@NonNull TabPlayer player) {
         return playersPreviewingNametag.contains(player);
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
         super.onWorldChange(p, from , to);
         if (isUnlimitedDisabled(p.getServer(), to)) {
             if (getDisabledUnlimitedPlayers().add(p)) updateTeamData(p);
@@ -134,7 +134,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
      *          player to update
      */
     @Override
-    public boolean updateProperties(TabPlayer p) {
+    public boolean updateProperties(@NonNull TabPlayer p) {
         boolean changed = super.updateProperties(p);
         if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTAGNAME, p.getName())) changed = true;
         if (p.setProperty(this, TabConstants.Property.NAMETAG, p.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() +
@@ -149,21 +149,21 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
+    public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (p.hasInvisibilityPotion()) return false; //1.8.x client sided bug
         if (playersWithInvisibleNameTagView.contains(viewer)) return false;
         return isOnBoat(p) || isPlayerDisabled(p);
     }
 
-    public abstract boolean isOnBoat(TabPlayer player);
+    public abstract boolean isOnBoat(@NonNull TabPlayer player);
 
-    public abstract void setNameTagPreview(TabPlayer player, boolean status);
+    public abstract void setNameTagPreview(@NonNull TabPlayer player, boolean status);
 
-    public abstract void resumeArmorStands(TabPlayer player);
+    public abstract void resumeArmorStands(@NonNull TabPlayer player);
 
-    public abstract void pauseArmorStands(TabPlayer player);
+    public abstract void pauseArmorStands(@NonNull TabPlayer player);
 
-    public abstract void updateNameTagVisibilityView(TabPlayer player);
+    public abstract void updateNameTagVisibilityView(@NonNull TabPlayer player);
 
     /* NameTag override */
 
@@ -255,7 +255,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         return lines;
     }
 
-    private void rebuildNameTagLine(TabPlayer player) {
+    private void rebuildNameTagLine(@NonNull TabPlayer player) {
         player.setProperty(this, TabConstants.Property.NAMETAG, player.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue() +
                 player.getProperty(TabConstants.Property.CUSTOMTAGNAME).getCurrentRawValue() + player.getProperty(TabConstants.Property.TAGSUFFIX).getCurrentRawValue());
     }

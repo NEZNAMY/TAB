@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab announce bar" subcommand
@@ -24,7 +27,7 @@ public class AnnounceBarCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         BossBarManager feature = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
         if (feature == null) {
             sendMessage(sender, getMessages().getBossBarNotEnabled());
@@ -60,7 +63,7 @@ public class AnnounceBarCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         BossBarManager b = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
         if (b == null) return new ArrayList<>();
         List<String> suggestions = new ArrayList<>();

@@ -1,11 +1,14 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlayerList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -17,7 +20,7 @@ public class PlayerSlot {
     @Getter private TabPlayer player;
     private String text = "";
 
-    public void setPlayer(TabPlayer newPlayer) {
+    public void setPlayer(@Nullable TabPlayer newPlayer) {
         if (player == newPlayer) return;
         this.player = newPlayer;
         if (player != null) text = "";
@@ -28,7 +31,7 @@ public class PlayerSlot {
         }
     }
 
-    public TabList.Entry getSlot(TabPlayer p) {
+    public @NotNull TabList.Entry getSlot(@NonNull TabPlayer p) {
         TabList.Entry data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
@@ -56,7 +59,7 @@ public class PlayerSlot {
         return data;
     }
 
-    public void setText(String text) {
+    public void setText(@NonNull String text) {
         if (this.text.equals(text) && player == null) return;
         this.text = text;
         if (player != null) {

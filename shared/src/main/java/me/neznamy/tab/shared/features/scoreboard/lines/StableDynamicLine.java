@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -17,6 +18,8 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 public class StableDynamicLine extends ScoreboardLine implements Refreshable {
 
     private final String[] EMPTY_ARRAY = new String[0];
+    @Getter private final String featureName = "Scoreboard";
+    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
 
     /**
      * Constructs new instance with given parameters
@@ -28,13 +31,13 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      * @param   text
      *          text to display
      */
-    public StableDynamicLine(ScoreboardImpl parent, int lineNumber, String text) {
+    public StableDynamicLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
         super(parent, lineNumber);
         this.text = text;
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;
@@ -42,7 +45,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void register(TabPlayer p) {
+    public void register(@NonNull TabPlayer p) {
         p.setProperty(this, parent.getName() + "-" + teamName, text);
         String[] prefixSuffix = replaceText(p, true, true);
         if (prefixSuffix.length == 0) return;
@@ -50,7 +53,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void unregister(TabPlayer p) {
+    public void unregister(@NonNull TabPlayer p) {
         if (parent.getPlayers().contains(p) && p.getProperty(parent.getName() + "-" + teamName).get().length() > 0) {
             removeLine(p, getPlayerName());
         }
@@ -106,7 +109,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
      *          text to split
      * @return  array of 2 elements for prefix and suffix
      */
-    private String[] split(TabPlayer p, String text) {
+    private String[] split(@NonNull TabPlayer p, @NonNull String text) {
         int charLimit = 16;
         if (text.length() > charLimit && p.getVersion().getMinorVersion() < 13) {
             StringBuilder prefix = new StringBuilder(text);

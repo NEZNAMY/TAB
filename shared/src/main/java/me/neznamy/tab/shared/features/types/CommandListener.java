@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -17,5 +18,5 @@ public interface CommandListener {
      *          Command line including /
      * @return  Whether the command should be cancelled or not
      */
-    boolean onCommand(TabPlayer sender, String message);
+    boolean onCommand(@NonNull TabPlayer sender, @NonNull String message);
 }

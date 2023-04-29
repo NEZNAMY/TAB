@@ -13,6 +13,7 @@ import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.message.RedisMessage;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -26,14 +27,14 @@ public class RedisTeams extends RedisFeature {
     @Getter private final Map<RedisPlayer, String> nameVisibilities = new WeakHashMap<>();
     @Getter private final Set<RedisPlayer> disabledNameTags = Collections.newSetFromMap(new WeakHashMap<>());
 
-    public RedisTeams(RedisSupport redisSupport, NameTag nameTags) {
+    public RedisTeams(@NonNull RedisSupport redisSupport, @NonNull NameTag nameTags) {
         this.redisSupport = redisSupport;
         this.nameTags = nameTags;
         redisSupport.registerMessage("teams", Update.class, Update::new);
     }
 
     @Override
-    public void onJoin(TabPlayer player) {
+    public void onJoin(@NonNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             if (!disabledNameTags.contains(redis)) {
                 player.getScoreboard().registerTeam(teamNames.get(redis), prefixes.get(redis), suffixes.get(redis),
@@ -44,7 +45,7 @@ public class RedisTeams extends RedisFeature {
     }
 
     @Override
-    public void onJoin(RedisPlayer player) {
+    public void onJoin(@NonNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
                     nameVisibilities.get(player), "always",
@@ -53,12 +54,12 @@ public class RedisTeams extends RedisFeature {
     }
 
     @Override
-    public void onServerSwitch(TabPlayer player) {
+    public void onServerSwitch(@NonNull TabPlayer player) {
         onJoin(player);
     }
 
     @Override
-    public void onServerSwitch(RedisPlayer player) {
+    public void onServerSwitch(@NonNull RedisPlayer player) {
         if (disabledNameTags.contains(player)) {
             if (!nameTags.isDisabled(player.getServer(), null)) {
                 disabledNameTags.remove(player);
@@ -79,14 +80,14 @@ public class RedisTeams extends RedisFeature {
     }
 
     @Override
-    public void onQuit(RedisPlayer player) {
+    public void onQuit(@NonNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().unregisterTeam(teamNames.get(player));
         }
     }
 
     @Override
-    public void write(@NonNull ByteArrayDataOutput out, TabPlayer player) {
+    public void write(@NonNull ByteArrayDataOutput out, @NonNull TabPlayer player) {
         out.writeUTF(nameTags.getSorting().getShortTeamName(player));
         out.writeUTF(player.getProperty(TabConstants.Property.TAGPREFIX).get());
         out.writeUTF(player.getProperty(TabConstants.Property.TAGSUFFIX).get());
@@ -94,7 +95,7 @@ public class RedisTeams extends RedisFeature {
     }
 
     @Override
-    public void read(@NonNull ByteArrayDataInput in, RedisPlayer player) {
+    public void read(@NonNull ByteArrayDataInput in, @NonNull RedisPlayer player) {
         String teamName = in.readUTF();
         teamName = checkTeamName(player, teamName.substring(0, teamName.length()-1), 65);
         teamNames.put(player, teamName);
@@ -103,7 +104,7 @@ public class RedisTeams extends RedisFeature {
         nameVisibilities.put(player, in.readUTF());
     }
 
-    private String checkTeamName(RedisPlayer player, String currentName15, int id) {
+    private @NotNull String checkTeamName(@NonNull RedisPlayer player, @NonNull String currentName15, int id) {
         String potentialTeamName = currentName15 + (char)id;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (nameTags.getSorting().getShortTeamName(all).equals(potentialTeamName)) {

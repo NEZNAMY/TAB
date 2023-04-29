@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
 
@@ -15,7 +16,7 @@ public interface GradientPattern {
      *          text to be reformatted
      * @return  reformatted text
      */
-    String applyPattern(String text, boolean ignorePlaceholders);
+    String applyPattern(@NonNull String text, boolean ignorePlaceholders);
 
     /**
      * Returns gradient text based on start color, text and end color
@@ -28,7 +29,7 @@ public interface GradientPattern {
      *          end color
      * @return  reformatted text
      */
-    default String asGradient(TextColor start, String text, TextColor end) {
+    default String asGradient(@NonNull TextColor start, @NonNull String text, @NonNull TextColor end) {
         //lazy support for magic codes in gradients
         String magicCodes = EnumChatFormat.getLastColors(text);
         String deColorized = text.substring(magicCodes.length());

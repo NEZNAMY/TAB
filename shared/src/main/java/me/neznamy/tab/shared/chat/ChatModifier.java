@@ -3,12 +3,14 @@ package me.neznamy.tab.shared.chat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
 @Data @NoArgsConstructor
 public class ChatModifier {
 
-    private TextColor color;
+    @Nullable private TextColor color;
     private boolean bold;
     private boolean italic;
     private boolean underlined;
@@ -25,7 +27,7 @@ public class ChatModifier {
     }
 
     @SuppressWarnings("unchecked")
-    public JSONObject serialize(boolean rgbSupport) {
+    public @NotNull JSONObject serialize(boolean rgbSupport) {
         JSONObject json = new JSONObject();
         if (color != null) json.put("color", color.toString(rgbSupport));
         if (bold) json.put("bold", true);
@@ -36,7 +38,7 @@ public class ChatModifier {
         return json;
     }
 
-    public String getMagicCodes() {
+    public @NotNull String getMagicCodes() {
         StringBuilder builder = new StringBuilder();
         if (isBold()) builder.append(EnumChatFormat.BOLD.getFormat());
         if (isItalic()) builder.append(EnumChatFormat.ITALIC.getFormat());

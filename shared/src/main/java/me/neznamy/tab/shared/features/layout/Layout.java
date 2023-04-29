@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.tablist.TabList;
@@ -28,7 +29,7 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     @Getter private final List<ParentGroup> groups;
     @Getter private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    public void sendTo(TabPlayer p) {
+    public void sendTo(@NonNull TabPlayer p) {
         if (viewers.contains(p)) return;
         viewers.add(p);
         List<TabList.Entry> list = new ArrayList<>();
@@ -43,18 +44,18 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
         p.getTabList().addEntries(list);
     }
 
-    public String getEntryName(TabPlayer viewer, long slot) {
+    public String getEntryName(@NonNull TabPlayer viewer, long slot) {
         return viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ? "|slot_" + (10+slot) : "";
     }
 
-    public void removeFrom(TabPlayer p) {
+    public void removeFrom(@NonNull TabPlayer p) {
         if (!viewers.contains(p)) return;
         viewers.remove(p);
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.getTabList().removeEntries(manager.getUuids().values());
     }
 
-    public boolean isConditionMet(TabPlayer p) {
+    public boolean isConditionMet(@NonNull TabPlayer p) {
         return displayCondition == null || displayCondition.isMet(p);
     }
 
@@ -70,15 +71,15 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         tick();
     }
 
-    public boolean containsViewer(TabPlayer viewer) {
+    public boolean containsViewer(@NonNull TabPlayer viewer) {
         return viewers.contains(viewer);
     }
 
-    public PlayerSlot getSlot(TabPlayer p) {
+    public PlayerSlot getSlot(@NonNull TabPlayer p) {
         for (ParentGroup group : groups) {
             if (group.getPlayers().containsKey(p)) {
                 return group.getPlayers().get(p);
@@ -88,7 +89,7 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     }
 
     @Override
-    public void onServerChange(TabPlayer changed, String from, String to) {
+    public void onServerChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
         if (viewers.remove(changed)) sendTo(changed);
     }
 }

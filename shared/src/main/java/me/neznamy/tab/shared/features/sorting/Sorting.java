@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -25,6 +26,7 @@ import me.neznamy.tab.shared.features.sorting.types.PlaceholderHighToLow;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderLowToHigh;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderZtoA;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Class for handling player sorting rules
@@ -67,7 +69,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     }
     
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         String previousShortName = shortTeamNames.get(p);
         constructTeamNames(p);
         if (!shortTeamNames.get(p).equals(previousShortName)) {
@@ -93,7 +95,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     }
     
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         constructTeamNames(connectedPlayer);
     }
     
@@ -102,7 +104,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
      *
      * @return  list of compiled sorting types
      */
-    private SortingType[] compile(List<String> options) {
+    private @NotNull SortingType[] compile(@NonNull List<String> options) {
         List<SortingType> list = new ArrayList<>();
         for (String element : options) {
             String[] arr = element.split(":");
@@ -122,7 +124,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
      * @param   p
      *          player to build team name for
      */
-    public void constructTeamNames(TabPlayer p) {
+    public void constructTeamNames(@NonNull TabPlayer p) {
         teamNameNotes.put(p, "");
         StringBuilder shortName = new StringBuilder();
         for (SortingType type : usedSortingTypes) {
@@ -153,7 +155,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
      *          current character to check as 16th character
      * @return  first available full team name
      */
-    private String checkTeamName(TabPlayer p, StringBuilder currentName, int id) {
+    private @NotNull String checkTeamName(@NonNull TabPlayer p, @NonNull StringBuilder currentName, int id) {
         String potentialTeamName = currentName.toString() + (char)id;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == p) continue;
@@ -177,25 +179,26 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
      *
      * @return  user-friendly representation of sorting types
      */
-    public String typesToString() {
+    public @NotNull String typesToString() {
         return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" -> "));
     }
 
-    public String getShortTeamName(TabPlayer p) {
+    public @NotNull String getShortTeamName(@NonNull TabPlayer p) {
         TeamManager teams = TAB.getInstance().getTeamManager();
-        if (teams != null && teams.getForcedTeamName(p) != null) return teams.getForcedTeamName(p);
+        String forced = teams == null ? null : teams.getForcedTeamName(p);
+        if (forced != null) return forced;
         return shortTeamNames.get(p);
     }
 
-    public String getFullTeamName(TabPlayer p) {
+    public @NotNull String getFullTeamName(@NonNull TabPlayer p) {
         return fullTeamNames.get(p);
     }
 
-    public String getTeamNameNote(TabPlayer p) {
+    public @NotNull String getTeamNameNote(@NonNull TabPlayer p) {
         return teamNameNotes.get(p);
     }
 
-    public void setTeamNameNote(TabPlayer p, String note) {
+    public void setTeamNameNote(@NonNull TabPlayer p, @NonNull String note) {
         teamNameNotes.put(p, note);
     }
 }

@@ -12,6 +12,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -57,7 +59,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
      * @param   displayCondition
      *          display condition
      */
-    public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, String displayCondition) {
+    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull String title,
+                          @NonNull List<String> lines, @Nullable String displayCondition) {
         this(manager, name, title, lines, false);
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
@@ -77,7 +80,8 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
      * @param   lines
      *          lines of scoreboard
      */
-    public ScoreboardImpl(ScoreboardManagerImpl manager, String name, String title, List<String> lines, boolean dynamicLinesOnly) {
+    public ScoreboardImpl(@NonNull ScoreboardManagerImpl manager, @NonNull String name, @NonNull String title,
+                          @NonNull List<String> lines, boolean dynamicLinesOnly) {
         this.manager = manager;
         this.name = name;
         this.title = title;
@@ -103,7 +107,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
      *          text to display
      * @return  most optimal line from provided text
      */
-    private ScoreboardLine registerLine(int lineNumber, String text) {
+    private @NotNull ScoreboardLine registerLine(int lineNumber, @Nullable String text) {
         if (text == null) return new StaticLine(this, lineNumber, "");
         if (text.startsWith("Custom|")) {
             String[] elements = text.split("\\|");
@@ -125,11 +129,11 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
      *          player to check
      * @return  true if condition is null or is met, false otherwise
      */
-    public boolean isConditionMet(TabPlayer p) {
+    public boolean isConditionMet(@NonNull TabPlayer p) {
         return displayCondition == null || displayCondition.isMet(p);
     }
 
-    public void addPlayer(TabPlayer p) {
+    public void addPlayer(@NonNull TabPlayer p) {
         if (players.contains(p)) return; //already registered
         players.add(p);
         p.setProperty(this, titleProperty, title);
@@ -151,7 +155,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
         players.clear();
     }
 
-    public void removePlayer(TabPlayer p) {
+    public void removePlayer(@NonNull TabPlayer p) {
         if (!players.contains(p)) return; //not registered
         p.getScoreboard().unregisterObjective(ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line line : lines) {
@@ -164,7 +168,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
         refreshed.getScoreboard().updateObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(titleProperty).updateAndGet(), false);
     }
@@ -201,7 +205,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
         TAB.getInstance().getFeatureManager().unregisterFeature(TabConstants.Feature.scoreboardLine(name, index));
     }
 
-    public void recalculateScores(TabPlayer p) {
+    public void recalculateScores(@NonNull TabPlayer p) {
         if (!manager.isUsingNumbers()) return;
         List<Line> linesReversed = new ArrayList<>(lines);
         Collections.reverse(linesReversed);
@@ -217,7 +221,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
         }
     }
 
-    public void removePlayerFromSet(TabPlayer player) {
+    public void removePlayerFromSet(@NonNull TabPlayer player) {
         players.remove(player);
     }
 }

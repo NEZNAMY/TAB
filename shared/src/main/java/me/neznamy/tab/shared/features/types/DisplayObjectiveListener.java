@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -17,5 +18,5 @@ public interface DisplayObjectiveListener {
      * @param   objective
      *          Objective name
      */
-    void onDisplayObjective(TabPlayer receiver, int slot, String objective);
+    void onDisplayObjective(@NonNull TabPlayer receiver, int slot, @NonNull String objective);
 }

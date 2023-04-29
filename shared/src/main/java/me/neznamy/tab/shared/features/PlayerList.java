@@ -62,7 +62,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      *          TabList viewer
      * @return  UUID of TabList entry representing requested player
      */
-    public UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
+    public UUID getTablistUUID(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (layoutManager != null) {
             Layout layout = layoutManager.getPlayerViews().get(viewer);
             if (layout != null) {
@@ -83,7 +83,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      *          Player to update properties of
      * @return  {@code true} if at least one property changed, {@code false} if not
      */
-    protected boolean updateProperties(TabPlayer p) {
+    protected boolean updateProperties(@NonNull TabPlayer p) {
         boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
         if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName())) changed = true;
         if (p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX)) changed = true;
@@ -98,7 +98,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      * @param   format
      *          Whether player's actual format should be used or {@code null} for reset
      */
-    protected void updatePlayer(me.neznamy.tab.api.TabPlayer p, boolean format) {
+    protected void updatePlayer(@NonNull me.neznamy.tab.api.TabPlayer p, boolean format) {
         TabPlayer player = (TabPlayer) p;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
@@ -116,7 +116,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      *          Viewer seeing the format
      * @return  Format of specified player for viewer
      */
-    public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
+    public @Nullable IChatBaseComponent getTabFormat(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
         Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
         Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
@@ -161,8 +161,8 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
+    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -173,7 +173,11 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
+    }
+
+    private void processSwitch(@NonNull TabPlayer p) {
         boolean disabledBefore = isDisabledPlayer(p);
         boolean disabledNow = false;
         if (isDisabled(p.getServer(), p.getWorld())) {
@@ -192,7 +196,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
@@ -210,7 +214,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         updateProperties(connectedPlayer);
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
             addDisabledPlayer(connectedPlayer);
@@ -234,7 +238,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id) {
+    public IChatBaseComponent onDisplayNameChange(@NonNull TabPlayer packetReceiver, @NonNull UUID id) {
         if (disabling || !antiOverrideTabList) return null;
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
         if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {
@@ -244,7 +248,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void onVanishStatusChange(TabPlayer player) {
+    public void onVanishStatusChange(@NonNull TabPlayer player) {
         if (player.isVanished()) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));

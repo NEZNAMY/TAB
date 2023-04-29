@@ -1,8 +1,11 @@
 package me.neznamy.tab.shared.config.mysql;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
@@ -16,7 +19,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     private final Map<String, Map<String, Map<String, Object>>> perWorld = new HashMap<>();
     private final Map<String, Map<String, Map<String, Object>>> perServer = new HashMap<>();
 
-    public MySQLGroupConfiguration(MySQL mysql) throws SQLException {
+    public MySQLGroupConfiguration(@NonNull MySQL mysql) throws SQLException {
         this.mysql = mysql;
         mysql.execute("create table if not exists tab_groups (`group` varchar(64), `property` varchar(16), `value` varchar(1024), world varchar(64), server varchar(64))");
         CachedRowSet crs = mysql.getCRS("select * from tab_groups");
@@ -32,7 +35,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public void setProperty(String group, String property, String server, String world, String value) {
+    public void setProperty(@NonNull String group, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
         String lowercaseGroup = group.equals(TabConstants.DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
         try {
             if (getProperty(lowercaseGroup, property, server, world) != null) {
@@ -49,7 +52,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
         return isNull ? "is" : "=";
     }
 
-    private void setProperty0(String group, String property, String server, String world, String value) {
+    private void setProperty0(@NonNull String group, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value) {
         if (world != null) {
             perWorld.computeIfAbsent(world, w -> new HashMap<>()).computeIfAbsent(group, g -> new HashMap<>()).put(property, value);
         } else if (server != null) {
@@ -60,7 +63,7 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public String[] getProperty(String group, String property, String server, String world) {
+    public String[] getProperty(@NonNull String group, @NonNull String property, @Nullable String server, @Nullable String world) {
         String lowercaseGroup = group.equals(TabConstants.DEFAULT_GROUP) ? group : group.toLowerCase(Locale.US);
         Object value;
         if ((value = perWorld.getOrDefault(world, new HashMap<>()).getOrDefault(lowercaseGroup, new HashMap<>()).get(property)) != null) {
@@ -85,29 +88,29 @@ public class MySQLGroupConfiguration implements PropertyConfiguration {
     }
 
     @Override
-    public void remove(String group) {
+    public void remove(@NonNull String group) {
         values.getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, null, null, null));
         perWorld.keySet().forEach(world -> perWorld.get(world).getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, null, world, null)));
         perServer.keySet().forEach(server -> perServer.get(server).getOrDefault(group, new HashMap<>()).keySet().forEach(property -> setProperty(group, property, server, null, null)));
     }
 
     @Override
-    public Map<String, Object> getGlobalSettings(String name) {
+    public @NotNull Map<String, Object> getGlobalSettings(@NonNull String name) {
         return values.getOrDefault(name, Collections.emptyMap());
     }
 
     @Override
-    public Map<String, Map<String, Object>> getPerWorldSettings(String name) {
+    public @NotNull Map<String, Map<String, Object>> getPerWorldSettings(@NonNull String name) {
         return convertMap(perWorld, name);
     }
 
     @Override
-    public Map<String, Map<String, Object>> getPerServerSettings(String name) {
+    public @NotNull Map<String, Map<String, Object>> getPerServerSettings(@NonNull String name) {
         return convertMap(perServer, name);
     }
 
     @Override
-    public Set<String> getAllEntries() {
+    public @NotNull Set<String> getAllEntries() {
         Set<String> set = new HashSet<>(values.keySet());
         perWorld.values().forEach(map -> set.addAll(map.keySet()));
         perServer.values().forEach(map -> set.addAll(map.keySet()));

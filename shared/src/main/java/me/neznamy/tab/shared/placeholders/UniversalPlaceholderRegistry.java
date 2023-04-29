@@ -67,7 +67,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
             ((PlaceholderManagerImpl) manager).registerPlaceholder(new PlayerPlaceholderImpl(TabConstants.Placeholder.animation(a.getName()), a.getRefresh(), p -> a.getMessage()) {
 
                 @Override
-                public List<String> getNestedPlaceholders(String output) {
+                public List<String> getNestedPlaceholders(@NonNull String output) {
                     return nested;
                 }
             });
@@ -79,6 +79,10 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
             String type = String.valueOf(condition.getValue().get("type"));
             String yes = condition.getValue().getOrDefault(true, true).toString();
             String no = condition.getValue().getOrDefault(false, false).toString();
+            if (list == null) {
+                TAB.getInstance().getMisconfigurationHelper().conditionHasNoConditions(condition.getKey());
+                continue;
+            }
             Condition c = new Condition(!"OR".equals(type), condition.getKey(), list, yes, no);
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.condition(c.getName()), c.getRefresh(), p -> c.getText((TabPlayer)p));
         }
@@ -110,7 +114,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
      *          value to use if entered format is not valid
      * @return  evaluated date format
      */
-    private SimpleDateFormat createDateFormat(String value, String defaultValue) {
+    private SimpleDateFormat createDateFormat(@NonNull String value, @NonNull String defaultValue) {
         try {
             return new SimpleDateFormat(value, Locale.ENGLISH);
         } catch (IllegalArgumentException e) {

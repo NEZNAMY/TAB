@@ -17,7 +17,8 @@ public abstract class BackendTabPlayer extends TabPlayer {
      * @param world           Player's world
      * @param protocolVersion Player's game version
      */
-    protected BackendTabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion) {
+    protected BackendTabPlayer(@NonNull Object player, @NonNull UUID uniqueId, @NonNull String name,
+                               @NonNull String server, @NonNull String world, int protocolVersion) {
         super(player, uniqueId, name, server, world, protocolVersion, true);
     }
 

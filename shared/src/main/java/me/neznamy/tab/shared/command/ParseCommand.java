@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -12,6 +13,8 @@ import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab parse &lt;player&gt; &lt;placeholder&gt;" subcommand
@@ -26,7 +29,7 @@ public class ParseCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         if (args.length < 2) {
             sendMessage(sender, getMessages().getParseCommandUsage());
             return;
@@ -61,7 +64,7 @@ public class ParseCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         if (arguments.length == 1) {
             List<String> suggestions = getOnlinePlayers(arguments[0]);
             if ("me".startsWith(arguments[0].toLowerCase())) suggestions.add("me");

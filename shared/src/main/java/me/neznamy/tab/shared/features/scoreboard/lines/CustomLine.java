@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
@@ -12,6 +13,9 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  * Not for public use
  */
 public class CustomLine extends ScoreboardLine implements Refreshable {
+
+    @Getter private final String featureName = "Scoreboard";
+    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
 
     //configured prefix
     private String prefix;
@@ -41,7 +45,8 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
      * @param   score
      *          score
      */
-    public CustomLine(ScoreboardImpl parent, int lineNumber, String prefix, String name, String suffix, int score) {
+    public CustomLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String prefix, @NonNull String name,
+                      @NonNull String suffix, int score) {
         super(parent, lineNumber);
         this.prefix = prefix;
         this.name = name;
@@ -50,7 +55,7 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String oldName = refreshed.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get();
         boolean prefixUpdate = refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).update();
@@ -71,7 +76,7 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void register(TabPlayer p) {
+    public void register(@NonNull TabPlayer p) {
         p.setProperty(this, TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber), prefix);
         p.setProperty(this, TabConstants.Property.scoreboardName(parent.getName(), lineNumber), name);
         p.setProperty(this, TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber), suffix);
@@ -80,7 +85,7 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void unregister(TabPlayer p) {
+    public void unregister(@NonNull TabPlayer p) {
         if (parent.getPlayers().contains(p)) {
             removeLine(p, p.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get());
         }
@@ -96,7 +101,7 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public int getNumber(TabPlayer p) {
+    public int getNumber(@NonNull TabPlayer p) {
         return score;
     }
 }

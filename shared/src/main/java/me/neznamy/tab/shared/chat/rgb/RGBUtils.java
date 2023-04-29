@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.neznamy.tab.shared.chat.rgb.format.CMIFormat;
 import me.neznamy.tab.shared.chat.rgb.format.RGBFormatter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A helper class to reformat all RGB formats into the default #RRGGBB and apply gradients
@@ -79,7 +80,7 @@ public class RGBUtils {
      *          original text
      * @return  text where everything is converted to #RRGGBB
      */
-    public String applyFormats(@NonNull String text) {
+    public @NotNull String applyFormats(@NonNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, false);
@@ -98,7 +99,7 @@ public class RGBUtils {
      *          original text
      * @return  text where all gradients with static text are converted to #RRGGBB
      */
-    public String applyCleanGradients(@NonNull String text) {
+    public @NotNull String applyCleanGradients(@NonNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, true);
@@ -117,8 +118,7 @@ public class RGBUtils {
      *          whether client accepts RGB or not
      * @return  converted text
      */
-    public String convertToBukkitFormat(String text, boolean rgbClient) {
-        if (text == null) return null;
+    public @NotNull String convertToBukkitFormat(@NonNull String text, boolean rgbClient) {
         if (!text.contains("#")) return text; //no rgb codes
         if (rgbClient) {
             //converting random formats to TAB one
@@ -146,8 +146,7 @@ public class RGBUtils {
      *          text to convert
      * @return  translated text
      */
-    public String convertRGBtoLegacy(String text) {
-        if (text == null) return null;
+    public @NotNull String convertRGBtoLegacy(@NonNull String text) {
         return IChatBaseComponent.fromColoredText(text).toLegacyText();
     }
 

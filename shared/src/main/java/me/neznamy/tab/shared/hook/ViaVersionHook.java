@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.hook;
 
 import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -29,7 +30,7 @@ public class ViaVersionHook {
      *          Player's name for debug messages
      * @return  Player's network version
      */
-    public int getPlayerVersion(UUID player, String playerName) {
+    public int getPlayerVersion(@NonNull UUID player, @NonNull String playerName) {
         if (!installed) return TAB.getInstance().getServerVersion().getNetworkId();
         int version = Via.getAPI().getPlayerVersion(player);
         TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);

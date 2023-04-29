@@ -44,7 +44,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
             addDisabledPlayer(connectedPlayer);
             return;
@@ -53,9 +53,8 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
-
+    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
         // Velocity clears header/footer on server switch, which can be a problem without placeholders that change often
         // Resend immediately instead of the next time a placeholder changes value
         if (isDisabledPlayer(p)) return;
@@ -63,7 +62,11 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
+    }
+
+    private void processSwitch(@NonNull TabPlayer p) {
         boolean disabledBefore = isDisabledPlayer(p);
         boolean disabledNow = false;
         if (isDisabled(p.getServer(), p.getWorld())) {
@@ -87,7 +90,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         if (force) {
             p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
             p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));

@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab announce scoreboard" subcommand
@@ -24,7 +27,7 @@ public class AnnounceScoreboardCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         ScoreboardManager feature = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
         if (feature == null) {
             sendMessage(sender, getMessages().getScoreboardFeatureNotEnabled());
@@ -51,7 +54,7 @@ public class AnnounceScoreboardCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         ScoreboardManager s = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
         if (s == null) return new ArrayList<>();
         List<String> suggestions = new ArrayList<>();

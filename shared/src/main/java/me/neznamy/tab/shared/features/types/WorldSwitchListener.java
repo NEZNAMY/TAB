@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -17,5 +18,5 @@ public interface WorldSwitchListener {
      * @param   to
      *          Name of new world
      */
-    void onWorldChange(TabPlayer changed, String from, String to);
+    void onWorldChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to);
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -77,14 +78,14 @@ public interface TabList {
             private int gameMode;
             @Nullable private IChatBaseComponent displayName;
 
-            public Builder name(String name) { this.name = name; return this; }
-            public Builder skin(Skin skin) { this.skin = skin; return this; }
-            public Builder listed(boolean listed) { this.listed = listed; return this; }
-            public Builder latency(int latency) { this.latency = latency; return this; }
-            public Builder gameMode(int gameMode) { this.gameMode = gameMode; return this; }
-            public Builder displayName(IChatBaseComponent displayName) { this.displayName = displayName; return this; }
+            public @NotNull Builder name(String name) { this.name = name; return this; }
+            public @NotNull Builder skin(Skin skin) { this.skin = skin; return this; }
+            public @NotNull Builder listed(boolean listed) { this.listed = listed; return this; }
+            public @NotNull Builder latency(int latency) { this.latency = latency; return this; }
+            public @NotNull Builder gameMode(int gameMode) { this.gameMode = gameMode; return this; }
+            public @NotNull Builder displayName(IChatBaseComponent displayName) { this.displayName = displayName; return this; }
 
-            public Entry build() {
+            public @NotNull Entry build() {
                 return new Entry(uniqueId, name, skin, listed, latency, gameMode, displayName);
             }
         }

@@ -3,9 +3,12 @@ package me.neznamy.tab.shared.command;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab group" subcommand
@@ -20,7 +23,7 @@ public class GroupCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         //<name> <property> [value...]
         if (args.length == 0) {
             help(sender);
@@ -41,7 +44,7 @@ public class GroupCommand extends PropertyCommand {
         trySaveEntity(sender, args);
     }
 
-    private void remove(TabPlayer sender, String group) {
+    private void remove(@Nullable TabPlayer sender, @NonNull String group) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getGroups().remove(group);
             for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
@@ -55,7 +58,7 @@ public class GroupCommand extends PropertyCommand {
         }
     }
 
-    private void sendGroupInfo(TabPlayer sender, String group) {
+    private void sendGroupInfo(@Nullable TabPlayer sender, @NonNull String group) {
         sendMessage(sender, "&f=== Group &9" + group + "&f ===");
         for (Map.Entry<String, Object> entry : TAB.getInstance().getConfiguration().getGroups().getGlobalSettings(group).entrySet()) {
             sendRawMessage(sender, "  " + entry.getKey() + ": " + entry.getValue());
@@ -77,7 +80,7 @@ public class GroupCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(TabPlayer sender, String group, String type, String value, String server, String world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NonNull String group, @NonNull String type, @NonNull String value, @Nullable String server, @Nullable String world) {
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getGroupValueAssigned(type, value, group));
         } else {
@@ -94,7 +97,7 @@ public class GroupCommand extends PropertyCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         if (arguments.length == 1) {
             Set<String> groups = new HashSet<>(TAB.getInstance().getConfiguration().getGroups().getAllEntries());
             groups.add(TabConstants.DEFAULT_GROUP);

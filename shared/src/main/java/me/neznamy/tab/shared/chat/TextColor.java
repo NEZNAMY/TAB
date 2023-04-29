@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A class representing a component color, which can be either RGB or legacy code.
@@ -64,7 +65,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if {@code hexCode} is {@code null} or {@code legacyColor} is {@code null}
      */
-    public TextColor(@NonNull String hexCode, EnumChatFormat legacyColor) {
+    public TextColor(@NonNull String hexCode, @NonNull EnumChatFormat legacyColor) {
         this.hexCode = hexCode;
         this.legacyColorForced = true;
         this.legacyColor = legacyColor;
@@ -168,7 +169,7 @@ public class TextColor {
      *
      * @return  closest legacy color
      */
-    public EnumChatFormat getLegacyColor() {
+    public @NotNull EnumChatFormat getLegacyColor() {
         if (legacyColor == null) legacyColor = loadClosestColor();
         return legacyColor;
     }
@@ -178,7 +179,7 @@ public class TextColor {
      *
      * @return  the rgb combination as a 6-digit hex code string
      */
-    public String getHexCode() {
+    public @NotNull String getHexCode() {
         if (hexCode == null) hexCode = String.format("%06X", rgb);
         return hexCode;
     }
@@ -189,7 +190,7 @@ public class TextColor {
      *
      * @return  the color serialized for use in chat component
      */
-    public String toString(boolean rgbSupport) {
+    public @NotNull String toString(boolean rgbSupport) {
         if (!rgbSupport) return getLegacyColor().toString().toLowerCase();
         EnumChatFormat legacyEquivalent = EnumChatFormat.fromRGBExact(getRed(), getGreen(), getBlue());
         if (legacyEquivalent != null) {

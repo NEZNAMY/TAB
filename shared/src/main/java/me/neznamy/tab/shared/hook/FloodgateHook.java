@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.hook;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.geysermc.floodgate.api.FloodgateApi;
@@ -29,7 +30,7 @@ public class FloodgateHook {
      *          Player's name, used in debug message
      * @return  {@code true} if bedrock player, {@code false} if not
      */
-    public boolean isFloodgatePlayer(UUID uniqueId, String name) {
+    public boolean isFloodgatePlayer(@NonNull UUID uniqueId, @NonNull String name) {
         if (!installed) return false;
         if (FloodgateApi.getInstance() == null) {
             TAB.getInstance().debug("Floodgate is installed, but API returned null. Could not check player " + name);

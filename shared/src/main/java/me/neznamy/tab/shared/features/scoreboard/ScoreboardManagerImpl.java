@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -72,7 +73,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         if (forcedScoreboard.containsKey(p) || !hasScoreboardVisible(p) ||
                 announcement != null || otherPluginScoreboards.containsKey(p) || joinDelayed.contains(p)) return;
         sendHighestScoreboard(p);
@@ -86,7 +87,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         if (joinDelay > 0) {
             joinDelayed.add(connectedPlayer);
             TAB.getInstance().getCPUManager().runTaskLater(joinDelay, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
@@ -104,7 +105,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      * @param   p
      *          player to send scoreboard to
      */
-    public void sendHighestScoreboard(TabPlayer p) {
+    public void sendHighestScoreboard(@NonNull TabPlayer p) {
         if (!hasScoreboardVisible(p)) return;
         ScoreboardImpl scoreboard = (ScoreboardImpl) detectHighestScoreboard(p);
         ScoreboardImpl current = activeScoreboards.get(p);
@@ -124,7 +125,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      * @param   p
      *          player to unregister scoreboard to
      */
-    public void unregisterScoreboard(TabPlayer p) {
+    public void unregisterScoreboard(@NonNull TabPlayer p) {
         if (activeScoreboards.containsKey(p)) {
             activeScoreboards.get(p).removePlayer(p);
             activeScoreboards.remove(p);
@@ -138,7 +139,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
      *          player to check
      * @return  highest scoreboard player should see
      */
-    public Scoreboard detectHighestScoreboard(TabPlayer p) {
+    public @Nullable Scoreboard detectHighestScoreboard(@NonNull TabPlayer p) {
         if (forcedScoreboard.containsKey(p)) return forcedScoreboard.get(p);
         for (Scoreboard sb : definedScoreboards) {
             if (((ScoreboardImpl)sb).isConditionMet(p)) return sb;
@@ -147,7 +148,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public boolean onCommand(TabPlayer sender, String message) {
+    public boolean onCommand(@NonNull TabPlayer sender, @NonNull String message) {
         if (message.equals(toggleCommand) || message.startsWith(toggleCommand+" ")) {
             TAB.getInstance().getCommand().execute(sender, message.replace(toggleCommand, "scoreboard").split(" "));
             return true;
@@ -156,7 +157,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void onDisplayObjective(TabPlayer receiver, int slot, String objective) {
+    public void onDisplayObjective(@NonNull TabPlayer receiver, int slot, @NonNull String objective) {
         if (respectOtherPlugins && slot == PlatformScoreboard.DisplaySlot.SIDEBAR.ordinal() && !objective.equals(OBJECTIVE_NAME)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " received scoreboard called " + objective + ", hiding TAB one.");
             otherPluginScoreboards.put(receiver, objective);
@@ -168,7 +169,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void onObjective(TabPlayer receiver, int action, String objective) {
+    public void onObjective(@NonNull TabPlayer receiver, int action, @NonNull String objective) {
         if (respectOtherPlugins && action == 1 && otherPluginScoreboards.containsKey(receiver) && otherPluginScoreboards.get(receiver).equals(objective)) {
             TAB.getInstance().debug("Player " + receiver.getName() + " no longer has another scoreboard, sending TAB one.");
             otherPluginScoreboards.remove(receiver);
@@ -296,7 +297,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public void onServerChange(TabPlayer changed, String from, String to) {
+    public void onServerChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
         otherPluginScoreboards.remove(changed);
         ScoreboardImpl scoreboard = activeScoreboards.get(changed);
         if (scoreboard != null) {

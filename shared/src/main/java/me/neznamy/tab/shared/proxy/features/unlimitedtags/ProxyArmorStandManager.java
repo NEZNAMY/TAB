@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.proxy.features.unlimitedtags;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
 import me.neznamy.tab.shared.TabConstants;
@@ -12,7 +13,7 @@ public class ProxyArmorStandManager implements ArmorStandManager {
     private final NameTagX nameTagX;
     private final ProxyTabPlayer owner;
 
-    public ProxyArmorStandManager(NameTagX nameTagX, TabPlayer owner) {
+    public ProxyArmorStandManager(@NonNull NameTagX nameTagX, @NonNull TabPlayer owner) {
         this.nameTagX = nameTagX;
         this.owner = (ProxyTabPlayer) owner;
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()

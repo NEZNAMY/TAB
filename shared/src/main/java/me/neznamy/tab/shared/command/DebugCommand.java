@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -14,6 +15,8 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab debug" subcommand
@@ -28,7 +31,7 @@ public class DebugCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         TabPlayer analyzed = null;
         if (args.length > 0) {
             analyzed = TAB.getInstance().getPlayer(args[0]);
@@ -51,7 +54,7 @@ public class DebugCommand extends SubCommand {
      * @param   analyzed
      *          player to be analyzed
      */
-    private void debug(TabPlayer sender, TabPlayer analyzed) {
+    private void debug(@Nullable TabPlayer sender, @Nullable TabPlayer analyzed) {
         TAB tab = TAB.getInstance();
         String separator = "&7&m>-------------------------------<";
         sendMessage(sender, "&3[TAB] &a&lShowing debug information");
@@ -101,7 +104,7 @@ public class DebugCommand extends SubCommand {
      *
      * @return  group choice logic
      */
-    private String getGroupChoiceLogic() {
+    private @NotNull String getGroupChoiceLogic() {
         if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
             return "Permissions";
         }
@@ -114,7 +117,7 @@ public class DebugCommand extends SubCommand {
      *
      * @return  sorting type
      */
-    private String getSortingType() {
+    private @NotNull String getSortingType() {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting != null) {
             return sorting.typesToString();
@@ -130,7 +133,7 @@ public class DebugCommand extends SubCommand {
      *          player to check group of
      * @return  all info about player's group
      */
-    private String getGroup(TabPlayer analyzed) {
+    private @NotNull String getGroup(@NonNull TabPlayer analyzed) {
         if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
             return "&eHighest group permission: &8tab.group.&a" + analyzed.getGroup();
         }
@@ -144,7 +147,7 @@ public class DebugCommand extends SubCommand {
      *          player to get team name of
      * @return  team name of specified player
      */
-    private String getTeamName(TabPlayer analyzed) {
+    private @NotNull String getTeamName(@NonNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
@@ -162,7 +165,7 @@ public class DebugCommand extends SubCommand {
      *          player to get team name note of
      * @return  team name note of specified player
      */
-    private String getTeamNameNote(TabPlayer analyzed) {
+    private @NotNull String getTeamNameNote(@NonNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
@@ -177,7 +180,7 @@ public class DebugCommand extends SubCommand {
      *
      * @return  list of extra properties
      */
-    public List<String> getExtraLines() {
+    public @NotNull List<String> getExtraLines() {
         if (!TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) return new ArrayList<>();
         List<String> lines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines"));
         Map<String, Number> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
@@ -199,7 +202,7 @@ public class DebugCommand extends SubCommand {
      * @param   disabled
      *          if feature the property belongs to is disabled or not
      */
-    private void showProperty(TabPlayer sender, TabPlayer analyzed, String property, boolean disabled) {
+    private void showProperty(@Nullable TabPlayer sender, @NonNull TabPlayer analyzed, @NonNull String property, boolean disabled) {
         if (disabled) {
             sendMessage(sender, "&a" + property + ": &cDisabled in player's world/server");
         } else {
@@ -211,7 +214,7 @@ public class DebugCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         return arguments.length == 1 ? getOnlinePlayers(arguments[0]) : new ArrayList<>();
     }
 }

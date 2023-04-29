@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.proxy;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
@@ -34,6 +35,7 @@ public class PluginMessageHandler {
         messages.put("RegisterPlaceholder", this::registerPlaceholder);
         messages.put("PlaceholderError", this::placeholderError);
     }
+
     /**
      * Handles incoming plugin message with tab's channel name
      *
@@ -43,7 +45,7 @@ public class PluginMessageHandler {
      *          incoming message
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void onPluginMessage(UUID uuid, String name, byte[] bytes) {
+    public void onPluginMessage(@NonNull UUID uuid, @NonNull String name, byte[] bytes) {
         ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
         if (player == null) {
             TAB.getInstance().getErrorManager().printError("Ignoring plugin message (" + new String(bytes) + ") for player " +
@@ -54,7 +56,7 @@ public class PluginMessageHandler {
         messages.get(in.readUTF()).accept(player, in);
     }
 
-    public void placeholder(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void placeholder(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         String identifier = in.readUTF();
         if (!TAB.getInstance().getPlaceholderManager().getRegisteredPlaceholders().containsKey(identifier)) return;
         Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
@@ -65,37 +67,37 @@ public class PluginMessageHandler {
         }
     }
 
-    public void vanished(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void vanished(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         player.setVanished(in.readBoolean());
         TAB.getInstance().getFeatureManager().onVanishStatusChange(player);
         ((PlayerPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.VANISHED)).updateValue(player, player.isVanished());
     }
 
-    public void disguised(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void disguised(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         player.setDisguised(in.readBoolean());
     }
 
-    public void invisible(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void invisible(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         player.setInvisibilityPotion(in.readBoolean());
     }
 
-    public void world(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void world(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
     }
 
-    public void group(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void group(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.GROUP)).updateValue(player, in.readUTF());
     }
 
-    public void boat(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void boat(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         player.setOnBoat(in.readBoolean());
     }
 
-    public void permission(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void permission(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         player.setHasPermission(in.readUTF(), in.readBoolean());
     }
 
-    public void playerJoinResponse(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void playerJoinResponse(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
         if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge &&
                 !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
@@ -124,11 +126,11 @@ public class PluginMessageHandler {
         player.setBridgeConnected(true);
     }
 
-    public void registerPlaceholder(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void registerPlaceholder(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholders(Collections.singletonList(in.readUTF()));
     }
 
-    public void placeholderError(ProxyTabPlayer player, ByteArrayDataInput in) {
+    public void placeholderError(@NonNull ProxyTabPlayer player, @NonNull ByteArrayDataInput in) {
         String message = in.readUTF();
         int count = in.readInt();
         List<String> stack = new ArrayList<>();

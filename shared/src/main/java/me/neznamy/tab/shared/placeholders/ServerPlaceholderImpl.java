@@ -10,6 +10,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of ServerPlaceholder interface
@@ -33,7 +35,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      * @param   supplier
      *          supplier returning fresh output on request
      */
-    public ServerPlaceholderImpl(String identifier, int refresh, Supplier<Object> supplier) {
+    public ServerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier) {
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.supplier = supplier;
@@ -47,7 +49,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      */
     public boolean update() {
         String obj = getReplacements().findReplacement(String.valueOf(request()));
-        String newValue = obj == null ? identifier : setPlaceholders(obj, null);
+        String newValue = setPlaceholders(obj, null);
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && lastValue == null) {
@@ -74,7 +76,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      * @param   force
      *          whether refreshing should be forced or not
      */
-    private void updateValue(Object value, boolean force) {
+    private void updateValue(@Nullable Object value, boolean force) {
         String s = getReplacements().findReplacement(value == null ? lastValue == null ? identifier : lastValue : value.toString());
         if (s.equals(lastValue) && !force) return;
         lastValue = s;
@@ -97,12 +99,12 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     }
 
     @Override
-    public void updateFromNested(TabPlayer player) {
+    public void updateFromNested(@NonNull TabPlayer player) {
         updateValue(request(), true);
     }
 
     @Override
-    public String getLastValue(TabPlayer p) {
+    public @NotNull String getLastValue(@Nullable TabPlayer p) {
         return lastValue;
     }
 
@@ -113,7 +115,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      *
      * @return  value placeholder returned or "ERROR" if it threw an error
      */
-    public Object request() {
+    public @Nullable Object request() {
         try {
             return supplier.get();
         } catch (Throwable t) {

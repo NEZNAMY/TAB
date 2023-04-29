@@ -25,7 +25,7 @@ public class ProxyTabExpansion implements TabExpansion {
         return false;
     }
 
-    public void resendAllValues(TabPlayer player) {
+    public void resendAllValues(@NonNull TabPlayer player) {
         for (Map.Entry<String, String> entry : values.computeIfAbsent(player, p -> new HashMap<>()).entrySet()) {
             ((ProxyTabPlayer)player).sendPluginMessage("Expansion", entry.getKey(), entry.getValue());
         }

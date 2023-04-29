@@ -72,7 +72,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
         for (BossBar line : lineValues) {
             line.removePlayer(p);
         }

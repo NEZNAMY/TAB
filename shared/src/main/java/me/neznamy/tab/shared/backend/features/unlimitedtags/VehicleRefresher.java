@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -71,13 +72,13 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         Object vehicle = feature.getVehicle(connectedPlayer);
         if (vehicle != null) vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
     }
 
     @Override
-    public void onQuit(TabPlayer disconnectedPlayer) {
+    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
         if (playersInVehicle.containsKey(disconnectedPlayer)) vehicles.remove(feature.getEntityId(playersInVehicle.remove(disconnectedPlayer)));
         for (List<Integer> entities : vehicles.values()) {
             entities.remove((Integer)feature.getEntityId(disconnectedPlayer));
@@ -85,7 +86,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         if (feature.isPlayerDisabled(p)) return;
         Object vehicle = feature.getVehicle(p);
         if (playersInVehicle.containsKey(p) && vehicle == null) {
@@ -117,7 +118,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
      *          Player to check
      * @return  {@code true} if in a boat, {@code false} if not
      */
-    public boolean isOnBoat(TabPlayer p) {
+    public boolean isOnBoat(@NonNull TabPlayer p) {
         return playersOnBoats.contains(p);
     }
 }

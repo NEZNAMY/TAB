@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -19,7 +21,7 @@ public class PlayerSkin extends SkinSource {
     }
 
     @Override
-    public List<String> download(String input) {
+    public @NotNull List<String> download(@NonNull String input) {
         try {
             JSONObject json = getResponse("https://api.ashcon.app/mojang/v2/user/" + input);
             JSONObject textures = (JSONObject) json.get("textures");

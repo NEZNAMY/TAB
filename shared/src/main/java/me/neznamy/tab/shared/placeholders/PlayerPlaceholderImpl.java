@@ -9,6 +9,8 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of the PlayerPlaceholder interface
@@ -22,7 +24,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     private final String ERROR_VALUE = "ERROR";
 
     /** Placeholder function returning fresh output on request */
-    private final Function<me.neznamy.tab.api.TabPlayer, Object> function;
+    @NonNull private final Function<me.neznamy.tab.api.TabPlayer, Object> function;
 
     /** Last known values for each online player after applying replacements and nested placeholders */
     private final WeakHashMap<TabPlayer, String> lastValues = new WeakHashMap<>();
@@ -38,7 +40,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * @param   function
      *          refresh function which returns new up-to-date output on request
      */
-    public PlayerPlaceholderImpl(String identifier, int refresh, Function<me.neznamy.tab.api.TabPlayer, Object> function) {
+    public PlayerPlaceholderImpl(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, Object> function) {
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.function = function;
@@ -51,11 +53,11 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      *          player to update placeholder for
      * @return  {@code true} if value changed since last time, {@code false} if not
      */
-    public boolean update(TabPlayer p) {
+    public boolean update(@NonNull TabPlayer p) {
         Object output = request(p);
         if (output == null) return false; //bridge placeholders, they are updated using updateValue method
         String obj = getReplacements().findReplacement(String.valueOf(output));
-        String newValue = obj == null ? identifier : setPlaceholders(obj, p);
+        String newValue = setPlaceholders(obj, p);
 
         //make invalid placeholders return identifier instead of nothing
         if (identifier.equals(newValue) && !lastValues.containsKey(p)) {
@@ -82,7 +84,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      * @param   force
      *          whether refreshing should be forced or not
      */
-    private void updateValue(TabPlayer player, Object value, boolean force) {
+    private void updateValue(@NonNull TabPlayer player, @Nullable Object value, boolean force) {
         String s = getReplacements().findReplacement(value == null ? lastValues.getOrDefault(player, identifier) :
                 setPlaceholders(value.toString(), player));
         if (s.equals(lastValues.getOrDefault(player, identifier)) && !force) return;
@@ -100,15 +102,15 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     }
 
     @Override
-    public void updateValue(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull Object value) {
+    public void updateValue(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull Object value) {
         updateValue((TabPlayer) player, value, false);
     }
 
-    public void updateFromNested(TabPlayer player) {
+    public void updateFromNested(@NonNull TabPlayer player) {
         updateValue(player, request(player), true);
     }
 
-    public String getLastValue(TabPlayer p) {
+    public @NotNull String getLastValue(@Nullable TabPlayer p) {
         if (p == null) return identifier;
         if (!lastValues.containsKey(p)) {
             lastValues.put(p, getReplacements().findReplacement(identifier));
@@ -126,7 +128,7 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
      *          player to get placeholder value for
      * @return  value placeholder returned or "ERROR" if it threw an error
      */
-    public Object request(TabPlayer p) {
+    public Object request(@NonNull TabPlayer p) {
         try {
             return function.apply(p);
         } catch (Throwable t) {

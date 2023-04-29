@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -24,7 +26,7 @@ public class Texture extends SkinSource {
     }
 
     @Override
-    public List<String> download(String texture) {
+    public @NotNull List<String> download(@NonNull String texture) {
         try {
             URL url = new URL("https://api.mineskin.org/generate/url/");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();

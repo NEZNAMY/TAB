@@ -5,7 +5,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -111,36 +110,28 @@ public class BukkitPlatform extends BackendPlatform {
         if (identifier.startsWith("%rel_")) {
             //relational placeholder
             TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRefreshInterval(identifier), (viewer, target) ->
-                placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
+                    placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
+        } else if (identifier.startsWith("%sync:")) {
+            String syncedPlaceholder = "%" + identifier.substring(6, identifier.length()-1) + "%";
+            PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
+            ppl[0] = pl.registerPlayerPlaceholder(identifier, refresh, p -> {
+                try {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        long time = System.nanoTime();
+                        ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
+                        TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime()-time);
+                    });
+                    return null;
+                } catch (UnsupportedOperationException e) {
+                    return "<Folia does not support sync placeholders>";
+                }
+            });
+        } else if (identifier.startsWith("%server_")) {
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, refresh, () ->
+                    placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
         } else {
-            //normal placeholder
-            if (identifier.startsWith("%sync:")) {
-                String syncedPlaceholder = "%" + identifier.substring(6, identifier.length()-1) + "%";
-                pl.registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, null) {
-                    
-                    @Override
-                    public Object request(TabPlayer p) {
-                        try {
-                            Bukkit.getScheduler().runTask(plugin, () -> {
-                                long time = System.nanoTime();
-                                updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
-                                TAB.getInstance().getCPUManager().addPlaceholderTime(getIdentifier(), System.nanoTime()-time);
-                            });
-                            return null;
-                        } catch (UnsupportedOperationException e) {
-                            return "<Folia does not support sync placeholders>";
-                        }
-                    }
-                });
-                return;
-            }
-            if (identifier.startsWith("%server_")) {
-                TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, refresh, () ->
-                        placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
-            } else {
-                TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p ->
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p ->
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
-            }
         }
     }
 

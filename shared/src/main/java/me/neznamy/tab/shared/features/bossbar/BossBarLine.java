@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Class representing a BossBar from configuration
@@ -76,8 +77,8 @@ public class BossBarLine implements BossBar {
      * @param   progress
      *          BossBar progress
      */
-    public BossBarLine(BossBarManagerImpl manager, String name, String displayCondition,
-                       String color, String style, String title, String progress, boolean announcementOnly) {
+    public BossBarLine(@NonNull BossBarManagerImpl manager, @NonNull String name, @Nullable String displayCondition,
+                       @NonNull String color, @NonNull String style, @NonNull String title, @NonNull String progress, boolean announcementOnly) {
         this.name = name;
         this.displayCondition = Condition.getCondition(displayCondition);
         if (this.displayCondition != null) {
@@ -109,7 +110,7 @@ public class BossBarLine implements BossBar {
      *          player to check condition for
      * @return  true if met, false if not
      */
-    public boolean isConditionMet(TabPlayer p) {
+    public boolean isConditionMet(@NonNull TabPlayer p) {
         if (displayCondition == null) return true;
         return displayCondition.isMet(p);
     }
@@ -121,7 +122,7 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed color
      */
-    public BarColor parseColor(String color) {
+    public @NotNull BarColor parseColor(@NonNull String color) {
         try {
             return BarColor.valueOf(color);
         } catch (IllegalArgumentException e) {
@@ -136,7 +137,7 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed style
      */
-    public BarStyle parseStyle(String style) {
+    public @NotNull BarStyle parseStyle(@NonNull String style) {
         try {
             return BarStyle.valueOf(style);
         } catch (IllegalArgumentException e) {
@@ -152,7 +153,7 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed progress
      */
-    public float parseProgress(String progress) {
+    public float parseProgress(@NonNull String progress) {
         float value = TAB.getInstance().getErrorManager().parseFloat(progress, 100);
         if (value < 0) value = 0;
         if (value > 100) value = 100;
@@ -256,7 +257,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating text";
 
         @Override
-        public void refresh(TabPlayer refreshed, boolean force) {
+        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
         }
@@ -268,7 +269,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating progress";
 
         @Override
-        public void refresh(TabPlayer refreshed, boolean force) {
+        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseProgress(refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
@@ -280,7 +281,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating color";
 
         @Override
-        public void refresh(TabPlayer refreshed, boolean force) {
+        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseColor(refreshed.getProperty(propertyColor).updateAndGet()));
         }
@@ -292,7 +293,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating style";
 
         @Override
-        public void refresh(TabPlayer refreshed, boolean force) {
+        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseStyle(refreshed.getProperty(propertyStyle).updateAndGet()));
         }

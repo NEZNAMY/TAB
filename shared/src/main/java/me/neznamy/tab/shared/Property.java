@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A dynamic text with placeholder support. If any placeholder
@@ -19,22 +22,22 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 public class Property {
 
     /** Internal identifier for this text for PlaceholderAPI expansion, null if it should not be exposed */
-    private final String name;
+    @Nullable private final String name;
 
     /**
      * Feature defining this text, which will receive refresh function
      * if any of placeholders used in it change value.
      */
-    private final Refreshable listener;
+    @Nullable private final Refreshable listener;
     
     /** Player this text belongs to */
-    private final TabPlayer owner;
+    @NonNull private final TabPlayer owner;
     
     /** Raw value as defined in configuration */
-    @Getter private String originalRawValue;
+    @NonNull @Getter private String originalRawValue;
 
     /** Raw value assigned via API, null if not set */
-    @Getter private String temporaryValue;
+    @Nullable @Getter private String temporaryValue;
 
     /**
      * Raw value using %s for each placeholder ready to be inserted
@@ -47,7 +50,7 @@ public class Property {
     private String lastReplacedValue;
     
     /** Source defining value of the text, displayed in debug command */
-    private String source;
+    @Nullable private String source;
 
     /**
      * All placeholders used in the text in the same order they are used,
@@ -73,12 +76,13 @@ public class Property {
      * @param   source
      *          Source of the text used in debug command
      */
-    public Property(String name, Refreshable listener, TabPlayer owner, String rawValue, String source) {
+    public Property(@Nullable String name, @Nullable Refreshable listener, @NonNull TabPlayer owner,
+                    @NonNull String rawValue, @Nullable String source) {
         this.name = name;
         this.listener = listener;
         this.owner = owner;
         this.source = source;
-        this.originalRawValue = (rawValue == null ? "" : rawValue);
+        this.originalRawValue = rawValue;
         analyze(this.originalRawValue);
     }
 
@@ -89,7 +93,7 @@ public class Property {
      * @param   value
      *          raw value to analyze
      */
-    private void analyze(String value) {
+    private void analyze(@NonNull String value) {
         List<String> placeholders0 = new ArrayList<>();
         List<String> relPlaceholders0 = new ArrayList<>();
         for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(value)) {
@@ -135,7 +139,7 @@ public class Property {
      * @param   newSource
      *          new source of the text
      */
-    public void changeRawValue(String newValue, String newSource) {
+    public void changeRawValue(@NonNull String newValue, @Nullable String newSource) {
         if (originalRawValue.equals(newValue)) return;
         originalRawValue = newValue;
         source = newSource;
@@ -149,7 +153,7 @@ public class Property {
      *
      * @return  source of the value
      */
-    public String getSource() {
+    public @Nullable String getSource() {
         return temporaryValue == null ? source : "API";
     }
 
@@ -159,7 +163,7 @@ public class Property {
      * @param   temporaryValue
      *          temporary value to be assigned
      */
-    public void setTemporaryValue(String temporaryValue) {
+    public void setTemporaryValue(@Nullable String temporaryValue) {
         if (temporaryValue != null) {
             this.temporaryValue = temporaryValue;
             analyze(this.temporaryValue);
@@ -174,10 +178,9 @@ public class Property {
      *
      * @return  current raw value
      */
-    public String getCurrentRawValue() {
+    public @NotNull String getCurrentRawValue() {
         return temporaryValue != null ? temporaryValue : originalRawValue;
     }
-
 
     /**
      * Replaces all placeholders in current raw value, colorizes it and returns it.
@@ -185,7 +188,7 @@ public class Property {
      *
      * @return  updated value
      */
-    public String updateAndGet() {
+    public @NotNull String updateAndGet() {
         update();
         return get();
     }
@@ -223,7 +226,7 @@ public class Property {
      *
      * @return  last known value
      */
-    public String get() {
+    public @NotNull String get() {
         return lastReplacedValue;
     }
 
@@ -234,7 +237,7 @@ public class Property {
      *          the viewer
      * @return  format for the viewer
      */
-    public String getFormat(TabPlayer viewer) {
+    public @NotNull String getFormat(@Nullable TabPlayer viewer) {
         String format = lastReplacedValue;
         for (String identifier : relPlaceholders) {
             RelationalPlaceholderImpl pl = (RelationalPlaceholderImpl) TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);

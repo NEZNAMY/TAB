@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -18,7 +19,6 @@ import java.util.WeakHashMap;
 public abstract class ScoreboardLine extends TabFeature implements Line {
 
     @Getter private final String featureName = "Scoreboard";
-    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
 
     //ID of this line
     protected final int lineNumber;
@@ -45,7 +45,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   lineNumber
      *          ID of this line
      */
-    protected ScoreboardLine(ScoreboardImpl parent, int lineNumber) {
+    protected ScoreboardLine(@NonNull ScoreboardImpl parent, int lineNumber) {
         this.parent = parent;
         this.lineNumber = lineNumber;
         teamName = "TAB-SB-TM-" + lineNumber;
@@ -58,7 +58,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   p
      *          player to register line to
      */
-    public abstract void register(TabPlayer p);
+    public abstract void register(@NonNull TabPlayer p);
     
     /**
      * Unregisters this line to the player
@@ -66,14 +66,14 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   p
      *          player to unregister line to
      */
-    public abstract void unregister(TabPlayer p);
+    public abstract void unregister(@NonNull TabPlayer p);
 
     /**
      * Returns forced name start of this line to specified viewer
      *
      * @return  forced name start of this line to specified viewer
      */
-    public String getPlayerName(TabPlayer viewer) {
+    public String getPlayerName(@NonNull TabPlayer viewer) {
         return playerName;
     }
 
@@ -86,7 +86,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          max length of first string
      * @return  array of 2 strings where second one might be empty
      */
-    protected String[] split(String string, int firstElementMaxLength) {
+    protected String[] split(@NonNull String string, int firstElementMaxLength) {
         if (string.length() <= firstElementMaxLength) return new String[] {string, ""};
         int splitIndex = firstElementMaxLength;
         if (string.charAt(splitIndex-1) == EnumChatFormat.COLOR_CHAR) splitIndex--;
@@ -118,7 +118,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   suffix
      *          suffix
      */
-    protected void addLine(TabPlayer p, String fakePlayer, String prefix, String suffix) {
+    protected void addLine(@NonNull TabPlayer p, @NonNull String fakePlayer, @NonNull String prefix, @NonNull String suffix) {
         p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
         p.getScoreboard().registerTeam(teamName, prefix, suffix, "never", "never", Collections.singletonList(fakePlayer), 0);
         shownPlayers.add(p);
@@ -132,7 +132,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      * @param   fakePlayer
      *          player name
      */
-    protected void removeLine(TabPlayer p, String fakePlayer) {
+    protected void removeLine(@NonNull TabPlayer p, @NonNull String fakePlayer) {
         p.getScoreboard().removeScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer);
         p.getScoreboard().unregisterTeam(teamName);
         shownPlayers.remove(p);
@@ -145,7 +145,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          player to get number for
      * @return  number displayed
      */
-    public int getNumber(TabPlayer p) {
+    public int getNumber(@NonNull TabPlayer p) {
         if (parent.getManager().isUsingNumbers() || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) {
             return parent.getLines().size() + 1 - lineNumber;
         } else {
@@ -165,7 +165,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      *          maximum length of name field, used values are 16 characters for &lt;1.8 and 40 for 1.8+
      * @return  Split text as an array of 3 elements
      */
-    protected String[] splitText(String playerNameStart, String text, int maxNameLength) {
+    protected String[] splitText(@NonNull String playerNameStart, @NonNull String text, int maxNameLength) {
         String prefixValue;
         String nameValue;
         String suffixValue;
@@ -187,7 +187,7 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
         return new String[]{prefixValue, nameValue, suffixValue};
     }
 
-    public boolean isShownTo(TabPlayer player) {
+    public boolean isShownTo(@NonNull TabPlayer player) {
         return shownPlayers.contains(player);
     }
 }

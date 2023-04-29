@@ -86,7 +86,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @param   useRealId
      *          Whether tablist uses real uuid or offline
      */
-    protected TabPlayer(Object player, UUID uniqueId, String name, String server, String world, int protocolVersion, boolean useRealId) {
+    protected TabPlayer(@NonNull Object player, @NonNull UUID uniqueId, @NonNull String name, @NonNull String server,
+                        @NonNull String world, int protocolVersion, boolean useRealId) {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
@@ -115,7 +116,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @return  {@code true} if property did not exist or existed with different raw value,
      *          {@code false} if property existed with the same raw value already.
      */
-    private boolean setProperty(Refreshable feature, String identifier, String rawValue, String source, boolean exposeInExpansion) {
+    private boolean setProperty(@Nullable Refreshable feature, @NonNull String identifier, @NonNull String rawValue,
+                                @Nullable String source, boolean exposeInExpansion) {
         Property p = getProperty(identifier);
         if (p == null) {
             properties.put(identifier, new Property(exposeInExpansion ? identifier : null, feature, this, rawValue, source));
@@ -142,7 +144,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          new raw value
      * @return  {@code true} if value changed / did not exist, {@code false} if value did not change
      */
-    public boolean setProperty(Refreshable feature, String identifier, String rawValue) {
+    public boolean setProperty(@Nullable Refreshable feature, @NonNull String identifier, @NonNull String rawValue) {
         return setProperty(feature, identifier, rawValue, null, false);
     }
 
@@ -170,7 +172,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     }
 
     @Override
-    public void setTemporaryGroup(String group) {
+    public void setTemporaryGroup(@Nullable String group) {
         if (Objects.equals(group, temporaryGroup)) return;
         temporaryGroup = group;
         forceRefresh();
@@ -189,8 +191,8 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      * @param   translateColors
      *          whether colors should be translated or not
      */
-    public void sendMessage(String message, boolean translateColors) {
-        if (message == null || message.length() == 0) return;
+    public void sendMessage(@NonNull String message, boolean translateColors) {
+        if (message.length() == 0) return;
         IChatBaseComponent component;
         if (translateColors) {
             component = IChatBaseComponent.fromColoredText(message);
@@ -205,7 +207,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         TAB.getInstance().getFeatureManager().refresh(this, true);
     }
 
-    public Property getProperty(String name) {
+    public Property getProperty(@NonNull String name) {
         return properties.get(name);
     }
 
@@ -221,7 +223,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          property name to load
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    public boolean loadPropertyFromConfig(Refreshable feature, String property) {
+    public boolean loadPropertyFromConfig(@Nullable Refreshable feature, @NonNull String property) {
         return loadPropertyFromConfig(feature, property, "");
     }
 
@@ -235,7 +237,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *          value to use if property is not defined in config
      * @return  {@code true} if value did not exist or changed, {@code false} otherwise
      */
-    public boolean loadPropertyFromConfig(Refreshable feature, String property, String ifNotSet) {
+    public boolean loadPropertyFromConfig(@Nullable Refreshable feature, @NonNull String property, @NonNull String ifNotSet) {
         String[] value = TAB.getInstance().getConfiguration().getUsers().getProperty(getName(), property, server, world);
         if (value.length == 0) {
             value = TAB.getInstance().getConfiguration().getUsers().getProperty(getUniqueId().toString(), property, server, world);
@@ -321,7 +323,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  TabList interface for calling tablist-related methods
      */
-    public abstract TabList getTabList();
+    public abstract @NotNull TabList getTabList();
 
     /**
      * Sends specified component as a chat message

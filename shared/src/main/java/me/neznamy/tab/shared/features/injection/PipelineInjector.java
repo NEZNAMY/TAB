@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.injection;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
@@ -53,11 +54,11 @@ public abstract class PipelineInjector extends TabFeature implements JoinListene
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         inject(connectedPlayer);
     }
 
-    protected void logTeamOverride(String team, String player, String expectedTeam) {
+    protected void logTeamOverride(@NonNull String team, @NonNull String player, @NonNull String expectedTeam) {
         String message = "Something just tried to add player " + player + " into team " + team + " (expected team: " + expectedTeam + ")";
         //not logging the same message for every online player who received the packet
         if (!message.equals(lastTeamOverrideMessage)) {

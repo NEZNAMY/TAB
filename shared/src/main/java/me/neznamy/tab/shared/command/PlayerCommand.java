@@ -3,9 +3,12 @@ package me.neznamy.tab.shared.command;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab player" subcommand
@@ -20,7 +23,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         //<name> <property> [value...]
         if (args.length <= 1) {
             help(sender);
@@ -33,7 +36,7 @@ public class PlayerCommand extends PropertyCommand {
         trySaveEntity(sender, args);
     }
 
-    private void remove(TabPlayer sender, String player) {
+    private void remove(@Nullable TabPlayer sender, @NonNull String player) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getUsers().remove(player);
             TabPlayer pl = TAB.getInstance().getPlayer(player);
@@ -47,7 +50,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(TabPlayer sender, String player, String type, String value, String server, String world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NonNull String player, @NonNull String type, @NonNull String value, @Nullable String server, @Nullable String world) {
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
         } else {
@@ -66,7 +69,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(TabPlayer sender, String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         return super.complete(sender, arguments);
     }

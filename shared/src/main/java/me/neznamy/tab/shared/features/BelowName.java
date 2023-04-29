@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
@@ -72,7 +73,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         connectedPlayer.setProperty(this, TabConstants.Property.BELOWNAME_NUMBER, rawNumber);
         connectedPlayer.setProperty(textRefresher, TabConstants.Property.BELOWNAME_TEXT, rawText);
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
@@ -92,8 +93,8 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
-    public void onServerChange(TabPlayer player, String from, String to) {
-        onWorldChange(player, null, null);
+    public void onServerChange(@NonNull TabPlayer player, @NonNull String from, @NonNull String to) {
+        processSwitch(player);
         if (isDisabledPlayer(player)) return;
         player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         player.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
@@ -105,7 +106,11 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
+    }
+
+    private void processSwitch(@NonNull TabPlayer p) {
         boolean disabledBefore = isDisabledPlayer(p);
         boolean disabledNow = false;
         if (isDisabled(p.getServer(), p.getWorld())) {
@@ -114,15 +119,16 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         } else {
             removeDisabledPlayer(p);
         }
-        if (disabledNow && !disabledBefore) {
-            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
+        if (disabledNow) {
+            if (!disabledBefore) {
+                p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
+            }
             return;
         }
-        if (!disabledNow && disabledBefore) {
+        if (disabledBefore) {
             onJoin(p);
             return;
         }
-        if (disabledNow) return;
         int number = getValue(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (sameServerAndWorld(all, p)) {
@@ -133,12 +139,12 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         if (redis != null) redis.updateBelowName(p, number);
     }
 
-    public int getValue(TabPlayer p) {
+    public int getValue(@NonNull TabPlayer p) {
         return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).updateAndGet(), 0);
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (isDisabledPlayer(refreshed)) return;
         int number = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -149,7 +155,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         if (redis != null) redis.updateBelowName(refreshed, number);
     }
 
-    private boolean sameServerAndWorld(TabPlayer player1, TabPlayer player2) {
+    private boolean sameServerAndWorld(@NonNull TabPlayer player1, @NonNull TabPlayer player2) {
         return player2.getWorld().equals(player1.getWorld()) && Objects.equals(player2.getServer(), player1.getServer());
     }
 
@@ -161,7 +167,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         private final BelowName feature;
 
         @Override
-        public void refresh(TabPlayer refreshed, boolean force) {
+        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
             if (feature.isDisabledPlayer(refreshed)) return;
             refreshed.getScoreboard().updateObjective(OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         }

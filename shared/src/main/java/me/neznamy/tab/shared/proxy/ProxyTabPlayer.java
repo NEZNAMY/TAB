@@ -58,7 +58,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * @param   protocolVersion
      *          Player's protocol network id
      */
-    protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
+    protected ProxyTabPlayer(@NonNull Object player, @NonNull UUID uniqueId, @NonNull String name, @NonNull String server, int protocolVersion) {
         super(player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
         sendJoinPluginMessage();
     }
@@ -111,7 +111,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * @param   value
      *          Permission value
      */
-    public void setHasPermission(String permission, boolean value) {
+    public void setHasPermission(@NonNull String permission, boolean value) {
         permissions.put(permission, value);
     }
 
@@ -153,7 +153,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      *          Messages to encode
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void sendPluginMessage(Object... args) {
+    public void sendPluginMessage(@NonNull Object... args) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         for (Object arg : args) {
             writeObject(out, arg);

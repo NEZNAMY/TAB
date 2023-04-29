@@ -156,7 +156,7 @@ public abstract class NMSStorage {
      *          client version used to decide RGB conversion
      * @return  converted component or {@code null} if {@code component} is {@code null}
      */
-    public @Nullable Object toNMSComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
+    public @Nullable Object toNMSComponent(@NonNull IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
     }
 

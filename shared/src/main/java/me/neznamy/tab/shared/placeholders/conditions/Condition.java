@@ -4,11 +4,13 @@ import java.util.*;
 import java.util.function.Function;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The main condition class. It allows users to configure different
@@ -75,15 +77,11 @@ public class Condition {
      * @param   no
      *          value to return if condition is not met
      */
-    public Condition(boolean type, String name, List<String> conditions, String yes, String no) {
+    public Condition(boolean type, @NonNull String name, @NonNull List<String> conditions, @Nullable String yes, @Nullable String no) {
         this.type = type;
         this.name = name;
         this.yes = yes;
         this.no = no;
-        if (conditions == null) {
-            TAB.getInstance().getMisconfigurationHelper().conditionHasNoConditions(name);
-            return;
-        }
         for (String line : conditions) {
             Function<TabPlayer, Boolean> condition = compile(line);
             if (condition != null) {
@@ -100,8 +98,8 @@ public class Condition {
                 placeholdersInConditions.addAll(pm.detectPlaceholders(subCondition));
             }
         }
-        placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
-        placeholdersInConditions.addAll(pm.detectPlaceholders(no));
+        if (yes != null) placeholdersInConditions.addAll(pm.detectPlaceholders(yes));
+        if (no != null) placeholdersInConditions.addAll(pm.detectPlaceholders(no));
         registeredConditions.put(name, this);
     }
 

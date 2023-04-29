@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
@@ -13,6 +14,7 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Feature registration which offers calls to all features
@@ -24,7 +26,7 @@ public class FeatureManager {
     private final Map<String, TabFeature> features = new LinkedHashMap<>();
 
     /** All registered features in an array to avoid memory allocations on iteration */
-    @Getter private TabFeature[] values = new TabFeature[0];
+    @NonNull @Getter private TabFeature[] values = new TabFeature[0];
 
     /**
      * Calls load() on all features.
@@ -70,13 +72,13 @@ public class FeatureManager {
      * @param   force
      *          whether refresh should be forced or not
      */
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         for (TabFeature f : values) {
             if (f instanceof Refreshable) ((Refreshable)f).refresh(refreshed, force);
         }
     }
 
-    public void onGameModeChange(TabPlayer player) {
+    public void onGameModeChange(@NonNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof GameModeListener)) continue;
             long time = System.nanoTime();
@@ -85,7 +87,7 @@ public class FeatureManager {
         }
     }
 
-    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id) {
+    public IChatBaseComponent onDisplayNameChange(@NonNull TabPlayer packetReceiver, @NonNull UUID id) {
         IChatBaseComponent newDisplayName = null;
         for (TabFeature f : values) {
             if (!(f instanceof DisplayNameListener)) continue;
@@ -97,7 +99,7 @@ public class FeatureManager {
         return newDisplayName;
     }
 
-    public void onQuit(TabPlayer disconnectedPlayer) {
+    public void onQuit(@Nullable TabPlayer disconnectedPlayer) {
         if (disconnectedPlayer == null) return;
         long millis = System.currentTimeMillis();
         for (TabFeature f : values) {
@@ -110,7 +112,7 @@ public class FeatureManager {
         TAB.getInstance().debug("Player quit of " + disconnectedPlayer.getName() + " processed in " + (System.currentTimeMillis()-millis) + "ms");
     }
 
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         if (!connectedPlayer.isOnline()) return;
         long millis = System.currentTimeMillis();
         TAB.getInstance().addPlayer(connectedPlayer);
@@ -130,7 +132,7 @@ public class FeatureManager {
         }
     }
 
-    public void onWorldChange(UUID playerUUID, String to) {
+    public void onWorldChange(@NonNull UUID playerUUID, @NonNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
         String from = changed.getWorld();
@@ -144,7 +146,7 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.WORLD)).updateValue(changed, to);
     }
 
-    public void onServerChange(UUID playerUUID, String to) {
+    public void onServerChange(@NonNull UUID playerUUID, @NonNull String to) {
         TabPlayer changed = TAB.getInstance().getPlayer(playerUUID);
         if (changed == null) return;
         String from = changed.getServer();
@@ -160,7 +162,7 @@ public class FeatureManager {
         ((PlayerPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.SERVER)).updateValue(changed, to);
     }
 
-    public boolean onCommand(TabPlayer sender, String command) {
+    public boolean onCommand(@Nullable TabPlayer sender, @NonNull String command) {
         if (sender == null) return false;
         boolean cancel = false;
         for (TabFeature f : values) {
@@ -180,7 +182,7 @@ public class FeatureManager {
      * @param   packet
      *          OUT packet coming from the server
      */
-    public void onPacketSend(TabPlayer receiver, Object packet) {
+    public void onPacketSend(@NonNull TabPlayer receiver, @NonNull Object packet) {
         for (TabFeature f : values) {
             if (!(f instanceof PacketSendListener)) continue;
             long time = System.nanoTime();
@@ -203,7 +205,7 @@ public class FeatureManager {
      * @param   objective
      *          Objective name
      */
-    public void onDisplayObjective(TabPlayer packetReceiver, int slot, String objective) {
+    public void onDisplayObjective(@NonNull TabPlayer packetReceiver, int slot, @NonNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof DisplayObjectiveListener)) continue;
             long time = System.nanoTime();
@@ -222,7 +224,7 @@ public class FeatureManager {
      * @param   objective
      *          Objective name
      */
-    public void onObjective(TabPlayer packetReceiver, int action, String objective) {
+    public void onObjective(@NonNull TabPlayer packetReceiver, int action, @NonNull String objective) {
         for (TabFeature f : values) {
             if (!(f instanceof ObjectiveListener)) continue;
             long time = System.nanoTime();
@@ -231,7 +233,7 @@ public class FeatureManager {
         }
     }
 
-    public void onVanishStatusChange(TabPlayer player) {
+    public void onVanishStatusChange(@NonNull TabPlayer player) {
         for (TabFeature f : values) {
             if (!(f instanceof VanishListener)) continue;
             long time = System.nanoTime();
@@ -240,8 +242,7 @@ public class FeatureManager {
         }
     }
 
-    public void registerFeature(String featureName, TabFeature featureHandler) {
-        if (featureName == null || featureHandler == null) return;
+    public void registerFeature(@NonNull String featureName, @NonNull TabFeature featureHandler) {
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
         if (featureHandler instanceof VanishListener) {
@@ -252,17 +253,17 @@ public class FeatureManager {
         }
     }
 
-    public void unregisterFeature(String featureName) {
+    public void unregisterFeature(@NonNull String featureName) {
         features.remove(featureName);
         values = features.values().toArray(new TabFeature[0]);
     }
 
-    public boolean isFeatureEnabled(String name) {
+    public boolean isFeatureEnabled(@NonNull String name) {
         return features.containsKey(name);
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends TabFeature> T getFeature(String name) {
+    public <T extends TabFeature> T getFeature(@NonNull String name) {
         return (T) features.get(name);
     }
 }

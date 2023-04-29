@@ -23,48 +23,48 @@ public class RedisBelowName extends RedisFeature {
     private final RedisSupport redisSupport;
     @Getter private final Map<RedisPlayer, Integer> values = new WeakHashMap<>();
 
-    public RedisBelowName(RedisSupport redisSupport) {
+    public RedisBelowName(@NonNull RedisSupport redisSupport) {
         this.redisSupport = redisSupport;
         redisSupport.registerMessage("belowname", Update.class, Update::new);
     }
 
     @Override
-    public void onJoin(TabPlayer player) {
+    public void onJoin(@NonNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             player.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), values.get(redis));
         }
     }
 
     @Override
-    public void onJoin(RedisPlayer player) {
+    public void onJoin(@NonNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), values.get(player));
         }
     }
 
     @Override
-    public void onServerSwitch(TabPlayer player) {
+    public void onServerSwitch(@NonNull TabPlayer player) {
         onJoin(player);
     }
 
     @Override
-    public void onServerSwitch(RedisPlayer player) {
+    public void onServerSwitch(@NonNull RedisPlayer player) {
         // No action is needed
     }
 
     @Override
-    public void onQuit(RedisPlayer player) {
+    public void onQuit(@NonNull RedisPlayer player) {
         // No action is needed
     }
 
     @Override
-    public void write(@NonNull ByteArrayDataOutput out, TabPlayer player) {
+    public void write(@NonNull ByteArrayDataOutput out, @NonNull TabPlayer player) {
         out.writeInt(TAB.getInstance().getErrorManager().parseInteger(
                 player.getProperty(TabConstants.Property.BELOWNAME_NUMBER).get(), 0));
     }
 
     @Override
-    public void read(@NonNull ByteArrayDataInput in, RedisPlayer player) {
+    public void read(@NonNull ByteArrayDataInput in, @NonNull RedisPlayer player) {
         values.put(player, in.readInt());
     }
 

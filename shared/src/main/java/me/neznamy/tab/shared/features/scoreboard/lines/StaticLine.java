@@ -25,13 +25,13 @@ public class StaticLine extends ScoreboardLine {
     protected String name;
     protected String suffix;
 
-    public StaticLine(ScoreboardImpl parent, int lineNumber, String text) {
+    public StaticLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
         super(parent, lineNumber);
         this.text = EnumChatFormat.color(text);
         setValues(this.text);
     }
 
-    private void setValues(String text) {
+    private void setValues(@NonNull String text) {
         super.text = text;
         String legacy = RGBUtils.getInstance().convertRGBtoLegacy(this.text);
         //1.8+
@@ -47,7 +47,7 @@ public class StaticLine extends ScoreboardLine {
     }
 
     @Override
-    public String getPlayerName(TabPlayer viewer) {
+    public String getPlayerName(@NonNull TabPlayer viewer) {
         if (viewer.getVersion().getMinorVersion() >= 13) {
             return playerName;
         } else if (viewer.getVersion().getMinorVersion() >= 8) {
@@ -58,7 +58,7 @@ public class StaticLine extends ScoreboardLine {
     }
 
     @Override
-    public void register(TabPlayer p) {
+    public void register(@NonNull TabPlayer p) {
         if (p.getVersion().getMinorVersion() >= 13) {
             addLine(p, playerName, text, "");
         } else if (p.getVersion().getMinorVersion() >= 8) {
@@ -69,7 +69,7 @@ public class StaticLine extends ScoreboardLine {
     }
 
     @Override
-    public void unregister(TabPlayer p) {
+    public void unregister(@NonNull TabPlayer p) {
         if (text.length() > 0) {
             removeLine(p, getPlayerName(p));
         }

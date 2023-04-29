@@ -8,17 +8,17 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 
 public abstract class RedisFeature {
 
-    public abstract void onJoin(TabPlayer player);
+    public abstract void onJoin(@NonNull TabPlayer player);
 
-    public abstract void onJoin(RedisPlayer player);
+    public abstract void onJoin(@NonNull RedisPlayer player);
 
-    public abstract void onServerSwitch(TabPlayer player);
+    public abstract void onServerSwitch(@NonNull TabPlayer player);
 
-    public abstract void onServerSwitch(RedisPlayer player);
+    public abstract void onServerSwitch(@NonNull RedisPlayer player);
 
-    public abstract void onQuit(RedisPlayer player);
+    public abstract void onQuit(@NonNull RedisPlayer player);
 
-    public abstract void write(@NonNull ByteArrayDataOutput out, TabPlayer player);
+    public abstract void write(@NonNull ByteArrayDataOutput out, @NonNull TabPlayer player);
 
-    public abstract void read(@NonNull ByteArrayDataInput in, RedisPlayer player);
+    public abstract void read(@NonNull ByteArrayDataInput in, @NonNull RedisPlayer player);
 }

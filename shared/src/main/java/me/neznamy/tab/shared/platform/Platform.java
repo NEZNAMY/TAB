@@ -66,14 +66,16 @@ public abstract class Platform {
             featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
 
         if (configuration.isPipelineInjection()) {
-            featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, getPipelineInjector());
+            PipelineInjector inj = getPipelineInjector();
+            if (inj != null) featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, inj);
         }
 
         if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
             featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
 
         if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, getPerWorldPlayerlist());
+            TabFeature pwp = getPerWorldPlayerlist();
+            if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
         }
 
         if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
@@ -121,7 +123,8 @@ public abstract class Platform {
         }
 
         // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
-        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, getRedisSupport());
+        RedisSupport redis = getRedisSupport();
+        if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
     }
 
     public @NotNull BossBarManagerImpl getLegacyBossBar() {

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -14,5 +15,5 @@ public interface GameModeListener {
      * @param   player
      *          Player who changed game mode
      */
-    void onGameModeChange(TabPlayer player);
+    void onGameModeChange(@NonNull TabPlayer player);
 }

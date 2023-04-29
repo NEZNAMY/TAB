@@ -69,7 +69,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      *          name of BossBar in config
      * @return  loaded BossBar
      */
-    private BossBarLine loadFromConfig(String bar) {
+    private @NotNull BossBarLine loadFromConfig(@NonNull String bar) {
         Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
         String condition = (String) bossBar.get("display-condition");
         String style = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "style", "PROGRESS",
@@ -92,7 +92,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         if (!hasBossBarVisible(p)) return;
         for (BossBar line : lineValues) {
             line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
@@ -111,12 +111,12 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         setBossBarVisible(connectedPlayer, hiddenByDefault == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
     }
 
     @Override
-    public boolean onCommand(TabPlayer sender, String message) {
+    public boolean onCommand(@NonNull TabPlayer sender, @NonNull String message) {
         if (message.equalsIgnoreCase(toggleCommand)) {
             TAB.getInstance().getCommand().execute(sender, new String[] {"bossbar"});
             return true;
@@ -130,7 +130,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * @param   p
      *          player to process
      */
-    protected void detectBossBarsAndSend(TabPlayer p) {
+    protected void detectBossBarsAndSend(@NonNull TabPlayer p) {
         if (!hasBossBarVisible(p)) return;
         showBossBars(p, defaultBars);
         showBossBars(p, announcedBossBars.stream().map(BossBar::getName).collect(Collectors.toList()));
@@ -144,7 +144,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * @param   bars
      *          list of BossBars to check
      */
-    private void showBossBars(TabPlayer p, List<String> bars) {
+    private void showBossBars(@NonNull TabPlayer p, @NonNull List<String> bars) {
         for (String defaultBar : bars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
             if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {

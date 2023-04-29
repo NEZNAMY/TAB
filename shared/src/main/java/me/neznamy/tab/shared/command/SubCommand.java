@@ -9,12 +9,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.MessageFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Abstract class representing a subcommand of "/tab" command
  */
@@ -42,7 +46,7 @@ public abstract class SubCommand {
      * @param   subcommand
      *          subcommand to register
      */
-    public void registerSubCommand(SubCommand subcommand) {
+    public void registerSubCommand(@NonNull SubCommand subcommand) {
         getSubcommands().put(subcommand.getName(), subcommand);
     }
 
@@ -53,7 +57,7 @@ public abstract class SubCommand {
      *          player who ran command or null if console
      * @return  true if sender has permission or is console, false otherwise
      */
-    public boolean hasPermission(TabPlayer sender) {
+    public boolean hasPermission(@Nullable TabPlayer sender) {
         return hasPermission(sender, permission);
     }
 
@@ -66,7 +70,7 @@ public abstract class SubCommand {
      *          permission to check for
      * @return  true if sender has permission or is console, false otherwise
      */
-    public boolean hasPermission(TabPlayer sender, String permission) {
+    public boolean hasPermission(@Nullable TabPlayer sender, @Nullable String permission) {
         if (permission == null) return true; //no permission required
         if (sender == null) return true; //console
         if (sender.hasPermission(TabConstants.Permission.COMMAND_ALL)) return true;
@@ -81,7 +85,7 @@ public abstract class SubCommand {
      * @param   messages
      *          messages to send
      */
-    public void sendMessages(TabPlayer sender, List<String> messages) {
+    public void sendMessages(@Nullable TabPlayer sender, @NonNull List<String> messages) {
         messages.forEach(m -> sendMessage(sender, m));
     }
 
@@ -93,8 +97,8 @@ public abstract class SubCommand {
      * @param   message
      *          the message to sent
      */
-    public void sendMessage(TabPlayer sender, String message) {
-        if (message == null || message.length() == 0) return;
+    public void sendMessage(@Nullable TabPlayer sender, @NonNull String message) {
+        if (message.length() == 0) return;
         if (sender != null) {
             sender.sendMessage(message, true);
         } else {
@@ -110,8 +114,8 @@ public abstract class SubCommand {
      * @param   message
      *          the message to sent
      */
-    public void sendRawMessage(TabPlayer sender, String message) {
-        if (message == null || message.length() == 0) return;
+    public void sendRawMessage(@Nullable TabPlayer sender, @NonNull String message) {
+        if (message.length() == 0) return;
         if (sender != null) {
             sender.sendMessage(message, false);
         } else {
@@ -126,7 +130,7 @@ public abstract class SubCommand {
      *          beginning of the name
      * @return  List of compatible players
      */
-    public List<String> getOnlinePlayers(String nameStart) {
+    public @NotNull List<String> getOnlinePlayers(@NonNull String nameStart) {
         List<String> suggestions = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
@@ -134,7 +138,7 @@ public abstract class SubCommand {
         return suggestions;
     }
 
-    public List<String> getStartingArgument(Collection<String> values, String argument) {
+    public @NotNull List<String> getStartingArgument(@NonNull Collection<String> values, @NonNull String argument) {
         return values.stream().filter(value -> value.toLowerCase().startsWith(argument.toLowerCase())).collect(Collectors.toList());
     }
 
@@ -147,7 +151,7 @@ public abstract class SubCommand {
      *          arguments inserted in chat so far
      * @return  List of possible arguments
      */
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         String argument;
         if (arguments.length == 0) {
             argument = "";
@@ -168,7 +172,7 @@ public abstract class SubCommand {
         return new ArrayList<>();
     }
 
-    public MessageFile getMessages() {
+    public @NotNull MessageFile getMessages() {
         return TAB.getInstance().getConfiguration().getMessages();
     }
 
@@ -180,5 +184,5 @@ public abstract class SubCommand {
      * @param   args
      *          arguments of the command
      */
-    public abstract void execute(TabPlayer sender, String[] args);
+    public abstract void execute(@Nullable TabPlayer sender, @NonNull String[] args);
 }

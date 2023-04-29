@@ -2,9 +2,12 @@ package me.neznamy.tab.shared.command;
 
 import java.util.List;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab playeruuid" subcommand
@@ -19,7 +22,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         //<uuid> <property> [value...]
         if (args.length <= 1) {
             help(sender);
@@ -39,7 +42,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
         trySaveEntity(sender, args);
     }
 
-    private void remove(TabPlayer sender, TabPlayer changed) {
+    private void remove(@Nullable TabPlayer sender, @NonNull TabPlayer changed) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
             changed.forceRefresh();
@@ -50,7 +53,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(TabPlayer sender, String playerName, String type, String value, String server, String world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NonNull String playerName, @NonNull String type, @NonNull String value, String server, String world) {
         TabPlayer player = TAB.getInstance().getPlayer(playerName);
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, playerName + "(" + player.getUniqueId() + ")"));
@@ -64,7 +67,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
     
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         return super.complete(sender, arguments);
     }

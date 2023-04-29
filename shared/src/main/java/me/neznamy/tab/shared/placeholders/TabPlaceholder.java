@@ -1,10 +1,13 @@
 package me.neznamy.tab.shared.placeholders;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,16 +17,17 @@ import java.util.Map;
 /**
  * General collection of variables and functions shared between all placeholder types
  */
+@Getter
 public abstract class TabPlaceholder implements Placeholder {
 
     /** Refresh interval of the placeholder */
-    @Getter private final int refresh;
+    private final int refresh;
 
     /** Placeholder's identifier including % */
-    @Getter protected final String identifier;
+    @NonNull protected final String identifier;
 
     /** Configured placeholder output replacements */
-    @Getter protected final PlaceholderReplacementPattern replacements;
+    @NonNull protected final PlaceholderReplacementPattern replacements;
 
     /**
      * List of placeholders using this placeholder as a nested placeholder,
@@ -41,7 +45,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          refresh interval in milliseconds, must be divisible by {@link TabConstants.Placeholder#MINIMUM_REFRESH_INTERVAL}
      *          or equal to -1 to disable automatic refreshing
      */
-    protected TabPlaceholder(String identifier, int refresh) {
+    protected TabPlaceholder(@NonNull String identifier, int refresh) {
         if (refresh % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0 && refresh != -1)
             throw new IllegalArgumentException("Refresh interval must be divisible by " + TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL);
         if (!identifier.startsWith("%") || !identifier.endsWith("%"))
@@ -69,7 +73,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          player to set placeholder for
      * @return  string with this placeholder replaced
      */
-    public String set(String string, TabPlayer player) {
+    public String set(@NonNull String string, @Nullable TabPlayer player) {
         return replace(string, identifier, setPlaceholders(getLastValue(player), player));
     }
 
@@ -81,7 +85,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          output to check
      * @return  List of nested placeholders in provided output
      */
-    public List<String> getNestedPlaceholders(String output) {
+    public List<String> getNestedPlaceholders(@NonNull String output) {
         return TAB.getInstance().getPlaceholderManager().detectPlaceholders(output);
     }
 
@@ -98,7 +102,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          Replacement text
      * @return  Replaced text
      */
-    private String replace(String string, String original, String replacement) {
+    private String replace(@NonNull String string, @NonNull String original, @NonNull String replacement) {
         if (!string.contains(original)) return string;
         if (string.equals(original)) return replacement;
         return string.replace(original, replacement);
@@ -113,7 +117,7 @@ public abstract class TabPlaceholder implements Placeholder {
      *          player to replace for
      * @return  text with replaced placeholders in output
      */
-    protected String setPlaceholders(String text, TabPlayer p) {
+    protected @NotNull String setPlaceholders(@NonNull String text, @Nullable TabPlayer p) {
         if (identifier.equals(text)) return text;
         String replaced = text;
         for (String s : getNestedPlaceholders(text)) {
@@ -130,7 +134,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   parent
      *          parent placeholder using this placeholder in output
      */
-    public void addParent(String parent) {
+    public void addParent(@NonNull String parent) {
         if (!parents.contains(parent)) parents.add(parent);
     }
 
@@ -141,7 +145,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   player
      *          Player to update placeholders for.
      */
-    public void updateParents(TabPlayer player) {
+    public void updateParents(@NonNull TabPlayer player) {
         if (parents.isEmpty()) return;
         parents.stream().map(identifier -> TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier)).forEach(placeholder -> placeholder.updateFromNested(player));
     }
@@ -152,7 +156,7 @@ public abstract class TabPlaceholder implements Placeholder {
      * @param   player
      *          player to update placeholder for
      */
-    public abstract void updateFromNested(TabPlayer player);
+    public abstract void updateFromNested(@NonNull TabPlayer player);
 
     /**
      * Returns last known value of defined player
@@ -161,5 +165,5 @@ public abstract class TabPlaceholder implements Placeholder {
      *          player to get value of
      * @return  last known value for specified player
      */
-    public abstract String getLastValue(TabPlayer player);
+    public abstract @NotNull String getLastValue(@Nullable TabPlayer player);
 }

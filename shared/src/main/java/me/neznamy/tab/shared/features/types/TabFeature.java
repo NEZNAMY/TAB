@@ -5,6 +5,8 @@ import java.util.*;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Abstract class representing a core feature of the plugin.
@@ -59,7 +61,7 @@ public abstract class TabFeature {
      *          world to check
      * @return  {@code true} if feature should be disabled, {@code false} if not
      */
-    public boolean isDisabled(String server, String world) {
+    public boolean isDisabled(@Nullable String server, @Nullable String world) {
         boolean contains = contains(disabledWorlds, world);
         if (worldWhitelistMode) contains = !contains;
         if (contains) return true;
@@ -79,7 +81,7 @@ public abstract class TabFeature {
      *          Element to find
      * @return  {@code true} if element was found, {@code false} if not
      */
-    protected boolean contains(String[] list, String element) {
+    protected boolean contains(@NonNull String[] list, @Nullable String element) {
         if (element == null) return false;
         for (String s : list) {
             if (s.endsWith("*")) {
@@ -100,7 +102,7 @@ public abstract class TabFeature {
      * @return  {@code true} if player is in disabled server / world,
      *          {@code false} if not
      */
-    public boolean isDisabledPlayer(TabPlayer p) {
+    public boolean isDisabledPlayer(@NonNull TabPlayer p) {
         return disabledPlayers.contains(p);
     }
 
@@ -111,7 +113,7 @@ public abstract class TabFeature {
      * @param   p
      *          Player to add
      */
-    public void addDisabledPlayer(TabPlayer p) {
+    public void addDisabledPlayer(@NonNull TabPlayer p) {
         if (disabledPlayers.contains(p)) return;
         disabledPlayers.add(p);
     }
@@ -123,7 +125,7 @@ public abstract class TabFeature {
      * @param   p
      *          Player to check
      */
-    public void removeDisabledPlayer(TabPlayer p) {
+    public void removeDisabledPlayer(@NonNull TabPlayer p) {
         disabledPlayers.remove(p);
     }
 
@@ -132,5 +134,5 @@ public abstract class TabFeature {
      *
      * @return  name of this feature display in /tab cpu
      */
-    public abstract String getFeatureName();
+    public abstract @NotNull String getFeatureName();
 }

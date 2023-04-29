@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.JoinListener;
@@ -42,12 +43,12 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         entityIdMap.put(nameTagX.getEntityId(connectedPlayer), connectedPlayer);
     }
 
     @Override
-    public void onQuit(TabPlayer disconnectedPlayer) {
+    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
         entityIdMap.remove(nameTagX.getEntityId(disconnectedPlayer));
     }
 
@@ -60,7 +61,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      * @param   entityId
      *          spawned entity
      */
-    public void onEntitySpawn(BackendTabPlayer receiver, int entityId) {
+    public void onEntitySpawn(@NonNull BackendTabPlayer receiver, int entityId) {
         TabPlayer spawnedPlayer = entityIdMap.get(entityId);
         if (spawnedPlayer != null && spawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(spawnedPlayer)) {
             TAB.getInstance().getCPUManager().runMeasuredTask(nameTagX, TabConstants.CpuUsageCategory.PACKET_ENTITY_SPAWN,
@@ -79,7 +80,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      * @param   entityId
      *          entity that moved
      */
-    public void onEntityMove(BackendTabPlayer receiver, int entityId) {
+    public void onEntityMove(@NonNull BackendTabPlayer receiver, int entityId) {
         TabPlayer pl = entityIdMap.get(entityId);
         if (pl != null) {
             //player moved
@@ -107,7 +108,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      * @param   entities
      *          de-spawned entities
      */
-    public void onEntityDestroy(BackendTabPlayer receiver, List<Integer> entities) {
+    public void onEntityDestroy(@NonNull BackendTabPlayer receiver, @NonNull List<Integer> entities) {
         for (int entity : entities) {
             onEntityDestroy(receiver, entity);
         }
@@ -122,7 +123,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      * @param   entities
      *          de-spawned entities
      */
-    public void onEntityDestroy(BackendTabPlayer receiver, int... entities) {
+    public void onEntityDestroy(@NonNull BackendTabPlayer receiver, int... entities) {
         for (int entity : entities) {
             onEntityDestroy(receiver, entity);
         }
@@ -137,7 +138,7 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      * @param   entity
      *          de-spawned entity
      */
-    public void onEntityDestroy(BackendTabPlayer receiver, int entity) {
+    public void onEntityDestroy(@NonNull BackendTabPlayer receiver, int entity) {
         TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
         if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
             BackendArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);

@@ -1,26 +1,28 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
 public class PlayerView {
 
-    private final AlignedPlayerList feature;
-    private final TabPlayer viewer;
+    @NonNull private final AlignedPlayerList feature;
+    @NonNull private final TabPlayer viewer;
     private final boolean canSeeVanished;
     private final Map<TabPlayer, Integer> playerWidths = new WeakHashMap<>();
 
     private int maxWidth;
     private TabPlayer maxPlayer;
 
-    public PlayerView(AlignedPlayerList feature, TabPlayer viewer) {
+    public PlayerView(@NonNull AlignedPlayerList feature, @NonNull TabPlayer viewer) {
         this.feature = feature;
         this.viewer = viewer;
         canSeeVanished = viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
@@ -35,7 +37,7 @@ public class PlayerView {
         updateAllPlayers();
     }
 
-    public void playerJoin(TabPlayer connectedPlayer) {
+    public void playerJoin(@NonNull TabPlayer connectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         int width = getPlayerNameWidth(connectedPlayer);
         playerWidths.put(connectedPlayer, width);
@@ -48,7 +50,7 @@ public class PlayerView {
         }
     }
 
-    public void worldChange(TabPlayer target) {
+    public void worldChange(@NonNull TabPlayer target) {
         int width = getPlayerNameWidth(target);
         if (playerWidths.getOrDefault(target, 0) != width) {
             playerWidths.put(target, width);
@@ -66,7 +68,7 @@ public class PlayerView {
         }
     }
 
-    public synchronized IChatBaseComponent formatName(TabPlayer target) {
+    public synchronized IChatBaseComponent formatName(@NonNull TabPlayer target) {
         Integer width = playerWidths.get(target);
         if (width == null) return null; //in packet reader, not loaded yet, will send packet after loading player
         Property prefixPr = target.getProperty(TabConstants.Property.TABPREFIX);
@@ -120,7 +122,7 @@ public class PlayerView {
         return output.toString();
     }
 
-    public void updatePlayer(TabPlayer target) {
+    public void updatePlayer(@NonNull TabPlayer target) {
         playerWidths.put(target, getPlayerNameWidth(target));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
@@ -129,7 +131,7 @@ public class PlayerView {
         }
     }
 
-    public void processPlayerQuit(TabPlayer disconnectedPlayer) {
+    public void processPlayerQuit(@NonNull TabPlayer disconnectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (disconnectedPlayer == maxPlayer && recalculateMaxWidth(disconnectedPlayer)) {
             updateAllPlayers();
@@ -143,7 +145,7 @@ public class PlayerView {
      *          player to get width for
      * @return  width of player's TabList name format
      */
-    private int getPlayerNameWidth(TabPlayer p) {
+    private int getPlayerNameWidth(@NonNull TabPlayer p) {
         return getTextWidth(IChatBaseComponent.fromColoredText(
                 p.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) +
                 p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer) +
@@ -157,7 +159,7 @@ public class PlayerView {
      *          component to get width of
      * @return  text width of characters in given component
      */
-    private int getTextWidth(IChatBaseComponent component) {
+    private int getTextWidth(@NonNull IChatBaseComponent component) {
         int width = 0;
         if (component.getText() != null) {
             for (char c : component.getText().toCharArray()) {
@@ -174,7 +176,7 @@ public class PlayerView {
     }
 
     // returns true if max changed, false if not
-    private boolean recalculateMaxWidth(TabPlayer ignoredPlayer) {
+    private boolean recalculateMaxWidth(@Nullable TabPlayer ignoredPlayer) {
         int newMaxWidth = 0;
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -192,7 +194,7 @@ public class PlayerView {
         return changed;
     }
 
-    public void onVanishChange(TabPlayer changed) {
+    public void onVanishChange(@NonNull TabPlayer changed) {
         playerWidths.put(changed, getPlayerNameWidth(changed));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();

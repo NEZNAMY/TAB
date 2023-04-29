@@ -21,6 +21,7 @@ import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -113,7 +114,8 @@ public class TAB extends TabAPI {
      * @param   serverVersion
      *          Version the server is running on
      */
-    public TAB(Platform platform, ProtocolVersion serverVersion, String serverVersionString, File dataFolder, Object logger) {
+    public TAB(@NonNull Platform platform, @NonNull ProtocolVersion serverVersion,
+               @NonNull String serverVersionString, @NonNull File dataFolder, @Nullable Object logger) {
         this.platform = platform;
         this.serverVersion = serverVersion;
         this.serverVersionString = serverVersionString;
@@ -136,7 +138,7 @@ public class TAB extends TabAPI {
      *          TabList id of player
      * @return  player with provided id or null if player was not found
      */
-    public TabPlayer getPlayerByTabListUUID(UUID tabListId) {
+    public @Nullable TabPlayer getPlayerByTabListUUID(UUID tabListId) {
         return playersByTabListId.get(tabListId);
     }
 
@@ -213,7 +215,7 @@ public class TAB extends TabAPI {
      * @param   player
      *          Player to add
      */
-    public void addPlayer(TabPlayer player) {
+    public void addPlayer(@NonNull TabPlayer player) {
         data.put(player.getUniqueId(), player);
         playersByTabListId.put(player.getTablistId(), player);
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
@@ -225,7 +227,7 @@ public class TAB extends TabAPI {
      * @param   player
      *          Player to remove
      */
-    public void removePlayer(TabPlayer player) {
+    public void removePlayer(@NonNull TabPlayer player) {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
@@ -236,7 +238,7 @@ public class TAB extends TabAPI {
      *
      * @return  group manager instance
      */
-    public GroupManager getGroupManager() {
+    public @NotNull GroupManager getGroupManager() {
         return featureManager.getFeature(TabConstants.Feature.GROUP_MANAGER);
     }
 
@@ -245,22 +247,22 @@ public class TAB extends TabAPI {
      *
      * @return  {@link #cpu}
      */
-    public CpuManager getCPUManager() {
+    public @NotNull CpuManager getCPUManager() {
         return cpu;
     }
 
     @Override
-    public BossBarManager getBossBarManager() {
+    public @Nullable BossBarManager getBossBarManager() {
         return featureManager.getFeature(TabConstants.Feature.BOSS_BAR);
     }
 
     @Override
-    public ScoreboardManager getScoreboardManager() {
+    public @Nullable ScoreboardManager getScoreboardManager() {
         return featureManager.getFeature(TabConstants.Feature.SCOREBOARD);
     }
 
     @Override
-    public TeamManager getTeamManager() {
+    public @Nullable TeamManager getTeamManager() {
         if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
         return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
     }
@@ -271,7 +273,7 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public TabPlayer getPlayer(@NonNull String name) {
+    public @Nullable TabPlayer getPlayer(@NonNull String name) {
         for (TabPlayer p : data.values()) {
             if (p.getName().equalsIgnoreCase(name)) return p;
         }
@@ -279,25 +281,25 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public TabPlayer getPlayer(@NonNull UUID uniqueId) {
+    public @Nullable TabPlayer getPlayer(@NonNull UUID uniqueId) {
         return data.get(uniqueId);
     }
 
-    public void sendConsoleMessage(String message, boolean translateColors) {
+    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
         platform.sendConsoleMessage(message, translateColors);
     }
 
     @Override
-    public HeaderFooterManager getHeaderFooterManager() {
+    public @Nullable HeaderFooterManager getHeaderFooterManager() {
         return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
     }
 
-    public ConfigurationFile getConfig() {
+    public @NotNull ConfigurationFile getConfig() {
         return configuration.getConfig();
     }
 
     @Override
-    public TablistFormatManager getTablistFormatManager() {
+    public @Nullable TablistFormatManager getTablistFormatManager() {
         return featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
     }
 
@@ -308,7 +310,7 @@ public class TAB extends TabAPI {
      * @param   message
      *          Message to send
      */
-    public void debug(String message) {
+    public void debug(@NonNull String message) {
         if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
     }
 }

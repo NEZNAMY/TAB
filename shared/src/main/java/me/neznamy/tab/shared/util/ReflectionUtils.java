@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -67,7 +68,7 @@ public class ReflectionUtils {
      * @throws  NoSuchMethodException
      *          if no such method exists
      */
-    public static Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
+    public static Method getMethod(@NonNull Class<?> clazz, @NonNull String[] names, @NonNull Class<?>... parameterTypes) throws NoSuchMethodException {
         for (String name : names) {
             try {
                 return clazz.getMethod(name, parameterTypes);
@@ -103,7 +104,7 @@ public class ReflectionUtils {
      *          Parameter types of methods
      * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
      */
-    public static List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
+    public static List<Method> getMethods(@NonNull Class<?> clazz, @NonNull Class<?> returnType, @NonNull Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
             if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
@@ -129,7 +130,7 @@ public class ReflectionUtils {
      *          Type of field
      * @return  List of instance fields with defined class type
      */
-    public static List<Field> getInstanceFields(Class<?> clazz, Class<?> fieldType) {
+    public static List<Field> getInstanceFields(@NonNull Class<?> clazz, @NonNull Class<?> fieldType) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == fieldType && !Modifier.isStatic(field.getModifiers())) {
@@ -146,7 +147,7 @@ public class ReflectionUtils {
      *          Object to make accessible
      * @return  Provided object
      */
-    public static <T extends AccessibleObject> T setAccessible(T o) {
+    public static @NotNull <T extends AccessibleObject> T setAccessible(@NonNull T o) {
         o.setAccessible(true);
         return o;
     }

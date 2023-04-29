@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A class representing an animation from animations.yml
@@ -48,7 +51,7 @@ public class Animation {
      * @param   interval
      *          change interval to next frame
      */
-    public Animation(String name, List<String> list, int interval) {
+    public Animation(@NonNull String name, @Nullable List<String> list, int interval) {
         this.name = name;
         this.messages = TAB.getInstance().getMisconfigurationHelper().fixAnimationFrames(name, list).toArray(new String[0]);
         this.interval = TAB.getInstance().getMisconfigurationHelper().fixAnimationInterval(name, interval);
@@ -83,7 +86,7 @@ public class Animation {
      *
      * @return  current message
      */
-    public String getMessage() {
+    public @NotNull String getMessage() {
         return messages[(((TAB.getInstance().getPlaceholderManager().getLoopTime().get())%(messages.length*interval))/interval)];
     }
 }

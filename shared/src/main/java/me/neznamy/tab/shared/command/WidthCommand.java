@@ -5,6 +5,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -190,7 +191,7 @@ public class WidthCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(TabPlayer sender, String[] arguments) {
         List<String> suggestions = new ArrayList<>();
         if (arguments.length == 1) {
             suggestions.add("set");

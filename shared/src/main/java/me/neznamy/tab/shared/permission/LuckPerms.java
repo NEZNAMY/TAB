@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.permission;
 
 import java.util.Optional;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import net.luckperms.api.LuckPermsProvider;
@@ -15,7 +16,7 @@ import net.luckperms.api.query.QueryOptions;
 public class LuckPerms extends PermissionPlugin {
 
     @Override
-    public String getPrimaryGroup(TabPlayer p) {
+    public String getPrimaryGroup(@NonNull TabPlayer p) {
         try {
             net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
             User user = api.getUserManager().getUser(p.getUniqueId());
@@ -33,7 +34,7 @@ public class LuckPerms extends PermissionPlugin {
      *          Player to get prefix of
      * @return  Player's prefix
      */
-    public String getPrefix(TabPlayer p) {
+    public String getPrefix(@NonNull TabPlayer p) {
         return getValue(p, true);
     }
 
@@ -44,7 +45,7 @@ public class LuckPerms extends PermissionPlugin {
      *          Player to get suffix of
      * @return  Player's suffix
      */
-    public String getSuffix(TabPlayer p) {
+    public String getSuffix(@NonNull TabPlayer p) {
         return getValue(p, false);
     }
 
@@ -58,7 +59,7 @@ public class LuckPerms extends PermissionPlugin {
      *          {@code true} if prefix should be returned, {@code false} if suffix
      * @return  Player's metadata value
      */
-    private String getValue(TabPlayer p, boolean prefix) {
+    private String getValue(@NonNull TabPlayer p, boolean prefix) {
         try {
             net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
             User user = api.getUserManager().getUser(p.getUniqueId());

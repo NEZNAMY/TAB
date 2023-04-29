@@ -1,7 +1,9 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,7 +34,7 @@ public class ErrorManager {
     /** placeholder-errors.log file for errors thrown by placeholders */
     private final File placeholderErrorLog;
 
-    public ErrorManager(TAB tab) {
+    public ErrorManager(@NonNull TAB tab) {
         errorLog = new File(tab.getDataFolder(), "errors.log");
         antiOverrideLog = new File(tab.getDataFolder(), "anti-override.log");
         placeholderErrorLog = new File(tab.getDataFolder(), "placeholder-errors.log");
@@ -44,7 +46,7 @@ public class ErrorManager {
      * @param   message
      *          message to print
      */
-    public void printError(String message) {
+    public void printError(@Nullable String message) {
         printError(message, null, false);
     }
 
@@ -56,7 +58,7 @@ public class ErrorManager {
      * @param   t
      *          thrown error
      */
-    public void printError(String message, Throwable t) {
+    public void printError(@Nullable String message, @Nullable Throwable t) {
         printError(message, t, false);
     }
 
@@ -70,7 +72,7 @@ public class ErrorManager {
      * @param   intoConsoleToo
      *          if the message should be printed into console as well or not
      */
-    public void printError(String message, Throwable t, boolean intoConsoleToo) {
+    public void printError(@Nullable String message, @Nullable Throwable t, boolean intoConsoleToo) {
         printError(message, t, intoConsoleToo, errorLog);
     }
 
@@ -86,7 +88,7 @@ public class ErrorManager {
      * @param   file
      *          file to print error to
      */
-    public void printError(String message, Throwable t, boolean intoConsoleToo, File file) {
+    public void printError(@Nullable String message, @Nullable Throwable t, boolean intoConsoleToo, @NonNull File file) {
         Throwable error = t;
         while (error != null && error.getCause() != null) {
             error = error.getCause();
@@ -113,7 +115,7 @@ public class ErrorManager {
      * @param   file
      *          file to print error to
      */
-    private synchronized void printError(String message, List<String> error, boolean intoConsoleToo, File file) {
+    private synchronized void printError(@Nullable String message, @NonNull List<String> error, boolean intoConsoleToo, @NonNull File file) {
         try {
             if (!file.exists()) Files.createFile(file.toPath());
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
@@ -151,7 +153,7 @@ public class ErrorManager {
      * @param   t
      *          thrown error
      */
-    public void placeholderError(String message, Throwable t) {
+    public void placeholderError(@Nullable String message, @Nullable Throwable t) {
         printError(message, t, false, placeholderErrorLog);
     }
 
@@ -163,7 +165,7 @@ public class ErrorManager {
      * @param   t
      *          thrown stack trace elements
      */
-    public void placeholderError(String message, List<String> t) {
+    public void placeholderError(@Nullable String message, @NonNull List<String> t) {
         printError(message, t, false, placeholderErrorLog);
     }
 
@@ -175,7 +177,7 @@ public class ErrorManager {
      * @param   t
      *          thrown error
      */
-    public void criticalError(String message, Throwable t) {
+    public void criticalError(@Nullable String message, @Nullable Throwable t) {
         printError(message, t, true);
     }
 
@@ -189,7 +191,7 @@ public class ErrorManager {
      *          value to return if string is not valid
      * @return  parsed integer or {@code defaultValue} if input is invalid
      */
-    public int parseInteger(String string, int defaultValue) {
+    public int parseInteger(@NonNull String string, int defaultValue) {
         try {
             return (int) Math.round(Double.parseDouble(string));
         } catch (NumberFormatException e) {
@@ -207,7 +209,7 @@ public class ErrorManager {
      *          value to return if string is not valid
      * @return  parsed float or {@code defaultValue} if input is invalid
      */
-    public float parseFloat(String string, float defaultValue) {
+    public float parseFloat(@NonNull String string, float defaultValue) {
         try {
             return Float.parseFloat(string);
         } catch (NumberFormatException e) {
@@ -225,7 +227,7 @@ public class ErrorManager {
      *          value to return if string is not valid
      * @return  parsed float or {@code defaultValue} if input is invalid
      */
-    public double parseDouble(String string, double defaultValue) {
+    public double parseDouble(@NonNull String string, double defaultValue) {
         try {
             return Double.parseDouble(string);
         } catch (NumberFormatException e) {

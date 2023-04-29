@@ -5,11 +5,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.scoreboard.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab scoreboard [on/off/toggle] [player] [options]" subcommand
@@ -25,18 +28,18 @@ public class ScoreboardCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         ScoreboardManagerImpl scoreboard = getScoreboardManager();
         if (scoreboard == null) {
             sendMessage(sender, "&cScoreboard feature is not enabled, therefore toggle command cannot be used.");
             return;
         }
         if (args.length == 0) {
-            toggle(sender);
+            toggle(sender, scoreboard);
             return;
         }
         if (args[0].equalsIgnoreCase("show")) {
-            show(sender, args);
+            show(sender, args, scoreboard);
             return;
         }
         TabPlayer p = getTarget(sender, args);
@@ -58,13 +61,12 @@ public class ScoreboardCommand extends SubCommand {
         }
     }
 
-    private void toggle(TabPlayer sender) {
+    private void toggle(@Nullable TabPlayer sender, @NonNull ScoreboardManagerImpl scoreboard) {
         if (sender == null) {
             sendMessage(null, getMessages().getCommandOnlyFromGame());
             return;
         }
         if (sender.hasPermission(TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE)) {
-            ScoreboardManagerImpl scoreboard = getScoreboardManager();
             if (scoreboard.getOtherPluginScoreboards().containsKey(sender)) return; //not overriding other plugins
             scoreboard.toggleScoreboard(sender, true);
         } else {
@@ -72,12 +74,11 @@ public class ScoreboardCommand extends SubCommand {
         }
     }
 
-    private void show(TabPlayer sender, String[] args) {
+    private void show(@Nullable TabPlayer sender, @NonNull String[] args, @NonNull ScoreboardManagerImpl scoreboard) {
         if (args.length < 2) {
             sendMessage(sender, getMessages().getScoreboardShowUsage());
             return;
         }
-        ScoreboardManagerImpl scoreboard = getScoreboardManager();
         Scoreboard sb = scoreboard.getRegisteredScoreboards().get(args[1]);
         if (sb == null) {
             sendMessage(sender, getMessages().getScoreboardNotFound(args[1]));
@@ -108,7 +109,7 @@ public class ScoreboardCommand extends SubCommand {
         scoreboard.showScoreboard(target, sb);
     }
 
-    private TabPlayer getTarget(TabPlayer sender, String[] args) {
+    private TabPlayer getTarget(@Nullable TabPlayer sender, @NonNull String[] args) {
         if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
             if (hasPermission(sender, TabConstants.Permission.COMMAND_SCOREBOARD_TOGGLE_OTHER)) {
                 return TAB.getInstance().getPlayer(args[1]);
@@ -125,12 +126,12 @@ public class ScoreboardCommand extends SubCommand {
         return null;
     }
 
-    private ScoreboardManagerImpl getScoreboardManager() {
+    private @Nullable ScoreboardManagerImpl getScoreboardManager() {
         return TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         ScoreboardManagerImpl scoreboard = getScoreboardManager();
         if (scoreboard == null) return new ArrayList<>();
         if (arguments.length == 1) return getStartingArgument(Arrays.asList("on", "off", "toggle", "show"), arguments[0]);

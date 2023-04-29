@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.permission;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -20,5 +21,5 @@ public abstract class PermissionPlugin {
      *          player to get group of
      * @return  player's primary permission group
      */
-    public abstract String getPrimaryGroup(TabPlayer player);
+    public abstract String getPrimaryGroup(@NonNull TabPlayer player);
 }

@@ -24,14 +24,14 @@ public class RedisPlayerList extends RedisFeature {
     private final Map<RedisPlayer, String> values = new WeakHashMap<>();
     private final Set<RedisPlayer> disabledPlayerlist = Collections.newSetFromMap(new WeakHashMap<>());
 
-    public RedisPlayerList(RedisSupport redisSupport, PlayerList playerList) {
+    public RedisPlayerList(@NonNull RedisSupport redisSupport, @NonNull PlayerList playerList) {
         this.redisSupport = redisSupport;
         this.playerList = playerList;
         redisSupport.registerMessage("tabformat", Update.class, Update::new);
     }
 
     @Override
-    public void onJoin(TabPlayer player) {
+    public void onJoin(@NonNull TabPlayer player) {
         if (player.getVersion().getMinorVersion() < 8) return;
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             if (!disabledPlayerlist.contains(redis)) player.getTabList().updateDisplayName(
@@ -40,7 +40,7 @@ public class RedisPlayerList extends RedisFeature {
     }
 
     @Override
-    public void onJoin(RedisPlayer player) {
+    public void onJoin(@NonNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8 || disabledPlayerlist.contains(player)) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), IChatBaseComponent.optimizedComponent(values.get(player)));
@@ -48,12 +48,12 @@ public class RedisPlayerList extends RedisFeature {
     }
 
     @Override
-    public void onServerSwitch(TabPlayer player) {
+    public void onServerSwitch(@NonNull TabPlayer player) {
         onJoin(player);
     }
 
     @Override
-    public void onServerSwitch(RedisPlayer player) {
+    public void onServerSwitch(@NonNull RedisPlayer player) {
         if (disabledPlayerlist.contains(player)) {
             if (!playerList.isDisabled(player.getServer(), null)) {
                 disabledPlayerlist.remove(player);
@@ -74,27 +74,27 @@ public class RedisPlayerList extends RedisFeature {
     }
 
     @Override
-    public void onQuit(RedisPlayer player) {
+    public void onQuit(@NonNull RedisPlayer player) {
         // No action is needed
     }
 
     @Override
-    public void write(@NonNull ByteArrayDataOutput out, TabPlayer player) {
+    public void write(@NonNull ByteArrayDataOutput out, @NonNull TabPlayer player) {
         out.writeUTF(player.getProperty(TabConstants.Property.TABPREFIX).get() +
                 player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() +
                 player.getProperty(TabConstants.Property.TABSUFFIX).get());
     }
 
     @Override
-    public void read(@NonNull ByteArrayDataInput in, RedisPlayer player) {
+    public void read(@NonNull ByteArrayDataInput in, @NonNull RedisPlayer player) {
         values.put(player, in.readUTF());
     }
 
-    public boolean isDisabled(RedisPlayer player) {
+    public boolean isDisabled(@NonNull RedisPlayer player) {
         return disabledPlayerlist.contains(player);
     }
 
-    public String getFormat(RedisPlayer player) {
+    public String getFormat(@NonNull RedisPlayer player) {
         return values.get(player);
     }
 

@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
+import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -12,6 +13,8 @@ import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
  */
 public class LongLine extends ScoreboardLine implements Refreshable {
 
+    @Getter private final String featureName = "Scoreboard";
+    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
     private final String textProperty;
     private final String nameProperty;
 
@@ -25,7 +28,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
      * @param   text
      *          line text
      */
-    public LongLine(ScoreboardImpl parent, int lineNumber, String text) {
+    public LongLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
         super(parent, lineNumber);
         this.text = text;
         nameProperty = TabConstants.Property.scoreboardName(parent.getName(), lineNumber);
@@ -33,7 +36,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
@@ -49,7 +52,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void register(TabPlayer p) {
+    public void register(@NonNull TabPlayer p) {
         p.setProperty(this, textProperty, text);
         String value = p.getProperty(textProperty).get();
         if (p.getVersion().getMinorVersion() >= 13) {
@@ -63,7 +66,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void unregister(TabPlayer p) {
+    public void unregister(@NonNull TabPlayer p) {
         if (parent.getPlayers().contains(p)) {
             removeLine(p, p.getProperty(nameProperty).get());
         }
@@ -79,7 +82,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public String getPlayerName(TabPlayer viewer) {
+    public String getPlayerName(@NonNull TabPlayer viewer) {
         return viewer.getProperty(nameProperty).get();
     }
 }

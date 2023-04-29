@@ -11,7 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -43,7 +45,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
      * @throws  IOException
      *          if I/O operation with the file unexpectedly fails
      */
-    public YamlConfigurationFile(InputStream source, File destination) throws YAMLException, IOException {
+    public YamlConfigurationFile(@Nullable InputStream source, @NonNull File destination) throws YAMLException, IOException {
         super(source, destination);
         FileInputStream input = null;
         try {

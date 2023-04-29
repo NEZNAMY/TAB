@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
@@ -46,7 +47,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
      *          Player to get value of
      * @return  Current value of player
      */
-    public int getValue(TabPlayer p) {
+    public int getValue(@NonNull TabPlayer p) {
         return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
     }
 
@@ -80,7 +81,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         connectedPlayer.setProperty(this, TabConstants.Property.YELLOW_NUMBER, rawValue);
         if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
             addDisabledPlayer(connectedPlayer);
@@ -105,8 +106,8 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
+    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
         if (isDisabledPlayer(p) || p.isBedrockPlayer()) return;
         p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
         p.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
@@ -116,7 +117,11 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
+    }
+
+    private void processSwitch(@NonNull TabPlayer p) {
         boolean disabledBefore = isDisabledPlayer(p);
         boolean disabledNow = false;
         if (isDisabled(p.getServer(), p.getWorld())) {
@@ -132,7 +137,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         int value = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (isDisabledPlayer(all) || all.isBedrockPlayer()) continue;

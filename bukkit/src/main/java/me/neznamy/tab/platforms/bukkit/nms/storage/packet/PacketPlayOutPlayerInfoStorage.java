@@ -62,7 +62,7 @@ public class PacketPlayOutPlayerInfoStorage {
                             entry.isListed(),
                             entry.getLatency(),
                             int2GameMode(entry.getGameMode()),
-                            nms.toNMSComponent(entry.getDisplayName(), clientVersion),
+                            entry.getDisplayName() == null ? null : nms.toNMSComponent(entry.getDisplayName(), clientVersion),
                             null
                     ));
                 }
@@ -80,7 +80,7 @@ public class PacketPlayOutPlayerInfoStorage {
                     parameters.add(profile);
                     parameters.add(entry.getLatency());
                     parameters.add(int2GameMode(entry.getGameMode()));
-                    parameters.add(nms.toNMSComponent(entry.getDisplayName(), clientVersion));
+                    parameters.add(entry.getDisplayName() == null ? null : nms.toNMSComponent(entry.getDisplayName(), clientVersion));
                     if (nms.getMinorVersion() >= 19) parameters.add(null);
                     players.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(parameters.toArray()));
                 }

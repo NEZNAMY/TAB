@@ -2,9 +2,11 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
 import me.neznamy.tab.shared.command.level2.AnnounceScoreboardCommand;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab announce" subcommand
@@ -21,7 +23,7 @@ public class AnnounceCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         if (args.length == 0) {
             sendMessage(sender, getMessages().getAnnounceCommandUsage());
             return;

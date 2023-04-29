@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.backend;
 
+import lombok.NonNull;
+
 public interface EntityData {
 
-    Object build();
+    @NonNull Object build();
 }

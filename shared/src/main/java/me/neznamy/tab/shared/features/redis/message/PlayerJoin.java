@@ -20,7 +20,7 @@ public class PlayerJoin extends RedisMessage {
     @Getter private RedisPlayer decodedPlayer;
     private TabPlayer encodedPlayer;
 
-    public PlayerJoin(RedisSupport redisSupport, TabPlayer encodedPlayer) {
+    public PlayerJoin(@NonNull RedisSupport redisSupport, @NonNull TabPlayer encodedPlayer) {
         this.redisSupport = redisSupport;
         this.encodedPlayer = encodedPlayer;
     }

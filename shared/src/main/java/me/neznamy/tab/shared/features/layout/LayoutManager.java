@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
@@ -14,30 +15,33 @@ import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+@Getter
 public class LayoutManager extends TabFeature implements JoinListener, QuitListener, VanishListener, Loadable,
         UnLoadable, Refreshable {
 
     private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
-    @Getter private final String defaultSkin = TAB.getInstance().getConfig().getString("layout.default-skin", "mineskin:1753261242");
-    @Getter private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfig().getBoolean("layout.enable-remaining-players-text", true);
-    @Getter private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfig().getString("layout.remaining-players-text", "... and %s more"));
-    @Getter private final int emptySlotPing = TAB.getInstance().getConfig().getInt("layout.empty-slot-ping-value", 1000);
-    @Getter private final boolean hideVanishedPlayers = TAB.getInstance().getConfig().getBoolean("layout.hide-vanished-players", true);
-    @Getter private final SkinManager skinManager = new SkinManager(defaultSkin);
-    @Getter private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
+    private final String defaultSkin = TAB.getInstance().getConfig().getString("layout.default-skin", "mineskin:1753261242");
+    private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfig().getBoolean("layout.enable-remaining-players-text", true);
+    private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfig().getString("layout.remaining-players-text", "... and %s more"));
+    private final int emptySlotPing = TAB.getInstance().getConfig().getInt("layout.empty-slot-ping-value", 1000);
+    private final boolean hideVanishedPlayers = TAB.getInstance().getConfig().getBoolean("layout.hide-vanished-players", true);
+    private final SkinManager skinManager = new SkinManager(defaultSkin);
+    private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
         for (int slot=1; slot<=80; slot++) {
             put(slot, new UUID(0, translateSlot(slot)));
         }
     }};
     private final Map<String, Layout> layouts = loadLayouts();
-    @Getter private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
+    private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
-    @Getter private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
+    private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
     private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-    @Getter private PlayerList playerList;
-    @Getter private final String featureName = "Layout";
-    @Getter private final String refreshDisplayName = "Switching layouts";
+    private PlayerList playerList;
+    private final String featureName = "Layout";
+    private final String refreshDisplayName = "Switching layouts";
 
     @Override
     public void load() {
@@ -48,7 +52,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         }
     }
 
-    private Direction parseDirection(String value) {
+    private @NotNull Direction parseDirection(@NonNull String value) {
         try {
             return Direction.valueOf(value);
         } catch (IllegalArgumentException e) {
@@ -58,7 +62,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Layout> loadLayouts() {
+    private @NotNull Map<String, Layout> loadLayouts() {
         Map<String, Layout> layoutMap = new LinkedHashMap<>();
         for (Entry<Object, Object> layout : TAB.getInstance().getConfig().getConfigurationSection("layout.layouts").entrySet()) {
             Map<String, Object> map = (Map<String, Object>) layout.getValue();
@@ -116,7 +120,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void onJoin(TabPlayer p) {
+    public void onJoin(@NonNull TabPlayer p) {
         teamNames.put(p, sorting.getFullTeamName(p));
         sortedPlayers.put(p, sorting.getFullTeamName(p));
         Layout highest = getHighestLayout(p);
@@ -134,7 +138,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void onQuit(TabPlayer p) {
+    public void onQuit(@NonNull TabPlayer p) {
         sortedPlayers.remove(p);
         teamNames.remove(p);
         layouts.values().forEach(Layout::tick);
@@ -149,7 +153,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
+    public void refresh(@NonNull TabPlayer p, boolean force) {
         Layout highest = getHighestLayout(p);
         Layout current = playerViews.get(p);
         if (current != highest) {
@@ -168,22 +172,22 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void onVanishStatusChange(TabPlayer p) {
+    public void onVanishStatusChange(@NonNull TabPlayer p) {
         layouts.values().forEach(Layout::tick);
     }
 
-    private Layout getHighestLayout(TabPlayer p) {
+    private @Nullable Layout getHighestLayout(@NonNull TabPlayer p) {
         for (Layout layout : layouts.values()) {
             if (layout.isConditionMet(p)) return layout;
         }
         return null;
     }
 
-    public UUID getUUID(int slot) {
+    public @NotNull UUID getUUID(int slot) {
         return uuids.get(slot);
     }
 
-    public void updateTeamName(TabPlayer p, String teamName) {
+    public void updateTeamName(@NonNull TabPlayer p, @NonNull String teamName) {
         sortedPlayers.remove(p);
         teamNames.put(p, teamName);
         sortedPlayers.put(p, teamName);

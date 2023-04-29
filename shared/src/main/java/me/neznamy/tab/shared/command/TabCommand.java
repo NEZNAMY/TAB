@@ -6,10 +6,13 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The core command handler
@@ -44,7 +47,7 @@ public class TabCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         if (args.length > 0) {
             String arg0 = args[0];
             SubCommand command = getSubcommands().get(arg0.toLowerCase());
@@ -68,7 +71,7 @@ public class TabCommand extends SubCommand {
      * @param   sender
      *          player who ran command or null if from console
      */
-    private void help(TabPlayer sender) {
+    private void help(@Nullable TabPlayer sender) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {
             if (sender != null) {
                 sender.sendMessage("&3TAB v" + TabConstants.PLUGIN_VERSION + "&0 by _NEZNAMY_", true);
@@ -83,7 +86,7 @@ public class TabCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         if (!hasPermission(sender, TabConstants.Permission.COMMAND_AUTOCOMPLETE)) return new ArrayList<>();
         return super.complete(sender, arguments);
     }

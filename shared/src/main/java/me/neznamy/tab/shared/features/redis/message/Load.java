@@ -14,7 +14,7 @@ public class Load extends RedisMessage {
     private TabPlayer[] players;
     private PlayerJoin[] decodedPlayers;
 
-    public Load(RedisSupport redisSupport, TabPlayer[] players) {
+    public Load(@NonNull RedisSupport redisSupport, @NonNull TabPlayer[] players) {
         this.redisSupport = redisSupport;
         this.players = players;
     }

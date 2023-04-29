@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
@@ -74,7 +75,7 @@ public class IChatBaseComponent {
      *
      * @return  list of extra components
      */
-    public List<IChatBaseComponent> getExtra() {
+    public @NotNull List<IChatBaseComponent> getExtra() {
         if (extra == null) return Collections.emptyList();
         return extra;
     }
@@ -88,7 +89,7 @@ public class IChatBaseComponent {
      * @throws  IllegalArgumentException
      *          if {@code components} is an empty list
      */
-    public IChatBaseComponent setExtra(List<IChatBaseComponent> components) {
+    public @NotNull IChatBaseComponent setExtra(@NonNull List<IChatBaseComponent> components) {
         if (components.isEmpty()) throw new IllegalArgumentException("Unexpected empty array of components"); //exception taken from minecraft
         this.extra = components;
         return this;
@@ -103,7 +104,7 @@ public class IChatBaseComponent {
      * @see     #toString(ProtocolVersion)
      */
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         JSONObject json = new JSONObject();
         if (text != null) json.put("text", text);
         json.putAll(modifier.serialize(targetVersion == null || targetVersion.getMinorVersion() >= 16));
@@ -119,10 +120,9 @@ public class IChatBaseComponent {
      *          client version to adapt component for
      * @return  serialized string
      */
-    public String toString(ProtocolVersion clientVersion) {
+    public @NotNull String toString(@NonNull ProtocolVersion clientVersion) {
         if (extra == null) {
-            if (text == null) return null;
-            if (text.length() == 0) return "{\"text\":\"\"}";
+            if (text == null || text.length() == 0) return "{\"text\":\"\"}";
         }
         targetVersion = clientVersion;
         for (IChatBaseComponent child : getExtra()) {
@@ -138,7 +138,7 @@ public class IChatBaseComponent {
      *          text to convert
      * @return  organized component from colored text
      */
-    public static IChatBaseComponent fromColoredText(@NonNull String originalText) {
+    public static @NotNull IChatBaseComponent fromColoredText(@NonNull String originalText) {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
         List<IChatBaseComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
@@ -228,7 +228,7 @@ public class IChatBaseComponent {
      *          current index start
      * @return  true if legacy color is defined, false if not
      */
-    private static boolean containsLegacyCode(String text, int i) {
+    private static boolean containsLegacyCode(@NonNull String text, int i) {
         if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
         return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
     }
@@ -238,7 +238,7 @@ public class IChatBaseComponent {
      *
      * @return  The simple text format
      */
-    public String toLegacyText() {
+    public @NotNull String toLegacyText() {
         StringBuilder builder = new StringBuilder();
         append(builder, "");
         return builder.toString();
@@ -254,7 +254,7 @@ public class IChatBaseComponent {
      *          colors and magic codes in previous component
      * @return  new formatting, might be identical to previous one
      */
-    private String append(StringBuilder builder, String previousFormatting) {
+    private @NotNull String append(@NonNull StringBuilder builder, @NonNull String previousFormatting) {
         String formatting = previousFormatting;
         if (text != null) {
             formatting = getFormatting();
@@ -275,7 +275,7 @@ public class IChatBaseComponent {
      *
      * @return  used colors and magic codes
      */
-    private String getFormatting() {
+    private @NotNull String getFormatting() {
         StringBuilder builder = new StringBuilder();
         if (modifier.getColor() != null) {
             if (modifier.getColor().getLegacyColor() == EnumChatFormat.WHITE) {
@@ -294,7 +294,7 @@ public class IChatBaseComponent {
      *
      * @return  raw text in this component and all child components
      */
-    public String toRawText() {
+    public @NotNull String toRawText() {
         StringBuilder builder = new StringBuilder();
         if (text != null) builder.append(text);
         for (IChatBaseComponent child : getExtra()) {
@@ -308,7 +308,7 @@ public class IChatBaseComponent {
      *
      * @return  converted text
      */
-    public String toFlatText() {
+    public @NotNull String toFlatText() {
         StringBuilder builder = new StringBuilder();
         if (modifier.getColor() != null) builder.append("#").append(modifier.getColor().getHexCode());
         builder.append(modifier.getMagicCodes());
@@ -328,7 +328,7 @@ public class IChatBaseComponent {
      *          text to create component from
      * @return  The most performance-optimized component based on text
      */
-    public static IChatBaseComponent optimizedComponent(String text) {
+    public static @NotNull IChatBaseComponent optimizedComponent(@NonNull String text) {
         return stringCache.get(text, null);
     }
 
@@ -338,7 +338,7 @@ public class IChatBaseComponent {
      *
      * @return  Adventure component from this component.
      */
-    public Component toAdventureComponent() {
+    public @NotNull Component toAdventureComponent() {
         net.kyori.adventure.text.format.TextColor color = modifier.getColor() == null ? null :
                 net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getRgb());
         Set<TextDecoration> decorations = new HashSet<>();

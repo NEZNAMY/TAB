@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -9,6 +10,8 @@ import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
 import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.mysql.MySQLGroupConfiguration;
 import me.neznamy.tab.shared.config.mysql.MySQLUserConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
@@ -95,7 +98,7 @@ public class Configs {
      * @return  value with specified path or default value if not present
      */
     @SuppressWarnings("unchecked")
-    public <T> T getSecretOption(String path, T defaultValue) {
+    public @NotNull <T> T getSecretOption(@NonNull String path, @NonNull T defaultValue) {
         Object value = config.getObject(path);
         return value == null ? defaultValue : (T) value;
     }
@@ -114,7 +117,7 @@ public class Configs {
         return playerdata;
     }
 
-    public String getGroup(List<Object> serverGroups, String element) {
+    public String getGroup(@NonNull List<Object> serverGroups, @Nullable String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
             for (String definedWorld : worldGroup.toString().split(";")) {

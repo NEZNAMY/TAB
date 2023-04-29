@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.platform;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
@@ -17,7 +18,7 @@ public class PlatformEventListener {
      * @param   player
      *          Player who joined
      */
-    public void join(TabPlayer player) {
+    public void join(@NonNull TabPlayer player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onJoin(player));
@@ -29,7 +30,7 @@ public class PlatformEventListener {
      * @param   player
      *          UUID of player who left
      */
-    public void quit(UUID player) {
+    public void quit(@NonNull UUID player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(player)));
@@ -43,7 +44,7 @@ public class PlatformEventListener {
      * @param   world
      *          New world
      */
-    public void worldChange(UUID player, String world) {
+    public void worldChange(@NonNull UUID player, @NonNull String world) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onWorldChange(player, world));
@@ -57,7 +58,7 @@ public class PlatformEventListener {
      * @param   server
      *          New server
      */
-    public void serverChange(UUID player, String server) {
+    public void serverChange(@NonNull UUID player, @NonNull String server) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onServerChange(player, server));
@@ -73,13 +74,13 @@ public class PlatformEventListener {
      * @param   message
      *          The message
      */
-    public void pluginMessage(UUID player, String playerName, byte[] message) {
+    public void pluginMessage(@NonNull UUID player, @NonNull String playerName, byte[] message) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
                     ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, playerName, message));
     }
 
-    public boolean command(UUID player, String command) {
+    public boolean command(@NonNull UUID player, @NonNull String command) {
         if (TAB.getInstance().isPluginDisabled()) return false;
         return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);
     }

@@ -1,10 +1,13 @@
 package me.neznamy.tab.shared.command;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -21,7 +24,7 @@ public class NameTagCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         if (args.length == 0 || args.length > 3) {
             sendMessages(sender, getMessages().getNameTagHelpMenu());
             return;
@@ -41,7 +44,7 @@ public class NameTagCommand extends SubCommand {
         }
     }
 
-    private void preview(TabPlayer sender, TabPlayer target, boolean silent) {
+    private void preview(@Nullable TabPlayer sender, @Nullable TabPlayer target, boolean silent) {
         if (target == null) return;
 
         NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
@@ -56,7 +59,7 @@ public class NameTagCommand extends SubCommand {
         nameTagX.toggleNametagPreview(target, !silent);
     }
 
-    private void toggle(TabPlayer sender, TabPlayer target, boolean silent) {
+    private void toggle(@Nullable TabPlayer sender, @Nullable TabPlayer target, boolean silent) {
         if (target == null) return;
 
         TeamManager teams = TAB.getInstance().getTeamManager();
@@ -67,7 +70,7 @@ public class NameTagCommand extends SubCommand {
         teams.toggleNameTagVisibilityView(target, !silent);
     }
 
-    private TabPlayer getTarget(TabPlayer sender, String[] args, String permissionOther, String permission) {
+    private @Nullable TabPlayer getTarget(@Nullable TabPlayer sender, @NonNull String[] args, @NonNull String permissionOther, @NonNull String permission) {
         if (args.length >= 2 && TAB.getInstance().getPlayer(args[1]) != null) {
             if (hasPermission(sender, permissionOther)) {
                 return TAB.getInstance().getPlayer(args[1]);
@@ -85,7 +88,7 @@ public class NameTagCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
         if (arguments.length == 1) return getStartingArgument(Arrays.asList("toggle", "preview"), arguments[0]);
         if (arguments.length == 2) return getOnlinePlayers(arguments[1]);
         if (arguments.length == 3) return getStartingArgument(Collections.singletonList("-s"), arguments[2]);

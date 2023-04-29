@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -14,5 +15,5 @@ public interface JoinListener {
      * @param   connectedPlayer
      *          Player who connected
      */
-    void onJoin(TabPlayer connectedPlayer);
+    void onJoin(@NonNull TabPlayer connectedPlayer);
 }

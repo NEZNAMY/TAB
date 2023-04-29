@@ -27,7 +27,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class FabricTAB implements DedicatedServerModInitializer {
 
@@ -59,7 +58,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         TAB.getInstance().load();
     }
 
-    public Component toComponent(@Nullable IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
+    public Component toComponent(@NonNull IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
     }
 

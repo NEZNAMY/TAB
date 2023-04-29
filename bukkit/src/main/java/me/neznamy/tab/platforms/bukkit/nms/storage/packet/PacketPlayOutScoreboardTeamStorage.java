@@ -58,8 +58,8 @@ public class PacketPlayOutScoreboardTeamStorage {
 
     private static void createTeamModern(Object team, ProtocolVersion clientVersion, String prefix, String suffix, String visibility, String collision) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
-        if (prefix != null) ScoreboardTeam_setPrefix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
-        if (suffix != null) ScoreboardTeam_setSuffix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
+        ScoreboardTeam_setPrefix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
+        ScoreboardTeam_setSuffix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
         ScoreboardTeam_setColor.invoke(team, Enum.valueOf(nms.EnumChatFormat, EnumChatFormat.lastColorsOf(prefix).toString()));
         ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
         ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
@@ -67,8 +67,8 @@ public class PacketPlayOutScoreboardTeamStorage {
 
     private static void createTeamLegacy(Object team, String prefix, String suffix, String visibility, String collision) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
-        if (prefix != null) ScoreboardTeam_setPrefix.invoke(team, prefix);
-        if (suffix != null) ScoreboardTeam_setSuffix.invoke(team, suffix);
+        ScoreboardTeam_setPrefix.invoke(team, prefix);
+        ScoreboardTeam_setSuffix.invoke(team, suffix);
         if (nms.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
         if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
     }

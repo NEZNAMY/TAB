@@ -62,7 +62,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException {
+    public void onPacketSend(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException {
         if (receiver.getVersion().getMinorVersion() < 8) return;
         if (!receiver.isLoaded() || isDisabledPlayer(receiver) || getDisabledUnlimitedPlayers().contains(receiver)) return;
         if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets

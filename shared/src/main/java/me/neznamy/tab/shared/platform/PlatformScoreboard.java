@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -62,8 +63,8 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
-    public void registerTeam(@NonNull String name, String prefix, String suffix, @NonNull String visibility, @NonNull String collision,
-                             Collection<String> players, int options) {
+    public void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
+                             @NonNull String collision, @NonNull Collection<String> players, int options) {
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
             return;
@@ -79,7 +80,8 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
-    public void updateTeam(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+    public void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
+                           @NonNull String collision, int options) {
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
             return;
@@ -87,7 +89,7 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         updateTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, options);
     }
 
-    private void error(String format, Object... args) {
+    private void error(@NonNull String format, @NonNull Object... args) {
         TAB.getInstance().getErrorManager().printError(String.format(format, args) + player.getName());
     }
 
@@ -111,7 +113,7 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
      *          Length to cut to
      * @return  string cut to {@code length} characters
      */
-    private String cutTo(String string, int length) {
+    private String cutTo(@Nullable String string, int length) {
         if (player.getVersion().getMinorVersion() >= 13) return string;
         if (string == null) return "";
         String legacyText = string;

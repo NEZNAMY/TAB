@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -19,7 +21,7 @@ public class MineSkin extends SkinSource {
     }
 
     @Override
-    public List<String> download(String input) {
+    public @NotNull List<String> download(@NonNull String input) {
         try {
             String type;
             try {

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.permission;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -12,7 +13,7 @@ public class VaultBridge extends PermissionPlugin {
     @Getter private final String name = "Vault through BukkitBridge";
 
     @Override
-    public String getPrimaryGroup(TabPlayer p) {
+    public String getPrimaryGroup(@NonNull TabPlayer p) {
         return p.getGroup();
     }
 }

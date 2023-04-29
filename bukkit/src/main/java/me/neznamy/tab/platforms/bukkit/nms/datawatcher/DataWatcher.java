@@ -61,7 +61,7 @@ public class DataWatcher implements EntityData {
      *
      * @return  an instance of NMS.DataWatcher with same data
      */
-    public Object build() {
+    public @NonNull Object build() {
         try {
             NMSStorage nms = NMSStorage.getInstance();
             Object nmsWatcher;

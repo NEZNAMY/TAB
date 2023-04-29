@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 
 /**
@@ -18,7 +19,7 @@ public class Preconditions {
      * @throws  IllegalStateException
      *          If player is not loaded
      */
-    public static void checkLoaded(TabPlayer player) {
+    public static void checkLoaded(@NonNull TabPlayer player) {
         if (!player.isLoaded()) throw new IllegalStateException("Player is not loaded yet. Try again later.");
     }
 }

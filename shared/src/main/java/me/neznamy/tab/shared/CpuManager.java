@@ -6,7 +6,9 @@ import java.util.concurrent.*;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -78,7 +80,7 @@ public class CpuManager {
      *
      * @param task task to execute
      */
-    private void submit(Runnable task) {
+    private void submit(@NonNull Runnable task) {
         if (scheduler.isShutdown()) return;
         if (!enabled) {
             taskQueue.add(task);
@@ -102,7 +104,7 @@ public class CpuManager {
      * @param map map to convert
      * @return converted and sorted map
      */
-    private Map<String, Float> getUsage(Map<String, Long> map) {
+    private @NotNull Map<String, Float> getUsage(@NonNull Map<String, Long> map) {
         return map
                 .entrySet()
                 .stream()
@@ -118,7 +120,7 @@ public class CpuManager {
      *
      * @return map of CPU usage per feature and type
      */
-    public Map<String, Map<String, Float>> getFeatureUsage() {
+    public @NotNull Map<String, Map<String, Float>> getFeatureUsage() {
         final Map<String, Map<String, Long>> map = featureUsagePrevious;
 
         TreeMap<Long, Map.Entry<String, Map<String, Float>>> sorted
@@ -164,7 +166,7 @@ public class CpuManager {
      * @param type        sub-feature to add time to
      * @param nanoseconds time to add
      */
-    public void addTime(TabFeature feature, String type, long nanoseconds) {
+    public void addTime(@NonNull TabFeature feature, @NonNull String type, long nanoseconds) {
         addTime(feature.getFeatureName(), type, nanoseconds);
     }
 
@@ -175,7 +177,7 @@ public class CpuManager {
      * @param type        sub-feature to add time to
      * @param nanoseconds time to add
      */
-    public void addTime(String feature, String type, long nanoseconds) {
+    public void addTime(@NonNull String feature, @NonNull String type, long nanoseconds) {
         featureUsageCurrent
                 .computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
                 .merge(type, nanoseconds, Long::sum);
@@ -188,7 +190,7 @@ public class CpuManager {
      * @param key  usage key
      * @param time nanoseconds to add
      */
-    private void addTime(Map<String, Long> map, String key, long time) {
+    private void addTime(@NonNull Map<String, Long> map, @NonNull String key, long time) {
         map.merge(key, time, Long::sum);
     }
 
@@ -198,15 +200,15 @@ public class CpuManager {
      * @param placeholder placeholder to add time to
      * @param nanoseconds time to add
      */
-    public void addPlaceholderTime(String placeholder, long nanoseconds) {
+    public void addPlaceholderTime(@NonNull String placeholder, long nanoseconds) {
         addTime(placeholderUsageCurrent, placeholder, nanoseconds);
     }
 
-    public void runMeasuredTask(TabFeature feature, String type, Runnable task) {
+    public void runMeasuredTask(@NonNull TabFeature feature, @NonNull String type, @NonNull Runnable task) {
         runMeasuredTask(feature.getFeatureName(), type, task);
     }
 
-    public void runMeasuredTask(String feature, String type, Runnable task) {
+    public void runMeasuredTask(@NonNull String feature, @NonNull String type, @NonNull Runnable task) {
         submit(() -> {
             long time = System.nanoTime();
             task.run();
@@ -214,26 +216,26 @@ public class CpuManager {
         });
     }
 
-    public void runTask(Runnable task) {
+    public void runTask(@NonNull Runnable task) {
         submit(task);
     }
 
-    public void startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
+    public void startRepeatingMeasuredTask(int intervalMilliseconds, @NonNull TabFeature feature, @NonNull String type, @NonNull Runnable task) {
         if (scheduler.isShutdown()) return;
         scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void startRepeatingTask(int intervalMilliseconds, Runnable task) {
+    public void startRepeatingTask(int intervalMilliseconds, @NonNull Runnable task) {
         if (scheduler.isShutdown()) return;
         scheduler.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
+    public void runTaskLater(int delayMilliseconds, @NonNull TabFeature feature, @NonNull String type, @NonNull Runnable task) {
         if (scheduler.isShutdown()) return;
         scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    private void run(Runnable task) {
+    private void run(@NonNull Runnable task) {
         try {
             task.run();
         } catch (Exception | LinkageError | StackOverflowError e) {

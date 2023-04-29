@@ -1,5 +1,9 @@
 package me.neznamy.tab.shared.config;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +30,7 @@ public interface PropertyConfiguration {
      * @param   value
      *          Value of the property
      */
-    void setProperty(String groupOrUser, String property, String server, String world, String value);
+    void setProperty(@NonNull String groupOrUser, @NonNull String property, @Nullable String server, @Nullable String world, @Nullable String value);
 
     /**
      * Gets property of group or user. If {@code server} or {@code world}
@@ -46,7 +50,7 @@ public interface PropertyConfiguration {
      * @return  Array with 2 elements with value being first, source second if found,
      *          empty array if nothing was found.
      */
-    String[] getProperty(String groupOrUser, String property, String server, String world);
+    @NotNull String[] getProperty(@NonNull String groupOrUser, @NonNull String property, @Nullable String server, @Nullable String world);
 
     /**
      * Removes all data applied to specified group or user.
@@ -54,7 +58,7 @@ public interface PropertyConfiguration {
      * @param   groupOrUser
      *          Name of group or user, depending on what this instance handles
      */
-    void remove(String groupOrUser);
+    void remove(@NonNull String groupOrUser);
 
     /**
      * Returns map of global settings applied to specified group or user.
@@ -64,7 +68,7 @@ public interface PropertyConfiguration {
      *          Name of group or user, depending on what this instance handles
      * @return  Map of global settings of specified group or user
      */
-    Map<String, Object> getGlobalSettings(String groupOrUser);
+    @NotNull Map<String, Object> getGlobalSettings(@NonNull String groupOrUser);
 
     /**
      * Returns map of per-world settings of specified group or user.
@@ -74,7 +78,7 @@ public interface PropertyConfiguration {
      *          Name of group or user, depending on what this instance handles
      * @return  Map of per-world settings of specified group or user
      */
-    Map<String, Map<String, Object>> getPerWorldSettings(String groupOrUser);
+    @NotNull Map<String, Map<String, Object>> getPerWorldSettings(@NonNull String groupOrUser);
 
     /**
      * Returns map of per-server settings of specified group or user.
@@ -84,7 +88,7 @@ public interface PropertyConfiguration {
      *          Name of group or user, depending on what this instance handles
      * @return  Map of per-server settings of specified group or user
      */
-    Map<String, Map<String, Object>> getPerServerSettings(String groupOrUser);
+    @NotNull Map<String, Map<String, Object>> getPerServerSettings(@NonNull String groupOrUser);
 
     /**
      * Returns set of all groups or users that have anything configured,
@@ -92,7 +96,7 @@ public interface PropertyConfiguration {
      *
      * @return  Set of all entries with something configured
      */
-    Set<String> getAllEntries();
+    @NotNull Set<String> getAllEntries();
 
     /**
      * Converts per-world or per-server map into a per-world or per-server map
@@ -105,7 +109,7 @@ public interface PropertyConfiguration {
      *          Name of group or user, depending on what this instance handles
      * @return  Converted map only containing data of specified group or user
      */
-    default Map<String, Map<String, Object>> convertMap(Map<String, Map<String, Map<String, Object>>> map, String groupOrUser) {
+    default @NotNull Map<String, Map<String, Object>> convertMap(@NonNull Map<String, Map<String, Map<String, Object>>> map, String groupOrUser) {
         Map<String, Map<String, Object>> converted = new HashMap<>();
         for (Map.Entry<String, Map<String, Map<String, Object>>> entry : map.entrySet()) {
             converted.put(entry.getKey(), entry.getValue().get(groupOrUser));
@@ -122,7 +126,7 @@ public interface PropertyConfiguration {
      * @return  Converted string
      */
     @SuppressWarnings("unchecked")
-    default String toString(Object obj) {
+    default @NotNull String toString(@NonNull Object obj) {
         if (obj instanceof List) {
             return ((List<Object>)obj).stream().map(Object::toString).collect(Collectors.joining("\n"));
         }
@@ -138,7 +142,7 @@ public interface PropertyConfiguration {
      *          String to convert
      * @return  Converted object
      */
-    default Object fromString(String string) {
+    default @Nullable Object fromString(@Nullable String string) {
         if (string != null && string.contains("\n")) {
             return Arrays.asList(string.split("\n"));
         }

@@ -12,6 +12,7 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -76,7 +77,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
         if (isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
@@ -91,7 +92,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NonNull TabPlayer connectedPlayer) {
         sorting.constructTeamNames(connectedPlayer);
         updateProperties(connectedPlayer);
         hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
@@ -110,7 +111,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onQuit(TabPlayer disconnectedPlayer) {
+    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
         if (!isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
@@ -125,15 +126,19 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
+    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!isDisabledPlayer(all)) registerTeam(all, p);
         }
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
+    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+        processSwitch(p);
+    }
+
+    private void processSwitch(@NonNull TabPlayer p) {
         boolean disabledBefore = isDisabledPlayer(p);
         boolean disabledNow = false;
         if (isDisabled(p.getServer(), p.getWorld())) {
@@ -248,7 +253,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
                 translate(getTeamVisibility(p, p)));
     }
 
-    public void updateTeamData(TabPlayer p, TabPlayer viewer) {
+    public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
@@ -256,20 +261,20 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
                 translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions());
     }
 
-    public void unregisterTeam(TabPlayer p, String teamName) {
+    public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
         if (hasTeamHandlingPaused(p)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().unregisterTeam(teamName);
         }
     }
 
-    public void registerTeam(TabPlayer p) {
+    public void registerTeam(@NonNull TabPlayer p) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             registerTeam(p, viewer);
         }
     }
 
-    private void registerTeam(TabPlayer p, TabPlayer viewer) {
+    private void registerTeam(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         if (hasTeamHandlingPaused(p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
@@ -281,26 +286,26 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         return b ? "always" : "never";
     }
     
-    protected boolean updateProperties(TabPlayer p) {
+    protected boolean updateProperties(@NonNull TabPlayer p) {
         boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TAGPREFIX);
         if (p.loadPropertyFromConfig(this, TabConstants.Property.TAGSUFFIX)) changed = true;
         return changed;
     }
 
-    public boolean getTeamVisibility(TabPlayer p, TabPlayer viewer) {
+    public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNameTags
                 && (!accepting18x || !p.hasInvisibilityPotion()) && !playersWithInvisibleNameTagView.contains(viewer);
     }
 
     @Override
-    public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, String prefix) {
+    public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
         Preconditions.checkLoaded(player);
         ((TabPlayer)player).getProperty(TabConstants.Property.TAGPREFIX).setTemporaryValue(prefix);
         updateTeamData((TabPlayer) player);
     }
 
     @Override
-    public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, String suffix) {
+    public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
         Preconditions.checkLoaded(player);
         ((TabPlayer)player).getProperty(TabConstants.Property.TAGSUFFIX).setTemporaryValue(suffix);
         updateTeamData((TabPlayer) player);

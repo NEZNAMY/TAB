@@ -3,19 +3,22 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.tablist.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ParentGroup {
 
-    private final Layout layout;
-    private final Condition condition;
+    @NonNull private final Layout layout;
+    @Nullable private final Condition condition;
     private final int[] slots;
     @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
     @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
-    public ParentGroup(Layout layout, Condition condition, int[] slots) {
+    public ParentGroup(@NonNull Layout layout, @Nullable Condition condition, int[] slots) {
         this.layout = layout;
         this.condition = condition;
         this.slots = slots;
@@ -24,7 +27,7 @@ public class ParentGroup {
         }
     }
 
-    public void tick(List<TabPlayer> remainingPlayers) {
+    public void tick(@NonNull List<TabPlayer> remainingPlayers) {
         players.clear();
         List<TabPlayer> meetingCondition = new ArrayList<>();
         for (TabPlayer p : remainingPlayers) {
@@ -47,7 +50,7 @@ public class ParentGroup {
         }
     }
     
-    public List<TabList.Entry> getSlots(TabPlayer p) {
+    public @NotNull List<TabList.Entry> getSlots(@NonNull TabPlayer p) {
         List<TabList.Entry> data = new ArrayList<>();
         playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
         return data;

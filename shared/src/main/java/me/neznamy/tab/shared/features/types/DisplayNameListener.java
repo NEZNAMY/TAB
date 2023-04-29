@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 
@@ -19,5 +20,5 @@ public interface DisplayNameListener {
      *          Affected entry
      * @return  New display name to write to the packet, {@code null} for keeping it
      */
-    IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id);
+    IChatBaseComponent onDisplayNameChange(@NonNull TabPlayer packetReceiver, @NonNull UUID id);
 }

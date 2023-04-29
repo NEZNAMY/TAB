@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -29,7 +31,7 @@ public class CpuCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
         String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
         TAB tab = TAB.getInstance();
         Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
@@ -61,7 +63,7 @@ public class CpuCommand extends SubCommand {
         sendMessage(sender, " ");
     }
 
-    private void printPlaceholders(TabPlayer sender, Map<String, Float> map) {
+    private void printPlaceholders(@Nullable TabPlayer sender, @NonNull Map<String, Float> map) {
         int printCounter = 0;
         for (Entry<String, Float> entry : map.entrySet()) {
             if (printCounter++ == 5) break;
@@ -73,7 +75,7 @@ public class CpuCommand extends SubCommand {
         }
     }
 
-    public void sendToConsole(Map<String, Map<String, Float>> features) {
+    public void sendToConsole(@NonNull Map<String, Map<String, Float>> features) {
         TAB.getInstance().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
@@ -89,7 +91,7 @@ public class CpuCommand extends SubCommand {
         }
     }
 
-    public void sendToPlayer(TabPlayer sender, Map<String, Map<String, Float>> features) {
+    public void sendToPlayer(@NonNull TabPlayer sender, @NonNull Map<String, Map<String, Float>> features) {
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (execute from console for more info):");
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
@@ -106,7 +108,7 @@ public class CpuCommand extends SubCommand {
      *          usage
      * @return  colored usage
      */
-    private String colorize(String usage, float threshold1, float threshold2) {
+    private String colorize(@NonNull String usage, float threshold1, float threshold2) {
         float percent = Float.parseFloat(usage.replace(",", "."));
         if (percent > threshold1) return "&c" + usage;
         if (percent > threshold2) return "&e" + usage;

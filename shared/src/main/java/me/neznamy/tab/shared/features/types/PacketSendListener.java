@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
@@ -17,5 +18,5 @@ public interface PacketSendListener {
      * @throws  ReflectiveOperationException
      *          If thrown by reflective operation
      */
-    void onPacketSend(TabPlayer receiver, Object packet) throws ReflectiveOperationException;
+    void onPacketSend(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException;
 }

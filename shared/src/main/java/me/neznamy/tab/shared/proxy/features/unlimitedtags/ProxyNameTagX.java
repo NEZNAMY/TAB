@@ -1,5 +1,6 @@
 package me.neznamy.tab.shared.proxy.features.unlimitedtags;
 
+import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
@@ -12,7 +13,7 @@ public class ProxyNameTagX extends NameTagX {
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
+    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
         super.onServerChange(p, from, to);
         if (isPreviewingNametag(p)) {
             ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "Preview", true);
@@ -24,33 +25,33 @@ public class ProxyNameTagX extends NameTagX {
     }
 
     @Override
-    public void onQuit(TabPlayer disconnectedPlayer) {
+    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
         super.onQuit(disconnectedPlayer);
         armorStandManagerMap.remove(disconnectedPlayer); // WeakHashMap doesn't clear this due to value referencing the key
     }
 
     @Override
-    public boolean isOnBoat(TabPlayer player) {
+    public boolean isOnBoat(@NonNull TabPlayer player) {
         return ((ProxyTabPlayer)player).isOnBoat();
     }
 
     @Override
-    public void setNameTagPreview(TabPlayer player, boolean status) {
+    public void setNameTagPreview(@NonNull TabPlayer player, boolean status) {
         ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Preview", status);
     }
 
     @Override
-    public void resumeArmorStands(TabPlayer player) {
+    public void resumeArmorStands(@NonNull TabPlayer player) {
         ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Resume");
     }
 
     @Override
-    public void pauseArmorStands(TabPlayer player) {
+    public void pauseArmorStands(@NonNull TabPlayer player) {
         ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "Pause");
     }
 
     @Override
-    public void updateNameTagVisibilityView(TabPlayer player) {
+    public void updateNameTagVisibilityView(@NonNull TabPlayer player) {
         ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "VisibilityView");
     }
 }
