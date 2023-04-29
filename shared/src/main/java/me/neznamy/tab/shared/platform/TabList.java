@@ -34,6 +34,17 @@ public interface TabList {
     void addEntry(@NonNull TabList.Entry entry);
 
     /**
+     * Sets header and footer to specified values
+     *
+     * @param   header
+     *          Header to use
+     * @param   footer
+     *          Footer to use
+     */
+    void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer);
+
+
+    /**
      * A subclass representing player list entry
      */
     @Data

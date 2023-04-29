@@ -308,16 +308,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     public abstract @Nullable TabList.Skin getSkin();
 
     /**
-     * Sets header and footer to specified values
-     *
-     * @param   header
-     *          Header to use
-     * @param   footer
-     *          Footer to use
-     */
-    public abstract void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer);
-
-    /**
      * Returns TabList interface for calling tablist-related methods
      *
      * @return  TabList interface for calling tablist-related methods

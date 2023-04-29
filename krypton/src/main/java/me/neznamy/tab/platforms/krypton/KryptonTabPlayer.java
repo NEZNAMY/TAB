@@ -78,9 +78,4 @@ public class KryptonTabPlayer extends TabPlayer {
     public int getGamemode() {
         return getPlayer().getGameMode().ordinal();
     }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().getTabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
-    }
 }

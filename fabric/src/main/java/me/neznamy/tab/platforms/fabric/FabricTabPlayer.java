@@ -84,12 +84,4 @@ public class FabricTabPlayer extends TabPlayer {
     public int getGamemode() {
         return getPlayer().gameMode.getGameModeForPlayer().getId();
     }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().connection.send(FabricMultiVersion.setHeaderAndFooter.apply(
-                FabricTAB.getInstance().toComponent(header, getVersion()),
-                FabricTAB.getInstance().toComponent(footer, getVersion()))
-        );
-    }
 }

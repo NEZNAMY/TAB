@@ -134,7 +134,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
     
     private void sendHeaderFooter(TabPlayer player, IChatBaseComponent header, IChatBaseComponent footer) {
-        player.setPlayerListHeaderFooter(header, footer);
+        player.getTabList().setPlayerListHeaderFooter(header, footer);
     }
 
     @Override

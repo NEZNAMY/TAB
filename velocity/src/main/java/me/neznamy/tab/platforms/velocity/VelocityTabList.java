@@ -72,6 +72,11 @@ public class VelocityTabList implements TabList {
                 .build());
     }
 
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
+    }
+
     /**
      * Returns TabList entry with specified UUID. If no such entry was found,
      * a new, dummy entry is returned to avoid NPE.

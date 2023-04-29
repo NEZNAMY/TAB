@@ -52,6 +52,11 @@ public class KryptonTabList implements TabList {
                 .buildAndRegister();
     }
 
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        player.getPlayer().getTabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
+    }
+
     private @NotNull GameProfile createGameProfile(@NonNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
         String newName = name == null ? "" : name;
         if (skin == null) return GameProfile.of(newName, uuid);

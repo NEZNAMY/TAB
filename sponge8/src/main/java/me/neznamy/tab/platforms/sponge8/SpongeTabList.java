@@ -7,7 +7,6 @@ import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
 
@@ -17,27 +16,27 @@ import java.util.UUID;
 public class SpongeTabList implements TabList {
 
     /** Player this TabList belongs to */
-    private final ServerPlayer player;
+    private final SpongeTabPlayer player;
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
-        player.tabList().removeEntry(entry);
+        player.getPlayer().tabList().removeEntry(entry);
     }
 
     @Override
     public void updateDisplayName(@NonNull UUID id, @Nullable IChatBaseComponent displayName) {
-        player.tabList().entry(id).ifPresent(
+        player.getPlayer().tabList().entry(id).ifPresent(
                 entry -> entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent()));
     }
 
     @Override
     public void updateLatency(@NonNull UUID id, int latency) {
-        player.tabList().entry(id).ifPresent(entry -> entry.setLatency(latency));
+        player.getPlayer().tabList().entry(id).ifPresent(entry -> entry.setLatency(latency));
     }
 
     @Override
     public void updateGameMode(@NonNull UUID id, int gameMode) {
-        player.tabList().entry(id).ifPresent(entry -> entry.setGameMode(convertGameMode(gameMode)));
+        player.getPlayer().tabList().entry(id).ifPresent(entry -> entry.setGameMode(convertGameMode(gameMode)));
     }
 
     @Override
@@ -45,13 +44,18 @@ public class SpongeTabList implements TabList {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
-        player.tabList().addEntry(org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
-                .list(player.tabList())
+        player.getPlayer().tabList().addEntry(org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
+                .list(player.getPlayer().tabList())
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))
                 .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
                 .build());
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        player.getPlayer().tabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 
     private GameMode convertGameMode(int mode) {

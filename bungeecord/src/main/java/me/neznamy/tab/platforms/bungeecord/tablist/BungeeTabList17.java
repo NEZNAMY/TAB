@@ -1,13 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -25,11 +23,11 @@ import java.util.UUID;
  * While BungeeCord itself does not support 1.7, some of its forks do.
  * This was tested on FlameCord fork.
  */
-@RequiredArgsConstructor
-public class BungeeTabList17 implements TabList {
+public class BungeeTabList17 extends BungeeTabList {
 
-    /** Player this TabList belongs to */
-    private final @NotNull BungeeTabPlayer player;
+    public BungeeTabList17(BungeeTabPlayer player) {
+        super(player);
+    }
 
     /** Because entries are identified by names and not uuids on 1.7 */
     private final Map<UUID, String> userNames = new HashMap<>();

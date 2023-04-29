@@ -147,28 +147,6 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        // Method was added to Bukkit API in 1.13.1, however despite that it's just a String one
-        // Using it would cause high CPU usage and massive memory allocations on RGB & animations
-        // Send packet instead for performance & older server version support
-
-        /*if (TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_13_1.getNetworkId()) {
-            String bukkitHeader = RGBUtils.getInstance().convertToBukkitFormat(header.toFlatText(),
-                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
-            String bukkitFooter = RGBUtils.getInstance().convertToBukkitFormat(footer.toFlatText(),
-                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
-            getPlayer().setPlayerListHeaderFooter(bukkitHeader, bukkitFooter);
-            return;
-        }*/
-
-        try {
-            sendPacket(PacketPlayOutPlayerListHeaderFooterStorage.build(header, footer, version));
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    @Override
     public void spawnEntity(int entityId, @NonNull UUID id, @NonNull Object entityType, @NonNull Location location, @NonNull EntityData data) {
         try {
             sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));

@@ -48,6 +48,14 @@ public class FabricTabList implements TabList {
                 .setDisplayName(entry.getDisplayName() == null ? null : FabricTAB.getInstance().toComponent(entry.getDisplayName(), player.getVersion()))));
     }
 
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        player.getPlayer().connection.send(FabricMultiVersion.setHeaderAndFooter.apply(
+                FabricTAB.getInstance().toComponent(header, player.getVersion()),
+                FabricTAB.getInstance().toComponent(footer, player.getVersion()))
+        );
+    }
+
     @RequiredArgsConstructor
     @Getter
     public static class Builder {

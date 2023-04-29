@@ -23,7 +23,7 @@ import java.util.List;
 public final class SpongeTabPlayer extends TabPlayer {
 
     @Getter private final PlatformScoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
-    @Getter private final TabList tabList = new SpongeTabList(getPlayer());
+    @Getter private final TabList tabList = new SpongeTabList(this);
     @Getter private final AdventureBossBar bossBar = new AdventureBossBar(getPlayer());
 
     public SpongeTabPlayer(ServerPlayer player) {
@@ -87,11 +87,6 @@ public final class SpongeTabPlayer extends TabPlayer {
         if (getPlayer().gameMode().get() == GameModes.ADVENTURE.get()) return 2;
         if (getPlayer().gameMode().get() == GameModes.SPECTATOR.get()) return 3;
         return 0;
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().tabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 
     public void setPlayer(final ServerPlayer player) {

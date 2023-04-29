@@ -54,6 +54,14 @@ public class SpongeTabList implements TabList {
                 .build());
     }
 
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        player.getPlayer().getTabList().setHeaderAndFooter(
+                Sponge7TAB.getTextCache().get(header, player.getVersion()),
+                Sponge7TAB.getTextCache().get(footer, player.getVersion())
+        );
+    }
+
     private GameMode convertGameMode(int mode) {
         switch (mode) {
             case 0: return GameModes.SURVIVAL;

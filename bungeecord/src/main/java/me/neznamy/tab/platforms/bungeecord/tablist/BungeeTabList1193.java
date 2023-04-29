@@ -1,19 +1,17 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
 import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.UUID;
 
 /**
  * TabList handler for 1.19.3+ players using the new tablist packets.
@@ -21,11 +19,11 @@ import java.util.*;
  * They are sent using an internal BungeeCord method that keeps track of them,
  * so they are removed on server switch to secure parity with Velocity.
  */
-@RequiredArgsConstructor
-public class BungeeTabList1193 implements TabList {
+public class BungeeTabList1193 extends BungeeTabList {
 
-    /** Player this TabList belongs to */
-    private final BungeeTabPlayer player;
+    public BungeeTabList1193(BungeeTabPlayer player) {
+        super(player);
+    }
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
@@ -69,12 +67,6 @@ public class BungeeTabList1193 implements TabList {
         }
         item.setUsername(entry.getName());
         sendPacket(EnumSet.allOf(PlayerListItemUpdate.Action.class), item);
-    }
-
-    private @NotNull Item item(@NonNull UUID id) {
-        Item item = new Item();
-        item.setUuid(id);
-        return item;
     }
 
     private void sendPacket(@NonNull EnumSet<PlayerListItemUpdate.Action> actions, @NonNull Item item) {

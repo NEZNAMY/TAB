@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerListHeaderFooterStorage;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
 import me.neznamy.tab.shared.platform.TabList;
@@ -66,5 +67,27 @@ public class BukkitTabList implements TabList {
     @Override
     public void addEntry(@NonNull Entry entry) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER", entry, player.getVersion()));
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+        // Method was added to Bukkit API in 1.13.1, however despite that it's just a String one
+        // Using it would cause high CPU usage and massive memory allocations on RGB & animations
+        // Send packet instead for performance & older server version support
+
+        /*if (TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_13_1.getNetworkId()) {
+            String bukkitHeader = RGBUtils.getInstance().convertToBukkitFormat(header.toFlatText(),
+                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+            String bukkitFooter = RGBUtils.getInstance().convertToBukkitFormat(footer.toFlatText(),
+                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+            getPlayer().setPlayerListHeaderFooter(bukkitHeader, bukkitFooter);
+            return;
+        }*/
+
+        try {
+            player.sendPacket(PacketPlayOutPlayerListHeaderFooterStorage.build(header, footer, player.getVersion()));
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

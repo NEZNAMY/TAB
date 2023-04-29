@@ -88,9 +88,4 @@ public final class SpongeTabPlayer extends TabPlayer {
         if (gameMode.equals(GameModes.SPECTATOR)) return 3;
         return 0;
     }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().getTabList().setHeaderAndFooter(Sponge7TAB.getTextCache().get(header, version), Sponge7TAB.getTextCache().get(footer, version));
-    }
 }
