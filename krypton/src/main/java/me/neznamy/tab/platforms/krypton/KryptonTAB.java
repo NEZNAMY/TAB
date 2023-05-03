@@ -3,28 +3,20 @@ package me.neznamy.tab.platforms.krypton;
 import com.google.inject.Inject;
 import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
+import me.neznamy.tab.shared.TabConstants;
 import org.kryptonmc.api.Server;
 import org.kryptonmc.api.command.CommandMeta;
-import org.kryptonmc.api.command.Sender;
-import org.kryptonmc.api.command.SimpleCommand;
-import org.kryptonmc.api.entity.player.Player;
 import org.kryptonmc.api.event.Event;
 import org.kryptonmc.api.event.EventFilter;
 import org.kryptonmc.api.event.EventNode;
 import org.kryptonmc.api.event.Listener;
 import org.kryptonmc.api.event.server.ServerStartEvent;
 import org.kryptonmc.api.event.server.ServerStopEvent;
-import org.kryptonmc.api.plugin.annotation.DataFolder;
 import org.kryptonmc.api.plugin.annotation.Dependency;
 import org.kryptonmc.api.plugin.annotation.Plugin;
+
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Main class for Krypton platform
@@ -42,68 +34,24 @@ import java.util.List;
 )
 public class KryptonTAB {
 
-    @Getter private final Server server;
-    private final EventNode<Event> pluginEventNode;
-    @Getter private final Path folder;
-    @Getter private final EventNode<Event> eventNode;
-
-    @Inject
-    public KryptonTAB(Server server, EventNode<Event> pluginEventNode, @DataFolder Path folder) {
-        this.server = server;
-        this.pluginEventNode = pluginEventNode;
-        this.folder = folder;
-        this.eventNode = EventNode.Companion.filteredForEvent("tab_events", EventFilter.ALL, (it) -> !TAB.getInstance().isPluginDisabled());
-    }
+    @Inject @Getter private Server server;
+    @Inject private EventNode<Event> pluginEventNode;
+    @Inject @Getter private Path folder;
+    @Getter private final EventNode<Event> eventNode = EventNode.Companion.filteredForEvent("tab_events", EventFilter.ALL,
+            (it) -> !TAB.getInstance().isPluginDisabled());
 
     @Listener
     public final void onStart(ServerStartEvent event) {
-        pluginEventNode.addChild(this.eventNode);
-        TAB tab = new TAB(
-                new KryptonPlatform(this),
-                ProtocolVersion.fromNetworkId(this.server.getPlatform().protocolVersion()),
-                server.getPlatform().version(),
-                folder.toFile(),
-                null
-        );
-        TAB.setInstance(tab);
+        pluginEventNode.addChild(eventNode);
         eventNode.registerListeners(new KryptonEventListener());
-        server.getCommandManager().register(new KryptonTABCommand(), CommandMeta.builder("tab").build());
+        server.getCommandManager().register(new KryptonTabCommand(), CommandMeta.builder("tab").build());
+        TAB.setInstance(new TAB(new KryptonPlatform(this), ProtocolVersion.fromNetworkId(server.getPlatform().protocolVersion()),
+                server.getPlatform().version(), folder.toFile(), null));
         TAB.getInstance().load();
     }
 
     @Listener
     public final void onStop(ServerStopEvent event) {
         TAB.getInstance().unload();
-    }
-
-    public static class KryptonTABCommand implements SimpleCommand {
-
-        @Override
-        public void execute(@NotNull Sender sender, String[] args) {
-            if (TAB.getInstance().isPluginDisabled()) {
-                boolean canReload = sender.hasPermission("tab.reload");
-                boolean isAdmin = sender.hasPermission("tab.admin");
-                for (String message : TAB.getInstance().getDisabledCommand().execute(args, canReload, isAdmin)) {
-                    sender.sendMessage(Component.text(message));
-                }
-                return;
-            }
-            TabPlayer player = null;
-            if (sender instanceof Player) {
-                player = TAB.getInstance().getPlayer(((Player) sender).getUuid());
-                if (player == null) return;
-            }
-            TAB.getInstance().getCommand().execute(player, args);
-        }
-
-        @Override
-        public @NotNull List<String> suggest(@NotNull Sender sender, String[] args) {
-            TabPlayer player = null;
-            if (sender instanceof Player) {
-                player = TAB.getInstance().getPlayer(((Player) sender).getUuid());
-                if (player == null) return Collections.emptyList();
-            }
-            return TAB.getInstance().getCommand().complete(player, args);
-        }
     }
 }

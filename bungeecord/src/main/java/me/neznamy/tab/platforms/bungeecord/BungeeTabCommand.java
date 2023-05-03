@@ -1,0 +1,49 @@
+package me.neznamy.tab.platforms.bungeecord;
+
+import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
+
+import java.util.ArrayList;
+
+public class BungeeTabCommand extends Command implements TabExecutor {
+
+    /**
+     * Constructs new instance
+     */
+    public BungeeTabCommand() {
+        super("btab", null);
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (TAB.getInstance().isPluginDisabled()) {
+            for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
+                sender.sendMessage(new TextComponent(EnumChatFormat.color(message)));
+            }
+        } else {
+            TabPlayer p = null;
+            if (sender instanceof ProxiedPlayer) {
+                p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
+                if (p == null) return; //player not loaded correctly
+            }
+            TAB.getInstance().getCommand().execute(p, args);
+        }
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        TabPlayer p = null;
+        if (sender instanceof ProxiedPlayer) {
+            p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
+            if (p == null) return new ArrayList<>(); //player not loaded correctly
+        }
+        return TAB.getInstance().getCommand().complete(p, args);
+    }
+}

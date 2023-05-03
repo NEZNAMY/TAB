@@ -40,7 +40,7 @@ public class FabricMultiVersion {
         sendMessage = (player, message) -> player.getPlayer().sendSystemMessage(FabricTAB.getInstance().toComponent(message, player.getVersion()));
         sendMessage2 = CommandSourceStack::sendSystemMessage;
         registerCommand = () -> net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register(
-                (dispatcher, $, $$) -> FabricTAB.getInstance().onRegisterCommands(dispatcher));
+                (dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
         setProgress = ServerBossEvent::setProgress;
         registerTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
         unregisterTeam = ClientboundSetPlayerTeamPacket::createRemovePacket;
@@ -52,7 +52,7 @@ public class FabricMultiVersion {
         sendMessage = (player, message) -> player.getPlayer().sendMessage(FabricTAB.getInstance().toComponent(message, player.getVersion()), SYSTEM_ID);
         sendMessage2 = (source, message) -> source.sendSuccess(message, false);
         registerCommand = () -> net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register(
-                (dispatcher, $) -> FabricTAB.getInstance().onRegisterCommands(dispatcher));
+                (dispatcher, $) -> new FabricTabCommand().onRegisterCommands(dispatcher));
         setProgress = ServerBossEvent::setProgress;
         registerTeam = team -> ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true);
         unregisterTeam = ClientboundSetPlayerTeamPacket::createRemovePacket;
@@ -66,7 +66,7 @@ public class FabricMultiVersion {
         );
         sendMessage2 = (source, message) -> source.sendSuccess(message, false);
         registerCommand = () -> net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register(
-                (dispatcher, $) -> FabricTAB.getInstance().onRegisterCommands(dispatcher));
+                (dispatcher, $) -> new FabricTabCommand().onRegisterCommands(dispatcher));
         setProgress = ServerBossEvent::setPercent;
         registerTeam = team -> new ClientboundSetPlayerTeamPacket(team, 0);
         unregisterTeam = team -> new ClientboundSetPlayerTeamPacket(team, 1);

@@ -2,7 +2,6 @@ package me.neznamy.tab.platforms.bukkit;
 
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.*;
 import me.neznamy.tab.shared.TAB;
@@ -10,7 +9,6 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +45,7 @@ public class BukkitTAB extends JavaPlugin {
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
         PluginCommand cmd = Bukkit.getPluginCommand("tab");
         if (cmd == null) return;
-        TABCommand command = new TABCommand();
+        BukkitTabCommand command = new BukkitTabCommand();
         cmd.setExecutor(command);
         cmd.setTabCompleter(command);
     }
@@ -105,38 +103,5 @@ public class BukkitTAB extends JavaPlugin {
             } catch (Exception ignored) {}
         }
         throw new IllegalStateException("Unsupported server version");
-    }
-
-    /**
-     * Command handler for /tab command
-     */
-    private static class TABCommand implements CommandExecutor, TabCompleter {
-
-        @Override
-        public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-            if (TAB.getInstance().isPluginDisabled()) {
-                for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
-                    sender.sendMessage(EnumChatFormat.color(message));
-                }
-            } else {
-                TabPlayer p = null;
-                if (sender instanceof Player) {
-                    p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
-                    if (p == null) return true; //player not loaded correctly
-                }
-                TAB.getInstance().getCommand().execute(p, args);
-            }
-            return false;
-        }
-
-        @Override
-        public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
-            TabPlayer p = null;
-            if (sender instanceof Player) {
-                p = TAB.getInstance().getPlayer(((Player)sender).getUniqueId());
-                if (p == null) return new ArrayList<>(); //player not loaded correctly
-            }
-            return TAB.getInstance().getCommand().complete(p, args);
-        }
     }
 }
