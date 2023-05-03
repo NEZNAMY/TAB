@@ -38,7 +38,7 @@ public class PacketPlayOutPlayerInfoStorage {
         PlayerInfoDataStorage.load(nms);
     }
 
-    public static Object createPacket(String action, TabList.Entry entry, ProtocolVersion clientVersion) {
+    public static Object createPacket(TabList.Action action, TabList.Entry entry, ProtocolVersion clientVersion) {
         NMSStorage nms = NMSStorage.getInstance();
         if (nms.getMinorVersion() < 8) return null;
         try {
@@ -46,10 +46,10 @@ public class PacketPlayOutPlayerInfoStorage {
             List<Object> players = new ArrayList<>();
             if (NMSStorage.getInstance().is1_19_3Plus()) {
                 EnumSet<?> actions;
-                if (action.equals("ADD_PLAYER")) {
+                if (action == TabList.Action.ADD_PLAYER) {
                     actions = EnumSet.allOf(EnumPlayerInfoActionClass);
                 } else {
-                    actions = EnumSet.of(Enum.valueOf(EnumPlayerInfoActionClass, action));
+                    actions = EnumSet.of(Enum.valueOf(EnumPlayerInfoActionClass, action.name()));
                 }
                 packet = CONSTRUCTOR.newInstance(actions, Collections.emptyList());
                 GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
@@ -65,7 +65,7 @@ public class PacketPlayOutPlayerInfoStorage {
                         null
                 ));
             } else {
-                packet = CONSTRUCTOR.newInstance(Enum.valueOf(EnumPlayerInfoActionClass, action),
+                packet = CONSTRUCTOR.newInstance(Enum.valueOf(EnumPlayerInfoActionClass, action.name()),
                         Array.newInstance(NMSStorage.getInstance().EntityPlayer, 0));
                 GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
                 if (entry.getSkin() != null) profile.getProperties().put(TabList.TEXTURES_PROPERTY,

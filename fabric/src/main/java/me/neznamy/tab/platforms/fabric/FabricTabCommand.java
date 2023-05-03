@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class FabricTabCommand {
 
     public void onRegisterCommands(@NonNull CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralCommandNode<CommandSourceStack> command = Commands.literal("tab")
+        LiteralCommandNode<CommandSourceStack> command = Commands.literal(TabConstants.COMMAND_BACKEND)
                 .executes(context -> executeCommand(context.getSource(), new String[0]))
                 .build();
         ArgumentCommandNode<CommandSourceStack, String> args = Commands.argument("args", StringArgumentType.greedyString())

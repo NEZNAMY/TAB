@@ -36,6 +36,8 @@ public class IChatBaseComponent {
     private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(10000,
             (component, clientVersion) -> component.toString());
 
+    public static final String EMPTY_COMPONENT = "{\"text\":\"\"}";
+
     /** Text of the component */
     @Getter @Setter private String text;
 
@@ -121,9 +123,7 @@ public class IChatBaseComponent {
      * @return  serialized string
      */
     public @NotNull String toString(@NonNull ProtocolVersion clientVersion) {
-        if (extra == null) {
-            if (text == null || text.length() == 0) return "{\"text\":\"\"}";
-        }
+        if (extra == null && (text == null || text.length() == 0)) return EMPTY_COMPONENT;
         targetVersion = clientVersion;
         for (IChatBaseComponent child : getExtra()) {
             child.targetVersion = clientVersion;

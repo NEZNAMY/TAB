@@ -60,7 +60,7 @@ public class KryptonTabList implements TabList {
     private @NotNull GameProfile createGameProfile(@NonNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
         String newName = name == null ? "" : name;
         if (skin == null) return GameProfile.of(newName, uuid);
-        ProfileProperty property = ProfileProperty.of("textures", skin.getValue(), skin.getSignature());
+        ProfileProperty property = ProfileProperty.of(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature());
         return GameProfile.of(newName, uuid, Collections.singletonList(property));
     }
 }

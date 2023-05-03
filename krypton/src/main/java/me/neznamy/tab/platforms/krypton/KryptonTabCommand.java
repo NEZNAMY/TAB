@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.krypton;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +17,8 @@ public class KryptonTabCommand implements SimpleCommand {
     @Override
     public void execute(@NotNull Sender sender, String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean canReload = sender.hasPermission("tab.reload");
-            boolean isAdmin = sender.hasPermission("tab.admin");
+            boolean canReload = sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
+            boolean isAdmin = sender.hasPermission(TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, canReload, isAdmin)) {
                 sender.sendMessage(Component.text(message));
             }

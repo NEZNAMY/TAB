@@ -23,7 +23,7 @@ public class TabCommand extends SubCommand {
      * Constructs new instance with given parameter and registers all subcommands
      */
     public TabCommand() {
-        super("tab", null);
+        super(null, null);
         registerSubCommand(new AnnounceCommand());
         registerSubCommand(new BossBarCommand());
         registerSubCommand(new CpuCommand());
@@ -79,7 +79,8 @@ public class TabCommand extends SubCommand {
                 TAB.getInstance().sendConsoleMessage("&3TAB v" + TabConstants.PLUGIN_VERSION, true);
             }
             for (String message : getMessages().getHelpMenu()) {
-                if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) message = message.replace("/tab", "/btab");
+                if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
+                    message = message.replace("/" + TabConstants.COMMAND_BACKEND, "/" + TabConstants.COMMAND_PROXY);
                 sendMessage(sender, message);
             }
         }

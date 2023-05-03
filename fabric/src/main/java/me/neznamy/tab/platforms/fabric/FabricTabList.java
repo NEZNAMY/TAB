@@ -81,9 +81,4 @@ public class FabricTabList implements TabList {
             return profile;
         }
     }
-
-    public enum Action {
-
-        ADD_PLAYER, REMOVE_PLAYER, UPDATE_DISPLAY_NAME, UPDATE_LATENCY, UPDATE_GAME_MODE
-    }
 }

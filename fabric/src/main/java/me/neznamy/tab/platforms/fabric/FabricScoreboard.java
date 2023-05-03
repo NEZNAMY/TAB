@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
 
     private final @NotNull Scoreboard dummyScoreboard = new Scoreboard();
-    private final @NotNull Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson("{\"text\":\"\"}"));
+    private final @NotNull Component EMPTY_COMPONENT = Objects.requireNonNull(Component.Serializer.fromJson(IChatBaseComponent.EMPTY_COMPONENT));
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);

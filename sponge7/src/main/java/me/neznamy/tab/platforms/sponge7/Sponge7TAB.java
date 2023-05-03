@@ -44,7 +44,7 @@ public class Sponge7TAB {
         game.getCommandManager().register(this, CommandSpec.builder()
                 .arguments(GenericArguments.remainingJoinedStrings(Text.of("arguments")))
                 .executor(cmd::executeCommand)
-                .build(), "tab");
+                .build(), TabConstants.COMMAND_BACKEND);
         game.getEventManager().registerListeners(this, new SpongeEventListener());
         String version = game.getPlatform().getMinecraftVersion().getName();
         TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir, logger));

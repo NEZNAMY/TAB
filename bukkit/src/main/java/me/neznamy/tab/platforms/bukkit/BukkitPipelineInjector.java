@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
@@ -38,7 +39,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         NMSStorage nms = NMSStorage.getInstance();
         try {
             if (nms.CHANNEL != null) return (Channel) nms.CHANNEL.get(nms.NETWORK_MANAGER.get(bukkit.getPlayerConnection()));
-        } catch (final IllegalAccessException exception) {
+        } catch (IllegalAccessException exception) {
             TAB.getInstance().getErrorManager().printError("Failed to get channel of " + bukkit.getName(), exception);
         }
         return null;
@@ -93,7 +94,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         for (Object nmsData : (List<?>) PacketPlayOutPlayerInfoStorage.PLAYERS.get(packet)) {
             GameProfile profile = (GameProfile) PlayerInfoDataStorage.PlayerInfoData_getProfile.invoke(nmsData);
             Object displayName = null;
-            if (actions.contains("UPDATE_DISPLAY_NAME") || actions.contains("ADD_PLAYER")) {
+            if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 displayName = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
                 if (newDisplayName != null) displayName = nms.toNMSComponent(newDisplayName, receiver.getVersion());

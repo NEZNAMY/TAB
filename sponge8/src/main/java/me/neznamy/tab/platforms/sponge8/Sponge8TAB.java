@@ -45,7 +45,7 @@ public class Sponge8TAB {
 
     @Listener
     public void onRegisterCommands(RegisterCommandEvent<Command.Raw> event) {
-        event.register(container, new SpongeTabCommand(), "tab");
+        event.register(container, new SpongeTabCommand(), TabConstants.COMMAND_BACKEND);
     }
 
     @Listener

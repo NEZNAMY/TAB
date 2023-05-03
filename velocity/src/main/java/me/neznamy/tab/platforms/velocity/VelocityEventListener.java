@@ -40,11 +40,11 @@ public class VelocityEventListener extends PlatformEventListener {
         // Imagine not allowing to cancel a command while it works completely fine on BungeeCord and Bukkit and everywhere else
         BossBarManagerImpl bossbar = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
         if (bossbar != null && bossbar.getToggleCommand().substring(1).equals(e.getCommand())) {
-            e.setResult(CommandResult.command("vtab bossbar"));
+            e.setResult(CommandResult.command(TabConstants.COMMAND_PROXY + " bossbar"));
         }
         ScoreboardManagerImpl scoreboard = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
         if (scoreboard != null && scoreboard.getToggleCommand().substring(1).equals(e.getCommand())) {
-            e.setResult(CommandResult.command("vtab scoreboard"));
+            e.setResult(CommandResult.command(TabConstants.COMMAND_PROXY + " scoreboard"));
         }
     }
 

@@ -23,6 +23,9 @@ public class TabConstants {
     public static final String REDIS_CHANNEL_NAME = PLUGIN_NAME;
     public static final String PIPELINE_HANDLER_NAME = PLUGIN_NAME;
 
+    public static final String COMMAND_BACKEND = "tab";
+    public static final String COMMAND_PROXY = "btab";
+
     /**
      * Feature sub-category explaining why / when a certain feature
      * needed CPU time to process tasks.

@@ -38,35 +38,35 @@ public class BukkitTabList implements TabList {
         } else {
             //1.19.2-
             player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(
-                    "REMOVE_PLAYER", new Entry.Builder(entry).build(), player.getVersion())
+                    Action.REMOVE_PLAYER, new Entry.Builder(entry).build(), player.getVersion())
             );
         }
     }
 
     @Override
     public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_DISPLAY_NAME",
+        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.UPDATE_DISPLAY_NAME,
                 new Entry.Builder(entry).displayName(displayName).build(), player.getVersion())
         );
     }
 
     @Override
     public void updateLatency(@NonNull UUID entry, int latency) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_LATENCY",
+        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.UPDATE_LATENCY,
                 new Entry.Builder(entry).latency(latency).build(), player.getVersion())
         );
     }
 
     @Override
     public void updateGameMode(@NonNull UUID entry, int gameMode) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("UPDATE_GAME_MODE",
+        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.UPDATE_GAME_MODE,
                 new Entry.Builder(entry).gameMode(gameMode).build(), player.getVersion())
         );
     }
 
     @Override
     public void addEntry(@NonNull Entry entry) {
-        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket("ADD_PLAYER", entry, player.getVersion()));
+        player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.ADD_PLAYER, entry, player.getVersion()));
     }
 
     @Override

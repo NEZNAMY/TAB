@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -32,7 +33,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         instance = this;
         ProtocolVersion protocolVersion = ProtocolVersion.fromNetworkId(SharedConstants.getCurrentVersion().getProtocolVersion());
         String version = SharedConstants.getCurrentVersion().getName();
-        File folder = FabricLoader.getInstance().getConfigDir().resolve("tab").toFile();
+        File folder = FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
         TAB.setInstance(new TAB(new FabricPlatform(), protocolVersion, version, folder, null));
         new FabricEventListener().register();
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {

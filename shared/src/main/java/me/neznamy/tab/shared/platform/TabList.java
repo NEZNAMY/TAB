@@ -43,6 +43,9 @@ public interface TabList {
      */
     void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer);
 
+    enum Action {
+        ADD_PLAYER, REMOVE_PLAYER, UPDATE_DISPLAY_NAME, UPDATE_LATENCY, UPDATE_GAME_MODE
+    }
 
     /**
      * A subclass representing player list entry

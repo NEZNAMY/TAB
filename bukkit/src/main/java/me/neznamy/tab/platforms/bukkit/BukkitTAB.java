@@ -43,7 +43,7 @@ public class BukkitTAB extends JavaPlugin {
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PLACEHOLDER_API, () -> platform.isPlaceholderAPI() ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
-        PluginCommand cmd = Bukkit.getPluginCommand("tab");
+        PluginCommand cmd = Bukkit.getPluginCommand(TabConstants.COMMAND_BACKEND);
         if (cmd == null) return;
         BukkitTabCommand command = new BukkitTabCommand();
         cmd.setExecutor(command);

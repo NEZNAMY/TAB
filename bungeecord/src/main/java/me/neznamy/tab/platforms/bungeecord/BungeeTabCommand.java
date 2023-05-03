@@ -18,7 +18,7 @@ public class BungeeTabCommand extends Command implements TabExecutor {
      * Constructs new instance
      */
     public BungeeTabCommand() {
-        super("btab", null);
+        super(TabConstants.COMMAND_PROXY, null);
     }
 
     @Override

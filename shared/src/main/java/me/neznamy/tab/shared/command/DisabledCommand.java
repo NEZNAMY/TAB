@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 
 /**
  * Command processor when TAB is disabled due to broken configuration file
@@ -34,7 +35,7 @@ public class DisabledCommand {
             }
         } else {
             if (hasAdminPermission) {
-                String command = TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY ? "/tab" : "/btab";
+                String command = "/" + (TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY ? TabConstants.COMMAND_BACKEND : TabConstants.COMMAND_PROXY);
                 messages.add("&m                                                                                ");
                 messages.add(" &cPlugin is disabled due to an error. Check console for more details.");
                 messages.add(" &8>> &3&l" + command + " reload");

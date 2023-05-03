@@ -23,7 +23,7 @@ public class KryptonTabPlayer extends TabPlayer {
     @Getter private final PlatformBossBar bossBar = new AdventureBossBar(getPlayer());
 
     public KryptonTabPlayer(Player player) {
-        super(player, player.getUuid(), player.getProfile().name(), "N/A",
+        super(player, player.getUuid(), player.getProfile().name(), TAB.getInstance().getConfiguration().getServerName(),
                 player.getWorld().getName(), TAB.getInstance().getServerVersion().getNetworkId(), true);
     }
 
