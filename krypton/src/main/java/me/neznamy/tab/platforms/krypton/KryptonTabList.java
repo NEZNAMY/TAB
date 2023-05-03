@@ -42,7 +42,7 @@ public class KryptonTabList implements TabList {
     }
 
     @Override
-    public void addEntry(@NonNull me.neznamy.tab.shared.platform.TabList.Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
         player.getPlayer().getTabList().createEntryBuilder(entry.getUniqueId(), profile)
                 .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())

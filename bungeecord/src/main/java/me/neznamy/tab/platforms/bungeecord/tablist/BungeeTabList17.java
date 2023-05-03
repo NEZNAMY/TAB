@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bungeecord.tablist;
 import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.Nullable;
@@ -25,13 +24,13 @@ import java.util.UUID;
  */
 public class BungeeTabList17 extends BungeeTabList {
 
-    public BungeeTabList17(BungeeTabPlayer player) {
-        super(player);
-    }
-
     /** Because entries are identified by names and not uuids on 1.7 */
     private final Map<UUID, String> userNames = new HashMap<>();
     private final Map<UUID, String> displayNames = new HashMap<>();
+
+    public BungeeTabList17(BungeeTabPlayer player) {
+        super(player);
+    }
 
     @Override
     public void removeEntry(@NonNull UUID entry) {
@@ -60,7 +59,7 @@ public class BungeeTabList17 extends BungeeTabList {
     public void updateGameMode(@NonNull UUID entry, int gameMode) {/*Added in 1.8*/}
 
     @Override
-    public void addEntry(@NonNull TabList.Entry entry) {
+    public void addEntry(@NonNull Entry entry) {
         String displayNameString = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
         if (displayNameString.length() > 16) displayNameString = displayNameString.substring(0, 16); // 16 character limit
         update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(), displayNameString, entry.getLatency()));

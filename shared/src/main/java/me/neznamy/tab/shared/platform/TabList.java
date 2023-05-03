@@ -31,7 +31,7 @@ public interface TabList {
 
     void updateGameMode(@NonNull UUID entry, int gameMode);
 
-    void addEntry(@NonNull TabList.Entry entry);
+    void addEntry(@NonNull Entry entry);
 
     /**
      * Sets header and footer to specified values
