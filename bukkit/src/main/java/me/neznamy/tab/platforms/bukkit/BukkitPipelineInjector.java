@@ -135,9 +135,14 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 continue;
             }
             Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
+            String expectedTeam = sorting.getShortTeamName(p);
+            if (expectedTeam == null) {
+                newList.add(entry);
+                continue;
+            }
             if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(sorting.getShortTeamName(p))) {
-                logTeamOverride(teamName, p.getName(), sorting.getShortTeamName(p));
+                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
+                logTeamOverride(teamName, p.getName(), expectedTeam);
             } else {
                 newList.add(entry);
             }

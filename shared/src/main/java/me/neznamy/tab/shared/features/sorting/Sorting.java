@@ -27,6 +27,7 @@ import me.neznamy.tab.shared.features.sorting.types.PlaceholderLowToHigh;
 import me.neznamy.tab.shared.features.sorting.types.PlaceholderZtoA;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Class for handling player sorting rules
@@ -183,7 +184,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
         return Arrays.stream(usedSortingTypes).map(Object::toString).collect(Collectors.joining(" -> "));
     }
 
-    public @NotNull String getShortTeamName(@NonNull TabPlayer p) {
+    public @Nullable String getShortTeamName(@NonNull TabPlayer p) {
         TeamManager teams = TAB.getInstance().getTeamManager();
         String forced = teams == null ? null : teams.getForcedTeamName(p);
         if (forced != null) return forced;

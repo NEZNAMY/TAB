@@ -110,9 +110,10 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         Collection<String> col = Lists.newArrayList(packet.getPlayers());
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
-            if (col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(sorting.getShortTeamName(p))) {
-                logTeamOverride(packet.getName(), p.getName(), sorting.getShortTeamName(p));
+            String expectedTeam = sorting.getShortTeamName(p);
+            if (expectedTeam != null && col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
+                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
+                logTeamOverride(packet.getName(), p.getName(), expectedTeam);
                 col.remove(p.getNickname());
             }
         }
