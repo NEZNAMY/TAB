@@ -22,7 +22,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     // config options
     private final List<String> spyServers = TAB.getInstance().getConfiguration().getConfig().getStringList("global-playerlist.spy-servers", Collections.singletonList("spyserver1"));
     private final Map<String, List<String>> sharedServers = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("global-playerlist.server-groups");
-    private final boolean displayAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
+    private final boolean othersAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-others-as-spectators", false);
     private final boolean vanishedAsSpectators = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.display-vanished-players-as-spectators", true);
     private final boolean isolateUnlistedServers = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.isolate-unlisted-servers", false);
     private final boolean updateLatency = TAB.getInstance().getConfiguration().getConfig().getBoolean("global-playerlist.update-latency", false);
@@ -75,15 +75,15 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
 
     @Override
     public void onJoin(@NonNull TabPlayer connectedPlayer) {
-        List<TabList.Entry> entries = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (connectedPlayer.getServer().equals(all.getServer())) continue;
             if (shouldSee(all, connectedPlayer)) {
                 all.getTabList().addEntry(getAddInfoData(connectedPlayer, all));
             }
-            if (shouldSee(connectedPlayer, all)) entries.add(getAddInfoData(all, connectedPlayer));
+            if (shouldSee(connectedPlayer, all)) {
+                connectedPlayer.getTabList().addEntry(getAddInfoData(all, connectedPlayer));
+            }
         }
-        if (!entries.isEmpty()) connectedPlayer.getTabList().addEntries(entries);
     }
 
     @Override
@@ -107,11 +107,10 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         // Player who switched server is removed from tablist of other players in ~70-110ms (depending on online count), re-add with a delay
         TAB.getInstance().getCPUManager().runTaskLater(200, this, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (all.getServer().equals(changed.getServer())) continue;
+                // Remove for everyone and add back if visible, easy solution to display-others-as-spectators option
+                all.getTabList().removeEntry(changed.getTablistId());
                 if (shouldSee(all, changed)) {
                     all.getTabList().addEntry(getAddInfoData(changed, all));
-                } else {
-                    all.getTabList().removeEntry(changed.getTablistId());
                 }
             }
         });
@@ -122,12 +121,14 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
         }
+        int gameMode = (othersAsSpectators && !p.getServer().equals(viewer.getServer())) ||
+                (vanishedAsSpectators && p.isVanished()) ? 3 : p.getGamemode();
         return new TabList.Entry(
                 p.getTablistId(),
                 p.getName(),
                 p.getSkin(),
                 p.getPing(),
-                vanishedAsSpectators && p.isVanished() ? 3 : p.getGamemode(),
+                gameMode,
                 viewer.getVersion().getMinorVersion() >= 8 ? format : null
         );
     }
@@ -136,7 +137,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     public void onGameModeChange(@NonNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (!player.getServer().equals(viewer.getServer())) {
-                viewer.getTabList().updateGameMode(player.getTablistId(), displayAsSpectators ? 3 : player.getGamemode());
+                viewer.getTabList().updateGameMode(player.getTablistId(), othersAsSpectators ? 3 : player.getGamemode());
             }
         }
     }
