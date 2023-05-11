@@ -68,50 +68,15 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
             TAB.getInstance().getMisconfigurationHelper().checkLayoutMap(layout.getKey().toString(), map);
             Condition displayCondition = Condition.getCondition((String) map.get("condition"));
             if (displayCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(displayCondition.getName())));
-            Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
-            List<Integer> emptySlots = new ArrayList<>();
-            List<ParentGroup> parentGroups = new ArrayList<>();
-            Layout l = new Layout(layout.getKey().toString(), this, displayCondition, fixedSlots, emptySlots, parentGroups);
-            for (int slot=1; slot<=80; slot++) {
-                emptySlots.add(slot);
-            }
+            Layout l = new Layout(layout.getKey().toString(), this, displayCondition);
             for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
-                String[] array = fixedSlot.split("\\|");
-                try {
-                    int slot = Integer.parseInt(array[0]);
-                    String text = array[1];
-                    String skin = array.length > 2 ? array[2] : "";
-                    int ping = array.length > 3 ? TAB.getInstance().getErrorManager().parseInteger(array[3], emptySlotPing) : emptySlotPing;
-                    FixedSlot f = new FixedSlot(l, uuids.get(slot), text,
-                            "Layout-" + l.getName() + "SLOT-" + slot,
-                            skinManager.getSkin(skin.length() == 0 ? defaultSkin : skin), ping);
-                    fixedSlots.put(slot, f);
-                    emptySlots.remove((Integer)slot);
-                    if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(layout.getKey().toString(), slot), f);
-                } catch (NumberFormatException e) {
-                    TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(layout.getKey().toString(), fixedSlot);
-                }
+                FixedSlot.registerFromLine(this, l, fixedSlot);
             }
-            Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.get("groups");
+            Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.getOrDefault("groups", Collections.emptyMap());
             if (groups != null) {
                 for (Entry<String, Map<String, Object>> group : groups.entrySet()) {
-                    TAB.getInstance().getMisconfigurationHelper().checkLayoutGroupMap(layout.getKey().toString(), group.getKey(), group.getValue());
-                    Condition condition = Condition.getCondition((String) group.getValue().get("condition"));
-                    List<Integer> positions = new ArrayList<>();
-                    for (String line : (List<String>) group.getValue().get("slots")) {
-                        String[] arr = line.split("-");
-                        int from = Integer.parseInt(arr[0]);
-                        int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
-                        for (int i = from; i<= to; i++) {
-                            positions.add(i);
-                        }
-                    }
-                    positions.removeAll(fixedSlots.keySet());
-                    parentGroups.add(new ParentGroup(l, condition, positions.stream().mapToInt(i->i).toArray()));
-                    emptySlots.removeAll(positions);
-                    if (condition != null) {
-                        l.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
-                    }
+                    TAB.getInstance().getMisconfigurationHelper().checkLayoutGroupMap(l.getName(), group.getKey(), group.getValue());
+                    l.getGroups().add(ParentGroup.fromMap(l, group.getValue()));
                 }
             }
             layoutMap.put(layout.getKey().toString(), l);

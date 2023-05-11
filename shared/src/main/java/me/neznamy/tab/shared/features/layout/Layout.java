@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -24,9 +25,9 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     @Getter private final String name;
     @Getter private final LayoutManager manager;
     private final Condition displayCondition;
-    private final Map<Integer, FixedSlot> fixedSlots;
-    private final List<Integer> emptySlots;
-    @Getter private final List<ParentGroup> groups;
+    @Getter private final Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
+    @Getter private final List<Integer> emptySlots = IntStream.range(1, 81).boxed().collect(Collectors.toList());
+    @Getter private final List<ParentGroup> groups = new ArrayList<>();
     @Getter private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
 
     public void sendTo(@NonNull TabPlayer p) {
