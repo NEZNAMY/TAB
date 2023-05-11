@@ -65,6 +65,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         Map<String, Layout> layoutMap = new LinkedHashMap<>();
         for (Entry<Object, Object> layout : TAB.getInstance().getConfig().getConfigurationSection("layout.layouts").entrySet()) {
             Map<String, Object> map = (Map<String, Object>) layout.getValue();
+            TAB.getInstance().getMisconfigurationHelper().checkLayoutMap(layout.getKey().toString(), map);
             Condition displayCondition = Condition.getCondition((String) map.get("condition"));
             if (displayCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(displayCondition.getName())));
             Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
@@ -94,6 +95,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
             Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.get("groups");
             if (groups != null) {
                 for (Entry<String, Map<String, Object>> group : groups.entrySet()) {
+                    TAB.getInstance().getMisconfigurationHelper().checkLayoutGroupMap(layout.getKey().toString(), group.getKey(), group.getValue());
                     Condition condition = Condition.getCondition((String) group.getValue().get("condition"));
                     List<Integer> positions = new ArrayList<>();
                     for (String line : (List<String>) group.getValue().get("slots")) {

@@ -178,6 +178,24 @@ public class MisconfigurationHelper {
                 "Disable global playerlist for the same result, but with better performance.");
     }
 
+    public void checkLayoutMap(String layoutName, Map<String, Object> map) {
+        List<String> expectedKeys = Arrays.asList("condition", "fixed-slots", "groups");
+        for (String mapKey : map.keySet()) {
+            if (!expectedKeys.contains(mapKey)) {
+                startupWarn("Unknown property \"" + mapKey + "\" in layout \"" + layoutName + "\". Valid properties: " + expectedKeys);
+            }
+        }
+    }
+
+    public void checkLayoutGroupMap(String layoutName, String groupName, Map<String, Object> map) {
+        List<String> expectedKeys = Arrays.asList("condition", "slots");
+        for (String mapKey : map.keySet()) {
+            if (!expectedKeys.contains(mapKey)) {
+                startupWarn("Unknown property \"" + mapKey + "\" in layout \"" + layoutName + "\"'s group \"" + groupName + "\". Valid properties: " + expectedKeys);
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public @NotNull <T> T fromMapOrElse(@NonNull Map<String, Object> map, @NonNull String key, @NonNull T defaultValue, @NonNull String warnMessage) {
         if (map.containsKey(key)) {
