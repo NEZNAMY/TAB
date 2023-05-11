@@ -4,6 +4,9 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.PlatformScoreboard.CollisionRule;
+import me.neznamy.tab.shared.platform.PlatformScoreboard.NameVisibility;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
@@ -56,24 +59,24 @@ public class PacketPlayOutScoreboardTeamStorage {
         }
     }
 
-    private static void createTeamModern(Object team, ProtocolVersion clientVersion, String prefix, String suffix, String visibility, String collision) throws ReflectiveOperationException {
+    private static void createTeamModern(Object team, ProtocolVersion clientVersion, String prefix, String suffix, NameVisibility visibility, CollisionRule collision) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         ScoreboardTeam_setPrefix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(prefix), clientVersion));
         ScoreboardTeam_setSuffix.invoke(team, nms.toNMSComponent(IChatBaseComponent.optimizedComponent(suffix), clientVersion));
         ScoreboardTeam_setColor.invoke(team, Enum.valueOf(nms.EnumChatFormat, EnumChatFormat.lastColorsOf(prefix).toString()));
-        ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
-        ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
+        ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, visibility.name()));
+        ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, collision.name()));
     }
 
-    private static void createTeamLegacy(Object team, String prefix, String suffix, String visibility, String collision) throws ReflectiveOperationException {
+    private static void createTeamLegacy(Object team, String prefix, String suffix, PlatformScoreboard.NameVisibility visibility, CollisionRule collision) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         ScoreboardTeam_setPrefix.invoke(team, prefix);
         ScoreboardTeam_setSuffix.invoke(team, suffix);
-        if (nms.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, String.valueOf(visibility).equals("always") ? "ALWAYS" : "NEVER"));
-        if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, String.valueOf(collision).equals("always") ? "ALWAYS" : "NEVER"));
+        if (nms.getMinorVersion() >= 8) ScoreboardTeam_setNameTagVisibility.invoke(team, Enum.valueOf(EnumNameTagVisibility, visibility.name()));
+        if (nms.getMinorVersion() >= 9) ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, collision.name()));
     }
 
-    public static Object register(String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options, ProtocolVersion clientVersion) {
+    public static Object register(String name, String prefix, String suffix, NameVisibility visibility, CollisionRule collision, Collection<String> players, int options, ProtocolVersion clientVersion) {
         try {
             NMSStorage nms = NMSStorage.getInstance();
             Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);
@@ -108,7 +111,7 @@ public class PacketPlayOutScoreboardTeamStorage {
         }
     }
 
-    public static Object update(String name, String prefix, String suffix, String visibility, String collision, int options, ProtocolVersion clientVersion) {
+    public static Object update(String name, String prefix, String suffix, NameVisibility visibility, CollisionRule collision, int options, ProtocolVersion clientVersion) {
         try {
             NMSStorage nms = NMSStorage.getInstance();
             Object team = newScoreboardTeam.newInstance(nms.emptyScoreboard, name);

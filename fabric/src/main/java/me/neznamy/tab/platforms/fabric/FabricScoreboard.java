@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Objects;
 
 import lombok.NonNull;
@@ -95,13 +94,13 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
         PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
         team.setAllowFriendlyFire((options & 0x01) > 0);
         team.setSeeFriendlyInvisibles((options & 0x02) > 0);
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
-        team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
-        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
+        team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
+        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
@@ -114,13 +113,13 @@ public class FabricScoreboard extends PlatformScoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
         PlayerTeam team = new PlayerTeam(dummyScoreboard, name);
         team.setAllowFriendlyFire((options & 0x01) > 0);
         team.setSeeFriendlyInvisibles((options & 0x02) > 0);
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
-        team.setCollisionRule(Team.CollisionRule.valueOf(collision.toUpperCase(Locale.US)));
-        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.toUpperCase(Locale.US)));
+        team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
+        team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
         team.setPlayerPrefix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
         team.setPlayerSuffix(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         player.sendPacket(FabricMultiVersion.updateTeam.apply(team));

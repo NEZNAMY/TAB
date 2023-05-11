@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.platform.PlatformScoreboard.CollisionRule;
+import me.neznamy.tab.shared.platform.PlatformScoreboard.NameVisibility;
 import me.neznamy.tab.shared.util.Preconditions;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
@@ -225,7 +227,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         if (redis != null) redis.updateTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player),
                 ((TabPlayer) player).getProperty(TabConstants.Property.TAGPREFIX).get(),
                 ((TabPlayer) player).getProperty(TabConstants.Property.TAGSUFFIX).get(),
-                translate(getTeamVisibility((TabPlayer) player, (TabPlayer) player)));
+                (getTeamVisibility((TabPlayer) player, (TabPlayer) player) ? NameVisibility.ALWAYS : NameVisibility.NEVER));
     }
 
     @Override
@@ -250,15 +252,21 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         if (redis != null) redis.updateTeam(p, sorting.getShortTeamName(p),
                 p.getProperty(TabConstants.Property.TAGPREFIX).get(),
                 p.getProperty(TabConstants.Property.TAGSUFFIX).get(),
-                translate(getTeamVisibility(p, p)));
+                getTeamVisibility(p, p) ? NameVisibility.ALWAYS : NameVisibility.NEVER);
     }
 
     public void updateTeamData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
         boolean visible = getTeamVisibility(p, viewer);
         String currentPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String currentSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.getScoreboard().updateTeam(sorting.getShortTeamName(p), currentPrefix, currentSuffix,
-                translate(visible), translate(collisionManager.getCollision(p)), getTeamOptions());
+        viewer.getScoreboard().updateTeam(
+                sorting.getShortTeamName(p),
+                currentPrefix,
+                currentSuffix,
+                visible ? NameVisibility.ALWAYS : NameVisibility.NEVER,
+                collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
+                getTeamOptions()
+        );
     }
 
     public void unregisterTeam(@NonNull TabPlayer p, @NonNull String teamName) {
@@ -278,14 +286,17 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         if (hasTeamHandlingPaused(p)) return;
         String replacedPrefix = p.getProperty(TabConstants.Property.TAGPREFIX).getFormat(viewer);
         String replacedSuffix = p.getProperty(TabConstants.Property.TAGSUFFIX).getFormat(viewer);
-        viewer.getScoreboard().registerTeam(sorting.getShortTeamName(p), replacedPrefix, replacedSuffix, translate(getTeamVisibility(p, viewer)),
-                translate(collisionManager.getCollision(p)), Collections.singletonList(p.getNickname()), getTeamOptions());
+        viewer.getScoreboard().registerTeam(
+                sorting.getShortTeamName(p),
+                replacedPrefix,
+                replacedSuffix,
+                getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
+                collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
+                Collections.singletonList(p.getNickname()),
+                getTeamOptions()
+        );
     }
 
-    public String translate(boolean b) {
-        return b ? "always" : "never";
-    }
-    
     protected boolean updateProperties(@NonNull TabPlayer p) {
         boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TAGPREFIX);
         if (p.loadPropertyFromConfig(this, TabConstants.Property.TAGSUFFIX)) changed = true;

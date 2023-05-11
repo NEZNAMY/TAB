@@ -12,6 +12,8 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.message.RedisMessage;
+import me.neznamy.tab.shared.platform.PlatformScoreboard.NameVisibility;
+import me.neznamy.tab.shared.platform.PlatformScoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +26,7 @@ public class RedisTeams extends RedisFeature {
     @Getter private final Map<RedisPlayer, String> teamNames = new WeakHashMap<>();
     @Getter private final Map<RedisPlayer, String> prefixes = new WeakHashMap<>();
     @Getter private final Map<RedisPlayer, String> suffixes = new WeakHashMap<>();
-    @Getter private final Map<RedisPlayer, String> nameVisibilities = new WeakHashMap<>();
+    @Getter private final Map<RedisPlayer, NameVisibility> nameVisibilities = new WeakHashMap<>();
     @Getter private final Set<RedisPlayer> disabledNameTags = Collections.newSetFromMap(new WeakHashMap<>());
 
     public RedisTeams(@NonNull RedisSupport redisSupport, @NonNull NameTag nameTags) {
@@ -38,7 +40,7 @@ public class RedisTeams extends RedisFeature {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             if (!disabledNameTags.contains(redis)) {
                 player.getScoreboard().registerTeam(teamNames.get(redis), prefixes.get(redis), suffixes.get(redis),
-                        nameVisibilities.get(redis), "always",
+                        nameVisibilities.get(redis), CollisionRule.ALWAYS,
                         Collections.singletonList(redis.getNickname()), 2);
             }
         }
@@ -48,7 +50,7 @@ public class RedisTeams extends RedisFeature {
     public void onJoin(@NonNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
-                    nameVisibilities.get(player), "always",
+                    nameVisibilities.get(player), CollisionRule.ALWAYS,
                     Collections.singletonList(player.getNickname()), 2);
         }
     }
@@ -66,7 +68,7 @@ public class RedisTeams extends RedisFeature {
                 for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                     all.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
                             nameVisibilities.get(player),
-                            "always", Collections.singletonList(player.getNickname()), 2);
+                            CollisionRule.ALWAYS, Collections.singletonList(player.getNickname()), 2);
                 }
             }
         } else {
@@ -91,7 +93,7 @@ public class RedisTeams extends RedisFeature {
         out.writeUTF(nameTags.getSorting().getShortTeamName(player));
         out.writeUTF(player.getProperty(TabConstants.Property.TAGPREFIX).get());
         out.writeUTF(player.getProperty(TabConstants.Property.TAGSUFFIX).get());
-        out.writeUTF(nameTags.getTeamVisibility(player, player) ? "always" : "never");
+        out.writeUTF((nameTags.getTeamVisibility(player, player) ? NameVisibility.ALWAYS : NameVisibility.NEVER).toString());
     }
 
     @Override
@@ -101,7 +103,7 @@ public class RedisTeams extends RedisFeature {
         teamNames.put(player, teamName);
         prefixes.put(player, in.readUTF());
         suffixes.put(player, in.readUTF());
-        nameVisibilities.put(player, in.readUTF());
+        nameVisibilities.put(player, NameVisibility.getByName(in.readUTF()));
     }
 
     private @NotNull String checkTeamName(@NonNull RedisPlayer player, @NonNull String currentName15, int id) {
@@ -128,7 +130,7 @@ public class RedisTeams extends RedisFeature {
         private String teamName;
         private String prefix;
         private String suffix;
-        private String nameVisibility;
+        private NameVisibility nameVisibility;
 
         @Override
         public void write(@NonNull ByteArrayDataOutput out) {
@@ -136,7 +138,7 @@ public class RedisTeams extends RedisFeature {
             out.writeUTF(teamName);
             out.writeUTF(prefix);
             out.writeUTF(suffix);
-            out.writeUTF(nameVisibility);
+            out.writeUTF(nameVisibility.toString());
         }
 
         @Override
@@ -145,7 +147,7 @@ public class RedisTeams extends RedisFeature {
             teamName = in.readUTF();
             prefix = in.readUTF();
             suffix = in.readUTF();
-            nameVisibility = in.readUTF();
+            nameVisibility = NameVisibility.getByName(in.readUTF());
         }
 
         @Override
@@ -161,12 +163,12 @@ public class RedisTeams extends RedisFeature {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(newTeamName, prefix, suffix, nameVisibility,
-                            "always", Collections.singletonList(target.getNickname()), 2);
+                            CollisionRule.ALWAYS, Collections.singletonList(target.getNickname()), 2);
                 }
             } else {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().updateTeam(oldTeamName, prefix, suffix, nameVisibility,
-                            "always", 2);
+                            CollisionRule.ALWAYS, 2);
                 }
             }
         }

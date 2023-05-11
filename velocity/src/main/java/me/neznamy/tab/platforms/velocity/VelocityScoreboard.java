@@ -42,7 +42,7 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);
@@ -54,8 +54,8 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
         args.add(suffix);
         args.add(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion()));
         args.add(options);
-        args.add(visibility);
-        args.add(collision);
+        args.add(visibility.toString());
+        args.add(collision.toString());
         args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
         player.sendPluginMessage(args.toArray());
     }
@@ -66,7 +66,7 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);
@@ -77,8 +77,8 @@ public class VelocityScoreboard extends PlatformScoreboard<VelocityTabPlayer> {
         args.add(suffix);
         args.add(IChatBaseComponent.optimizedComponent(suffix).toString(player.getVersion()));
         args.add(options);
-        args.add(visibility);
-        args.add(collision);
+        args.add(visibility.toString());
+        args.add(collision.toString());
         args.add(EnumChatFormat.lastColorsOf(prefix).ordinal());
         player.sendPluginMessage(args.toArray());
     }

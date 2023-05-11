@@ -58,7 +58,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
         Team team = Team.builder()
                 .name(name)
                 .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent())
@@ -81,7 +81,7 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
         Team team = player.getPlayer().scoreboard().team(name).orElse(null);
         if (team == null) return;
         team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent());
@@ -93,22 +93,22 @@ public class SpongeScoreboard extends PlatformScoreboard<SpongeTabPlayer> {
         team.setNameTagVisibility(convertVisibility(visibility));
     }
 
-    private CollisionRule convertCollisionRule(String rule) {
+    private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(CollisionRule rule) {
         switch (rule) {
-            case "always": return CollisionRules.ALWAYS.get();
-            case "never": return CollisionRules.NEVER.get();
-            case "pushOtherTeams": return CollisionRules.PUSH_OTHER_TEAMS.get();
-            case "pushOwnTeam": return CollisionRules.PUSH_OWN_TEAM.get();
+            case ALWAYS: return CollisionRules.ALWAYS.get();
+            case NEVER: return CollisionRules.NEVER.get();
+            case PUSH_OTHER_TEAMS: return CollisionRules.PUSH_OTHER_TEAMS.get();
+            case PUSH_OWN_TEAM: return CollisionRules.PUSH_OWN_TEAM.get();
             default: throw new IllegalArgumentException();
         }
     }
 
-    private Visibility convertVisibility(String visibility) {
+    private Visibility convertVisibility(NameVisibility visibility) {
         switch (visibility) {
-            case "always": return Visibilities.ALWAYS.get();
-            case "never": return Visibilities.NEVER.get();
-            case "hideForOtherTeams": return Visibilities.HIDE_FOR_OTHER_TEAMS.get();
-            case "hideForOwnTeam": return Visibilities.HIDE_FOR_OWN_TEAM.get();
+            case ALWAYS: return Visibilities.ALWAYS.get();
+            case NEVER: return Visibilities.NEVER.get();
+            case HIDE_FOR_OTHER_TEAMS: return Visibilities.HIDE_FOR_OTHER_TEAMS.get();
+            case HIDE_FOR_OWN_TEAM: return Visibilities.HIDE_FOR_OWN_TEAM.get();
             default: throw new IllegalArgumentException();
         }
     }

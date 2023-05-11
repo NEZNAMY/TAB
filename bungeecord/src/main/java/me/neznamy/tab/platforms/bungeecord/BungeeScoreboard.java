@@ -44,14 +44,14 @@ public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
         player.sendPacket(new Team(name, (byte) 0, jsonOrRaw(name, player.getVersion()),
                 jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
-                visibility, collision, color, (byte)options, players.toArray(new String[0])));
+                visibility.toString(), collision.toString(), color, (byte)options, players.toArray(new String[0])));
     }
 
     @Override
@@ -60,14 +60,14 @@ public class BungeeScoreboard extends PlatformScoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
         player.sendPacket(new Team(name, (byte) 2, jsonOrRaw(name, player.getVersion()),
                 jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
-                visibility, collision, color, (byte)options, null));
+                visibility.toString(), collision.toString(), color, (byte)options, null));
     }
 
     /**

@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.krypton;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
-import org.kryptonmc.api.scoreboard.CollisionRule;
 import org.kryptonmc.api.scoreboard.Objective;
 import org.kryptonmc.api.scoreboard.ObjectiveRenderType;
 import org.kryptonmc.api.scoreboard.Scoreboard;
@@ -56,39 +55,19 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
         Team team = getScoreboard().createTeamBuilder(name)
                 .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent())
                 .prefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent())
                 .suffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent())
                 .friendlyFire((options & 0x01) != 0)
                 .canSeeInvisibleMembers((options & 0x02) != 0)
-                .collisionRule(convertCollisionRule(collision))
-                .nameTagVisibility(convertVisibility(visibility))
+                .collisionRule(org.kryptonmc.api.scoreboard.CollisionRule.valueOf(collision.name()))
+                .nameTagVisibility(Visibility.valueOf(visibility.name()))
                 .buildAndRegister();
         for (String member : players) {
             team.addMember(IChatBaseComponent.optimizedComponent(member).toAdventureComponent());
         }
-    }
-
-    private CollisionRule convertCollisionRule(String rule) {
-        return switch (rule) {
-            case "always" -> CollisionRule.ALWAYS;
-            case "never" -> CollisionRule.NEVER;
-            case "pushOtherTeams" -> CollisionRule.PUSH_OTHER_TEAMS;
-            case "pushOwnTeam" -> CollisionRule.PUSH_OWN_TEAM;
-            default -> throw new IllegalArgumentException();
-        };
-    }
-
-    private Visibility convertVisibility(String visibility) {
-        return switch (visibility) {
-            case "always" -> Visibility.ALWAYS;
-            case "never" -> Visibility.NEVER;
-            case "hideForOtherTeams" -> Visibility.HIDE_FOR_OTHER_TEAMS;
-            case "hideForOwnTeam" -> Visibility.HIDE_FOR_OWN_TEAM;
-            default -> throw new IllegalArgumentException();
-        };
     }
 
     @Override
@@ -98,7 +77,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility, @NonNull String collision, int options) {
+    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
         Team team = getScoreboard().getTeam(name);
         if (team == null) return;
         team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent());
@@ -106,8 +85,8 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
         team.setSuffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent());
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeInvisibleMembers((options & 0x02) != 0);
-        team.setCollisionRule(convertCollisionRule(collision));
-        team.setNameTagVisibility(convertVisibility(visibility));
+        team.setCollisionRule(org.kryptonmc.api.scoreboard.CollisionRule.valueOf(collision.name()));
+        team.setNameTagVisibility(Visibility.valueOf(visibility.name()));
     }
 
     @Override

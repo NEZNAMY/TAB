@@ -1,15 +1,15 @@
 package me.neznamy.tab.shared.platform;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class PlatformScoreboard<T extends TabPlayer> {
@@ -63,8 +63,8 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
-    public void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
-                             @NonNull String collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
+                             @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
             return;
@@ -80,8 +80,8 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
-    public void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
-                           @NonNull String collision, int options) {
+    public void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
+                           @NonNull CollisionRule collision, int options) {
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
             return;
@@ -141,13 +141,55 @@ public abstract class PlatformScoreboard<T extends TabPlayer> {
 
     public abstract void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
 
-    public abstract void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
-                                                 @NonNull String collision, @NonNull Collection<String> players, int options);
+    public abstract void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
+                                                 @NonNull CollisionRule collision, @NonNull Collection<String> players, int options);
 
     public abstract void unregisterTeam0(@NonNull String name);
 
-    public abstract void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull String visibility,
-                                     @NonNull String collision, int options);
+    public abstract void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
+                                     @NonNull CollisionRule collision, int options);
 
     public enum DisplaySlot { PLAYER_LIST, SIDEBAR, BELOW_NAME }
+
+    @AllArgsConstructor
+    public enum CollisionRule {
+
+        ALWAYS("always"),
+        NEVER("never"),
+        PUSH_OTHER_TEAMS("pushOtherTeams"),
+        PUSH_OWN_TEAM("pushOwnTeam");
+
+        private static final Map<String, CollisionRule> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(collisionRule -> collisionRule.string, collisionRule -> collisionRule));
+        private final String string;
+
+        @Override
+        public String toString() {
+            return string;
+        }
+
+        public static CollisionRule getByName(String name) {
+            return BY_NAME.getOrDefault(name, ALWAYS);
+        }
+    }
+
+    @AllArgsConstructor
+    public enum NameVisibility {
+
+        ALWAYS("always"),
+        NEVER("never"),
+        HIDE_FOR_OTHER_TEAMS("hideForOtherTeams"),
+        HIDE_FOR_OWN_TEAM("hideForOwnTeam");
+
+        private static final Map<String, NameVisibility> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(visibility -> visibility.string, visibility -> visibility));
+        private final String string;
+
+        @Override
+        public String toString() {
+            return string;
+        }
+
+        public static NameVisibility getByName(String name) {
+            return BY_NAME.getOrDefault(name, ALWAYS);
+        }
+    }
 }
