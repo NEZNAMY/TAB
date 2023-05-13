@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,10 +37,6 @@ public class WidthCheckCommand extends SubCommand {
         int characterId = 1;
         for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
             widths[characterId++] = (byte) Float.parseFloat(line);
-        }
-        Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
-        for (Map.Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            widths[entry.getKey()] = entry.getValue().byteValue();
         }
         return widths;
     }

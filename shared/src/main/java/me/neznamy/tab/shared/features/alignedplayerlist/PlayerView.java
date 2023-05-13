@@ -160,13 +160,24 @@ public class PlayerView {
      * @return  text width of characters in given component
      */
     private int getTextWidth(@NonNull IChatBaseComponent component) {
+        byte[] widths = feature.getWidths();
+        Map<String, Integer> multiCharWidths = feature.getMultiCharWidths();
         int width = 0;
         if (component.getText() != null) {
-            for (char c : component.getText().toCharArray()) {
-                width += feature.getWidths()[c] + 1;
+            char[] chars = component.getText().toCharArray();
+            for (int i=0; i<chars.length; i++) {
                 if (component.getModifier().isBold()) {
                     width += 1;
                 }
+                if (i < chars.length-1) {
+                    String key = (int)chars[i] + "+" + (int)chars[i + 1];
+                    if (multiCharWidths.containsKey(key)) {
+                        width += multiCharWidths.get(key) + 1;
+                        i++; // Skip next character
+                        continue;
+                    }
+                }
+                width += widths[chars[i]] + 1;
             }
         }
         for (IChatBaseComponent extra : component.getExtra()) {

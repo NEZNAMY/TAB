@@ -23,6 +23,7 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
 
     private final Map<TabPlayer, PlayerView> playerViews = new HashMap<>();
     @Getter private final byte[] widths = loadWidths();
+    @Getter private final Map<String, Integer> multiCharWidths = loadMultiCharWidths();
 
     /**
      * Loads widths from included widths.txt file as well as width overrides from config
@@ -38,18 +39,33 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
         for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
             widths[characterId++] = (byte) Float.parseFloat(line);
         }
-        Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
+        Map<Object, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
         List<Integer> redundant = new ArrayList<>();
-        for (Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            if (widths[entry.getKey()] == entry.getValue().byteValue()) {
-                redundant.add(entry.getKey());
-            } else {
-                widths[entry.getKey()] = entry.getValue().byteValue();
+        for (Entry<Object, Integer> entry : widthOverrides.entrySet()) {
+            if (entry.getKey() instanceof Integer) {
+                Integer key = (Integer) entry.getKey();
+                if (widths[key] == entry.getValue().byteValue()) {
+                    redundant.add(key);
+                } else {
+                    widths[key] = entry.getValue().byteValue();
+                }
             }
         }
         redundant.forEach(widthOverrides::remove);
         if (!redundant.isEmpty()) TAB.getInstance().getConfig().save();
         return widths;
+    }
+
+    private Map<String, Integer> loadMultiCharWidths() {
+        Map<String, Integer> multiCharWidths = new HashMap<>();
+        Map<Object, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
+        List<Integer> redundant = new ArrayList<>();
+        for (Entry<Object, Integer> entry : widthOverrides.entrySet()) {
+            if (entry.getKey() instanceof String) {
+                multiCharWidths.put((String) entry.getKey(), entry.getValue());
+            }
+        }
+        return multiCharWidths;
     }
 
     @Override
