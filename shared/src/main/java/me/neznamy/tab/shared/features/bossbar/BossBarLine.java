@@ -153,11 +153,16 @@ public class BossBarLine implements BossBar {
      *          string to parse
      * @return  parsed progress
      */
-    public float parseProgress(@NonNull String progress) {
-        float value = TAB.getInstance().getErrorManager().parseFloat(progress, 100);
-        if (value < 0) value = 0;
-        if (value > 100) value = 100;
-        return value;
+    public float parseProgress(@NonNull TabPlayer player, @NonNull String progress) {
+        try {
+            float value = Float.parseFloat(progress);
+            if (value < 0) value = 0;
+            if (value > 100) value = 100;
+            return value;
+        } catch (NumberFormatException e) {
+            TAB.getInstance().getMisconfigurationHelper().invalidNumberForBossBarProgress(name, progress, player.getProperty(propertyProgress).getCurrentRawValue());
+            return 100;
+        }
     }
 
     @Override
@@ -176,7 +181,7 @@ public class BossBarLine implements BossBar {
         this.progress = progress;
         for (TabPlayer p : players) {
             p.setProperty(progressRefresher, propertyProgress, progress);
-            p.getBossBar().update(uniqueId, parseProgress(p.getProperty(propertyProgress).get())/100);
+            p.getBossBar().update(uniqueId, parseProgress(p, p.getProperty(propertyProgress).get())/100);
         }
     }
 
@@ -227,7 +232,7 @@ public class BossBarLine implements BossBar {
         player.getBossBar().create(
                 uniqueId,
                 player.getProperty(propertyTitle).updateAndGet(),
-                parseProgress(player.getProperty(propertyProgress).updateAndGet())/100,
+                parseProgress(player, player.getProperty(propertyProgress).updateAndGet())/100,
                 parseColor(player.getProperty(propertyColor).updateAndGet()),
                 parseStyle(player.getProperty(propertyStyle).updateAndGet())
         );
@@ -271,7 +276,7 @@ public class BossBarLine implements BossBar {
         @Override
         public void refresh(@NonNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
-            refreshed.getBossBar().update(uniqueId, parseProgress(refreshed.getProperty(propertyProgress).updateAndGet())/100);
+            refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
     }
 

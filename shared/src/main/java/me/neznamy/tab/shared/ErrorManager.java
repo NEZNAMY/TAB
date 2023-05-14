@@ -200,24 +200,6 @@ public class ErrorManager {
     }
 
     /**
-     * Parses float in given string and returns it.
-     * Returns second argument if string is not valid.
-     *
-     * @param   string
-     *          string to parse
-     * @param   defaultValue
-     *          value to return if string is not valid
-     * @return  parsed float or {@code defaultValue} if input is invalid
-     */
-    public float parseFloat(@NonNull String string, float defaultValue) {
-        try {
-            return Float.parseFloat(string);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    /**
      * Parses double in given string and returns it.
      * Returns second argument if string is not valid.
      *

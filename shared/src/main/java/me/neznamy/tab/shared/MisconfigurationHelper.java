@@ -18,6 +18,10 @@ public class MisconfigurationHelper {
     /** Amount of logged warns on startup */
     private int warnCount;
 
+    // ------------------------
+    // Startup Errors
+    // ------------------------
+
     /**
      * Checks if configured refresh intervals are non-negative, non-zero and
      * divisible by {@link Placeholder#MINIMUM_REFRESH_INTERVAL}. If not,
@@ -227,5 +231,20 @@ public class MisconfigurationHelper {
         TAB.getInstance().sendConsoleMessage("&eFound a total of " + warnCount + " issues.", true);
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
+    }
+
+    // ------------------------
+    // Runtime Errors
+    // ------------------------
+
+    public void invalidNumberForBossBarProgress(String bossbar, String input, String configuredValue) {
+        if (configuredValue.contains("%")) {
+            TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder \"" + configuredValue +
+                    "\" used in BossBar progress of \"" + bossbar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")", true);
+
+        } else {
+            TAB.getInstance().sendConsoleMessage("&c[WARN] BossBar \"" + bossbar +
+                    "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one.", true);
+        }
     }
 }
