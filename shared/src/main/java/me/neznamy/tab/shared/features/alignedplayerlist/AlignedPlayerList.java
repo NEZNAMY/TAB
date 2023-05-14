@@ -59,7 +59,6 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
     private Map<String, Integer> loadMultiCharWidths() {
         Map<String, Integer> multiCharWidths = new HashMap<>();
         Map<Object, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
-        List<Integer> redundant = new ArrayList<>();
         for (Entry<Object, Integer> entry : widthOverrides.entrySet()) {
             if (entry.getKey() instanceof String) {
                 multiCharWidths.put((String) entry.getKey(), entry.getValue());

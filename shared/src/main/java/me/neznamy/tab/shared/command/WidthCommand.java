@@ -112,8 +112,6 @@ public class WidthCommand extends SubCommand {
     public void sendWidth(TabPlayer sender, String symbol, int amount) {
         List<IChatBaseComponent> messages = new ArrayList<>();
         IChatBaseComponent charMessage = new IChatBaseComponent(EnumChatFormat.color("|&2" + symbol + " &d|"));
-        String idText = symbol.length() == 1 ? "ID: &f" + symbol.charAt(0):
-                "IDS: &f" + Arrays.toString(Stream.of(symbol.split("")).mapToInt(s -> s.charAt(0)).toArray());
         messages.add(new IChatBaseComponent(EnumChatFormat.color("&b[TAB] Use &7/tab width set " + symbol + " <width> &bwith the matching value")));
         for (int i = 1; i <= amount; i++) {
             messages.add(getText(i));
