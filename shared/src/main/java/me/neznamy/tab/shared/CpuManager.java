@@ -52,6 +52,14 @@ public class CpuManager {
 
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
+
+            for (Entry<String, Long> entry : placeholderUsagePrevious.entrySet()) {
+                float usagePercent = nanosToPercent(entry.getValue());
+                if (usagePercent > 50) {
+                    TAB.getInstance().sendConsoleMessage("&c[WARN] CPU usage of placeholder " + entry.getKey() +
+                            " is " + (int)usagePercent + "%. It will most likely cause problems. Try increasing refresh interval.", true);
+                }
+            }
         });
     }
 
