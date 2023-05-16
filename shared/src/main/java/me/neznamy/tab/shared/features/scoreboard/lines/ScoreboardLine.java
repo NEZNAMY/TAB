@@ -5,7 +5,7 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.api.scoreboard.Line;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -121,8 +121,8 @@ public abstract class ScoreboardLine extends TabFeature implements Line {
      */
     protected void addLine(@NonNull TabPlayer p, @NonNull String fakePlayer, @NonNull String prefix, @NonNull String suffix) {
         p.getScoreboard().setScore(ScoreboardManagerImpl.OBJECTIVE_NAME, fakePlayer, getNumber(p));
-        p.getScoreboard().registerTeam(teamName, prefix, suffix, PlatformScoreboard.NameVisibility.NEVER,
-                PlatformScoreboard.CollisionRule.NEVER, Collections.singletonList(fakePlayer), 0);
+        p.getScoreboard().registerTeam(teamName, prefix, suffix, Scoreboard.NameVisibility.NEVER,
+                Scoreboard.CollisionRule.NEVER, Collections.singletonList(fakePlayer), 0);
         shownPlayers.add(p);
     }
     

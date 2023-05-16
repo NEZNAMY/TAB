@@ -6,7 +6,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.FloodgateHook;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.*;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.event.impl.PlayerLoadEventImpl;
@@ -255,14 +255,14 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      *
      * @return  scoreboard interface for calling scoreboard-related methods
      */
-    public abstract @NotNull PlatformScoreboard<? extends TabPlayer> getScoreboard();
+    public abstract @NotNull Scoreboard<? extends TabPlayer> getScoreboard();
 
     /**
      * Returns handler for calling bossbar-related methods
      *
      * @return  handler for calling bossbar-related methods
      */
-    public abstract @NotNull PlatformBossBar getBossBar();
+    public abstract @NotNull BossBar getBossBar();
 
     /**
      * Returns {@code true} if player is disguised using LibsDisguises, {@code false} if not

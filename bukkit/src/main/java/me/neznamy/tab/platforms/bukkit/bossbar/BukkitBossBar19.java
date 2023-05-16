@@ -2,12 +2,11 @@ package me.neznamy.tab.platforms.bukkit.bossbar;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BossBar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,18 +17,18 @@ import java.util.UUID;
  * to allow 1.8 players, it will handle the entity and teleporting by itself.
  */
 @RequiredArgsConstructor
-public class BukkitBossBar19 implements PlatformBossBar {
+public class BukkitBossBar19 implements BossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;
 
     /** Bukkit BossBars the player can currently see */
-    private final Map<UUID, BossBar> bossBars = new HashMap<>();
+    private final Map<UUID, org.bukkit.boss.BossBar> bossBars = new HashMap<>();
 
     @Override
     public void create(@NonNull UUID id, @NonNull String title, float progress, me.neznamy.tab.api.bossbar.@NonNull BarColor color, me.neznamy.tab.api.bossbar.@NonNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
-        BossBar bar = Bukkit.createBossBar(
+        org.bukkit.boss.BossBar bar = Bukkit.createBossBar(
                 RGBUtils.getInstance().convertToBukkitFormat(title,
                         player.getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16),
                 org.bukkit.boss.BarColor.valueOf(color.name()),

@@ -1,12 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.bossbar;
 
 import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.legacy.bossbar.BossBar;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -20,18 +19,18 @@ import java.util.UUID;
  * Handler for 1.9+ players on 1.8 server using ViaVersion API.
  */
 @RequiredArgsConstructor
-public class BukkitBossBarVia implements PlatformBossBar {
+public class BukkitBossBarVia implements BossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;
 
     /** ViaVersion BossBars this 1.9+ player can see on 1.8 server */
-    private final Map<UUID, BossBar> viaBossBars = new HashMap<>();
+    private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossBars = new HashMap<>();
 
     @Override
     public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         if (viaBossBars.containsKey(id)) return;
-        BossBar bar = Via.getAPI().legacyAPI().createLegacyBossBar(
+        com.viaversion.viaversion.api.legacy.bossbar.BossBar bar = Via.getAPI().legacyAPI().createLegacyBossBar(
                 RGBUtils.getInstance().convertToBukkitFormat(title, player.getVersion().getMinorVersion() >= 16),
                 progress,
                 BossColor.valueOf(color.name()),

@@ -1,13 +1,13 @@
 package me.neznamy.tab.platforms.krypton;
 
-import me.neznamy.tab.shared.platform.PlatformEventListener;
+import me.neznamy.tab.shared.platform.EventListener;
 import org.kryptonmc.api.entity.player.Player;
 import org.kryptonmc.api.event.Listener;
 import org.kryptonmc.api.event.command.CommandExecuteEvent;
 import org.kryptonmc.api.event.player.PlayerJoinEvent;
 import org.kryptonmc.api.event.player.PlayerQuitEvent;
 
-public class KryptonEventListener extends PlatformEventListener {
+public class KryptonEventListener extends EventListener {
 
     @Listener
     public void onJoin(PlayerJoinEvent event) {

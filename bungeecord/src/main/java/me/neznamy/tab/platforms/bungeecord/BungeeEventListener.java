@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.PlatformEventListener;
+import me.neznamy.tab.shared.platform.EventListener;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -14,7 +14,7 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * The core for BungeeCord forwarding events into all enabled features
  */
-public class BungeeEventListener extends PlatformEventListener implements Listener {
+public class BungeeEventListener extends EventListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerDisconnectEvent e) {

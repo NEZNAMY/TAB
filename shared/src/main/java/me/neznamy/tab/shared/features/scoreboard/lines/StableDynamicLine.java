@@ -6,7 +6,7 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.types.Refreshable;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
 
@@ -42,8 +42,8 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;
-        refreshed.getScoreboard().updateTeam(teamName, prefixSuffix[0], prefixSuffix[1], PlatformScoreboard.NameVisibility.NEVER,
-                PlatformScoreboard.CollisionRule.NEVER, 0);
+        refreshed.getScoreboard().updateTeam(teamName, prefixSuffix[0], prefixSuffix[1], Scoreboard.NameVisibility.NEVER,
+                Scoreboard.CollisionRule.NEVER, 0);
     }
 
     @Override

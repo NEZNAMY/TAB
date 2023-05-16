@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -74,8 +74,8 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
                         teamName,
                         refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).get(),
                         refreshed.getProperty(TabConstants.Property.scoreboardSuffix(parent.getName(), lineNumber)).get(),
-                        PlatformScoreboard.NameVisibility.ALWAYS,
-                        PlatformScoreboard.CollisionRule.ALWAYS,
+                        Scoreboard.NameVisibility.ALWAYS,
+                        Scoreboard.CollisionRule.ALWAYS,
                         0
                 );
             }

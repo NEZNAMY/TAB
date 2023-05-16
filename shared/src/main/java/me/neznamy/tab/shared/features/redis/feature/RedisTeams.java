@@ -12,8 +12,8 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.message.RedisMessage;
-import me.neznamy.tab.shared.platform.PlatformScoreboard.NameVisibility;
-import me.neznamy.tab.shared.platform.PlatformScoreboard.CollisionRule;
+import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
+import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 

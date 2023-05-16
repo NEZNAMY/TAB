@@ -6,8 +6,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.scoreboard.Line;
-import me.neznamy.tab.api.scoreboard.Scoreboard;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.scoreboard.lines.*;
@@ -20,7 +19,7 @@ import java.util.*;
 /**
  * A class representing a scoreboard configured in config
  */
-public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshable {
+public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.scoreboard.Scoreboard, Refreshable {
 
     @Getter private final String featureName = "Scoreboard";
     @Getter private final String refreshDisplayName = "Updating Scoreboard title";
@@ -138,7 +137,7 @@ public class ScoreboardImpl extends TabFeature implements Scoreboard, Refreshabl
         players.add(p);
         p.setProperty(this, titleProperty, title);
         p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).updateAndGet(), false);
-        p.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
+        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
         }

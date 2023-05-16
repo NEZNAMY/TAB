@@ -10,22 +10,21 @@ import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
 
 @AllArgsConstructor
-public class AdventureBossBar implements PlatformBossBar {
+public class AdventureBossBar implements BossBar {
 
     @Setter private Audience audience;
 
-    private final Map<UUID, BossBar> bossBars = new LinkedHashMap<>();
+    private final Map<UUID, net.kyori.adventure.bossbar.BossBar> bossBars = new LinkedHashMap<>();
 
     @Override
     public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
-        BossBar bar = BossBar.bossBar(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
+        net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(),
                 progress,
-                BossBar.Color.valueOf(color.toString()),
-                BossBar.Overlay.valueOf(style.toString()));
+                net.kyori.adventure.bossbar.BossBar.Color.valueOf(color.toString()),
+                net.kyori.adventure.bossbar.BossBar.Overlay.valueOf(style.toString()));
         bossBars.put(id, bar);
         audience.showBossBar(bar);
     }
@@ -42,12 +41,12 @@ public class AdventureBossBar implements PlatformBossBar {
 
     @Override
     public void update(@NonNull UUID id, @NonNull BarStyle style) {
-        bossBars.get(id).overlay(BossBar.Overlay.valueOf(style.toString()));
+        bossBars.get(id).overlay(net.kyori.adventure.bossbar.BossBar.Overlay.valueOf(style.toString()));
     }
 
     @Override
     public void update(@NonNull UUID id, @NonNull BarColor color) {
-        bossBars.get(id).color(BossBar.Color.valueOf(color.toString()));
+        bossBars.get(id).color(net.kyori.adventure.bossbar.BossBar.Color.valueOf(color.toString()));
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public abstract class PlatformScoreboard<T extends TabPlayer> {
+public abstract class Scoreboard<T extends TabPlayer> {
 
     /** Player this scoreboard belongs to */
     protected final T player;

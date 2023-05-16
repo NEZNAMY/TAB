@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.platform.PlatformEventListener;
+import me.neznamy.tab.shared.platform.EventListener;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -11,7 +11,7 @@ import org.spongepowered.api.event.entity.living.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 
-public class SpongeEventListener extends PlatformEventListener {
+public class SpongeEventListener extends EventListener {
 
     @Listener
     public void onQuit(ServerSideConnectionEvent.Disconnect event) {

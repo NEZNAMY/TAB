@@ -11,12 +11,12 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.platform.PlatformEventListener;
+import me.neznamy.tab.shared.platform.EventListener;
 
 /**
  * The core for velocity forwarding events into all enabled features
  */
-public class VelocityEventListener extends PlatformEventListener {
+public class VelocityEventListener extends EventListener {
 
     @Subscribe
     public void onQuit(DisconnectEvent e) {

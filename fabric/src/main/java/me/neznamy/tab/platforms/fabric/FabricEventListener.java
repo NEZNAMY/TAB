@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.fabric;
 
-import me.neznamy.tab.shared.platform.PlatformEventListener;
+import me.neznamy.tab.shared.platform.EventListener;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
-public class FabricEventListener extends PlatformEventListener {
+public class FabricEventListener extends EventListener {
 
     public void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, $, $$) -> onJoin(handler));

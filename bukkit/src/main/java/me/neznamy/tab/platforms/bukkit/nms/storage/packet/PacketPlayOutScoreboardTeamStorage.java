@@ -4,9 +4,9 @@ import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
-import me.neznamy.tab.shared.platform.PlatformScoreboard.CollisionRule;
-import me.neznamy.tab.shared.platform.PlatformScoreboard.NameVisibility;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
+import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
@@ -68,7 +68,7 @@ public class PacketPlayOutScoreboardTeamStorage {
         ScoreboardTeam_setCollisionRule.invoke(team, Enum.valueOf(EnumTeamPush, collision.name()));
     }
 
-    private static void createTeamLegacy(Object team, String prefix, String suffix, PlatformScoreboard.NameVisibility visibility, CollisionRule collision) throws ReflectiveOperationException {
+    private static void createTeamLegacy(Object team, String prefix, String suffix, Scoreboard.NameVisibility visibility, CollisionRule collision) throws ReflectiveOperationException {
         NMSStorage nms = NMSStorage.getInstance();
         ScoreboardTeam_setPrefix.invoke(team, prefix);
         ScoreboardTeam_setSuffix.invoke(team, suffix);

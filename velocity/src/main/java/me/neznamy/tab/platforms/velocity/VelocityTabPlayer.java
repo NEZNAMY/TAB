@@ -5,10 +5,10 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    @Getter private final PlatformScoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
+    @Getter private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
     @Getter private final TabList tabList = new VelocityTabList(this);
-    @Getter private final PlatformBossBar bossBar = new AdventureBossBar(getPlayer());
+    @Getter private final BossBar bossBar = new AdventureBossBar(getPlayer());
 
     /**
      * Constructs new instance for given player

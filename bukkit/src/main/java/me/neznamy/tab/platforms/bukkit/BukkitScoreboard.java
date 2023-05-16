@@ -5,7 +5,7 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboar
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 
 import java.util.Collection;
 
@@ -33,7 +33,7 @@ import java.util.Collection;
  *      plugin. They might also put all players into the same scoreboard,
  *      making per-player view of teams, especially sidebar not working.<p>
  */
-public class BukkitScoreboard extends PlatformScoreboard<BukkitTabPlayer> {
+public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     public BukkitScoreboard(BukkitTabPlayer player) {
         super(player);

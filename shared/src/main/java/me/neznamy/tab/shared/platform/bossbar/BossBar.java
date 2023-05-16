@@ -6,7 +6,7 @@ import me.neznamy.tab.api.bossbar.BarStyle;
 
 import java.util.UUID;
 
-public interface PlatformBossBar {
+public interface BossBar {
 
     /**
      * Creates boss bar and sends it to the player

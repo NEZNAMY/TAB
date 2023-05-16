@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Class for methods called by platform's event listener.
  */
-public class PlatformEventListener {
+public class EventListener {
 
     /**
      * Processes player join by forwarding it to all features.

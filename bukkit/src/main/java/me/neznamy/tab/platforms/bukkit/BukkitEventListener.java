@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import me.neznamy.tab.shared.platform.PlatformEventListener;
+import me.neznamy.tab.shared.platform.EventListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  * The core for bukkit forwarding events into all enabled features
  */
-public class BukkitEventListener extends PlatformEventListener implements Listener {
+public class BukkitEventListener extends EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent e) {

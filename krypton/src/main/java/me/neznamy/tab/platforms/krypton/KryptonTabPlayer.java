@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.auth.ProfileProperty;
@@ -18,9 +18,9 @@ import java.util.List;
 
 public class KryptonTabPlayer extends TabPlayer {
 
-    @Getter private final PlatformScoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
+    @Getter private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
     @Getter private final TabList tabList = new KryptonTabList(this);
-    @Getter private final PlatformBossBar bossBar = new AdventureBossBar(getPlayer());
+    @Getter private final BossBar bossBar = new AdventureBossBar(getPlayer());
 
     public KryptonTabPlayer(Player player) {
         super(player, player.getUuid(), player.getProfile().name(), TAB.getInstance().getConfiguration().getServerName(),

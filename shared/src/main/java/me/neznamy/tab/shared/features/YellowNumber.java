@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -62,7 +62,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
             }
             if (loaded.isBedrockPlayer()) continue;
             loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            loaded.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+            loaded.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (disableChecker.isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
@@ -89,7 +89,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         }
         if (!connectedPlayer.isBedrockPlayer()) {
             connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-            connectedPlayer.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+            connectedPlayer.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         }
         int value = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -109,7 +109,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
         if (disableChecker.isDisabledPlayer(p) || p.isBedrockPlayer()) return;
         p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
-        p.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
+        p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
         }

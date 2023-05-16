@@ -2,22 +2,21 @@ package me.neznamy.tab.platforms.krypton;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import org.kryptonmc.api.scoreboard.Objective;
 import org.kryptonmc.api.scoreboard.ObjectiveRenderType;
-import org.kryptonmc.api.scoreboard.Scoreboard;
 import org.kryptonmc.api.scoreboard.Team;
 import org.kryptonmc.api.scoreboard.Visibility;
 import org.kryptonmc.api.scoreboard.criteria.Criteria;
 
 import java.util.Collection;
 
-public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
+public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
 
     public KryptonScoreboard(@NonNull KryptonTabPlayer player) {
         super(player);
         // Create a new, blank scoreboard for each player to avoid conflicts
-        player.getPlayer().showScoreboard(Scoreboard.create());
+        player.getPlayer().showScoreboard(org.kryptonmc.api.scoreboard.Scoreboard.create());
     }
 
     @Override
@@ -101,7 +100,7 @@ public class KryptonScoreboard extends PlatformScoreboard<KryptonTabPlayer> {
         if (objective != null) objective.removeScore(IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent());
     }
 
-    private Scoreboard getScoreboard() {
+    private org.kryptonmc.api.scoreboard.Scoreboard getScoreboard() {
         return player.getPlayer().getScoreboard();
     }
 }

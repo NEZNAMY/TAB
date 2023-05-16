@@ -2,11 +2,11 @@ package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.key.Keys;
@@ -21,9 +21,9 @@ import java.util.Collection;
 
 public final class SpongeTabPlayer extends TabPlayer {
 
-    @Getter private final PlatformScoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+    @Getter private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     @Getter private final TabList tabList = new SpongeTabList(this);
-    @Getter private final PlatformBossBar bossBar = new SpongeBossBar(this);
+    @Getter private final BossBar bossBar = new SpongeBossBar(this);
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),

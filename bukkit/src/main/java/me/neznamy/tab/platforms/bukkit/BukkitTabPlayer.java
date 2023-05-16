@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar18;
@@ -15,7 +15,7 @@ import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -42,9 +42,9 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     /** Player's connection for sending packets, preloading for speed */
     @Getter private Object playerConnection;
 
-    @Getter private final PlatformScoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
+    @Getter private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
     @Getter private final TabList tabList = new BukkitTabList(this);
-    @Getter private final PlatformBossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+    @Getter private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar19(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar18(this);
 
     /**

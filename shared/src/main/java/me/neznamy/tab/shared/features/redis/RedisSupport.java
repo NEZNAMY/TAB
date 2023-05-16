@@ -15,7 +15,7 @@ import me.neznamy.tab.shared.features.redis.feature.*;
 import me.neznamy.tab.shared.features.redis.message.*;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +65,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     }
 
     public void updateTeam(@NonNull TabPlayer p, @NonNull String teamName, @NonNull String tagPrefix,
-                              @NonNull String tagSuffix, @NonNull PlatformScoreboard.NameVisibility nameVisibility) {
+                              @NonNull String tagSuffix, @NonNull Scoreboard.NameVisibility nameVisibility) {
         if (redisTeams == null) return; // Plugin still loading
         sendMessage(redisTeams.new Update(p.getTablistId(), teamName, tagPrefix, tagSuffix, nameVisibility));
     }

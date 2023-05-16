@@ -8,8 +8,8 @@ import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
-import me.neznamy.tab.shared.platform.bossbar.PlatformBossBar;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.TabList;
 import net.minecraft.network.protocol.Packet;
@@ -19,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class FabricTabPlayer extends TabPlayer {
 
-    @Getter private final PlatformScoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
+    @Getter private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
     @Getter private final TabList tabList = new FabricTabList(this);
-    @Getter private final PlatformBossBar bossBar = new FabricBossBar(this);
+    @Getter private final BossBar bossBar = new FabricBossBar(this);
 
     public FabricTabPlayer(ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), TAB.getInstance().getConfiguration().getServerName(),

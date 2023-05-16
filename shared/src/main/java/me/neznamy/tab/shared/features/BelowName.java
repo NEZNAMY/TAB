@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -49,7 +49,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
                 continue;
             }
             loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-            loaded.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+            loaded.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         }
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
@@ -81,7 +81,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
             return;
         }
         connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        connectedPlayer.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+        connectedPlayer.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         int number = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!disableChecker.isDisabledPlayer(all)) all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), number);
@@ -94,7 +94,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public void onServerChange(@NonNull TabPlayer player, @NonNull String from, @NonNull String to) {
         if (disableChecker.isDisabledPlayer(player)) return;
         player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
-        player.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
+        player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
         }

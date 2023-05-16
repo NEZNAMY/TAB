@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.scoreboard.lines;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.platform.PlatformScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -42,7 +42,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
                 refreshed.getScoreboard().updateTeam(teamName, refreshed.getProperty(textProperty).get(),
-                        "", PlatformScoreboard.NameVisibility.ALWAYS, PlatformScoreboard.CollisionRule.ALWAYS, 0);
+                        "", Scoreboard.NameVisibility.ALWAYS, Scoreboard.CollisionRule.ALWAYS, 0);
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
                 String[] values = splitText(getPlayerName(lineNumber), RGBUtils.getInstance().convertRGBtoLegacy(refreshed.getProperty(textProperty).get()), refreshed.getVersion().getMinorVersion() >= 8 ? 40 : 16);
