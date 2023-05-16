@@ -98,6 +98,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                 playersOnBoats.remove(p);
                 feature.updateTeamData(p);
             }
+            feature.getArmorStandManager(p).updateVisibility(true);
         }
         if (!playersInVehicle.containsKey(p) && vehicle != null) {
             //vehicle enter
@@ -108,6 +109,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                 playersOnBoats.add(p);
                 feature.updateTeamData(p);
             }
+            feature.getArmorStandManager(p).updateVisibility(true);
         }
     }
 

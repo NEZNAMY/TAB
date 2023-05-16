@@ -202,7 +202,7 @@ public class ArmorStand {
      * @return  DataWatcher for viewer
      */
     public EntityData createDataWatcher(@NonNull String displayName, @NonNull TabPlayer viewer) {
-        byte flags = (byte) (asm.isSneaking() ? 34 : 32);
+        byte flags = (byte) (manager.isSneaking(owner) ? 34 : 32);
         boolean nameVisible = !shouldBeInvisibleFor(viewer, displayName) && visible;
         return manager.createDataWatcher(viewer, flags, displayName, nameVisible);
     }
