@@ -27,7 +27,6 @@ public class RedisTeams extends RedisFeature {
     @Getter private final Map<RedisPlayer, String> prefixes = new WeakHashMap<>();
     @Getter private final Map<RedisPlayer, String> suffixes = new WeakHashMap<>();
     @Getter private final Map<RedisPlayer, NameVisibility> nameVisibilities = new WeakHashMap<>();
-    @Getter private final Set<RedisPlayer> disabledNameTags = Collections.newSetFromMap(new WeakHashMap<>());
 
     public RedisTeams(@NonNull RedisSupport redisSupport, @NonNull NameTag nameTags) {
         this.redisSupport = redisSupport;
@@ -38,11 +37,9 @@ public class RedisTeams extends RedisFeature {
     @Override
     public void onJoin(@NonNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-            if (!disabledNameTags.contains(redis)) {
-                player.getScoreboard().registerTeam(teamNames.get(redis), prefixes.get(redis), suffixes.get(redis),
+            player.getScoreboard().registerTeam(teamNames.get(redis), prefixes.get(redis), suffixes.get(redis),
                         nameVisibilities.get(redis), CollisionRule.ALWAYS,
                         Collections.singletonList(redis.getNickname()), 2);
-            }
         }
     }
 
@@ -62,23 +59,7 @@ public class RedisTeams extends RedisFeature {
 
     @Override
     public void onServerSwitch(@NonNull RedisPlayer player) {
-        if (disabledNameTags.contains(player)) {
-            if (!nameTags.isDisabled(player.getServer(), null)) {
-                disabledNameTags.remove(player);
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
-                            nameVisibilities.get(player),
-                            CollisionRule.ALWAYS, Collections.singletonList(player.getNickname()), 2);
-                }
-            }
-        } else {
-            if (nameTags.isDisabled(player.getServer(), null)) {
-                disabledNameTags.add(player);
-                for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                    all.getScoreboard().unregisterTeam(teamNames.get(player));
-                }
-            }
-        }
+        // No action is needed
     }
 
     @Override

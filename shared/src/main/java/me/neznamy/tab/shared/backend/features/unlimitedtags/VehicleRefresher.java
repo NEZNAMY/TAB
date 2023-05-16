@@ -43,7 +43,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Override
     public void load() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(50,
-                this, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
+                featureName, TabConstants.CpuUsageCategory.PROCESSING_PLAYER_MOVEMENT, () -> {
                     for (TabPlayer inVehicle : playersInVehicle.keySet()) {
                         feature.getArmorStandManager(inVehicle).teleport();
                     }

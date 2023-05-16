@@ -70,9 +70,10 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     public void sendJoinPluginMessage() {
         bridgeConnected = false; // Reset on server switch
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
+        List<Object> args = Lists.newArrayList(
+                "PlayerJoin",
+                getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge && !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
-                false,
                 !(expansion instanceof EmptyTabExpansion));
         ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
         Map<String, Integer> placeholders = platform.getBridgePlaceholders();
@@ -82,15 +83,12 @@ public abstract class ProxyTabPlayer extends TabPlayer {
             args.add(entry.getValue());
         }
         NameTagX nametagx = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
-        boolean enabled = nametagx != null && !nametagx.getDisabledUnlimitedServers().contains(getServer());
+        boolean enabled = nametagx != null;
         args.add(enabled);
         if (enabled) {
-            args.add(true);
-            args.add(0.26d);
             args.add(nametagx.isDisableOnBoats());
             args.add(nametagx.isArmorStandsAlwaysVisible());
-            args.add(nametagx.getDisabledUnlimitedWorlds().size());
-            args.addAll(nametagx.getDisabledUnlimitedWorlds());
+            args.add(nametagx.getDisableChecker().isDisabledPlayer(this) || nametagx.getUnlimitedDisableChecker().isDisabledPlayer(this));
             args.add(nametagx.getDynamicLines().size());
             args.addAll(nametagx.getDynamicLines());
             args.add(nametagx.getStaticLines().size());

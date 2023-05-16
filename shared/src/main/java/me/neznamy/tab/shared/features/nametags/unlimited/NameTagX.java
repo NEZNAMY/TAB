@@ -3,6 +3,8 @@ package me.neznamy.tab.shared.features.nametags.unlimited;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.team.UnlimitedNametagManager;
+import me.neznamy.tab.shared.features.types.DisableChecker;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.util.Preconditions;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
@@ -18,35 +20,23 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     //config options
     @Getter private final boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);
-    @Getter private final List<String> disabledUnlimitedWorlds = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-worlds", new ArrayList<>());
-    @Getter private final List<String> disabledUnlimitedServers = TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.disable-in-servers", new ArrayList<>());
     @Getter private final List<String> dynamicLines = new ArrayList<>(TAB.getInstance().getConfiguration().getConfig().getStringList("scoreboard-teams.unlimited-nametag-mode.dynamic-lines", Arrays.asList(TabConstants.Property.ABOVENAME, TabConstants.Property.NAMETAG, TabConstants.Property.BELOWNAME, "another")));
     @Getter private final Map<String, Object> staticLines = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard-teams.unlimited-nametag-mode.static-lines");
     @Getter private final boolean armorStandsAlwaysVisible = TAB.getInstance().getConfiguration().getSecretOption("scoreboard-teams.unlimited-nametag-mode.always-visible", false);
 
-    @Getter private final String featureName = "Unlimited NameTags";
+    @Getter protected final String featureName = "Unlimited NameTags";
     private final Set<me.neznamy.tab.api.TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
-    @Getter private final Set<TabPlayer> disabledUnlimitedPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Map<TabPlayer, ArmorStandManager> armorStandManagerMap = new WeakHashMap<>();
-    private final String[] disabledUnlimitedWorldsArray = disabledUnlimitedWorlds.toArray(new String[0]);
-    private final boolean unlimitedWorldWhitelistMode = disabledUnlimitedWorlds.contains("WHITELIST");
-    private final String[] disabledUnlimitedServersArray = disabledUnlimitedServers.toArray(new String[0]);
-    private final boolean unlimitedServerWhitelistMode = disabledUnlimitedServers.contains("WHITELIST");
     private final Set<TabPlayer> playersPreviewingNametag = Collections.newSetFromMap(new WeakHashMap<>());
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
+    @Getter private final DisableChecker unlimitedDisableChecker;
 
     public NameTagX(@NonNull BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction) {
         this.armorStandFunction = armorStandFunction;
         Collections.reverse(dynamicLines);
-    }
-
-    public boolean isUnlimitedDisabled(@Nullable String server, @Nullable String world) {
-        boolean contains = contains(disabledUnlimitedServersArray, server);
-        if (unlimitedServerWhitelistMode) contains = !contains;
-        if (contains) return true;
-        contains = contains(disabledUnlimitedWorldsArray, world);
-        if (unlimitedWorldWhitelistMode) contains = !contains;
-        return contains;
+        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("scoreboard-teams.unlimited-nametag-mode.disable-condition"));
+        unlimitedDisableChecker = new DisableChecker(featureName, disableCondition, this::onUnlimitedDisableConditionChange);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS + "-Condition", unlimitedDisableChecker);
     }
 
     public ArmorStandManager getArmorStandManager(@NonNull TabPlayer player) {
@@ -54,7 +44,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     public boolean isPlayerDisabled(@NonNull TabPlayer p) {
-        return isDisabledPlayer(p) || disabledUnlimitedPlayers.contains(p) || hasTeamHandlingPaused(p) || hasDisabledArmorStands(p);
+        return getDisableChecker().isDisabledPlayer(p) || unlimitedDisableChecker.isDisabledPlayer(p) || hasTeamHandlingPaused(p) || hasDisabledArmorStands(p);
     }
 
     @Override
@@ -65,8 +55,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             armorStandManagerMap.put(all, armorStandFunction.apply(this, all));
-            if (isUnlimitedDisabled(all.getServer(), all.getWorld())) {
-                disabledUnlimitedPlayers.add(all);
+            if (unlimitedDisableChecker.isDisableConditionMet(all)) {
+                unlimitedDisableChecker.addDisabledPlayer(all);
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(all, false);
         }
@@ -75,8 +65,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
 
     @Override
     public void onJoin(@NonNull TabPlayer connectedPlayer) {
-        if (isUnlimitedDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld()))
-            disabledUnlimitedPlayers.add(connectedPlayer);
+        if (unlimitedDisableChecker.isDisableConditionMet(connectedPlayer))
+            unlimitedDisableChecker.addDisabledPlayer(connectedPlayer);
         super.onJoin(connectedPlayer);
         armorStandManagerMap.put(connectedPlayer, armorStandFunction.apply(this, connectedPlayer));
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(connectedPlayer, false);
@@ -114,15 +104,9 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         return playersPreviewingNametag.contains(player);
     }
 
-    @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        super.onWorldChange(p, from , to);
-        if (isUnlimitedDisabled(p.getServer(), to)) {
-            if (getDisabledUnlimitedPlayers().add(p)) updateTeamData(p);
-        } else {
-            if (getDisabledUnlimitedPlayers().remove(p)) {
-                updateTeamData(p);
-            }
+    public void onUnlimitedDisableConditionChange(TabPlayer p, boolean disabledNow) {
+        updateTeamData(p);
+        if (!unlimitedDisableChecker.isDisabledPlayer(p)) {
             getArmorStandManager(p).refresh(true);
         }
     }
@@ -280,7 +264,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
         Preconditions.checkLoaded(player);
         if (teamHandlingPaused.contains(player)) return;
-        if (!isDisabledPlayer((TabPlayer) player)) unregisterTeam((TabPlayer) player, getSorting().getShortTeamName((TabPlayer) player));
+        if (!getDisableChecker().isDisabledPlayer((TabPlayer) player)) unregisterTeam((TabPlayer) player, getSorting().getShortTeamName((TabPlayer) player));
         teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
         pauseArmorStands((TabPlayer) player);
     }
@@ -290,7 +274,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
         Preconditions.checkLoaded(player);
         if (!teamHandlingPaused.contains(player)) return;
         teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
-        if (!isDisabledPlayer((TabPlayer) player)) registerTeam((TabPlayer) player);
+        if (!getDisableChecker().isDisabledPlayer((TabPlayer) player)) registerTeam((TabPlayer) player);
         resumeArmorStands((TabPlayer) player);
     }
 

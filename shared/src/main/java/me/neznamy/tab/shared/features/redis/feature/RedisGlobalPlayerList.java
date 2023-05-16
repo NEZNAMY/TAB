@@ -49,7 +49,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     @Override
     public void onServerSwitch(@NonNull RedisPlayer player) {
-        TAB.getInstance().getCPUManager().runTaskLater(200, redisSupport, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
+        TAB.getInstance().getCPUManager().runTaskLater(200, redisSupport.getFeatureName(), TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer.getServer().equals(player.getServer())) continue;
                 if (shouldSee(viewer, player)) {
@@ -102,7 +102,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
 
     private @NotNull TabList.Entry getEntry(@NonNull RedisPlayer player) {
         return new TabList.Entry(player.getUniqueId(), player.getNickname(), skins.get(player), 0, 0,
-                redisSupport.getRedisPlayerList() == null || redisSupport.getRedisPlayerList().isDisabled(player) ? null :
+                redisSupport.getRedisPlayerList() == null ? null :
                         IChatBaseComponent.optimizedComponent(redisSupport.getRedisPlayerList().getFormat(player)));
     }
 }

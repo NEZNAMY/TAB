@@ -54,7 +54,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
 
     @Override
     public void refresh(@NonNull TabPlayer p, boolean force) {
-        if (nameTags.isDisabledPlayer(p)) return;
+        if (nameTags.getDisableChecker().isDisabledPlayer(p)) return;
         nameTags.updateTeamData(p);
     }
     

@@ -73,7 +73,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
         String previousShortName = shortTeamNames.get(p);
         constructTeamNames(p);
         if (!shortTeamNames.get(p).equals(previousShortName)) {
-            if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.isDisabledPlayer(p)) {
+            if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.getDisableChecker().isDisabledPlayer(p)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(previousShortName);
                 }

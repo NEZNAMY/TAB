@@ -50,18 +50,6 @@ public class PlayerView {
         }
     }
 
-    public void worldChange(@NonNull TabPlayer target) {
-        int width = getPlayerNameWidth(target);
-        if (playerWidths.getOrDefault(target, 0) != width) {
-            playerWidths.put(target, width);
-            if (recalculateMaxWidth(null)) {
-                updateAllPlayers();
-            } else {
-                viewer.getTabList().updateDisplayName(feature.getTablistUUID(target, viewer), formatName(target));
-            }
-        }
-    }
-
     private void updateAllPlayers() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             viewer.getTabList().updateDisplayName(feature.getTablistUUID(all, viewer), formatName(all));

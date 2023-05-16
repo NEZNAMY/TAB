@@ -87,7 +87,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      *          json message to process
      */
     public void processMessage(@NonNull String msg) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
             ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
             String proxy = in.readUTF();
             if (proxy.equals(this.proxy.toString())) return; // Message coming from current proxy
@@ -190,7 +190,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         if (redisPlayerList == null) return null;
         if (!redisPlayerList.getPlayerList().isAntiOverrideTabList()) return null;
         RedisPlayer packetPlayer = redisPlayers.get(id);
-        if (packetPlayer != null && !redisPlayerList.isDisabled(packetPlayer)) {
+        if (packetPlayer != null) {
             return IChatBaseComponent.optimizedComponent(redisPlayerList.getFormat(packetPlayer));
         }
         return null;

@@ -48,7 +48,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     public void onSneak(PlayerToggleSneakEvent e) {
         TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
         if (p == null || isPlayerDisabled(p)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
                 () -> getArmorStandManager(p).sneak(e.isSneaking()));
     }
 
@@ -56,7 +56,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     public void onRespawn(PlayerRespawnEvent e) {
         TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
         if (respawned == null || isPlayerDisabled(respawned)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
                 () -> getArmorStandManager(respawned).teleport());
     }
 
@@ -64,7 +64,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     @Override
     public void onPacketSend(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException {
         if (receiver.getVersion().getMinorVersion() < 8) return;
-        if (!receiver.isLoaded() || isDisabledPlayer(receiver) || getDisabledUnlimitedPlayers().contains(receiver)) return;
+        if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
         if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
             packetListener.onEntityMove((BackendTabPlayer) receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
         } else if (PacketPlayOutEntityTeleportStorage.CLASS.isInstance(packet)) {

@@ -159,7 +159,7 @@ public class Condition {
      * @return  condition from string
      */
     public static Condition getCondition(String string) {
-        if (string == null) return null;
+        if (string == null || string.isEmpty()) return null;
         if (registeredConditions.containsKey(string)) {
             return registeredConditions.get(string);
         } else {

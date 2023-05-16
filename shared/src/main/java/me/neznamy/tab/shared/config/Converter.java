@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Configuration converter that converts configuration files from practically
@@ -362,17 +364,19 @@ public class Converter {
         config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
     }
 
+    @SuppressWarnings("unchecked")
     public void convert332to400(@NonNull ConfigurationFile config) throws IOException {
-        if (!config.hasConfigOption("ping-spoof.enabled")) return;
-        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
-        config.set("ping-spoof", null);
-        config.set("fix-pet-names", null);
-        config.set("bossbar.disable-in-worlds", null);
-        config.set("bossbar.disable-in-servers", null);
-        config.set("scoreboard.disable-in-worlds", null);
-        config.set("scoreboard.disable-in-servers", null);
-        config.set("remove-ghost-players", null);
-        config.set("global-playerlist.fill-profile-key", null);
+        if (config.hasConfigOption("ping-spoof.enabled")) {
+            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
+            config.set("ping-spoof", null);
+            config.set("fix-pet-names", null);
+            config.set("bossbar.disable-in-worlds", null);
+            config.set("bossbar.disable-in-servers", null);
+            config.set("scoreboard.disable-in-worlds", null);
+            config.set("scoreboard.disable-in-servers", null);
+            config.set("remove-ghost-players", null);
+            config.set("global-playerlist.fill-profile-key", null);
+        }
         if (config.hasConfigOption("placeholderapi-refresh-intervals.server")) {
             Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
             Map<String, Object> server = config.getConfigurationSection("placeholderapi-refresh-intervals.server");
@@ -392,5 +396,31 @@ public class Converter {
             config.set("layout", layout.getValues());
             Files.delete(layoutFile.toPath());
         }
+        Consumer<Map<String, Object>> disabledConditionConverter = (map -> {
+            List<String> newConditions = new ArrayList<>();
+            boolean update = false;
+            if (map.containsKey("disable-in-worlds") && map.get("disable-in-worlds") instanceof List) {
+                update = true;
+                List<String> worlds = (List<String>) map.get("disable-in-worlds");
+                newConditions.addAll(worlds.stream().map(world -> "%world%=" + world).collect(Collectors.toList()));
+            }
+            if (map.containsKey("disable-in-servers") && map.get("disable-in-servers") instanceof List) {
+                update = true;
+                List<String> worlds = (List<String>) map.get("disable-in-servers");
+                newConditions.addAll(worlds.stream().map(server -> "%server%=" + server).collect(Collectors.toList()));
+            }
+            if (update) {
+                map.remove("disable-in-worlds");
+                map.remove("disable-in-servers");
+                map.put("disable-condition", String.join("|", newConditions));
+                config.save();
+            }
+        });
+        disabledConditionConverter.accept(config.getConfigurationSection("header-footer"));
+        disabledConditionConverter.accept(config.getConfigurationSection("tablist-name-formatting"));
+        disabledConditionConverter.accept(config.getConfigurationSection("scoreboard-teams"));
+        disabledConditionConverter.accept(config.getConfigurationSection("scoreboard-teams.unlimited-nametag-mode"));
+        disabledConditionConverter.accept(config.getConfigurationSection("yellow-number-in-tablist"));
+        disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
     }
 }

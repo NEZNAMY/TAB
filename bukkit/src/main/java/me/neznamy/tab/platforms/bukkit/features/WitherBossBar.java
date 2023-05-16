@@ -36,7 +36,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
         //when MC is on fullscreen, BossBar disappears after 1 second of not being seen
         //when in a small window, it's about 100ms
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100,
-                this, TabConstants.CpuUsageCategory.TELEPORTING_WITHER, this::teleport);
+                featureName, TabConstants.CpuUsageCategory.TELEPORTING_WITHER, this::teleport);
         super.load();
         teleport();
     }
@@ -67,7 +67,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        TAB.getInstance().getCPUManager().runMeasuredTask(this, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
                 () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
     }
 

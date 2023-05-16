@@ -47,7 +47,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     private final Set<me.neznamy.tab.api.TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    @Getter private final String featureName = "BossBar";
+    @Getter protected final String featureName = "BossBar";
     @Getter private final String refreshDisplayName = "Updating display conditions";
 
     /**
@@ -223,7 +223,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         TAB.getInstance().getCPUManager().runTask(() -> line.addPlayer(player));
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
-                this, "Removing temporary BossBar", () -> line.removePlayer(player));
+                featureName, "Removing temporary BossBar", () -> line.removePlayer(player));
     }
 
     @Override
@@ -240,7 +240,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             }
         });
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
-                this, "Removing announced BossBar", () -> {
+                featureName, "Removing announced BossBar", () -> {
             for (TabPlayer all : players) {
                 line.removePlayer(all);
             }

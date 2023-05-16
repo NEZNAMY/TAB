@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -140,7 +140,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
                 continue;
             }
-            if (!((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
+            if (!((NameTag)TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(p) &&
                     !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
                 logTeamOverride(teamName, p.getName(), expectedTeam);
             } else {

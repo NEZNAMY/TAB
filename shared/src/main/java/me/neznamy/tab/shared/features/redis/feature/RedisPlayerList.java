@@ -22,7 +22,6 @@ public class RedisPlayerList extends RedisFeature {
     private final RedisSupport redisSupport;
     @Getter private final PlayerList playerList;
     private final Map<RedisPlayer, String> values = new WeakHashMap<>();
-    private final Set<RedisPlayer> disabledPlayerlist = Collections.newSetFromMap(new WeakHashMap<>());
 
     public RedisPlayerList(@NonNull RedisSupport redisSupport, @NonNull PlayerList playerList) {
         this.redisSupport = redisSupport;
@@ -34,15 +33,14 @@ public class RedisPlayerList extends RedisFeature {
     public void onJoin(@NonNull TabPlayer player) {
         if (player.getVersion().getMinorVersion() < 8) return;
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-            if (!disabledPlayerlist.contains(redis)) player.getTabList().updateDisplayName(
-                    redis.getUniqueId(), IChatBaseComponent.optimizedComponent(values.get(redis)));
+            player.getTabList().updateDisplayName(redis.getUniqueId(), IChatBaseComponent.optimizedComponent(values.get(redis)));
         }
     }
 
     @Override
     public void onJoin(@NonNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (viewer.getVersion().getMinorVersion() < 8 || disabledPlayerlist.contains(player)) continue;
+            if (viewer.getVersion().getMinorVersion() < 8) continue;
             viewer.getTabList().updateDisplayName(player.getUniqueId(), IChatBaseComponent.optimizedComponent(values.get(player)));
         }
     }
@@ -54,23 +52,7 @@ public class RedisPlayerList extends RedisFeature {
 
     @Override
     public void onServerSwitch(@NonNull RedisPlayer player) {
-        if (disabledPlayerlist.contains(player)) {
-            if (!playerList.isDisabled(player.getServer(), null)) {
-                disabledPlayerlist.remove(player);
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    if (viewer.getVersion().getMinorVersion() < 8) continue;
-                    viewer.getTabList().updateDisplayName(player.getUniqueId(), IChatBaseComponent.optimizedComponent(values.get(player)));
-                }
-            }
-        } else {
-            if (playerList.isDisabled(player.getServer(), null)) {
-                disabledPlayerlist.add(player);
-                for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-                    if (viewer.getVersion().getMinorVersion() < 8) continue;
-                    viewer.getTabList().updateDisplayName(player.getUniqueId(), null);
-                }
-            }
-        }
+        // No action is needed
     }
 
     @Override
@@ -88,10 +70,6 @@ public class RedisPlayerList extends RedisFeature {
     @Override
     public void read(@NonNull ByteArrayDataInput in, @NonNull RedisPlayer player) {
         values.put(player, in.readUTF());
-    }
-
-    public boolean isDisabled(@NonNull RedisPlayer player) {
-        return disabledPlayerlist.contains(player);
     }
 
     public String getFormat(@NonNull RedisPlayer player) {

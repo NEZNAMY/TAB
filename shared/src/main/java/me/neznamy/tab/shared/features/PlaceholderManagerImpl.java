@@ -52,7 +52,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
 
     public PlaceholderManagerImpl() {
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, this, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, this::refresh);
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, this::refresh);
         TAB.getInstance().getMisconfigurationHelper().fixRefreshIntervals(refreshIntervals);
         defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
     }
@@ -89,7 +89,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             }
         }
         //subtracting back usage by this method from placeholder refreshing usage, since it is already counted under different name in this method
-        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
+        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, startRefreshTime-System.nanoTime());
     }
 
     private boolean updateRelationalPlaceholder(@NonNull RelationalPlaceholderImpl placeholder, @NonNull Map<TabPlayer, Set<Refreshable>> forceUpdate) {

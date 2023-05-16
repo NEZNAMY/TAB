@@ -9,9 +9,9 @@ import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
-import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
@@ -111,7 +111,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
             String expectedTeam = sorting.getShortTeamName(p);
-            if (expectedTeam != null && col.contains(p.getNickname()) && !((TabFeature)TAB.getInstance().getTeamManager()).isDisabledPlayer(p) &&
+            if (expectedTeam != null && col.contains(p.getNickname()) &&
+                    !((NameTag)TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(p) &&
                     !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
                 logTeamOverride(packet.getName(), p.getName(), expectedTeam);
                 col.remove(p.getNickname());

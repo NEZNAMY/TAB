@@ -72,8 +72,8 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             playerViews.put(all, new PlayerView(this, all));
-            if (isDisabled(all.getServer(), all.getWorld())) {
-                addDisabledPlayer(all);
+            if (disableChecker.isDisableConditionMet(all)) {
+                disableChecker.addDisabledPlayer(all);
             }
         }
         playerViews.values().forEach(PlayerView::load);
@@ -84,8 +84,8 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
         updateProperties(connectedPlayer);
         playerViews.put(connectedPlayer, new PlayerView(this, connectedPlayer));
         playerViews.values().forEach(v -> v.playerJoin(connectedPlayer));
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
+        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
+            disableChecker.addDisabledPlayer(connectedPlayer);
             return;
         }
         if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
@@ -97,7 +97,7 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
         if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION) ||
                 connectedPlayer.getVersion().getMinorVersion() == 8)
-            TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+            TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
     }
 
     @Override
@@ -107,14 +107,8 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
     }
 
     @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        super.onWorldChange(p, from, to);
-        playerViews.values().forEach(v -> v.worldChange(p));
-    }
-
-    @Override
     public void refresh(@NonNull TabPlayer refreshed, boolean force) {
-        if (isDisabledPlayer(refreshed)) return;
+        if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);

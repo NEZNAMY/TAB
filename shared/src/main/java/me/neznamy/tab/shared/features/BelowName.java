@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.PlatformScoreboard;
 import me.neznamy.tab.shared.TAB;
@@ -12,13 +13,12 @@ import me.neznamy.tab.shared.features.types.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Feature handler for BelowName feature
  */
 public class BelowName extends TabFeature implements JoinListener, Loadable, UnLoadable,
-        WorldSwitchListener, ServerSwitchListener, Refreshable {
+        ServerSwitchListener, Refreshable {
 
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
 
@@ -27,11 +27,13 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     private final String rawNumber = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.number", TabConstants.Placeholder.HEALTH);
     private final String rawText = TAB.getInstance().getConfiguration().getConfig().getString("belowname-objective.text", "Health");
     private final TextRefresher textRefresher = new TextRefresher(this);
-
+    private final DisableChecker disableChecker;
     private RedisSupport redis;
 
     public BelowName() {
-        super("belowname-objective");
+        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("belowname-objective.disable-condition"));
+        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME + "-Condition", disableChecker);
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.BELOW_NAME_TEXT, textRefresher);
         TAB.getInstance().getMisconfigurationHelper().checkBelowNameText(rawText);
     }
@@ -42,8 +44,8 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         for (TabPlayer loaded : TAB.getInstance().getOnlinePlayers()) {
             loaded.setProperty(this, TabConstants.Property.BELOWNAME_NUMBER, rawNumber);
             loaded.setProperty(textRefresher, TabConstants.Property.BELOWNAME_TEXT, rawText);
-            if (isDisabled(loaded.getServer(), loaded.getWorld())) {
-                addDisabledPlayer(loaded);
+            if (disableChecker.isDisableConditionMet(loaded)) {
+                disableChecker.addDisabledPlayer(loaded);
                 continue;
             }
             loaded.getScoreboard().registerObjective(OBJECTIVE_NAME, loaded.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
@@ -51,15 +53,13 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-            if (isDisabledPlayer(target)) continue;
+            if (disableChecker.isDisabledPlayer(target)) continue;
             values.put(target, getValue(target));
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            if (isDisabledPlayer(viewer)) continue;
+            if (disableChecker.isDisabledPlayer(viewer)) continue;
             for (Map.Entry<TabPlayer, Integer> entry : values.entrySet()) {
-                if (sameServerAndWorld(entry.getKey(), viewer)) {
-                    viewer.getScoreboard().setScore(OBJECTIVE_NAME, entry.getKey().getNickname(), entry.getValue());
-                }
+                viewer.getScoreboard().setScore(OBJECTIVE_NAME, entry.getKey().getNickname(), entry.getValue());
             }
         }
     }
@@ -67,7 +67,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     @Override
     public void unload() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (isDisabledPlayer(p)) continue;
+            if (disableChecker.isDisabledPlayer(p)) continue;
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         }
     }
@@ -76,67 +76,36 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     public void onJoin(@NonNull TabPlayer connectedPlayer) {
         connectedPlayer.setProperty(this, TabConstants.Property.BELOWNAME_NUMBER, rawNumber);
         connectedPlayer.setProperty(textRefresher, TabConstants.Property.BELOWNAME_TEXT, rawText);
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
+        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
+            disableChecker.addDisabledPlayer(connectedPlayer);
             return;
         }
         connectedPlayer.getScoreboard().registerObjective(OBJECTIVE_NAME, connectedPlayer.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         connectedPlayer.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         int number = getValue(connectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (sameServerAndWorld(all, connectedPlayer)) {
-                all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), number);
-                connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-            }
+            if (!disableChecker.isDisabledPlayer(all)) all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), number);
+            connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
         }
         if (redis != null) redis.updateBelowName(connectedPlayer, number);
     }
 
     @Override
     public void onServerChange(@NonNull TabPlayer player, @NonNull String from, @NonNull String to) {
-        processSwitch(player);
-        if (isDisabledPlayer(player)) return;
+        if (disableChecker.isDisabledPlayer(player)) return;
         player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         player.getScoreboard().setDisplaySlot(PlatformScoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (sameServerAndWorld(all, player)) {
-                player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-            }
+            player.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
         }
     }
 
-    @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        processSwitch(p);
-    }
-
-    private void processSwitch(@NonNull TabPlayer p) {
-        boolean disabledBefore = isDisabledPlayer(p);
-        boolean disabledNow = false;
-        if (isDisabled(p.getServer(), p.getWorld())) {
-            disabledNow = true;
-            addDisabledPlayer(p);
-        } else {
-            removeDisabledPlayer(p);
-        }
+    public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            if (!disabledBefore) {
-                p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
-            }
-            return;
-        }
-        if (disabledBefore) {
+            p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
+        } else {
             onJoin(p);
-            return;
         }
-        int number = getValue(p);
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (sameServerAndWorld(all, p)) {
-                all.getScoreboard().setScore(OBJECTIVE_NAME, p.getNickname(), number);
-                p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
-            }
-        }
-        if (redis != null) redis.updateBelowName(p, number);
     }
 
     public int getValue(@NonNull TabPlayer p) {
@@ -145,18 +114,12 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
     @Override
     public void refresh(@NonNull TabPlayer refreshed, boolean force) {
-        if (isDisabledPlayer(refreshed)) return;
+        if (disableChecker.isDisabledPlayer(refreshed)) return;
         int number = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (sameServerAndWorld(all, refreshed)) {
-                all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), number);
-            }
+            all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), number);
         }
         if (redis != null) redis.updateBelowName(refreshed, number);
-    }
-
-    private boolean sameServerAndWorld(@NonNull TabPlayer player1, @NonNull TabPlayer player2) {
-        return player2.getWorld().equals(player1.getWorld()) && Objects.equals(player2.getServer(), player1.getServer());
     }
 
     @RequiredArgsConstructor
@@ -168,7 +131,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
 
         @Override
         public void refresh(@NonNull TabPlayer refreshed, boolean force) {
-            if (feature.isDisabledPlayer(refreshed)) return;
+            if (feature.disableChecker.isDisabledPlayer(refreshed)) return;
             refreshed.getScoreboard().updateObjective(OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         }
     }

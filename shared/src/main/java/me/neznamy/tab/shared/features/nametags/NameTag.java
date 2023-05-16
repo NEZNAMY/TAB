@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.PlatformScoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.PlatformScoreboard.NameVisibility;
 import me.neznamy.tab.shared.util.Preconditions;
@@ -35,7 +36,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     protected final WeakHashMap<me.neznamy.tab.api.TabPlayer, List<me.neznamy.tab.api.TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
     private final WeakHashMap<me.neznamy.tab.api.TabPlayer, String> forcedTeamName = new WeakHashMap<>();
     protected final Set<me.neznamy.tab.api.TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
-
+    @Getter private final DisableChecker disableChecker;
     private RedisSupport redis;
 
     private final boolean accepting18x = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ||
@@ -43,7 +44,9 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
             TAB.getInstance().getServerVersion().getMinorVersion() == 8;
 
     public NameTag() {
-        super("scoreboard-teams");
+        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("scoreboard-teams.disable-condition"));
+        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
     }
 
     @Override
@@ -55,15 +58,15 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
             hiddenNameTagFor.put(all, new ArrayList<>());
-            if (isDisabled(all.getServer(), all.getWorld())) {
-                addDisabledPlayer(all);
+            if (disableChecker.isDisableConditionMet(all)) {
+                disableChecker.addDisabledPlayer(all);
                 continue;
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(all, true);
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (!isDisabledPlayer(target)) registerTeam(target, viewer);
+                if (!disableChecker.isDisabledPlayer(target)) registerTeam(target, viewer);
             }
         }
     }
@@ -72,7 +75,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     public void unload() {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (hasTeamHandlingPaused(target)) return;
+                if (hasTeamHandlingPaused(target) || disableChecker.isDisabledPlayer(target)) return;
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(target));
             }
         }
@@ -80,7 +83,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
 
     @Override
     public void refresh(@NonNull TabPlayer refreshed, boolean force) {
-        if (isDisabledPlayer(refreshed)) return;
+        if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
@@ -100,13 +103,13 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
         hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == connectedPlayer) continue; //avoiding double registration
-            if (!isDisabledPlayer(all)) {
+            if (!disableChecker.isDisabledPlayer(all)) {
                 registerTeam(all, connectedPlayer);
             }
         }
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagVisibility(connectedPlayer, true);
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
+        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
+            disableChecker.addDisabledPlayer(connectedPlayer);
             return;
         }
         registerTeam(connectedPlayer);
@@ -114,7 +117,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
 
     @Override
     public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
-        if (!isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
+        if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
                 viewer.getScoreboard().unregisterTeam(sorting.getShortTeamName(disconnectedPlayer));
@@ -129,33 +132,22 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
 
     @Override
     public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        processSwitch(p);
+        if (updateProperties(p) && !disableChecker.isDisabledPlayer(p)) updateTeamData(p);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (!isDisabledPlayer(all)) registerTeam(all, p);
+            if (!disableChecker.isDisabledPlayer(all)) registerTeam(all, p);
         }
     }
 
     @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
-        processSwitch(p);
+    public void onWorldChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
+        if (updateProperties(changed) && !disableChecker.isDisabledPlayer(changed)) updateTeamData(changed);
     }
 
-    private void processSwitch(@NonNull TabPlayer p) {
-        boolean disabledBefore = isDisabledPlayer(p);
-        boolean disabledNow = false;
-        if (isDisabled(p.getServer(), p.getWorld())) {
-            disabledNow = true;
-            addDisabledPlayer(p);
-        } else {
-            removeDisabledPlayer(p);
-        }
-        boolean changed = updateProperties(p);
-        if (disabledNow && !disabledBefore) {
+    public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
+        if (disabledNow) {
             unregisterTeam(p, sorting.getShortTeamName(p));
-        } else if (!disabledNow && disabledBefore) {
+        } else {
             registerTeam(p);
-        } else if (changed) {
-            updateTeamData(p);
         }
     }
 
@@ -200,7 +192,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     @Override
     public void pauseTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
         if (teamHandlingPaused.contains(player)) return;
-        if (!isDisabledPlayer((TabPlayer) player)) unregisterTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player));
+        if (!disableChecker.isDisabledPlayer((TabPlayer) player)) unregisterTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player));
         teamHandlingPaused.add(player); //adding after, so unregisterTeam method runs
     }
 
@@ -208,7 +200,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     public void resumeTeamHandling(@NonNull me.neznamy.tab.api.TabPlayer player) {
         if (!teamHandlingPaused.contains(player)) return;
         teamHandlingPaused.remove(player); //removing before, so registerTeam method runs
-        if (!isDisabledPlayer((TabPlayer) player)) registerTeam((TabPlayer) player);
+        if (!disableChecker.isDisabledPlayer((TabPlayer) player)) registerTeam((TabPlayer) player);
     }
 
     @Override

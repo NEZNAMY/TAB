@@ -32,7 +32,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      * Starts task checking for player visibility to hide armor stands of invisible players.
      */
     private void startVisibilityRefreshTask() {
-        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, this, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
+        TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, featureName, TabConstants.CpuUsageCategory.REFRESHING_NAME_TAG_VISIBILITY, () -> {
 
             for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
                 if (isPlayerDisabled(p)) continue;
@@ -139,12 +139,6 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
         super.onWorldChange(p, from, to);
-        if (isUnlimitedDisabled(p.getServer(), to)) {
-            getDisabledUnlimitedPlayers().add(p);
-            updateTeamData(p);
-        } else if (getDisabledUnlimitedPlayers().remove(p)) {
-            updateTeamData(p);
-        }
         if (isPreviewingNametag(p)) {
             getArmorStandManager(p).spawn((BackendTabPlayer) p);
         }

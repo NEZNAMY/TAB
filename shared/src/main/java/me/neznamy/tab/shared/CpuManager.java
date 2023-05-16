@@ -212,10 +212,6 @@ public class CpuManager {
         addTime(placeholderUsageCurrent, placeholder, nanoseconds);
     }
 
-    public void runMeasuredTask(@NonNull TabFeature feature, @NonNull String type, @NonNull Runnable task) {
-        runMeasuredTask(feature.getFeatureName(), type, task);
-    }
-
     public void runMeasuredTask(@NonNull String feature, @NonNull String type, @NonNull Runnable task) {
         submit(() -> {
             long time = System.nanoTime();
@@ -228,7 +224,7 @@ public class CpuManager {
         submit(task);
     }
 
-    public void startRepeatingMeasuredTask(int intervalMilliseconds, @NonNull TabFeature feature, @NonNull String type, @NonNull Runnable task) {
+    public void startRepeatingMeasuredTask(int intervalMilliseconds, @NonNull String feature, @NonNull String type, @NonNull Runnable task) {
         if (scheduler.isShutdown()) return;
         scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
@@ -238,7 +234,7 @@ public class CpuManager {
         scheduler.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void runTaskLater(int delayMilliseconds, @NonNull TabFeature feature, @NonNull String type, @NonNull Runnable task) {
+    public void runTaskLater(int delayMilliseconds, @NonNull String feature, @NonNull String type, @NonNull Runnable task) {
         if (scheduler.isShutdown()) return;
         scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }

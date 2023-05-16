@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.NonNull;
-import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -76,7 +76,7 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, getTeamNameNote(analyzed));
         if (tab.getFeatureManager().isFeatureEnabled(TabConstants.Feature.PLAYER_LIST)) {
             PlayerList playerlist = tab.getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-            boolean disabledPlayerlist = playerlist.isDisabled(analyzed.getServer(), analyzed.getWorld());
+            boolean disabledPlayerlist = playerlist.getDisableChecker().isDisabledPlayer(analyzed);
             showProperty(sender, analyzed, TabConstants.Property.TABPREFIX, disabledPlayerlist);
             showProperty(sender, analyzed, TabConstants.Property.TABSUFFIX, disabledPlayerlist);
             showProperty(sender, analyzed, TabConstants.Property.CUSTOMTABNAME, disabledPlayerlist);
@@ -86,7 +86,7 @@ public class DebugCommand extends SubCommand {
             sendMessage(sender, "&acustomtabname: &cDisabled");
         }
         if (tab.getTeamManager() != null) {
-            boolean disabledNametags = ((TabFeature) tab.getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld());
+            boolean disabledNametags = ((NameTag) tab.getTeamManager()).getDisableChecker().isDisabledPlayer(analyzed);
             showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
             showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
             for (String line : getExtraLines()) {
@@ -151,7 +151,7 @@ public class DebugCommand extends SubCommand {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
-                ((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
+                ((NameTag) TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
@@ -169,7 +169,7 @@ public class DebugCommand extends SubCommand {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
-                ((TabFeature) TAB.getInstance().getTeamManager()).isDisabled(analyzed.getServer(), analyzed.getWorld())) {
+                ((NameTag) TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
             return "";
         }
         return "&eSorting note: &r" + sorting.getTeamNameNote(analyzed);
