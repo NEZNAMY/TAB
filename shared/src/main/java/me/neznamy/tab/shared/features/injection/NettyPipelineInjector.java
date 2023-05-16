@@ -62,22 +62,6 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         }
     }
 
-    /**
-     * Returns player with matching game profile name. This is different from
-     * real name when a nick plugin changing names of players is used. If no
-     * player was found, returns {@code null}.
-     *
-     * @param   name
-     *          Game profile name
-     * @return  Player with matching game profile name
-     */
-    public @Nullable TabPlayer getPlayer(@NotNull String name) {
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (p.getNickname().equals(name)) return p;
-        }
-        return null;
-    }
-
     public abstract void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException;
 
     public abstract void onObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException;

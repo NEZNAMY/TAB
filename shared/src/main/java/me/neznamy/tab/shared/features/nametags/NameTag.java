@@ -285,7 +285,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
                 replacedSuffix,
                 getTeamVisibility(p, viewer) ? NameVisibility.ALWAYS : NameVisibility.NEVER,
                 collisionManager.getCollision(p) ? CollisionRule.ALWAYS : CollisionRule.NEVER,
-                Collections.singletonList(p.getNickname()),
+                Collections.singletonList(p.getName()),
                 getTeamOptions()
         );
     }

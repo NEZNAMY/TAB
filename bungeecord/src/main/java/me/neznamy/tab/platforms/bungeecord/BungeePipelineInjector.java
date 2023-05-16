@@ -110,11 +110,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
             String expectedTeam = sorting.getShortTeamName(p);
-            if (expectedTeam != null && col.contains(p.getNickname()) &&
+            if (expectedTeam != null && col.contains(p.getName()) &&
                     !((NameTag)TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(p) &&
                     !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
                 logTeamOverride(packet.getName(), p.getName(), expectedTeam);
-                col.remove(p.getNickname());
+                col.remove(p.getName());
             }
         }
         RedisSupport redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
@@ -122,9 +122,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             RedisTeams teams = redis.getRedisTeams();
             if (teams != null) {
                 for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                    if (col.contains(p.getNickname()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
+                    if (col.contains(p.getName()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
                         logTeamOverride(packet.getName(), p.getName(), teams.getTeamNames().get(p));
-                        col.remove(p.getNickname());
+                        col.remove(p.getName());
                     }
                 }
             }

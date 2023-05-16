@@ -38,7 +38,7 @@ public class RedisTeams extends RedisFeature {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             player.getScoreboard().registerTeam(teamNames.get(redis), prefixes.get(redis), suffixes.get(redis),
                         nameVisibilities.get(redis), CollisionRule.ALWAYS,
-                        Collections.singletonList(redis.getNickname()), 2);
+                        Collections.singletonList(redis.getName()), 2);
         }
     }
 
@@ -47,7 +47,7 @@ public class RedisTeams extends RedisFeature {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
                     nameVisibilities.get(player), CollisionRule.ALWAYS,
-                    Collections.singletonList(player.getNickname()), 2);
+                    Collections.singletonList(player.getName()), 2);
         }
     }
 
@@ -143,7 +143,7 @@ public class RedisTeams extends RedisFeature {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(newTeamName, prefix, suffix, nameVisibility,
-                            CollisionRule.ALWAYS, Collections.singletonList(target.getNickname()), 2);
+                            CollisionRule.ALWAYS, Collections.singletonList(target.getName()), 2);
                 }
             } else {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

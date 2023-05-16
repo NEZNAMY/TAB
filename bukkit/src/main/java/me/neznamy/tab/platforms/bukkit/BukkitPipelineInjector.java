@@ -129,7 +129,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
         Collection<String> newList = new ArrayList<>();
         for (String entry : players) {
-            TabPlayer p = getPlayer(entry);
+            TabPlayer p = TAB.getInstance().getPlayer(entry);
             if (p == null) {
                 newList.add(entry);
                 continue;

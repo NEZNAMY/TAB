@@ -63,9 +63,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
      */
     @Getter private boolean loaded;
 
-    /** Player's name as seen in GameProfile, can be altered by nick plugins */
-    @Getter @Setter private String nickname;
-
     /**
      * Constructs new instance with given parameters
      *
@@ -89,7 +86,6 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
-        this.nickname = name;
         this.server = server;
         this.world = world;
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);
