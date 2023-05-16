@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Abstract class containing common variables and methods
  * shared between proxies.
  */
-public abstract class ProxyPlatform extends Platform {
+public abstract class ProxyPlatform implements Platform {
 
     /** Plugin message handler for sending and receiving plugin messages */
     @Getter protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();

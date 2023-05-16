@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
@@ -33,7 +33,7 @@ import java.util.Collection;
  * Implementation of Platform interface for Bukkit platform
  */
 @RequiredArgsConstructor
-public class BukkitPlatform extends BackendPlatform {
+public class BukkitPlatform implements BackendPlatform {
 
     @Getter private final BukkitPipelineInjector pipelineInjector = NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
 
@@ -134,21 +134,9 @@ public class BukkitPlatform extends BackendPlatform {
         }
     }
 
-    /**
-     * Sends console message using ConsoleCommandSender, due to
-     * Paper not translating colors correctly in Logger messages
-     * and to allow RGB (at least on Paper, doesn't work on spigot)
-     *
-     * @param   message
-     *          Message to send
-     * @param   translateColors
-     *          Whether color codes should be translated or not
-     */
     @Override
-    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + (translateColors ?
-                EnumChatFormat.color(RGBUtils.getInstance().convertToBukkitFormat(message,
-                        TAB.getInstance().getServerVersion().getMinorVersion() >= 16))
-                : message));
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
+                TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
 }

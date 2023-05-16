@@ -4,12 +4,12 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
 
-    private final @NotNull Plugin plugin;
+    @NotNull private final BungeeTAB plugin;
     @Getter private final BungeePipelineInjector pipelineInjector = new BungeePipelineInjector();
 
     @Override
@@ -29,6 +29,11 @@ public class BungeePlatform extends ProxyPlatform {
             return new RedisBungeeSupport(plugin);
         }
         return null;
+    }
+
+    @Override
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        plugin.getLogger().info(message.toLegacyText());
     }
 
     @Override

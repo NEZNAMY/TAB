@@ -1,132 +1,30 @@
 package me.neznamy.tab.shared.platform;
 
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.shared.FeatureManager;
-import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.features.*;
-import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
-import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
-import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 /**
  * An interface with methods that are called in universal code,
  * but require platform-specific API calls
  */
-public abstract class Platform {
-
-    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
-        Object logger = TAB.getInstance().getLogger();
-        if (logger instanceof java.util.logging.Logger) {
-            ((java.util.logging.Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
-        } else if (logger instanceof Logger) {
-            ((Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
-        }
-    }
+public interface Platform {
 
     /**
-     * Detects permission plugin and returns it's representing object
+     * Detects permission plugin and returns its representing object
      *
      * @return  the interface representing the permission hook
      */
-    public abstract @NotNull PermissionPlugin detectPermissionPlugin();
+    @NotNull PermissionPlugin detectPermissionPlugin();
 
-    /**
-     * Loads features
-     */
-    public void loadFeatures() {
-        Configs configuration = TAB.getInstance().getConfiguration();
-        FeatureManager featureManager = TAB.getInstance().getFeatureManager();
-        int minorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
-
-        if (configuration.getConfig().getBoolean("bossbar.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.BOSS_BAR,
-                    minorVersion >= 9 ? new BossBarManagerImpl() : getLegacyBossBar());
-        }
-
-        if (configuration.getConfig().getBoolean("header-footer.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.HEADER_FOOTER, new HeaderFooter());
-
-        if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
-
-        if (configuration.isPipelineInjection()) {
-            PipelineInjector inj = getPipelineInjector();
-            if (inj != null) featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, inj);
-        }
-
-        if (configuration.getConfig().getBoolean("scoreboard.enabled", false))
-            featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
-
-        if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
-            TabFeature pwp = getPerWorldPlayerlist();
-            if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
-        }
-
-        if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.YELLOW_NUMBER, new YellowNumber());
-
-        if (configuration.getConfig().getBoolean("belowname-objective.enabled", true))
-            featureManager.registerFeature(TabConstants.Feature.BELOW_NAME, new BelowName());
-
-        // No requirements, but due to chicken vs egg, the feature uses NameTags, Layout and RedisBungee
-        if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true) ||
-                configuration.getConfig().getBoolean("layout.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.SORTING, new Sorting());
-        }
-
-        // Must be loaded after: Sorting
-        if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true)) {
-            if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && minorVersion >= 8) {
-                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, getUnlimitedNametags());
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
-            }
-        }
-
-        // Must be loaded after: Sorting
-        if (minorVersion >= 8 && configuration.getConfig().getBoolean("layout.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
-        }
-
-        // Must be loaded after: Layout
-        if (minorVersion >= 8 && configuration.getConfig().getBoolean("tablist-name-formatting.enabled", true)) {
-            if (configuration.getConfig().getBoolean("tablist-name-formatting.align-tabsuffix-on-the-right", false)) {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new AlignedPlayerList());
-            } else {
-                featureManager.registerFeature(TabConstants.Feature.PLAYER_LIST, new PlayerList());
-            }
-        }
-
-        // Must be loaded after: PlayerList
-        if (configuration.getConfig().getBoolean("global-playerlist.enabled", false) &&
-                TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY) {
-            featureManager.registerFeature(TabConstants.Feature.GLOBAL_PLAYER_LIST, new GlobalPlayerList());
-            if (configuration.getConfig().getBoolean("layout.enabled", false)) {
-                TAB.getInstance().getMisconfigurationHelper().bothGlobalPlayerListAndLayoutEnabled();
-            }
-        }
-
-        // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
-        RedisSupport redis = getRedisSupport();
-        if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
-    }
-
-    public @NotNull BossBarManagerImpl getLegacyBossBar() {
+    default @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new BossBarManagerImpl();
     }
 
@@ -137,25 +35,27 @@ public abstract class Platform {
      * @param   identifier
      *          placeholder's identifier
      */
-    public abstract void registerUnknownPlaceholder(@NotNull String identifier);
+    void registerUnknownPlaceholder(@NotNull String identifier);
 
     /**
      * Creates instance for all online players and adds them to the plugin
      */
-    public abstract void loadPlayers();
+    void loadPlayers();
 
     /**
      * Registers all placeholders, including universal and platform-specific ones
      */
-    public abstract void registerPlaceholders();
+    void registerPlaceholders();
 
-    public abstract @Nullable PipelineInjector getPipelineInjector();
+    @Nullable PipelineInjector getPipelineInjector();
 
-    public abstract @NotNull NameTag getUnlimitedNametags();
+    @NotNull NameTag getUnlimitedNametags();
 
-    public abstract @NotNull TabExpansion getTabExpansion();
+    @NotNull TabExpansion getTabExpansion();
 
-    public abstract @Nullable RedisSupport getRedisSupport();
+    @Nullable RedisSupport getRedisSupport();
 
-    public abstract @Nullable TabFeature getPerWorldPlayerlist();
+    @Nullable TabFeature getPerWorldPlayerlist();
+
+    void sendConsoleMessage(@NotNull IChatBaseComponent message);
 }

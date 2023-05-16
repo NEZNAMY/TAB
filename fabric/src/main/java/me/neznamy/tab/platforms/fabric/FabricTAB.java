@@ -25,7 +25,6 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     @Getter private static FabricTAB instance;
     private final boolean fabricPermissionsApi = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
-
     @Getter private MinecraftServer server;
 
     @Override
@@ -34,7 +33,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
         ProtocolVersion protocolVersion = ProtocolVersion.fromNetworkId(SharedConstants.getCurrentVersion().getProtocolVersion());
         String version = SharedConstants.getCurrentVersion().getName();
         File folder = FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
-        TAB.setInstance(new TAB(new FabricPlatform(), protocolVersion, version, folder, null));
+        TAB.setInstance(new TAB(new FabricPlatform(), protocolVersion, version, folder));
         new FabricEventListener().register();
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             this.server = server;

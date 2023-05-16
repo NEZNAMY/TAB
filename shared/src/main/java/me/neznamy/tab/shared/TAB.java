@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
@@ -95,9 +96,6 @@ public class TAB extends TabAPI {
     /** TAB's data folder */
     @Getter private final File dataFolder;
 
-    /** Plugin's console logger provided by platform */
-    @Getter private final Object logger;
-
     /** File with YAML syntax error, which prevented plugin from loading */
     @Getter @Setter private String brokenFile;
 
@@ -114,12 +112,11 @@ public class TAB extends TabAPI {
      *          Version the server is running on
      */
     public TAB(@NotNull Platform platform, @NotNull ProtocolVersion serverVersion,
-               @NotNull String serverVersionString, @NotNull File dataFolder, @Nullable Object logger) {
+               @NotNull String serverVersionString, @NotNull File dataFolder) {
         this.platform = platform;
         this.serverVersion = serverVersion;
         this.serverVersionString = serverVersionString;
         this.dataFolder = dataFolder;
-        this.logger = logger;
         this.errorManager = new ErrorManager(this);
         try {
             eventBus = new EventBusImpl();
@@ -156,7 +153,7 @@ public class TAB extends TabAPI {
             featureManager.registerFeature(TabConstants.Feature.PLACEHOLDER_MANAGER, new PlaceholderManagerImpl());
             featureManager.registerFeature(TabConstants.Feature.GROUP_MANAGER, new GroupManager(platform.detectPermissionPlugin()));
             platform.registerPlaceholders();
-            platform.loadFeatures();
+            featureManager.loadFeaturesFromConfig();
             platform.loadPlayers();
             command = new TabCommand();
             featureManager.load();
@@ -285,7 +282,7 @@ public class TAB extends TabAPI {
     }
 
     public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
-        platform.sendConsoleMessage(message, translateColors);
+        platform.sendConsoleMessage(translateColors ? IChatBaseComponent.fromColoredText(message) : new IChatBaseComponent(message));
     }
 
     @Override

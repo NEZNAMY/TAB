@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -12,8 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
-public final class SpongePlatform extends BackendPlatform {
+@RequiredArgsConstructor
+public final class SpongePlatform implements BackendPlatform {
 
+    private final Sponge7TAB plugin;
     @Getter private final PipelineInjector pipelineInjector = null;
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature perWorldPlayerlist = null;
@@ -38,5 +42,10 @@ public final class SpongePlatform extends BackendPlatform {
     @Override
     public @NotNull NameTag getUnlimitedNametags() {
         return new NameTag();
+    }
+
+    @Override
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        plugin.getLogger().info(message.toLegacyText());
     }
 }

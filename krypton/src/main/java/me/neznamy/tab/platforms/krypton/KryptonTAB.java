@@ -46,7 +46,7 @@ public class KryptonTAB {
         eventNode.registerListeners(new KryptonEventListener());
         server.getCommandManager().register(new KryptonTabCommand(), CommandMeta.builder(TabConstants.COMMAND_BACKEND).build());
         TAB.setInstance(new TAB(new KryptonPlatform(this), ProtocolVersion.fromNetworkId(server.getPlatform().protocolVersion()),
-                server.getPlatform().version(), folder.toFile(), null));
+                server.getPlatform().version(), folder.toFile()));
         TAB.getInstance().load();
     }
 

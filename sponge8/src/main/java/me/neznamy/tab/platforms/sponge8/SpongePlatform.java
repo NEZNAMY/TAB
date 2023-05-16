@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -10,13 +10,12 @@ import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
-public final class SpongePlatform extends BackendPlatform {
+public final class SpongePlatform implements BackendPlatform {
 
     @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
     @Getter private final TabFeature perWorldPlayerlist = null;
@@ -49,10 +48,7 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
-        Sponge.systemSubject().sendMessage(Component.text()
-                .append(Component.text("[TAB] ")).append(LegacyComponentSerializer.legacySection().deserialize(
-                        translateColors ? EnumChatFormat.color(message) : message)).build()
-        );
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent()));
     }
 }

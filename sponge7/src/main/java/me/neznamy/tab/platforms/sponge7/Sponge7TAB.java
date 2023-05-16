@@ -36,7 +36,7 @@ public class Sponge7TAB {
 
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private File configDir;
-    @Inject private Logger logger;
+    @Inject @Getter private Logger logger;
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
@@ -47,7 +47,7 @@ public class Sponge7TAB {
                 .build(), TabConstants.COMMAND_BACKEND);
         game.getEventManager().registerListeners(this, new SpongeEventListener());
         String version = game.getPlatform().getMinecraftVersion().getName();
-        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir, logger));
+        TAB.setInstance(new TAB(new SpongePlatform(this), ProtocolVersion.fromFriendlyName(version), version, configDir));
         TAB.getInstance().load();
     }
 

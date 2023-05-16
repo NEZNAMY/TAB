@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.krypton;
 
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -8,13 +9,12 @@ import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.Server;
 import org.kryptonmc.api.entity.player.Player;
 
-public class KryptonPlatform extends BackendPlatform {
+public class KryptonPlatform implements BackendPlatform {
     
     @NotNull private final KryptonTAB plugin;
     @NotNull private final Server server;
@@ -25,10 +25,8 @@ public class KryptonPlatform extends BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
-        Component object = translateColors ? LegacyComponentSerializer.legacyAmpersand().deserialize(message) : Component.text(message);
-        Component actualMessage = Component.text().append(Component.text("[TAB] ")).append(object).build();
-        server.getConsole().sendMessage(actualMessage);
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        server.getConsole().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent()));
     }
 
     @Override

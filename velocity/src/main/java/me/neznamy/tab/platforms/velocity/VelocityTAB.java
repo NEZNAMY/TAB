@@ -43,7 +43,7 @@ public class VelocityTAB {
     @Inject private Metrics.Factory metricsFactory;
 
     /** Console logger with TAB's prefix */
-    @Inject private Logger logger;
+    @Inject @Getter private Logger logger;
 
     /** Folder for configuration files */
     @Inject @DataDirectory Path dataFolder;
@@ -63,7 +63,7 @@ public class VelocityTAB {
         server.getCommandManager().register(server.getCommandManager().metaBuilder(TabConstants.COMMAND_PROXY).build(), new VelocityTabCommand());
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
         server.getEventManager().register(this, new VelocityEventListener());
-        TAB.setInstance(new TAB(new VelocityPlatform(this, server), ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile(), logger));
+        TAB.setInstance(new TAB(new VelocityPlatform(this, server), ProtocolVersion.PROXY, server.getVersion().getVersion(), dataFolder.toFile()));
         TAB.getInstance().load();
         metricsFactory.make(this, 10533).addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED,
                 () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));

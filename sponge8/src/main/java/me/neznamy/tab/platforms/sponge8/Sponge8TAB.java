@@ -5,7 +5,6 @@ import lombok.Getter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import org.apache.logging.log4j.Logger;
 import org.bstats.charts.SimplePie;
 import org.bstats.sponge.Metrics;
 import org.spongepowered.api.Game;
@@ -24,7 +23,6 @@ public class Sponge8TAB {
 
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
-    @Inject private Logger logger;
     @Inject @Getter private PluginContainer container;
     private final Metrics metrics;
 
@@ -37,7 +35,7 @@ public class Sponge8TAB {
     public void onServerStart(StartingEngineEvent<Server> event) {
         game.eventManager().registerListeners(container, new SpongeEventListener());
         String version = game.platform().minecraftVersion().name();
-        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir.toFile(), logger));
+        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), version, configDir.toFile()));
         TAB.getInstance().load();
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> TAB.getInstance().getServerVersion().getFriendlyName()));
