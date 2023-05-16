@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -9,6 +8,7 @@ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 import net.md_5.bungee.protocol.packet.Team;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -24,27 +24,27 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPacket(new ScoreboardDisplay((byte)slot.ordinal(), objective));
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 0));
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
+    public void unregisterObjective0(@NotNull String objectiveName) {
         player.sendPacket(new ScoreboardObjective(objectiveName, null, null, (byte) 1));
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 2));
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
@@ -55,12 +55,12 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
+    public void unregisterTeam0(@NotNull String name) {
         player.sendPacket(new Team(name));
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
@@ -82,7 +82,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
      *          Version of player to convert text for
      * @return  serialized component for 1.13+ clients, cut string for 1.12-
      */
-    private String jsonOrRaw(@NonNull String text, @NonNull ProtocolVersion clientVersion) {
+    private String jsonOrRaw(@NotNull String text, @NotNull ProtocolVersion clientVersion) {
         if (clientVersion.getMinorVersion() >= 13) {
             return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
         } else {
@@ -91,12 +91,12 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         player.sendPacket(new ScoreboardScore(playerName, (byte) 0, objective, score));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         player.sendPacket(new ScoreboardScore(playerName, (byte) 1, objective, 0));
     }
 }

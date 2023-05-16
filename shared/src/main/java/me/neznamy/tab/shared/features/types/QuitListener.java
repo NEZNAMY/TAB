@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to player quit event
@@ -15,5 +15,5 @@ public interface QuitListener {
      * @param   disconnectedPlayer
      *          Player who disconnected
      */
-    void onQuit(@NonNull TabPlayer disconnectedPlayer);
+    void onQuit(@NotNull TabPlayer disconnectedPlayer);
 }

@@ -1,13 +1,13 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.QuitListener;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlayerList;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -80,7 +80,7 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         updateProperties(connectedPlayer);
         playerViews.put(connectedPlayer, new PlayerView(this, connectedPlayer));
         playerViews.values().forEach(v -> v.playerJoin(connectedPlayer));
@@ -101,13 +101,13 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
     }
 
     @Override
-    public void onQuit(@NonNull TabPlayer p) {
+    public void onQuit(@NotNull TabPlayer p) {
         playerViews.values().forEach(v -> v.processPlayerQuit(p));
         playerViews.remove(p);
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
@@ -125,14 +125,14 @@ public class AlignedPlayerList extends PlayerList implements QuitListener {
     }
 
     @Override
-    public IChatBaseComponent getTabFormat(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
+    public IChatBaseComponent getTabFormat(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         PlayerView view = playerViews.get(viewer);
         if (view == null) return null;
         return view.formatName(p);
     }
 
     @Override
-    public void onVanishStatusChange(@NonNull TabPlayer player) {
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
         playerViews.values().forEach(v -> v.onVanishChange(player));
     }
 }

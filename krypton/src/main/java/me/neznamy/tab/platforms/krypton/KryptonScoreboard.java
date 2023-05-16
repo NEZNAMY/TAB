@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.krypton;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 import org.kryptonmc.api.scoreboard.Objective;
 import org.kryptonmc.api.scoreboard.ObjectiveRenderType;
 import org.kryptonmc.api.scoreboard.Team;
@@ -13,14 +13,14 @@ import java.util.Collection;
 
 public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
 
-    public KryptonScoreboard(@NonNull KryptonTabPlayer player) {
+    public KryptonScoreboard(@NotNull KryptonTabPlayer player) {
         super(player);
         // Create a new, blank scoreboard for each player to avoid conflicts
         player.getPlayer().showScoreboard(org.kryptonmc.api.scoreboard.Scoreboard.create());
     }
 
     @Override
-    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objectiveName) {
+    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objectiveName) {
         Objective objective = getScoreboard().getObjective(objectiveName);
         if (objective != null) getScoreboard().updateSlot(objective, convertDisplaySlot(slot));
     }
@@ -30,7 +30,7 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         Objective ignored = getScoreboard().createObjectiveBuilder()
                 .name(objectiveName)
                 .criterion(Criteria.DUMMY.get())
@@ -40,13 +40,13 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
+    public void unregisterObjective0(@NotNull String objectiveName) {
         Objective objective = getScoreboard().getObjective(objectiveName);
         if (objective != null) getScoreboard().removeObjective(objective);
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         Objective objective = getScoreboard().getObjective(objectiveName);
         if (objective == null) return;
         objective.setDisplayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
@@ -54,7 +54,7 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         Team team = getScoreboard().createTeamBuilder(name)
                 .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent())
                 .prefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent())
@@ -70,13 +70,13 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
+    public void unregisterTeam0(@NotNull String name) {
         Team team = getScoreboard().getTeam(name);
         if (team != null) getScoreboard().removeTeam(team);
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         Team team = getScoreboard().getTeam(name);
         if (team == null) return;
         team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent());
@@ -89,13 +89,13 @@ public class KryptonScoreboard extends Scoreboard<KryptonTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NonNull String objectiveName, @NonNull String playerName, int score) {
+    public void setScore0(@NotNull String objectiveName, @NotNull String playerName, int score) {
         Objective objective = getScoreboard().getObjective(objectiveName);
         if (objective != null) objective.getOrCreateScore(IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent()).setScore(score);
     }
 
     @Override
-    public void removeScore0(@NonNull String objectiveName, @NonNull String playerName) {
+    public void removeScore0(@NotNull String objectiveName, @NotNull String playerName) {
         Objective objective = getScoreboard().getObjective(objectiveName);
         if (objective != null) objective.removeScore(IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent());
     }

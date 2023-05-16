@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -46,7 +45,7 @@ public abstract class SubCommand {
      * @param   subcommand
      *          subcommand to register
      */
-    public void registerSubCommand(@NonNull SubCommand subcommand) {
+    public void registerSubCommand(@NotNull SubCommand subcommand) {
         getSubcommands().put(subcommand.getName(), subcommand);
     }
 
@@ -85,7 +84,7 @@ public abstract class SubCommand {
      * @param   messages
      *          messages to send
      */
-    public void sendMessages(@Nullable TabPlayer sender, @NonNull List<String> messages) {
+    public void sendMessages(@Nullable TabPlayer sender, @NotNull List<String> messages) {
         messages.forEach(m -> sendMessage(sender, m));
     }
 
@@ -97,7 +96,7 @@ public abstract class SubCommand {
      * @param   message
      *          the message to sent
      */
-    public void sendMessage(@Nullable TabPlayer sender, @NonNull String message) {
+    public void sendMessage(@Nullable TabPlayer sender, @NotNull String message) {
         if (message.length() == 0) return;
         if (sender != null) {
             sender.sendMessage(message, true);
@@ -114,7 +113,7 @@ public abstract class SubCommand {
      * @param   message
      *          the message to sent
      */
-    public void sendRawMessage(@Nullable TabPlayer sender, @NonNull String message) {
+    public void sendRawMessage(@Nullable TabPlayer sender, @NotNull String message) {
         if (message.length() == 0) return;
         if (sender != null) {
             sender.sendMessage(message, false);
@@ -130,7 +129,7 @@ public abstract class SubCommand {
      *          beginning of the name
      * @return  List of compatible players
      */
-    public @NotNull List<String> getOnlinePlayers(@NonNull String nameStart) {
+    public @NotNull List<String> getOnlinePlayers(@NotNull String nameStart) {
         List<String> suggestions = new ArrayList<>();
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all.getName().toLowerCase().startsWith(nameStart.toLowerCase())) suggestions.add(all.getName());
@@ -138,7 +137,7 @@ public abstract class SubCommand {
         return suggestions;
     }
 
-    public @NotNull List<String> getStartingArgument(@NonNull Collection<String> values, @NonNull String argument) {
+    public @NotNull List<String> getStartingArgument(@NotNull Collection<String> values, @NotNull String argument) {
         return values.stream().filter(value -> value.toLowerCase().startsWith(argument.toLowerCase())).collect(Collectors.toList());
     }
 
@@ -151,7 +150,7 @@ public abstract class SubCommand {
      *          arguments inserted in chat so far
      * @return  List of possible arguments
      */
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         String argument;
         if (arguments.length == 0) {
             argument = "";
@@ -184,5 +183,5 @@ public abstract class SubCommand {
      * @param   args
      *          arguments of the command
      */
-    public abstract void execute(@Nullable TabPlayer sender, @NonNull String[] args);
+    public abstract void execute(@Nullable TabPlayer sender, @NotNull String[] args);
 }

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -10,6 +9,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +73,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         connectedPlayer.setProperty(this, TabConstants.Property.BELOWNAME_NUMBER, rawNumber);
         connectedPlayer.setProperty(textRefresher, TabConstants.Property.BELOWNAME_TEXT, rawText);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
@@ -91,7 +91,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer player, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer player, @NotNull String from, @NotNull String to) {
         if (disableChecker.isDisabledPlayer(player)) return;
         player.getScoreboard().registerObjective(OBJECTIVE_NAME, player.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         player.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.BELOW_NAME, OBJECTIVE_NAME);
@@ -108,12 +108,12 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         }
     }
 
-    public int getValue(@NonNull TabPlayer p) {
+    public int getValue(@NotNull TabPlayer p) {
         return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.BELOWNAME_NUMBER).updateAndGet(), 0);
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (disableChecker.isDisabledPlayer(refreshed)) return;
         int number = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -130,7 +130,7 @@ public class BelowName extends TabFeature implements JoinListener, Loadable, UnL
         private final BelowName feature;
 
         @Override
-        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+        public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (feature.disableChecker.isDisabledPlayer(refreshed)) return;
             refreshed.getScoreboard().updateObjective(OBJECTIVE_NAME, refreshed.getProperty(TabConstants.Property.BELOWNAME_TEXT).updateAndGet(), false);
         }

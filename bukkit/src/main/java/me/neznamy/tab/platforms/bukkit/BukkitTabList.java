@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerListHeaderFooterStorage;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
 import me.neznamy.tab.shared.platform.TabList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -27,7 +27,7 @@ public class BukkitTabList implements TabList {
     private final BukkitTabPlayer player;
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry(@NotNull UUID entry) {
         if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
             try {
@@ -44,33 +44,33 @@ public class BukkitTabList implements TabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.UPDATE_DISPLAY_NAME,
                 new Entry.Builder(entry).displayName(displayName).build(), player.getVersion())
         );
     }
 
     @Override
-    public void updateLatency(@NonNull UUID entry, int latency) {
+    public void updateLatency(@NotNull UUID entry, int latency) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.UPDATE_LATENCY,
                 new Entry.Builder(entry).latency(latency).build(), player.getVersion())
         );
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID entry, int gameMode) {
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.UPDATE_GAME_MODE,
                 new Entry.Builder(entry).gameMode(gameMode).build(), player.getVersion())
         );
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
+    public void addEntry(@NotNull Entry entry) {
         player.sendPacket(PacketPlayOutPlayerInfoStorage.createPacket(Action.ADD_PLAYER, entry, player.getVersion()));
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         // Method was added to Bukkit API in 1.13.1, however despite that it's just a String one
         // Using it would cause high CPU usage and massive memory allocations on RGB & animations
         // Send packet instead for performance & older server version support

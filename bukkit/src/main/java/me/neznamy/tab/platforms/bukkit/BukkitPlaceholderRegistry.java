@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -43,7 +43,7 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void registerPlaceholders(@NonNull PlaceholderManager manager) {
+    public void registerPlaceholders(@NotNull PlaceholderManager manager) {
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500, p -> ((Player) p.getPlayer()).getDisplayName());
         if (paperTps != null) {
             manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000, () -> formatTPS(Bukkit.getTPS()[0]));

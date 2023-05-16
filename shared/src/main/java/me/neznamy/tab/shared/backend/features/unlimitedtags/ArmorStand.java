@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -9,6 +8,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -61,8 +61,8 @@ public class ArmorStand {
      * @param   staticOffset
      *          {@code true} if offset is static, {@code false} if not
      */
-    public ArmorStand(@NonNull BackendNameTagX feature, @NonNull BackendArmorStandManager asm, @NonNull TabPlayer owner,
-                      @NonNull String propertyName, double yOffset, boolean staticOffset) {
+    public ArmorStand(@NotNull BackendNameTagX feature, @NotNull BackendArmorStandManager asm, @NotNull TabPlayer owner,
+                      @NotNull String propertyName, double yOffset, boolean staticOffset) {
         this.manager = feature;
         this.asm = asm;
         this.owner = owner;
@@ -134,7 +134,7 @@ public class ArmorStand {
      *          string to check
      * @return  {@code true} if it's empty, {@code false} if not
      */
-    protected boolean isNameVisiblyEmpty(@NonNull String displayName) {
+    protected boolean isNameVisiblyEmpty(@NotNull String displayName) {
         if (displayName.length() == 0) return true;
         if (!displayName.startsWith(EnumChatFormat.COLOR_STRING) && !displayName.startsWith("&") && !displayName.startsWith("#")) return false;
         String text = IChatBaseComponent.fromColoredText(displayName).toRawText();
@@ -153,7 +153,7 @@ public class ArmorStand {
      *          Viewer of the armor stand
      * @return  Y to add to player's location
      */
-    public double getYAdd(boolean sleeping, boolean sneaking, @NonNull TabPlayer viewer) {
+    public double getYAdd(boolean sleeping, boolean sneaking, @NotNull TabPlayer viewer) {
         double y = getOffset();
         if (!sleeping) {
             if (sneaking) {
@@ -182,13 +182,13 @@ public class ArmorStand {
         }
     }
 
-    public boolean shouldBeInvisibleFor(@NonNull TabPlayer viewer, @NonNull String displayName) {
+    public boolean shouldBeInvisibleFor(@NotNull TabPlayer viewer, @NotNull String displayName) {
         return isNameVisiblyEmpty(displayName) || !manager.canSee(viewer, owner) ||
                 manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
                 (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3);
     }
 
-    public void sendTeleportPacket(@NonNull BackendTabPlayer viewer) {
+    public void sendTeleportPacket(@NotNull BackendTabPlayer viewer) {
         viewer.teleportEntity(entityId, new Location(manager.getX(owner), getYLocation(viewer), manager.getZ(owner), 0, 0));
     }
 
@@ -201,7 +201,7 @@ public class ArmorStand {
      *          player to apply checks against
      * @return  DataWatcher for viewer
      */
-    public EntityData createDataWatcher(@NonNull String displayName, @NonNull TabPlayer viewer) {
+    public EntityData createDataWatcher(@NotNull String displayName, @NotNull TabPlayer viewer) {
         byte flags = (byte) (manager.isSneaking(owner) ? 34 : 32);
         boolean nameVisible = !shouldBeInvisibleFor(viewer, displayName) && visible;
         return manager.createDataWatcher(viewer, flags, displayName, nameVisible);
@@ -216,7 +216,7 @@ public class ArmorStand {
      *          Player looking at the armor stand
      * @return  Location where armor stand should be for specified viewer
      */
-    public double getYLocation(@NonNull TabPlayer viewer) {
+    public double getYLocation(@NotNull TabPlayer viewer) {
         double y = manager.getY(owner.getPlayer());
         //1.14+ server sided bug
         Object vehicle = manager.getVehicle(owner);

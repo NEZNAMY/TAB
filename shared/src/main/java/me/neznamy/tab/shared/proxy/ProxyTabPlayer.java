@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -13,6 +12,7 @@ import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +58,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * @param   protocolVersion
      *          Player's protocol network id
      */
-    protected ProxyTabPlayer(@NonNull Object player, @NonNull UUID uniqueId, @NonNull String name, @NonNull String server, int protocolVersion) {
+    protected ProxyTabPlayer(@NotNull Object player, @NotNull UUID uniqueId, @NotNull String name, @NotNull String server, int protocolVersion) {
         super(player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
         sendJoinPluginMessage();
     }
@@ -109,7 +109,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * @param   value
      *          Permission value
      */
-    public void setHasPermission(@NonNull String permission, boolean value) {
+    public void setHasPermission(@NotNull String permission, boolean value) {
         permissions.put(permission, value);
     }
 
@@ -136,7 +136,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             sendPluginMessage("Permission", permission);
             return permissions != null && permissions.getOrDefault(permission, false);
@@ -151,7 +151,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      *          Messages to encode
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void sendPluginMessage(@NonNull Object... args) {
+    public void sendPluginMessage(@NotNull Object... args) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         for (Object arg : args) {
             writeObject(out, arg);
@@ -168,7 +168,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * @param   value
      *          Value to write
      */
-    private void writeObject(@NonNull ByteArrayDataOutput out, @NonNull Object value) {
+    private void writeObject(@NotNull ByteArrayDataOutput out, @NotNull Object value) {
         if (value instanceof String) {
             out.writeUTF((String) value);
         } else if (value instanceof Boolean) {

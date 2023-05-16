@@ -1,6 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb.gradient;
 
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +17,7 @@ public class CMIGradient extends CommonGradient {
     }
     
     @Override
-    public String applyPattern(@NonNull String text, boolean ignorePlaceholders) {
+    public String applyPattern(@NotNull String text, boolean ignorePlaceholders) {
         String replaced = text;
         if (replaced.contains("<>}")) {
             Matcher m = shortcutPattern.matcher(replaced);

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.types;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -31,7 +30,7 @@ public class DisableChecker extends TabFeature implements Refreshable {
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (disableCondition == null) return;
         boolean disabledNow = disableCondition.isMet(refreshed);
         if (disabledNow == disabledPlayers.contains(refreshed)) return; // Condition result did not change, only placeholders inside
@@ -51,7 +50,7 @@ public class DisableChecker extends TabFeature implements Refreshable {
      * @return  {@code true} if player is disabled,
      *          {@code false} if not
      */
-    public boolean isDisabledPlayer(@NonNull TabPlayer p) {
+    public boolean isDisabledPlayer(@NotNull TabPlayer p) {
         return disabledPlayers.contains(p);
     }
 
@@ -61,7 +60,7 @@ public class DisableChecker extends TabFeature implements Refreshable {
      * @param   p
      *          Player to add
      */
-    public void addDisabledPlayer(@NonNull TabPlayer p) {
+    public void addDisabledPlayer(@NotNull TabPlayer p) {
         disabledPlayers.add(p);
     }
 

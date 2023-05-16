@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -20,7 +19,7 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
-    public void registerUnknownPlaceholder(@NonNull String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 

@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -32,7 +31,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -42,7 +41,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(message.toAdventureComponent());
     }
 

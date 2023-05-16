@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -47,7 +46,7 @@ public class TabCommand extends SubCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (args.length > 0) {
             String arg0 = args[0];
             SubCommand command = getSubcommands().get(arg0.toLowerCase());
@@ -87,7 +86,7 @@ public class TabCommand extends SubCommand {
     }
 
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (!hasPermission(sender, TabConstants.Permission.COMMAND_AUTOCOMPLETE)) return new ArrayList<>();
         return super.complete(sender, arguments);
     }

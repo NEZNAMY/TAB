@@ -3,11 +3,11 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.player.ChatSession;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -22,7 +22,7 @@ public class VelocityTabList implements TabList {
     private final VelocityTabPlayer player;
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry(@NotNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
@@ -35,28 +35,28 @@ public class VelocityTabList implements TabList {
      * entry and adding it again to avoid this bug.
      */
     @Override
-    public void updateDisplayName(@NonNull UUID id, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (player.getVersion().getMinorVersion() >= 8) {
-            getEntry(id).setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
+            getEntry(entry).setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
         } else {
-            String username = getEntry(id).getProfile().getName();
-            removeEntry(id);
-            addEntry(new Entry.Builder(id).name(username).displayName(displayName).build());
+            String username = getEntry(entry).getProfile().getName();
+            removeEntry(entry);
+            addEntry(new Entry.Builder(entry).name(username).displayName(displayName).build());
         }
     }
 
     @Override
-    public void updateLatency(@NonNull UUID id, int latency) {
-        getEntry(id).setLatency(latency);
+    public void updateLatency(@NotNull UUID entry, int latency) {
+        getEntry(entry).setLatency(latency);
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID id, int gameMode) {
-        getEntry(id).setGameMode(gameMode);
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+        getEntry(entry).setGameMode(gameMode);
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
+    public void addEntry(@NotNull Entry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         player.getPlayer().getTabList().addEntry(TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
@@ -73,7 +73,7 @@ public class VelocityTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 

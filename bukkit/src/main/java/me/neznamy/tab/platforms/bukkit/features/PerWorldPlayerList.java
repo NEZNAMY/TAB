@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.UnLoadable;
@@ -22,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Per-world-PlayerList feature handler
@@ -36,7 +36,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
     /** Plugin reference*/
-    @NonNull private final JavaPlugin plugin;
+    @NotNull private final JavaPlugin plugin;
 
     @Getter private final String featureName = "Per world PlayerList";
 
@@ -78,7 +78,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      * @param   p
      *          Player to update
      */
-    private void checkPlayer(@NonNull Player p) {
+    private void checkPlayer(@NotNull Player p) {
         for (Player all : Bukkit.getOnlinePlayers()) {
             if (all == p) continue;
             if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
@@ -96,7 +96,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      *          Target displayed in the TabList
      * @return  {@code true} if viewer should see target, {@code false} if not.
      */
-    private boolean shouldSee(@NonNull Player viewer, @NonNull Player target) {
+    private boolean shouldSee(@NotNull Player viewer, @NotNull Player target) {
         if (target == viewer) return true;
         if ((allowBypass && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || ignoredWorlds.contains(viewer.getWorld().getName())) return true;
         String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world

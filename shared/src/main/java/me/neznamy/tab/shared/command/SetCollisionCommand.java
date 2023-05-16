@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.team.TeamManager;
 import me.neznamy.tab.shared.TAB;
@@ -23,7 +22,7 @@ public class SetCollisionCommand extends SubCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         TeamManager feature = TAB.getInstance().getTeamManager();
         if (feature == null) {
             sendMessage(sender, getMessages().getTeamFeatureRequired());
@@ -43,7 +42,7 @@ public class SetCollisionCommand extends SubCommand {
     }
     
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         if (arguments.length == 2) return getStartingArgument(Arrays.asList("true", "false"), arguments[1]);
         return new ArrayList<>();

@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared.platform.bossbar;
 
-import lombok.NonNull;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ public interface BossBar {
      * @param   style
      *          BossBar style
      */
-    void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style);
+    void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style);
 
     /**
      * Updates title
@@ -32,7 +32,7 @@ public interface BossBar {
      * @param   title
      *          New title
      */
-    void update(@NonNull UUID id, @NonNull String title);
+    void update(@NotNull UUID id, @NotNull String title);
 
     /**
      * Updates progress
@@ -42,7 +42,7 @@ public interface BossBar {
      * @param   progress
      *          New progress (0-1)
      */
-    void update(@NonNull UUID id, float progress);
+    void update(@NotNull UUID id, float progress);
 
     /**
      * Updates style
@@ -52,7 +52,7 @@ public interface BossBar {
      * @param   style
      *          New style
      */
-    void update(@NonNull UUID id, @NonNull BarStyle style);
+    void update(@NotNull UUID id, @NotNull BarStyle style);
 
     /**
      * Updates color
@@ -62,7 +62,7 @@ public interface BossBar {
      * @param   color
      *          New color
      */
-    void update(@NonNull UUID id, @NonNull BarColor color);
+    void update(@NotNull UUID id, @NotNull BarColor color);
 
     /**
      * Removes boss bar
@@ -70,5 +70,5 @@ public interface BossBar {
      * @param   id
      *          Unique identifier to match the bossbar with other functions
      */
-    void remove(@NonNull UUID id);
+    void remove(@NotNull UUID id);
 }

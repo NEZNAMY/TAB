@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -17,6 +16,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An additional class with additional code for &lt;1.9 servers due to an entity being required
@@ -28,7 +28,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     private static final int WITHER_DISTANCE = 60;
 
     /** Reference to plugin for registering listener */
-    private final @NonNull JavaPlugin plugin;
+    private final @NotNull JavaPlugin plugin;
 
     @Override
     public void load() {
@@ -72,7 +72,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     }
 
     @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+    public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         for (BossBar line : lineValues) {
             line.removePlayer(p);
         }

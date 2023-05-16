@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.krypton;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
@@ -17,23 +16,23 @@ import org.kryptonmc.api.entity.player.Player;
 
 public class KryptonPlatform extends BackendPlatform {
     
-    @NonNull private final KryptonTAB plugin;
-    @NonNull private final Server server;
+    @NotNull private final KryptonTAB plugin;
+    @NotNull private final Server server;
 
-    public KryptonPlatform(@NonNull KryptonTAB plugin) {
+    public KryptonPlatform(@NotNull KryptonTAB plugin) {
         this.plugin = plugin;
         server = plugin.getServer();
     }
 
     @Override
-    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
+    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
         Component object = translateColors ? LegacyComponentSerializer.legacyAmpersand().deserialize(message) : Component.text(message);
         Component actualMessage = Component.text().append(Component.text("[TAB] ")).append(object).build();
         server.getConsole().sendMessage(actualMessage);
     }
 
     @Override
-    public void registerUnknownPlaceholder(@NonNull String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> "");
     }
 

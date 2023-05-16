@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to player join event
@@ -15,5 +15,5 @@ public interface JoinListener {
      * @param   connectedPlayer
      *          Player who connected
      */
-    void onJoin(@NonNull TabPlayer connectedPlayer);
+    void onJoin(@NotNull TabPlayer connectedPlayer);
 }

@@ -92,7 +92,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         if (!hasBossBarVisible(p)) return;
         for (BossBar line : lineValues) {
             line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
@@ -111,12 +111,12 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         setBossBarVisible(connectedPlayer, hiddenByDefault == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
     }
 
     @Override
-    public boolean onCommand(@NonNull TabPlayer sender, @NonNull String message) {
+    public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
         if (message.equalsIgnoreCase(toggleCommand)) {
             TAB.getInstance().getCommand().execute(sender, new String[] {"bossbar"});
             return true;

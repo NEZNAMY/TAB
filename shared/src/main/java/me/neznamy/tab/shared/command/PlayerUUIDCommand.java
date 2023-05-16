@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.command;
 
 import java.util.List;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -22,7 +21,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         //<uuid> <property> [value...]
         if (args.length <= 1) {
             help(sender);
@@ -42,7 +41,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
         trySaveEntity(sender, args);
     }
 
-    private void remove(@Nullable TabPlayer sender, @NonNull TabPlayer changed) {
+    private void remove(@Nullable TabPlayer sender, @NotNull TabPlayer changed) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getUsers().remove(changed.getUniqueId().toString());
             changed.forceRefresh();
@@ -53,7 +52,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(@Nullable TabPlayer sender, @NonNull String playerName, @NonNull String type, @NonNull String value, String server, String world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NotNull String playerName, @NotNull String type, @NotNull String value, String server, String world) {
         TabPlayer player = TAB.getInstance().getPlayer(playerName);
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, playerName + "(" + player.getUniqueId() + ")"));
@@ -67,7 +66,7 @@ public class PlayerUUIDCommand extends PropertyCommand {
     }
     
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         return super.complete(sender, arguments);
     }

@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to command preprocess event
@@ -18,5 +18,5 @@ public interface CommandListener {
      *          Command line including /
      * @return  Whether the command should be cancelled or not
      */
-    boolean onCommand(@NonNull TabPlayer sender, @NonNull String message);
+    boolean onCommand(@NotNull TabPlayer sender, @NotNull String message);
 }

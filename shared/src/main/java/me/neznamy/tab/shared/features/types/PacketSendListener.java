@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to packets sent to players
@@ -18,5 +18,5 @@ public interface PacketSendListener {
      * @throws  ReflectiveOperationException
      *          If thrown by reflective operation
      */
-    void onPacketSend(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException;
+    void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException;
 }

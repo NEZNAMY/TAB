@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Line using all 3 values - prefix, name and suffix. Line may flicker when placeholder changes value.
@@ -37,7 +38,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {

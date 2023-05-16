@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -13,13 +12,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class ParentGroup {
 
-    @NonNull private final Layout layout;
+    @NotNull private final Layout layout;
     @Nullable private final Condition condition;
     @Getter private final int[] slots;
     @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
     @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
-    public ParentGroup(@NonNull Layout layout, @Nullable Condition condition, int[] slots) {
+    public ParentGroup(@NotNull Layout layout, @Nullable Condition condition, int[] slots) {
         this.layout = layout;
         this.condition = condition;
         this.slots = slots;
@@ -28,7 +27,7 @@ public class ParentGroup {
         }
     }
 
-    public void tick(@NonNull List<TabPlayer> remainingPlayers) {
+    public void tick(@NotNull List<TabPlayer> remainingPlayers) {
         players.clear();
         List<TabPlayer> meetingCondition = new ArrayList<>();
         for (TabPlayer p : remainingPlayers) {
@@ -51,14 +50,14 @@ public class ParentGroup {
         }
     }
     
-    public @NotNull List<TabList.Entry> getSlots(@NonNull TabPlayer p) {
+    public @NotNull List<TabList.Entry> getSlots(@NotNull TabPlayer p) {
         List<TabList.Entry> data = new ArrayList<>();
         playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
         return data;
     }
 
     @SuppressWarnings("unchecked")
-    public static @NotNull ParentGroup fromMap(@NonNull Layout layout, @NonNull Map<String, Object> map) {
+    public static @NotNull ParentGroup fromMap(@NotNull Layout layout, @NotNull Map<String, Object> map) {
         Condition condition = Condition.getCondition((String) map.get("condition"));
         List<Integer> positions = new ArrayList<>();
         for (String line : (List<String>) map.get("slots")) {

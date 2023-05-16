@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.platform;
 
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.FeatureManager;
 import me.neznamy.tab.shared.TAB;
@@ -30,7 +29,7 @@ import org.slf4j.Logger;
  */
 public abstract class Platform {
 
-    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
+    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
         Object logger = TAB.getInstance().getLogger();
         if (logger instanceof java.util.logging.Logger) {
             ((java.util.logging.Logger) logger).info(translateColors ? EnumChatFormat.color(message) : message);
@@ -138,7 +137,7 @@ public abstract class Platform {
      * @param   identifier
      *          placeholder's identifier
      */
-    public abstract void registerUnknownPlaceholder(@NonNull String identifier);
+    public abstract void registerUnknownPlaceholder(@NotNull String identifier);
 
     /**
      * Creates instance for all online players and adds them to the plugin
@@ -154,7 +153,7 @@ public abstract class Platform {
 
     public abstract @NotNull NameTag getUnlimitedNametags();
 
-    public abstract @NonNull TabExpansion getTabExpansion();
+    public abstract @NotNull TabExpansion getTabExpansion();
 
     public abstract @Nullable RedisSupport getRedisSupport();
 

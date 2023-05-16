@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -9,6 +8,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Feature handler for scoreboard objective with
@@ -47,7 +47,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
      *          Player to get value of
      * @return  Current value of player
      */
-    public int getValue(@NonNull TabPlayer p) {
+    public int getValue(@NotNull TabPlayer p) {
         return TAB.getInstance().getErrorManager().parseInteger(p.getProperty(TabConstants.Property.YELLOW_NUMBER).updateAndGet(), 0);
     }
 
@@ -81,7 +81,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         connectedPlayer.setProperty(this, TabConstants.Property.YELLOW_NUMBER, rawValue);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             disableChecker.addDisabledPlayer(connectedPlayer);
@@ -106,7 +106,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         if (disableChecker.isDisabledPlayer(p) || p.isBedrockPlayer()) return;
         p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
         p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
@@ -124,7 +124,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         int value = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (disableChecker.isDisabledPlayer(all) || all.isBedrockPlayer()) continue;

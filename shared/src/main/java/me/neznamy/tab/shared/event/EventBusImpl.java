@@ -16,7 +16,7 @@ import net.kyori.event.method.MethodHandleEventExecutorFactory;
 import net.kyori.event.method.MethodScanner;
 import net.kyori.event.method.MethodSubscriptionAdapter;
 import net.kyori.event.method.SimpleMethodSubscriptionAdapter;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public final class EventBusImpl implements EventBus {
 
@@ -27,7 +27,7 @@ public final class EventBusImpl implements EventBus {
         this.bus = new SimpleEventBus<TabEvent>(TabEvent.class) {
 
             @Override
-            protected boolean shouldPost(@NonNull TabEvent event, @NonNull EventSubscriber<?> subscriber) {
+            protected boolean shouldPost(@NotNull TabEvent event, @NotNull EventSubscriber<?> subscriber) {
                 return true;
             }
         };
@@ -69,17 +69,17 @@ public final class EventBusImpl implements EventBus {
     private static final class TabMethodScanner implements MethodScanner<Object> {
 
         @Override
-        public boolean shouldRegister(@NonNull Object listener, @NonNull Method method) {
+        public boolean shouldRegister(@NotNull Object listener, @NotNull Method method) {
             return method.isAnnotationPresent(Subscribe.class);
         }
 
         @Override
-        public int postOrder(@NonNull Object listener, @NonNull Method method) {
+        public int postOrder(@NotNull Object listener, @NotNull Method method) {
             return PostOrders.NORMAL;
         }
 
         @Override
-        public boolean consumeCancelledEvents(@NonNull Object listener, @NonNull Method method) {
+        public boolean consumeCancelledEvents(@NotNull Object listener, @NotNull Method method) {
             return true;
         }
     }
@@ -90,7 +90,7 @@ public final class EventBusImpl implements EventBus {
         private final EventHandler<E> handler;
 
         @Override
-        public void invoke(@NonNull E event) {
+        public void invoke(@NotNull E event) {
             handler.handle(event);
         }
     }

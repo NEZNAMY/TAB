@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
@@ -15,23 +14,23 @@ public interface TabList {
 
     String TEXTURES_PROPERTY = "textures";
 
-    default void removeEntries(@NonNull Collection<UUID> entries) {
+    default void removeEntries(@NotNull Collection<UUID> entries) {
         entries.forEach(this::removeEntry);
     }
 
-    default void addEntries(@NonNull Collection<Entry> entries) {
+    default void addEntries(@NotNull Collection<Entry> entries) {
         entries.forEach(this::addEntry);
     }
 
-    void removeEntry(@NonNull UUID entry);
+    void removeEntry(@NotNull UUID entry);
 
-    void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName);
+    void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName);
 
-    void updateLatency(@NonNull UUID entry, int latency);
+    void updateLatency(@NotNull UUID entry, int latency);
 
-    void updateGameMode(@NonNull UUID entry, int gameMode);
+    void updateGameMode(@NotNull UUID entry, int gameMode);
 
-    void addEntry(@NonNull Entry entry);
+    void addEntry(@NotNull Entry entry);
 
     /**
      * Sets header and footer to specified values
@@ -41,7 +40,7 @@ public interface TabList {
      * @param   footer
      *          Footer to use
      */
-    void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer);
+    void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer);
 
     enum Action {
         ADD_PLAYER, REMOVE_PLAYER, UPDATE_DISPLAY_NAME, UPDATE_LATENCY, UPDATE_GAME_MODE
@@ -55,7 +54,7 @@ public interface TabList {
     class Entry {
 
         /** Player UUID */
-        @NonNull private UUID uniqueId;
+        @NotNull private UUID uniqueId;
 
         /** Real name of affected player */
         @Nullable private String name;
@@ -78,7 +77,7 @@ public interface TabList {
         @RequiredArgsConstructor
         public static class Builder {
 
-            @NonNull private UUID uniqueId;
+            @NotNull private UUID uniqueId;
             @Nullable private String name;
             @Nullable private Skin skin;
             private int latency;
@@ -104,7 +103,7 @@ public interface TabList {
     class Skin {
 
         /** Skin value */
-        @NonNull private final String value;
+        @NotNull private final String value;
 
         /** Skin signature */
         @Nullable private final String signature;

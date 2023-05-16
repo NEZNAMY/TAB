@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.fabric;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
@@ -11,6 +10,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.BossEvent;
+import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class FabricBossBar implements BossBar {
@@ -19,7 +19,7 @@ public class FabricBossBar implements BossBar {
     private final Map<UUID, ServerBossEvent> bars = new HashMap<>();
 
     @Override
-    public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossEvent bar = new ServerBossEvent(
                 FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                 BossEvent.BossBarColor.valueOf(color.name()),
@@ -31,27 +31,27 @@ public class FabricBossBar implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull String title) {
+    public void update(@NotNull UUID id, @NotNull String title) {
         bars.get(id).setName(FabricTAB.getInstance().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
     }
 
     @Override
-    public void update(@NonNull UUID id, float progress) {
+    public void update(@NotNull UUID id, float progress) {
         FabricMultiVersion.setProgress.accept(bars.get(id), progress);
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarStyle style) {
+    public void update(@NotNull UUID id, @NotNull BarStyle style) {
         bars.get(id).setOverlay(BossEvent.BossBarOverlay.valueOf(style.name()));
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarColor color) {
+    public void update(@NotNull UUID id, @NotNull BarColor color) {
         bars.get(id).setColor(BossEvent.BossBarColor.valueOf(color.name()));
     }
 
     @Override
-    public void remove(@NonNull UUID id) {
+    public void remove(@NotNull UUID id) {
         bars.remove(id).removePlayer(player.getPlayer());
     }
 }

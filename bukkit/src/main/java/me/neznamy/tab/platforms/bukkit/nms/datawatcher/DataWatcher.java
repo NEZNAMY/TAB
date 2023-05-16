@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -52,7 +52,7 @@ public class DataWatcher implements EntityData {
      * @param   value
      *          value
      */
-    public void setValue(@NonNull DataWatcherObject type, @NonNull Object value) {
+    public void setValue(@NotNull DataWatcherObject type, @NotNull Object value) {
         dataValues.put(type.getPosition(), new DataWatcherItem(type, value));
     }
 
@@ -61,7 +61,7 @@ public class DataWatcher implements EntityData {
      *
      * @return  an instance of NMS.DataWatcher with same data
      */
-    public @NonNull Object build() {
+    public @NotNull Object build() {
         try {
             NMSStorage nms = NMSStorage.getInstance();
             Object nmsWatcher;

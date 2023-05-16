@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -40,47 +40,47 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot.ordinal(), objective));
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
+    public void unregisterObjective0(@NotNull String objectiveName) {
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(1, objectiveName, "", false, player.getVersion()));
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, player.getVersion()));
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
+    public void unregisterTeam0(@NotNull String name) {
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.unregister(name));
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, player.getVersion()));
     }
 
     @Override
-    public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         player.sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, playerName, score));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         player.sendPacket(PacketPlayOutScoreboardScoreStorage.remove(objective, playerName));
     }
 }

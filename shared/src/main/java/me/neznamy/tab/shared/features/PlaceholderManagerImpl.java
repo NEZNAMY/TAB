@@ -245,7 +245,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         for (Placeholder p : usedPlaceholders) {
             long startTime = System.nanoTime();
             if (p instanceof RelationalPlaceholderImpl) {
@@ -265,7 +265,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         // Condition or placeholder only used in tab expansion, do nothing for now
     }
 }

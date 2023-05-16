@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.krypton;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.lucko.spark.api.Spark;
 import me.lucko.spark.api.statistic.StatisticWindow.*;
@@ -10,15 +9,16 @@ import me.lucko.spark.api.statistic.types.GenericStatistic;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import org.jetbrains.annotations.NotNull;
 import org.kryptonmc.api.entity.player.Player;
 
 @RequiredArgsConstructor
 public class KryptonPlaceholderRegistry extends UniversalPlaceholderRegistry {
 
-    private final @NonNull KryptonTAB plugin;
+    private final @NotNull KryptonTAB plugin;
 
     @Override
-    public void registerPlaceholders(@NonNull PlaceholderManager manager) {
+    public void registerPlaceholders(@NotNull PlaceholderManager manager) {
         // Built-in stuff
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.DISPLAY_NAME, 500, p -> ((Player) p.getPlayer()).getDisplayName());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.HEALTH, 100, p -> Math.ceil(((Player) p.getPlayer()).getHealth()));

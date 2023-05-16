@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -31,7 +30,7 @@ public class DebugCommand extends SubCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         TabPlayer analyzed = null;
         if (args.length > 0) {
             analyzed = TAB.getInstance().getPlayer(args[0]);
@@ -133,7 +132,7 @@ public class DebugCommand extends SubCommand {
      *          player to check group of
      * @return  all info about player's group
      */
-    private @NotNull String getGroup(@NonNull TabPlayer analyzed) {
+    private @NotNull String getGroup(@NotNull TabPlayer analyzed) {
         if (TAB.getInstance().getGroupManager().isGroupsByPermissions()) {
             return "&eHighest group permission: &8tab.group.&a" + analyzed.getGroup();
         }
@@ -147,7 +146,7 @@ public class DebugCommand extends SubCommand {
      *          player to get team name of
      * @return  team name of specified player
      */
-    private @NotNull String getTeamName(@NonNull TabPlayer analyzed) {
+    private @NotNull String getTeamName(@NotNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
@@ -165,7 +164,7 @@ public class DebugCommand extends SubCommand {
      *          player to get team name note of
      * @return  team name note of specified player
      */
-    private @NotNull String getTeamNameNote(@NonNull TabPlayer analyzed) {
+    private @NotNull String getTeamNameNote(@NotNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
         if (TAB.getInstance().getTeamManager() != null &&
@@ -202,7 +201,7 @@ public class DebugCommand extends SubCommand {
      * @param   disabled
      *          if feature the property belongs to is disabled or not
      */
-    private void showProperty(@Nullable TabPlayer sender, @NonNull TabPlayer analyzed, @NonNull String property, boolean disabled) {
+    private void showProperty(@Nullable TabPlayer sender, @NotNull TabPlayer analyzed, @NotNull String property, boolean disabled) {
         if (disabled) {
             sendMessage(sender, "&a" + property + ": &cDisabled in player's world/server");
         } else {
@@ -214,7 +213,7 @@ public class DebugCommand extends SubCommand {
     }
 
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         return arguments.length == 1 ? getOnlinePlayers(arguments[0]) : new ArrayList<>();
     }
 }

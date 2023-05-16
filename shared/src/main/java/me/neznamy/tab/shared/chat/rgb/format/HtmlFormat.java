@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.chat.rgb.format;
 
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -14,7 +13,7 @@ public class HtmlFormat implements RGBFormatter {
     private final Pattern pattern = Pattern.compile("#<[0-9a-fA-F]{6}>");
 
     @Override
-    public @NotNull String reformat(@NonNull String text) {
+    public @NotNull String reformat(@NotNull String text) {
         if (!text.contains("#<")) return text;
         Matcher m = pattern.matcher(text);
         String replaced = text;

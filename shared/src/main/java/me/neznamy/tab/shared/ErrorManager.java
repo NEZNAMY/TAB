@@ -1,8 +1,8 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
@@ -34,7 +34,7 @@ public class ErrorManager {
     /** placeholder-errors.log file for errors thrown by placeholders */
     private final File placeholderErrorLog;
 
-    public ErrorManager(@NonNull TAB tab) {
+    public ErrorManager(@NotNull TAB tab) {
         errorLog = new File(tab.getDataFolder(), "errors.log");
         antiOverrideLog = new File(tab.getDataFolder(), "anti-override.log");
         placeholderErrorLog = new File(tab.getDataFolder(), "placeholder-errors.log");
@@ -88,7 +88,7 @@ public class ErrorManager {
      * @param   file
      *          file to print error to
      */
-    public void printError(@Nullable String message, @Nullable Throwable t, boolean intoConsoleToo, @NonNull File file) {
+    public void printError(@Nullable String message, @Nullable Throwable t, boolean intoConsoleToo, @NotNull File file) {
         Throwable error = t;
         while (error != null && error.getCause() != null) {
             error = error.getCause();
@@ -115,7 +115,7 @@ public class ErrorManager {
      * @param   file
      *          file to print error to
      */
-    private synchronized void printError(@Nullable String message, @NonNull List<String> error, boolean intoConsoleToo, @NonNull File file) {
+    private synchronized void printError(@Nullable String message, @NotNull List<String> error, boolean intoConsoleToo, @NotNull File file) {
         try {
             if (!file.exists()) Files.createFile(file.toPath());
             try (BufferedWriter buf = new BufferedWriter(new FileWriter(file, true))) {
@@ -165,7 +165,7 @@ public class ErrorManager {
      * @param   t
      *          thrown stack trace elements
      */
-    public void placeholderError(@Nullable String message, @NonNull List<String> t) {
+    public void placeholderError(@Nullable String message, @NotNull List<String> t) {
         printError(message, t, false, placeholderErrorLog);
     }
 
@@ -191,7 +191,7 @@ public class ErrorManager {
      *          value to return if string is not valid
      * @return  parsed integer or {@code defaultValue} if input is invalid
      */
-    public int parseInteger(@NonNull String string, int defaultValue) {
+    public int parseInteger(@NotNull String string, int defaultValue) {
         try {
             return (int) Math.round(Double.parseDouble(string));
         } catch (NumberFormatException e) {
@@ -209,7 +209,7 @@ public class ErrorManager {
      *          value to return if string is not valid
      * @return  parsed float or {@code defaultValue} if input is invalid
      */
-    public double parseDouble(@NonNull String string, double defaultValue) {
+    public double parseDouble(@NotNull String string, double defaultValue) {
         try {
             return Double.parseDouble(string);
         } catch (NumberFormatException e) {

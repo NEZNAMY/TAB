@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.command;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.config.PropertyConfiguration;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -31,7 +30,7 @@ public class MySQLCommand extends SubCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (args.length == 0) {
             sendMessages(sender, getMessages().getMySQLHelpMenu());
             return;
@@ -103,7 +102,7 @@ public class MySQLCommand extends SubCommand {
         });
     }
 
-    private void upload(@NonNull YamlPropertyConfigurationFile file, @NonNull PropertyConfiguration mysqlTable) {
+    private void upload(@NotNull YamlPropertyConfigurationFile file, @NotNull PropertyConfiguration mysqlTable) {
         for (String name : file.getAllEntries()) {
             for (Map.Entry<String, Object> property : file.getGlobalSettings(name).entrySet()) {
                 mysqlTable.setProperty(name, property.getKey(), null, null, toString(property.getValue()));
@@ -124,7 +123,7 @@ public class MySQLCommand extends SubCommand {
     }
 
     @SuppressWarnings("unchecked")
-    private String toString(@NonNull Object obj) {
+    private String toString(@NotNull Object obj) {
         if (obj instanceof List) {
             return ((List<Object>)obj).stream().map(Object::toString).collect(Collectors.joining("\n"));
         }
@@ -132,7 +131,7 @@ public class MySQLCommand extends SubCommand {
     }
 
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         return getStartingArgument(Arrays.asList("download", "upload"), arguments[0]);
     }
 }

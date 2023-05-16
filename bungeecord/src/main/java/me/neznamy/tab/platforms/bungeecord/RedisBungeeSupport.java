@@ -3,13 +3,13 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Redis implementation for BungeeCord
@@ -18,10 +18,10 @@ import net.md_5.bungee.event.EventHandler;
 public class RedisBungeeSupport extends RedisSupport implements Listener {
 
     /** Plugin reference for registering listener */
-    private final @NonNull Plugin plugin;
+    private final @NotNull Plugin plugin;
 
     @EventHandler
-    public void onMessage(@NonNull PubSubMessageEvent e) {
+    public void onMessage(@NotNull PubSubMessageEvent e) {
         if (!e.getChannel().equals(TabConstants.REDIS_CHANNEL_NAME)) return;
         processMessage(e.getMessage());
     }
@@ -39,7 +39,7 @@ public class RedisBungeeSupport extends RedisSupport implements Listener {
     }
 
     @Override
-    public void sendMessage(@NonNull String message) {
+    public void sendMessage(@NotNull String message) {
         RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
     }
 }

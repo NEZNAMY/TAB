@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.features.globalplayerlist;
 import java.util.*;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabList;
@@ -50,14 +49,14 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         }
     }
 
-    public boolean shouldSee(@NonNull TabPlayer viewer, @NonNull TabPlayer displayed) {
+    public boolean shouldSee(@NotNull TabPlayer viewer, @NotNull TabPlayer displayed) {
         if (displayed == viewer) return true;
         if (displayed.isVanished() && !viewer.hasPermission(TabConstants.Permission.SEE_VANISHED)) return false;
         if (isSpyServer(viewer.getServer())) return true;
         return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
     }
 
-    public @NotNull String getServerGroup(@NonNull String serverName) {
+    public @NotNull String getServerGroup(@NotNull String serverName) {
         for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
             if (group.getValue().stream().anyMatch(serverName::equalsIgnoreCase)) return group.getKey();
         }
@@ -74,7 +73,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (connectedPlayer.getServer().equals(all.getServer())) continue;
             if (shouldSee(all, connectedPlayer)) {
@@ -87,7 +86,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (all == disconnectedPlayer) continue;
             all.getTabList().removeEntry(disconnectedPlayer.getTablistId());
@@ -95,7 +94,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // Event is fired after all entries are removed from switched player's tablist, ready to re-add immediately
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             // Ignore players on the same server, since the server already sends add packet
@@ -116,7 +115,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         });
     }
 
-    public @NotNull TabList.Entry getAddInfoData(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
+    public @NotNull TabList.Entry getAddInfoData(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         IChatBaseComponent format = null;
         if (playerlist != null) {
             format = playerlist.getTabFormat(p, viewer);
@@ -134,7 +133,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onGameModeChange(@NonNull TabPlayer player) {
+    public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (!player.getServer().equals(viewer.getServer())) {
                 viewer.getTabList().updateGameMode(player.getTablistId(), othersAsSpectators ? 3 : player.getGamemode());
@@ -143,7 +142,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
     }
 
     @Override
-    public void onVanishStatusChange(@NonNull TabPlayer p) {
+    public void onVanishStatusChange(@NotNull TabPlayer p) {
         if (p.isVanished()) {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == p) continue;
@@ -161,7 +160,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         }
     }
 
-    public boolean isSpyServer(@NonNull String server) {
+    public boolean isSpyServer(@NotNull String server) {
         return spyServers.stream().anyMatch(server::equalsIgnoreCase);
     }
 }

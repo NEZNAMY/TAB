@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -15,6 +14,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -156,7 +156,7 @@ public abstract class NMSStorage {
      *          client version used to decide RGB conversion
      * @return  converted component or {@code null} if {@code component} is {@code null}
      */
-    public @Nullable Object toNMSComponent(@NonNull IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
+    public @Nullable Object toNMSComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
     }
 
@@ -169,7 +169,7 @@ public abstract class NMSStorage {
      * @throws  ReflectiveOperationException
      *          if thrown by reflective operation
      */
-    public Object newScoreboardObjective(@NonNull String objectiveName) throws ReflectiveOperationException {
+    public Object newScoreboardObjective(@NotNull String objectiveName) throws ReflectiveOperationException {
         if (minorVersion >= 13) {
             return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
         }

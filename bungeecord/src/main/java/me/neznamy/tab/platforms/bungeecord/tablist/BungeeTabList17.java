@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
-import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry(@NotNull UUID entry) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
 
@@ -43,23 +43,23 @@ public class BungeeTabList17 extends BungeeTabList {
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.REMOVE_PLAYER, createItem(null, displayNames.get(entry), 0));
         addEntry(new Entry.Builder(entry).displayName(displayName).name(userNames.get(entry)).build());
     }
 
     @Override
-    public void updateLatency(@NonNull UUID entry, int latency) {
+    public void updateLatency(@NotNull UUID entry, int latency) {
         if (!displayNames.containsKey(entry)) return; // Entry not tracked by TAB
         update(PlayerListItem.Action.UPDATE_LATENCY, createItem(null, displayNames.get(entry), latency));
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID entry, int gameMode) {/*Added in 1.8*/}
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {/*Added in 1.8*/}
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
+    public void addEntry(@NotNull Entry entry) {
         String displayNameString = entry.getDisplayName() == null ? String.valueOf(entry.getName()) : entry.getDisplayName().toLegacyText();
         if (displayNameString.length() > 16) displayNameString = displayNameString.substring(0, 16); // 16 character limit
         update(PlayerListItem.Action.ADD_PLAYER, createItem(entry.getName(), displayNameString, entry.getLatency()));
@@ -69,14 +69,14 @@ public class BungeeTabList17 extends BungeeTabList {
         displayNames.put(entry.getUniqueId(), displayNameString);
     }
 
-    private void update(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {
+    private void update(@NotNull PlayerListItem.Action action, @NotNull PlayerListItem.Item item) {
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(action);
         packet.setItems(new PlayerListItem.Item[]{item});
         ((UserConnection)player.getPlayer()).getTabListHandler().onUpdate(packet);
     }
 
-    private PlayerListItem.Item createItem(@Nullable String username, @NonNull String displayName, int latency) {
+    private PlayerListItem.Item createItem(@Nullable String username, @NotNull String displayName, int latency) {
         PlayerListItem.Item item = new PlayerListItem.Item();
         item.setUsername(username);
         item.setDisplayName(displayName);

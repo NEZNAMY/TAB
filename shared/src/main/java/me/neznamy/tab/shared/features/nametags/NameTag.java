@@ -15,6 +15,7 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -82,7 +83,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
@@ -97,7 +98,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         sorting.constructTeamNames(connectedPlayer);
         updateProperties(connectedPlayer);
         hiddenNameTagFor.put(connectedPlayer, new ArrayList<>());
@@ -116,7 +117,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         if (!disableChecker.isDisabledPlayer(disconnectedPlayer) && !hasTeamHandlingPaused(disconnectedPlayer)) {
             for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                 if (viewer == disconnectedPlayer) continue; //player who just disconnected
@@ -139,7 +140,7 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     }
 
     @Override
-    public void onWorldChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         if (updateProperties(changed) && !disableChecker.isDisabledPlayer(changed)) updateTeamData(changed);
     }
 

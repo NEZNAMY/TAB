@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -31,7 +30,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(final @NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -41,7 +40,7 @@ public final class SpongeTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(Sponge7TAB.getTextCache().get(message, getVersion()));
     }
 

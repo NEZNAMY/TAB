@@ -167,7 +167,7 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
         refreshed.getScoreboard().updateObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(titleProperty).updateAndGet(), false);
     }

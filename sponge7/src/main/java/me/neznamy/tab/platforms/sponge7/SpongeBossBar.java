@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.sponge7;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.boss.*;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class SpongeBossBar implements BossBar {
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
 
     @Override
-    public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossBar bar = ServerBossBar.builder()
                 .name(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()))
                 .color(convertBossBarColor(color))
@@ -32,31 +32,31 @@ public class SpongeBossBar implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull String title) {
+    public void update(@NotNull UUID id, @NotNull String title) {
         bossBars.get(id).setName(Sponge7TAB.getTextCache().get(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
     }
 
     @Override
-    public void update(@NonNull UUID id, float progress) {
+    public void update(@NotNull UUID id, float progress) {
         bossBars.get(id).setPercent(progress);
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarStyle style) {
+    public void update(@NotNull UUID id, @NotNull BarStyle style) {
         bossBars.get(id).setOverlay(convertOverlay(style));
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarColor color) {
+    public void update(@NotNull UUID id, @NotNull BarColor color) {
         bossBars.get(id).setColor(convertBossBarColor(color));
     }
 
     @Override
-    public void remove(@NonNull UUID id) {
+    public void remove(@NotNull UUID id) {
         bossBars.remove(id).removePlayer(player.getPlayer());
     }
 
-    private @NonNull BossBarColor convertBossBarColor(@NonNull BarColor color) {
+    private @NotNull BossBarColor convertBossBarColor(@NotNull BarColor color) {
         switch (color) {
             case PINK: return BossBarColors.PINK;
             case BLUE: return BossBarColors.BLUE;
@@ -68,7 +68,7 @@ public class SpongeBossBar implements BossBar {
         }
     }
 
-    private @NonNull BossBarOverlay convertOverlay(@NonNull BarStyle style) {
+    private @NotNull BossBarOverlay convertOverlay(@NotNull BarStyle style) {
         switch (style) {
             case NOTCHED_6: return BossBarOverlays.NOTCHED_6;
             case NOTCHED_10: return BossBarOverlays.NOTCHED_10;

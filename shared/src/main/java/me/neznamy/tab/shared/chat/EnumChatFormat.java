@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -115,7 +114,7 @@ public enum EnumChatFormat {
      *          string to check last colors of
      * @return  last used color code in given string or WHITE if nothing is found
      */
-    public static @NotNull EnumChatFormat lastColorsOf(@NonNull String string) {
+    public static @NotNull EnumChatFormat lastColorsOf(@NotNull String string) {
         if (string.length() == 0) return EnumChatFormat.WHITE;
         String legacyText = RGBUtils.getInstance().convertRGBtoLegacy(string);
         String last = getLastColors(legacyText);
@@ -154,7 +153,7 @@ public enum EnumChatFormat {
      *          text to replace color symbol in
      * @return  colorized string from provided text
      */
-    public static @NotNull String color(@NonNull String textToTranslate) {
+    public static @NotNull String color(@NotNull String textToTranslate) {
         if (!textToTranslate.contains("&")) return textToTranslate;
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
@@ -173,7 +172,7 @@ public enum EnumChatFormat {
      *          text to revert colors in
      * @return  reverted text
      */
-    public static @NotNull String decolor(@NonNull String text) {
+    public static @NotNull String decolor(@NotNull String text) {
         if (!text.contains(COLOR_STRING)) return text;
         return text.replace(COLOR_CHAR, '&');
     }
@@ -185,7 +184,7 @@ public enum EnumChatFormat {
      *          text to get last colors from
      * @return  last colors used in provided text or empty string if nothing was found
      */
-    public static @NotNull String getLastColors(@NonNull String input) {
+    public static @NotNull String getLastColors(@NotNull String input) {
         StringBuilder result = new StringBuilder();
         int length = input.length();
         for (int index = length - 1; index > -1; index--) {

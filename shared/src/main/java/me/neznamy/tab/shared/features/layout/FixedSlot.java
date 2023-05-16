@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -28,12 +27,12 @@ public class FixedSlot extends TabFeature implements Refreshable {
     private final int ping;
 
     @Override
-    public void refresh(@NonNull TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         if (!layout.containsViewer(p) || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()));
     }
 
-    public @NotNull TabList.Entry createEntry(@NonNull TabPlayer viewer) {
+    public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
         viewer.setProperty(this, propertyName, text);
         return new TabList.Entry(
                 id,
@@ -45,7 +44,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
         );
     }
 
-    public static void registerFromLine(@NonNull LayoutManager manager, @NonNull Layout layout, @NonNull String line) {
+    public static void registerFromLine(@NotNull LayoutManager manager, @NotNull Layout layout, @NotNull String line) {
         String[] array = line.split("\\|");
         if (array.length < 2) {
             TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(layout.getName(), line);

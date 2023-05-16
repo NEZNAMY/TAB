@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.WeakHashMap;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.JoinListener;
@@ -14,6 +13,7 @@ import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
@@ -48,17 +48,17 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
     }
     
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         collision.put(connectedPlayer, collisionRule);
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         if (nameTags.getDisableChecker().isDisabledPlayer(p)) return;
         nameTags.updateTeamData(p);
     }
     
-    public void setCollisionRule(@NonNull TabPlayer player, @Nullable Boolean collision) {
+    public void setCollisionRule(@NotNull TabPlayer player, @Nullable Boolean collision) {
         if (Objects.equals(forcedCollision.get(player), collision)) return;
         if (collision == null) {
             forcedCollision.remove(player);
@@ -68,7 +68,7 @@ public class CollisionManager extends TabFeature implements JoinListener, Loadab
         nameTags.updateTeamData(player);
     }
 
-    public @Nullable Boolean getCollisionRule(@NonNull TabPlayer player) {
+    public @Nullable Boolean getCollisionRule(@NotNull TabPlayer player) {
         return forcedCollision.get(player);
     }
 }

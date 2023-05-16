@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -18,7 +17,7 @@ public abstract class PropertyCommand extends SubCommand {
     }
 
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NonNull String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length != 2) return new ArrayList<>();
         return getStartingArgument(getAllProperties(), arguments[1]);
     }
@@ -31,7 +30,7 @@ public abstract class PropertyCommand extends SubCommand {
         sendMessage(sender, " - &9belowname&3/&9abovename");
     }
 
-    protected void trySaveEntity(@Nullable TabPlayer sender, @NonNull String[] args) {
+    protected void trySaveEntity(@Nullable TabPlayer sender, @NotNull String[] args) {
         String value = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
         String world = null;
         String server = null;
@@ -61,6 +60,6 @@ public abstract class PropertyCommand extends SubCommand {
         help(sender);
     }
 
-    public abstract void saveEntity(@Nullable TabPlayer sender, @NonNull String name, @NonNull String property,
-                                    @NonNull String value, @Nullable String server, @Nullable String world);
+    public abstract void saveEntity(@Nullable TabPlayer sender, @NotNull String name, @NotNull String property,
+                                    @NotNull String value, @Nullable String server, @Nullable String world);
 }

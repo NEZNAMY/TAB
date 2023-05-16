@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -104,7 +103,7 @@ public class BukkitPlatform extends BackendPlatform {
     }
 
     @Override
-    public void registerUnknownPlaceholder(@NonNull String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
@@ -146,7 +145,7 @@ public class BukkitPlatform extends BackendPlatform {
      *          Whether color codes should be translated or not
      */
     @Override
-    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
+    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
         Bukkit.getConsoleSender().sendMessage("[TAB] " + (translateColors ?
                 EnumChatFormat.color(RGBUtils.getInstance().convertToBukkitFormat(message,
                         TAB.getInstance().getServerVersion().getMinorVersion() >= 16))

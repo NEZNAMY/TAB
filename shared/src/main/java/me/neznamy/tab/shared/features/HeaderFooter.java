@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -9,6 +8,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             disableChecker.addDisabledPlayer(connectedPlayer);
         }
@@ -56,7 +56,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         updateProperties(p);
         // Velocity clears header/footer on server switch, which can be a problem without placeholders that change often
         // Resend immediately instead of the next time a placeholder changes value
@@ -64,7 +64,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+    public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         updateProperties(p);
     }
 
@@ -79,7 +79,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         if (force) {
             p.setProperty(this, TabConstants.Property.HEADER, getProperty(p, TabConstants.Property.HEADER));
             p.setProperty(this, TabConstants.Property.FOOTER, getProperty(p, TabConstants.Property.FOOTER));
@@ -132,7 +132,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void setHeader(@NonNull me.neznamy.tab.api.TabPlayer p, @Nullable String header) {
+    public void setHeader(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header) {
         TabPlayer player = (TabPlayer) p;
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
         sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
@@ -140,7 +140,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void setFooter(@NonNull me.neznamy.tab.api.TabPlayer p, @Nullable String footer) {
+    public void setFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String footer) {
         TabPlayer player = (TabPlayer) p;
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);
         sendHeaderFooter(player, player.getProperty(TabConstants.Property.HEADER).updateAndGet(),
@@ -148,7 +148,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     @Override
-    public void setHeaderAndFooter(@NonNull me.neznamy.tab.api.TabPlayer p, @Nullable String header, @Nullable String footer) {
+    public void setHeaderAndFooter(@NotNull me.neznamy.tab.api.TabPlayer p, @Nullable String header, @Nullable String footer) {
         TabPlayer player = (TabPlayer) p;
         player.getProperty(TabConstants.Property.HEADER).setTemporaryValue(header);
         player.getProperty(TabConstants.Property.FOOTER).setTemporaryValue(footer);

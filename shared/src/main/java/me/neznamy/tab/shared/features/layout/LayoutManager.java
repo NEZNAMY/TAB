@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -51,7 +50,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         }
     }
 
-    private @NotNull Direction parseDirection(@NonNull String value) {
+    private @NotNull Direction parseDirection(@NotNull String value) {
         try {
             return Direction.valueOf(value);
         } catch (IllegalArgumentException e) {
@@ -86,7 +85,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer p) {
+    public void onJoin(@NotNull TabPlayer p) {
         teamNames.put(p, sorting.getFullTeamName(p));
         sortedPlayers.put(p, sorting.getFullTeamName(p));
         Layout highest = getHighestLayout(p);
@@ -102,7 +101,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void onQuit(@NonNull TabPlayer p) {
+    public void onQuit(@NotNull TabPlayer p) {
         sortedPlayers.remove(p);
         teamNames.remove(p);
         layouts.values().forEach(Layout::tick);
@@ -117,7 +116,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         Layout highest = getHighestLayout(p);
         Layout current = playerViews.get(p);
         if (current != highest) {
@@ -136,11 +135,11 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     @Override
-    public void onVanishStatusChange(@NonNull TabPlayer p) {
+    public void onVanishStatusChange(@NotNull TabPlayer p) {
         layouts.values().forEach(Layout::tick);
     }
 
-    private @Nullable Layout getHighestLayout(@NonNull TabPlayer p) {
+    private @Nullable Layout getHighestLayout(@NotNull TabPlayer p) {
         for (Layout layout : layouts.values()) {
             if (layout.isConditionMet(p)) return layout;
         }
@@ -151,7 +150,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         return uuids.get(slot);
     }
 
-    public void updateTeamName(@NonNull TabPlayer p, @NonNull String teamName) {
+    public void updateTeamName(@NotNull TabPlayer p, @NotNull String teamName) {
         sortedPlayers.remove(p);
         teamNames.put(p, teamName);
         sortedPlayers.put(p, teamName);

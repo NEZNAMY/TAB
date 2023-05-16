@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,17 +15,17 @@ import me.neznamy.tab.shared.config.file.ConfigurationFile;
 
 public abstract class SkinSource {
 
-    @NonNull private final ConfigurationFile file;
-    @NonNull private final String path;
-    @NonNull private final Map<String, List<String>> cache;
+    @NotNull private final ConfigurationFile file;
+    @NotNull private final String path;
+    @NotNull private final Map<String, List<String>> cache;
 
-    protected SkinSource(@NonNull ConfigurationFile file, @NonNull String path) {
+    protected SkinSource(@NotNull ConfigurationFile file, @NotNull String path) {
         this.file = file;
         this.path = path;
         this.cache = file.getConfigurationSection(path);
     }
 
-    public @NotNull List<String> getSkin(@NonNull String skin) {
+    public @NotNull List<String> getSkin(@NotNull String skin) {
         if (cache.containsKey(skin)) {
             return cache.get(skin);
         }
@@ -39,9 +38,9 @@ public abstract class SkinSource {
         return properties;
     }
 
-    public abstract @NotNull List<String> download(@NonNull String input);
+    public abstract @NotNull List<String> download(@NotNull String input);
 
-    protected @NotNull JSONObject getResponse(@NonNull String url) throws IOException, ParseException {
+    protected @NotNull JSONObject getResponse(@NotNull String url) throws IOException, ParseException {
         try (InputStreamReader reader = new InputStreamReader(new URL(url).openStream())) {
             return (JSONObject) new JSONParser().parse(reader);
         }

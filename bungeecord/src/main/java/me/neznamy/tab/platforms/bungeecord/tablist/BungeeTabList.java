@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
@@ -27,14 +26,14 @@ public abstract class BungeeTabList implements TabList {
     protected final BungeeTabPlayer player;
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().setTabHeader(
                 bungeeCache.get(header, player.getVersion()),
                 bungeeCache.get(footer, player.getVersion())
         );
     }
 
-    public @NotNull Item item(@NonNull UUID id) {
+    public @NotNull Item item(@NotNull UUID id) {
         Item item = new Item();
         item.setUuid(id);
         return item;
@@ -45,7 +44,7 @@ public abstract class BungeeTabList implements TabList {
      *
      * @return  BungeeCord component from this component.
      */
-    private static TextComponent toBungeeComponent(@NonNull IChatBaseComponent component, ProtocolVersion clientVersion) {
+    private static TextComponent toBungeeComponent(@NotNull IChatBaseComponent component, ProtocolVersion clientVersion) {
         TextComponent textComponent = new TextComponent(component.getText());
         if (component.getModifier().getColor() != null) textComponent.setColor(ChatColor.of(
                 component.getModifier().getColor().toString(clientVersion.getMinorVersion() >= 16)));

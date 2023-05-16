@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -12,6 +11,7 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.PlayerTeam;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -24,15 +24,15 @@ import java.util.function.Function;
  */
 public class FabricMultiVersion {
 
-    public static final @NonNull UUID SYSTEM_ID = new UUID(0, 0);
-    public static final @NonNull BiConsumer<FabricTabPlayer, IChatBaseComponent> sendMessage;
-    public static final @NonNull BiConsumer<CommandSourceStack, Component> sendMessage2;
-    public static final @NonNull Runnable registerCommand;
-    public static final @NonNull BiConsumer<ServerBossEvent, Float> setProgress;
-    public static final @NonNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> registerTeam;
-    public static final @NonNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> unregisterTeam;
-    public static final @NonNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> updateTeam;
-    public static final @NonNull BiFunction<Component, Component, Packet<?>> setHeaderAndFooter;
+    public static final @NotNull UUID SYSTEM_ID = new UUID(0, 0);
+    public static final @NotNull BiConsumer<FabricTabPlayer, IChatBaseComponent> sendMessage;
+    public static final @NotNull BiConsumer<CommandSourceStack, Component> sendMessage2;
+    public static final @NotNull Runnable registerCommand;
+    public static final @NotNull BiConsumer<ServerBossEvent, Float> setProgress;
+    public static final @NotNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> registerTeam;
+    public static final @NotNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> unregisterTeam;
+    public static final @NotNull Function<PlayerTeam, ClientboundSetPlayerTeamPacket> updateTeam;
+    public static final @NotNull BiFunction<Component, Component, Packet<?>> setHeaderAndFooter;
 
     static {
         // 1.19+

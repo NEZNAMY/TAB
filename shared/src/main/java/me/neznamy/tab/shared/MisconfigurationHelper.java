@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants.Placeholder;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
@@ -30,7 +29,7 @@ public class MisconfigurationHelper {
      * @param   refreshIntervals
      *          Configured refresh intervals
      */
-    public void fixRefreshIntervals(@NonNull Map<String, Integer> refreshIntervals) {
+    public void fixRefreshIntervals(@NotNull Map<String, Integer> refreshIntervals) {
         LinkedHashMap<String, Integer> valuesToFix = new LinkedHashMap<>();
         for (Map.Entry<String, Integer> entry : refreshIntervals.entrySet()) {
             int interval = entry.getValue();
@@ -59,7 +58,7 @@ public class MisconfigurationHelper {
      *          configured change interval
      * @return  fixed change interval
      */
-    public int fixAnimationInterval(@NonNull String name, int interval) {
+    public int fixAnimationInterval(@NotNull String name, int interval) {
         if (interval == 0) {
             startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of 0 milliseconds! Did you forget to configure it? &bUsing 1000.", name));
             return 1000;
@@ -88,7 +87,7 @@ public class MisconfigurationHelper {
      *          list of configured animation frames
      * @return  the list if it's valid, singleton list with {@code "<Invalid Animation>"} otherwise
      */
-    public List<String> fixAnimationFrames(@NonNull String name, @Nullable List<String> list) {
+    public List<String> fixAnimationFrames(@NotNull String name, @Nullable List<String> list) {
         if (list == null) {
             startupWarn("Animation \"&e" + name + "&c\" does not have any texts defined!");
             return Collections.singletonList("<Animation does not have any texts>");
@@ -104,7 +103,7 @@ public class MisconfigurationHelper {
      * @param   text
      *          Configured belowname text
      */
-    public void checkBelowNameText(@NonNull String text) {
+    public void checkBelowNameText(@NotNull String text) {
         if (!text.contains("%")) return;
         if (text.contains("%animation") || text.contains("%condition")) return;
         startupWarn("Belowname text is set to " + text + ", however, the feature cannot display different text on different players " +
@@ -118,7 +117,7 @@ public class MisconfigurationHelper {
      * @param   definition
      *          Configured skin definition
      */
-    public void invalidLayoutSkinDefinition(@NonNull String definition) {
+    public void invalidLayoutSkinDefinition(@NotNull String definition) {
         startupWarn("Invalid skin definition: \"" + definition + "\". Supported patterns are:",
                 "#1 - \"player:<name>\" for skin of player with specified name",
                 "#2 - \"mineskin:<id>\" for UUID of chosen skin from mineskin.org",
@@ -133,7 +132,7 @@ public class MisconfigurationHelper {
      * @param   line
      *          Line definition from configuration
      */
-    public void invalidFixedSlotDefinition(@NonNull String layout, @NonNull String line) {
+    public void invalidFixedSlotDefinition(@NotNull String layout, @NotNull String line) {
         startupWarn("Layout " + layout + " has invalid fixed slot defined as \"" + line + "\". Supported values are " +
                 "\"SLOT|TEXT\" and \"SLOT|TEXT|SKIN\", where SLOT is a number from 1 to 80, TEXT is displayed text and SKIN is skin used for the slot");
     }
@@ -145,23 +144,23 @@ public class MisconfigurationHelper {
      * @param   direction
      *          Configured direction
      */
-    public void invalidLayoutDirection(@NonNull String direction) {
+    public void invalidLayoutDirection(@NotNull String direction) {
         startupWarn("\"&e" + direction + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutManager.Direction.values()) + ". &bUsing COLUMNS");
     }
 
-    public void invalidSortingTypeElement(@NonNull String element, @NonNull Set<String> validTypes) {
+    public void invalidSortingTypeElement(@NotNull String element, @NotNull Set<String> validTypes) {
         startupWarn("\"&e" + element + "&c\" is not a valid sorting type element. Valid options are: &e" + validTypes + ".");
     }
 
-    public void invalidSortingPlaceholder(@NonNull String placeholder, @NonNull SortingType type) {
+    public void invalidSortingPlaceholder(@NotNull String placeholder, @NotNull SortingType type) {
         startupWarn("\"" + placeholder + "\" is not a valid placeholder for " + type.getClass().getSimpleName() + " sorting type");
     }
 
-    public void conditionHasNoConditions(@NonNull String conditionName) {
+    public void conditionHasNoConditions(@NotNull String conditionName) {
         startupWarn("Condition \"" + conditionName + "\" is missing \"conditions\" section.");
     }
 
-    public void invalidConditionPattern(@NonNull String conditionName, @NonNull String line) {
+    public void invalidConditionPattern(@NotNull String conditionName, @NotNull String line) {
         startupWarn("Line \"" + line + "\" in condition " + conditionName + " is not a valid condition pattern.");
     }
 
@@ -171,7 +170,7 @@ public class MisconfigurationHelper {
                 "If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
     }
 
-    public void invalidDateFormat(@NonNull String format) {
+    public void invalidDateFormat(@NotNull String format) {
         startupWarn("Format \"" + format + "\" is not a valid date/time format. Did you try to use color codes?");
     }
 
@@ -182,7 +181,7 @@ public class MisconfigurationHelper {
                 "Disable global playerlist for the same result, but with better performance.");
     }
 
-    public void checkLayoutMap(String layoutName, Map<String, Object> map) {
+    public void checkLayoutMap(@NotNull String layoutName, @NotNull Map<String, Object> map) {
         List<String> expectedKeys = Arrays.asList("condition", "fixed-slots", "groups");
         for (String mapKey : map.keySet()) {
             if (!expectedKeys.contains(mapKey)) {
@@ -191,7 +190,7 @@ public class MisconfigurationHelper {
         }
     }
 
-    public void checkLayoutGroupMap(String layoutName, String groupName, Map<String, Object> map) {
+    public void checkLayoutGroupMap(@NotNull String layoutName, @NotNull String groupName, @NotNull Map<String, Object> map) {
         List<String> expectedKeys = Arrays.asList("condition", "slots");
         for (String mapKey : map.keySet()) {
             if (!expectedKeys.contains(mapKey)) {
@@ -201,7 +200,7 @@ public class MisconfigurationHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public @NotNull <T> T fromMapOrElse(@NonNull Map<String, Object> map, @NonNull String key, @NonNull T defaultValue, @NonNull String warnMessage) {
+    public @NotNull <T> T fromMapOrElse(@NotNull Map<String, Object> map, @NotNull String key, @NotNull T defaultValue, @NotNull String warnMessage) {
         if (map.containsKey(key)) {
             return (T) map.get(key);
         } else {
@@ -216,7 +215,7 @@ public class MisconfigurationHelper {
      * @param   messages
      *          messages to print into console
      */
-    private void startupWarn(@NonNull String... messages) {
+    private void startupWarn(@NotNull String... messages) {
         warnCount++;
         for (String message : messages) {
             TAB.getInstance().sendConsoleMessage("&c[WARN] " + message, true);
@@ -237,7 +236,7 @@ public class MisconfigurationHelper {
     // Runtime Errors
     // ------------------------
 
-    public void invalidNumberForBossBarProgress(String bossbar, String input, String configuredValue) {
+    public void invalidNumberForBossBarProgress(@NotNull String bossbar, @NotNull String input, @NotNull String configuredValue) {
         if (configuredValue.contains("%")) {
             TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder \"" + configuredValue +
                     "\" used in BossBar progress of \"" + bossbar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")", true);

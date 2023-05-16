@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Listener for features listening to objective packet.
@@ -18,5 +18,5 @@ public interface ObjectiveListener {
      * @param   objective
      *          Objective name
      */
-    void onObjective(@NonNull TabPlayer receiver, int action, @NonNull String objective);
+    void onObjective(@NotNull TabPlayer receiver, int action, @NotNull String objective);
 }

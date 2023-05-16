@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
@@ -23,7 +22,7 @@ public final class SpongePlatform extends BackendPlatform {
     @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
-    public void registerUnknownPlaceholder(@NonNull String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
@@ -50,7 +49,7 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
+    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
         Sponge.systemSubject().sendMessage(Component.text()
                 .append(Component.text("[TAB] ")).append(LegacyComponentSerializer.legacySection().deserialize(
                         translateColors ? EnumChatFormat.color(message) : message)).build()

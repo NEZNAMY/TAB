@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SkinManager {
@@ -22,7 +22,7 @@ public class SkinManager {
     @Getter private TabList.Skin defaultSkin;
     private final Map<String, SkinSource> sources = new HashMap<>();
 
-    public SkinManager(@NonNull String defaultSkin) {
+    public SkinManager(@NotNull String defaultSkin) {
         try {
             File f = new File(TAB.getInstance().getDataFolder(), "skincache.yml");
             if (f.exists() || f.createNewFile()) {
@@ -39,7 +39,7 @@ public class SkinManager {
         }
     }
 
-    public @Nullable TabList.Skin getSkin(@NonNull String skin) {
+    public @Nullable TabList.Skin getSkin(@NotNull String skin) {
         if (invalidSkins.contains(skin)) return defaultSkin;
         for (Entry<String, SkinSource> entry : sources.entrySet()) {
             if (skin.startsWith(entry.getKey() + ":")) {

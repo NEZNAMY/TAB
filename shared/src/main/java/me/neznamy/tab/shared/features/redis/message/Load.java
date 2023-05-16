@@ -3,9 +3,9 @@ package me.neznamy.tab.shared.features.redis.message;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 @NoArgsConstructor
 public class Load extends RedisMessage {
@@ -14,13 +14,13 @@ public class Load extends RedisMessage {
     private TabPlayer[] players;
     private PlayerJoin[] decodedPlayers;
 
-    public Load(@NonNull RedisSupport redisSupport, @NonNull TabPlayer[] players) {
+    public Load(@NotNull RedisSupport redisSupport, @NotNull TabPlayer[] players) {
         this.redisSupport = redisSupport;
         this.players = players;
     }
 
     @Override
-    public void write(@NonNull ByteArrayDataOutput out) {
+    public void write(@NotNull ByteArrayDataOutput out) {
         out.writeInt(players.length);
         for (TabPlayer player : players) {
             new PlayerJoin(redisSupport, player).write(out);
@@ -28,7 +28,7 @@ public class Load extends RedisMessage {
     }
 
     @Override
-    public void read(@NonNull ByteArrayDataInput in) {
+    public void read(@NotNull ByteArrayDataInput in) {
         int count = in.readInt();
         decodedPlayers = new PlayerJoin[count];
         for (int i=0; i<count; i++) {
@@ -39,7 +39,7 @@ public class Load extends RedisMessage {
     }
 
     @Override
-    public void process(@NonNull RedisSupport redisSupport) {
+    public void process(@NotNull RedisSupport redisSupport) {
         for (PlayerJoin join : decodedPlayers) {
             if (!redisSupport.getRedisPlayers().containsKey(join.getDecodedPlayer().getUniqueId())) {
                 join.process(redisSupport);

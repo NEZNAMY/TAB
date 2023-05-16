@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -15,6 +14,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -44,11 +44,11 @@ public class FabricTAB implements DedicatedServerModInitializer {
         FabricMultiVersion.registerCommand.run();
     }
 
-    public Component toComponent(@NonNull IChatBaseComponent component, @NonNull ProtocolVersion clientVersion) {
+    public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
     }
 
-    public boolean hasPermission(@NonNull CommandSourceStack source, @NonNull String permission) {
+    public boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
         if (source.hasPermission(4)) return true;
         return fabricPermissionsApi && Permissions.check(source, permission);
     }

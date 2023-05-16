@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 public final class FabricPlatform extends BackendPlatform {
 
     @Override
-    public void registerUnknownPlaceholder(@NonNull String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
@@ -47,7 +46,7 @@ public final class FabricPlatform extends BackendPlatform {
     }
 
     @Override
-    public @NonNull TabExpansion getTabExpansion() {
+    public @NotNull TabExpansion getTabExpansion() {
         return new EmptyTabExpansion();
     }
 
@@ -57,7 +56,7 @@ public final class FabricPlatform extends BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
+    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
         MinecraftServer.LOGGER.info(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(
                             "[TAB] " + (translateColors ? EnumChatFormat.color(message) : message)).toString()).getString());
     }

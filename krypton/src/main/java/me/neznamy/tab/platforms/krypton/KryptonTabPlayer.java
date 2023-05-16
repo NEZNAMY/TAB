@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.krypton;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
@@ -28,7 +27,7 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -38,7 +37,7 @@ public class KryptonTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(message.toAdventureComponent());
     }
 

@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.api.event.EventHandler;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -17,6 +16,7 @@ import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -32,24 +32,24 @@ import java.util.function.Supplier;
 public abstract class RedisSupport extends TabFeature implements JoinListener, QuitListener,
         DisplayNameListener, Loadable, UnLoadable, ServerSwitchListener {
 
-    @NonNull private final String featureName = "RedisSupport";
+    @NotNull private final String featureName = "RedisSupport";
 
     /** Redis players on other proxies by their UUID */
-    @NonNull protected final Map<UUID, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
+    @NotNull protected final Map<UUID, RedisPlayer> redisPlayers = new ConcurrentHashMap<>();
 
     /** UUID of this proxy to ignore messages coming from the same proxy */
-    @NonNull private final UUID proxy = UUID.randomUUID();
+    @NotNull private final UUID proxy = UUID.randomUUID();
 
     /** Features this one hooks into */
-    @NonNull private final List<RedisFeature> features = new ArrayList<>();
+    @NotNull private final List<RedisFeature> features = new ArrayList<>();
     @Nullable private RedisBelowName redisBelowName;
     @Nullable private RedisYellowNumber redisYellowNumber;
     @Nullable private RedisPlayerList redisPlayerList;
     @Nullable private RedisTeams redisTeams;
 
     private EventHandler<TabPlaceholderRegisterEvent> eventHandler;
-    @NonNull private final Map<String, Supplier<RedisMessage>> messages = new HashMap<>();
-    @NonNull private final Map<Class<? extends RedisMessage>, String> classStringMap = new HashMap<>();
+    @NotNull private final Map<String, Supplier<RedisMessage>> messages = new HashMap<>();
+    @NotNull private final Map<Class<? extends RedisMessage>, String> classStringMap = new HashMap<>();
 
     public RedisSupport() {
         registerMessage("load", Load.class, Load::new);
@@ -59,23 +59,23 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         registerMessage("server", ServerSwitch.class, ServerSwitch::new);
     }
 
-    public void updateTabFormat(@NonNull TabPlayer p, @NonNull String format) {
+    public void updateTabFormat(@NotNull TabPlayer p, @NotNull String format) {
         if (redisPlayerList == null) return; // Plugin still loading
         sendMessage(redisPlayerList.new Update(p.getTablistId(), format));
     }
 
-    public void updateTeam(@NonNull TabPlayer p, @NonNull String teamName, @NonNull String tagPrefix,
-                              @NonNull String tagSuffix, @NonNull Scoreboard.NameVisibility nameVisibility) {
+    public void updateTeam(@NotNull TabPlayer p, @NotNull String teamName, @NotNull String tagPrefix,
+                              @NotNull String tagSuffix, @NotNull Scoreboard.NameVisibility nameVisibility) {
         if (redisTeams == null) return; // Plugin still loading
         sendMessage(redisTeams.new Update(p.getTablistId(), teamName, tagPrefix, tagSuffix, nameVisibility));
     }
 
-    public void updateBelowName(@NonNull TabPlayer p, int value) {
+    public void updateBelowName(@NotNull TabPlayer p, int value) {
         if (redisBelowName == null) return; // Plugin still loading
         sendMessage(redisBelowName.new Update(p.getTablistId(), value));
     }
 
-    public void updateYellowNumber(@NonNull TabPlayer p, int value) {
+    public void updateYellowNumber(@NotNull TabPlayer p, int value) {
         if (redisYellowNumber == null) return; // Plugin still loading
         sendMessage(redisYellowNumber.new Update(p.getTablistId(), value));
     }
@@ -86,7 +86,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   msg
      *          json message to process
      */
-    public void processMessage(@NonNull String msg) {
+    public void processMessage(@NotNull String msg) {
         TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.REDIS_BUNGEE_MESSAGE, () -> {
             ByteArrayDataInput in = ByteStreams.newDataInput(Base64.getDecoder().decode(msg));
             String proxy = in.readUTF();
@@ -104,7 +104,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
      * @param   message
      *          message to send
      */
-    public abstract void sendMessage(@NonNull String message);
+    public abstract void sendMessage(@NotNull String message);
 
     /**
      * Registers event and redis message listeners
@@ -169,24 +169,24 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer p) {
+    public void onJoin(@NotNull TabPlayer p) {
         sendMessage(new PlayerJoin(this, p));
         features.forEach(f -> f.onJoin(p));
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         sendMessage(new ServerSwitch(p.getTablistId(), to));
         features.forEach(f -> f.onServerSwitch(p));
     }
 
     @Override
-    public void onQuit(@NonNull TabPlayer p) {
+    public void onQuit(@NotNull TabPlayer p) {
         sendMessage(new PlayerQuit(p.getTablistId()));
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(@NonNull TabPlayer packetReceiver, @NonNull UUID id) {
+    public IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
         if (redisPlayerList == null) return null;
         if (!redisPlayerList.getPlayerList().isAntiOverrideTabList()) return null;
         RedisPlayer packetPlayer = redisPlayers.get(id);
@@ -196,7 +196,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         return null;
     }
 
-    public void sendMessage(@NonNull RedisMessage message) {
+    public void sendMessage(@NotNull RedisMessage message) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(proxy.toString());
         out.writeUTF(classStringMap.get(message.getClass()));
@@ -204,7 +204,7 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         sendMessage(Base64.getEncoder().encodeToString(out.toByteArray()));
     }
 
-    public void registerMessage(@NonNull String name, @NonNull Class<? extends RedisMessage> clazz, @NonNull Supplier<RedisMessage> supplier) {
+    public void registerMessage(@NotNull String name, @NotNull Class<? extends RedisMessage> clazz, @NotNull Supplier<RedisMessage> supplier) {
         messages.put(name, supplier);
         classStringMap.put(clazz, name);
     }

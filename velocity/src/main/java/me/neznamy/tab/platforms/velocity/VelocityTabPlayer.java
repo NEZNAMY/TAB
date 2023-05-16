@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -44,7 +43,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(message.toAdventureComponent());
     }
 

@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.platform.TabList;
@@ -11,6 +10,7 @@ import me.neznamy.tab.shared.features.types.ServerSwitchListener;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     @Getter private final List<ParentGroup> groups = new ArrayList<>();
     @Getter private final Set<TabPlayer> viewers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    public void sendTo(@NonNull TabPlayer p) {
+    public void sendTo(@NotNull TabPlayer p) {
         if (viewers.contains(p)) return;
         viewers.add(p);
         List<TabList.Entry> list = new ArrayList<>();
@@ -45,18 +45,18 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
         p.getTabList().addEntries(list);
     }
 
-    public String getEntryName(@NonNull TabPlayer viewer, long slot) {
+    public String getEntryName(@NotNull TabPlayer viewer, long slot) {
         return viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ? "|slot_" + (10+slot) : "";
     }
 
-    public void removeFrom(@NonNull TabPlayer p) {
+    public void removeFrom(@NotNull TabPlayer p) {
         if (!viewers.contains(p)) return;
         viewers.remove(p);
         if (p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         p.getTabList().removeEntries(manager.getUuids().values());
     }
 
-    public boolean isConditionMet(@NonNull TabPlayer p) {
+    public boolean isConditionMet(@NotNull TabPlayer p) {
         return displayCondition == null || displayCondition.isMet(p);
     }
 
@@ -72,15 +72,15 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer p, boolean force) {
+    public void refresh(@NotNull TabPlayer p, boolean force) {
         tick();
     }
 
-    public boolean containsViewer(@NonNull TabPlayer viewer) {
+    public boolean containsViewer(@NotNull TabPlayer viewer) {
         return viewers.contains(viewer);
     }
 
-    public PlayerSlot getSlot(@NonNull TabPlayer p) {
+    public PlayerSlot getSlot(@NotNull TabPlayer p) {
         for (ParentGroup group : groups) {
             if (group.getPlayers().containsKey(p)) {
                 return group.getPlayers().get(p);
@@ -90,7 +90,7 @@ public class Layout extends TabFeature implements Refreshable, ServerSwitchListe
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         if (viewers.remove(changed)) sendTo(changed);
     }
 }

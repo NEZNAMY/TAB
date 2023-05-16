@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.krypton;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -19,30 +18,30 @@ public class KryptonTabList implements TabList {
     private final KryptonTabPlayer player;
 
     @Override
-    public void removeEntry(@NonNull UUID entryId) {
+    public void removeEntry(@NotNull UUID entryId) {
         player.getPlayer().getTabList().removeEntry(entryId);
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entryId, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entryId, @Nullable IChatBaseComponent displayName) {
         TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
         if (entry != null) entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
     }
 
     @Override
-    public void updateLatency(@NonNull UUID entryId, int latency) {
+    public void updateLatency(@NotNull UUID entryId, int latency) {
         TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
         if (entry != null) entry.setLatency(latency);
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID entryId, int gameMode) {
+    public void updateGameMode(@NotNull UUID entryId, int gameMode) {
         TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
         if (entry != null) entry.setGameMode(GameMode.values()[gameMode]);
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
+    public void addEntry(@NotNull Entry entry) {
         GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
         player.getPlayer().getTabList().createEntryBuilder(entry.getUniqueId(), profile)
                 .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
@@ -53,11 +52,11 @@ public class KryptonTabList implements TabList {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().getTabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 
-    private @NotNull GameProfile createGameProfile(@NonNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
+    private @NotNull GameProfile createGameProfile(@NotNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
         String newName = name == null ? "" : name;
         if (skin == null) return GameProfile.of(newName, uuid);
         ProfileProperty property = ProfileProperty.of(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature());

@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.platform;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -23,7 +23,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
     /** Scoreboard objectives player has registered */
     private final Set<String> registeredObjectives = new HashSet<>();
 
-    public void setScore(@NonNull String objective, @NonNull String playerName, int score) {
+    public void setScore(@NotNull String objective, @NotNull String playerName, int score) {
         if (!registeredObjectives.contains(objective)) {
             error("Tried to update score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
@@ -31,7 +31,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         setScore0(objective, playerName, score);
     }
 
-    public void removeScore(@NonNull String objective, @NonNull String playerName) {
+    public void removeScore(@NotNull String objective, @NotNull String playerName) {
         if (!registeredObjectives.contains(objective)) {
             error("Tried to remove score (%s) without the existence of its requested objective '%s' to player ", playerName, objective);
             return;
@@ -39,7 +39,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         removeScore0(objective, playerName);
     }
 
-    public void registerObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         if (!registeredObjectives.add(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
@@ -47,7 +47,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         registerObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
-    public void unregisterObjective(@NonNull String objectiveName) {
+    public void unregisterObjective(@NotNull String objectiveName) {
         if (!registeredObjectives.remove(objectiveName)) {
             error("Tried to unregister non-existing objective %s for player ", objectiveName);
             return;
@@ -55,7 +55,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
-    public void updateObjective(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         if (!registeredObjectives.contains(objectiveName)) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
@@ -63,8 +63,8 @@ public abstract class Scoreboard<T extends TabPlayer> {
         updateObjective0(objectiveName, cutTo(title, 32), hearts);
     }
 
-    public void registerTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
-                             @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+                             @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         if (!registeredTeams.add(name)) {
             error("Tried to register duplicated team %s to player ", name);
             return;
@@ -72,7 +72,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         registerTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, players, options);
     }
 
-    public void unregisterTeam(@NonNull String name) {
+    public void unregisterTeam(@NotNull String name) {
         if (!registeredTeams.remove(name)) {
             error("Tried to unregister non-existing team %s for player ", name);
             return;
@@ -80,8 +80,8 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterTeam0(name);
     }
 
-    public void updateTeam(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
-                           @NonNull CollisionRule collision, int options) {
+    public void updateTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+                           @NotNull CollisionRule collision, int options) {
         if (!registeredTeams.contains(name)) {
             error("Tried to modify non-existing team %s for player ", name);
             return;
@@ -89,7 +89,7 @@ public abstract class Scoreboard<T extends TabPlayer> {
         updateTeam0(name, cutTo(prefix, 16), cutTo(suffix, 16), visibility, collision, options);
     }
 
-    private void error(@NonNull String format, @NonNull Object... args) {
+    private void error(@NotNull String format, @NotNull Object... args) {
         TAB.getInstance().getErrorManager().printError(String.format(format, args) + player.getName());
     }
 
@@ -129,25 +129,25 @@ public abstract class Scoreboard<T extends TabPlayer> {
         }
     }
 
-    public abstract void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective);
+    public abstract void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective);
 
-    public abstract void setScore0(@NonNull String objective, @NonNull String player, int score);
+    public abstract void setScore0(@NotNull String objective, @NotNull String player, int score);
 
-    public abstract void removeScore0(@NonNull String objective, @NonNull String player);
+    public abstract void removeScore0(@NotNull String objective, @NotNull String player);
 
-    public abstract void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
+    public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts);
 
-    public abstract void unregisterObjective0(@NonNull String objectiveName);
+    public abstract void unregisterObjective0(@NotNull String objectiveName);
 
-    public abstract void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts);
+    public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts);
 
-    public abstract void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
-                                                 @NonNull CollisionRule collision, @NonNull Collection<String> players, int options);
+    public abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+                                                 @NotNull CollisionRule collision, @NotNull Collection<String> players, int options);
 
-    public abstract void unregisterTeam0(@NonNull String name);
+    public abstract void unregisterTeam0(@NotNull String name);
 
-    public abstract void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility,
-                                     @NonNull CollisionRule collision, int options);
+    public abstract void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
+                                     @NotNull CollisionRule collision, int options);
 
     public enum DisplaySlot { PLAYER_LIST, SIDEBAR, BELOW_NAME }
 

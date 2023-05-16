@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -31,10 +30,10 @@ public class Property {
     @Nullable private final Refreshable listener;
     
     /** Player this text belongs to */
-    @NonNull private final TabPlayer owner;
+    @NotNull private final TabPlayer owner;
     
     /** Raw value as defined in configuration */
-    @NonNull @Getter private String originalRawValue;
+    @NotNull @Getter private String originalRawValue;
 
     /** Raw value assigned via API, null if not set */
     @Nullable @Getter private String temporaryValue;
@@ -76,8 +75,8 @@ public class Property {
      * @param   source
      *          Source of the text used in debug command
      */
-    public Property(@Nullable String name, @Nullable Refreshable listener, @NonNull TabPlayer owner,
-                    @NonNull String rawValue, @Nullable String source) {
+    public Property(@Nullable String name, @Nullable Refreshable listener, @NotNull TabPlayer owner,
+                    @NotNull String rawValue, @Nullable String source) {
         this.name = name;
         this.listener = listener;
         this.owner = owner;
@@ -93,7 +92,7 @@ public class Property {
      * @param   value
      *          raw value to analyze
      */
-    private void analyze(@NonNull String value) {
+    private void analyze(@NotNull String value) {
         List<String> placeholders0 = new ArrayList<>();
         List<String> relPlaceholders0 = new ArrayList<>();
         for (String identifier : TAB.getInstance().getPlaceholderManager().detectPlaceholders(value)) {
@@ -139,7 +138,7 @@ public class Property {
      * @param   newSource
      *          new source of the text
      */
-    public void changeRawValue(@NonNull String newValue, @Nullable String newSource) {
+    public void changeRawValue(@NotNull String newValue, @Nullable String newSource) {
         if (originalRawValue.equals(newValue)) return;
         originalRawValue = newValue;
         source = newSource;

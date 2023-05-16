@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.config;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -98,7 +97,7 @@ public class Configs {
      * @return  value with specified path or default value if not present
      */
     @SuppressWarnings("unchecked")
-    public @NotNull <T> T getSecretOption(@NonNull String path, @NonNull T defaultValue) {
+    public @NotNull <T> T getSecretOption(@NotNull String path, @NotNull T defaultValue) {
         Object value = config.getObject(path);
         return value == null ? defaultValue : (T) value;
     }
@@ -117,7 +116,7 @@ public class Configs {
         return playerdata;
     }
 
-    public String getGroup(@NonNull List<Object> serverGroups, @Nullable String element) {
+    public String getGroup(@NotNull List<Object> serverGroups, @Nullable String element) {
         if (serverGroups.isEmpty() || element == null) return element;
         for (Object worldGroup : serverGroups) {
             for (String definedWorld : worldGroup.toString().split(";")) {

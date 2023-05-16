@@ -4,23 +4,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
+import org.jetbrains.annotations.NotNull;
 
 @AllArgsConstructor
 public class CommonGradient implements GradientPattern {
 
-    @NonNull private final Pattern pattern;
-    @NonNull private final Pattern legacyPattern;
-    @NonNull private final String containCheck;
+    @NotNull private final Pattern pattern;
+    @NotNull private final Pattern legacyPattern;
+    @NotNull private final String containCheck;
     private final int legacyCharPosition;
     private final int startColorStart;
     private final int messageStart;
     private final int endColorStartSub;
 
     @Override
-    public String applyPattern(@NonNull String text, boolean ignorePlaceholders) {
+    public String applyPattern(@NotNull String text, boolean ignorePlaceholders) {
         if (!text.contains(containCheck)) return text;
         String replaced = text;
         Matcher m = legacyPattern.matcher(replaced);

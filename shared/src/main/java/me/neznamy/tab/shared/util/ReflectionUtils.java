@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.AccessibleObject;
@@ -27,7 +26,7 @@ public class ReflectionUtils {
      *          Full class path and name
      * @return  {@code true} if exists, {@code false} if not
      */
-    public static boolean classExists(@NonNull String path) {
+    public static boolean classExists(@NotNull String path) {
         try {
             Class.forName(path);
             return true;
@@ -45,7 +44,7 @@ public class ReflectionUtils {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
-    public static List<Field> getFields(@NonNull Class<?> clazz, @NonNull Class<?> type) {
+    public static List<Field> getFields(@NotNull Class<?> clazz, @NotNull Class<?> type) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == type) {
@@ -68,7 +67,7 @@ public class ReflectionUtils {
      * @throws  NoSuchMethodException
      *          if no such method exists
      */
-    public static Method getMethod(@NonNull Class<?> clazz, @NonNull String[] names, @NonNull Class<?>... parameterTypes) throws NoSuchMethodException {
+    public static Method getMethod(@NotNull Class<?> clazz, @NotNull String[] names, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
         for (String name : names) {
             try {
                 return clazz.getMethod(name, parameterTypes);
@@ -104,7 +103,7 @@ public class ReflectionUtils {
      *          Parameter types of methods
      * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
      */
-    public static List<Method> getMethods(@NonNull Class<?> clazz, @NonNull Class<?> returnType, @NonNull Class<?>... parameterTypes) {
+    public static List<Method> getMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
             if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
@@ -130,7 +129,7 @@ public class ReflectionUtils {
      *          Type of field
      * @return  List of instance fields with defined class type
      */
-    public static List<Field> getInstanceFields(@NonNull Class<?> clazz, @NonNull Class<?> fieldType) {
+    public static List<Field> getInstanceFields(@NotNull Class<?> clazz, @NotNull Class<?> fieldType) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == fieldType && !Modifier.isStatic(field.getModifiers())) {
@@ -147,7 +146,7 @@ public class ReflectionUtils {
      *          Object to make accessible
      * @return  Provided object
      */
-    public static @NotNull <T extends AccessibleObject> T setAccessible(@NonNull T o) {
+    public static @NotNull <T extends AccessibleObject> T setAccessible(@NotNull T o) {
         o.setAccessible(true);
         return o;
     }

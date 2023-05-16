@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,7 +35,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if color is {@code null}
      */
-    public TextColor(@NonNull TextColor color) {
+    public TextColor(@NotNull TextColor color) {
         rgb = color.rgb;
         legacyColor = color.legacyColor;
         hexCode = color.hexCode;
@@ -51,7 +50,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if hexCode is {@code null}
      */
-    public TextColor(@NonNull String hexCode) {
+    public TextColor(@NotNull String hexCode) {
         this.hexCode = hexCode;
     }
 
@@ -65,7 +64,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if {@code hexCode} is {@code null} or {@code legacyColor} is {@code null}
      */
-    public TextColor(@NonNull String hexCode, @NonNull EnumChatFormat legacyColor) {
+    public TextColor(@NotNull String hexCode, @NotNull EnumChatFormat legacyColor) {
         this.hexCode = hexCode;
         this.legacyColorForced = true;
         this.legacyColor = legacyColor;
@@ -79,7 +78,7 @@ public class TextColor {
      * @throws  IllegalArgumentException
      *          if {@code legacyColor} is {@code null}
      */
-    public TextColor(@NonNull EnumChatFormat legacyColor) {
+    public TextColor(@NotNull EnumChatFormat legacyColor) {
         this.rgb = (legacyColor.getRed() << 16) + (legacyColor.getGreen() << 8) + legacyColor.getBlue();
         this.hexCode = String.format("%06X", legacyColor.getHexCode());
     }

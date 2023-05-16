@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.nametags.unlimited.ArmorStandManager;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -33,7 +33,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   owner
      *          Owner of this armor stand manager
      */
-    public BackendArmorStandManager(@NonNull NameTagX nameTagX, @NonNull TabPlayer owner) {
+    public BackendArmorStandManager(@NotNull NameTagX nameTagX, @NotNull TabPlayer owner) {
         this.nameTagX = (BackendNameTagX) nameTagX;
         sneaking = this.nameTagX.isSneaking(owner);
         owner.setProperty(nameTagX, TabConstants.Property.NAMETAG, owner.getProperty(TabConstants.Property.TAGPREFIX).getCurrentRawValue()
@@ -58,7 +58,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to teleport armor stands for
      */
-    public void teleport(@NonNull BackendTabPlayer viewer) {
+    public void teleport(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand a : armorStandArray) a.teleport(viewer);
     }
 
@@ -76,7 +76,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      *          Player to check for
      * @return  {@code true} if player nearby, {@code false} if not
      */
-    public boolean isNearby(@NonNull BackendTabPlayer viewer) {
+    public boolean isNearby(@NotNull BackendTabPlayer viewer) {
         return nearbyPlayerList.contains(viewer);
     }
 
@@ -113,7 +113,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         }
     }
 
-    public void respawn(@NonNull BackendTabPlayer viewer) {
+    public void respawn(@NotNull BackendTabPlayer viewer) {
         // 1.8.0 will not see entity that respawned in the same tick
         // creating new delayed task every time someone sneaks can be abused and cause OOM
         // RIP 1.8.0
@@ -131,7 +131,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to spawn armor stands for
      */
-    public void spawn(@NonNull BackendTabPlayer viewer) {
+    public void spawn(@NotNull BackendTabPlayer viewer) {
         nearbyPlayerList.add(viewer);
         nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
         if (viewer.getVersion().getMinorVersion() < 8) return;
@@ -158,7 +158,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to remove
      */
-    public void unregisterPlayer(@NonNull BackendTabPlayer viewer) {
+    public void unregisterPlayer(@NotNull BackendTabPlayer viewer) {
         if (nearbyPlayerList.remove(viewer)) nearbyPlayers = nearbyPlayerList.toArray(new BackendTabPlayer[0]);
     }
 
@@ -172,7 +172,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      * @param   viewer
      *          player to destroy armor stands for
      */
-    public void destroy(@NonNull BackendTabPlayer viewer) {
+    public void destroy(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand as : armorStandArray) {
             viewer.destroyEntities(as.getEntityId());
         }
@@ -202,7 +202,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         if (fix) fixArmorStandHeights();
     }
 
-    public void updateMetadata(@NonNull BackendTabPlayer viewer) {
+    public void updateMetadata(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand a : armorStandArray) {
             viewer.updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
         }

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.bossbar;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -9,6 +8,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.backend.Location;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class BukkitBossBar18 implements BossBar {
     private final BukkitTabPlayer player;
 
     @Override
-    public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         DataWatcher w = new DataWatcher();
         float health = 300*progress;
         if (health == 0) health = 1;
@@ -36,14 +36,14 @@ public class BukkitBossBar18 implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull String title) {
+    public void update(@NotNull UUID id, @NotNull String title) {
         DataWatcher w = new DataWatcher();
         w.getHelper().setCustomName(title, player.getVersion());
         player.updateEntityMetadata(id.hashCode(), w);
     }
 
     @Override
-    public void update(@NonNull UUID id, float progress) {
+    public void update(@NotNull UUID id, float progress) {
         DataWatcher w = new DataWatcher();
         float health = 300*progress;
         if (health == 0) health = 1;
@@ -52,13 +52,13 @@ public class BukkitBossBar18 implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarStyle style) {/*Added in 1.9*/}
+    public void update(@NotNull UUID id, @NotNull BarStyle style) {/*Added in 1.9*/}
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarColor color) {/*Added in 1.9*/}
+    public void update(@NotNull UUID id, @NotNull BarColor color) {/*Added in 1.9*/}
 
     @Override
-    public void remove(@NonNull UUID id) {
+    public void remove(@NotNull UUID id) {
         player.destroyEntities(id.hashCode());
     }
 }

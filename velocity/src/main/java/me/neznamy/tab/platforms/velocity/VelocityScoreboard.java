@@ -1,9 +1,9 @@
 package me.neznamy.tab.platforms.velocity;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,29 +20,29 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPluginMessage("PacketPlayOutScoreboardDisplayObjective", slot.ordinal(), objective);
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 0,
                 title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
+    public void unregisterObjective0(@NotNull String objectiveName) {
         player.sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 1);
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 2,
                 title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);
@@ -61,12 +61,12 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
+    public void unregisterTeam0(@NotNull String name) {
         player.sendPluginMessage("PacketPlayOutScoreboardTeam", name, 1, 0);
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);
@@ -84,12 +84,12 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         player.sendPluginMessage("PacketPlayOutScoreboardScore", objective, 0, playerName, score);
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         player.sendPluginMessage("PacketPlayOutScoreboardScore", objective, 1, playerName, 0);
     }
 }

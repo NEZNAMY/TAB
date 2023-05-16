@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
@@ -80,7 +79,7 @@ public class RGBUtils {
      *          original text
      * @return  text where everything is converted to #RRGGBB
      */
-    public @NotNull String applyFormats(@NonNull String text) {
+    public @NotNull String applyFormats(@NotNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, false);
@@ -99,7 +98,7 @@ public class RGBUtils {
      *          original text
      * @return  text where all gradients with static text are converted to #RRGGBB
      */
-    public @NotNull String applyCleanGradients(@NonNull String text) {
+    public @NotNull String applyCleanGradients(@NotNull String text) {
         String replaced = text;
         for (GradientPattern pattern : gradients) {
             replaced = pattern.applyPattern(replaced, true);
@@ -118,7 +117,7 @@ public class RGBUtils {
      *          whether client accepts RGB or not
      * @return  converted text
      */
-    public @NotNull String convertToBukkitFormat(@NonNull String text, boolean rgbClient) {
+    public @NotNull String convertToBukkitFormat(@NotNull String text, boolean rgbClient) {
         if (!text.contains("#")) return text; //no rgb codes
         if (rgbClient) {
             //converting random formats to TAB one
@@ -146,7 +145,7 @@ public class RGBUtils {
      *          text to convert
      * @return  translated text
      */
-    public @NotNull String convertRGBtoLegacy(@NonNull String text) {
+    public @NotNull String convertRGBtoLegacy(@NotNull String text) {
         return IChatBaseComponent.fromColoredText(text).toLegacyText();
     }
 
@@ -158,7 +157,7 @@ public class RGBUtils {
      *          string to check
      * @return  {@code true} if valid, {@code false} if not
      */
-    public boolean isHexCode(@NonNull String string) {
+    public boolean isHexCode(@NotNull String string) {
         if (string.length() != 6) return false;
         for (int i=0; i<6; i++) {
             char c = string.charAt(i);

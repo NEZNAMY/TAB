@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to vanish status change
@@ -15,5 +15,5 @@ public interface VanishListener {
      * @param   player
      *          Player who changed vanish status
      */
-    void onVanishStatusChange(@NonNull TabPlayer player);
+    void onVanishStatusChange(@NotNull TabPlayer player);
 }

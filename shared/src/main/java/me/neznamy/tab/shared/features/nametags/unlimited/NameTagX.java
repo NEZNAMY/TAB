@@ -64,7 +64,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         if (unlimitedDisableChecker.isDisableConditionMet(connectedPlayer))
             unlimitedDisableChecker.addDisabledPlayer(connectedPlayer);
         super.onJoin(connectedPlayer);
@@ -73,7 +73,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         super.refresh(refreshed, force);
         if (isPlayerDisabled(refreshed)) return;
         getArmorStandManager(refreshed).refresh(force);

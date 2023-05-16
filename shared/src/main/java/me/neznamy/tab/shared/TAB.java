@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
@@ -114,8 +113,8 @@ public class TAB extends TabAPI {
      * @param   serverVersion
      *          Version the server is running on
      */
-    public TAB(@NonNull Platform platform, @NonNull ProtocolVersion serverVersion,
-               @NonNull String serverVersionString, @NonNull File dataFolder, @Nullable Object logger) {
+    public TAB(@NotNull Platform platform, @NotNull ProtocolVersion serverVersion,
+               @NotNull String serverVersionString, @NotNull File dataFolder, @Nullable Object logger) {
         this.platform = platform;
         this.serverVersion = serverVersion;
         this.serverVersionString = serverVersionString;
@@ -215,7 +214,7 @@ public class TAB extends TabAPI {
      * @param   player
      *          Player to add
      */
-    public void addPlayer(@NonNull TabPlayer player) {
+    public void addPlayer(@NotNull TabPlayer player) {
         data.put(player.getUniqueId(), player);
         playersByTabListId.put(player.getTablistId(), player);
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
@@ -227,7 +226,7 @@ public class TAB extends TabAPI {
      * @param   player
      *          Player to remove
      */
-    public void removePlayer(@NonNull TabPlayer player) {
+    public void removePlayer(@NotNull TabPlayer player) {
         data.remove(player.getUniqueId());
         playersByTabListId.remove(player.getTablistId());
         onlinePlayers = data.values().toArray(new TabPlayer[0]);
@@ -273,7 +272,7 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @Nullable TabPlayer getPlayer(@NonNull String name) {
+    public @Nullable TabPlayer getPlayer(@NotNull String name) {
         for (TabPlayer p : data.values()) {
             if (p.getName().equalsIgnoreCase(name)) return p;
         }
@@ -281,11 +280,11 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @Nullable TabPlayer getPlayer(@NonNull UUID uniqueId) {
+    public @Nullable TabPlayer getPlayer(@NotNull UUID uniqueId) {
         return data.get(uniqueId);
     }
 
-    public void sendConsoleMessage(@NonNull String message, boolean translateColors) {
+    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
         platform.sendConsoleMessage(message, translateColors);
     }
 
@@ -310,7 +309,7 @@ public class TAB extends TabAPI {
      * @param   message
      *          Message to send
      */
-    public void debug(@NonNull String message) {
+    public void debug(@NotNull String message) {
         if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
     }
 }

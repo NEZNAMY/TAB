@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Line of text with placeholder support
@@ -38,7 +39,7 @@ public class StableDynamicLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String[] prefixSuffix = replaceText(refreshed, force, false);
         if (prefixSuffix.length == 0) return;

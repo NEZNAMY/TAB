@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.backend.features.unlimitedtags;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.types.GameModeListener;
@@ -42,7 +41,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public BackendArmorStandManager getArmorStandManager(@NonNull TabPlayer player) {
+    public BackendArmorStandManager getArmorStandManager(@NotNull TabPlayer player) {
         return (BackendArmorStandManager) armorStandManagerMap.get(player);
     }
 
@@ -65,7 +64,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         super.onJoin(connectedPlayer);
         if (isPlayerDisabled(connectedPlayer)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
@@ -75,7 +74,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public boolean isOnBoat(@NonNull TabPlayer player) {
+    public boolean isOnBoat(@NotNull TabPlayer player) {
         return vehicleManager != null && vehicleManager.isOnBoat(player);
     }
 
@@ -89,7 +88,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      * @param   target
      *          Target player with armor stands
      */
-    private void spawnArmorStands(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
+    private void spawnArmorStands(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (target == viewer || isPlayerDisabled(target)) return;
         if (!areInSameWorld(viewer, target)) return;
@@ -98,7 +97,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public void onQuit(@NonNull TabPlayer disconnectedPlayer) {
+    public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
         super.onQuit(disconnectedPlayer);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(all).unregisterPlayer((BackendTabPlayer) disconnectedPlayer);
@@ -108,7 +107,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public void resumeArmorStands(@NonNull TabPlayer player) {
+    public void resumeArmorStands(@NotNull TabPlayer player) {
         if (isPlayerDisabled(player)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             spawnArmorStands(viewer, player);
@@ -116,7 +115,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public void setNameTagPreview(@NonNull TabPlayer player, boolean status) {
+    public void setNameTagPreview(@NotNull TabPlayer player, boolean status) {
         if (status) {
             getArmorStandManager(player).spawn((BackendTabPlayer) player);
         } else {
@@ -125,19 +124,19 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public void pauseArmorStands(@NonNull TabPlayer player) {
+    public void pauseArmorStands(@NotNull TabPlayer player) {
         getArmorStandManager(player).destroy();
     }
 
     @Override
-    public void updateNameTagVisibilityView(@NonNull TabPlayer player) {
+    public void updateNameTagVisibilityView(@NotNull TabPlayer player) {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(all).updateVisibility(true);
         }
     }
 
     @Override
-    public void onWorldChange(@NonNull TabPlayer p, @NonNull String from, @NonNull String to) {
+    public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         super.onWorldChange(p, from, to);
         if (isPreviewingNametag(p)) {
             getArmorStandManager(p).spawn((BackendTabPlayer) p);
@@ -151,13 +150,13 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     }
 
     @Override
-    public void onGameModeChange(@NonNull TabPlayer player) {
+    public void onGameModeChange(@NotNull TabPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(player).updateMetadata((BackendTabPlayer) viewer);
         }
     }
 
-    public int getEntityId(@NonNull TabPlayer player) {
+    public int getEntityId(@NotNull TabPlayer player) {
         return getEntityId(player.getPlayer());
     }
 
@@ -170,37 +169,37 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      *          second player
      * @return  flat distance in blocks
      */
-    public abstract double getDistance(@NonNull TabPlayer player1, @NonNull TabPlayer player2);
+    public abstract double getDistance(@NotNull TabPlayer player1, @NotNull TabPlayer player2);
 
-    public abstract boolean areInSameWorld(@NonNull TabPlayer player1, @NonNull TabPlayer player2);
+    public abstract boolean areInSameWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2);
 
-    public abstract boolean canSee(@NonNull TabPlayer viewer, @NonNull TabPlayer target);
+    public abstract boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target);
 
     public abstract void unregisterListener();
 
-    public abstract @NotNull List<Integer> getPassengers(@NonNull Object vehicle);
+    public abstract @NotNull List<Integer> getPassengers(@NotNull Object vehicle);
 
-    public abstract @Nullable Object getVehicle(@NonNull TabPlayer player);
+    public abstract @Nullable Object getVehicle(@NotNull TabPlayer player);
 
-    public abstract int getEntityId(@NonNull Object entity);
+    public abstract int getEntityId(@NotNull Object entity);
 
-    public abstract @NotNull String getEntityType(@NonNull Object entity);
+    public abstract @NotNull String getEntityType(@NotNull Object entity);
 
-    public abstract boolean isSneaking(@NonNull TabPlayer player);
+    public abstract boolean isSneaking(@NotNull TabPlayer player);
 
-    public abstract boolean isSwimming(@NonNull TabPlayer player);
+    public abstract boolean isSwimming(@NotNull TabPlayer player);
 
-    public abstract boolean isGliding(@NonNull TabPlayer player);
+    public abstract boolean isGliding(@NotNull TabPlayer player);
 
-    public abstract boolean isSleeping(@NonNull TabPlayer player);
+    public abstract boolean isSleeping(@NotNull TabPlayer player);
 
     public abstract @NotNull Object getArmorStandType();
 
-    public abstract double getX(@NonNull TabPlayer player);
+    public abstract double getX(@NotNull TabPlayer player);
 
-    public abstract double getY(@NonNull Object entity);
+    public abstract double getY(@NotNull Object entity);
 
-    public abstract double getZ(@NonNull TabPlayer player);
+    public abstract double getZ(@NotNull TabPlayer player);
 
-    public abstract EntityData createDataWatcher(@NonNull TabPlayer viewer, byte flags, @NonNull String displayName, boolean nameVisible);
+    public abstract EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible);
 }

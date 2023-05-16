@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.chat;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -42,7 +41,7 @@ public class IChatBaseComponent {
     @Getter @Setter private String text;
 
     /** Chat modifier containing color, magic codes, hover and click event */
-    @Getter @Setter @NonNull private ChatModifier modifier = new ChatModifier();
+    @Getter @Setter @NotNull private ChatModifier modifier = new ChatModifier();
 
     /** Extra components used in "extra" field */
     @Nullable private List<IChatBaseComponent> extra;
@@ -55,7 +54,7 @@ public class IChatBaseComponent {
      * @param   component
      *          component to clone
      */
-    public IChatBaseComponent(@NonNull IChatBaseComponent component) {
+    public IChatBaseComponent(@NotNull IChatBaseComponent component) {
         this.text = component.text;
         this.modifier = new ChatModifier(component.modifier);
         this.extra = component.extra == null ? null : component.extra.stream().map(IChatBaseComponent::new).collect(Collectors.toList());
@@ -91,7 +90,7 @@ public class IChatBaseComponent {
      * @throws  IllegalArgumentException
      *          if {@code components} is an empty list
      */
-    public @NotNull IChatBaseComponent setExtra(@NonNull List<IChatBaseComponent> components) {
+    public @NotNull IChatBaseComponent setExtra(@NotNull List<IChatBaseComponent> components) {
         if (components.isEmpty()) throw new IllegalArgumentException("Unexpected empty array of components"); //exception taken from minecraft
         this.extra = components;
         return this;
@@ -122,7 +121,7 @@ public class IChatBaseComponent {
      *          client version to adapt component for
      * @return  serialized string
      */
-    public @NotNull String toString(@NonNull ProtocolVersion clientVersion) {
+    public @NotNull String toString(@NotNull ProtocolVersion clientVersion) {
         if (extra == null && (text == null || text.length() == 0)) return EMPTY_COMPONENT;
         targetVersion = clientVersion;
         for (IChatBaseComponent child : getExtra()) {
@@ -138,7 +137,7 @@ public class IChatBaseComponent {
      *          text to convert
      * @return  organized component from colored text
      */
-    public static @NotNull IChatBaseComponent fromColoredText(@NonNull String originalText) {
+    public static @NotNull IChatBaseComponent fromColoredText(@NotNull String originalText) {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
         List<IChatBaseComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
@@ -228,7 +227,7 @@ public class IChatBaseComponent {
      *          current index start
      * @return  true if legacy color is defined, false if not
      */
-    private static boolean containsLegacyCode(@NonNull String text, int i) {
+    private static boolean containsLegacyCode(@NotNull String text, int i) {
         if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
         return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
     }
@@ -254,7 +253,7 @@ public class IChatBaseComponent {
      *          colors and magic codes in previous component
      * @return  new formatting, might be identical to previous one
      */
-    private @NotNull String append(@NonNull StringBuilder builder, @NonNull String previousFormatting) {
+    private @NotNull String append(@NotNull StringBuilder builder, @NotNull String previousFormatting) {
         String formatting = previousFormatting;
         if (text != null) {
             formatting = getFormatting();
@@ -328,7 +327,7 @@ public class IChatBaseComponent {
      *          text to create component from
      * @return  The most performance-optimized component based on text
      */
-    public static @NotNull IChatBaseComponent optimizedComponent(@NonNull String text) {
+    public static @NotNull IChatBaseComponent optimizedComponent(@NotNull String text) {
         return stringCache.get(text, null);
     }
 

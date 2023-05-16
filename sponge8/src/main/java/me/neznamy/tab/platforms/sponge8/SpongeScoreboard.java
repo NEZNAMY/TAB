@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.sponge8;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.scoreboard.*;
 import org.spongepowered.api.scoreboard.criteria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
@@ -20,7 +20,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setDisplaySlot(@NonNull DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.getPlayer().scoreboard().objective(objective).ifPresent(
                 o -> player.getPlayer().scoreboard().updateDisplaySlot(o, convertDisplaySlot(slot)));
     }
@@ -34,7 +34,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         Objective objective = Objective.builder()
                 .name(objectiveName)
                 .displayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent())
@@ -45,20 +45,20 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
+    public void unregisterObjective0(@NotNull String objectiveName) {
         player.getPlayer().scoreboard().objective(objectiveName).ifPresent(o ->
                 player.getPlayer().scoreboard().removeObjective(o));
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         Objective obj = player.getPlayer().scoreboard().objective(objectiveName).orElseThrow(IllegalStateException::new);
         obj.setDisplayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
         obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS.get() : ObjectiveDisplayModes.INTEGER.get());
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, @NonNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         Team team = Team.builder()
                 .name(name)
                 .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent())
@@ -76,12 +76,12 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
+    public void unregisterTeam0(@NotNull String name) {
         player.getPlayer().scoreboard().team(name).ifPresent(Team::unregister);
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, @NonNull String prefix, @NonNull String suffix, @NonNull NameVisibility visibility, @NonNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         Team team = player.getPlayer().scoreboard().team(name).orElse(null);
         if (team == null) return;
         team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent());
@@ -114,13 +114,13 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     }
 
     @Override
-    public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         player.getPlayer().scoreboard().objective(objective).ifPresent(o -> o.findOrCreateScore(
                 IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent()).setScore(score));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         player.getPlayer().scoreboard().objective(objective).ifPresent(o -> o.removeScore(
                 IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent()));
     }

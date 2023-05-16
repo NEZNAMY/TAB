@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -31,7 +30,7 @@ public class PlayerSlot {
         }
     }
 
-    public @NotNull TabList.Entry getSlot(@NonNull TabPlayer p) {
+    public @NotNull TabList.Entry getSlot(@NotNull TabPlayer p) {
         TabList.Entry data;
         TabPlayer player = this.player; //avoiding NPE from concurrent access
         if (player != null) {
@@ -57,7 +56,7 @@ public class PlayerSlot {
         return data;
     }
 
-    public void setText(@NonNull String text) {
+    public void setText(@NotNull String text) {
         if (this.text.equals(text) && player == null) return;
         this.text = text;
         if (player != null) {

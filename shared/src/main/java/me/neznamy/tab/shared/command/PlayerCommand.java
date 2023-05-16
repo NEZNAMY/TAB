@@ -3,7 +3,6 @@ package me.neznamy.tab.shared.command;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -23,7 +22,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         //<name> <property> [value...]
         if (args.length <= 1) {
             help(sender);
@@ -36,7 +35,7 @@ public class PlayerCommand extends PropertyCommand {
         trySaveEntity(sender, args);
     }
 
-    private void remove(@Nullable TabPlayer sender, @NonNull String player) {
+    private void remove(@Nullable TabPlayer sender, @NotNull String player) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
             TAB.getInstance().getConfiguration().getUsers().remove(player);
             TabPlayer pl = TAB.getInstance().getPlayer(player);
@@ -50,7 +49,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public void saveEntity(@Nullable TabPlayer sender, @NonNull String player, @NonNull String type, @NonNull String value, @Nullable String server, @Nullable String world) {
+    public void saveEntity(@Nullable TabPlayer sender, @NotNull String player, @NotNull String type, @NotNull String value, @Nullable String server, @Nullable String world) {
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
         } else {

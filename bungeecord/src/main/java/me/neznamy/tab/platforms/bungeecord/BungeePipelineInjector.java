@@ -8,7 +8,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import java.lang.reflect.Field;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.redis.feature.RedisTeams;
@@ -59,7 +58,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    protected @Nullable Channel getChannel(@NonNull TabPlayer player) {
+    protected @Nullable Channel getChannel(@NotNull TabPlayer player) {
         if (wrapperField == null) return null;
         final BungeeTabPlayer bungee = (BungeeTabPlayer) player;
         try {
@@ -71,39 +70,39 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onDisplayObjective(@NonNull TabPlayer player, @NonNull Object packet) {
+    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                 ((ScoreboardDisplay) packet).getPosition(), ((ScoreboardDisplay) packet).getName());
     }
 
     @Override
-    public void onObjective(@NonNull TabPlayer player, @NonNull Object packet) {
+    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 ((ScoreboardObjective) packet).getAction(), ((ScoreboardObjective) packet).getName());
     }
 
     @Override
-    public boolean isDisplayObjective(@NonNull Object packet) {
+    public boolean isDisplayObjective(@NotNull Object packet) {
         return packet instanceof ScoreboardDisplay;
     }
 
     @Override
-    public boolean isObjective(@NonNull Object packet) {
+    public boolean isObjective(@NotNull Object packet) {
         return packet instanceof ScoreboardObjective;
     }
 
     @Override
-    public boolean isTeam(@NonNull Object packet) {
+    public boolean isTeam(@NotNull Object packet) {
         return packet instanceof Team;
     }
 
     @Override
-    public boolean isPlayerInfo(@NonNull Object packet) {
+    public boolean isPlayerInfo(@NotNull Object packet) {
         return packet instanceof PlayerListItem || packet instanceof PlayerListItemUpdate;
     }
 
     @Override
-    public void modifyPlayers(@NonNull Object team) {
+    public void modifyPlayers(@NotNull Object team) {
         if (TAB.getInstance().getTeamManager() == null) return;
         Team packet = (Team) team;
         if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
@@ -134,7 +133,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onPlayerInfo(@NonNull TabPlayer receiver, @NonNull Object packet) {
+    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (packet instanceof PlayerListItemUpdate) {
             PlayerListItemUpdate update = (PlayerListItemUpdate) packet;
             for (PlayerListItem.Item item : update.getItems()) {
@@ -194,7 +193,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          *          byte buf to deserialize
          * @return  deserialized packet or input byte buf if packet is not tracked
          */
-        private @NotNull Object deserialize(@NonNull ByteBuf buf) {
+        private @NotNull Object deserialize(@NotNull ByteBuf buf) {
             int marker = buf.readerIndex();
             try {
                 int packetId = buf.readByte();

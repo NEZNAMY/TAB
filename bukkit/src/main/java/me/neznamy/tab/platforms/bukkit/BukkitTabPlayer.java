@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.bukkit;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
@@ -65,7 +64,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -90,7 +89,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
                 getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
@@ -147,7 +146,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void spawnEntity(int entityId, @NonNull UUID id, @NonNull Object entityType, @NonNull Location location, @NonNull EntityData data) {
+    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
         try {
             sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
             if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
@@ -159,7 +158,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void updateEntityMetadata(int entityId, @NonNull EntityData data) {
+    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
         try {
             if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
                 //1.19.3+
@@ -173,7 +172,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void teleportEntity(int entityId, @NonNull Location location) {
+    public void teleportEntity(int entityId, @NotNull Location location) {
         try {
             sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
         } catch (ReflectiveOperationException e) {

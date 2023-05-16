@@ -1,12 +1,12 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 
-import lombok.NonNull;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -27,7 +27,7 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
      * @throws  ClassNotFoundException
      *          if class does not exist
      */
-    private Class<?> getLegacyClass(@NonNull String... names) throws ClassNotFoundException {
+    private Class<?> getLegacyClass(@NotNull String... names) throws ClassNotFoundException {
         for (String name : names) {
             try {
                 return getLegacyClass(name);
@@ -47,7 +47,7 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
      * @throws  ClassNotFoundException
      *          if class was not found
      */
-    public Class<?> getLegacyClass(@NonNull String name) throws ClassNotFoundException {
+    public Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
         return Class.forName("net.minecraft.server." + serverPackage + "." + name);
     }
 

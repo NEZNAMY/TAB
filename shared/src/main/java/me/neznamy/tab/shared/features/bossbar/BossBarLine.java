@@ -262,7 +262,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating text";
 
         @Override
-        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+        public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, refreshed.getProperty(propertyTitle).updateAndGet());
         }
@@ -274,7 +274,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating progress";
 
         @Override
-        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+        public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseProgress(refreshed, refreshed.getProperty(propertyProgress).updateAndGet())/100);
         }
@@ -286,7 +286,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating color";
 
         @Override
-        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+        public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseColor(refreshed.getProperty(propertyColor).updateAndGet()));
         }
@@ -298,7 +298,7 @@ public class BossBarLine implements BossBar {
         @Getter private final String refreshDisplayName = "Updating style";
 
         @Override
-        public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+        public void refresh(@NotNull TabPlayer refreshed, boolean force) {
             if (!players.contains(refreshed)) return;
             refreshed.getBossBar().update(uniqueId, parseStyle(refreshed.getProperty(propertyStyle).updateAndGet()));
         }

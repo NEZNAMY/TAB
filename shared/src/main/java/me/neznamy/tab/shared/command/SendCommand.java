@@ -2,9 +2,9 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.command.level2.SendBarCommand;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +21,7 @@ public class SendCommand extends SubCommand {
     }
 
     @Override
-    public void execute(@Nullable TabPlayer sender, @NonNull String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (args.length > 0) {
             String arg0 = args[0].toLowerCase();
             SubCommand command = getSubcommands().get(arg0);

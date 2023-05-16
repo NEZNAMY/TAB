@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for features listening to players switching worlds
@@ -18,5 +18,5 @@ public interface WorldSwitchListener {
      * @param   to
      *          Name of new world
      */
-    void onWorldChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to);
+    void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to);
 }

@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
-import lombok.NonNull;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.Property;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -23,33 +23,33 @@ public class BungeeTabList18 extends BungeeTabList {
     }
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry(@NotNull UUID entry) {
         sendPacket(PlayerListItem.Action.REMOVE_PLAYER, item(entry));
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID entry, @Nullable IChatBaseComponent displayName) {
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         PlayerListItem.Item item = item(entry);
         item.setDisplayName(displayName == null ? null : displayName.toString(player.getVersion()));
         sendPacket(PlayerListItem.Action.UPDATE_DISPLAY_NAME, item);
     }
 
     @Override
-    public void updateLatency(@NonNull UUID entry, int latency) {
+    public void updateLatency(@NotNull UUID entry, int latency) {
         PlayerListItem.Item item = item(entry);
         item.setPing(latency);
         sendPacket(PlayerListItem.Action.UPDATE_LATENCY, item);
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID entry, int gameMode) {
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {
         PlayerListItem.Item item = item(entry);
         item.setGamemode(gameMode);
         sendPacket(PlayerListItem.Action.UPDATE_GAMEMODE, item);
     }
 
     @Override
-    public void addEntry(@NonNull Entry entry) {
+    public void addEntry(@NotNull Entry entry) {
         PlayerListItem.Item item = item(entry.getUniqueId());
         if (entry.getDisplayName() != null) item.setDisplayName(entry.getDisplayName().toString(player.getVersion()));
         item.setGamemode(entry.getGameMode());
@@ -63,7 +63,7 @@ public class BungeeTabList18 extends BungeeTabList {
         sendPacket(PlayerListItem.Action.ADD_PLAYER, item);
     }
 
-    private void sendPacket(@NonNull PlayerListItem.Action action, @NonNull PlayerListItem.Item item) {
+    private void sendPacket(@NotNull PlayerListItem.Action action, @NotNull PlayerListItem.Item item) {
         PlayerListItem packet = new PlayerListItem();
         packet.setAction(action);
         packet.setItems(new PlayerListItem.Item[]{item});

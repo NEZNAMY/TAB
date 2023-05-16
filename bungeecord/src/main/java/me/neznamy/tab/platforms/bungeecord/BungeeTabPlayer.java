@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList17;
@@ -61,12 +60,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      * @param   p
      *          BungeeCord player
      */
-    public BungeeTabPlayer(@NonNull ProxiedPlayer p) {
+    public BungeeTabPlayer(@NotNull ProxiedPlayer p) {
         super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
     }
 
     @Override
-    public boolean hasPermission0(@NonNull String permission) {
+    public boolean hasPermission0(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -75,12 +74,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         return getPlayer().getPing();
     }
 
-    public void sendPacket(@NonNull Object nmsPacket) {
+    public void sendPacket(@NotNull Object nmsPacket) {
         getPlayer().unsafe().sendPacket((DefinedPacket) nmsPacket);
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
     }
 
@@ -105,7 +104,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      *          packet class
      * @return  packet ID
      */
-    public int getPacketId(@NonNull Class<? extends DefinedPacket> clazz) {
+    public int getPacketId(@NotNull Class<? extends DefinedPacket> clazz) {
         if (getId == null) return -1;
         try {
             return (int) getId.invoke(directionData, clazz, getPlayer().getPendingConnection().getVersion());

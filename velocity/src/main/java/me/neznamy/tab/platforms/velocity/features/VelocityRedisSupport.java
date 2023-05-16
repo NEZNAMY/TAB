@@ -5,10 +5,10 @@ import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import me.neznamy.tab.platforms.velocity.VelocityTAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Redis implementation for Velocity
@@ -17,8 +17,8 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 public class VelocityRedisSupport extends RedisSupport {
 
     /** Plugin reference for registering listener */
-    @NonNull private final VelocityTAB plugin;
-    @NonNull private final ProxyServer server;
+    @NotNull private final VelocityTAB plugin;
+    @NotNull private final ProxyServer server;
 
     @Subscribe
     public void onMessage(PubSubMessageEvent e) {
@@ -39,7 +39,7 @@ public class VelocityRedisSupport extends RedisSupport {
     }
 
     @Override
-    public void sendMessage(@NonNull String message) {
+    public void sendMessage(@NotNull String message) {
         RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(TabConstants.REDIS_CHANNEL_NAME, message);
     }
 }

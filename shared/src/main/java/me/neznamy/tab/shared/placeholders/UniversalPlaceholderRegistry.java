@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.permission.LuckPerms;
 import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -26,7 +27,7 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerPlaceholders(@NonNull PlaceholderManager manager) {
+    public void registerPlaceholders(@NotNull PlaceholderManager manager) {
         manager.registerServerPlaceholder("%%", -1, () -> "%");
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.VANISHED, 1000, p -> ((TabPlayer)p).isVanished());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.WORLD, -1, p -> ((TabPlayer)p).getWorld());

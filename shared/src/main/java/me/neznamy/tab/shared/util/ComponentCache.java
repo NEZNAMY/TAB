@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.util;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +16,7 @@ public class ComponentCache<K, V> {
     private final Map<K, V> cacheModern = new HashMap<>();
     private final Map<K, V> cacheLegacy = new HashMap<>();
 
-    public @NotNull V get(@NonNull K key, @Nullable ProtocolVersion clientVersion) {
+    public @NotNull V get(@NotNull K key, @Nullable ProtocolVersion clientVersion) {
         try {
             Map<K, V> cache = clientVersion == null || clientVersion.getMinorVersion() >= 16 ? cacheModern : cacheLegacy;
             if (cache.containsKey(key)) return cache.get(key);

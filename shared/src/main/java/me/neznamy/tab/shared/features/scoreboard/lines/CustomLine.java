@@ -7,6 +7,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Fully customizable line, to use this class user must follow the following formula in a line
@@ -56,7 +57,7 @@ public class CustomLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void refresh(@NonNull TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         String oldName = refreshed.getProperty(TabConstants.Property.scoreboardName(parent.getName(), lineNumber)).get();
         boolean prefixUpdate = refreshed.getProperty(TabConstants.Property.scoreboardPrefix(parent.getName(), lineNumber)).update();

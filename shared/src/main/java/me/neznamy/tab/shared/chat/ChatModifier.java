@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.chat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
@@ -17,7 +16,7 @@ public class ChatModifier {
     private boolean strikethrough;
     private boolean obfuscated;
 
-    public ChatModifier(@NonNull ChatModifier modifier) {
+    public ChatModifier(@NotNull ChatModifier modifier) {
         this.color = modifier.color == null ? null : new TextColor(modifier.color);
         this.bold = modifier.bold;
         this.italic = modifier.italic;

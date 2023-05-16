@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.neznamy.tab.shared.TabConstants;
@@ -54,7 +53,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     }
 
     @Override
-    public void setValue(@NonNull TabPlayer player, @NonNull String key, @NonNull String value) {
+    public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
         values.computeIfAbsent((Player) player.getPlayer(), p -> new HashMap<>()).put(key, value);
     }
 }

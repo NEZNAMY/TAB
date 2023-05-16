@@ -1,11 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -26,7 +26,7 @@ public class DataWatcherHelper {
 
     /** Instance fields */
     private final int armorStandFlagsPosition = getArmorStandFlagsPosition();
-    @NonNull private final DataWatcher data;
+    @NotNull private final DataWatcher data;
 
     /**
      * Returns armor stand flags position based on server version
@@ -70,7 +70,7 @@ public class DataWatcherHelper {
      * @param   clientVersion
      *          client version
      */
-    public void setCustomName(@NonNull String customName, @NonNull ProtocolVersion clientVersion) {
+    public void setCustomName(@NotNull String customName, @NotNull ProtocolVersion clientVersion) {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 13) {
             data.setValue(new DataWatcherObject(2, DataWatcherSerializer_OPTIONAL_COMPONENT),
                     Optional.ofNullable(NMSStorage.getInstance().toNMSComponent(IChatBaseComponent.optimizedComponent(customName), clientVersion)));

@@ -4,7 +4,6 @@ import com.mojang.authlib.properties.Property;
 import java.util.Collection;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
@@ -29,7 +28,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return FabricTAB.getInstance().hasPermission(getPlayer().createCommandSourceStack(), permission);
     }
 
@@ -39,7 +38,7 @@ public class FabricTabPlayer extends TabPlayer {
     }
 
     @Override
-    public void sendMessage(@NonNull IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         FabricMultiVersion.sendMessage.accept(this, message);
     }
 

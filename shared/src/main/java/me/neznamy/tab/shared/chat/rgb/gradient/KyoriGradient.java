@@ -3,9 +3,9 @@ package me.neznamy.tab.shared.chat.rgb.gradient;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TextColor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Gradient applier for &lt;gradient:#RRGGBB:#RRGGBB&gt;Text&lt;/gradient&gt;
@@ -18,7 +18,7 @@ public class KyoriGradient implements GradientPattern {
     private final Pattern patternLegacy = Pattern.compile("<gradient:#[0-9a-fA-F]{6}\\|.:#[0-9a-fA-F]{6}>[^<]*</gradient>");
     
     @Override
-    public String applyPattern(@NonNull String text, boolean ignorePlaceholders) {
+    public String applyPattern(@NotNull String text, boolean ignorePlaceholders) {
         if (!text.contains("<grad")) return text;
         String replaced = text;
         Matcher m = patternLegacy.matcher(replaced);

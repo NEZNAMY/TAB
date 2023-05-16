@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.features.types;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,7 @@ public interface Refreshable {
      * @param   force
      *          Whether refresh should be forced
      */
-    void refresh(@NonNull TabPlayer refreshed, boolean force);
+    void refresh(@NotNull TabPlayer refreshed, boolean force);
 
     /**
      * Returns display name of {@link #refresh(TabPlayer, boolean)}
@@ -36,7 +35,7 @@ public interface Refreshable {
      * @param   placeholders
      *          placeholders to add as used in this feature
      */
-    default void addUsedPlaceholders(@NonNull Collection<String> placeholders) {
+    default void addUsedPlaceholders(@NotNull Collection<String> placeholders) {
         if (placeholders.isEmpty()) return;
         placeholders.forEach(p -> TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(p, this));
     }

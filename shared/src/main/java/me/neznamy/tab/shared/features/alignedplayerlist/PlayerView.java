@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.features.alignedplayerlist;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -14,15 +14,15 @@ import java.util.WeakHashMap;
 
 public class PlayerView {
 
-    @NonNull private final AlignedPlayerList feature;
-    @NonNull private final TabPlayer viewer;
+    @NotNull private final AlignedPlayerList feature;
+    @NotNull private final TabPlayer viewer;
     private final boolean canSeeVanished;
     private final Map<TabPlayer, Integer> playerWidths = new WeakHashMap<>();
 
     private int maxWidth;
     private TabPlayer maxPlayer;
 
-    public PlayerView(@NonNull AlignedPlayerList feature, @NonNull TabPlayer viewer) {
+    public PlayerView(@NotNull AlignedPlayerList feature, @NotNull TabPlayer viewer) {
         this.feature = feature;
         this.viewer = viewer;
         canSeeVanished = viewer.hasPermission(TabConstants.Permission.SEE_VANISHED);
@@ -37,7 +37,7 @@ public class PlayerView {
         updateAllPlayers();
     }
 
-    public void playerJoin(@NonNull TabPlayer connectedPlayer) {
+    public void playerJoin(@NotNull TabPlayer connectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         int width = getPlayerNameWidth(connectedPlayer);
         playerWidths.put(connectedPlayer, width);
@@ -56,7 +56,7 @@ public class PlayerView {
         }
     }
 
-    public synchronized IChatBaseComponent formatName(@NonNull TabPlayer target) {
+    public synchronized IChatBaseComponent formatName(@NotNull TabPlayer target) {
         Integer width = playerWidths.get(target);
         if (width == null) return null; //in packet reader, not loaded yet, will send packet after loading player
         Property prefixPr = target.getProperty(TabConstants.Property.TABPREFIX);
@@ -110,7 +110,7 @@ public class PlayerView {
         return output.toString();
     }
 
-    public void updatePlayer(@NonNull TabPlayer target) {
+    public void updatePlayer(@NotNull TabPlayer target) {
         playerWidths.put(target, getPlayerNameWidth(target));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
@@ -119,7 +119,7 @@ public class PlayerView {
         }
     }
 
-    public void processPlayerQuit(@NonNull TabPlayer disconnectedPlayer) {
+    public void processPlayerQuit(@NotNull TabPlayer disconnectedPlayer) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
         if (disconnectedPlayer == maxPlayer && recalculateMaxWidth(disconnectedPlayer)) {
             updateAllPlayers();
@@ -133,7 +133,7 @@ public class PlayerView {
      *          player to get width for
      * @return  width of player's TabList name format
      */
-    private int getPlayerNameWidth(@NonNull TabPlayer p) {
+    private int getPlayerNameWidth(@NotNull TabPlayer p) {
         return getTextWidth(IChatBaseComponent.fromColoredText(
                 p.getProperty(TabConstants.Property.TABPREFIX).getFormat(viewer) +
                 p.getProperty(TabConstants.Property.CUSTOMTABNAME).getFormat(viewer) +
@@ -147,7 +147,7 @@ public class PlayerView {
      *          component to get width of
      * @return  text width of characters in given component
      */
-    private int getTextWidth(@NonNull IChatBaseComponent component) {
+    private int getTextWidth(@NotNull IChatBaseComponent component) {
         byte[] widths = feature.getWidths();
         Map<String, Integer> multiCharWidths = feature.getMultiCharWidths();
         int width = 0;
@@ -193,7 +193,7 @@ public class PlayerView {
         return changed;
     }
 
-    public void onVanishChange(@NonNull TabPlayer changed) {
+    public void onVanishChange(@NotNull TabPlayer changed) {
         playerWidths.put(changed, getPlayerNameWidth(changed));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();

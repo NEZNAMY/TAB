@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.placeholders;
 
-import lombok.NonNull;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An interface to be implemented by classes which offer internal placeholders
@@ -17,5 +17,5 @@ public interface PlaceholderRegistry {
      * @param   manager
      *          placeholder manager to register placeholders to
      */
-    void registerPlaceholders(@NonNull PlaceholderManager manager);
+    void registerPlaceholders(@NotNull PlaceholderManager manager);
 }

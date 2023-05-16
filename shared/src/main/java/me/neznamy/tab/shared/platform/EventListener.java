@@ -1,9 +1,9 @@
 package me.neznamy.tab.shared.platform;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ public class EventListener {
      * @param   player
      *          Player who joined
      */
-    public void join(@NonNull TabPlayer player) {
+    public void join(@NotNull TabPlayer player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onJoin(player));
@@ -30,7 +30,7 @@ public class EventListener {
      * @param   player
      *          UUID of player who left
      */
-    public void quit(@NonNull UUID player) {
+    public void quit(@NotNull UUID player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onQuit(TAB.getInstance().getPlayer(player)));
@@ -44,7 +44,7 @@ public class EventListener {
      * @param   world
      *          New world
      */
-    public void worldChange(@NonNull UUID player, @NonNull String world) {
+    public void worldChange(@NotNull UUID player, @NotNull String world) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onWorldChange(player, world));
@@ -58,7 +58,7 @@ public class EventListener {
      * @param   server
      *          New server
      */
-    public void serverChange(@NonNull UUID player, @NonNull String server) {
+    public void serverChange(@NotNull UUID player, @NotNull String server) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
                 TAB.getInstance().getFeatureManager().onServerChange(player, server));
@@ -74,13 +74,13 @@ public class EventListener {
      * @param   message
      *          The message
      */
-    public void pluginMessage(@NonNull UUID player, @NonNull String playerName, byte[] message) {
+    public void pluginMessage(@NotNull UUID player, @NotNull String playerName, byte[] message) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
                     ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, playerName, message));
     }
 
-    public boolean command(@NonNull UUID player, @NonNull String command) {
+    public boolean command(@NotNull UUID player, @NotNull String command) {
         if (TAB.getInstance().isPluginDisabled()) return false;
         return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);
     }

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
@@ -27,7 +26,7 @@ public class BungeeBossBar implements BossBar {
     private final Map<UUID, Integer> styles = new HashMap<>();
 
     @Override
-    public void create(@NonNull UUID id, @NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
+    public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 0);
@@ -42,7 +41,7 @@ public class BungeeBossBar implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull String title) {
+    public void update(@NotNull UUID id, @NotNull String title) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 3);
@@ -51,7 +50,7 @@ public class BungeeBossBar implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, float progress) {
+    public void update(@NotNull UUID id, float progress) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 2);
@@ -60,7 +59,7 @@ public class BungeeBossBar implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarStyle style) {
+    public void update(@NotNull UUID id, @NotNull BarStyle style) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
@@ -72,7 +71,7 @@ public class BungeeBossBar implements BossBar {
     }
 
     @Override
-    public void update(@NonNull UUID id, @NonNull BarColor color) {
+    public void update(@NotNull UUID id, @NotNull BarColor color) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
@@ -84,7 +83,7 @@ public class BungeeBossBar implements BossBar {
     }
 
     @Override
-    public void remove(@NonNull UUID id) {
+    public void remove(@NotNull UUID id) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
         player.getPlayer().unsafe().sendPacket(new net.md_5.bungee.protocol.packet.BossBar(id, 1));

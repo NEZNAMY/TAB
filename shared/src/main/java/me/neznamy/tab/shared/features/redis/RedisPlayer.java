@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.redis;
 
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -9,10 +10,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RedisPlayer {
 
-    @NonNull private UUID uniqueId;
-    @NonNull private String name;
-    @NonNull private String nickname;
-    @NonNull private String server;
+    @NotNull private UUID uniqueId;
+    @NotNull private String name;
+    @NotNull private String nickname;
+    @NotNull private String server;
     private boolean vanished;
     private boolean staff;
 }

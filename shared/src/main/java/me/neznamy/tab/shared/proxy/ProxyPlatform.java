@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -48,7 +47,7 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public void registerUnknownPlaceholder(@NonNull String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         //internal dynamic %online_<server>% placeholder
         if (identifier.startsWith("%online_")) {

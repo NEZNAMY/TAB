@@ -1,6 +1,5 @@
 package me.neznamy.tab.shared.chat.rgb.format;
 
-import lombok.NonNull;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class MiniMessageFormat implements RGBFormatter {
 
     @Override
-    public @NotNull String reformat(@NonNull String text) {
+    public @NotNull String reformat(@NotNull String text) {
         if (!text.contains("<")) return text;
         try {
             return LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(text));

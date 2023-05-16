@@ -8,11 +8,11 @@ import java.util.function.Function;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,11 +22,11 @@ import org.jetbrains.annotations.Nullable;
 public abstract class NettyPipelineInjector extends PipelineInjector {
 
     //handler to inject before
-    private final @NonNull String injectPosition;
+    private final @NotNull String injectPosition;
 
     @Getter private final Function<TabPlayer, ChannelDuplexHandler> channelFunction = TabChannelDuplexHandler::new;
 
-    protected abstract @Nullable Channel getChannel(@NonNull TabPlayer player);
+    protected abstract @Nullable Channel getChannel(@NotNull TabPlayer player);
 
     /**
      * Injects custom channel duplex handler to prevent other plugins from overriding this one
@@ -35,7 +35,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
      *          player to inject
      */
     @Override
-    public void inject(@NonNull TabPlayer player) {
+    public void inject(@NotNull TabPlayer player) {
         final Channel channel = getChannel(player);
         if (player.getVersion().getMinorVersion() < 8 || channel == null) return; //hello A248
         if (!channel.pipeline().names().contains(injectPosition)) {
@@ -51,7 +51,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
     }
 
     @Override
-    public void uninject(@NonNull TabPlayer player) {
+    public void uninject(@NotNull TabPlayer player) {
         final Channel channel = getChannel(player);
         if (player.getVersion().getMinorVersion() < 8 || channel == null) return; //hello A248
         try {
@@ -71,26 +71,26 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
      *          Game profile name
      * @return  Player with matching game profile name
      */
-    public @Nullable TabPlayer getPlayer(@NonNull String name) {
+    public @Nullable TabPlayer getPlayer(@NotNull String name) {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             if (p.getNickname().equals(name)) return p;
         }
         return null;
     }
 
-    public abstract void onDisplayObjective(@NonNull TabPlayer player, @NonNull Object packet) throws IllegalAccessException;
+    public abstract void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException;
 
-    public abstract void onObjective(@NonNull TabPlayer player, @NonNull Object packet) throws IllegalAccessException;
+    public abstract void onObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException;
 
-    public abstract boolean isDisplayObjective(@NonNull Object packet);
+    public abstract boolean isDisplayObjective(@NotNull Object packet);
 
-    public abstract boolean isObjective(@NonNull Object packet);
+    public abstract boolean isObjective(@NotNull Object packet);
 
-    public abstract boolean isTeam(@NonNull Object packet);
+    public abstract boolean isTeam(@NotNull Object packet);
 
-    public abstract boolean isPlayerInfo(@NonNull Object packet);
+    public abstract boolean isPlayerInfo(@NotNull Object packet);
 
-    public abstract void onPlayerInfo(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException;
+    public abstract void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException;
 
     /**
      * Removes all real players from team if packet does not come from TAB and reports this to override log
@@ -100,7 +100,7 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
      * @throws  ReflectiveOperationException
      *          if throws by reflective operation
      */
-    public abstract void modifyPlayers(@NonNull Object teamPacket) throws ReflectiveOperationException;
+    public abstract void modifyPlayers(@NotNull Object teamPacket) throws ReflectiveOperationException;
 
     @RequiredArgsConstructor
     public class TabChannelDuplexHandler extends ChannelDuplexHandler {

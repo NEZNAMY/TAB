@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -40,7 +39,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     /** Reference to NMS storage for quick access */
     private final NMSStorage nms = NMSStorage.getInstance();
 
-    public BukkitNameTagX(@NonNull JavaPlugin plugin) {
+    public BukkitNameTagX(@NotNull JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -62,7 +61,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onPacketSend(@NonNull TabPlayer receiver, @NonNull Object packet) throws ReflectiveOperationException {
+    public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException {
         if (receiver.getVersion().getMinorVersion() < 8) return;
         if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
         if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
@@ -87,19 +86,19 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     }
 
     @Override
-    public double getDistance(@NonNull TabPlayer player1, @NonNull TabPlayer player2) {
+    public double getDistance(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
         Location loc1 = ((Player) player1.getPlayer()).getLocation();
         Location loc2 = ((Player) player2.getPlayer()).getLocation();
         return Math.sqrt(Math.pow(loc1.getX()-loc2.getX(), 2) + Math.pow(loc1.getZ()-loc2.getZ(), 2));
     }
 
     @Override
-    public boolean areInSameWorld(@NonNull TabPlayer player1, @NonNull TabPlayer player2) {
+    public boolean areInSameWorld(@NotNull TabPlayer player1, @NotNull TabPlayer player2) {
         return ((Player) player1.getPlayer()).getWorld() == ((Player) player2.getPlayer()).getWorld();
     }
 
     @Override
-    public boolean canSee(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
+    public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         return ((Player)viewer.getPlayer()).canSee((Player) target.getPlayer());
     }
 
@@ -110,7 +109,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
 
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull List<Integer> getPassengers(@NonNull Object entity) {
+    public @NotNull List<Integer> getPassengers(@NotNull Object entity) {
         Entity vehicle = (Entity) entity;
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 11) {
             return vehicle.getPassengers().stream().map(Entity::getEntityId).collect(Collectors.toList());
@@ -124,39 +123,39 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     }
 
     @Override
-    public @Nullable Object getVehicle(@NonNull TabPlayer player) {
+    public @Nullable Object getVehicle(@NotNull TabPlayer player) {
         return ((Player)player.getPlayer()).getVehicle();
     }
 
     @Override
-    public int getEntityId(@NonNull Object entity) {
+    public int getEntityId(@NotNull Object entity) {
         return ((Entity)entity).getEntityId();
     }
 
     @Override
-    public @NotNull String getEntityType(@NonNull Object entity) {
+    public @NotNull String getEntityType(@NotNull Object entity) {
         return ((Entity) entity).getType().toString().toLowerCase();
     }
 
     @Override
-    public boolean isSneaking(@NonNull TabPlayer player) {
+    public boolean isSneaking(@NotNull TabPlayer player) {
         return ((Player)player.getPlayer()).isSneaking();
     }
 
     @Override
-    public boolean isSwimming(@NonNull TabPlayer player) {
+    public boolean isSwimming(@NotNull TabPlayer player) {
         Player p = (Player) player.getPlayer();
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 14 && p.getPose() == Pose.SWIMMING) return true;
         return TAB.getInstance().getServerVersion().getMinorVersion() == 13 && p.isSwimming();
     }
 
     @Override
-    public boolean isGliding(@NonNull TabPlayer player) {
+    public boolean isGliding(@NotNull TabPlayer player) {
         return TAB.getInstance().getServerVersion().getMinorVersion() >= 9 && ((Player)player.getPlayer()).isGliding();
     }
 
     @Override
-    public boolean isSleeping(@NonNull TabPlayer player) {
+    public boolean isSleeping(@NotNull TabPlayer player) {
         return ((Player)player.getPlayer()).isSleeping();
     }
 
@@ -166,22 +165,22 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     }
 
     @Override
-    public double getX(@NonNull TabPlayer player) {
+    public double getX(@NotNull TabPlayer player) {
         return ((Player)player.getPlayer()).getLocation().getX();
     }
 
     @Override
-    public double getY(@NonNull Object entity) {
+    public double getY(@NotNull Object entity) {
         return ((Entity)entity).getLocation().getY();
     }
 
     @Override
-    public double getZ(@NonNull TabPlayer player) {
+    public double getZ(@NotNull TabPlayer player) {
         return ((Player)player.getPlayer()).getLocation().getZ();
     }
 
     @Override
-    public EntityData createDataWatcher(@NonNull TabPlayer viewer, byte flags, @NonNull String displayName, boolean nameVisible) {
+    public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
         DataWatcher datawatcher = new DataWatcher();
         datawatcher.getHelper().setEntityFlags(flags);
         datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());

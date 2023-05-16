@@ -1,11 +1,11 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import lombok.NonNull;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Cancelling GameMode change packet to spectator GameMode to avoid players being moved on
@@ -25,7 +25,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
      * @param   realGameMode
      *          Whether real GameMode should be shown or fake one
      */
-    private void updatePlayer(@NonNull TabPlayer viewer, boolean realGameMode) {
+    private void updatePlayer(@NotNull TabPlayer viewer, boolean realGameMode) {
         if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) return;
         for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
             if (viewer == target || target.getGamemode() != 3) continue;
@@ -34,7 +34,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     }
 
     @Override
-    public void onGameModeChange(@NonNull TabPlayer player) {
+    public void onGameModeChange(@NotNull TabPlayer player) {
         if (player.getGamemode() != 3) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.hasPermission(TabConstants.Permission.SPECTATOR_BYPASS)) continue;
@@ -45,7 +45,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     }
 
     @Override
-    public void onJoin(@NonNull TabPlayer p) {
+    public void onJoin(@NotNull TabPlayer p) {
         TAB.getInstance().getCPUManager().runTaskLater(100, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN,
                 () -> updatePlayer(p, false));
     }
@@ -65,7 +65,7 @@ public class SpectatorFix extends TabFeature implements JoinListener, GameModeLi
     }
 
     @Override
-    public void onServerChange(@NonNull TabPlayer changed, @NonNull String from, @NonNull String to) {
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         // 200ms delay for global playerlist, taking extra time
         TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.SERVER_SWITCH, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
