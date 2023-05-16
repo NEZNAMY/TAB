@@ -105,10 +105,8 @@ public abstract class NameTagX extends NameTag implements UnlimitedNametagManage
     }
 
     public void onUnlimitedDisableConditionChange(TabPlayer p, boolean disabledNow) {
-        updateTeamData(p);
-        if (!unlimitedDisableChecker.isDisabledPlayer(p)) {
-            getArmorStandManager(p).refresh(true);
-        }
+        if (!getDisableChecker().isDisabledPlayer(p)) updateTeamData(p);
+        getArmorStandManager(p).refresh(true);
     }
 
     /**

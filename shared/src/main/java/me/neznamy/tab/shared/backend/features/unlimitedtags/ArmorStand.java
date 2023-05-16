@@ -123,7 +123,8 @@ public class ArmorStand {
     public boolean calculateVisibility() {
         if (manager.isArmorStandsAlwaysVisible()) return true;
         if (owner.isDisguised() || manager.isOnBoat(owner)) return false;
-        return owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0;
+        return owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0 &&
+                !manager.getUnlimitedDisableChecker().isDisabledPlayer(owner);
     }
 
     /**

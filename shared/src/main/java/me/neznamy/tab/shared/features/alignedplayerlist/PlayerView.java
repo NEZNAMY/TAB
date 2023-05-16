@@ -52,6 +52,7 @@ public class PlayerView {
 
     private void updateAllPlayers() {
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+            if (feature.getDisableChecker().isDisabledPlayer(all)) continue;
             viewer.getTabList().updateDisplayName(feature.getTablistUUID(all, viewer), formatName(all));
         }
     }
@@ -179,7 +180,7 @@ public class PlayerView {
         int newMaxWidth = 0;
         TabPlayer newMaxPlayer = null;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all == ignoredPlayer) continue;
+            if (all == ignoredPlayer || !playerWidths.containsKey(all)) continue;
             if (all.isVanished() && !canSeeVanished && all != viewer) continue;
             int localWidth = playerWidths.get(all);
             if (localWidth > newMaxWidth) {
