@@ -87,7 +87,6 @@ public class BackendArmorStandManager implements ArmorStandManager {
      *          new sneaking status
      */
     public void sneak(boolean sneaking) {
-        if (this.sneaking == sneaking) return;
         this.sneaking = sneaking;
         for (BackendTabPlayer viewer : nearbyPlayers) {
             if (viewer.getVersion().getMinorVersion() == 14 && !nameTagX.isArmorStandsAlwaysVisible()) {

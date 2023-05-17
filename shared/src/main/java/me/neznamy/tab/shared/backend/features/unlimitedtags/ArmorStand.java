@@ -242,7 +242,7 @@ public class ArmorStand {
                 y = manager.getY(owner.getPlayer())-1.22;
             }
         }
-        y += getYAdd(manager.isSleeping(owner), asm.isSneaking(), viewer);
+        y += getYAdd(manager.isSleeping(owner), manager.isSneaking(owner), viewer);
         return y;
     }
 }
