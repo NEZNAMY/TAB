@@ -3,8 +3,6 @@ package me.neznamy.tab.shared.features.layout;
 import java.util.*;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
@@ -12,16 +10,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class ParentGroup {
 
-    @NotNull private final Layout layout;
+    @NotNull private final LayoutView layout;
     @Nullable private final Condition condition;
     @Getter private final int[] slots;
     @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
     @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
-    public ParentGroup(@NotNull Layout layout, @Nullable Condition condition, int[] slots) {
+    public ParentGroup(@NotNull LayoutView layout, @NotNull GroupPattern pattern, @NotNull TabPlayer viewer) {
         this.layout = layout;
-        this.condition = condition;
-        this.slots = slots;
+        this.condition = pattern.getCondition();
+        this.slots = pattern.getSlots();
         for (int slot : slots) {
             playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot)));
         }
@@ -50,29 +48,7 @@ public class ParentGroup {
         }
     }
     
-    public @NotNull List<TabList.Entry> getSlots(@NotNull TabPlayer p) {
-        List<TabList.Entry> data = new ArrayList<>();
-        playerSlots.values().forEach(s -> data.add(s.getSlot(p)));
-        return data;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static @NotNull ParentGroup fromMap(@NotNull Layout layout, @NotNull Map<String, Object> map) {
-        Condition condition = Condition.getCondition((String) map.get("condition"));
-        List<Integer> positions = new ArrayList<>();
-        for (String line : (List<String>) map.get("slots")) {
-            String[] arr = line.split("-");
-            int from = Integer.parseInt(arr[0]);
-            int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
-            for (int i = from; i<= to; i++) {
-                positions.add(i);
-            }
-        }
-        positions.removeAll(layout.getFixedSlots().keySet());
-        layout.getEmptySlots().removeAll(positions);
-        if (condition != null) {
-            layout.addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(condition.getName())));
-        }
-        return new ParentGroup(layout, condition, positions.stream().mapToInt(i->i).toArray());
+    public void sendSlots(@NotNull TabPlayer p) {
+        playerSlots.values().forEach(s -> p.getTabList().addEntry(s.getSlot(p)));
     }
 }

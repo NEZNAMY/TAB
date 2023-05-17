@@ -2,8 +2,11 @@ package me.neznamy.tab.shared.features.layout;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -12,34 +15,32 @@ import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.layout.skin.SkinManager;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class LayoutManager extends TabFeature implements JoinListener, QuitListener, VanishListener, Loadable,
-        UnLoadable, Refreshable {
+        UnLoadable, Refreshable, ServerSwitchListener {
 
     private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
     private final String defaultSkin = TAB.getInstance().getConfig().getString("layout.default-skin", "mineskin:1753261242");
     private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfig().getBoolean("layout.enable-remaining-players-text", true);
     private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfig().getString("layout.remaining-players-text", "... and %s more"));
     private final int emptySlotPing = TAB.getInstance().getConfig().getInt("layout.empty-slot-ping-value", 1000);
-    private final boolean hideVanishedPlayers = TAB.getInstance().getConfig().getBoolean("layout.hide-vanished-players", true);
     private final SkinManager skinManager = new SkinManager(defaultSkin);
     private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
         for (int slot=1; slot<=80; slot++) {
-            put(slot, new UUID(0, translateSlot(slot)));
+            put(slot, new UUID(0, direction.translateSlot(slot)));
         }
     }};
-    private final Map<String, Layout> layouts = loadLayouts();
-    private final WeakHashMap<TabPlayer, Layout> playerViews = new WeakHashMap<>();
+    private final Map<String, LayoutPattern> layouts = loadLayouts();
     private final WeakHashMap<TabPlayer, String> teamNames = new WeakHashMap<>();
     private final Map<TabPlayer, String> sortedPlayers = Collections.synchronizedMap(new TreeMap<>(Comparator.comparing(teamNames::get)));
     private final Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
     private PlayerList playerList;
     private final String featureName = "Layout";
     private final String refreshDisplayName = "Switching layouts";
+    private final Map<TabPlayer, LayoutView> views = new WeakHashMap<>();
 
     @Override
     public void load() {
@@ -59,27 +60,12 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private @NotNull Map<String, Layout> loadLayouts() {
-        Map<String, Layout> layoutMap = new LinkedHashMap<>();
-        for (Entry<Object, Object> layout : TAB.getInstance().getConfig().getConfigurationSection("layout.layouts").entrySet()) {
-            Map<String, Object> map = (Map<String, Object>) layout.getValue();
-            TAB.getInstance().getMisconfigurationHelper().checkLayoutMap(layout.getKey().toString(), map);
-            Condition displayCondition = Condition.getCondition((String) map.get("condition"));
-            if (displayCondition != null) addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.condition(displayCondition.getName())));
-            Layout l = new Layout(layout.getKey().toString(), this, displayCondition);
-            for (String fixedSlot : (List<String>)map.getOrDefault("fixed-slots", Collections.emptyList())) {
-                FixedSlot.registerFromLine(this, l, fixedSlot);
-            }
-            Map<String, Map<String, Object>> groups = (Map<String, Map<String, Object>>) map.getOrDefault("groups", Collections.emptyMap());
-            if (groups != null) {
-                for (Entry<String, Map<String, Object>> group : groups.entrySet()) {
-                    TAB.getInstance().getMisconfigurationHelper().checkLayoutGroupMap(l.getName(), group.getKey(), group.getValue());
-                    l.getGroups().add(ParentGroup.fromMap(l, group.getValue()));
-                }
-            }
-            layoutMap.put(layout.getKey().toString(), l);
-            TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layout(layout.getKey().toString()), l);
+    private @NotNull Map<String, LayoutPattern> loadLayouts() {
+        Map<String, LayoutPattern> layoutMap = new LinkedHashMap<>();
+        for (Entry<Object, Map<String, Object>> layout : TAB.getInstance().getConfig().<Object, Map<String, Object>>getConfigurationSection("layout.layouts").entrySet()) {
+            LayoutPattern pattern = new LayoutPattern(this, layout.getKey().toString(), layout.getValue());
+            layoutMap.put(pattern.getName(), pattern);
+            TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layout(layout.getKey().toString()), pattern);
         }
         return layoutMap;
     }
@@ -88,10 +74,13 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     public void onJoin(@NotNull TabPlayer p) {
         teamNames.put(p, sorting.getFullTeamName(p));
         sortedPlayers.put(p, sorting.getFullTeamName(p));
-        Layout highest = getHighestLayout(p);
-        if (highest != null) highest.sendTo(p);
-        playerViews.put(p, highest);
-        layouts.values().forEach(Layout::tick);
+        LayoutPattern highest = getHighestLayout(p);
+        if (highest != null) {
+            LayoutView view = new LayoutView(this, highest, p);
+            view.send();
+            views.put(p, view);
+        }
+        views.values().forEach(LayoutView::tick);
 
         // Unformat original entries for players who can see a layout to avoid spaces due to unparsed placeholders and such
         if (highest == null) return;
@@ -104,25 +93,23 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     public void onQuit(@NotNull TabPlayer p) {
         sortedPlayers.remove(p);
         teamNames.remove(p);
-        layouts.values().forEach(Layout::tick);
-    }
-
-    private int translateSlot(int slot) {
-        if (direction == Direction.ROWS) {
-            return (slot-1)%4*20+(slot-((slot-1)%4))/4+1;
-        } else {
-            return slot;
-        }
+        views.values().forEach(LayoutView::tick);
     }
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        Layout highest = getHighestLayout(p);
-        Layout current = playerViews.get(p);
-        if (current != highest) {
-            if (current != null) current.removeFrom(p);
-            if (highest != null) highest.sendTo(p);
-            playerViews.put(p, highest);
+        LayoutPattern highest = getHighestLayout(p);
+        String highestName = highest == null ? null : highest.getName();
+        LayoutView current = views.get(p);
+        String currentName = current == null ? null : current.getPattern().getName();
+        if (!Objects.equals(highestName, currentName)) {
+            if (current != null) current.destroy();
+            views.remove(p);
+            if (highest != null) {
+                LayoutView view = new LayoutView(this, highest, p);
+                view.send();
+                views.put(p, view);
+            }
         }
     }
 
@@ -136,12 +123,12 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
 
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer p) {
-        layouts.values().forEach(Layout::tick);
+        views.values().forEach(LayoutView::tick);
     }
 
-    private @Nullable Layout getHighestLayout(@NotNull TabPlayer p) {
-        for (Layout layout : layouts.values()) {
-            if (layout.isConditionMet(p)) return layout;
+    private @Nullable LayoutPattern getHighestLayout(@NotNull TabPlayer p) {
+        for (LayoutPattern pattern : layouts.values()) {
+            if (pattern.isConditionMet(p)) return pattern;
         }
         return null;
     }
@@ -154,11 +141,31 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
         sortedPlayers.remove(p);
         teamNames.put(p, teamName);
         sortedPlayers.put(p, teamName);
-        layouts.values().forEach(Layout::tick);
+        views.values().forEach(LayoutView::tick);
     }
 
+    @Override
+    public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        LayoutView view = views.get(changed);
+        if (view != null) view.send();
+    }
+
+    @RequiredArgsConstructor
     public enum Direction {
 
-        COLUMNS, ROWS
+        COLUMNS(slot -> slot),
+        ROWS(slot -> (slot-1)%4*20+(slot-((slot-1)%4))/4+1);
+
+        @NotNull private final Function<Integer, Integer> slotTranslator;
+
+        // 1.19.2-
+        public int translateSlot(int slot) {
+            return slotTranslator.apply(slot);
+        }
+
+        // 1.19.3+
+        public String getEntryName(TabPlayer viewer, int slot) {
+            return viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ? "|slot_" + (10+slotTranslator.apply(slot)) : "";
+        }
     }
 }

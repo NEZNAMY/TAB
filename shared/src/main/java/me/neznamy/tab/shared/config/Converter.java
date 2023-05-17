@@ -422,5 +422,6 @@ public class Converter {
         disabledConditionConverter.accept(config.getConfigurationSection("scoreboard-teams.unlimited-nametag-mode"));
         disabledConditionConverter.accept(config.getConfigurationSection("yellow-number-in-tablist"));
         disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
+        if (config.hasConfigOption("layout.hide-vanished-players")) config.set("layout.hide-vanished-players", null);
     }
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerSlot {
 
-    private final Layout layout;
+    private final LayoutView layout;
     @Getter private final UUID uniqueId;
     @Getter private TabPlayer player;
     private String text = "";
@@ -23,11 +23,9 @@ public class PlayerSlot {
         if (player == newPlayer) return;
         this.player = newPlayer;
         if (player != null) text = "";
-        for (TabPlayer viewer : layout.getViewers()) {
-            if (viewer.getVersion().getMinorVersion() < 8 || viewer.isBedrockPlayer()) continue;
-            viewer.getTabList().removeEntry(uniqueId);
-            viewer.getTabList().addEntry(getSlot(viewer));
-        }
+        if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
+        layout.getViewer().getTabList().removeEntry(uniqueId);
+        layout.getViewer().getTabList().addEntry(getSlot(layout.getViewer()));
     }
 
     public @NotNull TabList.Entry getSlot(@NotNull TabPlayer p) {
@@ -62,10 +60,8 @@ public class PlayerSlot {
         if (player != null) {
             setPlayer(null);
         } else {
-            for (TabPlayer all : layout.getViewers()) {
-                if (all.getVersion().getMinorVersion() < 8 || all.isBedrockPlayer()) continue;
-                all.getTabList().updateDisplayName(uniqueId, IChatBaseComponent.optimizedComponent(text));
-            }
+            if (layout.getViewer().getVersion().getMinorVersion() < 8 || layout.getViewer().isBedrockPlayer()) return;
+            layout.getViewer().getTabList().updateDisplayName(uniqueId, IChatBaseComponent.optimizedComponent(text));
         }
     }
 }

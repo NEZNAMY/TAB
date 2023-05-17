@@ -7,8 +7,8 @@ import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.layout.Layout;
 import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.layout.LayoutView;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -63,7 +63,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      */
     public UUID getTablistUUID(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         if (layoutManager != null) {
-            Layout layout = layoutManager.getPlayerViews().get(viewer);
+            LayoutView layout = layoutManager.getViews().get(viewer);
             if (layout != null) {
                 PlayerSlot slot = layout.getSlot(p);
                 if (slot != null) {
@@ -101,9 +101,12 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
         TabPlayer player = (TabPlayer) p;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            viewer.getTabList().updateDisplayName(getTablistUUID(player, viewer), format ? getTabFormat(player, viewer) : null);
+            UUID tablistId = getTablistUUID(player, viewer);
+            viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
+                    tablistId.getMostSignificantBits() == 0 ? new IChatBaseComponent(player.getName()) : null);
         }
-        if (redis != null) redis.updateTabFormat(player, player.getProperty(TabConstants.Property.TABPREFIX).get() + player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + player.getProperty(TabConstants.Property.TABSUFFIX).get());
+        if (redis != null) redis.updateTabFormat(player, player.getProperty(TabConstants.Property.TABPREFIX).get() +
+                player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + player.getProperty(TabConstants.Property.TABSUFFIX).get());
     }
 
     /**
