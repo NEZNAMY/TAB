@@ -13,6 +13,7 @@ public class ParentGroup {
     @NotNull private final LayoutView layout;
     @Nullable private final Condition condition;
     @Getter private final int[] slots;
+    private final TabPlayer viewer;
     @Getter private final Map<Integer, PlayerSlot> playerSlots = new HashMap<>();
     @Getter final Map<TabPlayer, PlayerSlot> players = new HashMap<>();
 
@@ -20,6 +21,7 @@ public class ParentGroup {
         this.layout = layout;
         this.condition = pattern.getCondition();
         this.slots = pattern.getSlots();
+        this.viewer = viewer;
         for (int slot : slots) {
             playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot)));
         }
@@ -48,7 +50,7 @@ public class ParentGroup {
         }
     }
     
-    public void sendSlots(@NotNull TabPlayer p) {
-        playerSlots.values().forEach(s -> p.getTabList().addEntry(s.getSlot(p)));
+    public void sendSlots() {
+        playerSlots.values().forEach(s -> viewer.getTabList().addEntry(s.getSlot(viewer)));
     }
 }
