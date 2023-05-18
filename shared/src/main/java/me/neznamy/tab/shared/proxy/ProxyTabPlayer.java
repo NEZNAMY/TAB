@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -95,6 +96,16 @@ public abstract class ProxyTabPlayer extends TabPlayer {
             for (Map.Entry<String, Object> entry : nametagx.getStaticLines().entrySet()) {
                 args.add(entry.getKey());
                 args.add(Double.valueOf(String.valueOf(entry.getValue())));
+            }
+        }
+        Map<String, Map<Object, Object>> replacements = TAB.getInstance().getConfig().getConfigurationSection("placeholder-output-replacements");
+        args.add(replacements.size());
+        for (Map.Entry<String, Map<Object, Object>> entry : replacements.entrySet()) {
+            args.add(entry.getKey());
+            args.add(entry.getValue().size());
+            for (Map.Entry<Object, Object> rule : entry.getValue().entrySet()) {
+                args.add(EnumChatFormat.color(String.valueOf(rule.getKey())));
+                args.add(EnumChatFormat.color(String.valueOf(rule.getValue())));
             }
         }
         sendPluginMessage(args.toArray());
