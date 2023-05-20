@@ -32,6 +32,12 @@ public class MisconfigurationHelper {
     public void fixRefreshIntervals(@NotNull Map<String, Integer> refreshIntervals) {
         LinkedHashMap<String, Integer> valuesToFix = new LinkedHashMap<>();
         for (Map.Entry<String, Integer> entry : refreshIntervals.entrySet()) {
+            if (entry.getValue() == null) {
+                startupWarn("Refresh interval of " + entry.getKey() +
+                        " is set to null. Define a valid value or remove it if you don't want to override default value.");
+                valuesToFix.put(entry.getKey(), Placeholder.MINIMUM_REFRESH_INTERVAL);
+                continue;
+            }
             int interval = entry.getValue();
             if (interval < 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
