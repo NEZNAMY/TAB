@@ -5,8 +5,11 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.api.tablist.layout.Layout;
+import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -19,14 +22,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-public class LayoutManager extends TabFeature implements JoinListener, QuitListener, VanishListener, Loadable,
+public class LayoutManagerImpl extends TabFeature implements LayoutManager, JoinListener, QuitListener, VanishListener, Loadable,
         UnLoadable, Refreshable, ServerSwitchListener {
 
+    /** Config options */
     private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
     private final String defaultSkin = TAB.getInstance().getConfig().getString("layout.default-skin", "mineskin:1753261242");
     private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfig().getBoolean("layout.enable-remaining-players-text", true);
     private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfig().getString("layout.remaining-players-text", "... and %s more"));
     private final int emptySlotPing = TAB.getInstance().getConfig().getInt("layout.empty-slot-ping-value", 1000);
+
     private final SkinManager skinManager = new SkinManager(defaultSkin);
     private final Map<Integer, UUID> uuids = new HashMap<Integer, UUID>() {{
         for (int slot=1; slot<=80; slot++) {
@@ -40,7 +45,8 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     private PlayerList playerList;
     private final String featureName = "Layout";
     private final String refreshDisplayName = "Switching layouts";
-    private final Map<TabPlayer, LayoutView> views = new WeakHashMap<>();
+    private final WeakHashMap<TabPlayer, LayoutView> views = new WeakHashMap<>();
+    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, LayoutPattern> forcedLayouts = new WeakHashMap<>();
 
     @Override
     public void load() {
@@ -127,6 +133,7 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     }
 
     private @Nullable LayoutPattern getHighestLayout(@NotNull TabPlayer p) {
+        if (forcedLayouts.containsKey(p)) return forcedLayouts.get(p);
         for (LayoutPattern pattern : layouts.values()) {
             if (pattern.isConditionMet(p)) return pattern;
         }
@@ -148,6 +155,23 @@ public class LayoutManager extends TabFeature implements JoinListener, QuitListe
     public void onServerChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
         LayoutView view = views.get(changed);
         if (view != null) view.send();
+    }
+
+    @Override
+    public Layout createNewLayout(String name) {
+        return new LayoutPattern(this, name, Collections.emptyMap());
+    }
+
+    @Override
+    public void sendLayout(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable Layout layout) {
+        forcedLayouts.put(player, (LayoutPattern) layout);
+        refresh((TabPlayer) player, false);
+    }
+
+    @Override
+    public void resetLayout(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        forcedLayouts.remove(player);
+        refresh((TabPlayer) player, false);
     }
 
     @RequiredArgsConstructor

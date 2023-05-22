@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -23,7 +23,7 @@ public class SetCollisionCommand extends SubCommand {
 
     @Override
     public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
-        TeamManager feature = TAB.getInstance().getTeamManager();
+        NameTagManager feature = TAB.getInstance().getNameTagManager();
         if (feature == null) {
             sendMessage(sender, getMessages().getTeamFeatureRequired());
             return;

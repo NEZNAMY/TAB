@@ -5,15 +5,17 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.NonNull;
+import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.shared.features.types.JoinListener;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -30,13 +32,13 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Class for handling player sorting rules
  */
-public class Sorting extends TabFeature implements JoinListener, Loadable, Refreshable {
+public class Sorting extends TabFeature implements SortingManager, JoinListener, Loadable, Refreshable {
 
     @Getter private final String featureName = "Team name refreshing";
     @Getter private final String refreshDisplayName = "Updating team name";
 
     private NameTag nameTags;
-    private LayoutManager layout;
+    private LayoutManagerImpl layout;
     private RedisSupport redis;
     
     //map of all registered sorting types
@@ -52,6 +54,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     private final WeakHashMap<TabPlayer, String> shortTeamNames = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> fullTeamNames = new WeakHashMap<>();
     private final WeakHashMap<TabPlayer, String> teamNameNotes = new WeakHashMap<>();
+    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, String> forcedTeamName = new WeakHashMap<>();
     
     /**
      * Constructs new instance and loads config options
@@ -72,7 +75,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
         String previousShortName = shortTeamNames.get(p);
         constructTeamNames(p);
         if (!shortTeamNames.get(p).equals(previousShortName)) {
-            if (nameTags != null && nameTags.getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.getDisableChecker().isDisabledPlayer(p)) {
+            if (nameTags != null && getForcedTeamName(p) == null && !nameTags.hasTeamHandlingPaused(p) && !nameTags.getDisableChecker().isDisabledPlayer(p)) {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(previousShortName);
                 }
@@ -85,7 +88,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     @Override
     public void load() {
         // All of these features are instantiated after this one, so they must be detected later
-        nameTags = (NameTag) TAB.getInstance().getTeamManager();
+        nameTags = (NameTag) TAB.getInstance().getNameTagManager();
         layout = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
         redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -183,8 +186,7 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     }
 
     public String getShortTeamName(@NotNull TabPlayer p) {
-        TeamManager teams = TAB.getInstance().getTeamManager();
-        String forced = teams == null ? null : teams.getForcedTeamName(p);
+        String forced = getForcedTeamName(p);
         if (forced != null) return forced;
         return shortTeamNames.get(p);
     }
@@ -200,4 +202,26 @@ public class Sorting extends TabFeature implements JoinListener, Loadable, Refre
     public void setTeamNameNote(@NotNull TabPlayer p, @NotNull String note) {
         teamNameNotes.put(p, note);
     }
+
+    @Override
+    public void forceTeamName(@NonNull me.neznamy.tab.api.TabPlayer player, String name) {
+        if (Objects.equals(forcedTeamName.get(player), name)) return;
+        if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
+        if (name != null) setTeamNameNote((TabPlayer) player, "Set using API");
+        NameTag nametag = (NameTag) TAB.getInstance().getNameTagManager();
+        if (nametag != null) nametag.unregisterTeam((TabPlayer) player, getShortTeamName((TabPlayer) player));
+        forcedTeamName.put(player, name);
+        if (nametag != null) nametag.registerTeam((TabPlayer) player);
+        if (layout != null) layout.updateTeamName((TabPlayer) player, fullTeamNames.get(player));
+        if (redis != null && nametag != null) redis.updateTeam((TabPlayer) player, getShortTeamName((TabPlayer) player),
+                ((TabPlayer) player).getProperty(TabConstants.Property.TAGPREFIX).get(),
+                ((TabPlayer) player).getProperty(TabConstants.Property.TAGSUFFIX).get(),
+                (nametag.getTeamVisibility((TabPlayer) player, (TabPlayer) player) ? Scoreboard.NameVisibility.ALWAYS : Scoreboard.NameVisibility.NEVER));
+    }
+
+    @Override
+    public String getForcedTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return forcedTeamName.get(player);
+    }
+
 }

@@ -120,7 +120,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @SuppressWarnings("unchecked")
     @Override
     public void modifyPlayers(@NotNull Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
-        if (TAB.getInstance().getTeamManager() == null) return;
+        if (TAB.getInstance().getNameTagManager() == null) return;
         int action = PacketPlayOutScoreboardTeamStorage.ACTION.getInt(packetPlayOutScoreboardTeam);
         if (action == 1 || action == 2 || action == 4) return;
         Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeamStorage.PLAYERS.get(packetPlayOutScoreboardTeam);
@@ -140,8 +140,8 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
                 continue;
             }
-            if (!((NameTag)TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
+            if (!((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !teamName.equals(expectedTeam)) {
                 logTeamOverride(teamName, p.getName(), expectedTeam);
             } else {
                 newList.add(entry);

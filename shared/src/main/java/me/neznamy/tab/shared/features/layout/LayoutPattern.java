@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
+import lombok.NonNull;
+import me.neznamy.tab.api.tablist.layout.Layout;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.types.Refreshable;
@@ -13,19 +15,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 @Getter
-public class LayoutPattern extends TabFeature implements Refreshable {
+public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     @Getter private final String featureName = "Layout";
     @Getter private final String refreshDisplayName = "Updating player groups";
 
-    @NotNull private final LayoutManager manager;
+    @NotNull private final LayoutManagerImpl manager;
     @NotNull private final String name;
     @Nullable private final Condition condition;
     private final Map<Integer, FixedSlot> fixedSlots = new HashMap<>();
     private final List<GroupPattern> groups = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public LayoutPattern(@NotNull LayoutManager manager, @NotNull String name, @NotNull Map<String, Object> map) {
+    public LayoutPattern(@NotNull LayoutManagerImpl manager, @NotNull String name, @NotNull Map<String, Object> map) {
         this.manager = manager;
         this.name = name;
         TAB.getInstance().getMisconfigurationHelper().checkLayoutMap(name, map);
@@ -71,5 +73,31 @@ public class LayoutPattern extends TabFeature implements Refreshable {
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         manager.getViews().values().forEach(LayoutView::tick);
+    }
+
+    @Override
+    public void addFixedSlot(int slot, @NonNull String text) {
+        addFixedSlot(slot, text, manager.getDefaultSkin(), manager.getEmptySlotPing());
+    }
+
+    @Override
+    public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin) {
+        addFixedSlot(slot, text, skin, manager.getEmptySlotPing());
+    }
+
+    @Override
+    public void addFixedSlot(int slot, @NonNull String text, int ping) {
+        addFixedSlot(slot, text, manager.getDefaultSkin(), ping);
+    }
+
+    @Override
+    public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
+        fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text,
+                "Layout-" + text + "-SLOT-" + slot, manager.getSkinManager().getSkin(skin), ping));
+    }
+
+    @Override
+    public void addGroup(@Nullable String condition, int[] slots) {
+        addGroup(Condition.getCondition(condition), slots);
     }
 }

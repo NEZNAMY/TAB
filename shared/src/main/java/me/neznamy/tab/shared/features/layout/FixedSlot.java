@@ -20,7 +20,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
     @Getter private final String featureName = "Layout";
     @Getter private final String refreshDisplayName = "Updating fixed slots";
 
-    private final LayoutManager manager;
+    private final LayoutManagerImpl manager;
     @Getter private final int slot;
     private final LayoutPattern pattern;
     private final UUID id;
@@ -47,7 +47,7 @@ public class FixedSlot extends TabFeature implements Refreshable {
         );
     }
 
-    public static @Nullable FixedSlot fromLine(@NotNull String line, @NotNull LayoutPattern pattern, @NotNull LayoutManager manager) {
+    public static @Nullable FixedSlot fromLine(@NotNull String line, @NotNull LayoutPattern pattern, @NotNull LayoutManagerImpl manager) {
         String[] array = line.split("\\|");
         if (array.length < 2) {
             TAB.getInstance().getMisconfigurationHelper().invalidFixedSlotDefinition(pattern.getName(), line);

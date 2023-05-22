@@ -84,8 +84,8 @@ public class DebugCommand extends SubCommand {
             sendMessage(sender, "&atabsuffix: &cDisabled");
             sendMessage(sender, "&acustomtabname: &cDisabled");
         }
-        if (tab.getTeamManager() != null) {
-            boolean disabledNametags = ((NameTag) tab.getTeamManager()).getDisableChecker().isDisabledPlayer(analyzed);
+        if (tab.getNameTagManager() != null) {
+            boolean disabledNametags = ((NameTag) tab.getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed);
             showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
             showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
             for (String line : getExtraLines()) {
@@ -149,8 +149,8 @@ public class DebugCommand extends SubCommand {
     private @NotNull String getTeamName(@NotNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
-        if (TAB.getInstance().getTeamManager() != null &&
-                ((NameTag) TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
+        if (TAB.getInstance().getNameTagManager() != null &&
+                ((NameTag) TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
             return "&eTeam name: &cSorting is disabled in player's world/server";
         }
         return "&eTeam name: &a" + (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.LAYOUT)
@@ -167,8 +167,8 @@ public class DebugCommand extends SubCommand {
     private @NotNull String getTeamNameNote(@NotNull TabPlayer analyzed) {
         Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
         if (sorting == null) return "";
-        if (TAB.getInstance().getTeamManager() != null &&
-                ((NameTag) TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
+        if (TAB.getInstance().getNameTagManager() != null &&
+                ((NameTag) TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed)) {
             return "";
         }
         return "&eSorting note: &r" + sorting.getTeamNameNote(analyzed);

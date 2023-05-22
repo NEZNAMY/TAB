@@ -16,6 +16,7 @@ public class TabConstants {
     public static final String PLUGIN_DESCRIPTION = "@description@";
     public static final String PLUGIN_WEBSITE = "@website@";
     public static final String PLUGIN_AUTHOR = "@author@";
+    public static final int API_VERSION = 1;
 
     public static final String NO_GROUP = "NONE";
     public static final String DEFAULT_GROUP = "_DEFAULT_";

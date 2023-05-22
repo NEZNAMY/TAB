@@ -16,7 +16,7 @@ import me.neznamy.tab.shared.features.alignedplayerlist.AlignedPlayerList;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
-import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
@@ -335,7 +335,7 @@ public class FeatureManager {
 
         // Must be loaded after: Sorting
         if (minorVersion >= 8 && configuration.getConfig().getBoolean("layout.enabled", false)) {
-            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManager());
+            featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
         }
 
         // Must be loaded after: Layout

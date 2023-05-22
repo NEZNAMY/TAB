@@ -5,12 +5,14 @@ import lombok.Setter;
 import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BossBarManager;
+import me.neznamy.tab.api.tablist.SortingManager;
+import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TablistFormatManager;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.command.DisabledCommand;
@@ -258,7 +260,7 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @Nullable TeamManager getTeamManager() {
+    public @Nullable NameTagManager getNameTagManager() {
         if (featureManager.isFeatureEnabled(TabConstants.Feature.NAME_TAGS)) return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
         return featureManager.getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
     }
@@ -297,6 +299,21 @@ public class TAB extends TabAPI {
     @Override
     public @Nullable TablistFormatManager getTablistFormatManager() {
         return featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
+    }
+
+    @Override
+    public @Nullable LayoutManager getLayoutManager() {
+        return featureManager.getFeature(TabConstants.Feature.LAYOUT);
+    }
+
+    @Override
+    public @Nullable SortingManager getSortingManager() {
+        return featureManager.getFeature(TabConstants.Feature.SORTING);
+    }
+
+    @Override
+    public int getApiVersion() {
+        return TabConstants.API_VERSION;
     }
 
     /**

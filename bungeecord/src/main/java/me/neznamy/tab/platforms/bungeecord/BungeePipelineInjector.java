@@ -103,7 +103,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
 
     @Override
     public void modifyPlayers(@NotNull Object team) {
-        if (TAB.getInstance().getTeamManager() == null) return;
+        if (TAB.getInstance().getNameTagManager() == null) return;
         Team packet = (Team) team;
         if (packet.getMode() == 1 || packet.getMode() == 2 || packet.getMode() == 4) return;
         Collection<String> col = Lists.newArrayList(packet.getPlayers());
@@ -111,8 +111,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
             String expectedTeam = sorting.getShortTeamName(p);
             if (expectedTeam != null && col.contains(p.getName()) &&
-                    !((NameTag)TAB.getInstance().getTeamManager()).getDisableChecker().isDisabledPlayer(p) &&
-                    !TAB.getInstance().getTeamManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
+                    !((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
+                    !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
                 logTeamOverride(packet.getName(), p.getName(), expectedTeam);
                 col.remove(p.getName());
             }

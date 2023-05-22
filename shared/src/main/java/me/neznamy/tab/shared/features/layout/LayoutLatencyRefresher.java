@@ -12,9 +12,9 @@ public class LayoutLatencyRefresher extends TabFeature implements Refreshable {
 
     @Getter private final String featureName = "Layout";
     @Getter private final String refreshDisplayName = "Updating latency";
-    @NotNull private final LayoutManager manager;
+    @NotNull private final LayoutManagerImpl manager;
 
-    public LayoutLatencyRefresher(@NotNull LayoutManager manager) {
+    public LayoutLatencyRefresher(@NotNull LayoutManagerImpl manager) {
         this.manager = manager;
         TAB.getInstance().getPlaceholderManager().addUsedPlaceholder(TabConstants.Placeholder.PING, this);
     }

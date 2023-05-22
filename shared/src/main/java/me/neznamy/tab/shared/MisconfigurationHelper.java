@@ -3,7 +3,7 @@ package me.neznamy.tab.shared;
 import java.util.*;
 
 import me.neznamy.tab.shared.TabConstants.Placeholder;
-import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -151,7 +151,7 @@ public class MisconfigurationHelper {
      *          Configured direction
      */
     public void invalidLayoutDirection(@NotNull String direction) {
-        startupWarn("\"&e" + direction + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutManager.Direction.values()) + ". &bUsing COLUMNS");
+        startupWarn("\"&e" + direction + "&c\" is not a valid type of layout direction. Valid options are: &e" + Arrays.deepToString(LayoutManagerImpl.Direction.values()) + ". &bUsing COLUMNS");
     }
 
     public void invalidSortingTypeElement(@NotNull String element, @NotNull Set<String> validTypes) {

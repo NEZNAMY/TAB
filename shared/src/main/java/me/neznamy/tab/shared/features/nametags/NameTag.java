@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.features.nametags;
 import lombok.Getter;
 import lombok.NonNull;
 import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;
 import me.neznamy.tab.shared.platform.Scoreboard.NameVisibility;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class NameTag extends TabFeature implements TeamManager, JoinListener, QuitListener,
+public class NameTag extends TabFeature implements NameTagManager, JoinListener, QuitListener,
         Loadable, UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
 
     @Getter private final String featureName = "NameTags";
@@ -35,7 +35,6 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     private final Set<me.neznamy.tab.api.TabPlayer> hiddenNameTag = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Set<me.neznamy.tab.api.TabPlayer> teamHandlingPaused = Collections.newSetFromMap(new WeakHashMap<>());
     protected final WeakHashMap<me.neznamy.tab.api.TabPlayer, List<me.neznamy.tab.api.TabPlayer>> hiddenNameTagFor = new WeakHashMap<>();
-    private final WeakHashMap<me.neznamy.tab.api.TabPlayer, String> forcedTeamName = new WeakHashMap<>();
     protected final Set<me.neznamy.tab.api.TabPlayer> playersWithInvisibleNameTagView = Collections.newSetFromMap(new WeakHashMap<>());
     @Getter private final DisableChecker disableChecker;
     private RedisSupport redis;
@@ -207,25 +206,6 @@ public class NameTag extends TabFeature implements TeamManager, JoinListener, Qu
     @Override
     public boolean hasTeamHandlingPaused(@NonNull me.neznamy.tab.api.TabPlayer player) {
         return teamHandlingPaused.contains(player);
-    }
-
-    @Override
-    public void forceTeamName(@NonNull me.neznamy.tab.api.TabPlayer player, String name) {
-        if (Objects.equals(forcedTeamName.get(player), name)) return;
-        if (name != null && name.length() > 16) throw new IllegalArgumentException("Team name cannot be more than 16 characters long.");
-        unregisterTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player));
-        forcedTeamName.put(player, name);
-        registerTeam((TabPlayer) player);
-        if (name != null) sorting.setTeamNameNote((TabPlayer) player, "Set using API");
-        if (redis != null) redis.updateTeam((TabPlayer) player, sorting.getShortTeamName((TabPlayer) player),
-                ((TabPlayer) player).getProperty(TabConstants.Property.TAGPREFIX).get(),
-                ((TabPlayer) player).getProperty(TabConstants.Property.TAGSUFFIX).get(),
-                (getTeamVisibility((TabPlayer) player, (TabPlayer) player) ? NameVisibility.ALWAYS : NameVisibility.NEVER));
-    }
-
-    @Override
-    public String getForcedTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        return forcedTeamName.get(player);
     }
 
     @Override

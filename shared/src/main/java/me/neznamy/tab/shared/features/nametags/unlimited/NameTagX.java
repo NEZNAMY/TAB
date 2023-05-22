@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.nametags.unlimited;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.team.UnlimitedNametagManager;
+import me.neznamy.tab.api.nametag.UnlimitedNameTagManager;
 import me.neznamy.tab.shared.features.types.DisableChecker;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.util.Preconditions;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.BiFunction;
 
-public abstract class NameTagX extends NameTag implements UnlimitedNametagManager {
+public abstract class NameTagX extends NameTag implements UnlimitedNameTagManager {
 
     //config options
     @Getter private final boolean disableOnBoats = TAB.getInstance().getConfiguration().getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.disable-on-boats", true);

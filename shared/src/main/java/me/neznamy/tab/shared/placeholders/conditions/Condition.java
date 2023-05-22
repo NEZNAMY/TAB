@@ -171,6 +171,19 @@ public class Condition {
             } else {
                 type = false;
                 conditions = Arrays.asList(string.split("\\|"));
+
+                // Fix conflict with | for multiple conditions and |- for "startsWith"
+                List<String> fixedConditions = new ArrayList<>();
+                for (int i=0; i<conditions.size(); i++) {
+                    String expression = conditions.get(i);
+                    if (i < conditions.size()-1 && conditions.get(i+1).startsWith("-")) {
+                        fixedConditions.add(expression + "|" + conditions.get(i+1));
+                        i++;
+                    } else {
+                        fixedConditions.add(expression);
+                    }
+                }
+                conditions = fixedConditions;
             }
             Condition c = new Condition(type, "AnonymousCondition[" + string + "]", conditions, "true", "false");
             c.finishSetup();

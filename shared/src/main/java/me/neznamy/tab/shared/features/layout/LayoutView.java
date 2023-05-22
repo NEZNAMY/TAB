@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Getter
 public class LayoutView {
 
-    private final LayoutManager manager;
+    private final LayoutManagerImpl manager;
     private final LayoutPattern pattern;
     private final TabPlayer viewer;
     private final Condition displayCondition;
@@ -28,7 +28,7 @@ public class LayoutView {
     private final Collection<FixedSlot> fixedSlots;
     private final List<ParentGroup> groups = new ArrayList<>();
 
-    public LayoutView(LayoutManager manager, LayoutPattern pattern, TabPlayer viewer) {
+    public LayoutView(LayoutManagerImpl manager, LayoutPattern pattern, TabPlayer viewer) {
         this.manager = manager;
         this.viewer = viewer;
         this.pattern = pattern;

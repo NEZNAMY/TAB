@@ -1,4 +1,4 @@
-package me.neznamy.tab.api.team;
+package me.neznamy.tab.api.nametag;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface UnlimitedNametagManager extends TeamManager {
+public interface UnlimitedNameTagManager extends NameTagManager {
 
     void disableArmorStands(@NonNull TabPlayer player);
     

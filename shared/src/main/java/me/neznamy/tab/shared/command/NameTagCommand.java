@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
@@ -61,7 +61,7 @@ public class NameTagCommand extends SubCommand {
     private void toggle(@Nullable TabPlayer sender, @Nullable TabPlayer target, boolean silent) {
         if (target == null) return;
 
-        TeamManager teams = TAB.getInstance().getTeamManager();
+        NameTagManager teams = TAB.getInstance().getNameTagManager();
         if (teams == null) {
             sendMessage(sender, getMessages().getNameTagFeatureNotEnabled());
             return;

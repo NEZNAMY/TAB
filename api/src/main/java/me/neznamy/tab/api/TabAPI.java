@@ -8,9 +8,11 @@ import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.event.EventBus;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
+import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TablistFormatManager;
-import me.neznamy.tab.api.team.TeamManager;
+import me.neznamy.tab.api.nametag.NameTagManager;
+import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,7 +88,7 @@ public abstract class TabAPI {
      *
      * @return  team manager
      */
-    public abstract @Nullable TeamManager getTeamManager();
+    public abstract @Nullable NameTagManager getNameTagManager();
 
     /**
      * Returns header/footer manager instance if the feature is enabled. If not, returns {@code null}.
@@ -110,9 +112,31 @@ public abstract class TabAPI {
     public abstract @Nullable TablistFormatManager getTablistFormatManager();
 
     /**
+     * Returns Layout manager instance if the feature is enabled. If not, returns {@code null}.
+     *
+     * @return  Layout manager
+     */
+    public abstract @Nullable LayoutManager getLayoutManager();
+
+    /**
+     * Returns Sorting manager instance if at least one feature capable of sorting players is enabled.
+     * If not, returns {@code null}.
+     *
+     * @return  Sorting manager
+     */
+    public abstract @Nullable SortingManager getSortingManager();
+
+    /**
      * Gets the event bus for registering listeners for TAB events.
      *
      * @return  the event bus
      */
     public abstract @Nullable EventBus getEventBus();
+
+    /**
+     * Returns current API version. Starting at 1, it is incremented every time something changes.
+     *
+     * @return  current API version
+     */
+    public abstract int getApiVersion();
 }

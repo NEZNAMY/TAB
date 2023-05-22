@@ -1,10 +1,10 @@
-package me.neznamy.tab.api.team;
+package me.neznamy.tab.api.nametag;
 
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.Nullable;
 
-public interface TeamManager {
+public interface NameTagManager {
 
     /**
      * Makes player's NameTag globally invisible
@@ -94,27 +94,6 @@ public interface TeamManager {
      * @return  true if paused, false if not
      */
     boolean hasTeamHandlingPaused(@NonNull TabPlayer player);
-
-    /**
-     * Forces new team name for the player until this method is called again with null argument and
-     * performs all actions to change player's team name
-     *
-     * @param   player
-     *          player to set team name of
-     * @param   teamName
-     *          forced team name
-     */
-    void forceTeamName(@NonNull TabPlayer player, @Nullable String teamName);
-
-    /**
-     * Returns forced team name of player or null if not forced
-     *
-     * @param   player
-     *          player to check forced team name of
-     * @return  forced team name of player or null if not forced
-     */
-    @Nullable String getForcedTeamName(@NonNull TabPlayer player);
-
 
     /**
      * Forces collision rule for the player. Setting it to null will remove forced value
