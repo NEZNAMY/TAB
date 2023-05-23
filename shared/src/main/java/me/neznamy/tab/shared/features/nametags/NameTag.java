@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features.nametags;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import me.neznamy.tab.shared.platform.Scoreboard.CollisionRule;

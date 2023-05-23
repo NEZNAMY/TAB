@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.chat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.text.Component;

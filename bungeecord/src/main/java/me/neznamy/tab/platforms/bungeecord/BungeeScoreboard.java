@@ -1,6 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.api.tablist.layout.Layout;
 import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import me.neznamy.tab.shared.chat.EnumChatFormat;

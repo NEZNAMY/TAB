@@ -3,7 +3,7 @@ package me.neznamy.tab.shared.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import org.jetbrains.annotations.NotNull;

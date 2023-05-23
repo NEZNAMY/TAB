@@ -2,7 +2,6 @@ package me.neznamy.tab.shared.platform;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.api.*;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.hook.FloodgateHook;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;

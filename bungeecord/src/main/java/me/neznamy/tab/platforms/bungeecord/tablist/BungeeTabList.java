@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;

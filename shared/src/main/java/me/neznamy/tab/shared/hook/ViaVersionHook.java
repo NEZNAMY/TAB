@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.hook;
 
 import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;

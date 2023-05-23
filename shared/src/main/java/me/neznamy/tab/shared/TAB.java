@@ -2,7 +2,6 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.api.ProtocolVersion;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.tablist.SortingManager;

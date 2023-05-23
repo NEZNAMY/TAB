@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;

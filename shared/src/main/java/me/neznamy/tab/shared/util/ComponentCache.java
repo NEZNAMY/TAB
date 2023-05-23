@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.util;
 
 import lombok.AllArgsConstructor;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

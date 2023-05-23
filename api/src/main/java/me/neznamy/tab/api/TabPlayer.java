@@ -25,13 +25,6 @@ public interface TabPlayer {
     @NotNull UUID getUniqueId();
 
     /**
-     * Returns player's protocol version
-     *
-     * @return  player's protocol version
-     */
-    @NotNull ProtocolVersion getVersion();
-
-    /**
      * Returns platform-specific entity
      *
      * @return  an instance of bukkit/bungee player depending on platform

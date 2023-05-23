@@ -1,4 +1,4 @@
-package me.neznamy.tab.api;
+package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import lombok.NonNull;

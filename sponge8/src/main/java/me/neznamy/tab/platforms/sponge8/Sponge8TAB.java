@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.sponge8;
 
 import com.google.inject.Inject;
 import lombok.Getter;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import org.bstats.charts.SimplePie;

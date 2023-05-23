@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.fabric;
 
 import lombok.Getter;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
