@@ -17,4 +17,8 @@ public interface PlaceholderManager {
     @NotNull RelationalPlaceholder registerRelationalPlaceholder(@NonNull String identifier, int refresh, @NonNull BiFunction<TabPlayer, TabPlayer, Object> function);
 
     @NotNull Placeholder getPlaceholder(@NonNull String identifier);
+
+    void unregisterPlaceholder(@NonNull Placeholder placeholder);
+
+    void unregisterPlaceholder(@NonNull String identifier);
 }

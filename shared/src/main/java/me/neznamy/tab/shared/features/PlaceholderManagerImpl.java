@@ -172,21 +172,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
         }
     }
 
-    @Override
-    public @NotNull ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier) {
-        return registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
-    }
-    
-    @Override
-    public @NotNull PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, Object> function) {
-        return registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
-    }
 
-    @Override
-    public @NotNull RelationalPlaceholderImpl registerRelationalPlaceholder(
-            @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
-        return registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
-    }
 
     /**
      * Detects placeholders in text using %% pattern and returns list of all detected identifiers
@@ -203,27 +189,6 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
             placeholders.add(m.group());
         }
         return placeholders;
-    }
-
-    @Override
-    public @NotNull TabPlaceholder getPlaceholder(@NonNull String identifier) {
-        TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
-        if (p == null) {
-            TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
-            if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(event);
-            if (event.getPlaceholder() != null) {
-                registerPlaceholder(event.getPlaceholder());
-            } else {
-                TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
-            }
-            addUsedPlaceholder(identifier, this); //likely used via tab expansion
-            return getPlaceholder(identifier);
-        }
-        if (!placeholderUsage.containsKey(identifier)) {
-            //tab expansion for internal placeholder
-            addUsedPlaceholder(identifier, this);
-        }
-        return p;
     }
 
     public void addUsedPlaceholder(@NonNull String identifier, @NonNull Refreshable feature) {
@@ -267,5 +232,58 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         // Condition or placeholder only used in tab expansion, do nothing for now
+    }
+
+    // ------------------
+    // API Implementation
+    // ------------------
+
+    @Override
+    public @NotNull ServerPlaceholderImpl registerServerPlaceholder(@NonNull String identifier, int refresh, @NonNull Supplier<Object> supplier) {
+        return registerPlaceholder(new ServerPlaceholderImpl(identifier, refresh, supplier));
+    }
+
+    @Override
+    public @NotNull PlayerPlaceholderImpl registerPlayerPlaceholder(@NonNull String identifier, int refresh, @NonNull Function<me.neznamy.tab.api.TabPlayer, Object> function) {
+        return registerPlaceholder(new PlayerPlaceholderImpl(identifier, refresh, function));
+    }
+
+    @Override
+    public @NotNull RelationalPlaceholderImpl registerRelationalPlaceholder(
+            @NonNull String identifier, int refresh, @NonNull BiFunction<me.neznamy.tab.api.TabPlayer, me.neznamy.tab.api.TabPlayer, Object> function) {
+        return registerPlaceholder(new RelationalPlaceholderImpl(identifier, refresh, function));
+    }
+
+    @Override
+    public @NotNull TabPlaceholder getPlaceholder(@NonNull String identifier) {
+        TabPlaceholder p = (TabPlaceholder) registeredPlaceholders.get(identifier);
+        if (p == null) {
+            TabPlaceholderRegisterEvent event = new TabPlaceholderRegisterEvent(identifier);
+            if (TAB.getInstance().getEventBus() != null) TAB.getInstance().getEventBus().fire(event);
+            if (event.getPlaceholder() != null) {
+                registerPlaceholder(event.getPlaceholder());
+            } else {
+                TAB.getInstance().getPlatform().registerUnknownPlaceholder(identifier);
+            }
+            addUsedPlaceholder(identifier, this); //likely used via tab expansion
+            return getPlaceholder(identifier);
+        }
+        if (!placeholderUsage.containsKey(identifier)) {
+            //tab expansion for internal placeholder
+            addUsedPlaceholder(identifier, this);
+        }
+        return p;
+    }
+
+    @Override
+    public void unregisterPlaceholder(@NonNull Placeholder placeholder) {
+        unregisterPlaceholder(placeholder.getIdentifier());
+    }
+
+    @Override
+    public void unregisterPlaceholder(@NonNull String identifier) {
+        registeredPlaceholders.remove(identifier);
+        placeholderUsage.remove(identifier);
+        recalculateUsedPlaceholders();
     }
 }
