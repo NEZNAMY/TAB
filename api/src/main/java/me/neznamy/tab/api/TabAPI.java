@@ -132,11 +132,4 @@ public abstract class TabAPI {
      * @return  the event bus
      */
     public abstract @Nullable EventBus getEventBus();
-
-    /**
-     * Returns current API version. Starting at 1, it is incremented every time something changes.
-     *
-     * @return  current API version
-     */
-    public abstract int getApiVersion();
 }

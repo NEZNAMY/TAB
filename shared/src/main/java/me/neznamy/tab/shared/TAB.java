@@ -310,11 +310,6 @@ public class TAB extends TabAPI {
         return featureManager.getFeature(TabConstants.Feature.SORTING);
     }
 
-    @Override
-    public int getApiVersion() {
-        return TabConstants.API_VERSION;
-    }
-
     /**
      * Sends a debug message into console if the option
      * is enabled in config.
