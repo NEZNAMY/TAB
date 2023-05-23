@@ -31,8 +31,8 @@ public class Condition {
         put("<=", line -> new NumericCondition(line.split("<="), (left, right) -> left <= right)::isMet);
         put("<-", line -> new StringCondition(line.split("<-"), String::contains)::isMet);
         put("<", line -> new NumericCondition(line.split("<"), (left, right) -> left < right)::isMet);
-        put("|-", line -> new StringCondition(line.split("|-"), String::startsWith)::isMet);
-        put("-|", line -> new StringCondition(line.split("-|"), String::endsWith)::isMet);
+        put("|-", line -> new StringCondition(line.split("\\|-"), String::startsWith)::isMet);
+        put("-|", line -> new StringCondition(line.split("-\\|"), String::endsWith)::isMet);
         put("!=", line -> new StringCondition(line.split("!="), (left, right) -> !left.equals(right))::isMet);
         put("=", line -> new StringCondition(line.split("="), String::equals)::isMet);
         put("permission:", line -> p -> p.hasPermission(line.split(":")[1]));
