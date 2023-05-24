@@ -26,7 +26,7 @@ public class BungeeTAB extends Plugin {
         TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder()));
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 10535);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPlugin().getName()));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
 

@@ -60,7 +60,7 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, separator);
         sendMessage(sender, "&6Server version: &b" + tab.getServerVersionString());
         sendMessage(sender, "&6Plugin version: &b" + TabConstants.PLUGIN_VERSION);
-        sendMessage(sender, "&6Permission plugin: &b" + TAB.getInstance().getGroupManager().getPlugin().getName());
+        sendMessage(sender, "&6Permission plugin: &b" + TAB.getInstance().getGroupManager().getPermissionPlugin());
         sendMessage(sender, "&6Permission group choice logic: &b" + getGroupChoiceLogic());
         sendMessage(sender, "&6Sorting system: &b" + getSortingType());
         sendMessage(sender, "&6Storage type: &b" + (tab.getConfiguration().getGroups() instanceof ConfigurationFile ? "File" : "MySQL"));

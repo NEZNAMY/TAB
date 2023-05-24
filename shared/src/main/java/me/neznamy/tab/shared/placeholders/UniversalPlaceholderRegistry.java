@@ -1,13 +1,12 @@
 package me.neznamy.tab.shared.placeholders;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,12 +50,11 @@ public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
         manager.registerServerPlaceholder(TabConstants.Placeholder.STAFF_ONLINE, 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
         manager.registerServerPlaceholder(TabConstants.Placeholder.NON_STAFF_ONLINE, 2000, () -> Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.hasPermission(TabConstants.Permission.STAFF) && !all.isVanished()).count());
         manager.registerPlayerPlaceholder(TabConstants.Placeholder.GAMEMODE, 100, p -> ((TabPlayer)p).getGamemode());
-        PermissionPlugin plugin = TAB.getInstance().getGroupManager().getPlugin();
-        if (plugin instanceof LuckPerms) {
+        if (LuckPermsHook.getInstance().isInstalled()) {
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, 1000,
-                    p -> ((LuckPerms)plugin).getPrefix((TabPlayer) p));
+                    p -> LuckPermsHook.getInstance().getPrefix((TabPlayer) p));
             manager.registerPlayerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, 1000,
-                    p -> ((LuckPerms)plugin).getSuffix((TabPlayer) p));
+                    p -> LuckPermsHook.getInstance().getSuffix((TabPlayer) p));
         } else {
             manager.registerServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_PREFIX, -1, () -> "");
             manager.registerServerPlaceholder(TabConstants.Placeholder.LUCKPERMS_SUFFIX, -1, () -> "");

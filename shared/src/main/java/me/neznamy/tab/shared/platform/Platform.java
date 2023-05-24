@@ -1,12 +1,12 @@
 package me.neznamy.tab.shared.platform;
 
+import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ public interface Platform {
      *
      * @return  the interface representing the permission hook
      */
-    @NotNull PermissionPlugin detectPermissionPlugin();
+    @NotNull GroupManager detectPermissionPlugin();
 
     default @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new BossBarManagerImpl();

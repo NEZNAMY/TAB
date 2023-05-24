@@ -3,39 +3,46 @@ package me.neznamy.tab.shared;
 import lombok.Getter;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.types.TabFeature;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Permission group manager retrieving groups from permission plugin
  */
+@Getter
 public class GroupManager extends TabFeature implements Refreshable {
 
-    /** Detected permission plugin to take groups from */
-    @NotNull @Getter private final PermissionPlugin plugin;
+    /** Permission plugin's name */
+    @NotNull private final String permissionPlugin;
+
+    /** Group retrieve function */
+    @NotNull private final Function<TabPlayer, String> groupFunction;
 
     /** If enabled, groups are assigned via permissions instead of permission plugin */
-    @Getter private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
+    private final boolean groupsByPermissions = TAB.getInstance().getConfiguration().getConfig().getBoolean("assign-groups-by-permissions", false);
 
     /** List of group permissions to iterate through if {@link #groupsByPermissions} is {@code true} */
     private final List<String> primaryGroupFindingList = TAB.getInstance().getConfiguration().getConfig().getStringList("primary-group-finding-list", Arrays.asList("Owner", "Admin", "Helper", "default"));
 
-    @Getter private final String featureName = "Permission group refreshing";
-    @Getter private final String refreshDisplayName = "Processing group change";
+    private final String featureName = "Permission group refreshing";
+    private final String refreshDisplayName = "Processing group change";
 
     /**
      * Constructs new instance with given permission plugin and registers group placeholder.
      *
-     * @param   plugin
-     *          Detected permission plugin
+     * @param   permissionPlugin
+     *          Name of detected permission plugin
+     * @param   groupFunction
+     *          Function returning group of a player
      */
-    public GroupManager(@NotNull PermissionPlugin plugin) {
-        this.plugin = plugin;
+    public GroupManager(@NotNull String permissionPlugin, @NotNull Function<TabPlayer, String> groupFunction) {
+        this.permissionPlugin = permissionPlugin;
+        this.groupFunction = groupFunction;
         TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(TabConstants.Placeholder.GROUP, 1000,
                 p -> detectPermissionGroup((TabPlayer) p));
         addUsedPlaceholders(Collections.singletonList(TabConstants.Placeholder.GROUP));
@@ -61,10 +68,10 @@ public class GroupManager extends TabFeature implements Refreshable {
      */
     private @NotNull String getByPrimary(@NotNull TabPlayer player) {
         try {
-            String group = plugin.getPrimaryGroup(player);
+            String group = groupFunction.apply(player);
             return group == null ? TabConstants.NO_GROUP : group;
         } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + plugin.getName(), e);
+            TAB.getInstance().getErrorManager().printError("Failed to get permission group of " + player.getName() + " using " + permissionPlugin, e);
             return TabConstants.NO_GROUP;
         }
     }

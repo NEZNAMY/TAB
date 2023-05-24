@@ -1,21 +1,20 @@
 package me.neznamy.tab.shared.backend;
 
+import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.None;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 public interface BackendPlatform extends Platform {
 
     @Override
-    @NotNull default PermissionPlugin detectPermissionPlugin() {
-        if (ReflectionUtils.classExists("net.luckperms.api.LuckPerms")) {
-            return new LuckPerms();
+    @NotNull default GroupManager detectPermissionPlugin() {
+        if (LuckPermsHook.getInstance().isInstalled()) {
+            return new GroupManager("LuckPerms", LuckPermsHook.getInstance().getGroupFunction());
         }
-        return new None();
+        return new GroupManager("None", p -> TabConstants.NO_GROUP);
     }
 
     default RedisSupport getRedisSupport() { return null; }

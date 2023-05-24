@@ -8,7 +8,6 @@ import me.neznamy.tab.api.placeholder.RelationalPlaceholder;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -99,7 +98,7 @@ public class PluginMessageHandler {
 
     public void playerJoinResponse(@NotNull ProxyTabPlayer player, @NotNull ByteArrayDataInput in) {
         TAB.getInstance().getFeatureManager().onWorldChange(player.getUniqueId(), in.readUTF());
-        if (TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge &&
+        if (TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                 !TAB.getInstance().getGroupManager().isGroupsByPermissions()) player.setGroup(in.readUTF());
         // reset attributes from previous server to default false values, new server will send separate update packets if needed
         player.setVanished(false);

@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.TabFeature;
@@ -9,12 +11,8 @@ import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,14 +33,12 @@ public abstract class ProxyPlatform implements Platform {
     @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
     @Override
-    public @NotNull PermissionPlugin detectPermissionPlugin() {
-        if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-            return new VaultBridge();
-        } else if (ReflectionUtils.classExists("net.luckperms.api.LuckPerms")) {
-            return new LuckPerms();
-        } else {
-            return new VaultBridge();
+    public @NotNull GroupManager detectPermissionPlugin() {
+        if (LuckPermsHook.getInstance().isInstalled() &&
+                !TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+            return new GroupManager("LuckPerms", LuckPermsHook.getInstance().getGroupFunction());
         }
+        return new GroupManager("Vault through Bridge", TabPlayer::getGroup);
     }
 
     @Override
