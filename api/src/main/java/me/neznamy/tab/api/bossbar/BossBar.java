@@ -194,16 +194,7 @@ public interface BossBar {
     @NotNull List<TabPlayer> getPlayers();
 
     /**
-     * Returns {@code true} if specified player can see this BossBar, {@code false} if not
-     *
-     * @param   player
-     *          Player to check for
-     * @return  {@code true} if contains, {@code false} if not
-     */
-    boolean containsPlayer(@NonNull TabPlayer player);
-
-    /**
-     * Returns {@code true} if this bossbar in configured as announcement-only bar,
+     * Returns {@code true} if this boss bar is configured as announcement-only bar,
      * {@code false} if not.
      *
      * @return  {@code true} if bar is announcement only, {@code false} if not

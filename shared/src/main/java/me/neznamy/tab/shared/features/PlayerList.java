@@ -2,7 +2,7 @@ package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.neznamy.tab.api.tablist.TablistFormatManager;
+import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -23,7 +23,7 @@ import java.util.UUID;
 /**
  * Feature handler for TabList display names
  */
-public class PlayerList extends TabFeature implements TablistFormatManager, JoinListener, DisplayNameListener, Loadable,
+public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, DisplayNameListener, Loadable,
         UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, VanishListener {
 
     @Getter protected final String featureName = "Tablist name formatting";

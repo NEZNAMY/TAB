@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -248,12 +249,7 @@ public class BossBarLine implements BossBar {
 
     @Override
     public @NotNull List<me.neznamy.tab.api.TabPlayer> getPlayers() {
-        return new ArrayList<>(players);
-    }
-
-    @Override
-    public boolean containsPlayer(me.neznamy.tab.api.@NonNull TabPlayer player) {
-        return players.contains((TabPlayer) player);
+        return players.stream().filter(TabPlayer::isOnline).collect(Collectors.toList());
     }
 
     public class TextRefresher extends TabFeature implements Refreshable {

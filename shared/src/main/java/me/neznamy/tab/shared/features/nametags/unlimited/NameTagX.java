@@ -150,7 +150,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     /* NameTag override */
 
     @Override
-    public void hideNametag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         if (hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).add(viewer);
         updateTeamData((TabPlayer) player, (TabPlayer) viewer);
@@ -158,7 +158,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     }
 
     @Override
-    public void showNametag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         if (!hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).remove(viewer);
         updateTeamData((TabPlayer) player, (TabPlayer) viewer);

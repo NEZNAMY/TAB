@@ -147,7 +147,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     private void showBossBars(@NonNull TabPlayer p, @NonNull List<String> bars) {
         for (String defaultBar : bars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
-            if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {
+            if (bar.isConditionMet(p) && !bar.getPlayers().contains(p)) {
                 bar.addPlayer(p);
             }
         }

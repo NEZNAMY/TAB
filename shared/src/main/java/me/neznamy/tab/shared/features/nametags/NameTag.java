@@ -152,40 +152,40 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     @Override
-    public void hideNametag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
         if (hiddenNameTag.contains(player)) return;
         hiddenNameTag.add(player);
         updateTeamData((TabPlayer) player);
     }
     
     @Override
-    public void hideNametag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+    public void hideNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         if (hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).add(viewer);
         updateTeamData((TabPlayer) player, (TabPlayer) viewer);
     }
 
     @Override
-    public void showNametag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
         if (!hiddenNameTag.contains(player)) return;
         hiddenNameTag.remove(player);
         updateTeamData((TabPlayer) player);
     }
     
     @Override
-    public void showNametag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+    public void showNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         if (!hiddenNameTagFor.get(player).contains(viewer)) return;
         hiddenNameTagFor.get(player).remove(viewer);
         updateTeamData((TabPlayer) player, (TabPlayer) viewer);
     }
 
     @Override
-    public boolean hasHiddenNametag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+    public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player) {
         return hiddenNameTag.contains(player);
     }
 
     @Override
-    public boolean hasHiddenNametag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
+    public boolean hasHiddenNameTag(@NonNull me.neznamy.tab.api.TabPlayer player, @NonNull me.neznamy.tab.api.TabPlayer viewer) {
         return hiddenNameTagFor.containsKey(player) && hiddenNameTagFor.get(player).contains(viewer);
     }
 
@@ -277,7 +277,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     public boolean getTeamVisibility(@NonNull TabPlayer p, @NonNull TabPlayer viewer) {
-        return !hasHiddenNametag(p) && !hasHiddenNametag(p, viewer) && !invisibleNameTags
+        return !hasHiddenNameTag(p) && !hasHiddenNameTag(p, viewer) && !invisibleNameTags
                 && (!accepting18x || !p.hasInvisibilityPotion()) && !playersWithInvisibleNameTagView.contains(viewer);
     }
 

@@ -17,10 +17,10 @@ public interface PlayerLoadEvent extends TabEvent {
     @NotNull TabPlayer getPlayer();
 
     /**
-     * Returns true if player was loaded because they joined,
-     * false if the player was loaded because tab reload command was executed
+     * Returns {@code true} if player was loaded because they joined,
+     * {@code false} if the player was loaded because tab reload command was executed
      *
-     * @return  true if player joined, false if plugin was reloaded
+     * @return  {@code true} if player joined, {@code false} if plugin was reloaded
      */
     boolean isJoin();
 }

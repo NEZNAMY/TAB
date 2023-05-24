@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Instance can be obtained using {@link me.neznamy.tab.api.TabAPI#getScoreboardManager()}.
  * This requires the scoreboard feature to be enabled in config,
- * the method will return null otherwise.
+ * the method will return {@code null} otherwise.
  */
 public interface ScoreboardManager {
 

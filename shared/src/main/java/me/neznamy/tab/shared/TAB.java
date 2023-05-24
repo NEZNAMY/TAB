@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
-import me.neznamy.tab.api.tablist.TablistFormatManager;
+import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.Platform;
@@ -296,7 +296,7 @@ public class TAB extends TabAPI {
     }
 
     @Override
-    public @Nullable TablistFormatManager getTablistFormatManager() {
+    public @Nullable TabListFormatManager getTabListFormatManager() {
         return featureManager.getFeature(TabConstants.Feature.PLAYER_LIST);
     }
 

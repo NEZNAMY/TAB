@@ -10,7 +10,7 @@ import me.neznamy.tab.api.placeholder.PlaceholderManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.SortingManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
-import me.neznamy.tab.api.tablist.TablistFormatManager;
+import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.api.tablist.layout.LayoutManager;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ public abstract class TabAPI {
     public static @NotNull TabAPI getInstance() {
         if (instance == null) throw new IllegalStateException("The API instance is null. This can have 2 possible causes: \n" +
                 "#1 - API was called before TAB was loaded. This means your plugin was loaded before TAB was. To make sure your " +
-                "plugin loads after TAB, add it as a depend or softdepend of your plugin.\n" +
+                "plugin loads after TAB, add it as a depend or soft depend of your plugin.\n" +
                 "#2 - You shaded TAB's classes into your plugin, instead of only using them. This is not allowed. To verify this " +
                 "is your case, unzip your plugin and check for TAB's classes. If they are there, you will need to fix your compiler " +
                 "to not include them, such as scope provided for maven compilation.");
@@ -105,11 +105,11 @@ public abstract class TabAPI {
     public abstract @NotNull PlaceholderManager getPlaceholderManager();
 
     /**
-     * Returns Tablist name format manager instance if the feature is enabled. If not, returns {@code null}.
+     * Returns TabList name format manager instance if the feature is enabled. If not, returns {@code null}.
      *
-     * @return  Tablist name format manager
+     * @return  TabList name format manager
      */
-    public abstract @Nullable TablistFormatManager getTablistFormatManager();
+    public abstract @Nullable TabListFormatManager getTabListFormatManager();
 
     /**
      * Returns Layout manager instance if the feature is enabled. If not, returns {@code null}.

@@ -123,7 +123,7 @@ public class ArmorStand {
     public boolean calculateVisibility() {
         if (manager.isArmorStandsAlwaysVisible()) return true;
         if (owner.isDisguised() || manager.isOnBoat(owner)) return false;
-        return owner.getGamemode() != 3 && !manager.hasHiddenNametag(owner) && property.get().length() > 0 &&
+        return owner.getGamemode() != 3 && !manager.hasHiddenNameTag(owner) && property.get().length() > 0 &&
                 !manager.getUnlimitedDisableChecker().isDisabledPlayer(owner);
     }
 
@@ -185,7 +185,7 @@ public class ArmorStand {
 
     public boolean shouldBeInvisibleFor(@NotNull TabPlayer viewer, @NotNull String displayName) {
         return isNameVisiblyEmpty(displayName) || !manager.canSee(viewer, owner) ||
-                manager.hasHiddenNametag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
+                manager.hasHiddenNameTag(owner, viewer) || manager.hasHiddenNameTagVisibilityView(viewer) ||
                 (owner.hasInvisibilityPotion() && viewer.getGamemode() != 3);
     }
 

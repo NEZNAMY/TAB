@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.redis.feature.*;
 import me.neznamy.tab.shared.features.redis.message.*;
 import me.neznamy.tab.shared.features.types.*;
-import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -144,9 +143,9 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
             String identifier = event.getIdentifier();
             if (identifier.startsWith("%online_")) {
                 String server = identifier.substring(8, identifier.length()-1);
-                event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
+                event.setServerPlaceholder(() ->
                         Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
-                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count()));
+                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count());
 
             }
         };

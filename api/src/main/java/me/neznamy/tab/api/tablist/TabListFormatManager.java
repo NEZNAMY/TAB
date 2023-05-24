@@ -7,14 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An interface allowing to modify tablist display names
+ * An interface allowing to modify TabList display names
  * of players.
  * <p>
- * Instance can be obtained using {@link TabAPI#getTablistFormatManager()}.
+ * Instance can be obtained using {@link TabAPI#getTabListFormatManager()}.
  * This requires the feature to be enabled in config, otherwise the method will
  * return {@code null}.
  */
-public interface TablistFormatManager {
+public interface TabListFormatManager {
 
     /**
      * Changes player's prefix to provided value. Supports placeholders,

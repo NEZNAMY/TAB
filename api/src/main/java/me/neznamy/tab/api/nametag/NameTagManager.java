@@ -1,61 +1,69 @@
 package me.neznamy.tab.api.nametag;
 
 import lombok.NonNull;
+import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Interface for manipulating player name tags.
+ * <p>
+ * Instance can be obtained using {@link TabAPI#getNameTagManager()}.
+ * This requires the Team feature to be enabled in config, otherwise the method will
+ * return {@code null}.
+ */
 public interface NameTagManager {
 
     /**
      * Makes player's NameTag globally invisible
      *
      * @param   player
-     *          player to hide nametag of
-     * @see     #showNametag(TabPlayer)
-     * @see     #hasHiddenNametag(TabPlayer)
+     *          player to hide name tag of
+     * @see     #showNameTag(TabPlayer)
+     * @see     #hasHiddenNameTag(TabPlayer)
      */
-    void hideNametag(@NonNull TabPlayer player);
+    void hideNameTag(@NonNull TabPlayer player);
 
     /**
      * Hides player's NameTag for specified player until it's shown again
      *
      * @param   player
-     *          player to hide nametag of
+     *          player to hide name tag of
      * @param   viewer
-     *          player to hide NameTag for
+     *          player to hide name tag for
      */
-    void hideNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
+    void hideNameTag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
 
     /**
      * Makes player's NameTag visible again
      *
      * @param   player
-     *          player to show nametag of
-     * @see     #hideNametag(TabPlayer)
-     * @see     #hasHiddenNametag(TabPlayer)
+     *          player to show name tag of
+     * @see     #hideNameTag(TabPlayer)
+     * @see     #hasHiddenNameTag(TabPlayer)
      */
-    void showNametag(@NonNull TabPlayer player);
+    void showNameTag(@NonNull TabPlayer player);
 
     /**
      * Shows player's NameTag for specified viewer if it was hidden before
      *
      * @param   player
-     *          player to show nametag of
+     *          player to show name tag of
      * @param   viewer
      *          player to show NameTag back for
      */
-    void showNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
+    void showNameTag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
 
     /**
      * Return whether player has hidden NameTag or not
      *
      * @param   player
-     *          player to check nametag visibility status of
+     *          player to check name tag visibility status of
      * @return  Whether player has hidden NameTag or not
-     * @see     #hideNametag(TabPlayer)
-     * @see     #showNametag(TabPlayer)
+     * @see     #hideNameTag(TabPlayer)
+     * @see     #showNameTag(TabPlayer)
      */
-    boolean hasHiddenNametag(@NonNull TabPlayer player);
+    boolean hasHiddenNameTag(@NonNull TabPlayer player);
 
     /**
      * Returns true if NameTag is hidden for specified viewer, false if not
@@ -66,7 +74,7 @@ public interface NameTagManager {
      *          player to check visibility status for
      * @return  true if hidden, false if not
      */
-    boolean hasHiddenNametag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
+    boolean hasHiddenNameTag(@NonNull TabPlayer player, @NonNull TabPlayer viewer);
 
     /**
      * Unregisters player's team and no longer handles it, as well as disables anti-override for teams.
@@ -151,19 +159,19 @@ public interface NameTagManager {
     @NonNull String getOriginalSuffix(@NonNull TabPlayer player);
 
     /**
-     * Toggles nametag visibility view on all players for specified player.
-     * On first call, nametags of all players will become invisible for specified
+     * Toggles name tag visibility view on all players for specified player.
+     * On first call, name tags of all players will become invisible for specified
      * player. On second call, they will become visible again.
      *
      * @param   player
-     *          player to toggle nametag visibility view for
+     *          player to toggle name tag visibility view for
      * @param   sendToggleMessage
      *          {@code true} if configured toggle message should be sent, {@code false} if not
      */
     void toggleNameTagVisibilityView(@NonNull TabPlayer player, boolean sendToggleMessage);
 
     /**
-     * Returns {@code true} if player has hidden nametags by either calling
+     * Returns {@code true} if player has hidden name tags by either calling
      * {@link #toggleNameTagVisibilityView(TabPlayer, boolean)} or using a command,
      * {@code false} if not.
      *
