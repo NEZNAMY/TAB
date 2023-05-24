@@ -49,7 +49,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     @Getter private final AtomicInteger loopTime = new AtomicInteger();
 
     @Getter @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", false) ?
-            TAB.getInstance().getPlatform().getTabExpansion() : new EmptyTabExpansion();
+            TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
 
     public PlaceholderManagerImpl() {
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL, featureName, TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, this::refresh);

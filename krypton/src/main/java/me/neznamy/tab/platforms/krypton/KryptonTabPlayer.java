@@ -15,11 +15,12 @@ import org.kryptonmc.api.entity.player.Player;
 
 import java.util.List;
 
+@Getter
 public class KryptonTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
-    @Getter private final TabList tabList = new KryptonTabList(this);
-    @Getter private final BossBar bossBar = new AdventureBossBar(getPlayer());
+    private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
+    private final TabList tabList = new KryptonTabList(this);
+    private final BossBar bossBar = new AdventureBossBar(getPlayer());
 
     public KryptonTabPlayer(Player player) {
         super(player, player.getUuid(), player.getProfile().name(), TAB.getInstance().getConfiguration().getServerName(),

@@ -6,6 +6,7 @@ import lombok.Setter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
@@ -33,16 +34,15 @@ import java.util.Collection;
  * Implementation of Platform interface for Bukkit platform
  */
 @RequiredArgsConstructor
+@Getter
 public class BukkitPlatform implements BackendPlatform {
-
-    @Getter private final BukkitPipelineInjector pipelineInjector = NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
 
     /** Plugin instance for registering tasks and events */
     private final JavaPlugin plugin;
 
     /** Variables checking presence of other plugins to hook into */
-    @Getter private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
-    @Getter @Setter private boolean libsDisguisesEnabled = ReflectionUtils.classExists("me.libraryaddict.disguise.DisguiseAPI");
+    private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
+    @Setter private boolean libsDisguisesEnabled = ReflectionUtils.classExists("me.libraryaddict.disguise.DisguiseAPI");
 
     public @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new WitherBossBar(plugin);
@@ -61,12 +61,17 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNametags() {
+    public @Nullable PipelineInjector createPipelineInjector() {
+        return NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
+    }
+
+    @Override
+    public @NotNull NameTag getUnlimitedNameTags() {
         return new BukkitNameTagX(plugin);
     }
 
     @Override
-    public @NotNull TabExpansion getTabExpansion() {
+    public @NotNull TabExpansion createTabExpansion() {
         if (placeholderAPI) {
             BukkitTabExpansion expansion = new BukkitTabExpansion();
             expansion.register();
@@ -76,7 +81,7 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerlist() {
+    public @Nullable TabFeature getPerWorldPlayerList() {
         return new PerWorldPlayerList(plugin);
     }
 

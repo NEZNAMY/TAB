@@ -138,7 +138,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     @Override
     public void onWorldChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         super.onWorldChange(p, from, to);
-        if (isPreviewingNametag(p)) {
+        if (isPreviewingNameTag(p)) {
             getArmorStandManager(p).spawn((BackendTabPlayer) p);
         }
         //for some reason this is needed for some users

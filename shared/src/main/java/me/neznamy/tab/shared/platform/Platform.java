@@ -47,15 +47,15 @@ public interface Platform {
      */
     void registerPlaceholders();
 
-    @Nullable PipelineInjector getPipelineInjector();
+    @Nullable PipelineInjector createPipelineInjector();
 
-    @NotNull NameTag getUnlimitedNametags();
+    @NotNull NameTag getUnlimitedNameTags();
 
-    @NotNull TabExpansion getTabExpansion();
+    @NotNull TabExpansion createTabExpansion();
 
     @Nullable RedisSupport getRedisSupport();
 
-    @Nullable TabFeature getPerWorldPlayerlist();
+    @Nullable TabFeature getPerWorldPlayerList();
 
     void sendConsoleMessage(@NotNull IChatBaseComponent message);
 }

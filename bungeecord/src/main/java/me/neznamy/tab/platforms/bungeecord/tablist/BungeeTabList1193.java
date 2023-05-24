@@ -14,7 +14,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 /**
- * TabList handler for 1.19.3+ players using the new tablist packets.
+ * TabList handler for 1.19.3+ players using the new tab list packets.
  * Because BungeeCord does not have a TabList API, we need to use packets.
  * They are sent using an internal BungeeCord method that keeps track of them,
  * so they are removed on server switch to secure parity with Velocity.

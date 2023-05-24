@@ -2,9 +2,9 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 public class BungeePlatform extends ProxyPlatform {
 
     @NotNull private final BungeeTAB plugin;
-    @Getter private final BungeePipelineInjector pipelineInjector = new BungeePipelineInjector();
 
     @Override
     public @Nullable RedisSupport getRedisSupport() {
@@ -41,5 +40,10 @@ public class BungeePlatform extends ProxyPlatform {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             TAB.getInstance().addPlayer(new BungeeTabPlayer(p));
         }
+    }
+
+    @Override
+    public @Nullable PipelineInjector createPipelineInjector() {
+        return new BungeePipelineInjector();
     }
 }

@@ -48,7 +48,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
                         feature.getArmorStandManager(inVehicle).teleport();
                     }
                     for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                        if (feature.isPreviewingNametag(p)) {
+                        if (feature.isPreviewingNameTag(p)) {
                             feature.getArmorStandManager(p).teleport((BackendTabPlayer) p);
                         }
                     }

@@ -15,7 +15,7 @@ public class ProxyNameTagX extends NameTagX {
     @Override
     public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
         super.onServerChange(p, from, to);
-        if (isPreviewingNametag(p)) {
+        if (isPreviewingNameTag(p)) {
             ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "Preview", true);
         }
         for (String line : getDefinedLines()) {

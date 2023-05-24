@@ -36,8 +36,8 @@ public class KryptonTAB {
 
     @Inject @Getter private Server server;
     @Inject private EventNode<Event> pluginEventNode;
-    @Inject @Getter private Path folder;
-    @Getter private final EventNode<Event> eventNode = EventNode.Companion.filteredForEvent("tab_events", EventFilter.ALL,
+    @Inject private Path folder;
+    private final EventNode<Event> eventNode = EventNode.Companion.filteredForEvent("tab_events", EventFilter.ALL,
             (it) -> !TAB.getInstance().isPluginDisabled());
 
     @Listener

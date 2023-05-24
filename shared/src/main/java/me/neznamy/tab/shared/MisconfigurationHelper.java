@@ -171,9 +171,9 @@ public class MisconfigurationHelper {
     }
 
     public void invisibleAndUnlimitedNameTagsAreMutuallyExclusive() {
-        startupWarn("Unlimited nametag mode is enabled as well as invisible nametags. These 2 options are mutually exclusive.",
-                "If you want nametags to be invisible, you don't need unlimited nametag mode at all.",
-                "If you want enhanced nametags without limits, making them invisible would defeat the purpose.");
+        startupWarn("Unlimited name tag mode is enabled as well as invisible name tags. These 2 options are mutually exclusive.",
+                "If you want name tags to be invisible, you don't need unlimited name tag mode at all.",
+                "If you want enhanced name tags without limits, making them invisible would defeat the purpose.");
     }
 
     public void invalidDateFormat(@NotNull String format) {
@@ -242,13 +242,13 @@ public class MisconfigurationHelper {
     // Runtime Errors
     // ------------------------
 
-    public void invalidNumberForBossBarProgress(@NotNull String bossbar, @NotNull String input, @NotNull String configuredValue) {
+    public void invalidNumberForBossBarProgress(@NotNull String bossBar, @NotNull String input, @NotNull String configuredValue) {
         if (configuredValue.contains("%")) {
             TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder \"" + configuredValue +
-                    "\" used in BossBar progress of \"" + bossbar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")", true);
+                    "\" used in BossBar progress of \"" + bossBar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")", true);
 
         } else {
-            TAB.getInstance().sendConsoleMessage("&c[WARN] BossBar \"" + bossbar +
+            TAB.getInstance().sendConsoleMessage("&c[WARN] BossBar \"" + bossBar +
                     "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one.", true);
         }
     }

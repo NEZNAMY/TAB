@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.sponge8;
 
-import lombok.Getter;
-import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
+import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
-import me.neznamy.tab.shared.features.nametags.NameTag;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +15,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
 public final class SpongePlatform implements BackendPlatform {
-
-    @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
-    @Getter private final TabFeature perWorldPlayerlist = null;
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -38,13 +34,23 @@ public final class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector getPipelineInjector() {
+    public @Nullable PipelineInjector createPipelineInjector() {
         return null;
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNametags() {
+    public @Nullable TabFeature getPerWorldPlayerList() {
+        return null;
+    }
+
+    @Override
+    public @NotNull NameTag getUnlimitedNameTags() {
         return new NameTag();
+    }
+
+    @Override
+    public @NotNull TabExpansion createTabExpansion() {
+        return new EmptyTabExpansion();
     }
 
     @Override

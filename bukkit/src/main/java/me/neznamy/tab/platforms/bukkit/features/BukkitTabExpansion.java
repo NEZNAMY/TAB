@@ -18,14 +18,15 @@ import java.util.WeakHashMap;
 /**
  * TAB's expansion for PlaceholderAPI
  */
+@Getter
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
 
     /** Map holding all values for all players for easy and high-performance access */
     private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();
 
-    @Getter private final String author = TabConstants.PLUGIN_AUTHOR;
-    @Getter private final String identifier = TabConstants.PLUGIN_ID;
-    @Getter private final String version = TabConstants.PLUGIN_VERSION;
+    private final String author = TabConstants.PLUGIN_AUTHOR;
+    private final String identifier = TabConstants.PLUGIN_ID;
+    private final String version = TabConstants.PLUGIN_VERSION;
 
     @Override
     public boolean persist() {

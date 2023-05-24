@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import com.google.inject.Inject;
-import lombok.Getter;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -23,7 +22,7 @@ public class Sponge8TAB {
 
     @Inject private Game game;
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
-    @Inject @Getter private PluginContainer container;
+    @Inject private PluginContainer container;
     private final Metrics metrics;
 
     @Inject

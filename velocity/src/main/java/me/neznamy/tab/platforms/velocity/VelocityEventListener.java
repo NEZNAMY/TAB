@@ -38,8 +38,8 @@ public class VelocityEventListener extends EventListener {
     public void onCommand(CommandExecuteEvent e) {
         if (TAB.getInstance().isPluginDisabled()) return;
         // Imagine not allowing to cancel a command while it works completely fine on BungeeCord and Bukkit and everywhere else
-        BossBarManagerImpl bossbar = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
-        if (bossbar != null && bossbar.getToggleCommand().substring(1).equals(e.getCommand())) {
+        BossBarManagerImpl bossBarManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
+        if (bossBarManager != null && bossBarManager.getToggleCommand().substring(1).equals(e.getCommand())) {
             e.setResult(CommandResult.command(TabConstants.COMMAND_PROXY + " bossbar"));
         }
         ScoreboardManagerImpl scoreboard = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);

@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.placeholder.Placeholder;
@@ -15,6 +16,7 @@ import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -31,9 +33,6 @@ public abstract class ProxyPlatform implements Platform {
 
     /** Placeholders which are refreshed on backend server */
     @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
-
-    @Getter private final TabFeature perWorldPlayerlist = null;
-    @Getter private final ProxyTabExpansion tabExpansion = new ProxyTabExpansion();
 
     @Override
     public @NotNull PermissionPlugin detectPermissionPlugin() {
@@ -75,7 +74,14 @@ public abstract class ProxyPlatform implements Platform {
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNameTags() {
         return new ProxyNameTagX();
+    }
+
+    @Override
+    public @Nullable TabFeature getPerWorldPlayerList() { return null; }
+
+    public @NotNull TabExpansion createTabExpansion() {
+        return new ProxyTabExpansion();
     }
 }

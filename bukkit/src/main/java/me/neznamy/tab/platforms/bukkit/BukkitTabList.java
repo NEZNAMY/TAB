@@ -17,7 +17,7 @@ import java.util.*;
  * we don't need to worry about that here.
  * <p>
  * This class does not support server versions of 1.7 and
- * below, because of the massive differences in tablist
+ * below, because of the massive differences in tab list
  * and packet fields.
  */
 @RequiredArgsConstructor

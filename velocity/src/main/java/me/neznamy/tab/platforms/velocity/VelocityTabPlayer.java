@@ -15,11 +15,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  * TabPlayer implementation for Velocity
  */
+@Getter
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    @Getter private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
-    @Getter private final TabList tabList = new VelocityTabList(this);
-    @Getter private final BossBar bossBar = new AdventureBossBar(getPlayer());
+    private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
+    private final TabList tabList = new VelocityTabList(this);
+    private final BossBar bossBar = new AdventureBossBar(getPlayer());
 
     /**
      * Constructs new instance for given player

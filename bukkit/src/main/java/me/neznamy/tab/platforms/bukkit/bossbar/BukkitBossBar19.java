@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Bossbar for 1.9+ servers where Bukkit API is used. If ViaVersion is used
+ * BossBar for 1.9+ servers where Bukkit API is used. If ViaVersion is used
  * to allow 1.8 players, it will handle the entity and teleporting by itself.
  */
 @RequiredArgsConstructor

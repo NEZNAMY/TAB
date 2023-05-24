@@ -47,22 +47,22 @@ public class KryptonPlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector getPipelineInjector() {
+    public @Nullable PipelineInjector createPipelineInjector() {
         return null;
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNameTags() {
         return new NameTag();
     }
 
     @Override
-    public @NotNull TabExpansion getTabExpansion() {
+    public @NotNull TabExpansion createTabExpansion() {
         return new EmptyTabExpansion();
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerlist() {
+    public @Nullable TabFeature getPerWorldPlayerList() {
         return null;
     }
 }

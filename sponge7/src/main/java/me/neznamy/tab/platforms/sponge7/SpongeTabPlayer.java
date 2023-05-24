@@ -18,11 +18,12 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.Collection;
 
+@Getter
 public final class SpongeTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
-    @Getter private final TabList tabList = new SpongeTabList(this);
-    @Getter private final BossBar bossBar = new SpongeBossBar(this);
+    private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+    private final TabList tabList = new SpongeTabList(this);
+    private final BossBar bossBar = new SpongeBossBar(this);
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),

@@ -12,10 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@RequiredArgsConstructor
-public class FabricTabList implements TabList {
-
-    private final FabricTabPlayer player;
+public record FabricTabList(FabricTabPlayer player) implements TabList {
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
@@ -25,7 +22,7 @@ public class FabricTabList implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.sendPacket(FabricMultiVersion.build(Action.UPDATE_DISPLAY_NAME,
-                        new Builder(entry).setDisplayName(displayName == null ? null : FabricTAB.getInstance().toComponent(displayName, player.getVersion()))));
+                new Builder(entry).setDisplayName(displayName == null ? null : FabricTAB.getInstance().toComponent(displayName, player.getVersion()))));
     }
 
     @Override
@@ -67,11 +64,31 @@ public class FabricTabList implements TabList {
         private int gameMode;
         @Nullable private Component displayName;
 
-        public Builder setName(String name) { this.name = name; return this; }
-        public Builder setSkin(Skin skin) { this.skin = skin; return this; }
-        public Builder setLatency(int latency) { this.latency = latency; return this; }
-        public Builder setGameMode(int gameMode) { this.gameMode = gameMode; return this; }
-        public Builder setDisplayName(Component displayName) { this.displayName = displayName; return this; }
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setSkin(Skin skin) {
+            this.skin = skin;
+            return this;
+        }
+
+        public Builder setLatency(int latency) {
+            this.latency = latency;
+            return this;
+        }
+
+        public Builder setGameMode(int gameMode) {
+            this.gameMode = gameMode;
+            return this;
+        }
+
+        public Builder setDisplayName(Component displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
         public GameProfile createProfile() {
             GameProfile profile = new GameProfile(id, name);
             if (skin != null) {

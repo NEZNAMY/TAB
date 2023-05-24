@@ -299,7 +299,7 @@ public class FeatureManager {
             featureManager.registerFeature(TabConstants.Feature.SPECTATOR_FIX, new SpectatorFix());
 
         if (configuration.isPipelineInjection()) {
-            PipelineInjector inj = TAB.getInstance().getPlatform().getPipelineInjector();
+            PipelineInjector inj = TAB.getInstance().getPlatform().createPipelineInjector();
             if (inj != null) featureManager.registerFeature(TabConstants.Feature.PIPELINE_INJECTION, inj);
         }
 
@@ -307,7 +307,7 @@ public class FeatureManager {
             featureManager.registerFeature(TabConstants.Feature.SCOREBOARD, new ScoreboardManagerImpl());
 
         if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
-            TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerlist();
+            TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList();
             if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
         }
 
@@ -326,7 +326,7 @@ public class FeatureManager {
         // Must be loaded after: Sorting
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true)) {
             if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && minorVersion >= 8) {
-                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, TAB.getInstance().getPlatform().getUnlimitedNametags());
+                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, TAB.getInstance().getPlatform().getUnlimitedNameTags());
             } else {
                 featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
             }

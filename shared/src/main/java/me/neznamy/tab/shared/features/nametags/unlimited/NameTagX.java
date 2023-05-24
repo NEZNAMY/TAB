@@ -27,7 +27,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Getter protected final String featureName = "Unlimited NameTags";
     private final Set<me.neznamy.tab.api.TabPlayer> playersDisabledWithAPI = Collections.newSetFromMap(new WeakHashMap<>());
     protected final Map<TabPlayer, ArmorStandManager> armorStandManagerMap = new WeakHashMap<>();
-    private final Set<TabPlayer> playersPreviewingNametag = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<TabPlayer> playersPreviewingNameTag = Collections.newSetFromMap(new WeakHashMap<>());
     private final BiFunction<NameTagX, TabPlayer, ArmorStandManager> armorStandFunction;
     @Getter private final DisableChecker unlimitedDisableChecker;
 
@@ -87,21 +87,21 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
         }
     }
 
-    public void toggleNametagPreview(TabPlayer player, boolean sendToggleMessage) {
-        if (playersPreviewingNametag.contains(player)) {
+    public void toggleNameTagPreview(TabPlayer player, boolean sendToggleMessage) {
+        if (playersPreviewingNameTag.contains(player)) {
             setNameTagPreview(player, false);
             if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOff(), true);
-            playersPreviewingNametag.remove(player);
+            playersPreviewingNameTag.remove(player);
         } else {
             setNameTagPreview(player, true);
             if (sendToggleMessage) player.sendMessage(TAB.getInstance().getConfiguration().getMessages().getNametagPreviewOn(), true);
-            playersPreviewingNametag.add(player);
+            playersPreviewingNameTag.add(player);
         }
-        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(player, isPreviewingNametag(player));
+        TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(player, isPreviewingNameTag(player));
     }
 
-    public boolean isPreviewingNametag(@NonNull TabPlayer player) {
-        return playersPreviewingNametag.contains(player);
+    public boolean isPreviewingNameTag(@NonNull TabPlayer player) {
+        return playersPreviewingNameTag.contains(player);
     }
 
     public void onUnlimitedDisableConditionChange(TabPlayer p, boolean disabledNow) {
@@ -165,7 +165,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
         resumeArmorStands((TabPlayer) player);
     }
 
-    /* UnlimitedNametagManager implementation */
+    /* UnlimitedNameTagManager implementation */
 
     @Override
     public void disableArmorStands(me.neznamy.tab.api.@NonNull TabPlayer player) {

@@ -55,7 +55,7 @@ public class NameTagCommand extends SubCommand {
             sendMessage(sender, getMessages().getArmorStandsDisabledCannotPreview());
             return;
         }
-        nameTagX.toggleNametagPreview(target, !silent);
+        nameTagX.toggleNameTagPreview(target, !silent);
     }
 
     private void toggle(@Nullable TabPlayer sender, @Nullable TabPlayer target, boolean silent) {

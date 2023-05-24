@@ -33,17 +33,18 @@ import java.util.UUID;
  * TabPlayer implementation for Bukkit platform
  */
 @SuppressWarnings("deprecation")
+@Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
     private Object handle;
 
     /** Player's connection for sending packets, preloading for speed */
-    @Getter private Object playerConnection;
+    private Object playerConnection;
 
-    @Getter private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
-    @Getter private final TabList tabList = new BukkitTabList(this);
-    @Getter private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+    private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
+    private final TabList tabList = new BukkitTabList(this);
+    private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar19(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar18(this);
 
     /**

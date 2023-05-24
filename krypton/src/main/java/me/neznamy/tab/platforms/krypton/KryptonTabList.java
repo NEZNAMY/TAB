@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.krypton;
 
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;
@@ -12,10 +11,7 @@ import org.kryptonmc.api.world.GameMode;
 import java.util.Collections;
 import java.util.UUID;
 
-@RequiredArgsConstructor
-public class KryptonTabList implements TabList {
-
-    private final KryptonTabPlayer player;
+public record KryptonTabList(KryptonTabPlayer player) implements TabList {
 
     @Override
     public void removeEntry(@NotNull UUID entryId) {
@@ -56,7 +52,8 @@ public class KryptonTabList implements TabList {
         player.getPlayer().getTabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
     }
 
-    private @NotNull GameProfile createGameProfile(@NotNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
+    private @NotNull
+    GameProfile createGameProfile(@NotNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
         String newName = name == null ? "" : name;
         if (skin == null) return GameProfile.of(newName, uuid);
         ProfileProperty property = ProfileProperty.of(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature());

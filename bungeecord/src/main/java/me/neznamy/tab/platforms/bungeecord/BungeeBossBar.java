@@ -29,12 +29,12 @@ public class BungeeBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
-        net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 0);
-        bossbar.setHealth(progress);
-        bossbar.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
-        bossbar.setColor(color.ordinal());
-        bossbar.setDivision(style.ordinal());
-        player.getPlayer().unsafe().sendPacket(bossbar);
+        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 0);
+        packet.setHealth(progress);
+        packet.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
+        packet.setColor(color.ordinal());
+        packet.setDivision(style.ordinal());
+        player.getPlayer().unsafe().sendPacket(packet);
 
         colors.put(id, color.ordinal());
         styles.put(id, style.ordinal());
@@ -44,28 +44,28 @@ public class BungeeBossBar implements BossBar {
     public void update(@NotNull UUID id, @NotNull String title) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
-        net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 3);
-        bossbar.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
-        player.getPlayer().unsafe().sendPacket(bossbar);
+        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 3);
+        packet.setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
+        player.getPlayer().unsafe().sendPacket(packet);
     }
 
     @Override
     public void update(@NotNull UUID id, float progress) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
-        net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 2);
-        bossbar.setHealth(progress);
-        player.getPlayer().unsafe().sendPacket(bossbar);
+        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 2);
+        packet.setHealth(progress);
+        player.getPlayer().unsafe().sendPacket(packet);
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
-        net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
-        bossbar.setDivision(style.ordinal());
-        bossbar.setColor(colors.get(id));
-        player.getPlayer().unsafe().sendPacket(bossbar);
+        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
+        packet.setDivision(style.ordinal());
+        packet.setColor(colors.get(id));
+        player.getPlayer().unsafe().sendPacket(packet);
 
         styles.put(id, style.ordinal());
     }
@@ -74,10 +74,10 @@ public class BungeeBossBar implements BossBar {
     public void update(@NotNull UUID id, @NotNull BarColor color) {
         if (player.getVersion().getMinorVersion() < 9) return;
 
-        net.md_5.bungee.protocol.packet.BossBar bossbar = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
-        bossbar.setDivision(styles.get(id));
-        bossbar.setColor(color.ordinal());
-        player.getPlayer().unsafe().sendPacket(bossbar);
+        net.md_5.bungee.protocol.packet.BossBar packet = new net.md_5.bungee.protocol.packet.BossBar(id, 4);
+        packet.setDivision(styles.get(id));
+        packet.setColor(color.ordinal());
+        player.getPlayer().unsafe().sendPacket(packet);
 
         colors.put(id, color.ordinal());
     }

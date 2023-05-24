@@ -16,11 +16,12 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@Getter
 public class FabricTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
-    @Getter private final TabList tabList = new FabricTabList(this);
-    @Getter private final BossBar bossBar = new FabricBossBar(this);
+    private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
+    private final TabList tabList = new FabricTabList(this);
+    private final BossBar bossBar = new FabricBossBar(this);
 
     public FabricTabPlayer(ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), TAB.getInstance().getConfiguration().getServerName(),

@@ -24,22 +24,23 @@ import java.util.UUID;
  * Abstract class for player on proxy containing variables and methods
  * shared between proxies.
  */
+@Getter @Setter
 public abstract class ProxyTabPlayer extends TabPlayer {
 
     /** Player's vanish status from backend server */
-    @Getter @Setter private boolean vanished;
+    private boolean vanished;
 
     /** Player's disguise status from backend server */
-    @Getter @Setter private boolean disguised;
+    private boolean disguised;
 
     /** Player's invisibility potion status from backend server */
-    @Setter private boolean invisibilityPotion;
+    private boolean invisibilityPotion;
 
     /** Player's boat vehicle status for unlimited NameTags */
-    @Getter @Setter private boolean onBoat;
+    private boolean onBoat;
 
     /** Flag for marking if this player has received join response from bridge or not */
-    @Getter @Setter private boolean bridgeConnected;
+    private boolean bridgeConnected;
 
     /** Map of player's requested permissions */
     private final Map<String, Boolean> permissions = new HashMap<>();

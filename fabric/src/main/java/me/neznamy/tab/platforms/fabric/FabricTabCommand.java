@@ -48,13 +48,12 @@ public class FabricTabCommand {
                 FabricMultiVersion.sendMessage2.accept(source, Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
             }
         } else {
-            TabPlayer player = null;
-            if (source.getEntity() != null) {
-                player = TAB.getInstance().getPlayer(source.getEntity().getUUID());
-                if (player == null) return 0;
+            if (source.getEntity() == null) {
+                TAB.getInstance().getCommand().execute(null, args);
+            } else {
+                TabPlayer player = TAB.getInstance().getPlayer(source.getEntity().getUUID());
+                if (player != null) TAB.getInstance().getCommand().execute(player, args);
             }
-
-            TAB.getInstance().getCommand().execute(player, args);
         }
         return 0;
     }

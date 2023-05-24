@@ -42,7 +42,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     }
 
     /**
-     * Updates Wither's location for all online players
+     * Updates Wither location for all online players
      */
     private void teleport() {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
@@ -67,8 +67,10 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
+        TabPlayer player = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
+        if (player == null) return;
         TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
-                () -> detectBossBarsAndSend(TAB.getInstance().getPlayer(e.getPlayer().getUniqueId())));
+                () -> detectBossBarsAndSend(player));
     }
 
     @Override

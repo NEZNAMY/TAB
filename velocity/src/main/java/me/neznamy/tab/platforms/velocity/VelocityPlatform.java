@@ -28,7 +28,7 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector getPipelineInjector() { return null; }
+    public @Nullable PipelineInjector createPipelineInjector() { return null; }
 
     @Override
     public @Nullable RedisSupport getRedisSupport() {

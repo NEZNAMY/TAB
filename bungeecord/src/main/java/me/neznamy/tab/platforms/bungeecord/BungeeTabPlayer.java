@@ -47,7 +47,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     /** Player's scoreboard */
     @Getter private final @NotNull Scoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
 
-    /** Player's tablist based on version */
+    /** Player's tab list based on version */
     private final @NotNull TabList tabList1_7 = new BungeeTabList17(this);
     private final @NotNull TabList tabList1_8 = new BungeeTabList18(this);
     private final @NotNull TabList tabList1_19_3 = new BungeeTabList1193(this);
