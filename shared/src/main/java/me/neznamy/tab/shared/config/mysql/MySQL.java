@@ -35,7 +35,7 @@ public class MySQL {
     }
 
     private boolean isConnected() throws SQLException {
-        return !con.isClosed();
+        return con != null && !con.isClosed();
     }
 
     public void execute(@NonNull String query, @Nullable Object... vars) throws SQLException {
