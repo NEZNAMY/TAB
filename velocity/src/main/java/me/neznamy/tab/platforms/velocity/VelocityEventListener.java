@@ -50,7 +50,7 @@ public class VelocityEventListener extends EventListener<Player> {
         if (!event.getIdentifier().getId().equalsIgnoreCase(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getTarget() instanceof Player) {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
-            pluginMessage(((Player) event.getTarget()).getUniqueId(), ((Player) event.getTarget()).getUsername(), event.getData());
+            pluginMessage(((Player) event.getTarget()).getUniqueId(), event.getData());
         }
     }
 

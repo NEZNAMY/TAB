@@ -76,15 +76,13 @@ public abstract class EventListener<T> {
      *
      * @param   player
      *          UUID of player who received message
-     * @param   playerName
-     *          Name of player who received message
      * @param   message
      *          The message
      */
-    public void pluginMessage(@NotNull UUID player, @NotNull String playerName, byte[] message) {
+    public void pluginMessage(@NotNull UUID player, byte[] message) {
         TAB.getInstance().getCPUManager().runMeasuredTask("Plugin message handling",
                 TabConstants.CpuUsageCategory.PLUGIN_MESSAGE, () ->
-                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, playerName, message));
+                    ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, message));
     }
 
     public boolean command(@NotNull UUID player, @NotNull String command) {

@@ -44,13 +44,9 @@ public class PluginMessageHandler {
      *          incoming message
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void onPluginMessage(@NotNull UUID uuid, @NotNull String name, byte[] bytes) {
+    public void onPluginMessage(@NotNull UUID uuid, byte[] bytes) {
         ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
-        if (player == null) {
-            TAB.getInstance().getErrorManager().printError("Ignoring plugin message (" + new String(bytes) + ") for player " +
-                    name + ", because player was not found");
-            return;
-        }
+        if (player == null) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
         messages.get(in.readUTF()).accept(player, in);
     }

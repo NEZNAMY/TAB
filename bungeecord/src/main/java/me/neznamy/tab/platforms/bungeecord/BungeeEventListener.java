@@ -38,8 +38,7 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
         if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
         if (event.getReceiver() instanceof ProxiedPlayer) {
             event.setCancelled(true);
-            pluginMessage(((ProxiedPlayer) event.getReceiver()).getUniqueId(),
-                    ((ProxiedPlayer) event.getReceiver()).getName(), event.getData());
+            pluginMessage(((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
         }
     }
 
