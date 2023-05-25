@@ -31,7 +31,7 @@ public abstract class NMSStorage {
     @Getter @Setter private static NMSStorage instance;
 
     /** Server's NMS/CraftBukkit package */
-    protected final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+    @Getter protected final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
     /** Server's minor version */
     @Getter protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);

@@ -144,4 +144,9 @@ public class BukkitPlatform implements BackendPlatform {
         Bukkit.getConsoleSender().sendMessage("[TAB] " + RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
                 TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0] + " (" + NMSStorage.getInstance().getServerPackage() + ")";
+    }
 }

@@ -56,4 +56,9 @@ public final class SpongePlatform implements BackendPlatform {
     public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
         plugin.getLogger().info(message.toLegacyText());
     }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[Sponge] " + Sponge.getPlatform().getMinecraftVersion().getName();
+    }
 }

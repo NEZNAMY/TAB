@@ -31,9 +31,8 @@ public class FabricTAB implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         instance = this;
         ProtocolVersion protocolVersion = ProtocolVersion.fromNetworkId(SharedConstants.getCurrentVersion().getProtocolVersion());
-        String version = SharedConstants.getCurrentVersion().getName();
         File folder = FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
-        TAB.setInstance(new TAB(new FabricPlatform(), protocolVersion, version, folder));
+        TAB.setInstance(new TAB(new FabricPlatform(), protocolVersion, folder));
         new FabricEventListener().register();
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             this.server = server;

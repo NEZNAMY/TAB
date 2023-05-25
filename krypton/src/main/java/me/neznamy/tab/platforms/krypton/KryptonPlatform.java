@@ -30,6 +30,11 @@ public class KryptonPlatform implements BackendPlatform {
     }
 
     @Override
+    public String getServerVersionInfo() {
+        return "[Krypton] " + server.getPlatform().version();
+    }
+
+    @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> "");
     }

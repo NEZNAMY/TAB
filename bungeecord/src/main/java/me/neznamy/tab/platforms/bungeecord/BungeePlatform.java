@@ -36,6 +36,11 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
+    public String getServerVersionInfo() {
+        return "[BungeeCord] " + plugin.getProxy().getName() + " - " + plugin.getProxy().getVersion();
+    }
+
+    @Override
     public void loadPlayers() {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             TAB.getInstance().addPlayer(new BungeeTabPlayer(p));

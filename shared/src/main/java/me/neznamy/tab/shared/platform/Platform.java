@@ -24,6 +24,11 @@ public interface Platform {
      */
     @NotNull GroupManager detectPermissionPlugin();
 
+    /**
+     * Returns bossbar feature for servers 1.8 and lower
+     *
+     * @return  bossbar feature for 1.8 and lower
+     */
     default @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new BossBarManagerImpl();
     }
@@ -47,15 +52,55 @@ public interface Platform {
      */
     void registerPlaceholders();
 
+    /**
+     * Creates pipeline injection instance and returns it
+     *
+     * @return  new pipeline injection or null if not available
+     */
     @Nullable PipelineInjector createPipelineInjector();
 
+    /**
+     * Returns nametag handler when unlimited nametag mode is enabled
+     * in config file.
+     *
+     * @return  Nametag feature handler for unlimited name tags
+     */
     @NotNull NameTag getUnlimitedNameTags();
 
+    /**
+     * Creates tab expansion instance and returns it
+     *
+     * @return  Created expansion
+     */
     @NotNull TabExpansion createTabExpansion();
 
+    /**
+     * Creates RedisSupport feature, registers listeners and returns it
+     *
+     * @return  Created instance
+     */
     @Nullable RedisSupport getRedisSupport();
 
+    /**
+     * Returns per world player list feature handler.
+     *
+     * @return  Created feature or null if not available on platform
+     */
     @Nullable TabFeature getPerWorldPlayerList();
 
+    /**
+     * Sends a console message with TAB's prefix using logger if available,
+     * otherwise platform's method for sending console message.
+     *
+     * @param   message
+     *          Message to send
+     */
     void sendConsoleMessage(@NotNull IChatBaseComponent message);
+
+    /**
+     * Returns information about server version, which is displayed in debug command
+     *
+     * @return  Server version information
+     */
+    String getServerVersionInfo();
 }

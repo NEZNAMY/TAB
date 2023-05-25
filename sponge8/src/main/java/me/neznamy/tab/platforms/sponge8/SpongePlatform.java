@@ -57,4 +57,9 @@ public final class SpongePlatform implements BackendPlatform {
     public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent()));
     }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[Sponge] " + Sponge.platform().minecraftVersion().name();
+    }
 }

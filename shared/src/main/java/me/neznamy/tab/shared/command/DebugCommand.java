@@ -58,7 +58,7 @@ public class DebugCommand extends SubCommand {
         String separator = "&7&m>-------------------------------<";
         sendMessage(sender, "&3[TAB] &a&lShowing debug information");
         sendMessage(sender, separator);
-        sendMessage(sender, "&6Server version: &b" + tab.getServerVersionString());
+        sendMessage(sender, "&6Server version: &b" + tab.getPlatform().getServerVersionInfo());
         sendMessage(sender, "&6Plugin version: &b" + TabConstants.PLUGIN_VERSION);
         sendMessage(sender, "&6Permission plugin: &b" + TAB.getInstance().getGroupManager().getPermissionPlugin());
         sendMessage(sender, "&6Permission group choice logic: &b" + getGroupChoiceLogic());

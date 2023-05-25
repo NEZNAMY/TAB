@@ -23,7 +23,7 @@ public class BungeeTAB extends Plugin {
         getProxy().registerChannel(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
         getProxy().getPluginManager().registerListener(this, new BungeeEventListener());
         getProxy().getPluginManager().registerCommand(this, new BungeeTabCommand());
-        TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY, getProxy().getVersion(), getDataFolder()));
+        TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY, getDataFolder()));
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 10535);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));

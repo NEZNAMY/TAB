@@ -43,4 +43,9 @@ public class VelocityPlatform extends ProxyPlatform {
     public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
         plugin.getLogger().info(message.toLegacyText());
     }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[Velocity] " + server.getVersion().getName() + " - " + server.getVersion().getVersion();
+    }
 }

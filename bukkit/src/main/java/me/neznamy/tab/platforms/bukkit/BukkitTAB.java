@@ -32,7 +32,7 @@ public class BukkitTAB extends JavaPlugin {
             return;
         }
         BukkitPlatform platform = new BukkitPlatform(this);
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), version + " (" + serverPackage + ")", getDataFolder()));
+        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), getDataFolder()));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
         }

@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -56,5 +57,10 @@ public final class FabricPlatform implements BackendPlatform {
     @Override
     public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
         MinecraftServer.LOGGER.info("[TAB] " + message.toRawText());
+    }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[Fabric] " + SharedConstants.getCurrentVersion().getName();
     }
 }
