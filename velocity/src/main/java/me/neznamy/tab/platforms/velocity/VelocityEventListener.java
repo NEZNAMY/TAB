@@ -12,11 +12,12 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.platform.EventListener;
+import me.neznamy.tab.shared.platform.TabPlayer;
 
 /**
  * The core for velocity forwarding events into all enabled features
  */
-public class VelocityEventListener extends EventListener {
+public class VelocityEventListener extends EventListener<Player> {
 
     @Subscribe
     public void onQuit(DisconnectEvent e) {
@@ -26,12 +27,8 @@ public class VelocityEventListener extends EventListener {
     @Subscribe
     @SuppressWarnings("UnstableApiUsage")
     public void onConnect(ServerPostConnectEvent e) {
-        Player p = e.getPlayer();
-        if (TAB.getInstance().getPlayer(p.getUniqueId()) == null) {
-            join(new VelocityTabPlayer(p));
-        } else {
-            serverChange(p.getUniqueId(), p.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("null"));
-        }
+        serverChange(e.getPlayer(), e.getPlayer().getUniqueId(), e.getPlayer().getCurrentServer()
+                .map(s -> s.getServerInfo().getName()).orElse("null"));
     }
 
     @Subscribe
@@ -55,5 +52,10 @@ public class VelocityEventListener extends EventListener {
             event.setResult(PluginMessageEvent.ForwardResult.handled());
             pluginMessage(((Player) event.getTarget()).getUniqueId(), ((Player) event.getTarget()).getUsername(), event.getData());
         }
+    }
+
+    @Override
+    public TabPlayer createPlayer(Player player) {
+        return new VelocityTabPlayer(player);
     }
 }

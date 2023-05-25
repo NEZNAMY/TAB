@@ -1,22 +1,20 @@
 package me.neznamy.tab.platforms.fabric;
 
 import me.neznamy.tab.shared.platform.EventListener;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.level.ServerPlayer;
 
-public class FabricEventListener extends EventListener {
+public class FabricEventListener extends EventListener<ServerPlayer> {
 
     public void register() {
-        ServerPlayConnectionEvents.JOIN.register((handler, $, $$) -> onJoin(handler));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, $) -> onQuit(handler));
+        ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
+        ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
     }
 
-    private void onJoin(ServerGamePacketListenerImpl connection) {
-        join(new FabricTabPlayer(connection.player));
-    }
-
-    private void onQuit(ServerGamePacketListenerImpl connection) {
-        quit(connection.player.getUUID());
+    @Override
+    public TabPlayer createPlayer(ServerPlayer player) {
+        return new FabricTabPlayer(player);
     }
 
     //TODO replace player on respawn

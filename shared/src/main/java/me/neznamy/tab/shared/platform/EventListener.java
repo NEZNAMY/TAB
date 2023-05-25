@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Class for methods called by platform's event listener.
  */
-public class EventListener {
+public abstract class EventListener<T> {
 
     /**
      * Processes player join by forwarding it to all features.
@@ -18,10 +18,10 @@ public class EventListener {
      * @param   player
      *          Player who joined
      */
-    public void join(@NotNull TabPlayer player) {
+    public void join(@NotNull T player) {
         if (TAB.getInstance().isPluginDisabled()) return;
         TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onJoin(player));
+                TAB.getInstance().getFeatureManager().onJoin(createPlayer(player)));
     }
 
     /**
@@ -54,14 +54,21 @@ public class EventListener {
      * Processes server change by forwarding it to all features.
      *
      * @param   player
-     *          Player who switched server
+     *          Player who switched server or joined
+     * @param   uuid
+     *          UUID of the player
      * @param   server
      *          New server
      */
-    public void serverChange(@NotNull UUID player, @NotNull String server) {
+    public void serverChange(@NotNull T player, @NotNull UUID uuid, @NotNull String server) {
         if (TAB.getInstance().isPluginDisabled()) return;
-        TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onServerChange(player, server));
+        TAB.getInstance().getCPUManager().runTask(() -> {
+            if (TAB.getInstance().getPlayer(uuid) == null) {
+                TAB.getInstance().getFeatureManager().onJoin(createPlayer(player));
+            } else {
+                TAB.getInstance().getFeatureManager().onServerChange(uuid, server);
+            }
+        });
     }
 
     /**
@@ -84,4 +91,6 @@ public class EventListener {
         if (TAB.getInstance().isPluginDisabled()) return false;
         return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);
     }
+
+    public abstract TabPlayer createPlayer(T player);
 }

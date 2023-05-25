@@ -1,6 +1,8 @@
 package me.neznamy.tab.platforms.bukkit;
 
 import me.neznamy.tab.shared.platform.EventListener;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,7 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  * The core for bukkit forwarding events into all enabled features
  */
-public class BukkitEventListener extends EventListener implements Listener {
+public class BukkitEventListener extends EventListener<Player> implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onQuit(PlayerQuitEvent e) {
@@ -21,7 +23,7 @@ public class BukkitEventListener extends EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
-        join(new BukkitTabPlayer(e.getPlayer()));
+        join(e.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -32,5 +34,10 @@ public class BukkitEventListener extends EventListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         if (command(e.getPlayer().getUniqueId(), e.getMessage())) e.setCancelled(true);
+    }
+
+    @Override
+    public TabPlayer createPlayer(Player player) {
+        return new BukkitTabPlayer(player);
     }
 }

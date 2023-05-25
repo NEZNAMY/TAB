@@ -1,8 +1,8 @@
 package me.neznamy.tab.platforms.bungeecord;
 
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -14,7 +14,7 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * The core for BungeeCord forwarding events into all enabled features
  */
-public class BungeeEventListener extends EventListener implements Listener {
+public class BungeeEventListener extends EventListener<ProxiedPlayer> implements Listener {
 
     @EventHandler
     public void onQuit(PlayerDisconnectEvent e) {
@@ -23,11 +23,7 @@ public class BungeeEventListener extends EventListener implements Listener {
 
     @EventHandler
     public void onSwitch(ServerSwitchEvent e) {
-        if (TAB.getInstance().getPlayer(e.getPlayer().getUniqueId()) == null) {
-            join(new BungeeTabPlayer(e.getPlayer()));
-        } else {
-            serverChange(e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
-        }
+        serverChange(e.getPlayer(), e.getPlayer().getUniqueId(), e.getPlayer().getServer().getInfo().getName());
     }
 
     @EventHandler
@@ -45,5 +41,10 @@ public class BungeeEventListener extends EventListener implements Listener {
             pluginMessage(((ProxiedPlayer) event.getReceiver()).getUniqueId(),
                     ((ProxiedPlayer) event.getReceiver()).getName(), event.getData());
         }
+    }
+
+    @Override
+    public TabPlayer createPlayer(ProxiedPlayer player) {
+        return new BungeeTabPlayer(player);
     }
 }
