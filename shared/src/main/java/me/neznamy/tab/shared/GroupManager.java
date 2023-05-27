@@ -10,6 +10,7 @@ import me.neznamy.tab.shared.permission.PermissionPlugin;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Permission group manager retrieving groups from permission plugin

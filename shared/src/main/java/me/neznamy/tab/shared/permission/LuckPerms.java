@@ -1,11 +1,19 @@
 package me.neznamy.tab.shared.permission;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.api.config.YamlConfigurationFile;
+import me.neznamy.tab.shared.TAB;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 
@@ -33,6 +41,26 @@ public class LuckPerms extends PermissionPlugin {
             net.luckperms.api.LuckPerms api = LuckPermsProvider.get();
             User user = api.getUserManager().getUser(p.getUniqueId());
             if (user == null) return TabConstants.NO_GROUP; //pretend like nothing is wrong
+
+            File folder = TAB.getInstance().getDataFolder();
+            ConfigurationFile groups = new YamlConfigurationFile(null, new File(folder, "groups.yml"));
+            Collection<Group> inheritedGroups = user.getInheritedGroups(user.getQueryOptions());
+            for(Group group : inheritedGroups) {
+                for (Object groupName : groups.getConfigurationSection("custom-groups").keySet()) {
+                    if(!groupName.toString().equalsIgnoreCase(group.getName()))
+                        continue;
+                    String[] serverList = groups.getString("custom-groups." + groupName).toLowerCase().split(",");
+                    if(Arrays.toString(serverList).contains("global")){
+                        return groupName.toString();
+                    }
+                    for (String server : serverList) {
+                        if (server.equalsIgnoreCase(p.getServer())) {
+                            return groupName.toString();
+                        }
+                    }
+                }
+            }
+
             return user.getPrimaryGroup();
         } catch (Exception e) {
             return TabConstants.NO_GROUP;

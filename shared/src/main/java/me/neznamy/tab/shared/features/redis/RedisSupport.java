@@ -3,10 +3,10 @@ package me.neznamy.tab.shared.features.redis;
 import lombok.Getter;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.chat.IChatBaseComponent;
 import me.neznamy.tab.api.event.EventHandler;
+import me.neznamy.tab.api.feature.*;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.event.impl.TabPlaceholderRegisterEvent;
 import me.neznamy.tab.shared.features.BelowName;
@@ -326,13 +326,23 @@ public abstract class RedisSupport extends TabFeature implements JoinListener, Q
         eventHandler = event -> {
             String identifier = event.getIdentifier();
             if (identifier.startsWith("%online_")) {
-                String server = identifier.substring(8, identifier.length()-1);
-                event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
-                        Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equals(server) && !p.isVanished()).count() +
-                                redisPlayers.values().stream().filter(all -> all.getServer().equals(server) && !all.isVanished()).count()));
+                String server;
+                String id = identifier.substring(8, identifier.length() - 1);
+                if (id.endsWith("*")) {
+                    server = id.substring(0, id.length() - 1);
+                    event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
+                            Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().toLowerCase().startsWith(server.toLowerCase()) && !p.isVanished()).count() +
+                                    redisPlayers.values().stream().filter(all -> all.getServer().toLowerCase().startsWith(server.toLowerCase()) && !all.isVanished()).count()));
+                } else {
+                    server = id;
+                    event.setPlaceholder(new ServerPlaceholderImpl(identifier, 1000, () ->
+                            Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(p -> p.getServer().equalsIgnoreCase(server) && !p.isVanished()).count() +
+                                    redisPlayers.values().stream().filter(all -> all.getServer().equalsIgnoreCase(server) && !all.isVanished()).count()));
+                }
 
             }
         };
+
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(TabConstants.Placeholder.ONLINE, 1000, () ->
                 Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(all -> !all.isVanished()).count() +
                         redisPlayers.values().stream().filter(all -> !all.isVanished()).count());
