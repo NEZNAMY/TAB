@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import de.myzelyam.api.vanish.BungeeVanishAPI;
 import lombok.Getter;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.platforms.bungeecord.tablist.BungeeTabList1193;
@@ -14,6 +15,7 @@ import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.UserConnection;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
@@ -34,6 +36,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     /** Inaccessible bungee internals */
     private static @Nullable Object directionData;
     private static @Nullable Method getId;
+
+    /** Flag tracking plugin presence */
+    private static final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 
     static {
         try {
@@ -129,14 +134,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean isVanished() {
-        try {
-            if (ReflectionUtils.classExists("de.myzelyam.api.vanish.BungeeVanishAPI") &&
-                    (boolean) Class.forName("de.myzelyam.api.vanish.BungeeVanishAPI")
-                            .getMethod("isInvisible", ProxiedPlayer.class).invoke(null, getPlayer()))
-                return true;
-        } catch (Exception e) {
-            TAB.getInstance().getErrorManager().printError("PremiumVanish generated an error when retrieving vanish status of " + getName(), e);
-        }
+        //noinspection ConstantConditions
+        if (premiumVanish && BungeeVanishAPI.isInvisible(getPlayer())) return true;
         return super.isVanished();
     }
 
