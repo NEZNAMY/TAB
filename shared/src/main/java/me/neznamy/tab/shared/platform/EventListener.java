@@ -85,6 +85,23 @@ public abstract class EventListener<T> {
                     ((ProxyPlatform)TAB.getInstance().getPlatform()).getPluginMessageHandler().onPluginMessage(player, message));
     }
 
+    /**
+     * Replaces player object reference. Needed on modded servers,
+     * as vanilla replaces player object on respawn, and they
+     * preserve that behavior.
+     *
+     * @param   player
+     *          UUID of affected player
+     * @param   newPlayer
+     *          New player object
+     */
+    public void replacePlayer(UUID player, T newPlayer) {
+        if (TAB.getInstance().isPluginDisabled()) return;
+        TabPlayer p = TAB.getInstance().getPlayer(player);
+        if (p == null) return;
+        p.setPlayer(newPlayer);
+    }
+
     public boolean command(@NotNull UUID player, @NotNull String command) {
         if (TAB.getInstance().isPluginDisabled()) return false;
         return TAB.getInstance().getFeatureManager().onCommand(TAB.getInstance().getPlayer(player), command);

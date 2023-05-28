@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.sponge8;
 
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.spongepowered.api.entity.living.player.Player;
@@ -27,10 +26,7 @@ public class SpongeEventListener extends EventListener<ServerPlayer> {
 
     @Listener(order = Order.PRE)
     public void onRespawn(RespawnPlayerEvent.Recreate event) {
-        if (TAB.getInstance().isPluginDisabled()) return;
-        SpongeTabPlayer player = (SpongeTabPlayer) TAB.getInstance().getPlayer(event.recreatedPlayer().uniqueId());
-        if (player == null) return;
-        player.setPlayer(event.recreatedPlayer());
+        replacePlayer(event.recreatedPlayer().uniqueId(), event.recreatedPlayer());
     }
 
     @Listener

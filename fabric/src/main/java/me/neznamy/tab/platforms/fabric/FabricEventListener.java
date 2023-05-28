@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -12,10 +11,7 @@ public class FabricEventListener extends EventListener<ServerPlayer> {
     public void register() {
         ServerPlayConnectionEvents.JOIN.register((connection, $, $$) -> join(connection.player));
         ServerPlayConnectionEvents.DISCONNECT.register((connection, $) -> quit(connection.player.getUUID()));
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            TabPlayer p = TAB.getInstance().getPlayer(newPlayer.getUUID());
-            if (p != null) p.setPlayer(newPlayer);
-        });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> replacePlayer(oldPlayer.getUUID(), newPlayer));
     }
 
     @Override
