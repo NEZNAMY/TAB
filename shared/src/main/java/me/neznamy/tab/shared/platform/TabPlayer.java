@@ -21,7 +21,7 @@ import java.util.*;
 public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
 
     /** Platform-specific player object instance */
-    protected Object player;
+    @Setter protected Object player;
 
     /** Player's real name */
     @Getter private final String name;
