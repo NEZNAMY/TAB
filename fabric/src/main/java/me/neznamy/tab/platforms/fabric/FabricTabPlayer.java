@@ -40,7 +40,7 @@ public class FabricTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        FabricMultiVersion.sendMessage.accept(this, message);
+        getPlayer().sendSystemMessage(FabricTAB.getInstance().toComponent(message, getVersion()));
     }
 
     @Override

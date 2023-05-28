@@ -1,7 +1,5 @@
 // Versions that don't require any code changes:
 //      1.19.3, 1.19.4
-// Versions that require changes to FabricMultiVersion.java:
-//      1.14 - 1.19.2
 val minecraftVersion = "1.19.4"
 
 val v114 = "0.28.5+1.14"

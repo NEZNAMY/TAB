@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
@@ -39,7 +40,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
             TAB.getInstance().load();
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
-        FabricMultiVersion.registerCommand.run();
+        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
     }
 
     public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
