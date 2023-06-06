@@ -33,6 +33,11 @@ public class ViaVersionHook {
     public int getPlayerVersion(@NotNull UUID player, @NotNull String playerName) {
         if (!installed) return TAB.getInstance().getServerVersion().getNetworkId();
         int version = Via.getAPI().getPlayerVersion(player);
+        if (version == -1) {
+            TAB.getInstance().sendConsoleMessage("&cViaVersion returned protocol version -1 for player " + playerName +
+                    ". Using version of the server (" + TAB.getInstance().getServerVersion().getNetworkId() + ")", true);
+            return TAB.getInstance().getServerVersion().getNetworkId();
+        }
         TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
         if (protocol == ProtocolVersion.UNKNOWN_CLIENT_VERSION) {
