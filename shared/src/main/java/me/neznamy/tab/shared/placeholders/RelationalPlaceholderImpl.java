@@ -100,6 +100,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         updateValue((TabPlayer) viewer, (TabPlayer) target, value, false);
     }
 
+    @Override
+    public void update(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target) {
+        update((TabPlayer) viewer, (TabPlayer) target);
+    }
+
     /**
      * Returns last known value for given players. First player is viewer,
      * second player is target.

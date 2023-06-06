@@ -129,7 +129,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private boolean updateServerPlaceholder(@NonNull ServerPlaceholderImpl placeholder, @NonNull Map<TabPlayer, Set<Refreshable>> update) {
         boolean somethingChanged = false;
         long startTime = System.nanoTime();
-        if (placeholder.update()) {
+        if (placeholder.update0()) {
             somethingChanged = true;
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 update.computeIfAbsent(all, k -> new HashSet<>()).addAll(placeholderUsage.get(placeholder.getIdentifier()));
@@ -164,7 +164,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     public void load() {
         for (Placeholder pl : usedPlaceholders) {
             if (pl instanceof ServerPlaceholderImpl) {
-                ((ServerPlaceholderImpl)pl).update();
+                ((ServerPlaceholderImpl)pl).update0();
             }
         }
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {

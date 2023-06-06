@@ -106,6 +106,11 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         updateValue((TabPlayer) player, value, false);
     }
 
+    @Override
+    public void update(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        update((TabPlayer) player);
+    }
+
     public void updateFromNested(@NonNull TabPlayer player) {
         updateValue(player, request(player), true);
     }

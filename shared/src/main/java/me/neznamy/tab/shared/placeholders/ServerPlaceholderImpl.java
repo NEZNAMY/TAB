@@ -39,7 +39,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         super(identifier, refresh);
         if (identifier.startsWith("%rel_")) throw new IllegalArgumentException("\"rel_\" is reserved for relational placeholder identifiers");
         this.supplier = supplier;
-        update();
+        update0();
     }
 
     /**
@@ -47,7 +47,7 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
      *
      * @return  true if value changed, false if not
      */
-    public boolean update() {
+    public boolean update0() {
         String obj = getReplacements().findReplacement(String.valueOf(request()));
         String newValue = setPlaceholders(obj, null);
 
@@ -96,6 +96,11 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     @Override
     public void updateValue(@NonNull Object value) {
         updateValue(value, false);
+    }
+
+    @Override
+    public void update() {
+        update0();
     }
 
     @Override
