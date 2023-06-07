@@ -97,7 +97,7 @@ public class MySQLCommand extends SubCommand {
                 sendMessage(sender, getMessages().getMySQLUploadSuccess());
             } catch (YAMLException | IOException e) {
                 sendMessage(sender, getMessages().getMySQLFailError());
-                TAB.getInstance().getErrorManager().criticalError("MySQL download failed", e);
+                TAB.getInstance().getErrorManager().criticalError("MySQL upload failed", e);
             }
         });
     }
