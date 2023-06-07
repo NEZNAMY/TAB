@@ -33,6 +33,9 @@ public class BukkitModernNMSStorage extends NMSStorage {
             DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("g").get(null);
             if (is1_19_4Plus()) {
                 DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("k").get(null);
+                if (is1_20Plus()) {
+                    (PING = EntityPlayer.getDeclaredField("f")).setAccessible(true);;
+                }
             } else {
                 DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("j").get(null);
             }
