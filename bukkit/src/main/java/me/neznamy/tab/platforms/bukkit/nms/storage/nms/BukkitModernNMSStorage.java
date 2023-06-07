@@ -33,9 +33,6 @@ public class BukkitModernNMSStorage extends NMSStorage {
             DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("g").get(null);
             if (is1_19_4Plus()) {
                 DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("k").get(null);
-                if (is1_20Plus()) {
-                    (PING = EntityPlayer.getDeclaredField("f")).setAccessible(true);;
-                }
             } else {
                 DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("j").get(null);
             }
@@ -47,6 +44,9 @@ public class BukkitModernNMSStorage extends NMSStorage {
             PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("d").get(null);
             (PacketPlayOutSpawnEntityLivingStorage.ENTITY_TYPE = PacketPlayOutSpawnEntityLivingStorage.CLASS.getDeclaredField("e")).setAccessible(true);
             DataWatcher.packDirty = DataWatcher.CLASS.getMethod("b");
+        }
+        if (minorVersion >= 20) {
+            (PING = EntityPlayer.getDeclaredField("f")).setAccessible(true);
         }
     }
 
