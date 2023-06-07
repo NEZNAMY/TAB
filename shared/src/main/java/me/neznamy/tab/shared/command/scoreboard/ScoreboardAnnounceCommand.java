@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared.command.level2;
+package me.neznamy.tab.shared.command.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,15 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Handler for "/tab announce scoreboard" subcommand
+ * Handler for "/tab scoreboard announce &lt;name&gt; &lt;length&gt;" subcommand
  */
-public class AnnounceScoreboardCommand extends SubCommand {
+public class ScoreboardAnnounceCommand extends SubCommand {
 
     /**
      * Constructs new instance
      */
-    public AnnounceScoreboardCommand() {
-        super("scoreboard", TabConstants.Permission.COMMAND_SCOREBOARD_ANNOUNCE);
+    public ScoreboardAnnounceCommand() {
+        super("announce", TabConstants.Permission.COMMAND_SCOREBOARD_ANNOUNCE);
     }
 
     @Override

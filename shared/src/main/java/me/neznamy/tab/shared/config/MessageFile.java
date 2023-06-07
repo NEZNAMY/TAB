@@ -27,7 +27,7 @@ public class MessageFile extends YamlConfigurationFile {
     @Getter private final String commandOnlyFromGame = getString("command-only-from-game", "&cThis command must be ran from the game");
     @Getter private final String unlimitedNametagModeNotEnabled = getString("unlimited-nametag-mode-not-enabled", "&c[TAB] Warning! To make this feature work, you need to enable unlimited-nametag-mode in the config!");
     @Getter private final String scoreboardFeatureNotEnabled = getString("scoreboard-feature-not-enabled", "&4This command requires the scoreboard feature to be enabled.");
-    @Getter private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab announce scoreboard <scoreboard name> <length>");
+    @Getter private final String scoreboardAnnounceCommandUsage = getString("scoreboard-announce-command-usage", "Usage: /tab scoreboard announce <scoreboard name> <length>");
     @Getter private final String nametagPreviewOn = getString("nametag-preview-on", "&7Preview mode &aactivated&7.");
     @Getter private final String nametagPreviewOff = getString("nametag-preview-of", "&7Preview mode &3deactivated&7.");
     @Getter private final String reloadSuccess = getString("reload-success", "&3[TAB] Successfully reloaded");
@@ -73,6 +73,11 @@ public class MessageFile extends YamlConfigurationFile {
     @Getter private final String nameTagsHidden = getString("nametags-hidden", "&aNametags of all players were hidden to you");
     @Getter private final String nameTagsShown = getString("nametags-shown", "&aNametags of all players were shown to you");
     @Getter private final String armorStandsDisabledCannotPreview = getString("armorstands-disabled-cannot-use-preview", "&cYour armor stands are disabled, therefore you cannot use preview feature");
+    @Getter private final List<String> scoreboardHelpMenu = getStringList("scoreboard-help-menu", Arrays.asList(
+            "/tab scoreboard [on/off/toggle] [player] [options]",
+            "/tab scoreboard show <name> [player]",
+            "/tab scoreboard announce <name> <length>"
+    ));
 
     public MessageFile() throws YAMLException, IOException {
         super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));

@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
-import me.neznamy.tab.shared.command.level2.AnnounceScoreboardCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +18,6 @@ public class AnnounceCommand extends SubCommand {
     public AnnounceCommand() {
         super("announce", null);
         getSubcommands().put("bar", new AnnounceBarCommand());
-        getSubcommands().put("scoreboard", new AnnounceScoreboardCommand());
     }
 
     @Override
