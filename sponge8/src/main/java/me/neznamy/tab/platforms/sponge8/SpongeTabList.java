@@ -60,11 +60,10 @@ public class SpongeTabList implements TabList {
 
     private GameMode convertGameMode(int mode) {
         switch (mode) {
-            case 0: return GameModes.SURVIVAL.get();
             case 1: return GameModes.CREATIVE.get();
             case 2: return GameModes.ADVENTURE.get();
             case 3: return GameModes.SPECTATOR.get();
-            default: return GameModes.NOT_SET.get();
+            default: return GameModes.SURVIVAL.get();
         }
     }
 }

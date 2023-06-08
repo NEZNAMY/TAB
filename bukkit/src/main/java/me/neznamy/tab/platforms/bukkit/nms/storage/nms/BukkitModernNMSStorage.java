@@ -17,7 +17,11 @@ public class BukkitModernNMSStorage extends NMSStorage {
 
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        (PING = EntityPlayer.getDeclaredField("e")).setAccessible(true);
+        if (minorVersion >= 20) {
+            (PING = EntityPlayer.getDeclaredField("f")).setAccessible(true);
+        } else {
+            (PING = EntityPlayer.getDeclaredField("e")).setAccessible(true);
+        }
         ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
         DataWatcher.REGISTER = ReflectionUtils.getMethod(DataWatcher.CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
         PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
