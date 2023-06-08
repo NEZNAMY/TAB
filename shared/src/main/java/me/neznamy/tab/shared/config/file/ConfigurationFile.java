@@ -101,10 +101,10 @@ public abstract class ConfigurationFile {
         return getObject(path, null);
     }
 
-    public Object getObject(@NonNull String[] path) {
+    public Object getObject(String[] path) {
         Object value = values;
         for (String section : path) {
-            if (!(value instanceof Map)) {
+            if (section == null || !(value instanceof Map)) {
                 return null;
             }
             value = getIgnoreCase((Map<Object, Object>) value, section);
