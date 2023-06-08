@@ -17,6 +17,7 @@ import me.neznamy.tab.shared.features.globalplayerlist.GlobalPlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardManagerImpl;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -326,7 +327,12 @@ public class FeatureManager {
         // Must be loaded after: Sorting
         if (configuration.getConfig().getBoolean("scoreboard-teams.enabled", true)) {
             if (configuration.getConfig().getBoolean("scoreboard-teams.unlimited-nametag-mode.enabled", false) && minorVersion >= 8) {
-                featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, TAB.getInstance().getPlatform().getUnlimitedNameTags());
+                NameTag unlimited = TAB.getInstance().getPlatform().getUnlimitedNameTags();
+                if (unlimited instanceof NameTagX) {
+                    featureManager.registerFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS, unlimited);
+                } else {
+                    featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, unlimited);
+                }
             } else {
                 featureManager.registerFeature(TabConstants.Feature.NAME_TAGS, new NameTag());
             }
