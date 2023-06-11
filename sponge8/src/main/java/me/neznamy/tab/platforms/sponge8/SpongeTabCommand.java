@@ -15,6 +15,7 @@ import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventContextKeys;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,12 @@ public class SpongeTabCommand implements Command.Raw {
             player = TAB.getInstance().getPlayer(source.uniqueId());
             if (player == null) return Collections.emptyList(); // Player not loaded correctly
         }
-        return TAB.getInstance().getCommand().complete(player, arguments.input().split(" ")).stream().map(CommandCompletion::of).collect(Collectors.toList());
+        String[] args = arguments.input().split(" ");
+        if (arguments.input().endsWith(" ")) {
+            args = Arrays.copyOf(args, args.length+1);
+            args[args.length-1] = "";
+        }
+        return TAB.getInstance().getCommand().complete(player, args).stream().map(CommandCompletion::of).collect(Collectors.toList());
     }
 
     @Override
