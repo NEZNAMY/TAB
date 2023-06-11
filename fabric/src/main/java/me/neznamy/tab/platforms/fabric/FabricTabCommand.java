@@ -16,6 +16,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class FabricTabCommand {
@@ -37,7 +38,12 @@ public class FabricTabCommand {
         int firstSpace = input.indexOf(' ');
         if (firstSpace == -1) return new String[0];
         String rawArgs = input.substring(firstSpace + 1);
-        return rawArgs.split(" ");
+        String[] args = rawArgs.split(" ");
+        if (rawArgs.endsWith(" ")) {
+            args = Arrays.copyOf(args, args.length+1);
+            args[args.length-1] = "";
+        }
+        return args;
     }
 
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
@@ -65,6 +71,10 @@ public class FabricTabCommand {
             if (player == null) return Suggestions.empty();
         }
 
+        int lastSpace = builder.getRemaining().lastIndexOf(' ');
+        if (lastSpace != -1) {
+            builder = builder.createOffset(lastSpace + 1 + builder.getStart());
+        }
         for (String suggestion : TAB.getInstance().getCommand().complete(player, args)) {
             builder.suggest(suggestion);
         }
