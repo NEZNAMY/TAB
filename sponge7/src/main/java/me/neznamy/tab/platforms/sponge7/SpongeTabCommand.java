@@ -4,18 +4,28 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class SpongeTabCommand {
+public class SpongeTabCommand extends CommandElement implements CommandExecutor {
 
-    public @NotNull CommandResult executeCommand(CommandSource source, CommandContext context) {
+    protected SpongeTabCommand() {
+        super(null);
+    }
+
+    public @NotNull CommandResult execute(@NotNull CommandSource source, @NotNull CommandContext context) {
         String[] args = context.<String>getOne(Text.of("arguments")).orElse("").split(" ");
 
         if (TAB.getInstance().isPluginDisabled()) {
@@ -28,7 +38,6 @@ public class SpongeTabCommand {
             }
             return CommandResult.success();
         }
-
         TabPlayer player = null;
         if (source instanceof Player) {
             player = TAB.getInstance().getPlayer(((Player) source).getUniqueId());
@@ -36,5 +45,29 @@ public class SpongeTabCommand {
         }
         TAB.getInstance().getCommand().execute(player, args);
         return CommandResult.success();
+    }
+
+    @Override
+    protected @Nullable Object parseValue(@NotNull CommandSource source, @NotNull CommandArgs args) {
+        return null;
+    }
+
+    @Override
+    public @NotNull List<String> complete(@NotNull CommandSource src, @NotNull CommandArgs commandArgs, @NotNull CommandContext context) {
+        TabPlayer player = null;
+        if (src.getCommandSource().isPresent()) {
+            CommandSource source = src.getCommandSource().get();
+            if (source instanceof Player) {
+                player = TAB.getInstance().getPlayer(((Player)source).getUniqueId());
+                if (player == null) return Collections.emptyList(); // Player not loaded correctly
+            }
+            String[] args = commandArgs.getRaw().split(" ");
+            if (commandArgs.getRaw().endsWith(" ")) {
+                args = Arrays.copyOf(args, args.length+1);
+                args[args.length-1] = "";
+            }
+            return TAB.getInstance().getCommand().complete(player, args);
+        }
+        return Collections.emptyList();
     }
 }

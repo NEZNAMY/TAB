@@ -42,8 +42,8 @@ public class Sponge7TAB {
     public void onServerStart(GameStartedServerEvent event) {
         SpongeTabCommand cmd = new SpongeTabCommand();
         game.getCommandManager().register(this, CommandSpec.builder()
-                .arguments(GenericArguments.remainingJoinedStrings(Text.of("arguments")))
-                .executor(cmd::executeCommand)
+                .arguments(cmd, GenericArguments.remainingJoinedStrings(Text.of("arguments"))) // GenericArguments.none() doesn't work, so rip no-arg
+                .executor(cmd)
                 .build(), TabConstants.COMMAND_BACKEND);
         game.getEventManager().registerListeners(this, new SpongeEventListener());
         String version = game.getPlatform().getMinecraftVersion().getName();
