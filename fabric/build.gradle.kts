@@ -1,12 +1,13 @@
 // Versions that don't require any code changes:
-//      1.19.3, 1.19.4, 1.20
-val minecraftVersion = "1.20"
+//      1.19.3, 1.19.4, 1.20, 1.20.1
+val minecraftVersion = "1.20.1"
 
 val v114 = "0.28.5+1.14"
 val v115 = "0.28.5+1.15"
 val v116 = "0.42.0+1.16"
 
 val fabricApiVersions = mapOf(
+    "1.20.1" to "0.83.0+1.20.1",
     "1.20"   to "0.83.0+1.20",
     "1.19.4" to "0.77.0+1.19.4",
     "1.19.3" to "0.76.0+1.19.3",
