@@ -35,7 +35,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(new ScoreboardObjective(objectiveName, null, null, (byte) 1));
+        player.sendPacket(new ScoreboardObjective(objectiveName, "", null, (byte) 1)); // Empty string to prevent kick on 1.7
     }
 
     @Override
