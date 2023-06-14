@@ -8,6 +8,8 @@ import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.util.ComponentCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
@@ -34,6 +36,10 @@ public class IChatBaseComponent {
 
     private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(10000,
             (component, clientVersion) -> component.toString());
+
+    /** Component cache for BungeeCord components */
+    private static final @NotNull ComponentCache<IChatBaseComponent, TextComponent> bungeeCache =
+            new ComponentCache<>(10000, IChatBaseComponent::toBungeeComponent0);
 
     public static final String EMPTY_COMPONENT = "{\"text\":\"\"}";
 
@@ -356,5 +362,33 @@ public class IChatBaseComponent {
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
         return Component.text(text, color, decorations)
                 .children(getExtra().stream().map(c -> c.toAdventureComponent(clientVersion)).collect(Collectors.toList()));
+    }
+
+    /**
+     * Converts this component to bungeecord component.
+     *
+     * @return  BungeeCord component from this component.
+     */
+    public TextComponent toBungeeComponent(@NotNull ProtocolVersion clientVersion) {
+        return bungeeCache.get(this, clientVersion);
+    }
+
+    /**
+     * Converts this component to bungeecord component.
+     *
+     * @return  BungeeCord component from this component.
+     */
+   private TextComponent toBungeeComponent0(@NotNull ProtocolVersion clientVersion) {
+        TextComponent textComponent = new TextComponent(text);
+        if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
+                modifier.getColor().toString(clientVersion.getMinorVersion() >= 16)));
+        if (modifier.isBold()) textComponent.setBold(true);
+        if (modifier.isItalic()) textComponent.setItalic(true);
+        if (modifier.isObfuscated()) textComponent.setObfuscated(true);
+        if (modifier.isStrikethrough()) textComponent.setStrikethrough(true);
+        if (modifier.isUnderlined()) textComponent.setUnderlined(true);
+        if (!getExtra().isEmpty()) textComponent.setExtra(
+                getExtra().stream().map(c -> c.toBungeeComponent(clientVersion)).collect(Collectors.toList()));
+        return textComponent;
     }
 }

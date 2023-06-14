@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import org.jetbrains.annotations.NotNull;
@@ -22,15 +24,15 @@ import java.util.UUID;
  * While BungeeCord itself does not support 1.7, some of its forks do.
  * This was tested on FlameCord fork.
  */
-public class BungeeTabList17 extends BungeeTabList {
+@RequiredArgsConstructor
+public class BungeeTabList17 implements TabList {
+
+    /** Player this TabList belongs to */
+    private final BungeeTabPlayer player;
 
     /** Because entries are identified by names and not uuids on 1.7 */
     private final Map<UUID, String> userNames = new HashMap<>();
     private final Map<UUID, String> displayNames = new HashMap<>();
-
-    public BungeeTabList17(BungeeTabPlayer player) {
-        super(player);
-    }
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
@@ -82,5 +84,10 @@ public class BungeeTabList17 extends BungeeTabList {
         item.setDisplayName(displayName);
         item.setPing(latency);
         return item;
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+        // Added in 1.8
     }
 }
