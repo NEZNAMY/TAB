@@ -26,7 +26,7 @@ public class KryptonPlatform implements BackendPlatform {
 
     @Override
     public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
-        server.getConsole().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent()));
+        server.getConsole().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent(TAB.getInstance().getServerVersion())));
     }
 
     @Override

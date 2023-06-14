@@ -335,11 +335,19 @@ public class IChatBaseComponent {
      * Converts this component to adventure component. RGB conversion to
      * legacy codes is managed by the platform using adventure components.
      *
+     * @param   clientVersion
+     *          Version to create component for
      * @return  Adventure component from this component.
      */
-    public @NotNull Component toAdventureComponent() {
-        net.kyori.adventure.text.format.TextColor color = modifier.getColor() == null ? null :
-                net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getRgb());
+    public @NotNull Component toAdventureComponent(@NotNull ProtocolVersion clientVersion) {
+        net.kyori.adventure.text.format.TextColor color = null;
+        if (modifier.getColor() != null) {
+            if (clientVersion.getMinorVersion() >= 16) {
+                color = net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getRgb());
+            } else {
+                color = net.kyori.adventure.text.format.TextColor.color(modifier.getColor().getLegacyColor().getHexCode());
+            }
+        }
         Set<TextDecoration> decorations = new HashSet<>();
         if (modifier.isBold()) decorations.add(TextDecoration.BOLD);
         if (modifier.isItalic()) decorations.add(TextDecoration.ITALIC);
@@ -347,6 +355,6 @@ public class IChatBaseComponent {
         if (modifier.isStrikethrough()) decorations.add(TextDecoration.STRIKETHROUGH);
         if (modifier.isUnderlined()) decorations.add(TextDecoration.UNDERLINED);
         return Component.text(text, color, decorations)
-                .children(getExtra().stream().map(IChatBaseComponent::toAdventureComponent).collect(Collectors.toList()));
+                .children(getExtra().stream().map(c -> c.toAdventureComponent(clientVersion)).collect(Collectors.toList()));
     }
 }

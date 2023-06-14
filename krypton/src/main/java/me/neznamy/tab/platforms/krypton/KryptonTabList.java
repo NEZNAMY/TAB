@@ -21,7 +21,7 @@ public record KryptonTabList(KryptonTabPlayer player) implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entryId, @Nullable IChatBaseComponent displayName) {
         TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
-        if (entry != null) entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
+        if (entry != null) entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent(player.getVersion()));
     }
 
     @Override
@@ -40,7 +40,7 @@ public record KryptonTabList(KryptonTabPlayer player) implements TabList {
     public void addEntry(@NotNull Entry entry) {
         GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
         player.getPlayer().getTabList().createEntryBuilder(entry.getUniqueId(), profile)
-                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(player.getVersion()))
                 .gameMode(GameMode.values()[entry.getGameMode()])
                 .latency(entry.getLatency())
                 .listed(true)
@@ -49,7 +49,10 @@ public record KryptonTabList(KryptonTabPlayer player) implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().getTabList().setHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
+        player.getPlayer().getTabList().setHeaderAndFooter(
+                header.toAdventureComponent(player.getVersion()),
+                footer.toAdventureComponent(player.getVersion())
+        );
     }
 
     private @NotNull

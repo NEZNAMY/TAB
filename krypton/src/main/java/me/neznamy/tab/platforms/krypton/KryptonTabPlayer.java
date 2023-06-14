@@ -20,7 +20,7 @@ public class KryptonTabPlayer extends TabPlayer {
 
     private final Scoreboard<KryptonTabPlayer> scoreboard = new KryptonScoreboard(this);
     private final TabList tabList = new KryptonTabList(this);
-    private final BossBar bossBar = new AdventureBossBar(getPlayer());
+    private final BossBar bossBar = new AdventureBossBar(this);
 
     public KryptonTabPlayer(Player player) {
         super(player, player.getUuid(), player.getProfile().name(), TAB.getInstance().getConfiguration().getServerName(),
@@ -39,7 +39,7 @@ public class KryptonTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(message.toAdventureComponent());
+        getPlayer().sendMessage(message.toAdventureComponent(getVersion()));
     }
 
     @Override

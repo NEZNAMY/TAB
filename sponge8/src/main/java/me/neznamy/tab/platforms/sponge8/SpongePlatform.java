@@ -55,7 +55,8 @@ public final class SpongePlatform implements BackendPlatform {
 
     @Override
     public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
-        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent()));
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
+                message.toAdventureComponent(TAB.getInstance().getServerVersion())));
     }
 
     @Override

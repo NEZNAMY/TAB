@@ -20,7 +20,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
     private final TabList tabList = new VelocityTabList(this);
-    private final BossBar bossBar = new AdventureBossBar(getPlayer());
+    private final BossBar bossBar = new AdventureBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -45,7 +45,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(message.toAdventureComponent());
+        getPlayer().sendMessage(message.toAdventureComponent(getVersion()));
     }
 
     @Override

@@ -37,7 +37,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         Objective objective = Objective.builder()
                 .name(objectiveName)
-                .displayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent())
+                .displayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(player.getVersion()))
                 .objectiveDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS : ObjectiveDisplayModes.INTEGER)
                 .criterion(Criteria.DUMMY)
                 .build();
@@ -53,7 +53,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         Objective obj = player.getPlayer().scoreboard().objective(objectiveName).orElseThrow(IllegalStateException::new);
-        obj.setDisplayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent());
+        obj.setDisplayName(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(player.getVersion()));
         obj.setDisplayMode(hearts ? ObjectiveDisplayModes.HEARTS.get() : ObjectiveDisplayModes.INTEGER.get());
     }
 
@@ -61,16 +61,16 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         Team team = Team.builder()
                 .name(name)
-                .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent())
-                .prefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent())
-                .suffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent())
+                .displayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent(player.getVersion()))
+                .prefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent(player.getVersion()))
+                .suffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent(player.getVersion()))
                 .allowFriendlyFire((options & 0x01) != 0)
                 .canSeeFriendlyInvisibles((options & 0x02) != 0)
                 .collisionRule(convertCollisionRule(collision))
                 .nameTagVisibility(convertVisibility(visibility))
                 .build();
         for (String member : players) {
-            team.addMember(IChatBaseComponent.optimizedComponent(member).toAdventureComponent());
+            team.addMember(IChatBaseComponent.optimizedComponent(member).toAdventureComponent(player.getVersion()));
         }
         player.getPlayer().scoreboard().registerTeam(team);
     }
@@ -84,9 +84,9 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         Team team = player.getPlayer().scoreboard().team(name).orElse(null);
         if (team == null) return;
-        team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent());
-        team.setPrefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent());
-        team.setSuffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent());
+        team.setDisplayName(IChatBaseComponent.optimizedComponent(name).toAdventureComponent(player.getVersion()));
+        team.setPrefix(IChatBaseComponent.optimizedComponent(prefix).toAdventureComponent(player.getVersion()));
+        team.setSuffix(IChatBaseComponent.optimizedComponent(suffix).toAdventureComponent(player.getVersion()));
         team.setAllowFriendlyFire((options & 0x01) != 0);
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
         team.setCollisionRule(convertCollisionRule(collision));
@@ -116,12 +116,12 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     @Override
     public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         player.getPlayer().scoreboard().objective(objective).ifPresent(o -> o.findOrCreateScore(
-                IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent()).setScore(score));
+                IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent(player.getVersion())).setScore(score));
     }
 
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         player.getPlayer().scoreboard().objective(objective).ifPresent(o -> o.removeScore(
-                IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent()));
+                IChatBaseComponent.optimizedComponent(playerName).toAdventureComponent(player.getVersion())));
     }
 }

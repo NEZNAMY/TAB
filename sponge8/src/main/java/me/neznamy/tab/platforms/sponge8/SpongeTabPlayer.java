@@ -24,7 +24,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     private final TabList tabList = new SpongeTabList(this);
-    private final AdventureBossBar bossBar = new AdventureBossBar(getPlayer());
+    private final AdventureBossBar bossBar = new AdventureBossBar(this);
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
@@ -43,7 +43,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(message.toAdventureComponent());
+        getPlayer().sendMessage(message.toAdventureComponent(getVersion()));
     }
 
     @Override
@@ -87,10 +87,5 @@ public final class SpongeTabPlayer extends TabPlayer {
         if (getPlayer().gameMode().get() == GameModes.ADVENTURE.get()) return 2;
         if (getPlayer().gameMode().get() == GameModes.SPECTATOR.get()) return 3;
         return 0;
-    }
-
-    public void setPlayer(final ServerPlayer player) {
-        this.player = player;
-        bossBar.setAudience(player);
     }
 }

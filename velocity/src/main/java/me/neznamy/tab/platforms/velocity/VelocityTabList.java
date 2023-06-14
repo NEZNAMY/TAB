@@ -37,7 +37,7 @@ public class VelocityTabList implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (player.getVersion().getMinorVersion() >= 8) {
-            getEntry(entry).setDisplayName(displayName == null ? null : displayName.toAdventureComponent());
+            getEntry(entry).setDisplayName(displayName == null ? null : displayName.toAdventureComponent(player.getVersion()));
         } else {
             String username = getEntry(entry).getProfile().getName();
             removeEntry(entry);
@@ -68,13 +68,16 @@ public class VelocityTabList implements TabList {
                 ))
                 .latency(entry.getLatency())
                 .gameMode(entry.getGameMode())
-                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent())
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(player.getVersion()))
                 .build());
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().sendPlayerListHeaderAndFooter(header.toAdventureComponent(), footer.toAdventureComponent());
+        player.getPlayer().sendPlayerListHeaderAndFooter(
+                header.toAdventureComponent(player.getVersion()),
+                footer.toAdventureComponent(player.getVersion())
+        );
     }
 
     /**
