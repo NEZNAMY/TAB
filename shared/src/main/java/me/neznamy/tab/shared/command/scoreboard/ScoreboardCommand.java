@@ -27,16 +27,16 @@ public class ScoreboardCommand extends SubCommand {
     @Override
     public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         SubCommand command;
-        if (args.length > 0) {
-            command = getSubcommands().get(args[0].toLowerCase());
-        } else {
+        if (args.length == 0) {
             command = getSubcommands().get("toggle");
             if (command.hasPermission(sender)) {
                 command.execute(sender, new String[0]);
             } else {
                 sendMessage(sender, getMessages().getNoPermission());
             }
+            return;
         }
+        command = getSubcommands().get(args[0].toLowerCase());
         if (command != null) {
             if (command.hasPermission(sender)) {
                 command.execute(sender, Arrays.copyOfRange(args, 1, args.length));
