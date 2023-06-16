@@ -38,7 +38,7 @@ public class IChatBaseComponent {
             (component, clientVersion) -> component.toString());
 
     /** Component cache for BungeeCord components */
-    private static final @NotNull ComponentCache<IChatBaseComponent, TextComponent> bungeeCache =
+    private static final @NotNull ComponentCache<IChatBaseComponent, Object> bungeeCache =
             new ComponentCache<>(10000, IChatBaseComponent::toBungeeComponent0);
 
     public static final String EMPTY_COMPONENT = "{\"text\":\"\"}";
@@ -370,7 +370,7 @@ public class IChatBaseComponent {
      * @return  BungeeCord component from this component.
      */
     public TextComponent toBungeeComponent(@NotNull ProtocolVersion clientVersion) {
-        return bungeeCache.get(this, clientVersion);
+        return (TextComponent) bungeeCache.get(this, clientVersion);
     }
 
     /**
@@ -378,7 +378,7 @@ public class IChatBaseComponent {
      *
      * @return  BungeeCord component from this component.
      */
-   private TextComponent toBungeeComponent0(@NotNull ProtocolVersion clientVersion) {
+   private Object toBungeeComponent0(@NotNull ProtocolVersion clientVersion) {
         TextComponent textComponent = new TextComponent(text);
         if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
                 modifier.getColor().toString(clientVersion.getMinorVersion() >= 16)));
