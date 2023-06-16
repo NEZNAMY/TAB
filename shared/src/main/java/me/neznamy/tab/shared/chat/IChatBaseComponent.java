@@ -378,7 +378,7 @@ public class IChatBaseComponent {
      *
      * @return  BungeeCord component from this component.
      */
-   private Object toBungeeComponent0(@NotNull ProtocolVersion clientVersion) {
+    private Object toBungeeComponent0(@NotNull ProtocolVersion clientVersion) {
         TextComponent textComponent = new TextComponent(text);
         if (modifier.getColor() != null) textComponent.setColor(ChatColor.of(
                 modifier.getColor().toString(clientVersion.getMinorVersion() >= 16)));
