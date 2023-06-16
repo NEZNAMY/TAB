@@ -1,37 +1,32 @@
 package me.neznamy.tab.platforms.sponge7;
 
-import lombok.Getter;
-import me.neznamy.tab.api.feature.TabFeature;
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.plugin.PluginContainer;
 
-public final class SpongePlatform extends BackendPlatform {
+@RequiredArgsConstructor
+public final class SpongePlatform implements BackendPlatform {
 
-    @Getter private final PipelineInjector pipelineInjector = null;
-    @Getter private final TabExpansion tabExpansion = new EmptyTabExpansion();
-    @Getter private final TabFeature petFix = null;
-    @Getter private final TabFeature perWorldPlayerlist = null;
+    private final Sponge7TAB plugin;
 
     @Override
-    public String getPluginVersion(String plugin) {
-        return Sponge.getPluginManager().getPlugin(plugin.toLowerCase()).flatMap(PluginContainer::getVersion).orElse(null);
-    }
-
-    @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
     }
 
     @Override
     public void loadPlayers() {
-        for (final Player player : Sponge.getServer().getOnlinePlayers()) {
+        for (Player player : Sponge.getServer().getOnlinePlayers()) {
             TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
         }
     }
@@ -42,7 +37,28 @@ public final class SpongePlatform extends BackendPlatform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @Nullable PipelineInjector createPipelineInjector() { return null; }
+
+    @Override
+    public @NotNull NameTag getUnlimitedNameTags() {
         return new NameTag();
+    }
+
+    @Override
+    public @NotNull TabExpansion createTabExpansion() {
+        return new EmptyTabExpansion();
+    }
+
+    @Override
+    public @Nullable TabFeature getPerWorldPlayerList() { return null; }
+
+    @Override
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        plugin.getLogger().info(message.toLegacyText());
+    }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[Sponge] " + Sponge.getPlatform().getMinecraftVersion().getName();
     }
 }

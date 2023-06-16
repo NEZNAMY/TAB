@@ -3,8 +3,10 @@ package me.neznamy.tab.shared.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.neznamy.tab.api.ProtocolVersion;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Command processor when TAB is disabled due to broken configuration file
@@ -22,7 +24,7 @@ public class DisabledCommand {
      *          if player has admin permission or not
      * @return  list of messages to send back
      */
-    public List<String> execute(String[] args, boolean hasReloadPermission, boolean hasAdminPermission) {
+    public List<String> execute(@NotNull String[] args, boolean hasReloadPermission, boolean hasAdminPermission) {
         List<String> messages = new ArrayList<>();
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             if (hasReloadPermission) {
@@ -33,7 +35,7 @@ public class DisabledCommand {
             }
         } else {
             if (hasAdminPermission) {
-                String command = TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY ? "/tab" : "/btab";
+                String command = "/" + (TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY ? TabConstants.COMMAND_BACKEND : TabConstants.COMMAND_PROXY);
                 messages.add("&m                                                                                ");
                 messages.add(" &cPlugin is disabled due to an error. Check console for more details.");
                 messages.add(" &8>> &3&l" + command + " reload");

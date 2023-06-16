@@ -1,34 +1,40 @@
 package me.neznamy.tab.shared.features;
 
 import lombok.Getter;
-import me.neznamy.tab.api.*;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.util.Preconditions;
+import lombok.NonNull;
+import me.neznamy.tab.api.tablist.TabListFormatManager;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.features.layout.Layout;
-import me.neznamy.tab.shared.features.layout.LayoutManager;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
+import me.neznamy.tab.shared.features.layout.LayoutView;
 import me.neznamy.tab.shared.features.layout.PlayerSlot;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.features.types.*;
+import me.neznamy.tab.shared.placeholders.conditions.Condition;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.util.Preconditions;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  * Feature handler for TabList display names
  */
-public class PlayerList extends TabFeature implements TablistFormatManager, JoinListener, DisplayNameListener, Loadable,
-        UnLoadable, ServerSwitchListener, WorldSwitchListener, Refreshable {
+public class PlayerList extends TabFeature implements TabListFormatManager, JoinListener, DisplayNameListener, Loadable,
+        UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable, VanishListener {
 
-    @Getter private final String featureName = "Tablist name formatting";
+    @Getter protected final String featureName = "Tablist name formatting";
     @Getter private final String refreshDisplayName = "Updating TabList format";
 
     /** Config option toggling anti-override which prevents other plugins from overriding TAB */
-    protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
+    @Getter protected final boolean antiOverrideTabList = TAB.getInstance().getConfiguration().getConfig().getBoolean("tablist-name-formatting.anti-override", true);
 
-    private final LayoutManager layoutManager = (LayoutManager) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
+    private final LayoutManagerImpl layoutManager = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.LAYOUT);
     private RedisSupport redis;
+    @Getter protected final DisableChecker disableChecker;
 
     /**
      * Flag tracking when the plugin is disabling to properly clear
@@ -37,11 +43,10 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      */
     private boolean disabling = false;
 
-    /**
-     * Constructs new instance and sends debug message that feature loaded.
-     */
     public PlayerList() {
-        super("tablist-name-formatting");
+        Condition disableCondition = Condition.getCondition(TAB.getInstance().getConfig().getString("tablist-name-formatting.disable-condition"));
+        disableChecker = new DisableChecker(featureName, disableCondition, this::onDisableConditionChange);
+        TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.PLAYER_LIST + "-Condition", disableChecker);
     }
 
     /**
@@ -56,9 +61,9 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      *          TabList viewer
      * @return  UUID of TabList entry representing requested player
      */
-    public UUID getTablistUUID(TabPlayer p, TabPlayer viewer) {
+    public UUID getTablistUUID(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         if (layoutManager != null) {
-            Layout layout = layoutManager.getPlayerViews().get(viewer);
+            LayoutView layout = layoutManager.getViews().get(viewer);
             if (layout != null) {
                 PlayerSlot slot = layout.getSlot(p);
                 if (slot != null) {
@@ -77,7 +82,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      *          Player to update properties of
      * @return  {@code true} if at least one property changed, {@code false} if not
      */
-    protected boolean updateProperties(TabPlayer p) {
+    protected boolean updateProperties(@NotNull TabPlayer p) {
         boolean changed = p.loadPropertyFromConfig(this, TabConstants.Property.TABPREFIX);
         if (p.loadPropertyFromConfig(this, TabConstants.Property.CUSTOMTABNAME, p.getName())) changed = true;
         if (p.loadPropertyFromConfig(this, TabConstants.Property.TABSUFFIX)) changed = true;
@@ -92,12 +97,16 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      * @param   format
      *          Whether player's actual format should be used or {@code null} for reset
      */
-    protected void updatePlayer(TabPlayer p, boolean format) {
+    protected void updatePlayer(@NotNull me.neznamy.tab.api.TabPlayer p, boolean format) {
+        TabPlayer player = (TabPlayer) p;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            viewer.getTabList().updateDisplayName(getTablistUUID(p, viewer), format ? getTabFormat(p, viewer) : null);
+            UUID tablistId = getTablistUUID(player, viewer);
+            viewer.getTabList().updateDisplayName(tablistId, format ? getTabFormat(player, viewer) :
+                    tablistId.getMostSignificantBits() == 0 ? new IChatBaseComponent(player.getName()) : null);
         }
-        if (redis != null) redis.updateTabFormat(p, p.getProperty(TabConstants.Property.TABPREFIX).get() + p.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + p.getProperty(TabConstants.Property.TABSUFFIX).get());
+        if (redis != null) redis.updateTabFormat(player, player.getProperty(TabConstants.Property.TABPREFIX).get() +
+                player.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + player.getProperty(TabConstants.Property.TABSUFFIX).get());
     }
 
     /**
@@ -109,7 +118,7 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
      *          Viewer seeing the format
      * @return  Format of specified player for viewer
      */
-    public IChatBaseComponent getTabFormat(TabPlayer p, TabPlayer viewer) {
+    public @Nullable IChatBaseComponent getTabFormat(@NotNull TabPlayer p, @NotNull TabPlayer viewer) {
         Property prefix = p.getProperty(TabConstants.Property.TABPREFIX);
         Property name = p.getProperty(TabConstants.Property.CUSTOMTABNAME);
         Property suffix = p.getProperty(TabConstants.Property.TABSUFFIX);
@@ -121,43 +130,40 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
 
     @Override
     public void load() {
-        redis = (RedisSupport) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
+        redis = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.REDIS_BUNGEE);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             updateProperties(all);
-            if (isDisabled(all.getServer(), all.getWorld())) {
-                addDisabledPlayer(all);
+            if (disableChecker.isDisableConditionMet(all)) {
+                disableChecker.addDisabledPlayer(all);
             } else {
                 if (redis != null) redis.updateTabFormat(all, all.getProperty(TabConstants.Property.TABPREFIX).get() + all.getProperty(TabConstants.Property.CUSTOMTABNAME).get() + all.getProperty(TabConstants.Property.TABSUFFIX).get());
             }
         }
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (viewer.getVersion().getMinorVersion() < 8) continue;
-            Map<UUID, IChatBaseComponent> map = new HashMap<>();
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                if (isDisabledPlayer(target)) continue;
-                map.put(getTablistUUID(target, viewer), getTabFormat(target, viewer));
+                if (disableChecker.isDisabledPlayer(target)) continue;
+                viewer.getTabList().updateDisplayName(getTablistUUID(target, viewer), getTabFormat(target, viewer));
             }
-            viewer.getTabList().updateDisplayNames(map);
         }
     }
 
     @Override
     public void unload() {
         disabling = true;
-        Map<UUID, IChatBaseComponent> updatedPlayers = new HashMap<>();
-        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-            if (!isDisabledPlayer(p)) updatedPlayers.put(getTablistUUID(p, p), null);
-        }
-        for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            if (all.getVersion().getMinorVersion() >= 8) all.getTabList().updateDisplayNames(updatedPlayers);
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            if (viewer.getVersion().getMinorVersion() < 8) continue;
+            for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
+                if (!disableChecker.isDisabledPlayer(target)) viewer.getTabList().updateDisplayName(getTablistUUID(target, target), null);
+            }
         }
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
+    public void onServerChange(@NotNull TabPlayer p, @NotNull String from, @NotNull String to) {
+        if (updateProperties(p) && !disableChecker.isDisabledPlayer(p)) updatePlayer(p, true);
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
-        TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
+        TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (p.getVersion().getMinorVersion() >= 8) p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
                 if (all.getVersion().getMinorVersion() >= 8) all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
@@ -166,27 +172,17 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
-        boolean disabledBefore = isDisabledPlayer(p);
-        boolean disabledNow = false;
-        if (isDisabled(p.getServer(), p.getWorld())) {
-            disabledNow = true;
-            addDisabledPlayer(p);
-        } else {
-            removeDisabledPlayer(p);
-        }
-        if (disabledNow) {
-            if (!disabledBefore) {
-                updatePlayer(p, false);
-            }
-        } else if (updateProperties(p)) {
-            updatePlayer(p, true);
-        }
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        if (updateProperties(changed) && !disableChecker.isDisabledPlayer(changed)) updatePlayer(changed, true);
+    }
+
+    public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
+        updatePlayer(p, !disabledNow);
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
-        if (isDisabledPlayer(refreshed)) return;
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
@@ -203,114 +199,101 @@ public class PlayerList extends TabFeature implements TablistFormatManager, Join
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         updateProperties(connectedPlayer);
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
+        if (disableChecker.isDisableConditionMet(connectedPlayer)) {
+            disableChecker.addDisabledPlayer(connectedPlayer);
             return;
         }
         Runnable r = () -> {
             refresh(connectedPlayer, true);
             if (connectedPlayer.getVersion().getMinorVersion() < 8) return;
-            Map<UUID, IChatBaseComponent> map = new HashMap<>();
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == connectedPlayer) continue; //already sent 4 lines above
-                map.put(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
+                connectedPlayer.getTabList().updateDisplayName(getTablistUUID(all, connectedPlayer), getTabFormat(all, connectedPlayer));
             }
-            if (!map.isEmpty()) connectedPlayer.getTabList().updateDisplayNames(map);
         };
-        r.run();
         //add packet might be sent after tab's refresh packet, resending again when anti-override is disabled
         if (!antiOverrideTabList || !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION) ||
-                connectedPlayer.getVersion().getMinorVersion() == 8)
-            TAB.getInstance().getCPUManager().runTaskLater(300, this, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+                connectedPlayer.getVersion().getMinorVersion() == 8) {
+            TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, r);
+        } else {
+            r.run();
+        }
     }
 
     @Override
-    public IChatBaseComponent onDisplayNameChange(TabPlayer packetReceiver, UUID id, IChatBaseComponent displayName) {
-        if (disabling || !antiOverrideTabList) return displayName;
+    public IChatBaseComponent onDisplayNameChange(@NotNull TabPlayer packetReceiver, @NotNull UUID id) {
+        if (disabling || !antiOverrideTabList) return null;
         TabPlayer packetPlayer = TAB.getInstance().getPlayerByTabListUUID(id);
-        if (packetPlayer != null && !isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {
+        if (packetPlayer != null && !disableChecker.isDisabledPlayer(packetPlayer) && packetPlayer.getTablistId() == getTablistUUID(packetPlayer, packetReceiver)) {
             return getTabFormat(packetPlayer, packetReceiver);
         }
-        return displayName;
+        return null;
     }
 
     @Override
-    public void setPrefix(TabPlayer player, String prefix) {
+    public void onVanishStatusChange(@NotNull TabPlayer player) {
+        if (player.isVanished()) return;
+        for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
+            viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
+        }
+    }
+
+    @Override
+    public void setPrefix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String prefix) {
         Preconditions.checkLoaded(player);
-        player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
+        ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(prefix);
         updatePlayer(player, true);
     }
 
     @Override
-    public void setName(TabPlayer player, String customName) {
+    public void setName(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String customName) {
         Preconditions.checkLoaded(player);
-        player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
+        ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(customName);
         updatePlayer(player, true);
     }
 
     @Override
-    public void setSuffix(TabPlayer player, String suffix) {
+    public void setSuffix(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String suffix) {
         Preconditions.checkLoaded(player);
-        player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
+        ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(suffix);
         updatePlayer(player, true);
     }
 
     @Override
-    public void resetPrefix(TabPlayer player) {
+    public String getCustomPrefix(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
-        player.getProperty(TabConstants.Property.TABPREFIX).setTemporaryValue(null);
-        updatePlayer(player, true);
+        return ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).getTemporaryValue();
     }
 
     @Override
-    public void resetName(TabPlayer player) {
+    public String getCustomName(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
-        player.getProperty(TabConstants.Property.CUSTOMTABNAME).setTemporaryValue(null);
-        updatePlayer(player, true);
+        return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).getTemporaryValue();
     }
 
     @Override
-    public void resetSuffix(TabPlayer player) {
+    public String getCustomSuffix(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
-        player.getProperty(TabConstants.Property.TABSUFFIX).setTemporaryValue(null);
-        updatePlayer(player, true);
+        return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getTemporaryValue();
     }
 
     @Override
-    public String getCustomPrefix(TabPlayer player) {
+    public @NotNull String getOriginalPrefix(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
-        return player.getProperty(TabConstants.Property.TABPREFIX).getTemporaryValue();
+        return ((TabPlayer)player).getProperty(TabConstants.Property.TABPREFIX).getOriginalRawValue();
     }
 
     @Override
-    public String getCustomName(TabPlayer player) {
+    public @NotNull String getOriginalName(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
-        return player.getProperty(TabConstants.Property.CUSTOMTABNAME).getTemporaryValue();
+        return ((TabPlayer)player).getProperty(TabConstants.Property.CUSTOMTABNAME).getOriginalRawValue();
     }
 
     @Override
-    public String getCustomSuffix(TabPlayer player) {
+    public @NotNull String getOriginalSuffix(me.neznamy.tab.api.@NonNull TabPlayer player) {
         Preconditions.checkLoaded(player);
-        return player.getProperty(TabConstants.Property.TABSUFFIX).getTemporaryValue();
-    }
-
-    @Override
-    public String getOriginalPrefix(TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return player.getProperty(TabConstants.Property.TABPREFIX).getOriginalRawValue();
-    }
-
-    @Override
-    public String getOriginalName(TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return player.getProperty(TabConstants.Property.CUSTOMTABNAME).getOriginalRawValue();
-    }
-
-    @Override
-    public String getOriginalSuffix(TabPlayer player) {
-        Preconditions.checkLoaded(player);
-        return player.getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
+        return ((TabPlayer)player).getProperty(TabConstants.Property.TABSUFFIX).getOriginalRawValue();
     }
 }

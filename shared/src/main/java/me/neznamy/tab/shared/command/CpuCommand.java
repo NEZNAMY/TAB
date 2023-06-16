@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab cpu" subcommand
@@ -29,7 +31,7 @@ public class CpuCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
         TAB tab = TAB.getInstance();
         Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
@@ -61,19 +63,19 @@ public class CpuCommand extends SubCommand {
         sendMessage(sender, " ");
     }
 
-    private void printPlaceholders(TabPlayer sender, Map<String, Float> map) {
+    private void printPlaceholders(@Nullable TabPlayer sender, @NotNull Map<String, Float> map) {
         int printCounter = 0;
         for (Entry<String, Float> entry : map.entrySet()) {
             if (printCounter++ == 5) break;
             String refresh = "";
             Placeholder p = TAB.getInstance().getPlaceholderManager().getPlaceholder(entry.getKey());
-            if (p != null && p.getRefresh() != -1) refresh = " &8(" + p.getRefresh() + ")&7";
+            if (p.getRefresh() != -1) refresh = " &8(" + p.getRefresh() + ")&7";
             String colorized = entry.getKey().startsWith("%sync:") ? "&c" + decimal3.format(entry.getValue()) : colorize(decimal3.format(entry.getValue()), 1, 0.3f);
             sendMessage(sender, String.format("&8&l%s &7%s - %s%%", LINE_CHAR, entry.getKey() + refresh, colorized));
         }
     }
 
-    public void sendToConsole(Map<String, Map<String, Float>> features) {
+    public void sendToConsole(@NotNull Map<String, Map<String, Float>> features) {
         TAB.getInstance().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
@@ -89,17 +91,12 @@ public class CpuCommand extends SubCommand {
         }
     }
 
-    public void sendToPlayer(TabPlayer sender, Map<String, Map<String, Float>> features) {
-        sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (hover with cursor for more info):");
+    public void sendToPlayer(@NotNull TabPlayer sender, @NotNull Map<String, Map<String, Float>> features) {
+        sendMessage(sender, "&8&l" + LINE_CHAR + " &6Features (execute from console for more info):");
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
-            List<String> messages = new ArrayList<>();
-            for (Entry<String, Float> type : entry.getValue().entrySet()) {
-                messages.add("&3" + type.getKey() + " - " + colorize(decimal3.format(type.getValue()), 5, 1) + "%");
-            }
             IChatBaseComponent message = new IChatBaseComponent(EnumChatFormat.color(core));
-            message.getModifier().onHoverShowText(new IChatBaseComponent(EnumChatFormat.color(String.join("\n", messages))));
             sender.sendMessage(message);
         }
     }
@@ -111,7 +108,7 @@ public class CpuCommand extends SubCommand {
      *          usage
      * @return  colored usage
      */
-    private String colorize(String usage, float threshold1, float threshold2) {
+    private String colorize(@NotNull String usage, float threshold1, float threshold2) {
         float percent = Float.parseFloat(usage.replace(",", "."));
         if (percent > threshold1) return "&c" + usage;
         if (percent > threshold2) return "&e" + usage;

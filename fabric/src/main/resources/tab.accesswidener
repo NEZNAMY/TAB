@@ -1,0 +1,21 @@
+accessWidener v1 named
+
+# new
+accessible field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;
+mutable field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;
+
+# old (~1.16.5-?)
+accessible field net/minecraft/server/MinecraftServer LOGGER Lorg/apache/logging/log4j/Logger;
+mutable field net/minecraft/server/MinecraftServer LOGGER Lorg/apache/logging/log4j/Logger;
+
+# 1.19.3+
+accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
+mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket entries Ljava/util/List;
+
+# 1.19.2-
+accessible field net/minecraft/network/protocol/game/ClientboundPlayerInfoPacket entries Ljava/util/List;
+mutable field net/minecraft/network/protocol/game/ClientboundPlayerInfoPacket entries Ljava/util/List;
+
+# 1.16.5-
+accessible field net/minecraft/network/protocol/game/ClientboundTabListPacket header Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/network/protocol/game/ClientboundTabListPacket footer Lnet/minecraft/network/chat/Component;

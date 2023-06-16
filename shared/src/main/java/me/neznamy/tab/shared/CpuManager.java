@@ -6,61 +6,59 @@ import java.util.concurrent.*;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import me.neznamy.tab.api.feature.TabFeature;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
  */
 public class CpuManager {
-    private static final int UPDATE_RATE_SECONDS = 10;
 
-    private static final long TIME_PERCENT
-            = TimeUnit.SECONDS.toNanos(1) / UPDATE_RATE_SECONDS;
-    /**
-     * Data reset interval in milliseconds
-     */
-    private static final int BUFFER_SIZE_MILLIS =
-            (int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS);
+    private final int UPDATE_RATE_SECONDS = 10;
 
-    /**
-     * Active time in current time period saved as nanoseconds from features
-     */
-    private volatile Map<String, Map<String, Long>> featureUsageCurrent
-            = new ConcurrentHashMap<>();
+    private final long TIME_PERCENT = TimeUnit.SECONDS.toNanos(1) / UPDATE_RATE_SECONDS;
 
-    /**
-     * Active time in current time period saved as nanoseconds from placeholders
-     */
-    private volatile Map<String, Long> placeholderUsageCurrent
-            = new ConcurrentHashMap<>();
+    /** Active time in current time period saved as nanoseconds from features */
+    private volatile Map<String, Map<String, Long>> featureUsageCurrent = new ConcurrentHashMap<>();
 
-    /**
-     * Active time in previous time period saved as nanoseconds from features
-     */
-    private volatile Map<String, Map<String, Long>> featureUsagePrevious
-            = new HashMap<>();
+    /** Active time in current time period saved as nanoseconds from placeholders */
+    private volatile Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<>();
 
-    /**
-     * Active time in previous time period saved as nanoseconds from placeholders
-     */
-    private volatile Map<String, Long> placeholderUsagePrevious
-            = new HashMap<>();
+    /** Active time in previous time period saved as nanoseconds from features */
+    private volatile Map<String, Map<String, Long>> featureUsagePrevious = new HashMap<>();
+
+    /** Active time in previous time period saved as nanoseconds from placeholders */
+    private volatile Map<String, Long> placeholderUsagePrevious = new HashMap<>();
 
     // Scheduler for scheduling delayed and repeating tasks
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
+    /** Tasks submitted to main thread before plugin was fully enabled */
+    private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
+
+    /** Enabled flag used to queue incoming tasks if plugin is not enabled yet */
+    private volatile boolean enabled = false;
+
     /**
      * Constructs new instance and starts repeating task that resets values in configured interval
      */
     public CpuManager() {
-        startRepeatingTask(BUFFER_SIZE_MILLIS, () -> {
+        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
             featureUsagePrevious = Collections.unmodifiableMap(featureUsageCurrent);
             placeholderUsagePrevious = Collections.unmodifiableMap(placeholderUsageCurrent);
 
             featureUsageCurrent = new ConcurrentHashMap<>();
             placeholderUsageCurrent = new ConcurrentHashMap<>();
+
+            for (Entry<String, Long> entry : placeholderUsagePrevious.entrySet()) {
+                float usagePercent = nanosToPercent(entry.getValue());
+                if (usagePercent > 50) {
+                    TAB.getInstance().sendConsoleMessage("&c[WARN] CPU usage of placeholder " + entry.getKey() +
+                            " is " + (int)usagePercent + "%. It will most likely cause problems. Try increasing refresh interval.", true);
+                }
+            }
         });
     }
 
@@ -72,20 +70,30 @@ public class CpuManager {
     }
 
     /**
+     * Marks cpu manager as loaded and submits all queued tasks
+     */
+    public void enable() {
+        enabled = true;
+
+        Runnable r;
+        while ((r = taskQueue.poll()) != null) {
+            submit(r);
+        }
+    }
+
+    /**
      * Submits task to TAB's main thread. If plugin is not enabled yet,
      * queues the task instead and executes once it's loaded.
      *
      * @param task task to execute
      */
-    private void submit(Runnable task) {
+    private void submit(@NotNull Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.submit(() -> {
-            try {
-                task.run();
-            } catch (Exception | LinkageError | StackOverflowError e) {
-                TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
-            }
-        });
+        if (!enabled) {
+            taskQueue.add(task);
+            return;
+        }
+        scheduler.submit(() -> run(task));
     }
 
     /**
@@ -103,7 +111,7 @@ public class CpuManager {
      * @param map map to convert
      * @return converted and sorted map
      */
-    private static Map<String, Float> getUsage(Map<String, Long> map) {
+    private @NotNull Map<String, Float> getUsage(@NotNull Map<String, Long> map) {
         return map
                 .entrySet()
                 .stream()
@@ -119,7 +127,7 @@ public class CpuManager {
      *
      * @return map of CPU usage per feature and type
      */
-    public Map<String, Map<String, Float>> getFeatureUsage() {
+    public @NotNull Map<String, Map<String, Float>> getFeatureUsage() {
         final Map<String, Map<String, Long>> map = featureUsagePrevious;
 
         TreeMap<Long, Map.Entry<String, Map<String, Float>>> sorted
@@ -154,9 +162,10 @@ public class CpuManager {
      * @param nanos nanoseconds of cpu time
      * @return usage in % (0-100)
      */
-    private static float nanosToPercent(long nanos) {
+    private float nanosToPercent(long nanos) {
         return (float) nanos / TIME_PERCENT;
     }
+
     /**
      * Adds cpu time to specified feature and usage type
      *
@@ -164,7 +173,7 @@ public class CpuManager {
      * @param type        sub-feature to add time to
      * @param nanoseconds time to add
      */
-    public void addTime(TabFeature feature, String type, long nanoseconds) {
+    public void addTime(@NotNull TabFeature feature, @NotNull String type, long nanoseconds) {
         addTime(feature.getFeatureName(), type, nanoseconds);
     }
 
@@ -175,7 +184,7 @@ public class CpuManager {
      * @param type        sub-feature to add time to
      * @param nanoseconds time to add
      */
-    public void addTime(String feature, String type, long nanoseconds) {
+    public void addTime(@NotNull String feature, @NotNull String type, long nanoseconds) {
         featureUsageCurrent
                 .computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
                 .merge(type, nanoseconds, Long::sum);
@@ -188,7 +197,7 @@ public class CpuManager {
      * @param key  usage key
      * @param time nanoseconds to add
      */
-    private static void addTime(Map<String, Long> map, String key, long time) {
+    private void addTime(@NotNull Map<String, Long> map, @NotNull String key, long time) {
         map.merge(key, time, Long::sum);
     }
 
@@ -198,15 +207,11 @@ public class CpuManager {
      * @param placeholder placeholder to add time to
      * @param nanoseconds time to add
      */
-    public void addPlaceholderTime(String placeholder, long nanoseconds) {
+    public void addPlaceholderTime(@NotNull String placeholder, long nanoseconds) {
         addTime(placeholderUsageCurrent, placeholder, nanoseconds);
     }
 
-    public void runMeasuredTask(TabFeature feature, String type, Runnable task) {
-        runMeasuredTask(feature.getFeatureName(), type, task);
-    }
-
-    public void runMeasuredTask(String feature, String type, Runnable task) {
+    public void runMeasuredTask(@NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         submit(() -> {
             long time = System.nanoTime();
             task.run();
@@ -214,22 +219,30 @@ public class CpuManager {
         });
     }
 
-    public void runTask(Runnable task) {
+    public void runTask(@NotNull Runnable task) {
         submit(task);
     }
 
-    public void startRepeatingMeasuredTask(int intervalMilliseconds, TabFeature feature, String type, Runnable task) {
+    public void startRepeatingMeasuredTask(int intervalMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void startRepeatingTask(int intervalMilliseconds, Runnable task) {
+    public void startRepeatingTask(int intervalMilliseconds, @NotNull Runnable task) {
         if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> runTask(task), 0, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void runTaskLater(int delayMilliseconds, TabFeature feature, String type, Runnable task) {
+    public void runTaskLater(int delayMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
         if (scheduler.isShutdown()) return;
         scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
+    }
+
+    private void run(@NotNull Runnable task) {
+        try {
+            task.run();
+        } catch (Exception | LinkageError | StackOverflowError e) {
+            TAB.getInstance().getErrorManager().printError("An error was thrown when executing task", e);
+        }
     }
 }

@@ -4,9 +4,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
@@ -33,7 +32,7 @@ public abstract class SortingType {
         this.sorting = sorting;
         this.displayName = displayName;
         if (!sortingPlaceholder.startsWith("%") || !sortingPlaceholder.endsWith("%")) {
-            TAB.getInstance().getErrorManager().startupWarn("\"" + sortingPlaceholder + "\" is not a valid placeholder for " + this + " sorting type");
+            TAB.getInstance().getMisconfigurationHelper().invalidSortingPlaceholder(sortingPlaceholder, this);
         } else {
             sorting.addUsedPlaceholders(Collections.singletonList(sortingPlaceholder));
             this.sortingPlaceholder = sortingPlaceholder;
@@ -75,5 +74,5 @@ public abstract class SortingType {
      *          player to get chars for
      * @return  an as-short-as-possible character sequence for unique sorting
      */
-    public abstract String getChars(ITabPlayer p);
+    public abstract String getChars(TabPlayer p);
 }

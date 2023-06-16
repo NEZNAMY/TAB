@@ -3,23 +3,24 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
-import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
+import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TabPlayer implementation for Velocity
  */
+@Getter
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    @Getter private final Scoreboard scoreboard = new VelocityScoreboard(this);
-    @Getter private final TabList tabList = new VelocityTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new VelocityBossBarHandler(this);
+    private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
+    private final TabList tabList = new VelocityTabList(this);
+    private final BossBar bossBar = new AdventureBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -28,7 +29,8 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      *          velocity player
      */
     public VelocityTabPlayer(Player p) {
-        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().get().getServerInfo().getName(), p.getProtocolVersion().getProtocol());
+        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
+                s.getServerInfo().getName()).orElse("null"), p.getProtocolVersion().getProtocol());
     }
     
     @Override
@@ -40,25 +42,20 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     public int getPing() {
         return (int) getPlayer().getPing();
     }
-    
+
     @Override
-    public void sendPacket(Object packet) {
-        throw new UnsupportedOperationException();
+    public void sendMessage(@NotNull IChatBaseComponent message) {
+        getPlayer().sendMessage(message.toAdventureComponent(getVersion()));
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
-        getPlayer().sendMessage(VelocityTAB.getComponentCache().get(message, getVersion()));
-    }
-
-    @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         if (getPlayer().getGameProfile().getProperties().size() == 0) return null; //offline mode
-        return new Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
+        return new TabList.Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
     }
     
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return (Player) player;
     }
     
@@ -73,16 +70,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
             if (entry.getProfile().getId().equals(getTablistId())) return entry.getGameMode();
         }
         return 0;
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().sendPlayerListHeaderAndFooter(VelocityTAB.getComponentCache().get(header, version), VelocityTAB.getComponentCache().get(footer, version));
-    }
-
-    @Override
-    public Object getChatSession() {
-        return null; // not supported by Velocity
     }
 
     @Override

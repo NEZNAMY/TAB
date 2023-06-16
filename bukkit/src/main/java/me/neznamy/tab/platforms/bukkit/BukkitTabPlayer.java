@@ -3,30 +3,28 @@ package me.neznamy.tab.platforms.bukkit;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
-import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
-import me.neznamy.tab.api.util.ComponentCache;
-import me.neznamy.tab.api.util.ReflectionUtils;
-import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_8;
-import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar1_9;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.hook.ViaVersionHook;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar18;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar19;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -35,36 +33,29 @@ import java.util.UUID;
  * TabPlayer implementation for Bukkit platform
  */
 @SuppressWarnings("deprecation")
+@Getter
 public class BukkitTabPlayer extends BackendTabPlayer {
-
-    /** Spigot check */
-    private static final boolean spigot = ReflectionUtils.classExists("org.bukkit.entity.Player$Spigot");
-
-    /** Component cache to save CPU when creating components */
-    private static final ComponentCache<IChatBaseComponent, BaseComponent[]> componentCache = new ComponentCache<>(10000,
-            (component, clientVersion) -> ComponentSerializer.parse(component.toString(clientVersion)));
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
     private Object handle;
 
     /** Player's connection for sending packets, preloading for speed */
-    @Getter private Object playerConnection;
+    private Object playerConnection;
 
-    @Getter private final Scoreboard scoreboard = new BukkitScoreboard(this);
-    @Getter private final TabList tabList = new BukkitTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
-            new BukkitBossBar1_9(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar1_8(this);
+    private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
+    private final TabList tabList = new BukkitTabList(this);
+    private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
+            new BukkitBossBar19(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar18(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version
      *
      * @param   p
      *          bukkit player
-     * @param   protocolVersion
-     *          Player's protocol network id
      */
-    public BukkitTabPlayer(Player p, int protocolVersion) {
-        super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(), p.getWorld().getName(), protocolVersion);
+    public BukkitTabPlayer(Player p) {
+        super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(),
+                p.getWorld().getName(), ViaVersionHook.getInstance().getPlayerVersion(p.getUniqueId(), p.getName()));
         try {
             handle = NMSStorage.getInstance().getHandle.invoke(player);
             playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -74,7 +65,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public boolean hasPermission(@NonNull String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -89,8 +80,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         }
     }
 
-    @Override
-    public void sendPacket(Object nmsPacket) {
+    public void sendPacket(@Nullable Object nmsPacket) {
         if (nmsPacket == null || !getPlayer().isOnline()) return;
         try {
             NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
@@ -100,12 +90,9 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void sendMessage(IChatBaseComponent message) {
-        if (spigot) {
-            getPlayer().spigot().sendMessage(componentCache.get(message, version));
-        } else {
-            getPlayer().sendMessage(message.toLegacyText());
-        }
+    public void sendMessage(@NotNull IChatBaseComponent message) {
+        getPlayer().sendMessage(RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
+                getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
 
     @Override
@@ -127,12 +114,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         try {
             Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
             if (col.isEmpty()) return null; //offline mode
             Property property = col.iterator().next();
-            return new Skin(property.getValue(), property.getSignature());
+            return new TabList.Skin(property.getValue(), property.getSignature());
         } catch (ReflectiveOperationException e) {
             TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
             return null;
@@ -140,7 +127,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return (Player) player;
     }
 
@@ -160,41 +147,19 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        // Method was added to Bukkit API in 1.13.1, however despite that it's just a String one
-        // Using it would cause high CPU usage and massive memory allocations on RGB & animations
-        // Send packet instead for performance & older server version support
-
-        /*if (TAB.getInstance().getServerVersion().getNetworkId() >= ProtocolVersion.V1_13_1.getNetworkId()) {
-            String bukkitHeader = RGBUtils.getInstance().convertToBukkitFormat(header.toFlatText(),
-                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
-            String bukkitFooter = RGBUtils.getInstance().convertToBukkitFormat(footer.toFlatText(),
-                    getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
-            getPlayer().setPlayerListHeaderFooter(bukkitHeader, bukkitFooter);
-            return;
-        }*/
-
-        try {
-            sendPacket(PacketPlayOutPlayerListHeaderFooterStorage.build(header, footer, version));
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void spawnEntity(int entityId, UUID id, Object entityType, Location location, EntityData data) {
+    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
         try {
             sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
             if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
                 updateEntityMetadata(entityId, data);
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     @Override
-    public void updateEntityMetadata(int entityId, EntityData data) {
+    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
         try {
             if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
                 //1.19.3+
@@ -203,16 +168,16 @@ public class BukkitTabPlayer extends BackendTabPlayer {
                 sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, data.build(), true));
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     @Override
-    public void teleportEntity(int entityId, Location location) {
+    public void teleportEntity(int entityId, @NotNull Location location) {
         try {
             sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -228,7 +193,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
                 }
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

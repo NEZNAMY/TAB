@@ -5,13 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.api.placeholder.Placeholder;
-import me.neznamy.tab.shared.DynamicText;
+import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab parse &lt;player&gt; &lt;placeholder&gt;" subcommand
@@ -26,7 +28,7 @@ public class ParseCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (args.length < 2) {
             sendMessage(sender, getMessages().getParseCommandUsage());
             return;
@@ -45,7 +47,7 @@ public class ParseCommand extends SubCommand {
         String message = EnumChatFormat.color("&6Replacing placeholder &e%placeholder% &6for player &e" + target.getName()).replace("%placeholder%", replaced);
         sendRawMessage(sender, message);
         try {
-            replaced = new DynamicText(null, null, target, replaced, null).get();
+            replaced = new Property(null, null, target, replaced, null).get();
         } catch (Exception e) {
             sendMessage(sender, "&cThe placeholder threw an exception when parsing. Check console for more info.");
             TAB.getInstance().getErrorManager().printError("Placeholder " + replaced + " threw an exception when parsing for player " + target.getName(), e, true);
@@ -61,7 +63,7 @@ public class ParseCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length == 1) {
             List<String> suggestions = getOnlinePlayers(arguments[0]);
             if ("me".startsWith(arguments[0].toLowerCase())) suggestions.add("me");

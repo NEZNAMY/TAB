@@ -1,10 +1,10 @@
 package me.neznamy.tab.platforms.sponge7;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.TabListEntry;
-import me.neznamy.tab.shared.tablist.SingleUpdateTabList;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.profile.GameProfile;
@@ -13,35 +13,34 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class SpongeTabList extends SingleUpdateTabList {
+public class SpongeTabList implements TabList {
 
     /** Player this TabList belongs to */
     private final SpongeTabPlayer player;
 
     @Override
-    public void removeEntry(@NonNull UUID entry) {
+    public void removeEntry(@NotNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
     }
 
     @Override
-    public void updateDisplayName(@NonNull UUID id, IChatBaseComponent displayName) {
-        player.getPlayer().getTabList().getEntry(id).ifPresent(
-                entry -> entry.setDisplayName(Sponge7TAB.getTextCache().get(displayName, player.getVersion())));
+    public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(
+                e -> e.setDisplayName(displayName == null ? null : Sponge7TAB.getTextCache().get(displayName, player.getVersion())));
     }
 
     @Override
-    public void updateLatency(@NonNull UUID id, int latency) {
-        player.getPlayer().getTabList().getEntry(id).ifPresent(entry -> entry.setLatency(latency));
+    public void updateLatency(@NotNull UUID entry, int latency) {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setLatency(latency));
     }
 
     @Override
-    public void updateGameMode(@NonNull UUID id, int gameMode) {
-        player.getPlayer().getTabList().getEntry(id).ifPresent(
-                entry -> entry.setGameMode(convertGameMode(gameMode)));
+    public void updateGameMode(@NotNull UUID entry, int gameMode) {
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setGameMode(convertGameMode(gameMode)));
     }
 
     @Override
-    public void addEntry(@NonNull TabListEntry entry) {
+    public void addEntry(@NotNull Entry entry) {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
@@ -50,8 +49,16 @@ public class SpongeTabList extends SingleUpdateTabList {
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))
-                .displayName(Sponge7TAB.getTextCache().get(entry.getDisplayName(), player.getVersion()))
+                .displayName(entry.getDisplayName() == null ? null : Sponge7TAB.getTextCache().get(entry.getDisplayName(), player.getVersion()))
                 .build());
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+        player.getPlayer().getTabList().setHeaderAndFooter(
+                Sponge7TAB.getTextCache().get(header, player.getVersion()),
+                Sponge7TAB.getTextCache().get(footer, player.getVersion())
+        );
     }
 
     private GameMode convertGameMode(int mode) {

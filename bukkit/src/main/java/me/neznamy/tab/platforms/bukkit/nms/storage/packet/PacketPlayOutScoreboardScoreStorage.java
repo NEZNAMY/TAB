@@ -44,7 +44,7 @@ public class PacketPlayOutScoreboardScoreStorage {
             }
             return CONSTRUCTOR.newInstance(scoreboardScore, 0);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -55,7 +55,7 @@ public class PacketPlayOutScoreboardScoreStorage {
             }
             return CONSTRUCTOR_String.newInstance(player);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

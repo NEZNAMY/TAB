@@ -3,9 +3,11 @@ package me.neznamy.tab.shared.command;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab group" subcommand
@@ -20,7 +22,7 @@ public class GroupCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         //<name> <property> [value...]
         if (args.length == 0) {
             help(sender);
@@ -34,53 +36,28 @@ public class GroupCommand extends PropertyCommand {
             }
             return;
         }
-        String group = args[0];
-        String type = args[1].toLowerCase();
-        String value = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-        String world = null;
-        String server = null;
-        if (args[args.length-2].equals("-w")) {
-            world = args[args.length-1];
-            value = value.startsWith("-w") ? "" : value.substring(0, value.length()-world.length()-4);
-        }
-        if (args[args.length-2].equals("-s")) {
-            server = args[args.length-1];
-            value = value.startsWith("-s") ? "" : value.substring(0, value.length()-server.length()-4);
-        }
-        if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-            value = value.substring(1, value.length()-1);
-        }
-        if ("remove".equals(type)) {
-            if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
-                TAB.getInstance().getConfiguration().getGroups().remove(group);
-                for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
-                    if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
-                        pl.forceRefresh();
-                    }
-                }
-                sendMessage(sender, getMessages().getGroupDataRemoved(group));
-            } else {
-                sendMessage(sender, getMessages().getNoPermission());
-            }
+        if ("remove".equalsIgnoreCase(args[1])) {
+            remove(sender, args[0]);
             return;
         }
-        for (String property : getAllProperties()) {
-            if (type.equals(property)) {
-                if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
-                    saveGroup(sender, group, type, value, server, world);
-                    if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) {
-                        sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
-                    }
-                } else {
-                    sendMessage(sender, getMessages().getNoPermission());
-                }
-                return;
-            }
-        }
-        help(sender);
+        trySaveEntity(sender, args);
     }
 
-    private void sendGroupInfo(TabPlayer sender, String group) {
+    private void remove(@Nullable TabPlayer sender, @NotNull String group) {
+        if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
+            TAB.getInstance().getConfiguration().getGroups().remove(group);
+            for (TabPlayer pl : TAB.getInstance().getOnlinePlayers()) {
+                if (pl.getGroup().equals(group) || TabConstants.DEFAULT_GROUP.equals(group)) {
+                    pl.forceRefresh();
+                }
+            }
+            sendMessage(sender, getMessages().getGroupDataRemoved(group));
+        } else {
+            sendMessage(sender, getMessages().getNoPermission());
+        }
+    }
+
+    private void sendGroupInfo(@Nullable TabPlayer sender, @NotNull String group) {
         sendMessage(sender, "&f=== Group &9" + group + "&f ===");
         for (Map.Entry<String, Object> entry : TAB.getInstance().getConfiguration().getGroups().getGlobalSettings(group).entrySet()) {
             sendRawMessage(sender, "  " + entry.getKey() + ": " + entry.getValue());
@@ -101,19 +78,8 @@ public class GroupCommand extends PropertyCommand {
         }
     }
 
-    /**
-     * Saves new group settings into config
-     *
-     * @param   sender
-     *          command sender or null if console
-     * @param   group
-     *          affected group
-     * @param   type
-     *          property type
-     * @param   value
-     *          new value
-     */
-    private void saveGroup(TabPlayer sender, String group, String type, String value, String server, String world) {
+    @Override
+    public void saveEntity(@Nullable TabPlayer sender, @NotNull String group, @NotNull String type, @NotNull String value, @Nullable String server, @Nullable String world) {
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getGroupValueAssigned(type, value, group));
         } else {
@@ -130,7 +96,7 @@ public class GroupCommand extends PropertyCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length == 1) {
             Set<String> groups = new HashSet<>(TAB.getInstance().getConfiguration().getGroups().getAllEntries());
             groups.add(TabConstants.DEFAULT_GROUP);

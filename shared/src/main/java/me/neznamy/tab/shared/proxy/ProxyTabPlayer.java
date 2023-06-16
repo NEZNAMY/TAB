@@ -4,15 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
-import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,19 +23,23 @@ import java.util.UUID;
  * Abstract class for player on proxy containing variables and methods
  * shared between proxies.
  */
-public abstract class ProxyTabPlayer extends ITabPlayer {
+@Getter @Setter
+public abstract class ProxyTabPlayer extends TabPlayer {
 
     /** Player's vanish status from backend server */
-    @Getter @Setter private boolean vanished;
+    private boolean vanished;
 
     /** Player's disguise status from backend server */
-    @Getter @Setter private boolean disguised;
+    private boolean disguised;
 
     /** Player's invisibility potion status from backend server */
-    @Setter private boolean invisibilityPotion;
+    private boolean invisibilityPotion;
 
     /** Player's boat vehicle status for unlimited NameTags */
-    @Getter @Setter private boolean onBoat;
+    private boolean onBoat;
+
+    /** Flag for marking if this player has received join response from bridge or not */
+    private boolean bridgeConnected;
 
     /** Map of player's requested permissions */
     private final Map<String, Boolean> permissions = new HashMap<>();
@@ -55,7 +59,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * @param   protocolVersion
      *          Player's protocol network id
      */
-    protected ProxyTabPlayer(Object player, UUID uniqueId, String name, String server, int protocolVersion) {
+    protected ProxyTabPlayer(@NotNull Object player, @NotNull UUID uniqueId, @NotNull String name, @NotNull String server, int protocolVersion) {
         super(player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
         sendJoinPluginMessage();
     }
@@ -65,10 +69,13 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * joined, containing all plugin configuration data.
      */
     public void sendJoinPluginMessage() {
+        bridgeConnected = false; // Reset on server switch
         TabExpansion expansion = TAB.getInstance().getPlaceholderManager().getTabExpansion();
-        List<Object> args = Lists.newArrayList("PlayerJoin", getVersion().getNetworkId(),
-                TAB.getInstance().getGroupManager().getPlugin() instanceof VaultBridge && !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
-                TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PET_FIX),
+        List<Object> args = Lists.newArrayList(
+                "PlayerJoin",
+                getVersion().getNetworkId(),
+                TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
+                        !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 !(expansion instanceof EmptyTabExpansion));
         ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
         Map<String, Integer> placeholders = platform.getBridgePlaceholders();
@@ -77,22 +84,29 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
             args.add(entry.getKey());
             args.add(entry.getValue());
         }
-        NameTagX nametagx = (NameTagX) TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
-        boolean enabled = nametagx != null && !nametagx.getDisabledUnlimitedServers().contains(getServer());
+        NameTagX nametagx = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+        boolean enabled = nametagx != null;
         args.add(enabled);
         if (enabled) {
-            args.add(true);
-            args.add(0.26d);
             args.add(nametagx.isDisableOnBoats());
             args.add(nametagx.isArmorStandsAlwaysVisible());
-            args.add(nametagx.getDisabledUnlimitedWorlds().size());
-            args.addAll(nametagx.getDisabledUnlimitedWorlds());
+            args.add(nametagx.getDisableChecker().isDisabledPlayer(this) || nametagx.getUnlimitedDisableChecker().isDisabledPlayer(this));
             args.add(nametagx.getDynamicLines().size());
             args.addAll(nametagx.getDynamicLines());
             args.add(nametagx.getStaticLines().size());
             for (Map.Entry<String, Object> entry : nametagx.getStaticLines().entrySet()) {
                 args.add(entry.getKey());
                 args.add(Double.valueOf(String.valueOf(entry.getValue())));
+            }
+        }
+        Map<String, Map<Object, Object>> replacements = TAB.getInstance().getConfig().getConfigurationSection("placeholder-output-replacements");
+        args.add(replacements.size());
+        for (Map.Entry<String, Map<Object, Object>> entry : replacements.entrySet()) {
+            args.add(entry.getKey());
+            args.add(entry.getValue().size());
+            for (Map.Entry<Object, Object> rule : entry.getValue().entrySet()) {
+                args.add(EnumChatFormat.color(String.valueOf(rule.getKey())));
+                args.add(EnumChatFormat.color(String.valueOf(rule.getValue())));
             }
         }
         sendPluginMessage(args.toArray());
@@ -107,7 +121,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * @param   value
      *          Permission value
      */
-    public void setHasPermission(String permission, boolean value) {
+    public void setHasPermission(@NotNull String permission, boolean value) {
         permissions.put(permission, value);
     }
 
@@ -128,20 +142,13 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      */
     public abstract void sendPluginMessage(byte[] message);
 
-    /**
-     * Returns player's chat signing key (1.19+), chat session (1.19.3+)
-     *
-     * @return  Player's chat session
-     */
-    public abstract Object getChatSession();
-
     @Override
     public boolean hasInvisibilityPotion() {
         return invisibilityPotion;
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
             sendPluginMessage("Permission", permission);
             return permissions != null && permissions.getOrDefault(permission, false);
@@ -156,7 +163,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      *          Messages to encode
      */
     @SuppressWarnings("UnstableApiUsage")
-    public void sendPluginMessage(Object... args) {
+    public void sendPluginMessage(@NotNull Object... args) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         for (Object arg : args) {
             writeObject(out, arg);
@@ -173,7 +180,7 @@ public abstract class ProxyTabPlayer extends ITabPlayer {
      * @param   value
      *          Value to write
      */
-    private void writeObject(@NonNull ByteArrayDataOutput out, @NonNull Object value) {
+    private void writeObject(@NotNull ByteArrayDataOutput out, @NotNull Object value) {
         if (value instanceof String) {
             out.writeUTF((String) value);
         } else if (value instanceof Boolean) {

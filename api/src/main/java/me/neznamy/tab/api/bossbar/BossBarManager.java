@@ -2,10 +2,12 @@ package me.neznamy.tab.api.bossbar;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import lombok.NonNull;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface allowing work with BossBars such as creating, sending
@@ -31,7 +33,7 @@ public interface BossBarManager {
      *          Style to use
      * @return  The newly created BossBar
      */
-    BossBar createBossBar(String title, float progress, BarColor color, BarStyle style);
+    @NotNull BossBar createBossBar(@NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style);
 
     /**
      * Creates BossBar with specified parameters and registers it to BossBar manager,
@@ -50,30 +52,19 @@ public interface BossBarManager {
      *          a placeholder that returns one of them
      * @return  The newly created BossBar
      */
-    BossBar createBossBar(String title, String progress, String color, String style);
+    @NotNull BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style);
 
     /**
      * Returns registered BossBar with given name. For BossBars from config it is the name
      * they were created with, for API BossBars their randomly generated name, which can be
      * retrieved using {@link me.neznamy.tab.api.bossbar.BossBar#getName()}.
-     * Returns null if no such BossBar exists.
+     * Returns {@code null} if no such BossBar exists.
      * 
      * @param   name
      *          Name of registered BossBar
      * @return  BossBar with specified name
      */
-    BossBar getBossBar(String name);
-
-    /**
-     * Returns registered BossBar with specified UUID. This UUID is randomly generated when
-     * BossBar is created and used in packets / to match which the one from Bukkit API.
-     * Returns null if no such BossBar exists.
-     * 
-     * @param   id
-     *          UUID to return BossBar by
-     * @return  BossBar with specified uuid
-     */
-    BossBar getBossBar(UUID id);
+    @Nullable BossBar getBossBar(@NonNull String name);
 
     /**
      * Returns a map of all registered BossBars. This includes both BossBars from config
@@ -84,7 +75,7 @@ public interface BossBarManager {
      *
      * @return  all registered BossBars
      */
-    Map<String, BossBar> getRegisteredBossBars();
+    @NotNull Map<String, BossBar> getRegisteredBossBars();
 
     /**
      * Toggles BossBar for this player and sends toggle message if {@code sendToggleMessage} is true.
@@ -96,7 +87,7 @@ public interface BossBarManager {
      * @see     #hasBossBarVisible(TabPlayer)
      * @see     #setBossBarVisible(TabPlayer, boolean, boolean)
      */
-    void toggleBossBar(TabPlayer player, boolean sendToggleMessage);
+    void toggleBossBar(@NonNull TabPlayer player, boolean sendToggleMessage);
 
     /**
      * Returns true if player can see BossBars, false if toggled via command or API.
@@ -107,7 +98,7 @@ public interface BossBarManager {
      * @see     #toggleBossBar(TabPlayer, boolean)
      * @see     #setBossBarVisible(TabPlayer, boolean, boolean)
      */
-    boolean hasBossBarVisible(TabPlayer player);
+    boolean hasBossBarVisible(@NonNull TabPlayer player);
 
     /**
      * Sets BossBar visibility of player to set value. If value did not change, nothing happens.
@@ -122,7 +113,7 @@ public interface BossBarManager {
      * @see #toggleBossBar(TabPlayer, boolean)
      * @see #hasBossBarVisible(TabPlayer)
      */
-    void setBossBarVisible(TabPlayer player, boolean visible, boolean sendToggleMessage);
+    void setBossBarVisible(@NonNull TabPlayer player, boolean visible, boolean sendToggleMessage);
 
     /**
      * Temporarily displays registered BossBar to player for specified amount of time in milliseconds.
@@ -138,7 +129,7 @@ public interface BossBarManager {
      * @see     #announceBossBar(String, int)
      * @see     #getAnnouncedBossBars()
      */
-    void sendBossBarTemporarily(TabPlayer player, String bossBar, int duration);
+    void sendBossBarTemporarily(@NonNull TabPlayer player, @NonNull String bossBar, int duration);
 
     /**
      * Temporarily displays registered BossBar to all players for specified amount of time in milliseconds.
@@ -152,7 +143,7 @@ public interface BossBarManager {
      * @see     #sendBossBarTemporarily(TabPlayer, String, int)
      * @see     #getAnnouncedBossBars()
      */
-    void announceBossBar(String bossBar, int duration);
+    void announceBossBar(@NonNull String bossBar, int duration);
 
     /**
      * Returns list of BossBars which are currently being announced.
@@ -161,5 +152,5 @@ public interface BossBarManager {
      * @see     #sendBossBarTemporarily(TabPlayer, String, int)
      * @see     #announceBossBar(String, int)
      */
-    List<BossBar> getAnnouncedBossBars();
+    @NotNull List<BossBar> getAnnouncedBossBars();
 }

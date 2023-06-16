@@ -1,16 +1,22 @@
 package me.neznamy.tab.shared.features.scoreboard.lines;
 
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.rgb.RGBUtils;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.Refreshable;
+import lombok.Getter;
+import lombok.NonNull;
+import me.neznamy.tab.shared.chat.rgb.RGBUtils;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.features.scoreboard.ScoreboardImpl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Line using all 3 values - prefix, name and suffix. Line may flicker when placeholder changes value.
  */
 public class LongLine extends ScoreboardLine implements Refreshable {
 
+    @Getter private final String featureName = "Scoreboard";
+    @Getter private final String refreshDisplayName = "Updating Scoreboard lines";
     private final String textProperty;
     private final String nameProperty;
 
@@ -24,7 +30,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
      * @param   text
      *          line text
      */
-    public LongLine(ScoreboardImpl parent, int lineNumber, String text) {
+    public LongLine(@NonNull ScoreboardImpl parent, int lineNumber, @NonNull String text) {
         super(parent, lineNumber);
         this.text = text;
         nameProperty = TabConstants.Property.scoreboardName(parent.getName(), lineNumber);
@@ -32,12 +38,12 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void refresh(TabPlayer refreshed, boolean force) {
+    public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (!parent.getPlayers().contains(refreshed)) return; //player has different scoreboard displayed
         if (refreshed.getProperty(textProperty).update()) {
             if (refreshed.getVersion().getMinorVersion() >= 13) {
                 refreshed.getScoreboard().updateTeam(teamName, refreshed.getProperty(textProperty).get(),
-                        "", "always", "always", 0);
+                        "", Scoreboard.NameVisibility.ALWAYS, Scoreboard.CollisionRule.ALWAYS, 0);
             } else {
                 removeLine(refreshed, refreshed.getProperty(nameProperty).get());
                 String[] values = splitText(getPlayerName(lineNumber), RGBUtils.getInstance().convertRGBtoLegacy(refreshed.getProperty(textProperty).get()), refreshed.getVersion().getMinorVersion() >= 8 ? 40 : 16);
@@ -48,7 +54,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void register(TabPlayer p) {
+    public void register(@NonNull TabPlayer p) {
         p.setProperty(this, textProperty, text);
         String value = p.getProperty(textProperty).get();
         if (p.getVersion().getMinorVersion() >= 13) {
@@ -62,14 +68,14 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public void unregister(TabPlayer p) {
+    public void unregister(@NonNull TabPlayer p) {
         if (parent.getPlayers().contains(p)) {
             removeLine(p, p.getProperty(nameProperty).get());
         }
     }
 
     @Override
-    public void setText(String text) {
+    public void setText(@NonNull String text) {
         this.text = text;
         for (TabPlayer p : parent.getPlayers()) {
             p.setProperty(this, textProperty, text);
@@ -78,7 +84,7 @@ public class LongLine extends ScoreboardLine implements Refreshable {
     }
 
     @Override
-    public String getPlayerName(TabPlayer viewer) {
+    public String getPlayerName(@NonNull TabPlayer viewer) {
         return viewer.getProperty(nameProperty).get();
     }
 }

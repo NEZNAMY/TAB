@@ -3,6 +3,8 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,21 +23,18 @@ public class DataWatcherObject {
     
     /** Instance fields */
     private final int position;
-    private final Object serializer;
+    @Nullable private final Object serializer;
 
     /**
      * Loads all required Fields and throws Exception if something went wrong
      *
-     * @param   nms
-     *          NMS storage reference
      * @throws  NoSuchMethodException
      *          If something fails
      */
-    public static void load(NMSStorage nms) throws NoSuchMethodException {
-        if (nms.getMinorVersion() < 9) return;
+    public static void load() throws NoSuchMethodException {
         CONSTRUCTOR = CLASS.getConstructor(int.class, DataWatcherHelper.DataWatcherSerializer);
-        SLOT = nms.getFields(CLASS, int.class).get(0);
-        SERIALIZER = nms.getFields(CLASS, DataWatcherHelper.DataWatcherSerializer).get(0);
+        SLOT = ReflectionUtils.getFields(CLASS, int.class).get(0);
+        SERIALIZER = ReflectionUtils.getFields(CLASS, DataWatcherHelper.DataWatcherSerializer).get(0);
     }
 
     /**

@@ -6,25 +6,26 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 
 public abstract class SkinSource {
 
-    private final ConfigurationFile file;
-    private final String path;
-    private final Map<String, List<String>> cache;
+    @NotNull private final ConfigurationFile file;
+    @NotNull private final String path;
+    @NotNull private final Map<String, List<String>> cache;
 
-    protected SkinSource(ConfigurationFile file, String path) {
+    protected SkinSource(@NotNull ConfigurationFile file, @NotNull String path) {
         this.file = file;
         this.path = path;
         this.cache = file.getConfigurationSection(path);
     }
 
-    public List<String> getSkin(String skin) {
+    public @NotNull List<String> getSkin(@NotNull String skin) {
         if (cache.containsKey(skin)) {
             return cache.get(skin);
         }
@@ -37,9 +38,9 @@ public abstract class SkinSource {
         return properties;
     }
 
-    public abstract List<String> download(String input);
+    public abstract @NotNull List<String> download(@NotNull String input);
 
-    protected JSONObject getResponse(String url) throws IOException, ParseException {
+    protected @NotNull JSONObject getResponse(@NotNull String url) throws IOException, ParseException {
         try (InputStreamReader reader = new InputStreamReader(new URL(url).openStream())) {
             return (JSONObject) new JSONParser().parse(reader);
         }

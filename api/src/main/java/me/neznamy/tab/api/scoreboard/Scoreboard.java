@@ -1,5 +1,8 @@
 package me.neznamy.tab.api.scoreboard;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -17,7 +20,7 @@ public interface Scoreboard {
      * 
      * @return  custom name of this scoreboard
      */
-    String getName();
+    @NotNull String getName();
 
     /**
      * Returns raw title of this scoreboard. Placeholders stay in their
@@ -26,7 +29,7 @@ public interface Scoreboard {
      * @return  scoreboard title
      * @see     #setTitle(String)
      */
-    String getTitle();
+    @NotNull String getTitle();
 
     /**
      * Sets title to specified value. Placeholders are refreshed automatically
@@ -43,7 +46,7 @@ public interface Scoreboard {
      *          New title to use with placeholder support
      * @see     #getTitle()
      */
-    void setTitle(String title);
+    void setTitle(@NonNull String title);
 
     /**
      * Returns list of lines in this scoreboard in the order they appear
@@ -54,7 +57,7 @@ public interface Scoreboard {
      * @see     #addLine(String)
      * @see     #removeLine(int)
      */
-    List<Line> getLines();
+    @NotNull List<Line> getLines();
 
     /**
      * Adds line with specified text on the bottom of scoreboard. Supports
@@ -65,7 +68,7 @@ public interface Scoreboard {
      * @see     #getLines()
      * @see     #removeLine(int)
      */
-    void addLine(String text);
+    void addLine(@NonNull String text);
 
     /**
      * Removes line with specified index. Index starts at {@code 0} and ends at 

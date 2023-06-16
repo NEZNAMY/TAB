@@ -1,12 +1,11 @@
 package me.neznamy.tab.platforms.bukkit;
 
-import lombok.NonNull;
-import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
-import me.neznamy.tab.shared.TabScoreboard;
+import me.neznamy.tab.shared.platform.Scoreboard;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -33,64 +32,55 @@ import java.util.Collection;
  *      scoreboard, automatically destroying all visuals made by the
  *      plugin. They might also put all players into the same scoreboard,
  *      making per-player view of teams, especially sidebar not working.<p>
- * #4 - API made scoreboards get saved into the world folder and then
- *      resent on join with everything that was ever registered to it,
- *      which is very poor performance-wise, especially since it does
- *      that in the main server thread. It might also send conflicting
- *      information, such as putting a player into team they were on
- *      previously, but are not supposed to be anymore. Removing the plugin
- *      would cause all visuals to still be present on the server,
- *      requiring owners to properly clear scoreboards, which is not something
- *      everyone knows how to do.
  */
-public class BukkitScoreboard extends TabScoreboard {
+public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
-    public BukkitScoreboard(TabPlayer player) {
+    public BukkitScoreboard(BukkitTabPlayer player) {
         super(player);
     }
 
     @Override
-    public void setDisplaySlot(DisplaySlot slot, @NonNull String objective) {
+    public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
         player.sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot.ordinal(), objective));
     }
 
     @Override
-    public void registerObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
-    public void unregisterObjective0(@NonNull String objectiveName) {
+    public void unregisterObjective0(@NotNull String objectiveName) {
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(1, objectiveName, "", false, player.getVersion()));
     }
 
     @Override
-    public void updateObjective0(@NonNull String objectiveName, @NonNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
         player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
-    public void registerTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.register(name, prefix, suffix, visibility, collision, players, options, player.getVersion()));
     }
 
     @Override
-    public void unregisterTeam0(@NonNull String name) {
+    public void unregisterTeam0(@NotNull String name) {
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.unregister(name));
     }
 
     @Override
-    public void updateTeam0(@NonNull String name, String prefix, String suffix, String visibility, String collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         player.sendPacket(PacketPlayOutScoreboardTeamStorage.update(name, prefix, suffix, visibility, collision, options, player.getVersion()));
     }
 
     @Override
-    public void setScore0(@NonNull String objective, @NonNull String playerName, int score) {
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
         player.sendPacket(PacketPlayOutScoreboardScoreStorage.change(objective, playerName, score));
     }
 
     @Override
-    public void removeScore0(@NonNull String objective, @NonNull String playerName) {
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         player.sendPacket(PacketPlayOutScoreboardScoreStorage.remove(objective, playerName));
     }
 }

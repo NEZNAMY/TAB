@@ -1,15 +1,16 @@
 package me.neznamy.tab.shared.command;
 
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.TabPlayer;
-import me.neznamy.tab.api.chat.EnumChatFormat;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,15 +38,11 @@ public class WidthCheckCommand extends SubCommand {
         for (String line : new BufferedReader(new InputStreamReader(file)).lines().collect(Collectors.toList())) {
             widths[characterId++] = (byte) Float.parseFloat(line);
         }
-        Map<Integer, Integer> widthOverrides = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("tablist-name-formatting.character-width-overrides");
-        for (Map.Entry<Integer, Integer> entry : widthOverrides.entrySet()) {
-            widths[entry.getKey()] = entry.getValue().byteValue();
-        }
         return widths;
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (widths == null) widths = loadWidths();
         if (sender == null) {
             sendMessage(null, getMessages().getCommandOnlyFromGame());
@@ -71,12 +68,7 @@ public class WidthCheckCommand extends SubCommand {
                 }
                 line.append("   ").append(row * COLUMNS + i).append("-").append((row + 1) * COLUMNS + i - 1).append("\n");
             }
-            IChatBaseComponent msg = IChatBaseComponent.fromColoredText(line + "§7§l[Previous]");
-            msg.getModifier().onClickRunCommand("/tab widthcheck " + (i-ROWS*COLUMNS));
-            IChatBaseComponent next = new IChatBaseComponent("                                    §7§l[Next]");
-            next.getModifier().onClickRunCommand("/tab widthcheck " + (i+ROWS*COLUMNS));
-            msg.addExtra(next);
-            sender.sendMessage(msg);
+            sender.sendMessage(IChatBaseComponent.fromColoredText(line.toString()));
         }
     }
 

@@ -1,19 +1,20 @@
 package me.neznamy.tab.shared.proxy;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.hook.LuckPermsHook;
+import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.api.placeholder.Placeholder;
-import me.neznamy.tab.shared.Platform;
+import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
-import me.neznamy.tab.shared.permission.LuckPerms;
-import me.neznamy.tab.shared.permission.PermissionPlugin;
-import me.neznamy.tab.shared.permission.VaultBridge;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
 import me.neznamy.tab.shared.proxy.features.unlimitedtags.ProxyNameTagX;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Abstract class containing common variables and methods
  * shared between proxies.
  */
-public abstract class ProxyPlatform extends Platform {
+public abstract class ProxyPlatform implements Platform {
 
     /** Plugin message handler for sending and receiving plugin messages */
     @Getter protected final PluginMessageHandler pluginMessageHandler = new PluginMessageHandler();
@@ -31,25 +32,17 @@ public abstract class ProxyPlatform extends Platform {
     /** Placeholders which are refreshed on backend server */
     @Getter private final Map<String, Integer> bridgePlaceholders = new ConcurrentHashMap<>();
 
-    @Getter private final TabFeature perWorldPlayerlist = null;
-    @Getter private final ProxyTabExpansion tabExpansion = new ProxyTabExpansion();
-    @Getter private final TabFeature petFix = new TabFeature() {
-        @Getter private final String featureName = "";
-    };
-
     @Override
-    public PermissionPlugin detectPermissionPlugin() {
-        if (TAB.getInstance().getConfiguration().isBukkitPermissions()) {
-            return new VaultBridge();
-        } else if (getPluginVersion(TabConstants.Plugin.LUCKPERMS) != null) {
-            return new LuckPerms(getPluginVersion(TabConstants.Plugin.LUCKPERMS));
-        } else {
-            return new VaultBridge();
+    public @NotNull GroupManager detectPermissionPlugin() {
+        if (LuckPermsHook.getInstance().isInstalled() &&
+                !TAB.getInstance().getConfiguration().isBukkitPermissions()) {
+            return new GroupManager("LuckPerms", LuckPermsHook.getInstance().getGroupFunction());
         }
+        return new GroupManager("Vault through Bridge", TabPlayer::getGroup);
     }
 
     @Override
-    public void registerUnknownPlaceholder(String identifier) {
+    public void registerUnknownPlaceholder(@NotNull String identifier) {
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         //internal dynamic %online_<server>% placeholder
         if (identifier.startsWith("%online_")) {
@@ -59,14 +52,11 @@ public abstract class ProxyPlatform extends Platform {
             return;
         }
         Placeholder placeholder;
-        int refresh;
+        int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
             placeholder = pl.registerRelationalPlaceholder(identifier, -1, (viewer, target) -> null);
-            refresh = pl.getRelationalRefresh(identifier);
         } else {
             placeholder = pl.registerPlayerPlaceholder(identifier, -1, player -> null);
-            refresh = pl.getPlayerPlaceholderRefreshIntervals().getOrDefault(identifier,
-                    pl.getServerPlaceholderRefreshIntervals().getOrDefault(identifier, pl.getDefaultRefresh()));
         }
         bridgePlaceholders.put(placeholder.getIdentifier(), refresh);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
@@ -80,7 +70,14 @@ public abstract class ProxyPlatform extends Platform {
     }
 
     @Override
-    public NameTag getUnlimitedNametags() {
+    public @NotNull NameTag getUnlimitedNameTags() {
         return new ProxyNameTagX();
+    }
+
+    @Override
+    public @Nullable TabFeature getPerWorldPlayerList() { return null; }
+
+    public @NotNull TabExpansion createTabExpansion() {
+        return new ProxyTabExpansion();
     }
 }

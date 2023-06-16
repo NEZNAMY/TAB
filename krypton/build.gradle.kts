@@ -1,17 +1,10 @@
 dependencies {
     implementation(projects.shared)
-    compileOnly(libs.krypton.api)
-    compileOnly(libs.krypton.server) {
-        exclude("ca.spottedleaf", "dataconverter")
-        exclude("org.kryptonmc", "nbt-common")
-        exclude("org.kryptonmc", "nbt-extra-kotlin")
-        exclude("org.kryptonmc", "serialization-core")
-        exclude("org.kryptonmc", "serialization-gson")
-        exclude("org.kryptonmc", "serialization-nbt")
-    }
-    compileOnly(libs.spark)
-    annotationProcessor(libs.krypton.annotationProcessor)
+    compileOnly("me.lucko:spark-api:0.1-SNAPSHOT")
+    compileOnly("org.kryptonmc:krypton-api:f93a12382f")
+    annotationProcessor("org.kryptonmc:krypton-annotation-processor:f93a12382f")
 }
+
 tasks.compileJava {
     options.release.set(17)
 }

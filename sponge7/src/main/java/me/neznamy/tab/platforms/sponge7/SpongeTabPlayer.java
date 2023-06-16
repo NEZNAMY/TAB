@@ -1,14 +1,13 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
-import lombok.NonNull;
-import me.neznamy.tab.api.BossBarHandler;
-import me.neznamy.tab.api.Scoreboard;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.Skin;
-import me.neznamy.tab.api.tablist.TabList;
-import me.neznamy.tab.shared.ITabPlayer;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -19,11 +18,12 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.Collection;
 
-public final class SpongeTabPlayer extends ITabPlayer {
+@Getter
+public final class SpongeTabPlayer extends TabPlayer {
 
-    @Getter private final Scoreboard scoreboard = new SpongeScoreboard(this);
-    @Getter private final TabList tabList = new SpongeTabList(this);
-    @Getter private final BossBarHandler bossBarHandler = new SpongeBossBarHandler(this);
+    private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+    private final TabList tabList = new SpongeTabList(this);
+    private final BossBar bossBar = new SpongeBossBar(this);
 
     public SpongeTabPlayer(final Player player) {
         super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
@@ -31,7 +31,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
     }
 
     @Override
-    public boolean hasPermission(final String permission) {
+    public boolean hasPermission(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
 
@@ -41,12 +41,7 @@ public final class SpongeTabPlayer extends ITabPlayer {
     }
 
     @Override
-    public void sendPacket(Object packet) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void sendMessage(IChatBaseComponent message) {
+    public void sendMessage(@NotNull IChatBaseComponent message) {
         getPlayer().sendMessage(Sponge7TAB.getTextCache().get(message, getVersion()));
     }
 
@@ -63,15 +58,15 @@ public final class SpongeTabPlayer extends ITabPlayer {
     }
 
     @Override
-    public Skin getSkin() {
+    public TabList.Skin getSkin() {
         final Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; //offline mode
         final ProfileProperty property = properties.iterator().next();
-        return new Skin(property.getValue(), property.getSignature().orElse(null));
+        return new TabList.Skin(property.getValue(), property.getSignature().orElse(null));
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return (Player) player;
     }
 
@@ -92,10 +87,5 @@ public final class SpongeTabPlayer extends ITabPlayer {
         if (gameMode.equals(GameModes.ADVENTURE)) return 2;
         if (gameMode.equals(GameModes.SPECTATOR)) return 3;
         return 0;
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(@NonNull IChatBaseComponent header, @NonNull IChatBaseComponent footer) {
-        getPlayer().getTabList().setHeaderAndFooter(Sponge7TAB.getTextCache().get(header, version), Sponge7TAB.getTextCache().get(footer, version));
     }
 }

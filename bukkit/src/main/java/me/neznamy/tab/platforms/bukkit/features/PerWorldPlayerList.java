@@ -7,9 +7,8 @@ import java.util.Map.Entry;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.TabAPI;
-import me.neznamy.tab.api.feature.Loadable;
-import me.neznamy.tab.api.feature.UnLoadable;
+import me.neznamy.tab.shared.features.types.Loadable;
+import me.neznamy.tab.shared.features.types.UnLoadable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,9 +18,10 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.neznamy.tab.api.feature.TabFeature;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Per-world-PlayerList feature handler
@@ -31,12 +31,12 @@ import me.neznamy.tab.shared.TAB;
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
 
     /** Config options */
-    private final boolean allowBypass = TabAPI.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
-    private final List<String> ignoredWorlds = TabAPI.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignoredworld", "build"));
-    private final Map<String, List<String>> sharedWorlds = TabAPI.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
+    private final boolean allowBypass = TAB.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+    private final List<String> ignoredWorlds = TAB.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignored_world", "build"));
+    private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
     /** Plugin reference*/
-    private final JavaPlugin plugin;
+    @NotNull private final JavaPlugin plugin;
 
     @Getter private final String featureName = "Per world PlayerList";
 
@@ -60,14 +60,14 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     public void onJoin(PlayerJoinEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
     }
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(getFeatureName(), TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
+        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
     }
 
     /**
@@ -78,7 +78,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      * @param   p
      *          Player to update
      */
-    private void checkPlayer(Player p) {
+    private void checkPlayer(@NotNull Player p) {
         for (Player all : Bukkit.getOnlinePlayers()) {
             if (all == p) continue;
             if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
@@ -96,7 +96,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      *          Target displayed in the TabList
      * @return  {@code true} if viewer should see target, {@code false} if not.
      */
-    private boolean shouldSee(Player viewer, Player target) {
+    private boolean shouldSee(@NotNull Player viewer, @NotNull Player target) {
         if (target == viewer) return true;
         if ((allowBypass && viewer.hasPermission(TabConstants.Permission.PER_WORLD_PLAYERLIST_BYPASS)) || ignoredWorlds.contains(viewer.getWorld().getName())) return true;
         String viewerWorldGroup = viewer.getWorld().getName() + "-default"; //preventing unwanted behavior when some group is called exactly like a world

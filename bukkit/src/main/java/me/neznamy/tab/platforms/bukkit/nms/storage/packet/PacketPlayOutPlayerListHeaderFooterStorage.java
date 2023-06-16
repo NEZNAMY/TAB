@@ -1,8 +1,9 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
-import me.neznamy.tab.api.ProtocolVersion;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -15,13 +16,12 @@ public class PacketPlayOutPlayerListHeaderFooterStorage {
     public static Field FOOTER;
 
     public static void load(NMSStorage nms) throws NoSuchMethodException {
-        if (nms.getMinorVersion() < 8) return;
         if (nms.getMinorVersion() >= 17) {
             CONSTRUCTOR = CLASS.getConstructor(nms.IChatBaseComponent, nms.IChatBaseComponent);
         } else {
             CONSTRUCTOR = CLASS.getConstructor();
-            HEADER = nms.getFields(CLASS, nms.IChatBaseComponent).get(0);
-            FOOTER = nms.getFields(CLASS, nms.IChatBaseComponent).get(1);
+            HEADER = ReflectionUtils.getFields(CLASS, nms.IChatBaseComponent).get(0);
+            FOOTER = ReflectionUtils.getFields(CLASS, nms.IChatBaseComponent).get(1);
         }
     }
 

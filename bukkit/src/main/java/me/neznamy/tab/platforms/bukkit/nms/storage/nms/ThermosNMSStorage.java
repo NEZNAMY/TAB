@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardScoreStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * NMS loader for Thermos 1.7.10.
@@ -12,7 +13,7 @@ public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
     public ThermosNMSStorage() throws ReflectiveOperationException {}
 
     @Override
-    public Class<?> getLegacyClass(String name) throws ClassNotFoundException {
+    public Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
         try {
             return getClass().getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
         } catch (NullPointerException e) {

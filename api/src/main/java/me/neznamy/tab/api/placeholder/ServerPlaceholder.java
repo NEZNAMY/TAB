@@ -1,22 +1,24 @@
 package me.neznamy.tab.api.placeholder;
 
+import lombok.NonNull;
+
+/**
+ * An interface for server placeholders (returning same value for all players)
+ */
 public interface ServerPlaceholder extends Placeholder {
 
-    void updateValue(Object value);
+    /**
+     * Force-updates placeholder value. It will still be overridden by periodic refresh later,
+     * so this is (only) useful for force an update when value is supposed to change, and you have
+     * a high refresh interval set.
+     *
+     * @param   value
+     *          New value
+     */
+    void updateValue(@NonNull Object value);
 
     /**
-     * Calls the placeholder request function and returns the output.
-     * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
-     * file and "ERROR" is returned.
-     *
-     * @return  value placeholder returned or "ERROR" if it threw an error
+     * Force-updates placeholder value using previously provided update function.
      */
-    Object request();
-
-    /**
-     * Returns last known value of the placeholder.
-     *
-     * @return  last known value
-     */
-    String getLastValue();
+    void update();
 }

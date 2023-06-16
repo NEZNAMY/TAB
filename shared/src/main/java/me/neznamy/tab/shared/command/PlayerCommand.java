@@ -1,12 +1,13 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab player" subcommand
@@ -21,70 +22,34 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         //<name> <property> [value...]
         if (args.length <= 1) {
             help(sender);
             return;
         }
-        String player = args[0];
-        String type = args[1].toLowerCase();
-        String value = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-        String world = null;
-        String server = null;
-        if (args[args.length-2].equals("-w")) {
-            world = args[args.length-1];
-            value = value.startsWith("-w") ? "" : value.substring(0, value.length()-world.length()-4);
-        }
-        if (args[args.length-2].equals("-s")) {
-            server = args[args.length-1];
-            value = value.startsWith("-s") ? "" : value.substring(0, value.length()-server.length()-4);
-        }
-        if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-            value = value.substring(1, value.length()-1);
-        }
-        if ("remove".equals(type)) {
-            if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
-                TAB.getInstance().getConfiguration().getUsers().remove(player);
-                TabPlayer pl = TAB.getInstance().getPlayer(player);
-                if (pl != null) {
-                    pl.forceRefresh();
-                }
-                sendMessage(sender, getMessages().getPlayerDataRemoved(player));
-            } else {
-                sendMessage(sender, getMessages().getNoPermission());
-            }
+        if ("remove".equalsIgnoreCase(args[1])) {
+            remove(sender, args[0]);
             return;
         }
-        for (String property : getAllProperties()) {
-            if (type.equals(property)) {
-                if (hasPermission(sender, TabConstants.Permission.COMMAND_PROPERTY_CHANGE_PREFIX + property)) {
-                    savePlayer(sender, player, type, value, server, world);
-                    if (extraProperties.contains(property) && !TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS)) {
-                        sendMessage(sender, getMessages().getUnlimitedNametagModeNotEnabled());
-                    }
-                } else {
-                    sendMessage(sender, getMessages().getNoPermission());
-                }
-                return;
-            }
-        }
-        help(sender);
+        trySaveEntity(sender, args);
     }
 
-    /**
-     * Saves new player settings into config
-     *
-     * @param   sender
-     *          command sender or null if console
-     * @param   player
-     *          affected player
-     * @param   type
-     *          property type
-     * @param   value
-     *          new value
-     */
-    public void savePlayer(TabPlayer sender, String player, String type, String value, String server, String world) {
+    private void remove(@Nullable TabPlayer sender, @NotNull String player) {
+        if (hasPermission(sender, TabConstants.Permission.COMMAND_DATA_REMOVE)) {
+            TAB.getInstance().getConfiguration().getUsers().remove(player);
+            TabPlayer pl = TAB.getInstance().getPlayer(player);
+            if (pl != null) {
+                pl.forceRefresh();
+            }
+            sendMessage(sender, getMessages().getPlayerDataRemoved(player));
+        } else {
+            sendMessage(sender, getMessages().getNoPermission());
+        }
+    }
+
+    @Override
+    public void saveEntity(@Nullable TabPlayer sender, @NotNull String player, @NotNull String type, @NotNull String value, @Nullable String server, @Nullable String world) {
         if (value.length() > 0) {
             sendMessage(sender, getMessages().getPlayerValueAssigned(type, value, player));
         } else {
@@ -103,7 +68,7 @@ public class PlayerCommand extends PropertyCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(TabPlayer sender, String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         return super.complete(sender, arguments);
     }

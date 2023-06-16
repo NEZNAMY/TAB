@@ -1,14 +1,16 @@
 package me.neznamy.tab.shared.features.bossbar;
 
 import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
-import me.neznamy.tab.api.feature.*;
-import me.neznamy.tab.api.TabPlayer;
+import lombok.NonNull;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.features.types.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,14 +19,14 @@ import java.util.stream.Collectors;
  * Class for handling BossBar feature
  */
 public class BossBarManagerImpl extends TabFeature implements BossBarManager, JoinListener, CommandListener, Loadable,
-        UnLoadable, WorldSwitchListener, ServerSwitchListener, Refreshable {
+        UnLoadable, Refreshable {
 
     //default BossBars
     private final List<String> defaultBars = new ArrayList<>();
 
     //registered BossBars
     @Getter private final Map<String, BossBar> registeredBossBars = new HashMap<>();
-    private BossBar[] lineValues;
+    protected BossBar[] lineValues;
 
     //config options
     @Getter private final String toggleCommand = TAB.getInstance().getConfiguration().getConfig().getString("bossbar.toggle-command", "/bossbar");
@@ -43,16 +45,15 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     //time when BossBar announce ends, used for placeholder
     private long announceEndTime;
 
-    private final Set<TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<me.neznamy.tab.api.TabPlayer> visiblePlayers = Collections.newSetFromMap(new WeakHashMap<>());
 
-    @Getter private final String featureName = "BossBar";
+    @Getter protected final String featureName = "BossBar";
     @Getter private final String refreshDisplayName = "Updating display conditions";
 
     /**
      * Constructs new instance and loads configuration
      */
     public BossBarManagerImpl() {
-        super("bossbar");
         for (Object bar : TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars").keySet()) {
             BossBarLine line = loadFromConfig(bar.toString());
             registeredBossBars.put(bar.toString(), line);
@@ -68,29 +69,17 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      *          name of BossBar in config
      * @return  loaded BossBar
      */
-    private BossBarLine loadFromConfig(String bar) {
+    private @NotNull BossBarLine loadFromConfig(@NonNull String bar) {
         Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
         String condition = (String) bossBar.get("display-condition");
-        String style = (String) bossBar.get("style");
-        String color = (String) bossBar.get("color");
-        String progress = String.valueOf(bossBar.get("progress"));
-        String text = (String) bossBar.get("text");
-        if (style == null) {
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "style");
-            style = "PROGRESS";
-        }
-        if (color == null) {
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "color");
-            color = "WHITE";
-        }
-        if (progress == null) {
-            progress = "100";
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "progress");
-        }
-        if (text == null) {
-            text = "";
-            TAB.getInstance().getErrorManager().missingAttribute(getFeatureName(), bar, "text");
-        }
+        String style = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "style", "PROGRESS",
+                "Bossbar \"" + bar + "\" is missing style!");
+        String color = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "color", "PURPLE",
+                "Bossbar \"" + bar + "\" is missing color!");
+        String progress = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "progress", "100",
+                "Bossbar \"" + bar + "\" is missing progress!");
+        String text = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "text", "<Text is not defined>",
+                "Bossbar \"" + bar + "\" is missing text!");
         return new BossBarLine(this, bar, condition, color, style, text, progress, (boolean) bossBar.getOrDefault("announcement-bar", false));
     }
 
@@ -103,8 +92,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void refresh(TabPlayer p, boolean force) {
-        if (!hasBossBarVisible(p) || isDisabledPlayer(p)) return;
+    public void refresh(@NotNull TabPlayer p, boolean force) {
+        if (!hasBossBarVisible(p)) return;
         for (BossBar line : lineValues) {
             line.removePlayer(p); //remove all BossBars and then resend them again to keep them displayed in defined order
         }
@@ -114,41 +103,20 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
 
     @Override
     public void unload() {
-        for (BossBar line : lineValues) {
-            for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            for (BossBar line : lineValues) {
                 line.removePlayer(p);
             }
         }
     }
 
     @Override
-    public void onJoin(TabPlayer connectedPlayer) {
-        if (isDisabled(connectedPlayer.getServer(), connectedPlayer.getWorld())) {
-            addDisabledPlayer(connectedPlayer);
-        }
+    public void onJoin(@NotNull TabPlayer connectedPlayer) {
         setBossBarVisible(connectedPlayer, hiddenByDefault == bossBarOffPlayers.contains(connectedPlayer.getName()), false);
     }
 
     @Override
-    public void onServerChange(TabPlayer p, String from, String to) {
-        onWorldChange(p, null, null);
-    }
-
-    @Override
-    public void onWorldChange(TabPlayer p, String from, String to) {
-        if (isDisabled(p.getServer(), p.getWorld())) {
-            addDisabledPlayer(p);
-        } else {
-            removeDisabledPlayer(p);
-        }
-        for (BossBar line : lineValues) {
-            line.removePlayer(p);
-        }
-        detectBossBarsAndSend(p);
-    }
-
-    @Override
-    public boolean onCommand(TabPlayer sender, String message) {
+    public boolean onCommand(@NotNull TabPlayer sender, @NotNull String message) {
         if (message.equalsIgnoreCase(toggleCommand)) {
             TAB.getInstance().getCommand().execute(sender, new String[] {"bossbar"});
             return true;
@@ -162,8 +130,8 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * @param   p
      *          player to process
      */
-    protected void detectBossBarsAndSend(TabPlayer p) {
-        if (isDisabledPlayer(p) || !hasBossBarVisible(p)) return;
+    protected void detectBossBarsAndSend(@NonNull TabPlayer p) {
+        if (!hasBossBarVisible(p)) return;
         showBossBars(p, defaultBars);
         showBossBars(p, announcedBossBars.stream().map(BossBar::getName).collect(Collectors.toList()));
     }
@@ -176,22 +144,22 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      * @param   bars
      *          list of BossBars to check
      */
-    private void showBossBars(TabPlayer p, List<String> bars) {
+    private void showBossBars(@NonNull TabPlayer p, @NonNull List<String> bars) {
         for (String defaultBar : bars) {
             BossBarLine bar = (BossBarLine) registeredBossBars.get(defaultBar);
-            if (bar.isConditionMet(p) && !bar.containsPlayer(p)) {
+            if (bar.isConditionMet(p) && !bar.getPlayers().contains(p)) {
                 bar.addPlayer(p);
             }
         }
     }
 
     @Override
-    public BossBar createBossBar(String title, float progress, BarColor color, BarStyle style) {
+    public @NotNull BossBar createBossBar(@NonNull String title, float progress, @NonNull BarColor color, @NonNull BarStyle style) {
         return createBossBar(title, String.valueOf(progress), color.toString(), style.toString());
     }
 
     @Override
-    public BossBar createBossBar(String title, String progress, String color, String style) {
+    public @NotNull BossBar createBossBar(@NonNull String title, @NonNull String progress, @NonNull String color, @NonNull String style) {
         UUID id = UUID.randomUUID();
         BossBar bar = new BossBarLine(this, id.toString(), null, color, style, title, progress, true);
         registeredBossBars.put(id.toString(), bar);
@@ -200,30 +168,23 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public BossBar getBossBar(String name) {
+    public BossBar getBossBar(@NonNull String name) {
         return registeredBossBars.get(name);
     }
 
     @Override
-    public BossBar getBossBar(UUID id) {
-        for (BossBar line : lineValues) {
-            if (line.getUniqueId() == id) return line;
-        }
-        return null;
-    }
-
-    @Override
-    public void toggleBossBar(TabPlayer player, boolean sendToggleMessage) {
+    public void toggleBossBar(me.neznamy.tab.api.@NonNull TabPlayer player, boolean sendToggleMessage) {
         setBossBarVisible(player, !hasBossBarVisible(player), sendToggleMessage);
     }
 
     @Override
-    public boolean hasBossBarVisible(TabPlayer player) {
+    public boolean hasBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return visiblePlayers.contains(player);
     }
 
     @Override
-    public void setBossBarVisible(TabPlayer player, boolean visible, boolean sendToggleMessage) {
+    public void setBossBarVisible(me.neznamy.tab.api.@NonNull TabPlayer p, boolean visible, boolean sendToggleMessage) {
+        TabPlayer player = (TabPlayer) p;
         if (visiblePlayers.contains(player) == visible) return;
         if (visible) {
             visiblePlayers.add(player);
@@ -256,23 +217,22 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
     }
 
     @Override
-    public void sendBossBarTemporarily(TabPlayer player, String bossBar, int duration) {
+    public void sendBossBarTemporarily(me.neznamy.tab.api.@NonNull TabPlayer player, @NonNull String bossBar, int duration) {
         if (!hasBossBarVisible(player)) return;
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         TAB.getInstance().getCPUManager().runTask(() -> line.addPlayer(player));
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
-                this, "Removing temporary BossBar", () -> line.removePlayer(player));
+                featureName, "Removing temporary BossBar", () -> line.removePlayer(player));
     }
 
     @Override
-    public void announceBossBar(String bossBar, int duration) {
+    public void announceBossBar(@NonNull String bossBar, int duration) {
         BossBar line = registeredBossBars.get(bossBar);
         if (line == null) throw new IllegalArgumentException("No registered BossBar found with name " + bossBar);
         List<TabPlayer> players = Arrays.stream(TAB.getInstance().getOnlinePlayers()).filter(
-                p -> !isDisabledPlayer(p) && hasBossBarVisible(p)).collect(Collectors.toList());
+                this::hasBossBarVisible).collect(Collectors.toList());
         TAB.getInstance().getCPUManager().runTask(() -> {
-            TAB.getInstance().getPlaceholderManager().getPlaceholder(TabConstants.Placeholder.COUNTDOWN).markAsUsed();
             announcedBossBars.add(line);
             announceEndTime = System.currentTimeMillis() + duration* 1000L;
             for (TabPlayer all : players) {
@@ -280,7 +240,7 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
             }
         });
         TAB.getInstance().getCPUManager().runTaskLater(duration*1000,
-                this, "Removing announced BossBar", () -> {
+                featureName, "Removing announced BossBar", () -> {
             for (TabPlayer all : players) {
                 line.removePlayer(all);
             }

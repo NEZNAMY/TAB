@@ -1,86 +1,65 @@
 package me.neznamy.tab.platforms.krypton;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.api.chat.IChatBaseComponent;
-import me.neznamy.tab.api.tablist.TabListEntry;
-import me.neznamy.tab.shared.tablist.BulkUpdateTabList;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.platform.TabList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.kryptonmc.api.auth.GameProfile;
+import org.kryptonmc.api.auth.ProfileProperty;
+import org.kryptonmc.api.entity.player.TabListEntry;
 import org.kryptonmc.api.world.GameMode;
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoRemove;
-import org.kryptonmc.krypton.packet.out.play.PacketOutPlayerInfoUpdate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.UUID;
 
-@RequiredArgsConstructor
-public class KryptonTabList extends BulkUpdateTabList {
-
-    private final KryptonTabPlayer player;
+public record KryptonTabList(KryptonTabPlayer player) implements TabList {
 
     @Override
-    public void removeEntries(@NonNull Collection<UUID> entries) {
-        player.sendPacket(new PacketOutPlayerInfoRemove(new ArrayList<>(entries)));
+    public void removeEntry(@NotNull UUID entryId) {
+        player.getPlayer().getTabList().removeEntry(entryId);
     }
 
     @Override
-    public void updateDisplayNames(@NonNull Map<UUID, IChatBaseComponent> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME),
-                entries.entrySet().stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getKey(),
-                        GameProfile.of("", entry.getKey()),
-                        false,
-                        0,
-                        GameMode.SURVIVAL,
-                        entry.getValue() == null ? null : GsonComponentSerializer.gson().deserialize(entry.getValue().toString(player.getVersion())),
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void updateDisplayName(@NotNull UUID entryId, @Nullable IChatBaseComponent displayName) {
+        TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
+        if (entry != null) entry.setDisplayName(displayName == null ? null : displayName.toAdventureComponent(player.getVersion()));
     }
 
     @Override
-    public void updateLatencies(@NotNull Map<UUID, Integer> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.UPDATE_LATENCY),
-                entries.entrySet().stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getKey(),
-                        GameProfile.of("", entry.getKey()),
-                        false,
-                        entry.getValue(),
-                        GameMode.SURVIVAL,
-                        null,
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void updateLatency(@NotNull UUID entryId, int latency) {
+        TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
+        if (entry != null) entry.setLatency(latency);
     }
 
     @Override
-    public void updateGameModes(@NotNull Map<UUID, Integer> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.UPDATE_GAME_MODE),
-                entries.entrySet().stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getKey(),
-                        GameProfile.of("", entry.getKey()),
-                        false,
-                        0,
-                        GameMode.values()[entry.getValue()],
-                        null,
-                        null
-                )).collect(Collectors.toList())
-        ));
+    public void updateGameMode(@NotNull UUID entryId, int gameMode) {
+        TabListEntry entry = player.getPlayer().getTabList().getEntry(entryId);
+        if (entry != null) entry.setGameMode(GameMode.values()[gameMode]);
     }
 
     @Override
-    public void addEntries(@NotNull Collection<TabListEntry> entries) {
-        player.sendPacket(new PacketOutPlayerInfoUpdate(EnumSet.of(PacketOutPlayerInfoUpdate.Action.ADD_PLAYER),
-                entries.stream().map(entry -> new PacketOutPlayerInfoUpdate.Entry(
-                        entry.getUniqueId(),
-                        GameProfile.of(entry.getName() == null ? "" : entry.getName(), entry.getUniqueId()),
-                        entry.isListed(),
-                        entry.getLatency(),
-                        GameMode.values()[entry.getGameMode()],
-                        entry.getDisplayName() == null ? null : GsonComponentSerializer.gson().deserialize(entry.getDisplayName().toString(player.getVersion())),
-                        null //TODO chat session?
-                )).collect(Collectors.toList())
-        ));
+    public void addEntry(@NotNull Entry entry) {
+        GameProfile profile = createGameProfile(entry.getUniqueId(), entry.getName(), entry.getSkin());
+        player.getPlayer().getTabList().createEntryBuilder(entry.getUniqueId(), profile)
+                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(player.getVersion()))
+                .gameMode(GameMode.values()[entry.getGameMode()])
+                .latency(entry.getLatency())
+                .listed(true)
+                .buildAndRegister();
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
+        player.getPlayer().getTabList().setHeaderAndFooter(
+                header.toAdventureComponent(player.getVersion()),
+                footer.toAdventureComponent(player.getVersion())
+        );
+    }
+
+    private @NotNull
+    GameProfile createGameProfile(@NotNull UUID uuid, @Nullable String name, @Nullable Skin skin) {
+        String newName = name == null ? "" : name;
+        if (skin == null) return GameProfile.of(newName, uuid);
+        ProfileProperty property = ProfileProperty.of(TabList.TEXTURES_PROPERTY, skin.getValue(), skin.getSignature());
+        return GameProfile.of(newName, uuid, Collections.singletonList(property));
     }
 }

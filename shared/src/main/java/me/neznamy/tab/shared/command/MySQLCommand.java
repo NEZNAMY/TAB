@@ -1,12 +1,14 @@
 package me.neznamy.tab.shared.command;
 
-import me.neznamy.tab.api.PropertyConfiguration;
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.config.PropertyConfiguration;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.api.TabConstants;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.config.Configs;
-import me.neznamy.tab.shared.config.MySQL;
+import me.neznamy.tab.shared.config.mysql.MySQL;
 import me.neznamy.tab.shared.config.file.YamlPropertyConfigurationFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.sql.rowset.CachedRowSet;
@@ -28,7 +30,7 @@ public class MySQLCommand extends SubCommand {
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (args.length == 0) {
             sendMessages(sender, getMessages().getMySQLHelpMenu());
             return;
@@ -52,7 +54,7 @@ public class MySQLCommand extends SubCommand {
         }
     }
 
-    private void download(TabPlayer sender) {
+    private void download(@Nullable TabPlayer sender) {
         MySQL mysql = TAB.getInstance().getConfiguration().getMysql();
         if (mysql == null) {
             sendMessage(sender, getMessages().getMySQLFailNotEnabled());
@@ -80,7 +82,7 @@ public class MySQLCommand extends SubCommand {
         });
     }
 
-    private void upload(TabPlayer sender) {
+    private void upload(@Nullable TabPlayer sender) {
         MySQL mysql = TAB.getInstance().getConfiguration().getMysql();
         if (mysql == null) {
             sendMessage(sender, getMessages().getMySQLFailNotEnabled());
@@ -95,12 +97,12 @@ public class MySQLCommand extends SubCommand {
                 sendMessage(sender, getMessages().getMySQLUploadSuccess());
             } catch (YAMLException | IOException e) {
                 sendMessage(sender, getMessages().getMySQLFailError());
-                TAB.getInstance().getErrorManager().criticalError("MySQL download failed", e);
+                TAB.getInstance().getErrorManager().criticalError("MySQL upload failed", e);
             }
         });
     }
 
-    private void upload(YamlPropertyConfigurationFile file, PropertyConfiguration mysqlTable) {
+    private void upload(@NotNull YamlPropertyConfigurationFile file, @NotNull PropertyConfiguration mysqlTable) {
         for (String name : file.getAllEntries()) {
             for (Map.Entry<String, Object> property : file.getGlobalSettings(name).entrySet()) {
                 mysqlTable.setProperty(name, property.getKey(), null, null, toString(property.getValue()));
@@ -121,7 +123,7 @@ public class MySQLCommand extends SubCommand {
     }
 
     @SuppressWarnings("unchecked")
-    private String toString(Object obj) {
+    private String toString(@NotNull Object obj) {
         if (obj instanceof List) {
             return ((List<Object>)obj).stream().map(Object::toString).collect(Collectors.joining("\n"));
         }
@@ -129,7 +131,7 @@ public class MySQLCommand extends SubCommand {
     }
 
     @Override
-    public List<String> complete(TabPlayer sender, String[] arguments) {
+    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         return getStartingArgument(Arrays.asList("download", "upload"), arguments[0]);
     }
 }

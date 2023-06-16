@@ -2,14 +2,15 @@ package me.neznamy.tab.platforms.bungeecord;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import me.neznamy.tab.api.TabConstants;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -18,25 +19,25 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
 
-    private final Plugin plugin;
-    @Getter private final BungeePipelineInjector pipelineInjector = new BungeePipelineInjector();
+    @NotNull private final BungeeTAB plugin;
 
     @Override
     public @Nullable RedisSupport getRedisSupport() {
-        if (ProxyServer.getInstance().getPluginManager().getPlugin(TabConstants.Plugin.REDIS_BUNGEE) != null) {
-            if (RedisBungeeAPI.getRedisBungeeApi() != null) {
-                return new RedisBungeeSupport(plugin);
-            } else {
-                TAB.getInstance().getErrorManager().criticalError("RedisBungee plugin was detected, but it returned null API instance. Disabling hook.", null);
-            }
+        if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
+                RedisBungeeAPI.getRedisBungeeApi() != null) {
+            return new RedisBungeeSupport(plugin);
         }
         return null;
     }
 
     @Override
-    public String getPluginVersion(String plugin) {
-        Plugin pl = ProxyServer.getInstance().getPluginManager().getPlugin(plugin);
-        return pl == null ? null : pl.getDescription().getVersion();
+    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+        plugin.getLogger().info(message.toLegacyText());
+    }
+
+    @Override
+    public String getServerVersionInfo() {
+        return "[BungeeCord] " + plugin.getProxy().getName() + " - " + plugin.getProxy().getVersion();
     }
 
     @Override
@@ -44,5 +45,10 @@ public class BungeePlatform extends ProxyPlatform {
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             TAB.getInstance().addPlayer(new BungeeTabPlayer(p));
         }
+    }
+
+    @Override
+    public @Nullable PipelineInjector createPipelineInjector() {
+        return new BungeePipelineInjector();
     }
 }

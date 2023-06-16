@@ -2,6 +2,7 @@ package me.neznamy.tab.api.event.player;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.TabEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Called when the player has been fully loaded by TAB.
@@ -13,13 +14,13 @@ public interface PlayerLoadEvent extends TabEvent {
      *
      * @return  the player that was loaded
      */
-    TabPlayer getPlayer();
+    @NotNull TabPlayer getPlayer();
 
     /**
-     * Returns true if player was loaded because they joined,
-     * false if the player was loaded because tab reload command was executed
+     * Returns {@code true} if player was loaded because they joined,
+     * {@code false} if the player was loaded because tab reload command was executed
      *
-     * @return  true if player joined, false if plugin was reloaded
+     * @return  {@code true} if player joined, {@code false} if plugin was reloaded
      */
     boolean isJoin();
 }

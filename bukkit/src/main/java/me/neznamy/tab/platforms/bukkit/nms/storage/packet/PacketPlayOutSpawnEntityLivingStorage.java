@@ -4,6 +4,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.EntityType;
 
 import java.lang.reflect.Constructor;
@@ -63,30 +64,30 @@ public class PacketPlayOutSpawnEntityLivingStorage {
         } else {
             CONSTRUCTOR = CLASS.getConstructor();
         }
-        ENTITY_ID = nms.getFields(CLASS, int.class).get(0);
-        YAW = nms.getFields(CLASS, byte.class).get(0);
-        PITCH = nms.getFields(CLASS, byte.class).get(1);
+        ENTITY_ID = ReflectionUtils.getFields(CLASS, int.class).get(0);
+        YAW = ReflectionUtils.getFields(CLASS, byte.class).get(0);
+        PITCH = ReflectionUtils.getFields(CLASS, byte.class).get(1);
         if (nms.getMinorVersion() >= 9) {
-            UUID = nms.getFields(CLASS, UUID.class).get(0);
+            UUID = ReflectionUtils.getFields(CLASS, UUID.class).get(0);
             if (nms.getMinorVersion() >= 19) {
-                X = nms.getFields(CLASS, double.class).get(2);
-                Y = nms.getFields(CLASS, double.class).get(3);
-                Z = nms.getFields(CLASS, double.class).get(4);
+                X = ReflectionUtils.getFields(CLASS, double.class).get(2);
+                Y = ReflectionUtils.getFields(CLASS, double.class).get(3);
+                Z = ReflectionUtils.getFields(CLASS, double.class).get(4);
             } else {
-                X = nms.getFields(CLASS, double.class).get(0);
-                Y = nms.getFields(CLASS, double.class).get(1);
-                Z = nms.getFields(CLASS, double.class).get(2);
+                X = ReflectionUtils.getFields(CLASS, double.class).get(0);
+                Y = ReflectionUtils.getFields(CLASS, double.class).get(1);
+                Z = ReflectionUtils.getFields(CLASS, double.class).get(2);
             }
         } else {
-            X = nms.getFields(CLASS, int.class).get(2);
-            Y = nms.getFields(CLASS, int.class).get(3);
-            Z = nms.getFields(CLASS, int.class).get(4);
+            X = ReflectionUtils.getFields(CLASS, int.class).get(2);
+            Y = ReflectionUtils.getFields(CLASS, int.class).get(3);
+            Z = ReflectionUtils.getFields(CLASS, int.class).get(4);
         }
         if (nms.getMinorVersion() < 19) {
-            ENTITY_TYPE = nms.getFields(CLASS, int.class).get(1);
+            ENTITY_TYPE = ReflectionUtils.getFields(CLASS, int.class).get(1);
         }
         if (nms.getMinorVersion() <= 14) {
-            DATA_WATCHER = nms.getFields(CLASS, DataWatcher.CLASS).get(0);
+            DATA_WATCHER = ReflectionUtils.getFields(CLASS, DataWatcher.CLASS).get(0);
         }
     }
 

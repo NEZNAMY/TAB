@@ -1,9 +1,7 @@
 import org.spongepowered.gradle.plugin.config.PluginLoaders
-import org.spongepowered.gradle.vanilla.repository.MinecraftPlatform
 
 plugins {
     id("org.spongepowered.gradle.plugin") version "2.0.2"
-    id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
 }
 
 repositories {
@@ -16,16 +14,11 @@ repositories {
 
 dependencies {
     implementation(projects.shared)
-    implementation(libs.bstats.sponge)
-}
-
-minecraft {
-    version("1.16.5")
-    platform(MinecraftPlatform.SERVER)
+    implementation("org.bstats:bstats-sponge:3.0.1")
 }
 
 sponge {
-    apiVersion(libs.sponge8.get().version)
+    apiVersion("8.0.0")
     loader {
         name(PluginLoaders.JAVA_PLAIN)
         version("1.0")
@@ -44,10 +37,4 @@ sponge {
         }
         contributor(rootProject.ext.get("author")!!.toString()) {}
     }
-}
-
-afterEvaluate {
-    // VanillaGradle adds all the Minecraft dependencies to the runtime classpath, which we don't want.
-    val runtime = configurations.runtimeClasspath.get()
-    runtime.setExtendsFrom(runtime.extendsFrom.minusElement(configurations.minecraft.get()))
 }

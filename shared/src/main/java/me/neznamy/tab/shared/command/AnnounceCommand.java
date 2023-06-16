@@ -2,9 +2,10 @@ package me.neznamy.tab.shared.command;
 
 import java.util.Arrays;
 
-import me.neznamy.tab.api.TabPlayer;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.command.level2.AnnounceBarCommand;
-import me.neznamy.tab.shared.command.level2.AnnounceScoreboardCommand;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handler for "/tab announce" subcommand
@@ -17,11 +18,10 @@ public class AnnounceCommand extends SubCommand {
     public AnnounceCommand() {
         super("announce", null);
         getSubcommands().put("bar", new AnnounceBarCommand());
-        getSubcommands().put("scoreboard", new AnnounceScoreboardCommand());
     }
 
     @Override
-    public void execute(TabPlayer sender, String[] args) {
+    public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
         if (args.length == 0) {
             sendMessage(sender, getMessages().getAnnounceCommandUsage());
             return;

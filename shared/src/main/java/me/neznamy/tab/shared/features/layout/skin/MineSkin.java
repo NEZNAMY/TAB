@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import me.neznamy.tab.api.config.ConfigurationFile;
+import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.TAB;
 
 public class MineSkin extends SkinSource {
@@ -19,7 +20,7 @@ public class MineSkin extends SkinSource {
     }
 
     @Override
-    public List<String> download(String input) {
+    public @NotNull List<String> download(@NotNull String input) {
         try {
             String type;
             try {
