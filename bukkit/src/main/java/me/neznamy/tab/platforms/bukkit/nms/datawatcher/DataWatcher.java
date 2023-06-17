@@ -39,9 +39,9 @@ public class DataWatcher implements EntityData {
      *          NMS storage reference
      */
     public static void load(NMSStorage nms) {
-        CONSTRUCTOR = CLASS.getConstructors()[0];
+        CONSTRUCTOR = ReflectionUtils.getOnlyConstructor(CLASS);
         if (nms.is1_19_3Plus()) {
-            markDirty = ReflectionUtils.getMethods(CLASS, void.class, DataWatcherObject.CLASS).get(0);
+            markDirty = ReflectionUtils.getOnlyMethod(CLASS, void.class, DataWatcherObject.CLASS);
         }
     }
     

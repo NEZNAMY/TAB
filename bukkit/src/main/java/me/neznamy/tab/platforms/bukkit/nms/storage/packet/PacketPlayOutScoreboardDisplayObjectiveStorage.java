@@ -16,8 +16,8 @@ public class PacketPlayOutScoreboardDisplayObjectiveStorage {
 
     public static void load() throws NoSuchMethodException {
         CONSTRUCTOR = CLASS.getConstructor(int.class, PacketPlayOutScoreboardObjectiveStorage.ScoreboardObjective);
-        POSITION = ReflectionUtils.getFields(CLASS, int.class).get(0);
-        OBJECTIVE_NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
+        POSITION = ReflectionUtils.getOnlyField(CLASS, int.class);
+        OBJECTIVE_NAME = ReflectionUtils.getOnlyField(CLASS, String.class);
     }
 
     @SneakyThrows

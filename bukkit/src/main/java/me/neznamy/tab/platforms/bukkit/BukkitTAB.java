@@ -12,7 +12,6 @@ import org.bukkit.command.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -58,45 +57,30 @@ public class BukkitTAB extends JavaPlugin {
     
     /**
      * Initializes all used NMS classes, constructors, fields and methods.
-     * Returns {@code true} if everything went successfully and version is marked as compatible,
-     * {@code false} if anything went wrong or version is not marked as compatible.
+     * Returns {@code true} if everything went successfully,
+     * {@code false} if anything went wrong.
      *
      * @return  {@code true} if server version is compatible, {@code false} if not
      */
     private boolean isVersionSupported() {
-        List<String> supportedVersions = Arrays.asList(
-                "v1_5_R1", "v1_5_R2", "v1_5_R3", "v1_6_R1", "v1_6_R2", "v1_6_R3",
-                "v1_7_R1", "v1_7_R2", "v1_7_R3", "v1_7_R4", "v1_8_R1", "v1_8_R2", "v1_8_R3",
-                "v1_9_R1", "v1_9_R2", "v1_10_R1", "v1_11_R1", "v1_12_R1", "v1_13_R1", "v1_13_R2",
-                "v1_14_R1", "v1_15_R1", "v1_16_R1", "v1_16_R2", "v1_16_R3", "v1_17_R1", "v1_18_R1",
-                "v1_18_R2", "v1_19_R1", "v1_19_R2", "v1_19_R3", "v1_20_R1");
-        String supportedVersionRange = "1.5 - 1.20.1";
-        String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         try {
             long time = System.currentTimeMillis();
             NMSStorage.setInstance(getNMSLoader());
-            if (supportedVersions.contains(serverPackage)) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
-                return true;
-            } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] No compatibility issue was found, but this plugin version does not claim to support your server package (" + serverPackage + "). This jar has only been tested on " + supportedVersionRange + ". Disabling just to stay safe."));
-            }
+            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
+            return true;
         } catch (IllegalStateException ex) {
-            if (supportedVersions.contains(serverPackage)) {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is marked as compatible, but a compatibility issue was found. Please report this issue (include your server version & fork too)"));
-            } else {
-                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is completely unsupported. This plugin version only supports " + supportedVersionRange + ". Disabling."));
-            }
+            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] A compatibility issue was found with your server version. This plugin version was made for 1.5 - 1.20.1. Disabling."));
+            return false;
         }
-        return false;
     }
 
     private @NotNull NMSStorage getNMSLoader() {
-        List<Callable<NMSStorage>> loaders = new ArrayList<>();
-        loaders.add(BukkitLegacyNMSStorage::new);
-        loaders.add(BukkitModernNMSStorage::new);
-        loaders.add(MojangModernNMSStorage::new);
-        loaders.add(ThermosNMSStorage::new);
+        List<Callable<NMSStorage>> loaders = Arrays.asList(
+                BukkitLegacyNMSStorage::new,
+                BukkitModernNMSStorage::new,
+                MojangModernNMSStorage::new,
+                ThermosNMSStorage::new
+        );
         for (Callable<NMSStorage> loader : loaders) {
             try {
                 return loader.call();

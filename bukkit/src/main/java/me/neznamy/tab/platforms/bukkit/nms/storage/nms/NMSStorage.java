@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.BukkitTabList;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -96,23 +97,24 @@ public abstract class NMSStorage {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
-            NETWORK_MANAGER = ReflectionUtils.getFields(PlayerConnection, NetworkManager).get(0);
+            NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
+            sendPacket = ReflectionUtils.getOnlyMethod(PlayerConnection, void.class, Packet);
+        } else {
+            sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
-            CHANNEL = ReflectionUtils.getFields(NetworkManager, Channel.class).get(0);
-            getProfile = ReflectionUtils.getMethods(EntityHuman, GameProfile.class).get(0);
+            CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
+            getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
-            PacketPlayOutPlayerListHeaderFooterStorage.load(this);
-            PacketPlayOutPlayerInfoStorage.load(this);
+            BukkitTabList.load(this);
         }
         if (minorVersion >= 9) {
             DataWatcherObject.load();
         }
-        PLAYER_CONNECTION = ReflectionUtils.getFields(EntityPlayer, PlayerConnection).get(0);
+        PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-        sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         emptyScoreboard = Scoreboard.getConstructor().newInstance();
         DataWatcher.load(this);
         DataWatcherItem.load(this);
@@ -125,7 +127,7 @@ public abstract class NMSStorage {
         PacketPlayOutScoreboardTeamStorage.load(this);
         PacketPlayOutScoreboardScoreStorage.load(this);
         IScoreboardCriteria_self = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
-        PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
+        PacketPlayOutEntity_ENTITYID = ReflectionUtils.getOnlyField(PacketPlayOutEntity, int.class);
         PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         loadNamedFieldsAndMethods();
     }

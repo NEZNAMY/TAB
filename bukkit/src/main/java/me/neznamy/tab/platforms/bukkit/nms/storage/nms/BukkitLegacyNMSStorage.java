@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
 
+import me.neznamy.tab.platforms.bukkit.BukkitTabList;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
@@ -118,12 +119,12 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
             ChatSerializer = getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
         }
         if (minorVersion >= 8) {
-            PacketPlayOutPlayerListHeaderFooterStorage.CLASS = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
+            BukkitTabList.PacketPlayOutPlayerListHeaderFooterClass = getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
             EntityArmorStand = getLegacyClass("EntityArmorStand");
-            PacketPlayOutPlayerInfoStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo");
-            PacketPlayOutPlayerInfoStorage.EnumPlayerInfoActionClass = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
-            PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage.CLASS = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
-            PacketPlayOutPlayerInfoStorage.EnumGamemodeClass = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
+            BukkitTabList.PacketPlayOutPlayerInfoClass = getLegacyClass("PacketPlayOutPlayerInfo");
+            BukkitTabList.EnumPlayerInfoActionClass = (Class<Enum>) getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            BukkitTabList.PlayerInfoDataClass = getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+            BukkitTabList.EnumGamemodeClass = (Class<Enum>) getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
             PacketPlayOutScoreboardObjectiveStorage.EnumScoreboardHealthDisplay = (Class<Enum>) getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
             PacketPlayOutScoreboardScoreStorage.EnumScoreboardAction = (Class<Enum>) getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
             PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility = (Class<Enum>) getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");

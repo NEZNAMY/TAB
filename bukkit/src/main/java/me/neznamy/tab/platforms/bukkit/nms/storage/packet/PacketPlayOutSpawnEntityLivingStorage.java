@@ -57,11 +57,7 @@ public class PacketPlayOutSpawnEntityLivingStorage {
         }
         
         if (nms.getMinorVersion() >= 17) {
-            if (nms.is1_19_3Plus()) {
-                CONSTRUCTOR = CLASS.getConstructor(nms.Entity);
-            } else {
-                CONSTRUCTOR = CLASS.getConstructor(nms.EntityLiving);
-            }
+            CONSTRUCTOR = CLASS.getConstructor(nms.is1_19_3Plus() ? nms.Entity : nms.EntityLiving);
         } else {
             CONSTRUCTOR = CLASS.getConstructor();
         }
@@ -69,7 +65,7 @@ public class PacketPlayOutSpawnEntityLivingStorage {
         YAW = ReflectionUtils.getFields(CLASS, byte.class).get(0);
         PITCH = ReflectionUtils.getFields(CLASS, byte.class).get(1);
         if (nms.getMinorVersion() >= 9) {
-            UUID = ReflectionUtils.getFields(CLASS, UUID.class).get(0);
+            UUID = ReflectionUtils.getOnlyField(CLASS, UUID.class);
             if (nms.getMinorVersion() >= 19) {
                 X = ReflectionUtils.getFields(CLASS, double.class).get(2);
                 Y = ReflectionUtils.getFields(CLASS, double.class).get(3);
@@ -88,7 +84,7 @@ public class PacketPlayOutSpawnEntityLivingStorage {
             ENTITY_TYPE = ReflectionUtils.getFields(CLASS, int.class).get(1);
         }
         if (nms.getMinorVersion() <= 14) {
-            DATA_WATCHER = ReflectionUtils.getFields(CLASS, DataWatcher.CLASS).get(0);
+            DATA_WATCHER = ReflectionUtils.getOnlyField(CLASS, DataWatcher.CLASS);
         }
     }
 

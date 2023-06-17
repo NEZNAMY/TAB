@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import me.neznamy.tab.shared.util.ReflectionUtils;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
@@ -20,7 +22,7 @@ public class PacketPlayOutEntityDestroyStorage {
      *          If something fails
      */
     public static void load() throws NoSuchMethodException {
-        (ENTITIES = CLASS.getDeclaredFields()[0]).setAccessible(true);
+        ENTITIES = ReflectionUtils.getOnlyField(CLASS);
         try {
             CONSTRUCTOR = CLASS.getConstructor(int[].class);
         } catch (NoSuchMethodException e) {

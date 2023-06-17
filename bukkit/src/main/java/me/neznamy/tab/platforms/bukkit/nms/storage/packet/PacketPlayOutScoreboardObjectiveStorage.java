@@ -25,16 +25,16 @@ public class PacketPlayOutScoreboardObjectiveStorage {
     public static Constructor<?> newScoreboardObjective;
 
     public static void load(NMSStorage nms) throws NoSuchMethodException {
-        newScoreboardObjective = ScoreboardObjective.getConstructors()[0];
+        newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
         OBJECTIVE_NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
         List<Field> list = ReflectionUtils.getFields(CLASS, int.class);
         METHOD = list.get(list.size()-1);
         if (nms.getMinorVersion() >= 8) {
-            RENDER_TYPE = ReflectionUtils.getFields(CLASS, EnumScoreboardHealthDisplay).get(0);
+            RENDER_TYPE = ReflectionUtils.getOnlyField(CLASS, EnumScoreboardHealthDisplay);
         }
         if (nms.getMinorVersion() >= 13) {
             CONSTRUCTOR = CLASS.getConstructor(ScoreboardObjective, int.class);
-            DISPLAY_NAME = ReflectionUtils.getFields(CLASS, nms.IChatBaseComponent).get(0);
+            DISPLAY_NAME = ReflectionUtils.getOnlyField(CLASS, nms.IChatBaseComponent);
         } else {
             CONSTRUCTOR = CLASS.getConstructor();
             DISPLAY_NAME = ReflectionUtils.getFields(CLASS, String.class).get(1);

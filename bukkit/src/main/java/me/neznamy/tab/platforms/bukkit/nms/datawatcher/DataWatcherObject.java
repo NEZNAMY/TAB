@@ -34,8 +34,8 @@ public class DataWatcherObject {
      */
     public static void load() throws NoSuchMethodException {
         CONSTRUCTOR = CLASS.getConstructor(int.class, DataWatcherHelper.DataWatcherSerializer);
-        SLOT = ReflectionUtils.getFields(CLASS, int.class).get(0);
-        SERIALIZER = ReflectionUtils.getFields(CLASS, DataWatcherHelper.DataWatcherSerializer).get(0);
+        SLOT = ReflectionUtils.getOnlyField(CLASS, int.class);
+        SERIALIZER = ReflectionUtils.getOnlyField(CLASS, DataWatcherHelper.DataWatcherSerializer);
     }
 
     /**

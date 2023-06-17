@@ -9,8 +9,6 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutPlayerInfoStorage.PlayerInfoDataStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
@@ -79,7 +77,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return PacketPlayOutPlayerInfoStorage.CLASS.isInstance(packet);
+        return BukkitTabList.PacketPlayOutPlayerInfoClass.isInstance(packet);
     }
 
     @Override
@@ -87,37 +85,37 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         NMSStorage nms = NMSStorage.getInstance();
         List<String> actions;
-        if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
+        if (BukkitTabList.ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
-            actions = ((EnumSet<?>)PacketPlayOutPlayerInfoStorage.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
+            actions = ((EnumSet<?>)BukkitTabList.ACTION.get(packet)).stream().map(Enum::name).collect(Collectors.toList());
         } else {
             //1.19.2-
-            actions = Collections.singletonList(PacketPlayOutPlayerInfoStorage.ACTION.get(packet).toString());
+            actions = Collections.singletonList(BukkitTabList.ACTION.get(packet).toString());
         }
         List<Object> updatedList = new ArrayList<>();
-        for (Object nmsData : (List<?>) PacketPlayOutPlayerInfoStorage.PLAYERS.get(packet)) {
-            GameProfile profile = (GameProfile) PlayerInfoDataStorage.PlayerInfoData_getProfile.invoke(nmsData);
+        for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
+            GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_getProfile.invoke(nmsData);
             Object displayName = null;
             if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
-                displayName = PlayerInfoDataStorage.PlayerInfoData_DisplayName.get(nmsData);
+                displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
                 if (newDisplayName != null) displayName = nms.toNMSComponent(newDisplayName, receiver.getVersion());
-                if (!nms.is1_19_3Plus()) PlayerInfoDataStorage.PlayerInfoData_DisplayName.set(nmsData, displayName);
+                if (!nms.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
             if (nms.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
-                updatedList.add(PlayerInfoDataStorage.newPlayerInfoData.newInstance(
+                updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
                         profile.getId(),
                         profile,
-                        PlayerInfoDataStorage.PlayerInfoData_Listed.getBoolean(nmsData),
-                        PlayerInfoDataStorage.PlayerInfoData_Latency.getInt(nmsData),
-                        PlayerInfoDataStorage.PlayerInfoData_GameMode.get(nmsData),
+                        BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
+                        BukkitTabList.PlayerInfoData_Latency.getInt(nmsData),
+                        BukkitTabList.PlayerInfoData_GameMode.get(nmsData),
                         displayName,
-                        PlayerInfoDataStorage.PlayerInfoData_RemoteChatSession.get(nmsData)));
+                        BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));
             }
         }
         if (nms.is1_19_3Plus()) {
-            PacketPlayOutPlayerInfoStorage.PLAYERS.set(packet, updatedList);
+            BukkitTabList.PLAYERS.set(packet, updatedList);
         }
     }
 

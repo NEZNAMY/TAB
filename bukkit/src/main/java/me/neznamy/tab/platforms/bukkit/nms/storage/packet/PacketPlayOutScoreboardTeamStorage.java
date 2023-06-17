@@ -44,17 +44,17 @@ public class PacketPlayOutScoreboardTeamStorage {
         newScoreboardTeam = ScoreboardTeam.getConstructor(nms.Scoreboard, String.class);
         NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
         ACTION = ReflectionUtils.getInstanceFields(CLASS, int.class).get(0);
-        PLAYERS = ReflectionUtils.getFields(CLASS, Collection.class).get(0);
-        ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getMethods(ScoreboardTeam, Collection.class).get(0);
+        PLAYERS = ReflectionUtils.getOnlyField(CLASS, Collection.class);
+        ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(ScoreboardTeam, Collection.class);
         if (nms.getMinorVersion() >= 9) {
-            ScoreboardTeam_setCollisionRule = ReflectionUtils.getMethods(ScoreboardTeam, void.class, EnumTeamPush).get(0);
+            ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(ScoreboardTeam, void.class, EnumTeamPush);
         }
         if (nms.getMinorVersion() >= 13) {
-            ScoreboardTeam_setColor = ReflectionUtils.getMethods(ScoreboardTeam, void.class, nms.EnumChatFormat).get(0);
+            ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(ScoreboardTeam, void.class, nms.EnumChatFormat);
         }
         if (nms.getMinorVersion() >= 17) {
-            Constructor_of = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam).get(0);
-            Constructor_ofBoolean = ReflectionUtils.getMethods(CLASS, CLASS, ScoreboardTeam, boolean.class).get(0);
+            Constructor_of = ReflectionUtils.getOnlyMethod(CLASS, CLASS, ScoreboardTeam);
+            Constructor_ofBoolean = ReflectionUtils.getOnlyMethod(CLASS, CLASS, ScoreboardTeam, boolean.class);
         } else {
             CONSTRUCTOR = CLASS.getConstructor(ScoreboardTeam, int.class);
         }
