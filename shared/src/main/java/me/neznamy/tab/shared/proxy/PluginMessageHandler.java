@@ -33,6 +33,7 @@ public class PluginMessageHandler {
         messages.put("PlayerJoinResponse", this::playerJoinResponse);
         messages.put("RegisterPlaceholder", this::registerPlaceholder);
         messages.put("PlaceholderError", this::placeholderError);
+        messages.put("UpdateGameMode", this::updateGameMode);
     }
 
     /**
@@ -118,6 +119,7 @@ public class PluginMessageHandler {
                 }
             }
         }
+        player.setGamemode(in.readInt());
         player.setBridgeConnected(true);
     }
 
@@ -133,5 +135,9 @@ public class PluginMessageHandler {
             stack.add(in.readUTF());
         }
         TAB.getInstance().getErrorManager().placeholderError(message, stack);
+    }
+
+    public void updateGameMode(ProxyTabPlayer player, ByteArrayDataInput in) {
+        player.setGamemode(in.readInt());
     }
 }

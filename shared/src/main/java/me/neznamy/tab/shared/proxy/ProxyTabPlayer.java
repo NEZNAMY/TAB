@@ -41,6 +41,9 @@ public abstract class ProxyTabPlayer extends TabPlayer {
     /** Flag for marking if this player has received join response from bridge or not */
     private boolean bridgeConnected;
 
+    /** Player's gamemode */
+    private int gamemode;
+
     /** Map of player's requested permissions */
     private final Map<String, Boolean> permissions = new HashMap<>();
 

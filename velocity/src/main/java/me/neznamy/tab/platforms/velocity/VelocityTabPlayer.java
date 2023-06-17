@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.player.TabListEntry;
 import lombok.Getter;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
@@ -62,14 +61,6 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     @Override
     public boolean isOnline() {
         return getPlayer().isActive();
-    }
-
-    @Override
-    public int getGamemode() {
-        for (TabListEntry entry : getPlayer().getTabList().getEntries()) {
-            if (entry.getProfile().getId().equals(getTablistId())) return entry.getGameMode();
-        }
-        return 0;
     }
 
     @Override
