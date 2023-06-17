@@ -14,7 +14,6 @@ public class MojangModernNMSStorage extends NMSStorage {
 
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        (PING = EntityPlayer.getDeclaredField("latency")).setAccessible(true);
         ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("fromJson", String.class);
         DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("define", DataWatcherObject.CLASS, Object.class);
         PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = PacketPlayOutScoreboardScoreStorage.ScoreboardScore.getMethod("setScore", int.class);

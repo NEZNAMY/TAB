@@ -52,7 +52,10 @@ public abstract class NMSStorage {
     public Class<?> Entity;
     public Class<?> EntityLiving;
     protected Class<?> PlayerConnection;
+
+    // Ping field for 1.5.2 - 1.16.5, 1.17+ has Player#getPing()
     public Field PING;
+
     public Field PLAYER_CONNECTION;
     public Field NETWORK_MANAGER;
     public Field CHANNEL;
