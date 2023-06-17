@@ -21,7 +21,7 @@ public class PacketPlayOutScoreboardDisplayObjectiveStorage {
     }
 
     @SneakyThrows
-    public static Object buildSilent(int slot, String objective) {
+    public static Object build(int slot, String objective) {
         return CONSTRUCTOR.newInstance(slot, NMSStorage.getInstance().newScoreboardObjective(objective));
     }
 }

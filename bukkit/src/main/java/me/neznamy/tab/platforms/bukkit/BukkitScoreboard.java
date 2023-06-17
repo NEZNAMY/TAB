@@ -41,22 +41,22 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.buildSilent(slot.ordinal(), objective));
+        player.sendPacket(PacketPlayOutScoreboardDisplayObjectiveStorage.build(slot.ordinal(), objective));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(0, objectiveName, title, hearts, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.build(0, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(1, objectiveName, "", false, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.build(1, objectiveName, "", false, player.getVersion()));
     }
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.buildSilent(2, objectiveName, title, hearts, player.getVersion()));
+        player.sendPacket(PacketPlayOutScoreboardObjectiveStorage.build(2, objectiveName, title, hearts, player.getVersion()));
     }
 
     @Override

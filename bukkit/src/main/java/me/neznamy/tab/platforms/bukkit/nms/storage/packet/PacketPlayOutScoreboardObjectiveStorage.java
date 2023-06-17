@@ -42,7 +42,7 @@ public class PacketPlayOutScoreboardObjectiveStorage {
     }
 
     @SneakyThrows
-    public static Object buildSilent(int action, String objectiveName, String title, boolean hearts, ProtocolVersion clientVersion) {
+    public static Object build(int action, String objectiveName, String title, boolean hearts, ProtocolVersion clientVersion) {
         NMSStorage nms = NMSStorage.getInstance();
         if (nms.getMinorVersion() >= 13) {
             return CONSTRUCTOR.newInstance(newScoreboardObjective.newInstance(null, objectiveName, null,
