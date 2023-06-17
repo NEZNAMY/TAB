@@ -99,6 +99,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     public void onQuit(@NotNull TabPlayer p) {
         sortedPlayers.remove(p);
         teamNames.remove(p);
+        views.remove(p);
         views.values().forEach(LayoutView::tick);
     }
 
