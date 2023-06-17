@@ -13,8 +13,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitModernNMSStorage extends NMSStorage {
 
-    public BukkitModernNMSStorage() throws ReflectiveOperationException {}
-
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         if (minorVersion >= 20) {

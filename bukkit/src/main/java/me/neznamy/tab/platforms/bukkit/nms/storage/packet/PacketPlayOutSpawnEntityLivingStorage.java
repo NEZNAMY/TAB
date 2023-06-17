@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -95,10 +96,9 @@ public class PacketPlayOutSpawnEntityLivingStorage {
      * Converts this class into NMS packet
      *
      * @return  NMS packet
-     * @throws  ReflectiveOperationException
-     *          If something went wrong
      */
-    public static Object build(int entityId, UUID id, Object entityType, Location location, EntityData data) throws ReflectiveOperationException {
+    @SneakyThrows
+    public static Object build(int entityId, UUID id, Object entityType, Location location, EntityData data) {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {

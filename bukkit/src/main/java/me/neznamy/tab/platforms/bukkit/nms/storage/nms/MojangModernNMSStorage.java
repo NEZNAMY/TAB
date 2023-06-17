@@ -12,8 +12,6 @@ import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class MojangModernNMSStorage extends NMSStorage {
 
-    public MojangModernNMSStorage() throws ReflectiveOperationException {}
-
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         (PING = EntityPlayer.getDeclaredField("latency")).setAccessible(true);

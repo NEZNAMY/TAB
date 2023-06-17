@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.Nullable;
@@ -41,10 +42,9 @@ public class DataWatcherObject {
      * Converts the object into NMS object
      *
      * @return  NMS object
-     * @throws  ReflectiveOperationException
-     *          If thrown by reflective operation
      */
-    public Object build() throws ReflectiveOperationException {
+    @SneakyThrows
+    public Object build() {
         if (NMSStorage.getInstance().getMinorVersion() >= 9) {
             return DataWatcherObject.CONSTRUCTOR.newInstance(position, serializer);
         } else {

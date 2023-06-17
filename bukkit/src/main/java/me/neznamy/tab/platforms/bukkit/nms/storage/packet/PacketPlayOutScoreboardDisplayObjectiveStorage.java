@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
@@ -19,11 +20,8 @@ public class PacketPlayOutScoreboardDisplayObjectiveStorage {
         OBJECTIVE_NAME = ReflectionUtils.getFields(CLASS, String.class).get(0);
     }
 
+    @SneakyThrows
     public static Object buildSilent(int slot, String objective) {
-        try {
-            return CONSTRUCTOR.newInstance(slot, NMSStorage.getInstance().newScoreboardObjective(objective));
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
-        }
+        return CONSTRUCTOR.newInstance(slot, NMSStorage.getInstance().newScoreboardObjective(objective));
     }
 }

@@ -16,8 +16,6 @@ import java.util.Arrays;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitLegacyNMSStorage extends NMSStorage {
 
-    public BukkitLegacyNMSStorage() throws ReflectiveOperationException {}
-
     /**
      * Returns class with given potential names in same order
      *

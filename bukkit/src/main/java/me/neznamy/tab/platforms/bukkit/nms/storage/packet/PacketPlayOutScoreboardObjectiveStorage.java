@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
@@ -40,25 +41,22 @@ public class PacketPlayOutScoreboardObjectiveStorage {
         }
     }
 
+    @SneakyThrows
     public static Object buildSilent(int action, String objectiveName, String title, boolean hearts, ProtocolVersion clientVersion) {
-        try {
-            NMSStorage nms = NMSStorage.getInstance();
-            if (nms.getMinorVersion() >= 13) {
-                return CONSTRUCTOR.newInstance(newScoreboardObjective.newInstance(null, objectiveName, null,
-                        nms.toNMSComponent(IChatBaseComponent.optimizedComponent(title), clientVersion),
-                        asDisplayType(hearts)), action);
-            }
-            Object nmsPacket = CONSTRUCTOR.newInstance();
-            OBJECTIVE_NAME.set(nmsPacket, objectiveName);
-            DISPLAY_NAME.set(nmsPacket, title);
-            if (nms.getMinorVersion() >= 8) {
-                RENDER_TYPE.set(nmsPacket, asDisplayType(hearts));
-            }
-            METHOD.set(nmsPacket, action);
-            return nmsPacket;
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
+        NMSStorage nms = NMSStorage.getInstance();
+        if (nms.getMinorVersion() >= 13) {
+            return CONSTRUCTOR.newInstance(newScoreboardObjective.newInstance(null, objectiveName, null,
+                    nms.toNMSComponent(IChatBaseComponent.optimizedComponent(title), clientVersion),
+                    asDisplayType(hearts)), action);
         }
+        Object nmsPacket = CONSTRUCTOR.newInstance();
+        OBJECTIVE_NAME.set(nmsPacket, objectiveName);
+        DISPLAY_NAME.set(nmsPacket, title);
+        if (nms.getMinorVersion() >= 8) {
+            RENDER_TYPE.set(nmsPacket, asDisplayType(hearts));
+        }
+        METHOD.set(nmsPacket, action);
+        return nmsPacket;
     }
 
     private static Object asDisplayType(boolean hearts) {

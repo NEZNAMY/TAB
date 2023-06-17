@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 
 import java.lang.reflect.Constructor;
@@ -31,31 +32,25 @@ public class PacketPlayOutScoreboardScoreStorage {
         }
     }
 
+    @SneakyThrows
     public static Object change(String objective, String player, int score) {
-        try {
-            NMSStorage nms = NMSStorage.getInstance();
-            if (nms.getMinorVersion() >= 13) {
-                return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "CHANGE"), objective, player, score);
-            }
-            Object scoreboardScore = newScoreboardScore.newInstance(nms.emptyScoreboard, nms.newScoreboardObjective(objective), player);
-            ScoreboardScore_setScore.invoke(scoreboardScore, score);
-            if (nms.getMinorVersion() >= 8) {
-                return CONSTRUCTOR.newInstance(scoreboardScore);
-            }
-            return CONSTRUCTOR.newInstance(scoreboardScore, 0);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
+        NMSStorage nms = NMSStorage.getInstance();
+        if (nms.getMinorVersion() >= 13) {
+            return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "CHANGE"), objective, player, score);
         }
+        Object scoreboardScore = newScoreboardScore.newInstance(nms.emptyScoreboard, nms.newScoreboardObjective(objective), player);
+        ScoreboardScore_setScore.invoke(scoreboardScore, score);
+        if (nms.getMinorVersion() >= 8) {
+            return CONSTRUCTOR.newInstance(scoreboardScore);
+        }
+        return CONSTRUCTOR.newInstance(scoreboardScore, 0);
     }
 
+    @SneakyThrows
     public static Object remove(String objective, String player) {
-        try {
-            if (NMSStorage.getInstance().getMinorVersion() >= 13) {
-                return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "REMOVE"), objective, player, 0);
-            }
-            return CONSTRUCTOR_String.newInstance(player);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
+        if (NMSStorage.getInstance().getMinorVersion() >= 13) {
+            return CONSTRUCTOR_1_13.newInstance(Enum.valueOf(EnumScoreboardAction, "REMOVE"), objective, player, 0);
         }
+        return CONSTRUCTOR_String.newInstance(player);
     }
 }

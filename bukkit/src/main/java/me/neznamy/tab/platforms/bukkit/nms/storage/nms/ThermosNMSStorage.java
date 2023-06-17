@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
 
-    public ThermosNMSStorage() throws ReflectiveOperationException {}
-
     @Override
     public Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
         try {

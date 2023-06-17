@@ -62,9 +62,9 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         }
     }
 
-    public abstract void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException;
+    public abstract void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet);
 
-    public abstract void onObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException;
+    public abstract void onObjective(@NotNull TabPlayer player, @NotNull Object packet);
 
     public abstract boolean isDisplayObjective(@NotNull Object packet);
 
@@ -74,17 +74,15 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
 
     public abstract boolean isPlayerInfo(@NotNull Object packet);
 
-    public abstract void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException;
+    public abstract void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet);
 
     /**
      * Removes all real players from team if packet does not come from TAB and reports this to override log
      *
      * @param   teamPacket
      *          team packet
-     * @throws  ReflectiveOperationException
-     *          if throws by reflective operation
      */
-    public abstract void modifyPlayers(@NotNull Object teamPacket) throws ReflectiveOperationException;
+    public abstract void modifyPlayers(@NotNull Object teamPacket);
 
     @RequiredArgsConstructor
     public class TabChannelDuplexHandler extends ChannelDuplexHandler {

@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -61,23 +62,20 @@ public class DataWatcher implements EntityData {
      *
      * @return  an instance of NMS.DataWatcher with same data
      */
+    @SneakyThrows
     public @NotNull Object build() {
-        try {
-            NMSStorage nms = NMSStorage.getInstance();
-            Object nmsWatcher;
-            if (CONSTRUCTOR.getParameterCount() == 1) { //1.7+
-                nmsWatcher = CONSTRUCTOR.newInstance(new Object[] {null});
-            } else {
-                nmsWatcher = CONSTRUCTOR.newInstance();
-            }
-            for (DataWatcherItem item : dataValues.values()) {
-                Object nmsObject = item.getType().build();
-                REGISTER.invoke(nmsWatcher, nmsObject, item.getValue());
-                if (nms.is1_19_3Plus()) markDirty.invoke(nmsWatcher, nmsObject);
-            }
-            return nmsWatcher;
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
+        NMSStorage nms = NMSStorage.getInstance();
+        Object nmsWatcher;
+        if (CONSTRUCTOR.getParameterCount() == 1) { //1.7+
+            nmsWatcher = CONSTRUCTOR.newInstance(new Object[] {null});
+        } else {
+            nmsWatcher = CONSTRUCTOR.newInstance();
         }
+        for (DataWatcherItem item : dataValues.values()) {
+            Object nmsObject = item.getType().build();
+            REGISTER.invoke(nmsWatcher, nmsObject, item.getValue());
+            if (nms.is1_19_3Plus()) markDirty.invoke(nmsWatcher, nmsObject);
+        }
+        return nmsWatcher;
     }
 }

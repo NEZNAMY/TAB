@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
@@ -114,16 +115,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @SneakyThrows
     public TabList.Skin getSkin() {
-        try {
-            Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
-            if (col.isEmpty()) return null; //offline mode
-            Property property = col.iterator().next();
-            return new TabList.Skin(property.getValue(), property.getSignature());
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get skin of " + getName(), e);
-            return null;
-        }
+        Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
+        if (col.isEmpty()) return null; //offline mode
+        Property property = col.iterator().next();
+        return new TabList.Skin(property.getValue(), property.getSignature());
     }
 
     @Override
@@ -148,52 +145,38 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
-        try {
-            sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
-            if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
-                updateEntityMetadata(entityId, data);
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
+        sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
+        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
+            updateEntityMetadata(entityId, data);
         }
     }
 
     @Override
+    @SneakyThrows
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        try {
-            if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
-                //1.19.3+
-                sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, DataWatcher.packDirty.invoke(data.build())));
-            } else {
-                sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, data.build(), true));
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
+        if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
+            //1.19.3+
+            sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, DataWatcher.packDirty.invoke(data.build())));
+        } else {
+            sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, data.build(), true));
         }
     }
 
     @Override
     public void teleportEntity(int entityId, @NotNull Location location) {
-        try {
-            sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
-        }
+        sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
     }
 
     @Override
+    @SneakyThrows
     public void destroyEntities(int... entities) {
-        try {
-            if (PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.getParameterTypes()[0] != int.class) {
-                sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(new Object[]{entities}));
-            } else {
-                //1.17.0 Mojank
-                for (int entity : entities) {
-                    sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(entity));
-                }
+        if (PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.getParameterTypes()[0] != int.class) {
+            sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(new Object[]{entities}));
+        } else {
+            //1.17.0 Mojank
+            for (int entity : entities) {
+                sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(entity));
             }
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
         }
     }
 }

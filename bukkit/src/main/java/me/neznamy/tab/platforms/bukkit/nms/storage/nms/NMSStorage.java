@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -86,11 +87,9 @@ public abstract class NMSStorage {
 
     /**
      * Constructs new instance and attempts to load all fields, methods and constructors.
-     *
-     * @throws  ReflectiveOperationException
-     *          If some field, constructor or method was not found
      */
-    public NMSStorage() throws ReflectiveOperationException {
+    @SneakyThrows
+    public NMSStorage() {
         ProtocolVersion.UNKNOWN_SERVER_VERSION.setMinorVersion(minorVersion); //fixing compatibility with forks that set version field value to "Unknown"
         loadClasses();
         if (minorVersion >= 7) {
@@ -166,10 +165,9 @@ public abstract class NMSStorage {
      * @param   objectiveName
      *          Objective name
      * @return  NMS Objective
-     * @throws  ReflectiveOperationException
-     *          if thrown by reflective operation
      */
-    public Object newScoreboardObjective(@NotNull String objectiveName) throws ReflectiveOperationException {
+    @SneakyThrows
+    public Object newScoreboardObjective(@NotNull String objectiveName) {
         if (minorVersion >= 13) {
             return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
         }

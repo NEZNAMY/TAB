@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Enum class representing all possibly used protocol versions
  */
+@Getter
 public enum ProtocolVersion {
 
     UNKNOWN_SERVER_VERSION ("Unknown"),
@@ -75,16 +76,16 @@ public enum ProtocolVersion {
     V1_4_6  (51);
 
     /** Version's network id found at https://wiki.vg/Protocol_version_numbers */
-    @Getter private final int networkId;
+    private final int networkId;
 
     /** Version's minor version, such as 16 for 1.16.x. Allowing override to
      * set minor version of UNKNOWN_SERVER_VERSION value to value from package to fix compatibility
      * with server forks that set bukkit version field value to "Unknown".
      */
-    @Getter @Setter private int minorVersion;
+    @Setter private int minorVersion;
 
     /** Version's friendly name displayed in %player-version% placeholder */
-    @Getter @NotNull private final String friendlyName;
+    @NotNull private final String friendlyName;
 
     /**
      * Constructs new instance with given network id

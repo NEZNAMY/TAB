@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabList;
@@ -46,14 +47,16 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException {
+    @SneakyThrows
+    public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
                 PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
                 (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
     }
 
     @Override
-    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) throws IllegalAccessException {
+    @SneakyThrows
+    public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
                 PacketPlayOutScoreboardObjectiveStorage.METHOD.getInt(packet),
                 (String) PacketPlayOutScoreboardObjectiveStorage.OBJECTIVE_NAME.get(packet));
@@ -80,7 +83,8 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException {
+    @SneakyThrows
+    public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
         NMSStorage nms = NMSStorage.getInstance();
         List<String> actions;
         if (PacketPlayOutPlayerInfoStorage.ClientboundPlayerInfoRemovePacket != null) {
@@ -119,7 +123,8 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void modifyPlayers(@NotNull Object packetPlayOutScoreboardTeam) throws ReflectiveOperationException {
+    @SneakyThrows
+    public void modifyPlayers(@NotNull Object packetPlayOutScoreboardTeam) {
         if (TAB.getInstance().getNameTagManager() == null) return;
         int action = PacketPlayOutScoreboardTeamStorage.ACTION.getInt(packetPlayOutScoreboardTeam);
         if (action == 1 || action == 2 || action == 4) return;

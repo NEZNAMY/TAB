@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -91,19 +92,15 @@ public class BukkitPlatform implements BackendPlatform {
      * @return  online players from Bukkit API
      */
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     private @NotNull Player[] getOnlinePlayers() {
-        try {
-            Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
-            if (players instanceof Player[]) {
-                //1.7-
-                return (Player[]) players;
-            } else {
-                //1.8+
-                return ((Collection<Player>)players).toArray(new Player[0]); 
-            }
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get online players", e);
-            return new Player[0];
+        Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
+        if (players instanceof Player[]) {
+            //1.7-
+            return (Player[]) players;
+        } else {
+            //1.8+
+            return ((Collection<Player>)players).toArray(new Player[0]);
         }
     }
 

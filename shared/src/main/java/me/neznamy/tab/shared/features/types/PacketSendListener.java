@@ -15,8 +15,6 @@ public interface PacketSendListener {
      *          Player who is about to receive a packet
      * @param   packet
      *          The packet
-     * @throws  ReflectiveOperationException
-     *          If thrown by reflective operation
      */
-    void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException;
+    void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet);
 }

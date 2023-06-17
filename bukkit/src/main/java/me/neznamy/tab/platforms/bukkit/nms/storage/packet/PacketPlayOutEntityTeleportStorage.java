@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.util.ReflectionUtils;
@@ -54,10 +55,9 @@ public class PacketPlayOutEntityTeleportStorage {
      * Converts this class into NMS packet
      *
      * @return  NMS packet
-     * @throws  ReflectiveOperationException
-     *          If something went wrong
      */
-    public static Object build(int entityId, Location location) throws ReflectiveOperationException {
+    @SneakyThrows
+    public static Object build(int entityId, Location location) {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {

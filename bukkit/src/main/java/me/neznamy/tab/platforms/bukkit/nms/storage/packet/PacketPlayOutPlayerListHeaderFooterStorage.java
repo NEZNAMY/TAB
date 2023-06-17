@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms.storage.packet;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
@@ -25,7 +26,8 @@ public class PacketPlayOutPlayerListHeaderFooterStorage {
         }
     }
 
-    public static Object build(IChatBaseComponent header, IChatBaseComponent footer, ProtocolVersion clientVersion) throws ReflectiveOperationException {
+    @SneakyThrows
+    public static Object build(IChatBaseComponent header, IChatBaseComponent footer, ProtocolVersion clientVersion) {
         NMSStorage nms = NMSStorage.getInstance();
         if (nms.getMinorVersion() < 8) return null;
         if (CONSTRUCTOR.getParameterCount() == 2) {

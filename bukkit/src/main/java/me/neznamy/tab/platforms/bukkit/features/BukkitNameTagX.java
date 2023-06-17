@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import lombok.SneakyThrows;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -61,7 +62,8 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) throws ReflectiveOperationException {
+    @SneakyThrows
+    public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (receiver.getVersion().getMinorVersion() < 8) return;
         if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
         if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets

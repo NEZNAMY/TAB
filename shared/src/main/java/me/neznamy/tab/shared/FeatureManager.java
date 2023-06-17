@@ -199,11 +199,7 @@ public class FeatureManager {
         for (TabFeature f : values) {
             if (!(f instanceof PacketSendListener)) continue;
             long time = System.nanoTime();
-            try {
-                ((PacketSendListener)f).onPacketSend(receiver, packet);
-            } catch (ReflectiveOperationException e) {
-                TAB.getInstance().getErrorManager().printError("Feature " + f.getClass().getSimpleName() + " failed to read packet", e);
-            }
+            ((PacketSendListener)f).onPacketSend(receiver, packet);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.RAW_PACKET_OUT, System.nanoTime()-time);
         }
     }
