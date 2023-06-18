@@ -71,9 +71,7 @@ public enum ProtocolVersion {
     V1_6_1  (73),
     V1_5_2  (61),
     V1_5_1  (60),
-    V1_5    (60),
-    V1_4_7  (51),
-    V1_4_6  (51);
+    V1_5    (60);
 
     /** Version's network id found at https://wiki.vg/Protocol_version_numbers */
     private final int networkId;

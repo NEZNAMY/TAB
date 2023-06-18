@@ -53,6 +53,34 @@ public class ReflectionUtils {
     }
 
     /**
+     * Returns all methods from class which return specified class type and have specified parameter types.
+     *
+     * @param   clazz
+     *          Class to get methods from
+     * @param   returnType
+     *          Return type of methods
+     * @param   parameterTypes
+     *          Parameter types of methods
+     * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
+     */
+    public static List<Method> getMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
+        List<Method> list = new ArrayList<>();
+        for (Method m : clazz.getDeclaredMethods()) {
+            if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
+            Class<?>[] types = m.getParameterTypes();
+            boolean valid = true;
+            for (int i=0; i<types.length; i++) {
+                if (types[i] != parameterTypes[i]) {
+                    valid = false;
+                    break;
+                }
+            }
+            if (valid) list.add(m);
+        }
+        return list;
+    }
+
+    /**
      * Returns method with specified possible names and parameters. Throws exception if no such method was found
      *
      * @param   clazz

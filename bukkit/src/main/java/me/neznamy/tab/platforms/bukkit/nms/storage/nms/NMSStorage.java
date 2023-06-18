@@ -98,7 +98,7 @@ public abstract class NMSStorage {
         loadClasses();
         if (minorVersion >= 7) {
             NETWORK_MANAGER = ReflectionUtils.getOnlyField(PlayerConnection, NetworkManager);
-            sendPacket = ReflectionUtils.getOnlyMethod(PlayerConnection, void.class, Packet);
+            sendPacket = ReflectionUtils.getMethods(PlayerConnection, void.class, Packet).get(0);
         } else {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
@@ -127,7 +127,7 @@ public abstract class NMSStorage {
         PacketPlayOutScoreboardTeamStorage.load(this);
         PacketPlayOutScoreboardScoreStorage.load(this);
         IScoreboardCriteria_self = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
-        PacketPlayOutEntity_ENTITYID = ReflectionUtils.getOnlyField(PacketPlayOutEntity, int.class);
+        PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
         PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         loadNamedFieldsAndMethods();
     }

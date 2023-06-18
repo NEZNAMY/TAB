@@ -69,7 +69,14 @@ public class BukkitTAB extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
             return true;
         } catch (IllegalStateException ex) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] A compatibility issue was found with your server version. This plugin version was made for 1.5 - 1.20.1. Disabling."));
+            if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is not compatible. " +
+                        "This plugin version was made for " + ProtocolVersion.values()[ProtocolVersion.values().length-1].getFriendlyName() +
+                        " - " + ProtocolVersion.values()[3].getFriendlyName() + ". Disabling."));
+            } else {
+                Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] A compatibility issue " +
+                        "with your server was found. Unless you are running some really weird server software, this is a bug."));
+            }
             return false;
         }
     }
