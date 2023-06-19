@@ -224,4 +224,8 @@ public class Sorting extends TabFeature implements SortingManager, JoinListener,
         return forcedTeamName.get(player);
     }
 
+    @Override
+    public @NotNull String getOriginalTeamName(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        return shortTeamNames.get((TabPlayer) player);
+    }
 }
