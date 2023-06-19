@@ -10,9 +10,9 @@ import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar18;
-import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar19;
-import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBarVia;
+import me.neznamy.tab.platforms.bukkit.bossbar.EntityBossBar;
+import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
+import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
@@ -47,7 +47,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final Scoreboard<BukkitTabPlayer> scoreboard = new PacketScoreboard(this);
     private final TabList tabList = new BukkitTabList(this);
     private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
-            new BukkitBossBar19(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar18(this);
+            new BukkitBossBar(this) : getVersion().getMinorVersion() >= 9 ? new ViaBossBar(this) : new EntityBossBar(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version

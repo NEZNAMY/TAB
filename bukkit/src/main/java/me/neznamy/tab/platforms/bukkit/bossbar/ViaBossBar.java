@@ -19,7 +19,7 @@ import java.util.UUID;
  * Handler for 1.9+ players on 1.8 server using ViaVersion API.
  */
 @RequiredArgsConstructor
-public class BukkitBossBarVia implements BossBar {
+public class ViaBossBar implements BossBar {
 
     /** Player this handler belongs to */
     private final BukkitTabPlayer player;
