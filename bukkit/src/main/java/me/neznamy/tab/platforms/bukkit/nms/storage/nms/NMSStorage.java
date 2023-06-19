@@ -119,6 +119,13 @@ public abstract class NMSStorage {
         PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
         PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         loadNamedFieldsAndMethods();
+        if (minorVersion < 17) {
+            try {
+                (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true); // 1.5.2 - 1.16.5
+            } catch (NoSuchFieldException e) {
+                (PING = EntityPlayer.getDeclaredField("field_71138_i")).setAccessible(true); // 1.7.10 Thermos
+            }
+        }
     }
 
     /**

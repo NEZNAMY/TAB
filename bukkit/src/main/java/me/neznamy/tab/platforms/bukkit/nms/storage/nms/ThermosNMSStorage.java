@@ -21,7 +21,6 @@ public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
 
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        (PING = EntityPlayer.getDeclaredField("field_71138_i")).setAccessible(true);
         PacketScoreboard.ScoreboardScore_setScore = PacketScoreboard.ScoreboardScoreClass.getMethod("func_96647_c", int.class);
         PacketScoreboard.ScoreboardTeam_setAllowFriendlyFire = PacketScoreboard.ScoreboardTeam.getMethod("func_96660_a", boolean.class);
         PacketScoreboard.ScoreboardTeam_setCanSeeFriendlyInvisibles = PacketScoreboard.ScoreboardTeam.getMethod("func_98300_b", boolean.class);

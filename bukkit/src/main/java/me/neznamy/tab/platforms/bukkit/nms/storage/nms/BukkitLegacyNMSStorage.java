@@ -53,7 +53,6 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
 
     @Override
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true);
         PacketScoreboard.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardScoreClass, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
         PacketScoreboard.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
         PacketScoreboard.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
