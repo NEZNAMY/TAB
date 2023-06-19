@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
@@ -43,7 +44,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     /** Player's connection for sending packets, preloading for speed */
     private final Object playerConnection;
 
-    private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
+    private final Scoreboard<BukkitTabPlayer> scoreboard = new PacketScoreboard(this);
     private final TabList tabList = new BukkitTabList(this);
     private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar19(this) : getVersion().getMinorVersion() >= 9 ? new BukkitBossBarVia(this) : new BukkitBossBar18(this);
