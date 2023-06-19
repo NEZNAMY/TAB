@@ -24,7 +24,6 @@ public class ThermosNMSStorage extends BukkitLegacyNMSStorage {
         PacketScoreboard.ScoreboardScore_setScore = PacketScoreboard.ScoreboardScoreClass.getMethod("func_96647_c", int.class);
         PacketScoreboard.ScoreboardTeam_setAllowFriendlyFire = PacketScoreboard.ScoreboardTeam.getMethod("func_96660_a", boolean.class);
         PacketScoreboard.ScoreboardTeam_setCanSeeFriendlyInvisibles = PacketScoreboard.ScoreboardTeam.getMethod("func_98300_b", boolean.class);
-        ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("func_150699_a", String.class);
         DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("func_75682_a", int.class, Object.class);
         PacketScoreboard.ScoreboardTeam_setPrefix = PacketScoreboard.ScoreboardTeam.getMethod("func_96666_b", String.class);
         PacketScoreboard.ScoreboardTeam_setSuffix = PacketScoreboard.ScoreboardTeam.getMethod("func_96662_c", String.class);
