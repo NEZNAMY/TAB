@@ -20,8 +20,9 @@ public abstract class EventListener<T> {
      */
     public void join(@NotNull T player) {
         if (TAB.getInstance().isPluginDisabled()) return;
+        TabPlayer p = createPlayer(player);
         TAB.getInstance().getCPUManager().runTask(() ->
-                TAB.getInstance().getFeatureManager().onJoin(createPlayer(player)));
+                TAB.getInstance().getFeatureManager().onJoin(p));
     }
 
     /**
