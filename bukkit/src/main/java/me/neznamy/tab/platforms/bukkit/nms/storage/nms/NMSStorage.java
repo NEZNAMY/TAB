@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabList;
+import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
@@ -14,7 +15,6 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
-import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,12 +78,6 @@ public abstract class NMSStorage {
     public Class<?> PacketPlayOutNamedEntitySpawn;
     public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
 
-    /** Scoreboard objectives */
-    public Class<?> Scoreboard;
-    protected Class<?> IScoreboardCriteria;
-    public Field IScoreboardCriteria_self;
-    public Object emptyScoreboard;
-
     public Object dummyEntity;
 
     private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(10000,
@@ -115,18 +109,13 @@ public abstract class NMSStorage {
         }
         PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
-        emptyScoreboard = Scoreboard.getConstructor().newInstance();
         DataWatcher.load(this);
         DataWatcherItem.load(this);
         PacketPlayOutEntityDestroyStorage.load();
         PacketPlayOutEntityMetadataStorage.load(this);
         PacketPlayOutEntityTeleportStorage.load(this);
         PacketPlayOutSpawnEntityLivingStorage.load(this);
-        PacketPlayOutScoreboardObjectiveStorage.load(this);
-        PacketPlayOutScoreboardDisplayObjectiveStorage.load();
-        PacketPlayOutScoreboardTeamStorage.load(this);
-        PacketPlayOutScoreboardScoreStorage.load(this);
-        IScoreboardCriteria_self = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
+        PacketScoreboard.load(this);
         PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
         PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         loadNamedFieldsAndMethods();
@@ -162,20 +151,5 @@ public abstract class NMSStorage {
      */
     public @Nullable Object toNMSComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
-    }
-
-    /**
-     * Creates a new Scoreboard Objective with given name.
-     *
-     * @param   objectiveName
-     *          Objective name
-     * @return  NMS Objective
-     */
-    @SneakyThrows
-    public Object newScoreboardObjective(@NotNull String objectiveName) {
-        if (minorVersion >= 13) {
-            return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, null, toNMSComponent(new IChatBaseComponent(""), TAB.getInstance().getServerVersion()), null);
-        }
-        return PacketPlayOutScoreboardObjectiveStorage.newScoreboardObjective.newInstance(null, objectiveName, IScoreboardCriteria_self.get(null));
     }
 }

@@ -6,6 +6,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 
 /**
@@ -18,12 +19,12 @@ public class BukkitModernNMSStorage extends NMSStorage {
     public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
         ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
         DataWatcher.REGISTER = ReflectionUtils.getMethod(DataWatcher.CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardScoreStorage.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketPlayOutScoreboardScoreStorage.ScoreboardScore, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(PacketPlayOutScoreboardTeamStorage.ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
+        PacketScoreboard.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardScoreClass, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
+        PacketScoreboard.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
+        PacketScoreboard.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Bukkit, Bukkit 1.18+}
+        PacketScoreboard.ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
+        PacketScoreboard.ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
+        PacketScoreboard.ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, PacketScoreboard.EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
         DataWatcherHelper.DataWatcherSerializer_BYTE = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("a").get(null);
         DataWatcherHelper.DataWatcherSerializer_FLOAT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("c").get(null);
         DataWatcherHelper.DataWatcherSerializer_STRING = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("d").get(null);
@@ -60,19 +61,19 @@ public class BukkitModernNMSStorage extends NMSStorage {
         EntityLiving = Class.forName("net.minecraft.world.entity.EntityLiving");
         PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
         BukkitTabList.PacketPlayOutPlayerListHeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
-        PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective");
-        PacketPlayOutScoreboardObjectiveStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective");
-        Scoreboard = Class.forName("net.minecraft.world.scores.Scoreboard");
-        PacketPlayOutScoreboardScoreStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore");
-        PacketPlayOutScoreboardObjectiveStorage.ScoreboardObjective = Class.forName("net.minecraft.world.scores.ScoreboardObjective");
-        PacketPlayOutScoreboardScoreStorage.ScoreboardScore = Class.forName("net.minecraft.world.scores.ScoreboardScore");
-        IScoreboardCriteria = Class.forName("net.minecraft.world.scores.criteria.IScoreboardCriteria");
-        PacketPlayOutScoreboardObjectiveStorage.EnumScoreboardHealthDisplay = (Class<Enum>) Class.forName("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay");
-        PacketPlayOutScoreboardScoreStorage.EnumScoreboardAction = (Class<Enum>) Class.forName("net.minecraft.server.ScoreboardServer$Action");
-        PacketPlayOutScoreboardTeamStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam");
-        PacketPlayOutScoreboardTeamStorage.ScoreboardTeam = Class.forName("net.minecraft.world.scores.ScoreboardTeam");
-        PacketPlayOutScoreboardTeamStorage.EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility");
-        PacketPlayOutScoreboardTeamStorage.EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush");
+        PacketScoreboard.DisplayObjectiveClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective");
+        PacketScoreboard.ObjectivePacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective");
+        PacketScoreboard.Scoreboard = Class.forName("net.minecraft.world.scores.Scoreboard");
+        PacketScoreboard.ScorePacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore");
+        PacketScoreboard.ScoreboardObjective = Class.forName("net.minecraft.world.scores.ScoreboardObjective");
+        PacketScoreboard.ScoreboardScoreClass = Class.forName("net.minecraft.world.scores.ScoreboardScore");
+        PacketScoreboard.IScoreboardCriteria = Class.forName("net.minecraft.world.scores.criteria.IScoreboardCriteria");
+        PacketScoreboard.EnumScoreboardHealthDisplay = (Class<Enum>) Class.forName("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay");
+        PacketScoreboard.EnumScoreboardAction = (Class<Enum>) Class.forName("net.minecraft.server.ScoreboardServer$Action");
+        PacketScoreboard.TeamPacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam");
+        PacketScoreboard.ScoreboardTeam = Class.forName("net.minecraft.world.scores.ScoreboardTeam");
+        PacketScoreboard.EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility");
+        PacketScoreboard.EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush");
         DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher");
         DataWatcherItem.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
         DataWatcherObject.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcherObject");

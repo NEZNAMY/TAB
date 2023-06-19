@@ -3,15 +3,13 @@ package me.neznamy.tab.platforms.bukkit;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardDisplayObjectiveStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardObjectiveStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutScoreboardTeamStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
@@ -48,31 +46,31 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @SneakyThrows
     public void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onDisplayObjective(player,
-                PacketPlayOutScoreboardDisplayObjectiveStorage.POSITION.getInt(packet),
-                (String) PacketPlayOutScoreboardDisplayObjectiveStorage.OBJECTIVE_NAME.get(packet));
+                PacketScoreboard.DisplayObjective_POSITION.getInt(packet),
+                (String) PacketScoreboard.DisplayObjective_OBJECTIVE_NAME.get(packet));
     }
 
     @Override
     @SneakyThrows
     public void onObjective(@NotNull TabPlayer player, @NotNull Object packet) {
         TAB.getInstance().getFeatureManager().onObjective(player,
-                PacketPlayOutScoreboardObjectiveStorage.METHOD.getInt(packet),
-                (String) PacketPlayOutScoreboardObjectiveStorage.OBJECTIVE_NAME.get(packet));
+                PacketScoreboard.Objective_METHOD.getInt(packet),
+                (String) PacketScoreboard.Objective_OBJECTIVE_NAME.get(packet));
     }
 
     @Override
     public boolean isDisplayObjective(@NotNull Object packet) {
-        return PacketPlayOutScoreboardDisplayObjectiveStorage.CLASS.isInstance(packet);
+        return PacketScoreboard.DisplayObjectiveClass.isInstance(packet);
     }
 
     @Override
     public boolean isObjective(@NotNull Object packet) {
-        return PacketPlayOutScoreboardObjectiveStorage.CLASS.isInstance(packet);
+        return PacketScoreboard.ObjectivePacketClass.isInstance(packet);
     }
 
     @Override
     public boolean isTeam(@NotNull Object packet) {
-        return PacketPlayOutScoreboardTeamStorage.CLASS.isInstance(packet);
+        return PacketScoreboard.TeamPacketClass.isInstance(packet);
     }
 
     @Override
@@ -124,10 +122,10 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @SneakyThrows
     public void modifyPlayers(@NotNull Object packetPlayOutScoreboardTeam) {
         if (TAB.getInstance().getNameTagManager() == null) return;
-        int action = PacketPlayOutScoreboardTeamStorage.ACTION.getInt(packetPlayOutScoreboardTeam);
+        int action = PacketScoreboard.TeamPacket_ACTION.getInt(packetPlayOutScoreboardTeam);
         if (action == 1 || action == 2 || action == 4) return;
-        Collection<String> players = (Collection<String>) PacketPlayOutScoreboardTeamStorage.PLAYERS.get(packetPlayOutScoreboardTeam);
-        String teamName = (String) PacketPlayOutScoreboardTeamStorage.NAME.get(packetPlayOutScoreboardTeam);
+        Collection<String> players = (Collection<String>) PacketScoreboard.TeamPacket_PLAYERS.get(packetPlayOutScoreboardTeam);
+        String teamName = (String) PacketScoreboard.TeamPacket_NAME.get(packetPlayOutScoreboardTeam);
         if (players == null) return;
         //creating a new list to prevent NoSuchFieldException in minecraft packet encoder when a player is removed
         Collection<String> newList = new ArrayList<>();
@@ -150,6 +148,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                 newList.add(entry);
             }
         }
-        PacketPlayOutScoreboardTeamStorage.PLAYERS.set(packetPlayOutScoreboardTeam, newList);
+        PacketScoreboard.TeamPacket_PLAYERS.set(packetPlayOutScoreboardTeam, newList);
     }
 }
