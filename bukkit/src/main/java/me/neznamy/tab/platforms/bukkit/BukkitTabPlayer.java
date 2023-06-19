@@ -38,10 +38,10 @@ import java.util.UUID;
 public class BukkitTabPlayer extends BackendTabPlayer {
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
-    private Object handle;
+    private final Object handle;
 
     /** Player's connection for sending packets, preloading for speed */
-    private Object playerConnection;
+    private final Object playerConnection;
 
     private final Scoreboard<BukkitTabPlayer> scoreboard = new BukkitScoreboard(this);
     private final TabList tabList = new BukkitTabList(this);
@@ -54,15 +54,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      * @param   p
      *          bukkit player
      */
+    @SneakyThrows
     public BukkitTabPlayer(Player p) {
         super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(),
                 p.getWorld().getName(), ViaVersionHook.getInstance().getPlayerVersion(p.getUniqueId(), p.getName()));
-        try {
-            handle = NMSStorage.getInstance().getHandle.invoke(player);
-            playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("Failed to get playerConnection of " + p.getName(), e);
-        }
+        handle = NMSStorage.getInstance().getHandle.invoke(player);
+        playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
     }
 
     @Override
@@ -82,13 +79,10 @@ public class BukkitTabPlayer extends BackendTabPlayer {
         }
     }
 
+    @SneakyThrows
     public void sendPacket(@Nullable Object nmsPacket) {
         if (nmsPacket == null || !getPlayer().isOnline()) return;
-        try {
-            NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
-        } catch (ReflectiveOperationException e) {
-            TAB.getInstance().getErrorManager().printError("An error occurred when sending " + nmsPacket.getClass().getSimpleName(), e);
-        }
+        NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
     }
 
     @Override
