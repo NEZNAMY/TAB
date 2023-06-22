@@ -14,7 +14,7 @@ dependencyResolutionManagement {
         maven("https://repo.spongepowered.org/repository/maven-public/") // Sponge
         maven("https://oss.sonatype.org/content/repositories/snapshots/") // Spark
         maven("https://maven.fabricmc.net/") // Fabric
-        maven("https://jitpack.io") // PremiumVanish
+        maven("https://jitpack.io") // PremiumVanish, Vault
     }
 }
 

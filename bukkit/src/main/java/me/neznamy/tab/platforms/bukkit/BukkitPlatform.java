@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -19,12 +21,15 @@ import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -145,5 +150,19 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0] + " (" + NMSStorage.getInstance().getServerPackage() + ")";
+    }
+
+    @Override
+    @NotNull public GroupManager detectPermissionPlugin() {
+        if (LuckPermsHook.getInstance().isInstalled()) {
+            return new GroupManager("LuckPerms", LuckPermsHook.getInstance().getGroupFunction());
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            RegisteredServiceProvider<Permission> provider = Bukkit.getServicesManager().getRegistration(Permission.class);
+            if (provider != null && !provider.getProvider().getName().equals("SuperPerms")) {
+                return new GroupManager(provider.getProvider().getName(), p -> provider.getProvider().getPrimaryGroup((Player) p.getPlayer()));
+            }
+        }
+        return new GroupManager("None", p -> TabConstants.NO_GROUP);
     }
 }
