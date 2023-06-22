@@ -25,6 +25,15 @@ public class ProxyNameTagX extends NameTagX {
     }
 
     @Override
+    public void onWorldChange(@NotNull TabPlayer changed, @NotNull String from, @NotNull String to) {
+        super.onWorldChange(changed, from, to);
+        for (String line : getDefinedLines()) {
+            String text = changed.getProperty(line).get();
+            ((ProxyTabPlayer)changed).sendPluginMessage("NameTagX", "SetText", line, text, IChatBaseComponent.fromColoredText(text).toString(changed.getVersion())); //rel placeholder support in the future
+        }
+    }
+
+    @Override
     public void onUnlimitedDisableConditionChange(TabPlayer p, boolean disabledNow) {
         super.onUnlimitedDisableConditionChange(p, disabledNow);
         ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "SetEnabled", !disabledNow && !getDisableChecker().isDisabledPlayer(p));
