@@ -2,10 +2,12 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Team;
@@ -27,7 +29,9 @@ import java.util.Collection;
  * changes and fields fail to load. Or as a complete replacement
  * if compatibility with other plugins turns out not to be a problem.
  */
-@SuppressWarnings("ConstantConditions") // Throw the NPE if something is not as expected, parent class should ensure it anyway
+// Throw the NPE if something is not as expected, parent class should ensure it anyway
+// Use Bukkit setColor, the adventure one does not support magic codes while they are permitted
+@SuppressWarnings({"ConstantConditions", "deprecation"})
 public class PaperScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     private final org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -85,6 +89,7 @@ public class PaperScoreboard extends Scoreboard<BukkitTabPlayer> {
         Team team = scoreboard.registerNewTeam(name);
         team.prefix(toAdventure(prefix));
         team.suffix(toAdventure(suffix));
+        team.setColor(ChatColor.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.values()[visibility.ordinal()]);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
         players.forEach(team::addEntry);
@@ -105,6 +110,7 @@ public class PaperScoreboard extends Scoreboard<BukkitTabPlayer> {
         Team team = scoreboard.getTeam(name);
         team.prefix(toAdventure(prefix));
         team.suffix(toAdventure(suffix));
+        team.setColor(ChatColor.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.values()[visibility.ordinal()]);
         team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.values()[collision.ordinal()]);
         team.setAllowFriendlyFire((options & 0x01) != 0);
