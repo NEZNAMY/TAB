@@ -62,7 +62,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Object vehicle = feature.getVehicle(p);
             if (vehicle != null) {
-                vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
+                updateVehicle(vehicle);
                 playersInVehicle.put(p, vehicle);
                 if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
                     playersOnBoats.add(p);
@@ -74,7 +74,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         Object vehicle = feature.getVehicle(connectedPlayer);
-        if (vehicle != null) vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
+        if (vehicle != null) updateVehicle(vehicle);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
         }
         if (!playersInVehicle.containsKey(p) && vehicle != null) {
             //vehicle enter
-            vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle));
+            updateVehicle(vehicle);
             feature.getArmorStandManager(p).respawn(); //making teleport instant instead of showing teleport animation
             playersInVehicle.put(p, vehicle);
             if (feature.isDisableOnBoats() && feature.getEntityType(vehicle).contains("boat")) {
@@ -122,5 +122,9 @@ public class VehicleRefresher extends TabFeature implements JoinListener, QuitLi
      */
     public boolean isOnBoat(@NotNull TabPlayer p) {
         return playersOnBoats.contains(p);
+    }
+
+    private void updateVehicle(Object vehicle) {
+        feature.runInEntityScheduler(vehicle, () -> vehicles.put(feature.getEntityId(vehicle), feature.getPassengers(vehicle)));
     }
 }

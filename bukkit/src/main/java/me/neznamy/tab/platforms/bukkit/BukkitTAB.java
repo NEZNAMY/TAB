@@ -1,10 +1,13 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
+import me.neznamy.tab.platforms.bukkit.platform.FoliaPlatform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.platforms.bukkit.nms.storage.nms.*;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -30,7 +33,8 @@ public class BukkitTAB extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        BukkitPlatform platform = new BukkitPlatform(this);
+        BukkitPlatform platform = ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer") ?
+                new FoliaPlatform(this) : new BukkitPlatform(this);
         TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), getDataFolder()));
         if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));

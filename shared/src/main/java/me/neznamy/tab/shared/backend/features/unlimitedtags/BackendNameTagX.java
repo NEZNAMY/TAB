@@ -202,4 +202,6 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public abstract double getZ(@NotNull TabPlayer player);
 
     public abstract EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible);
+
+    public abstract void runInEntityScheduler(Object entity, Runnable task);
 }

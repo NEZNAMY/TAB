@@ -1,10 +1,13 @@
-package me.neznamy.tab.platforms.bukkit;
+package me.neznamy.tab.platforms.bukkit.platform;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
+import me.neznamy.tab.platforms.bukkit.BukkitPlaceholderRegistry;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -28,6 +31,7 @@ import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -118,20 +122,7 @@ public class BukkitPlatform implements BackendPlatform {
             TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRefreshInterval(identifier), (viewer, target) ->
                     placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
         } else if (identifier.startsWith("%sync:")) {
-            String syncedPlaceholder = "%" + identifier.substring(6, identifier.length()-1) + "%";
-            PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
-            ppl[0] = pl.registerPlayerPlaceholder(identifier, refresh, p -> {
-                try {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        long time = System.nanoTime();
-                        ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
-                        TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime()-time);
-                    });
-                    return null;
-                } catch (UnsupportedOperationException e) {
-                    return "<Folia does not support sync placeholders>";
-                }
-            });
+            registerSyncPlaceholder(identifier, refresh);
         } else if (identifier.startsWith("%server_")) {
             TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, refresh, () ->
                     placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
@@ -139,6 +130,19 @@ public class BukkitPlatform implements BackendPlatform {
             TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p ->
                     placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
         }
+    }
+
+    public void registerSyncPlaceholder(String identifier, int refresh) {
+        String syncedPlaceholder = "%" + identifier.substring(6);
+        PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
+        ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                long time = System.nanoTime();
+                ppl[0].updateValue(p, placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), syncedPlaceholder) : identifier);
+                TAB.getInstance().getCPUManager().addPlaceholderTime(identifier, System.nanoTime()-time);
+            });
+            return null;
+        });
     }
 
     @Override
@@ -164,5 +168,9 @@ public class BukkitPlatform implements BackendPlatform {
             }
         }
         return new GroupManager("None", p -> TabConstants.NO_GROUP);
+    }
+
+    public void runEntityTask(Entity entity, Runnable task) {
+        task.run();
     }
 }

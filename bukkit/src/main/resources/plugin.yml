@@ -11,7 +11,7 @@ softdepend: [PlaceholderAPI, LuckPerms, LibsDisguises, ViaVersion, ViaRewind, fl
 loadbefore: []
 prefix: TAB
 libraries: []
-folia-supported: false
+folia-supported: true
 commands:
   tab:
     description: Plugin's main command

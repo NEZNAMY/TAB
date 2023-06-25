@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -189,5 +190,10 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
         datawatcher.getHelper().setCustomNameVisible(nameVisible);
         datawatcher.getHelper().setArmorStandFlags((byte)16);
         return datawatcher;
+    }
+
+    @Override
+    public void runInEntityScheduler(Object entity, Runnable task) {
+        ((BukkitPlatform)TAB.getInstance().getPlatform()).runEntityTask((Entity) entity, task);
     }
 }
