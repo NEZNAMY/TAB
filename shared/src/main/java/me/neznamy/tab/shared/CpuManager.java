@@ -54,10 +54,19 @@ public class CpuManager {
 
             for (Entry<String, Long> entry : placeholderUsagePrevious.entrySet()) {
                 float usagePercent = nanosToPercent(entry.getValue());
-                if (usagePercent > 50) {
+                if (usagePercent > 30) {
                     TAB.getInstance().sendConsoleMessage("&c[WARN] CPU usage of placeholder " + entry.getKey() +
                             " is " + (int)usagePercent + "%. It will most likely cause problems. Try increasing refresh interval.", true);
                 }
+            }
+            Map<String, Map<String, Float>> features = getFeatureUsage();
+            double featuresTotal = 0;
+            for (Map<String, Float> map : features.values()) {
+                featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
+            }
+            if (featuresTotal > 90) {
+                TAB.getInstance().sendConsoleMessage("&c[WARN] CPU usage of the plugin is "
+                        + (int)featuresTotal + "%. This will cause problems. Check /tab cpu to find out why.", true);
             }
         });
     }
