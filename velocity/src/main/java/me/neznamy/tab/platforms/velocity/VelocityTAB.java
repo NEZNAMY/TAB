@@ -19,12 +19,7 @@ import org.slf4j.Logger;
 import java.nio.file.Path;
 
 /**
- * Main class for Velocity platform.
- * The velocity-plugin.json is manually deleted from releases and therefore
- * requires manual compilation. This avoids unnecessary complications
- * and bug reports from an unsupported platform.
- * Most of the reasons why Velocity is not and will not be supported are listed at
- * https://gist.github.com/NEZNAMY/21c1aabe57a0a462ee175386c510fdf8
+ * Main class for Velocity.
  */
 @Plugin(
         id = TabConstants.PLUGIN_ID,
@@ -64,6 +59,9 @@ public class VelocityTAB {
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
         server.getEventManager().register(this, new VelocityEventListener());
         TAB.setInstance(new TAB(new VelocityPlatform(this, server), ProtocolVersion.PROXY, dataFolder.toFile()));
+        TAB.getInstance().sendConsoleMessage("&c[WARN] Velocity compatibility is very experimental and should not be used in production! " +
+                "If you use it, you WILL run into issues and they WILL NOT be fixed. Any bug reports featuring Velocity installation " +
+                "will be immediately closed.", true);
         TAB.getInstance().load();
         metricsFactory.make(this, 10533).addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED,
                 () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
