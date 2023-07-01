@@ -35,14 +35,16 @@ public class ViaVersionHook {
         int version = Via.getAPI().getPlayerVersion(player);
         if (version == -1) {
             TAB.getInstance().sendConsoleMessage("&cViaVersion returned protocol version -1 for player " + playerName +
-                    ". Using version of the server (" + TAB.getInstance().getServerVersion().getNetworkId() + ")", true);
+                    ". Using server's version (" + TAB.getInstance().getServerVersion().getNetworkId() + " - " +
+                    TAB.getInstance().getServerVersion().getFriendlyName() + ")", true);
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
-        TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
         if (protocol == ProtocolVersion.UNKNOWN_CLIENT_VERSION) {
             TAB.getInstance().sendConsoleMessage("&cViaVersion returned unknown protocol version " + version +
                     " for player " + playerName + ". This may result in plugin not working correctly for them.", true);
+        } else {
+            TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
         }
         return version;
     }
