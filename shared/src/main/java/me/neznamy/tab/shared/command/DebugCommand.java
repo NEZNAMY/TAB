@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.neznamy.tab.shared.features.nametags.NameTag;
+import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
@@ -88,8 +89,12 @@ public class DebugCommand extends SubCommand {
             boolean disabledNametags = ((NameTag) tab.getNameTagManager()).getDisableChecker().isDisabledPlayer(analyzed);
             showProperty(sender, analyzed, TabConstants.Property.TAGPREFIX, disabledNametags);
             showProperty(sender, analyzed, TabConstants.Property.TAGSUFFIX, disabledNametags);
-            for (String line : getExtraLines()) {
-                showProperty(sender, analyzed, line, disabledNametags);
+            NameTagX nameTagX = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.UNLIMITED_NAME_TAGS);
+            if (nameTagX != null) {
+                boolean disabledUnlimited = nameTagX.isPlayerDisabled(analyzed);
+                for (String line : getExtraLines()) {
+                    showProperty(sender, analyzed, line, disabledUnlimited);
+                }
             }
         } else {
             sendMessage(sender, "&atagprefix: &cDisabled");
