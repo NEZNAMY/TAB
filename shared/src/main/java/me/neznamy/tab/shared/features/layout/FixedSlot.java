@@ -28,15 +28,13 @@ public class FixedSlot extends TabFeature implements Refreshable {
     private final String propertyName;
     private final String skin;
     private final String skinProperty;
-    private TabList.Skin lastSkin;
     private final int ping;
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (!manager.getViews().containsKey(p) || manager.getViews().get(p).getPattern() != pattern || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 
-        TabList.Skin newSkin = manager.getSkinManager().getSkin(p.getProperty(skinProperty).updateAndGet());
-        if (newSkin != lastSkin) {
+        if (p.getProperty(skinProperty).update()) {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
             return;
@@ -51,10 +49,10 @@ public class FixedSlot extends TabFeature implements Refreshable {
         return new TabList.Entry(
                 id,
                 manager.getDirection().getEntryName(viewer, slot),
-                lastSkin = manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
+                manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).get()),
                 ping,
                 0,
-                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet()) // maybe just get is fine?
+                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).get())
         );
     }
 
