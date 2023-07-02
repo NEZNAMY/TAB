@@ -40,6 +40,12 @@ public class ProxyNameTagX extends NameTagX {
     }
 
     @Override
+    public void addDisabledPlayer(@NotNull TabPlayer player) {
+        super.addDisabledPlayer(player);
+        ((ProxyTabPlayer)player).sendPluginMessage("NameTagX", "SetEnabled", false);
+    }
+
+    @Override
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         super.onDisableConditionChange(p, disabledNow);
         ((ProxyTabPlayer)p).sendPluginMessage("NameTagX", "SetEnabled", !disabledNow && !getUnlimitedDisableChecker().isDisabledPlayer(p));

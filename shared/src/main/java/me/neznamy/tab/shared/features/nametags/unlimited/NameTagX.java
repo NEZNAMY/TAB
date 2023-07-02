@@ -56,7 +56,7 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
             updateProperties(all);
             armorStandManagerMap.put(all, armorStandFunction.apply(this, all));
             if (unlimitedDisableChecker.isDisableConditionMet(all)) {
-                unlimitedDisableChecker.addDisabledPlayer(all);
+                addDisabledPlayer(all);
             }
             TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(all, false);
         }
@@ -66,10 +66,14 @@ public abstract class NameTagX extends NameTag implements UnlimitedNameTagManage
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         if (unlimitedDisableChecker.isDisableConditionMet(connectedPlayer))
-            unlimitedDisableChecker.addDisabledPlayer(connectedPlayer);
+            addDisabledPlayer(connectedPlayer);
         super.onJoin(connectedPlayer);
         armorStandManagerMap.put(connectedPlayer, armorStandFunction.apply(this, connectedPlayer));
         TAB.getInstance().getPlaceholderManager().getTabExpansion().setNameTagPreview(connectedPlayer, false);
+    }
+
+    public void addDisabledPlayer(@NotNull TabPlayer player) {
+        unlimitedDisableChecker.addDisabledPlayer(player);
     }
 
     @Override
