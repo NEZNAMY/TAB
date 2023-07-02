@@ -34,13 +34,13 @@ public class FixedSlot extends TabFeature implements Refreshable {
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (!manager.getViews().containsKey(p) || manager.getViews().get(p).getPattern() != pattern || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
 
+        boolean updateName = p.getProperty(propertyName).update(); // update property so skin change can use new name, avoids sending both packets
         if (p.getProperty(skinProperty).update()) {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
             return;
         }
-        p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()));
-
+        if (updateName) p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()));
     }
 
     public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
