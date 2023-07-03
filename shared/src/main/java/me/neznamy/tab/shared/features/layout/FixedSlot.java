@@ -26,24 +26,33 @@ public class FixedSlot extends TabFeature implements Refreshable {
     private final UUID id;
     private final String text;
     private final String propertyName;
-    private final TabList.Skin skin;
+    private final String skin;
+    private final String skinProperty;
     private final int ping;
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
         if (!manager.getViews().containsKey(p) || manager.getViews().get(p).getPattern() != pattern || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-        p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()));
+
+        boolean updateName = p.getProperty(propertyName).update(); // update property so skin change can use new name, avoids sending both packets
+        if (p.getProperty(skinProperty).update()) {
+            p.getTabList().removeEntry(id);
+            p.getTabList().addEntry(createEntry(p));
+            return;
+        }
+        if (updateName) p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()));
     }
 
     public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
         viewer.setProperty(this, propertyName, text);
+        viewer.setProperty(this, skinProperty, skin);
         return new TabList.Entry(
                 id,
                 manager.getDirection().getEntryName(viewer, slot),
-                skin,
+                manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).get()),
                 ping,
                 0,
-                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet()) // maybe just get is fine?
+                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).get())
         );
     }
 
@@ -70,7 +79,8 @@ public class FixedSlot extends TabFeature implements Refreshable {
                 manager.getUUID(slot),
                 text,
                 "Layout-" + pattern.getName() + "-SLOT-" + slot,
-                manager.getSkinManager().getSkin(skin.length() == 0 ? manager.getDefaultSkin() : skin),
+                skin.length() == 0 ? manager.getDefaultSkin() : skin,
+                "Layout-" + pattern.getName() + "-SLOT-" + slot + "-skin",
                 ping
         );
         if (text.length() > 0) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.layoutSlot(pattern.getName(), slot), f);

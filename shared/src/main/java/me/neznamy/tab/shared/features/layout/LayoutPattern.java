@@ -93,7 +93,8 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
     @Override
     public void addFixedSlot(int slot, @NonNull String text, @NonNull String skin, int ping) {
         fixedSlots.put(slot, new FixedSlot(manager, slot, this, manager.getUUID(slot), text,
-                "Layout-" + text + "-SLOT-" + slot, manager.getSkinManager().getSkin(skin), ping));
+                "Layout-" + text + "-SLOT-" + slot, skin, "Layout-" + text + "-SLOT-" + slot+ "-skin", ping));
+
     }
 
     @Override
