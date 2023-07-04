@@ -21,7 +21,7 @@ public class BukkitEventListener extends EventListener<Player> implements Listen
         quit(e.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent e) {
         join(e.getPlayer());
     }
