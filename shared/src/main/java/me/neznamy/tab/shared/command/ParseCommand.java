@@ -44,6 +44,10 @@ public class ParseCommand extends SubCommand {
             }
         }
         String replaced = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        if (!replaced.contains("%")) {
+            sendMessage(sender, "&cThe provided input (" + replaced + ") does not contain any placeholders, therefore there's nothing to test.");
+            return;
+        }
         String message = EnumChatFormat.color("&6Replacing placeholder &e%placeholder% &6for player &e" + target.getName()).replace("%placeholder%", replaced);
         sendRawMessage(sender, message);
         try {
