@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabList;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherHelper;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -97,6 +98,7 @@ public abstract class NMSStorage {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
+            ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
@@ -111,6 +113,7 @@ public abstract class NMSStorage {
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
         DataWatcher.load(this);
         DataWatcherItem.load(this);
+        DataWatcherHelper.load(this);
         PacketPlayOutEntityDestroyStorage.load();
         PacketPlayOutEntityMetadataStorage.load(this);
         PacketPlayOutEntityTeleportStorage.load(this);
@@ -118,7 +121,6 @@ public abstract class NMSStorage {
         PacketScoreboard.load(this);
         PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
         PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
-        loadNamedFieldsAndMethods();
         if (minorVersion < 17) {
             try {
                 (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true); // 1.5.2 - 1.16.5
@@ -135,15 +137,6 @@ public abstract class NMSStorage {
      *          If a class was not found
      */
     public abstract void loadClasses() throws ClassNotFoundException;
-
-    /**
-     * Loads all fields and methods which must be loaded by their name due to
-     * lack of other methods of reliably retrieving them.
-     *
-     * @throws  ReflectiveOperationException
-     *          If a field or method was not found
-     */
-    public abstract void loadNamedFieldsAndMethods() throws ReflectiveOperationException;
 
     /**
      * Converts TAB's IChatBaseComponent into minecraft's component using String deserialization.

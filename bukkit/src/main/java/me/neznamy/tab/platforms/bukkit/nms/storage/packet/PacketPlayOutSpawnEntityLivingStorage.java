@@ -48,7 +48,7 @@ public class PacketPlayOutSpawnEntityLivingStorage {
      * @throws  NoSuchMethodException
      *          If something fails
      */
-    public static void load(NMSStorage nms) throws NoSuchMethodException, IllegalAccessException {
+    public static void load(NMSStorage nms) throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         int minorVersion = nms.getMinorVersion();
         if (minorVersion >= 13) {
             entityIds.put(EntityType.ARMOR_STAND, 1);
@@ -60,12 +60,12 @@ public class PacketPlayOutSpawnEntityLivingStorage {
         }
 
         if (minorVersion >= 19) {
-            CONSTRUCTOR = CLASS.getConstructor(int.class, UUID.class, double.class, double.class, double.class,
-                    float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
+            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("d").get(null);
+            CONSTRUCTOR = CLASS.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
         } else if (minorVersion >= 17) {
-            CONSTRUCTOR = CLASS.getConstructor(int.class, UUID.class, double.class, double.class, double.class,
-                    float.class, float.class, EntityTypes, int.class, Vec3D);
+            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("c").get(null);
+            CONSTRUCTOR = CLASS.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
         } else {
             CONSTRUCTOR = CLASS.getConstructor();

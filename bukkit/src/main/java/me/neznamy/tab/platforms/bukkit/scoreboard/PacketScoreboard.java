@@ -115,21 +115,31 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         TeamPacket_ACTION = ReflectionUtils.getInstanceFields(TeamPacketClass, int.class).get(0);
         TeamPacket_PLAYERS = ReflectionUtils.getOnlyField(TeamPacketClass, Collection.class);
         ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(ScoreboardTeam, Collection.class);
+        ScoreboardScore_setScore = ReflectionUtils.getMethod(ScoreboardScoreClass, new String[] {"func_96647_c", "setScore", "b", "c"}, int.class); // {Thermos, 1.5.1 - 1.17.1, 1.18+, 1.5}
+        ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_96660_a", "setAllowFriendlyFire", "a"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+}
+        ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_98300_b", "setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+}
         if (nms.getMinorVersion() >= 13) {
             newScorePacket_1_13 = ScorePacketClass.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
             newObjectivePacket = ObjectivePacketClass.getConstructor(ScoreboardObjective, int.class);
             Objective_DISPLAY_NAME = ReflectionUtils.getOnlyField(ObjectivePacketClass, nms.IChatBaseComponent);
             ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(ScoreboardTeam, void.class, nms.EnumChatFormat);
+            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(ScoreboardTeam, new String[]{"setPrefix", "b"}, nms.IChatBaseComponent); // {1.17.1-, 1.18+}
+            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(ScoreboardTeam, new String[]{"setSuffix", "c"}, nms.IChatBaseComponent); // {1.17.1-, 1.18+}
         } else {
             newScorePacket_String = ScorePacketClass.getConstructor(String.class);
             newObjectivePacket = ObjectivePacketClass.getConstructor();
             Objective_DISPLAY_NAME = ReflectionUtils.getFields(ObjectivePacketClass, String.class).get(1);
+            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_96666_b", "setPrefix", "b"}, String.class); // {Thermos, 1.5.1+, 1.5}
+            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_96662_c", "setSuffix", "c"}, String.class); // {Thermos, 1.5.1+, 1.5}
             if (nms.getMinorVersion() >= 8) {
                 newScorePacket = ScorePacketClass.getConstructor(ScoreboardScoreClass);
                 Objective_RENDER_TYPE = ReflectionUtils.getOnlyField(ObjectivePacketClass, EnumScoreboardHealthDisplay);
             } else {
                 newScorePacket = ScorePacketClass.getConstructor(ScoreboardScoreClass, int.class);
             }
+        }
+        if (nms.getMinorVersion() >= 8) {
+            ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8 & 1.18+}
         }
         if (nms.getMinorVersion() >= 9) {
             ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(ScoreboardTeam, void.class, EnumTeamPush);

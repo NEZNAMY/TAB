@@ -21,8 +21,8 @@ public class DataWatcher implements EntityData {
 
     /** NMS Fields */
     public static Class<?> CLASS;
-    public static Constructor<?> CONSTRUCTOR;
-    public static Method REGISTER;
+    private static Constructor<?> CONSTRUCTOR;
+    private static Method REGISTER;
     public static Method markDirty;
     public static Method packDirty;
     
@@ -38,8 +38,16 @@ public class DataWatcher implements EntityData {
      * @param   nms
      *          NMS storage reference
      */
-    public static void load(NMSStorage nms) {
+    public static void load(NMSStorage nms) throws NoSuchMethodException {
         CONSTRUCTOR = ReflectionUtils.getOnlyConstructor(CLASS);
+        if (nms.getMinorVersion() >= 9) {
+            REGISTER = ReflectionUtils.getMethod(CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
+        } else {
+            REGISTER = ReflectionUtils.getMethod(CLASS, new String[]{"func_75682_a", "a"}, int.class, Object.class); // {Thermos 1.7.10, Bukkit}
+        }
+        if (nms.getMinorVersion() >= 19) {
+            packDirty = CLASS.getMethod("b");
+        }
         if (nms.is1_19_3Plus()) {
             markDirty = ReflectionUtils.getOnlyMethod(CLASS, void.class, DataWatcherObject.CLASS);
         }

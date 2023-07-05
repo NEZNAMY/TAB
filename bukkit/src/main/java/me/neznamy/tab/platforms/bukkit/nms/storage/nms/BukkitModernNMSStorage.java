@@ -7,46 +7,12 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 
 /**
  * NMS loader for minecraft 1.17+ using Mojang packaging and bukkit names.
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class BukkitModernNMSStorage extends NMSStorage {
-
-    @Override
-    public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-        DataWatcher.REGISTER = ReflectionUtils.getMethod(DataWatcher.CLASS, new String[]{"register", "a"}, DataWatcherObject.CLASS, Object.class); // {Bukkit, Bukkit 1.18+}
-        PacketScoreboard.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardScoreClass, new String[]{"setScore", "b"}, int.class); // {Bukkit, Bukkit 1.18+}
-        PacketScoreboard.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setAllowFriendlyFire", "a"}, boolean.class); // {Bukkit, Bukkit 1.18+}
-        PacketScoreboard.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Bukkit, Bukkit 1.18+}
-        PacketScoreboard.ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setPrefix", "b"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
-        PacketScoreboard.ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setSuffix", "c"}, IChatBaseComponent); // {Bukkit, Bukkit 1.18+}
-        PacketScoreboard.ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[]{"setNameTagVisibility", "a"}, PacketScoreboard.EnumNameTagVisibility); // {Bukkit, Bukkit 1.18+}
-        DataWatcherHelper.DataWatcherSerializer_BYTE = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("a").get(null);
-        DataWatcherHelper.DataWatcherSerializer_FLOAT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("c").get(null);
-        DataWatcherHelper.DataWatcherSerializer_STRING = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("d").get(null);
-        if (is1_19_3Plus()) {
-            DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("g").get(null);
-            if (is1_19_4Plus()) {
-                DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("k").get(null);
-            } else {
-                DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("j").get(null);
-            }
-         } else {
-            DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("f").get(null);
-            DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("i").get(null);
-        }
-        if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("d").get(null);
-            (PacketPlayOutSpawnEntityLivingStorage.ENTITY_TYPE = PacketPlayOutSpawnEntityLivingStorage.CLASS.getDeclaredField("e")).setAccessible(true);
-            DataWatcher.packDirty = DataWatcher.CLASS.getMethod("b");
-        } else {
-            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("c").get(null);
-        }
-    }
 
     @Override
     public void loadClasses() throws ClassNotFoundException {

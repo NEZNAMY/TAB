@@ -7,7 +7,6 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
 import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -49,40 +48,6 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
      */
     public Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
         return Class.forName("net.minecraft.server." + serverPackage + "." + name);
-    }
-
-    @Override
-    public void loadNamedFieldsAndMethods() throws ReflectiveOperationException {
-        PacketScoreboard.ScoreboardScore_setScore = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardScoreClass, new String[] {"setScore", "c"}, int.class); // 1.5.1+, 1.5
-        PacketScoreboard.ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setAllowFriendlyFire", "a"}, boolean.class); // 1.5.1+, 1.5
-        PacketScoreboard.ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setCanSeeFriendlyInvisibles", "b"}, boolean.class); // 1.5.1+, 1.5
-        if (minorVersion >= 7) {
-            ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
-        }
-        if (minorVersion >= 8) {
-            PacketScoreboard.ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, PacketScoreboard.EnumNameTagVisibility); // {1.8.1+, 1.8}
-        }
-        if (minorVersion >= 9) {
-            DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("register", DataWatcherObject.CLASS, Object.class);
-            DataWatcherHelper.DataWatcherSerializer_BYTE = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("a").get(null);
-            DataWatcherHelper.DataWatcherSerializer_FLOAT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("c").get(null);
-            DataWatcherHelper.DataWatcherSerializer_STRING = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("d").get(null);
-            if (getMinorVersion() >= 13) {
-                DataWatcherHelper.DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("f").get(null);
-                DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("i").get(null);
-            } else {
-                DataWatcherHelper.DataWatcherSerializer_BOOLEAN = DataWatcherHelper.DataWatcherRegistry.getDeclaredField("h").get(null);
-            }
-        } else {
-            DataWatcher.REGISTER = DataWatcher.CLASS.getMethod("a", int.class, Object.class);
-        }
-        if (minorVersion >= 13) {
-            PacketScoreboard.ScoreboardTeam_setPrefix = PacketScoreboard.ScoreboardTeam.getMethod("setPrefix", IChatBaseComponent);
-            PacketScoreboard.ScoreboardTeam_setSuffix = PacketScoreboard.ScoreboardTeam.getMethod("setSuffix", IChatBaseComponent);
-        } else {
-            PacketScoreboard.ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setPrefix", "b"}, String.class); // 1.5.1+, 1.5
-            PacketScoreboard.ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(PacketScoreboard.ScoreboardTeam, new String[] {"setSuffix", "c"}, String.class); // 1.5.1+, 1.5
-        }
     }
 
     @Override
