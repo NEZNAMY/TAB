@@ -89,7 +89,6 @@ public class BukkitTAB extends JavaPlugin {
         List<Callable<NMSStorage>> loaders = Arrays.asList(
                 BukkitLegacyNMSStorage::new,
                 BukkitModernNMSStorage::new,
-                MojangModernNMSStorage::new,
                 ThermosNMSStorage::new
         );
         for (Callable<NMSStorage> loader : loaders) {
