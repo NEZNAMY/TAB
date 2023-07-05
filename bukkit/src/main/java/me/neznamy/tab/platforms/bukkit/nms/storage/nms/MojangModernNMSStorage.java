@@ -76,12 +76,9 @@ public class MojangModernNMSStorage extends NMSStorage {
         PacketScoreboard.ScoreboardTeam = Class.forName("net.minecraft.world.scores.PlayerTeam");
         PacketScoreboard.EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.Team$Visibility");
         PacketScoreboard.EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.Team$CollisionRule");
-        if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLivingStorage.EntityTypes = Class.forName("net.minecraft.world.entity.EntityType");
-            PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
-        } else {
-            PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddMobPacket");
-        }
+        PacketPlayOutSpawnEntityLivingStorage.Vec3D = Class.forName("net.minecraft.world.phys.Vec3");
+        PacketPlayOutSpawnEntityLivingStorage.EntityTypes = Class.forName("net.minecraft.world.entity.EntityType");
+        PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
         if (is1_19_3Plus()) {
             BukkitTabList.ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
             BukkitTabList.PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");

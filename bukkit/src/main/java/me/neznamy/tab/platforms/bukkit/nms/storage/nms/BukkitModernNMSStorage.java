@@ -43,6 +43,8 @@ public class BukkitModernNMSStorage extends NMSStorage {
             PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("d").get(null);
             (PacketPlayOutSpawnEntityLivingStorage.ENTITY_TYPE = PacketPlayOutSpawnEntityLivingStorage.CLASS.getDeclaredField("e")).setAccessible(true);
             DataWatcher.packDirty = DataWatcher.CLASS.getMethod("b");
+        } else {
+            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("c").get(null);
         }
     }
 
@@ -86,12 +88,9 @@ public class BukkitModernNMSStorage extends NMSStorage {
         PacketPlayOutEntityMetadataStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
         PacketPlayOutNamedEntitySpawn = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn");
         BukkitTabList.EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.EnumGamemode");
-        if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLivingStorage.EntityTypes = Class.forName("net.minecraft.world.entity.EntityTypes");
-            PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
-        } else {
-            PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntityLiving");
-        }
+        PacketPlayOutSpawnEntityLivingStorage.Vec3D = Class.forName("net.minecraft.world.phys.Vec3D");
+        PacketPlayOutSpawnEntityLivingStorage.EntityTypes = Class.forName("net.minecraft.world.entity.EntityTypes");
+        PacketPlayOutSpawnEntityLivingStorage.CLASS = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
         if (is1_19_3Plus()) {
             BukkitTabList.ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
             BukkitTabList.PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
