@@ -67,6 +67,11 @@ public class DebugCommand extends SubCommand {
         sendMessage(sender, "&6Storage type: &b" + (tab.getConfiguration().getGroups() instanceof ConfigurationFile ? "File" : "MySQL"));
         sendMessage(sender, separator);
         if (analyzed == null) return;
+        if (!analyzed.isLoaded()) {
+            sendMessage(sender, "&cThe specified player is not loaded. This is either because player failed to load" +
+                    " due to an error (see TAB's folder for errors.log file) or the plugin is overloaded (see /tab cpu).");
+            return;
+        }
         sendMessage(sender, "&ePlayer: &a" + analyzed.getName());
         if (analyzed instanceof ProxyTabPlayer) {
             sendMessage(sender, "&eBridge connection: " + (((ProxyTabPlayer)analyzed).isBridgeConnected() ? "&aConnected" : "&cNot connected"));
