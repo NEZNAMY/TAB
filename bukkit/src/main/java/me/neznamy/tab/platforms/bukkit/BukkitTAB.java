@@ -13,11 +13,6 @@ import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Main class for Bukkit platform
@@ -69,10 +64,12 @@ public class BukkitTAB extends JavaPlugin {
     private boolean isVersionSupported() {
         try {
             long time = System.currentTimeMillis();
-            NMSStorage.setInstance(getNMSLoader());
+            String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+            int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+            NMSStorage.setInstance(minorVersion >= 17 ? new BukkitModernNMSStorage() : new BukkitLegacyNMSStorage());
             Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
             return true;
-        } catch (IllegalStateException ex) {
+        } catch (Exception ex) {
             if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
                 Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Your server version is not compatible. " +
                         "This plugin version was made for " + ProtocolVersion.values()[ProtocolVersion.values().length-1].getFriendlyName() +
@@ -83,19 +80,5 @@ public class BukkitTAB extends JavaPlugin {
             }
             return false;
         }
-    }
-
-    private @NotNull NMSStorage getNMSLoader() {
-        List<Callable<NMSStorage>> loaders = Arrays.asList(
-                BukkitLegacyNMSStorage::new,
-                BukkitModernNMSStorage::new,
-                ThermosNMSStorage::new
-        );
-        for (Callable<NMSStorage> loader : loaders) {
-            try {
-                return loader.call();
-            } catch (Exception ignored) {}
-        }
-        throw new IllegalStateException("Unsupported server version");
     }
 }

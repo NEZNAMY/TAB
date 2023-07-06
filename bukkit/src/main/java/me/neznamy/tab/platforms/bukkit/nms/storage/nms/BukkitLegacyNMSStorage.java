@@ -38,7 +38,7 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
     }
 
     /**
-     * Returns class from given name
+     * Returns class from given name. Supports modded servers, such as Thermos.
      *
      * @param   name
      *          class name
@@ -47,7 +47,12 @@ public class BukkitLegacyNMSStorage extends NMSStorage {
      *          if class was not found
      */
     public Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
-        return Class.forName("net.minecraft.server." + serverPackage + "." + name);
+        try {
+            return getClass().getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+        } catch (NullPointerException e) {
+            // nested class not found
+            throw new ClassNotFoundException(name);
+        }
     }
 
     @Override
