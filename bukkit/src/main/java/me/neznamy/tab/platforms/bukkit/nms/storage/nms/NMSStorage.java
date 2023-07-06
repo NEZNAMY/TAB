@@ -100,7 +100,11 @@ public abstract class NMSStorage {
         if (minorVersion >= 8) {
             ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
-            getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
+            try {
+                getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
+            } catch (IllegalStateException catServer) {
+                getProfile = EntityHuman.getMethod("getProfile");
+            }
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
