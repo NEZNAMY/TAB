@@ -306,6 +306,9 @@ public class FeatureManager {
         if (configuration.getConfig().getBoolean("per-world-playerlist.enabled", false)) {
             TabFeature pwp = TAB.getInstance().getPlatform().getPerWorldPlayerList();
             if (pwp != null) featureManager.registerFeature(TabConstants.Feature.PER_WORLD_PLAYER_LIST, pwp);
+            if (configuration.getConfig().getBoolean("layout.enabled", false)) {
+                TAB.getInstance().getMisconfigurationHelper().bothPerWorldPlayerListAndLayoutEnabled();
+            }
         }
 
         if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true))

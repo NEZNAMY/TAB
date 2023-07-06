@@ -187,6 +187,13 @@ public class MisconfigurationHelper {
                 "Disable global playerlist for the same result, but with better performance.");
     }
 
+    public void bothPerWorldPlayerListAndLayoutEnabled() {
+        startupWarn("Both per world playerlist and layout features are enabled, but layout makes per world playerlist redundant.",
+                "Layout automatically works with all connected players and replaces real player entries with" +
+                        " fake players, making per world playerlist completely useless as real players are pushed out of the playerlist.",
+                "Disable per world playerlist for the same result, but with better performance.");
+    }
+
     public void checkLayoutMap(@NotNull String layoutName, @NotNull Map<String, Object> map) {
         List<String> expectedKeys = Arrays.asList("condition", "fixed-slots", "groups");
         for (String mapKey : map.keySet()) {
