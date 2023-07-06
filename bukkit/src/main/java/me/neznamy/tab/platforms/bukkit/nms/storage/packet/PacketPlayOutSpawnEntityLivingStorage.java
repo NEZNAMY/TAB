@@ -60,11 +60,11 @@ public class PacketPlayOutSpawnEntityLivingStorage {
         }
 
         if (minorVersion >= 19) {
-            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("d").get(null);
+            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
             CONSTRUCTOR = CLASS.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
         } else if (minorVersion >= 17) {
-            PacketPlayOutSpawnEntityLivingStorage.EntityTypes_ARMOR_STAND = PacketPlayOutSpawnEntityLivingStorage.EntityTypes.getDeclaredField("c").get(null);
+            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("c").get(null);
             CONSTRUCTOR = CLASS.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
         } else {
