@@ -49,7 +49,8 @@ public class PluginMessageHandler {
         ProxyTabPlayer player = (ProxyTabPlayer) TAB.getInstance().getPlayer(uuid);
         if (player == null) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
-        messages.get(in.readUTF()).accept(player, in);
+        BiConsumer<ProxyTabPlayer, ByteArrayDataInput> handler = messages.get(in.readUTF());
+        if (handler != null) handler.accept(player, in);
     }
 
     public void placeholder(@NotNull ProxyTabPlayer player, @NotNull ByteArrayDataInput in) {
