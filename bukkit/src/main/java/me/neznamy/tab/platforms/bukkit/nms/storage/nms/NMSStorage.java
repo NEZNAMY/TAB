@@ -98,12 +98,12 @@ public abstract class NMSStorage {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
-            ChatSerializer_DESERIALIZE = ChatSerializer.getMethod("a", String.class);
+            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethod(ChatSerializer, new String[]{"a"}, String.class);
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             try {
                 getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
             } catch (IllegalStateException catServer) {
-                getProfile = EntityHuman.getMethod("getProfile");
+                getProfile = ReflectionUtils.getMethod(EntityHuman, new String[] {"getProfile"});
             }
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");

@@ -94,13 +94,6 @@ public class ReflectionUtils {
      *          if no such method exists
      */
     public static Method getMethod(@NotNull Class<?> clazz, @NotNull String[] names, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
-        for (String name : names) {
-            try {
-                return clazz.getMethod(name, parameterTypes);
-            } catch (NoSuchMethodException e) {
-                //not the first method in array
-            }
-        }
         List<String> list = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
             if (m.getParameterCount() != parameterTypes.length) continue;
@@ -112,7 +105,14 @@ public class ReflectionUtils {
                     break;
                 }
             }
-            if (valid) list.add(m.getName());
+            if (valid) {
+                for (String name : names) {
+                    if (m.getName().equals(name)) return m;
+                    String[] array = m.getName().split("_");
+                    if (array.length > 2 && array[2].equals(name)) return m; // Bukkit/Forge hybrids may sometimes use these mappings
+                }
+                list.add(m.getName());
+            }
         }
         throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " +
                 Arrays.toString(parameterTypes) + " in class " + clazz.getName() + ". Methods with matching parameters: " + list);
