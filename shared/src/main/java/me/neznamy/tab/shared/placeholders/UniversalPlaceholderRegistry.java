@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.placeholders.conditions.Condition;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -22,7 +23,13 @@ import java.util.Map.Entry;
 public class UniversalPlaceholderRegistry implements PlaceholderRegistry {
 
     /** Decimal formatter for 2 decimal places */
-    private final DecimalFormat decimal2 = new DecimalFormat("#.##");
+    private final DecimalFormat decimal2;
+
+    public UniversalPlaceholderRegistry() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        decimal2 = new DecimalFormat("#.##", symbols);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
