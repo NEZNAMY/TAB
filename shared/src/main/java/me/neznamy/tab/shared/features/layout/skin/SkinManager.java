@@ -20,9 +20,16 @@ public class SkinManager {
 
     private final List<String> invalidSkins = new ArrayList<>();
     @Getter private TabList.Skin defaultSkin;
+    private final Map<Integer, TabList.Skin> defaultSkinHashMap = new HashMap<>();
     private final Map<String, SkinSource> sources = new HashMap<>();
 
-    public SkinManager(@NotNull String defaultSkin) {
+    public TabList.Skin getDefaultSkin(int slot) {
+        if(defaultSkinHashMap.containsKey(slot))
+                return defaultSkinHashMap.get(slot);
+        return defaultSkin;
+    }
+
+    public SkinManager(@NotNull String defaultSkin, Map<Integer, String> defaultSkinHashMap) {
         try {
             File f = new File(TAB.getInstance().getDataFolder(), "skincache.yml");
             if (f.exists() || f.createNewFile()) {
@@ -31,6 +38,10 @@ public class SkinManager {
                 sources.put("mineskin", new MineSkin(cache));
                 sources.put("texture", new Texture(cache));
                 this.defaultSkin = getSkin(defaultSkin);
+                for ( Map.Entry<Integer, String> entry : defaultSkinHashMap.entrySet()) {
+                    this.defaultSkinHashMap.put(entry.getKey(), getSkin(entry.getValue()));
+                }
+                System.out.println(this.defaultSkinHashMap);
             } else {
                 TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
             }

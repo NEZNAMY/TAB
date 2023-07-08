@@ -14,6 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerSlot {
 
+    private final int slot;
     private final LayoutView layout;
     @Getter private final UUID uniqueId;
     @Getter private TabPlayer player;
@@ -45,7 +46,7 @@ public class PlayerSlot {
             data = new TabList.Entry(
                     uniqueId,
                     layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
-                    layout.getManager().getSkinManager().getDefaultSkin(),
+                    layout.getManager().getSkinManager().getDefaultSkin(slot),
                     layout.getManager().getEmptySlotPing(),
                     0,
                     new IChatBaseComponent(text)
