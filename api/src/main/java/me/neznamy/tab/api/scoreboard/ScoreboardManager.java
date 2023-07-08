@@ -6,6 +6,7 @@ import java.util.Map;
 import lombok.NonNull;
 import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface allowing work with scoreboards, such as creating,
@@ -164,5 +165,5 @@ public interface ScoreboardManager {
      *          player to get active scoreboard of
      * @return  player's active scoreboard or {@code null} if player has no scoreboard
      */
-    @NotNull Scoreboard getActiveScoreboard(@NonNull TabPlayer player);
+    @Nullable Scoreboard getActiveScoreboard(@NonNull TabPlayer player);
 }
