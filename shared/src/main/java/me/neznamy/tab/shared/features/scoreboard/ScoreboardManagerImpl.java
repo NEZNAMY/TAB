@@ -291,7 +291,7 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     }
 
     @Override
-    public @NotNull me.neznamy.tab.api.scoreboard.Scoreboard getActiveScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player) {
+    public @Nullable me.neznamy.tab.api.scoreboard.Scoreboard getActiveScoreboard(me.neznamy.tab.api.@NonNull TabPlayer player) {
         return activeScoreboards.get(player);
     }
 
