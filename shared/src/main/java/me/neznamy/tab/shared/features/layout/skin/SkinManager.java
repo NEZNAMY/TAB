@@ -41,7 +41,6 @@ public class SkinManager {
                 for ( Map.Entry<Integer, String> entry : defaultSkinHashMap.entrySet()) {
                     this.defaultSkinHashMap.put(entry.getKey(), getSkin(entry.getValue()));
                 }
-                System.out.println(this.defaultSkinHashMap);
             } else {
                 TAB.getInstance().getErrorManager().criticalError("Failed to load skin cache", null);
             }
