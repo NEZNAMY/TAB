@@ -183,6 +183,16 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
      */
     public @NotNull List<String> detectPlaceholders(@NonNull String text) {
         if (!text.contains("%")) return Collections.emptyList();
+        if (text.charAt(0) == '%' && text.charAt(text.length()-1) == '%') {
+            int count = 0;
+            char[] array = text.toCharArray();
+            for (char c : array) {
+                if (c == '%') {
+                    count++;
+                }
+            }
+            if (count == 2) return Collections.singletonList(text);
+        }
         List<String> placeholders = new ArrayList<>();
         Matcher m = placeholderPattern.matcher(text);
         while (m.find()) {
