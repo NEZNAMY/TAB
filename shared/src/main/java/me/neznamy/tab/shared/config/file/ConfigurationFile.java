@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import me.neznamy.tab.shared.TAB;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -273,7 +274,7 @@ public abstract class ConfigurationFile {
      *          Path to the option with sections separated with "{@code .}"
      * @return  value from configuration file as {@code Map<K, V>}
      */
-    public <K, V> Map<K, V> getConfigurationSection(@NonNull String path) {
+    public @NotNull <K, V> Map<K, V> getConfigurationSection(@NonNull String path) {
         if (path.length() == 0) return (Map<K, V>) values;
         Object value = getObject(path, null);
         if (value instanceof Map) {

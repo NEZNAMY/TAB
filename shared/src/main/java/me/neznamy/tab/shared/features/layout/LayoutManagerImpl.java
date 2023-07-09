@@ -29,7 +29,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     /** Config options */
     private final Direction direction = parseDirection(TAB.getInstance().getConfig().getString("layout.direction", "COLUMNS"));
     private final String defaultSkin = TAB.getInstance().getConfig().getString("layout.default-skin", "mineskin:1753261242");
-    private Map<Integer, String> defaultSkinHashMap = loadDefaultSkins();
+    private final Map<Integer, String> defaultSkinHashMap = loadDefaultSkins();
     private final boolean remainingPlayersTextEnabled = TAB.getInstance().getConfig().getBoolean("layout.enable-remaining-players-text", true);
     private final String remainingPlayersText = EnumChatFormat.color(TAB.getInstance().getConfig().getString("layout.remaining-players-text", "... and %s more"));
     private final int emptySlotPing = TAB.getInstance().getConfig().getInt("layout.empty-slot-ping-value", 1000);
@@ -51,26 +51,23 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     private final WeakHashMap<me.neznamy.tab.api.TabPlayer, LayoutPattern> forcedLayouts = new WeakHashMap<>();
 
     public String getDefaultSkin(int slot) {
-        if(defaultSkinHashMap.containsKey(slot))
-            return defaultSkinHashMap.get(slot);
-        return defaultSkin;
+        return defaultSkinHashMap.getOrDefault(slot, defaultSkin);
     }
 
+    @SuppressWarnings("unchecked")
     private Map<Integer, String> loadDefaultSkins() {
         Map<Integer, String> defaultSkins = new HashMap<>();
         ConfigurationFile config = TAB.getInstance().getConfig();
-        if(config.hasConfigOption("layout.default-skins")){
-            Map<String, Map<String, Object>> section = config.getConfigurationSection("layout.default-skins");
-            for (Entry<String, Map<String, Object>> entry : section.entrySet()) {
-                Map<String, Object> skinData = entry.getValue();
-                String skin = (String) skinData.getOrDefault("skin", defaultSkin);
-                for (String line : (List<String>) skinData.get("slots")) {
-                    String[] arr = line.split("-");
-                    int from = Integer.parseInt(arr[0]);
-                    int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
-                    for (int i = from; i<= to; i++) {
-                        defaultSkins.put(i, skin);
-                    }
+        Map<String, Map<String, Object>> section = config.getConfigurationSection("layout.default-skins");
+        for (Entry<String, Map<String, Object>> entry : section.entrySet()) {
+            Map<String, Object> skinData = entry.getValue();
+            String skin = (String) skinData.getOrDefault("skin", defaultSkin);
+            for (String line : (List<String>) skinData.get("slots")) {
+                String[] arr = line.split("-");
+                int from = Integer.parseInt(arr[0]);
+                int to = arr.length == 1 ? from : Integer.parseInt(arr[1]);
+                for (int i = from; i<= to; i++) {
+                    defaultSkins.put(i, skin);
                 }
             }
         }

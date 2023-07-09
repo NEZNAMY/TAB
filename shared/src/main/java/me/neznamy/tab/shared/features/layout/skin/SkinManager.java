@@ -24,9 +24,7 @@ public class SkinManager {
     private final Map<String, SkinSource> sources = new HashMap<>();
 
     public TabList.Skin getDefaultSkin(int slot) {
-        if(defaultSkinHashMap.containsKey(slot))
-                return defaultSkinHashMap.get(slot);
-        return defaultSkin;
+        return defaultSkinHashMap.getOrDefault(slot, defaultSkin);
     }
 
     public SkinManager(@NotNull String defaultSkin, Map<Integer, String> defaultSkinHashMap) {
