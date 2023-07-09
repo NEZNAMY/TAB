@@ -80,10 +80,11 @@ public class MisconfigurationHelper {
             return 1000;
         }
         if (interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL != 0) {
-            int newInterval = interval - interval % TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
-            if (newInterval == 0) newInterval = TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
-            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s, which is not divisible by " +
-                    TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL + "! &bUsing %s.", name, interval, newInterval));
+            int min = TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL;
+            int newInterval = Math.round((float) interval / min) * min; // rounding
+            if (newInterval == 0) newInterval = min;
+            startupWarn(String.format("Animation \"&e%s&c\" has refresh interval of %s, which is not divisible by %s! &bUsing %s.",
+                    name, interval, min, newInterval));
             return newInterval;
         }
         return interval;
