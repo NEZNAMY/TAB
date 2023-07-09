@@ -17,12 +17,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlaceholder {
 
-    /**
-     * Internal constant used to detect if placeholder threw an error.
-     * If so, placeholder's last known value is displayed.
-     */
-    private final String ERROR_VALUE = "ERROR";
-
     /** Placeholder function returning fresh output on request */
     @NonNull private final Function<me.neznamy.tab.api.TabPlayer, Object> function;
 
@@ -127,18 +121,24 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
     /**
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
-     * file and "ERROR" is returned.
+     * file and {@link #ERROR_VALUE} is returned.
      *
      * @param   p
      *          player to get placeholder value for
-     * @return  value placeholder returned or "ERROR" if it threw an error
+     * @return  value placeholder returned or {@link #ERROR_VALUE} if it threw an error
      */
     public Object request(@NonNull TabPlayer p) {
+        long time = System.currentTimeMillis();
         try {
             return function.apply(p);
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().placeholderError("Player placeholder " + identifier + " generated an error when setting for player " + p.getName(), t);
             return ERROR_VALUE;
+        } finally {
+            long timeDiff = System.currentTimeMillis() - time;
+            if (timeDiff > TabConstants.Placeholder.RETURN_TIME_WARN_THRESHOLD) {
+                TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder " + identifier + " took " + timeDiff + "ms to return value for player " + p.getName(), true);
+            }
         }
     }
 }

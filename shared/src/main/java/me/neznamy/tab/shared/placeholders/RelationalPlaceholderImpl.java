@@ -135,20 +135,26 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
     /**
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
-     * file and "ERROR" is returned.
+     * file and {@link #ERROR_VALUE} is returned.
      *
      * @param   viewer
      *          player looking at output of the placeholder
      * @param   target
      *          player the placeholder is displayed on
-     * @return  value placeholder returned or "ERROR" if it threw an error
+     * @return  value placeholder returned or {@link #ERROR_VALUE} if it threw an error
      */
     public @Nullable Object request(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
+        long time = System.currentTimeMillis();
         try {
             return function.apply(viewer, target);
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().placeholderError("Relational placeholder " + identifier + " generated an error when setting for players " + viewer.getName() + " and " + target.getName(), t);
-            return "ERROR";
+            return ERROR_VALUE;
+        } finally {
+            long timeDiff = System.currentTimeMillis() - time;
+            if (timeDiff > TabConstants.Placeholder.RETURN_TIME_WARN_THRESHOLD) {
+                TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder " + identifier + " took " + timeDiff + "ms to return value for " + viewer.getName() + " and " + target.getName(), true);
+            }
         }
     }
 }

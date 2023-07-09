@@ -117,16 +117,22 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
     /**
      * Calls the placeholder request function and returns the output.
      * If the placeholder threw an exception, it is logged in {@code placeholder-errors.log}
-     * file and "ERROR" is returned.
+     * file and {@link #ERROR_VALUE} is returned.
      *
-     * @return  value placeholder returned or "ERROR" if it threw an error
+     * @return  value placeholder returned or {@link #ERROR_VALUE} if it threw an error
      */
     public @Nullable Object request() {
+        long time = System.currentTimeMillis();
         try {
             return supplier.get();
         } catch (Throwable t) {
             TAB.getInstance().getErrorManager().placeholderError("Server placeholder " + identifier + " generated an error", t);
-            return "ERROR";
+            return ERROR_VALUE;
+        } finally {
+            long timeDiff = System.currentTimeMillis() - time;
+            if (timeDiff > TabConstants.Placeholder.RETURN_TIME_WARN_THRESHOLD) {
+                TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder " + identifier + " took " + timeDiff + "ms to return value", true);
+            }
         }
     }
 }
