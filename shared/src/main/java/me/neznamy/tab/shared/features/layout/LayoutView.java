@@ -50,7 +50,7 @@ public class LayoutView {
             viewer.getTabList().addEntry(slot.createEntry(viewer));
         }
         for (int slot : emptySlots) {
-            viewer.getTabList().addEntry(new TabList.Entry(manager.getUUID(slot), getEntryName(viewer, slot), manager.getSkinManager().getDefaultSkin(),
+            viewer.getTabList().addEntry(new TabList.Entry(manager.getUUID(slot), getEntryName(viewer, slot), manager.getSkinManager().getDefaultSkin(slot),
                     manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
         }
         tick();

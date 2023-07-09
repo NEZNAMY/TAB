@@ -77,7 +77,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text) {
-        addFixedSlot(slot, text, manager.getDefaultSkin(), manager.getEmptySlotPing());
+        addFixedSlot(slot, text, manager.getDefaultSkin(slot), manager.getEmptySlotPing());
     }
 
     @Override
@@ -87,7 +87,7 @@ public class LayoutPattern extends TabFeature implements Refreshable, Layout {
 
     @Override
     public void addFixedSlot(int slot, @NonNull String text, int ping) {
-        addFixedSlot(slot, text, manager.getDefaultSkin(), ping);
+        addFixedSlot(slot, text, manager.getDefaultSkin(slot), ping);
     }
 
     @Override

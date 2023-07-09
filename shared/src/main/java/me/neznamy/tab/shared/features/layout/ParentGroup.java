@@ -23,7 +23,7 @@ public class ParentGroup {
         this.slots = pattern.getSlots();
         this.viewer = viewer;
         for (int slot : slots) {
-            playerSlots.put(slot, new PlayerSlot(layout, layout.getManager().getUUID(slot)));
+            playerSlots.put(slot, new PlayerSlot(slot, layout, layout.getManager().getUUID(slot)));
         }
     }
 
