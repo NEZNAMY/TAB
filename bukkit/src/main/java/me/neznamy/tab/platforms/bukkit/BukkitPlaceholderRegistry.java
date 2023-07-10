@@ -2,7 +2,9 @@ package me.neznamy.tab.platforms.bukkit;
 
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.placeholders.UniversalPlaceholderRegistry;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -77,6 +79,9 @@ public class BukkitPlaceholderRegistry extends UniversalPlaceholderRegistry {
             manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "");
             manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "");
         }
+        // PAPI override to prevent errors when ping field changes and expansion is not updated
+        manager.registerPlayerPlaceholder("%player_ping%", ((PlaceholderManagerImpl)manager).getRefreshInterval("%player_ping%"),
+                p -> ((TabPlayer)p).getPing());
         super.registerPlaceholders(manager);
     }
 }

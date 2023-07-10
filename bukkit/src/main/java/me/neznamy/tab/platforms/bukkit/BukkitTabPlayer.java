@@ -70,15 +70,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @SneakyThrows
     public int getPing() {
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 17) {
             return getPlayer().getPing();
         }
-        try {
-            return NMSStorage.getInstance().PING.getInt(handle);
-        } catch (IllegalAccessException e) {
-            return -1;
-        }
+        return NMSStorage.getInstance().PING.getInt(handle);
     }
 
     @SneakyThrows
