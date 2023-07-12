@@ -2,6 +2,8 @@ package me.neznamy.tab.shared;
 
 import java.util.*;
 
+import me.neznamy.tab.api.bossbar.BarColor;
+import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.TabConstants.Placeholder;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
@@ -226,6 +228,79 @@ public class MisconfigurationHelper {
         } else {
             startupWarn(warnMessage);
             return defaultValue;
+        }
+    }
+
+    /**
+     * Checks bossbar section configuration for: <p>
+     * - Unknown keys, to let people know if they made a typo <p>
+     * - Missing required properties (text, color, style, progress) and adding them with some default values <p>
+     * - Evaluating static values of color, style and progress if they can represent the required data type
+     *
+     * @param   bossbarSection
+     *          Map section of a bossbar in config
+     * @param   name
+     *          Name of the bossbar defined in config
+     */
+    public void checkBossBarProperties(Map<String, Object> bossbarSection, String name) {
+        // Unknown properties
+        List<String> validProperties = Arrays.asList("style", "color", "progress", "text", "announcement-bar", "display-condition");
+        for (String mapKey : bossbarSection.keySet()) {
+            if (!validProperties.contains(mapKey)) {
+                startupWarn("Unknown property \"" + mapKey + "\" in bossbar \"" + name + "\". Valid properties: " + validProperties);
+            }
+        }
+        // Text
+        if (!bossbarSection.containsKey("text")) {
+            startupWarn("Bossbar \"" + name + "\" is missing \"text\" property.");
+            bossbarSection.put("text", "Text is not defined!");
+        }
+        // Color
+        if (bossbarSection.containsKey("color")) {
+            String color = bossbarSection.get("color").toString();
+            if (!color.contains("%")) {
+                try {
+                    BarColor.valueOf(color.toUpperCase(Locale.US));
+                } catch (IllegalArgumentException e) {
+                    startupWarn("Bossbar \"" + name + " has color set to \"" + color + "\", which is not one of the supported colors " +
+                            Arrays.toString(BarColor.values()) + " or a placeholder evaluating to one.");
+                    bossbarSection.put("color", "PURPLE");
+                }
+            }
+        } else {
+            startupWarn("Bossbar \"" + name + "\" is missing \"color\" property.");
+            bossbarSection.put("color", "PURPLE");
+        }
+        // Style
+        if (bossbarSection.containsKey("style")) {
+            String style = bossbarSection.get("style").toString();
+            if (!style.contains("%")) {
+                try {
+                    BarStyle.valueOf(style.toUpperCase(Locale.US));
+                } catch (IllegalArgumentException e) {
+                    startupWarn("Bossbar \"" + name + " has style set to \"" + style + "\", which is not one of the supported styles " +
+                            Arrays.toString(BarStyle.values()) + " or a placeholder evaluating to one.");
+                    bossbarSection.put("style", "PROGRESS");
+                }
+            }
+        } else {
+            startupWarn("Bossbar \"" + name + "\" is missing \"style\" property.");
+            bossbarSection.put("style", "PROGRESS");
+        }
+        // Progress
+        if (bossbarSection.containsKey("progress")) {
+            String progress = bossbarSection.get("progress").toString();
+            if (!progress.contains("%")) {
+                try {
+                    Float.parseFloat(progress);
+                } catch (IllegalArgumentException e) {
+                    startupWarn("Bossbar \"" + name + " has progress set to \"" + progress + "\", which is not a valid number between 0 and 100 or a placeholder evaluating to one.");
+                    bossbarSection.put("progress", "100");
+                }
+            }
+        } else {
+            startupWarn("Bossbar \"" + name + "\" is missing \"progress\" property.");
+            bossbarSection.put("progress", "100");
         }
     }
 

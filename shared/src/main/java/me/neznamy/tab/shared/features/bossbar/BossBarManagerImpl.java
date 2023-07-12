@@ -71,16 +71,17 @@ public class BossBarManagerImpl extends TabFeature implements BossBarManager, Jo
      */
     private @NotNull BossBarLine loadFromConfig(@NonNull String bar) {
         Map<String, Object> bossBar = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("bossbar.bars." + bar);
-        String condition = (String) bossBar.get("display-condition");
-        String style = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "style", "PROGRESS",
-                "Bossbar \"" + bar + "\" is missing style!");
-        String color = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "color", "PURPLE",
-                "Bossbar \"" + bar + "\" is missing color!");
-        String progress = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "progress", "100",
-                "Bossbar \"" + bar + "\" is missing progress!");
-        String text = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(bossBar, "text", "<Text is not defined>",
-                "Bossbar \"" + bar + "\" is missing text!");
-        return new BossBarLine(this, bar, condition, color, style, text, progress, (boolean) bossBar.getOrDefault("announcement-bar", false));
+        TAB.getInstance().getMisconfigurationHelper().checkBossBarProperties(bossBar, bar);
+        return new BossBarLine(
+                this,
+                bar,
+                (String) bossBar.get("display-condition"),
+                String.valueOf(bossBar.get("color")),
+                String.valueOf(bossBar.get("style")),
+                String.valueOf(bossBar.get("text")),
+                String.valueOf(bossBar.get("progress")),
+                (boolean) bossBar.getOrDefault("announcement-bar", false)
+        );
     }
 
     @Override
