@@ -165,8 +165,10 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
         if (TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.PIPELINE_INJECTION)) return;
         TAB.getInstance().getCPUManager().runTaskLater(300, featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, () -> {
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-                if (p.getVersion().getMinorVersion() >= 8) p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
-                if (all.getVersion().getMinorVersion() >= 8) all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
+                if (!disableChecker.isDisabledPlayer(all) && p.getVersion().getMinorVersion() >= 8)
+                    p.getTabList().updateDisplayName(getTablistUUID(all, p), getTabFormat(all, p));
+                if (all != p && !disableChecker.isDisabledPlayer(p) && all.getVersion().getMinorVersion() >= 8)
+                    all.getTabList().updateDisplayName(getTablistUUID(p, all), getTabFormat(p, all));
             }
         });
     }
