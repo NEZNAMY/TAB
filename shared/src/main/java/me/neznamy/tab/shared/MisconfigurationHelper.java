@@ -33,6 +33,7 @@ public class MisconfigurationHelper {
      *          Configured refresh intervals
      */
     public void fixRefreshIntervals(@NotNull Map<String, Integer> refreshIntervals) {
+        int defaultRefresh = refreshIntervals.get("default-refresh-interval");
         LinkedHashMap<String, Integer> valuesToFix = new LinkedHashMap<>();
         for (Map.Entry<String, ?> entry : refreshIntervals.entrySet()) {
             if (entry.getValue() == null) {
@@ -48,6 +49,9 @@ public class MisconfigurationHelper {
                 continue;
             }
             int interval = (int) entry.getValue();
+            if (!entry.getKey().equals("default-refresh-interval") && interval == defaultRefresh) {
+                hint("Refresh interval of " + entry.getKey() + " is same as default interval, therefore there is no need to override it.");
+            }
             if (interval < 0) {
                 startupWarn("Invalid refresh interval configured for " + entry.getKey() +
                         " (" + interval + "). Value cannot be negative.");
