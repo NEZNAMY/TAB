@@ -5,6 +5,7 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -156,7 +157,7 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         } finally {
             long timeDiff = System.currentTimeMillis() - time;
             if (timeDiff > TabConstants.Placeholder.RETURN_TIME_WARN_THRESHOLD) {
-                TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder " + identifier + " took " + timeDiff + "ms to return value for " + viewer.getName() + " and " + target.getName(), true);
+                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder " + identifier + " took " + timeDiff + "ms to return value for " + viewer.getName() + " and " + target.getName()));
             }
         }
     }

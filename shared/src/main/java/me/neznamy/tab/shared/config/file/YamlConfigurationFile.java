@@ -13,6 +13,7 @@ import java.util.List;
 
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -60,13 +61,13 @@ public class YamlConfigurationFile extends ConfigurationFile {
             if (input != null) input.close();
             TAB tab = TAB.getInstance();
             tab.setBrokenFile(destination.getName());
-            tab.sendConsoleMessage("&cFile " + destination + " has broken syntax.", true);
-            tab.sendConsoleMessage("&6Error message from yaml parser: " + e.getMessage(), true);
+            tab.getPlatform().logWarn(new IChatBaseComponent("File " + destination + " has broken syntax."));
+            tab.getPlatform().logInfo(IChatBaseComponent.fromColoredText("&6Error message from yaml parser: " + e.getMessage()));
             List<String> suggestions = YamlAssist.getSuggestions(file);
             if (!suggestions.isEmpty()) {
-                tab.sendConsoleMessage("&dSuggestions to fix yaml syntax:", true);
+                tab.getPlatform().logInfo(IChatBaseComponent.fromColoredText("&dSuggestions to fix yaml syntax:"));
                 for (String suggestion : suggestions) {
-                    tab.sendConsoleMessage("&d- " + suggestion, true);
+                    tab.getPlatform().logInfo(IChatBaseComponent.fromColoredText("&d- " + suggestion));
                 }
             }
             throw e;
@@ -81,7 +82,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
             writer.close();
             fixHeader();
         } catch (IOException e) {
-            TAB.getInstance().sendConsoleMessage("&cFailed to save yaml file " + file.getPath() + " with content " + values.toString(), true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Failed to save yaml file " + file.getPath() + " with content " + values.toString()));
         }
     }
 }

@@ -76,7 +76,7 @@ public class CpuCommand extends SubCommand {
     }
 
     public void sendToConsole(@NotNull Map<String, Map<String, Float>> features) {
-        TAB.getInstance().sendConsoleMessage("&8&l" + LINE_CHAR + " &6Features:", true);
+        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&8&l" + LINE_CHAR + " &6Features:"));
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
@@ -84,9 +84,9 @@ public class CpuCommand extends SubCommand {
             for (Entry<String, Float> type : entry.getValue().entrySet()) {
                 messages.add(String.format("&8&l%s     &7%s - %s%%", LINE_CHAR, type.getKey(), colorize(decimal3.format(type.getValue()), 5, 1)));
             }
-            TAB.getInstance().sendConsoleMessage(core, true);
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText(core));
             for (String message : messages) {
-                TAB.getInstance().sendConsoleMessage(message, true);
+                TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText(message));
             }
         }
     }

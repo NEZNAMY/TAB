@@ -95,7 +95,16 @@ public interface Platform {
      * @param   message
      *          Message to send
      */
-    void sendConsoleMessage(@NotNull IChatBaseComponent message);
+    void logInfo(@NotNull IChatBaseComponent message);
+
+    /**
+     * Sends a red console message with TAB's prefix using logger with warn type if available,
+     * otherwise platform's method for sending console message.
+     *
+     * @param   message
+     *          Message to send
+     */
+    void logWarn(@NotNull IChatBaseComponent message);
 
     /**
      * Returns information about server version, which is displayed in debug command

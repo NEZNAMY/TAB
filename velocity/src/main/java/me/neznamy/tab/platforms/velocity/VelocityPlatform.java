@@ -6,6 +6,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -40,8 +41,13 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull IChatBaseComponent message) {
         plugin.getLogger().info(message.toLegacyText());
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        plugin.getLogger().warn(EnumChatFormat.RED.getFormat() + message.toLegacyText());
     }
 
     @Override

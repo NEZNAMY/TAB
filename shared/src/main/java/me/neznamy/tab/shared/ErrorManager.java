@@ -2,6 +2,7 @@ package me.neznamy.tab.shared;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,24 +124,24 @@ public class ErrorManager {
                     if (file.length() < 1000000)
                         buf.write(dateFormat.format(new Date()) + "[TAB v" + TabConstants.PLUGIN_VERSION + "] " + EnumChatFormat.decolor(message) + System.getProperty("line.separator"));
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
-                        TAB.getInstance().sendConsoleMessage(EnumChatFormat.color("&c[TAB v" + TabConstants.PLUGIN_VERSION + "] ") + EnumChatFormat.decolor(message), false);
+                        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(message));
                 }
                 for (String line : error) {
                     if (file.length() < 1000000)
                         buf.write(dateFormat.format(new Date()) + line + System.getProperty("line.separator"));
                     if (intoConsoleToo || TAB.getInstance().getConfiguration().isDebugMode())
-                        TAB.getInstance().sendConsoleMessage(EnumChatFormat.color("&c") + line, false);
+                        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(line));
                 }
             }
         } catch (IOException ex) {
-            TAB.getInstance().sendConsoleMessage("&cAn error occurred when printing error message into file", true);
-            TAB.getInstance().sendConsoleMessage(ex.getClass().getName() + ": " + ex.getMessage(), true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("An error occurred when printing error message into file"));
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(ex.getClass().getName() + ": " + ex.getMessage()));
             for (StackTraceElement e : ex.getStackTrace()) {
-                TAB.getInstance().sendConsoleMessage("\t" + e.toString(), true);
+                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("\t" + e.toString()));
             }
-            TAB.getInstance().sendConsoleMessage("&cOriginal error: " + message, true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Original error: " + message));
             for (String line : error) {
-                TAB.getInstance().sendConsoleMessage(line, true);
+                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(line));
             }
         }
     }

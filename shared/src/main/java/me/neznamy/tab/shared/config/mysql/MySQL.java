@@ -12,6 +12,7 @@ import javax.sql.rowset.RowSetProvider;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class MySQL {
     public void openConnection() throws SQLException {
         if (isConnected()) return;
         con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
-        TAB.getInstance().sendConsoleMessage("&aSuccessfully connected to MySQL", true);
+        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&aSuccessfully connected to MySQL"));
     }
     
     public void closeConnection() throws SQLException {

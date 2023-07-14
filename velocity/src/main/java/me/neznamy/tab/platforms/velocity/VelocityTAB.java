@@ -12,6 +12,7 @@ import lombok.Getter;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.bstats.charts.SimplePie;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
@@ -59,9 +60,9 @@ public class VelocityTAB {
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
         server.getEventManager().register(this, new VelocityEventListener());
         TAB.setInstance(new TAB(new VelocityPlatform(this, server), ProtocolVersion.PROXY, dataFolder.toFile()));
-        TAB.getInstance().sendConsoleMessage("&c[WARN] Velocity compatibility is very experimental and should not be used in production! " +
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Velocity compatibility is very experimental and should not be used in production! " +
                 "If you use it, you WILL run into issues and they WILL NOT be fixed. Any bug reports featuring Velocity installation " +
-                "will be immediately closed.", true);
+                "will be immediately closed."));
         TAB.getInstance().load();
         metricsFactory.make(this, 10533).addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED,
                 () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));

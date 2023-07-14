@@ -4,6 +4,7 @@ import com.viaversion.viaversion.api.Via;
 import lombok.Getter;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,15 +35,15 @@ public class ViaVersionHook {
         if (!installed) return TAB.getInstance().getServerVersion().getNetworkId();
         int version = Via.getAPI().getPlayerVersion(player);
         if (version == -1) {
-            TAB.getInstance().sendConsoleMessage("&cViaVersion returned protocol version -1 for player " + playerName +
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("ViaVersion returned protocol version -1 for player " + playerName +
                     ". Using server's version (" + TAB.getInstance().getServerVersion().getNetworkId() + " - " +
-                    TAB.getInstance().getServerVersion().getFriendlyName() + ")", true);
+                    TAB.getInstance().getServerVersion().getFriendlyName() + ")"));
             return TAB.getInstance().getServerVersion().getNetworkId();
         }
         ProtocolVersion protocol = ProtocolVersion.fromNetworkId(version);
         if (protocol == ProtocolVersion.UNKNOWN_CLIENT_VERSION) {
-            TAB.getInstance().sendConsoleMessage("&cViaVersion returned unknown protocol version " + version +
-                    " for player " + playerName + ". This may result in plugin not working correctly for them.", true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("ViaVersion returned unknown protocol version " + version +
+                    " for player " + playerName + ". This may result in plugin not working correctly for them."));
         } else {
             TAB.getInstance().debug("ViaVersion returned protocol version " + version + " for " + playerName);
         }
@@ -54,15 +55,15 @@ public class ViaVersionHook {
      */
     public void printProxyWarn() {
         if (!installed || TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return;
-        TAB.getInstance().sendConsoleMessage("&cDetected plugin ViaVersion, which when installed on proxy acts like a" +
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Detected plugin ViaVersion, which when installed on proxy acts like a" +
                 " client-sided protocol hack, making it impossible for TAB to properly detect player version and causing issues " +
-                "if client and server versions don't match, which include, but are not limited to:", true);
-        TAB.getInstance().sendConsoleMessage("&c#1 - NameTag prefix/suffix being cut to 16 characters even for 1.13+ players", true);
-        TAB.getInstance().sendConsoleMessage("&c#2 - Scoreboard lines being cut to 26 characters even for 1.13+ players", true);
-        TAB.getInstance().sendConsoleMessage("&c#3 - Scoreboard lines being cut to 14 characters for <1.13", true);
-        TAB.getInstance().sendConsoleMessage("&c#4 - Scoreboard lines might be out of order when using all 0s", true);
-        TAB.getInstance().sendConsoleMessage("&c#5 - RGB colors will display as legacy colors even for 1.16+ players", true);
-        TAB.getInstance().sendConsoleMessage("&c#6 - Layout entries will be in random order for 1.19.3+ players", true);
-        TAB.getInstance().sendConsoleMessage("&cPlease install ViaVersion on all backend servers instead.", true);
+                "if client and server versions don't match, which include, but are not limited to:"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#1 - NameTag prefix/suffix being cut to 16 characters even for 1.13+ players"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#2 - Scoreboard lines being cut to 26 characters even for 1.13+ players"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#3 - Scoreboard lines being cut to 14 characters for <1.13"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#4 - Scoreboard lines might be out of order when using all 0s"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#5 - RGB colors will display as legacy colors even for 1.16+ players"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#6 - Layout entries will be in random order for 1.19.3+ players"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Please install ViaVersion on all backend servers instead."));
     }
 }

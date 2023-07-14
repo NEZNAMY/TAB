@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.config;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.config.file.ConfigurationFile;
 import me.neznamy.tab.shared.config.file.YamlConfigurationFile;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ public class Converter {
 
     public void convert2810to290(@NotNull ConfigurationFile animations) {
         if (animations.getValues().size() == 1 && animations.getValues().containsKey("animations")) {
-            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.8.10 to 2.9.0", true);
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 2.8.10 to 2.9.0"));
             animations.setValues(animations.getConfigurationSection("animations"));
             animations.save();
         }
@@ -41,7 +42,7 @@ public class Converter {
      */
     public void convert292to300(@NotNull ConfigurationFile currentConfig) throws IOException {
         if (!currentConfig.hasConfigOption("change-nametag-prefix-suffix")) return;
-        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 2.9.2 to 3.0.0",true);
+        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 2.9.2 to 3.0.0"));
 
         File folder = TAB.getInstance().getDataFolder();
         moveOldFiles();
@@ -189,16 +190,14 @@ public class Converter {
         Map<String, List<Object>> perWorldBossBars = bossBar.getConfigurationSection("per-world");
         List<Object> activeBossBars = new ArrayList<>(bossBar.getStringList("default-bars", new ArrayList<>()));
         String separator = TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? "server" : "world";
-        if (perWorldBossBars != null) {
-            for (Map.Entry<String, List<Object>> entry : perWorldBossBars.entrySet()) {
-                for (Object bar : entry.getValue()) {
-                    if (!bars.containsKey(bar)) continue;
-                    activeBossBars.add(bar);
-                    if (bars.get(bar).containsKey("display-condition")) {
-                        bars.get(bar).put("display-condition", bars.get(bar).get("display-condition") + ";%" + separator + "%=" + entry.getKey());
-                    } else {
-                        bars.get(bar).put("display-condition", "%" + separator + "%=" + entry.getKey());
-                    }
+        for (Map.Entry<String, List<Object>> entry : perWorldBossBars.entrySet()) {
+            for (Object bar : entry.getValue()) {
+                if (!bars.containsKey(bar)) continue;
+                activeBossBars.add(bar);
+                if (bars.get(bar).containsKey("display-condition")) {
+                    bars.get(bar).put("display-condition", bars.get(bar).get("display-condition") + ";%" + separator + "%=" + entry.getKey());
+                } else {
+                    bars.get(bar).put("display-condition", "%" + separator + "%=" + entry.getKey());
                 }
             }
         }
@@ -354,20 +353,20 @@ public class Converter {
 
     public void convert301to302(@NotNull ConfigurationFile config) {
         if (!config.hasConfigOption("placeholders.remove-strings")) return;
-        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.0.1 to 3.0.2", true);
+        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.0.1 to 3.0.2"));
         config.set("placeholders.remove-strings", null);
     }
 
     public void convert331to332(@NotNull ConfigurationFile config) {
         if (!config.hasConfigOption("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients")) return;
-        TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.1 to 3.3.2", true);
+        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.1 to 3.3.2)"));
         config.set("scoreboard-teams.unlimited-nametag-mode.use-marker-tag-for-1-8-x-clients", null);
     }
 
     @SuppressWarnings("unchecked")
     public void convert332to400(@NotNull ConfigurationFile config) throws IOException {
         if (config.hasConfigOption("ping-spoof.enabled")) {
-            TAB.getInstance().sendConsoleMessage("&ePerforming configuration conversion from 3.3.2 to 4.0.0", true);
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.2 to 4.0.0"));
             config.set("ping-spoof", null);
             config.set("fix-pet-names", null);
             config.set("bossbar.disable-in-worlds", null);

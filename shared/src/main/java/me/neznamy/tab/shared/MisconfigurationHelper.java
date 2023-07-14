@@ -5,6 +5,7 @@ import java.util.*;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.TabConstants.Placeholder;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
 import org.jetbrains.annotations.NotNull;
@@ -313,7 +314,7 @@ public class MisconfigurationHelper {
     private void startupWarn(@NotNull String... messages) {
         warnCount++;
         for (String message : messages) {
-            TAB.getInstance().sendConsoleMessage("&c[WARN] " + message, true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(message));
         }
     }
 
@@ -322,7 +323,7 @@ public class MisconfigurationHelper {
      */
     public void printWarnCount() {
         if (warnCount == 0) return;
-        TAB.getInstance().sendConsoleMessage("&eFound a total of " + warnCount + " issues.", true);
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Found a total of " + warnCount + " issues."));
         // Reset after printing to prevent count going up on each reload
         warnCount = 0;
     }
@@ -333,12 +334,12 @@ public class MisconfigurationHelper {
 
     public void invalidNumberForBossBarProgress(@NotNull String bossBar, @NotNull String input, @NotNull String configuredValue) {
         if (configuredValue.contains("%")) {
-            TAB.getInstance().sendConsoleMessage("&c[WARN] Placeholder \"" + configuredValue +
-                    "\" used in BossBar progress of \"" + bossBar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")", true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder \"" + configuredValue +
+                    "\" used in BossBar progress of \"" + bossBar + "\" returned value, which cannot be evaluated to a number between 0 and 100 (\"" + input + "\")"));
 
         } else {
-            TAB.getInstance().sendConsoleMessage("&c[WARN] BossBar \"" + bossBar +
-                    "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one.", true);
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("BossBar \"" + bossBar +
+                    "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one."));
         }
     }
 }

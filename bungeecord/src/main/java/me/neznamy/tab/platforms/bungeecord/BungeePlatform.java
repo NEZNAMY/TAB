@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bungeecord;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -31,8 +32,13 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull IChatBaseComponent message) {
         plugin.getLogger().info(message.toLegacyText());
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        plugin.getLogger().warning(EnumChatFormat.RED.getFormat() + message.toLegacyText());
     }
 
     @Override

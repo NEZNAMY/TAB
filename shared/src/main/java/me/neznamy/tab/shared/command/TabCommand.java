@@ -73,11 +73,7 @@ public class TabCommand extends SubCommand {
      */
     private void help(@Nullable TabPlayer sender) {
         if (hasPermission(sender, TabConstants.Permission.COMMAND_ALL)) {
-            if (sender != null) {
-                sender.sendMessage("&3TAB v" + TabConstants.PLUGIN_VERSION + "&0 by _NEZNAMY_", true);
-            } else {
-                TAB.getInstance().sendConsoleMessage("&3TAB v" + TabConstants.PLUGIN_VERSION, true);
-            }
+            sendMessage(sender, "&3TAB v" + TabConstants.PLUGIN_VERSION);
             for (String message : getMessages().getHelpMenu()) {
                 if (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY)
                     message = message.replace("/" + TabConstants.COMMAND_BACKEND, "/" + TabConstants.COMMAND_PROXY);

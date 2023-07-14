@@ -54,9 +54,15 @@ public final class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
                 message.toAdventureComponent(TAB.getInstance().getServerVersion())));
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
+                message.toAdventureComponent(TAB.getInstance().getServerVersion()))); // Colors are not supported here
     }
 
     @Override

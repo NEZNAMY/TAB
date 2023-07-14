@@ -10,6 +10,7 @@ import me.neznamy.tab.platforms.bukkit.BukkitPlaceholderRegistry;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.GroupManager;
 import me.neznamy.tab.shared.TabConstants;
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -146,8 +147,14 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull IChatBaseComponent message) {
         Bukkit.getConsoleSender().sendMessage("[TAB] " + RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
+                TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] " + RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
                 TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
     }
 

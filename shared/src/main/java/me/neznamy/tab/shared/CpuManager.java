@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,8 +56,8 @@ public class CpuManager {
             for (Entry<String, Long> entry : placeholderUsagePrevious.entrySet()) {
                 float usagePercent = nanosToPercent(entry.getValue());
                 if (usagePercent > 30) {
-                    TAB.getInstance().sendConsoleMessage("&c[WARN] CPU usage of placeholder " + entry.getKey() +
-                            " is " + (int)usagePercent + "%. It will most likely cause problems. Try increasing refresh interval.", true);
+                    TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of placeholder " + entry.getKey() +
+                            " is " + (int)usagePercent + "%. It will most likely cause problems. Try increasing refresh interval."));
                 }
             }
             Map<String, Map<String, Float>> features = getFeatureUsage();
@@ -65,8 +66,8 @@ public class CpuManager {
                 featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
             }
             if (featuresTotal > 90) {
-                TAB.getInstance().sendConsoleMessage("&c[WARN] CPU usage of the plugin is "
-                        + (int)featuresTotal + "%. This will cause problems. Check /tab cpu to find out why.", true);
+                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of the plugin is "
+                        + (int)featuresTotal + "%. This will cause problems. Check /tab cpu to find out why."));
             }
         });
     }

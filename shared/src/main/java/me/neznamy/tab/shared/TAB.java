@@ -159,10 +159,10 @@ public class TAB extends TabAPI {
             cpu.enable();
             ViaVersionHook.getInstance().printProxyWarn();
             misconfigurationHelper.printWarnCount();
-            sendConsoleMessage("&aEnabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            platform.logInfo(IChatBaseComponent.fromColoredText("&aEnabled in " + (System.currentTimeMillis()-time) + "ms"));
             return configuration.getMessages().getReloadSuccess();
         } catch (YAMLException e) {
-            sendConsoleMessage("&cDid not enable due to a broken configuration file.", true);
+            platform.logWarn(IChatBaseComponent.fromColoredText("&cDid not enable due to a broken configuration file."));
             kill();
             return (configuration == null ? "&4Failed to reload, file %file% has broken syntax. Check console for more info."
                     : configuration.getMessages().getReloadFailBrokenFile()).replace("%file%", brokenFile);
@@ -183,7 +183,7 @@ public class TAB extends TabAPI {
             long time = System.currentTimeMillis();
             if (configuration.getMysql() != null) configuration.getMysql().closeConnection();
             featureManager.unload();
-            sendConsoleMessage("&aDisabled in " + (System.currentTimeMillis()-time) + "ms", true);
+            platform.logInfo(IChatBaseComponent.fromColoredText("&aDisabled in " + (System.currentTimeMillis()-time) + "ms"));
         } catch (Exception | NoClassDefFoundError e) {
             errorManager.criticalError("Failed to disable", e);
         }
@@ -277,10 +277,6 @@ public class TAB extends TabAPI {
         return data.get(uniqueId);
     }
 
-    public void sendConsoleMessage(@NotNull String message, boolean translateColors) {
-        platform.sendConsoleMessage(translateColors ? IChatBaseComponent.fromColoredText(message) : new IChatBaseComponent(message));
-    }
-
     @Override
     public @Nullable HeaderFooterManager getHeaderFooterManager() {
         return featureManager.getFeature(TabConstants.Feature.HEADER_FOOTER);
@@ -313,6 +309,7 @@ public class TAB extends TabAPI {
      *          Message to send
      */
     public void debug(@NotNull String message) {
-        if (configuration != null && configuration.isDebugMode()) sendConsoleMessage("&9[DEBUG] " + message, true);
+        if (configuration != null && configuration.isDebugMode())
+            platform.logInfo(IChatBaseComponent.fromColoredText("&9[DEBUG] " + message));
     }
 }

@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.krypton;
 
+import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.TAB;
@@ -25,8 +26,13 @@ public class KryptonPlatform implements BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull IChatBaseComponent message) {
         server.getConsole().sendMessage(Component.text("[TAB] ").append(message.toAdventureComponent(TAB.getInstance().getServerVersion())));
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        server.getConsole().sendMessage(Component.text(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] ").append(message.toAdventureComponent(TAB.getInstance().getServerVersion())));
     }
 
     @Override

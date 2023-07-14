@@ -55,8 +55,13 @@ public final class FabricPlatform implements BackendPlatform {
     }
 
     @Override
-    public void sendConsoleMessage(@NotNull IChatBaseComponent message) {
+    public void logInfo(@NotNull IChatBaseComponent message) {
         MinecraftServer.LOGGER.info("[TAB] " + message.toRawText());
+    }
+
+    @Override
+    public void logWarn(@NotNull IChatBaseComponent message) {
+        MinecraftServer.LOGGER.warn("[TAB] " + message.toRawText()); // Fabric console does not support colors
     }
 
     @Override

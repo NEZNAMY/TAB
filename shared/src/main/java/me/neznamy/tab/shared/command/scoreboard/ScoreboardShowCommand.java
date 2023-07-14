@@ -47,7 +47,7 @@ public class ScoreboardShowCommand extends SubCommand {
                 return;
             }
             if (sender == null) {
-                TAB.getInstance().sendConsoleMessage(getMessages().getCommandOnlyFromGame(), true);
+                sendMessage(null, getMessages().getCommandOnlyFromGame());
                 return;
             }
             target = sender;
