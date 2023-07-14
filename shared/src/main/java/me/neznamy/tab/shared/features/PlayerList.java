@@ -184,7 +184,6 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
-        if (disableChecker.isDisabledPlayer(refreshed)) return;
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
@@ -195,6 +194,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
             boolean suffix = refreshed.getProperty(TabConstants.Property.TABSUFFIX).update();
             refresh = prefix || name || suffix;
         }
+        if (disableChecker.isDisabledPlayer(refreshed)) return;
         if (refresh) {
             updatePlayer(refreshed, true);
         }
