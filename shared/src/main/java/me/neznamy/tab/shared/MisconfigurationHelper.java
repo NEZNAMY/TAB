@@ -342,4 +342,46 @@ public class MisconfigurationHelper {
                     "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one."));
         }
     }
+
+    // ------------------------
+    // Hints
+    // ------------------------
+
+    @SuppressWarnings("unchecked")
+    public void checkHeaderFooterForRedundancy(Map<String, Object> configSection) {
+        String defaultHeader = String.valueOf(configSection.get("header"));
+        String defaultFooter = String.valueOf(configSection.get("footer"));
+        if (configSection.get("per-world") instanceof Map) {
+            Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) configSection.get("per-world");
+            for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
+                String world = entry.getKey();
+                if (String.valueOf(entry.getValue().getOrDefault("header", "-")).equals(defaultHeader)) {
+                    hint("Per-world header for world \"" + world + "\" is identical to default header. " +
+                            "This is redundant and can be removed for cleaner config.");
+                }
+                if (String.valueOf(entry.getValue().getOrDefault("footer", "-")).equals(defaultFooter)) {
+                    hint("Per-world footer for world \"" + world + "\" is identical to default footer. " +
+                            "This is redundant and can be removed for cleaner config.");
+                }
+            }
+        }
+        if (configSection.get("per-server") instanceof Map) {
+            Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) configSection.get("per-server");
+            for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
+                String server = entry.getKey();
+                if (String.valueOf(entry.getValue().getOrDefault("header", "-")).equals(defaultHeader)) {
+                    hint("Per-server header for server \"" + server + "\" is identical to default header. " +
+                            "This is redundant and can be removed for cleaner config.");
+                }
+                if (String.valueOf(entry.getValue().getOrDefault("footer", "-")).equals(defaultFooter)) {
+                    hint("Per-server footer for server \"" + server + "\" is identical to default footer. " +
+                            "This is redundant and can be removed for cleaner config.");
+                }
+            }
+        }
+    }
+
+    public void hint(@NotNull String message) {
+        TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&6[Hint] " + message));
+    }
 }
