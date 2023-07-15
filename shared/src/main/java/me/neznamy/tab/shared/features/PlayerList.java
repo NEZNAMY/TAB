@@ -184,6 +184,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
+        if (refreshed.getProperty(TabConstants.Property.TABPREFIX) == null) return; // Placeholder in condition on join
         boolean refresh;
         if (force) {
             updateProperties(refreshed);
