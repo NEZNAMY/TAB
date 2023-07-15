@@ -17,7 +17,7 @@ public abstract class SortingType {
     private final String displayName;
 
     //number to add to / subtract from to prevent incorrect sorting with negative values
-    protected final int DEFAULT_NUMBER = 5000000;
+    protected final int DEFAULT_NUMBER = Integer.MAX_VALUE / 2;
     
     //placeholder to sort by, if sorting type uses it
     protected String sortingPlaceholder;
@@ -60,6 +60,30 @@ public abstract class SortingType {
             }
         }
         return sortedGroups;
+    }
+
+    /**
+     * Compresses a number to ### format, where # is a character symbol representing
+     * a number in a base of 65536. The first two represent the whole part, the third one decimal part.
+     * The maximum number it will work properly with is {@link Integer#MAX_VALUE}.
+     *
+     * @param   number
+     *          Number to convert
+     * @return  3 characters long String of converted number with a base of 65536.
+     */
+    public String compressNumber(TabPlayer player, double number) {
+        int wholePart = (int) number;
+        char decimalChar = (char) ((number - wholePart) * Character.MAX_VALUE);
+        StringBuilder sb = new StringBuilder();
+        while (wholePart > 0) {
+            char digit = (char) (wholePart % Character.MAX_VALUE);
+            sb.append(digit);
+            wholePart /= Character.MAX_VALUE;
+        }
+        sb.reverse();
+        if (sb.length() == 1) sb.insert(0, (char) 0); // Avoid a single # if number is < 65535
+        sb.append(decimalChar);
+        return sb.toString();
     }
 
     @Override

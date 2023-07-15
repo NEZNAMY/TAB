@@ -212,7 +212,7 @@ public class ErrorManager {
      */
     public double parseDouble(@NotNull String string, double defaultValue) {
         try {
-            return Double.parseDouble(string);
+            return Double.parseDouble(string.replace(",", "."));
         } catch (NumberFormatException e) {
             return defaultValue;
         }
