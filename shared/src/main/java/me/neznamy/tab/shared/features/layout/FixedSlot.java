@@ -32,15 +32,14 @@ public class FixedSlot extends TabFeature implements Refreshable {
 
     @Override
     public void refresh(@NotNull TabPlayer p, boolean force) {
-        if (!manager.getViews().containsKey(p) || manager.getViews().get(p).getPattern() != pattern || p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
-
-        boolean updateName = p.getProperty(propertyName).update(); // update property so skin change can use new name, avoids sending both packets
+        if (!manager.getViews().containsKey(p) || manager.getViews().get(p).getPattern() != pattern ||
+                p.getVersion().getMinorVersion() < 8 || p.isBedrockPlayer()) return;
         if (p.getProperty(skinProperty).update()) {
             p.getTabList().removeEntry(id);
             p.getTabList().addEntry(createEntry(p));
-            return;
+        } else {
+            p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).updateAndGet()));
         }
-        if (updateName) p.getTabList().updateDisplayName(id, IChatBaseComponent.optimizedComponent(p.getProperty(propertyName).get()));
     }
 
     public @NotNull TabList.Entry createEntry(@NotNull TabPlayer viewer) {
@@ -49,10 +48,10 @@ public class FixedSlot extends TabFeature implements Refreshable {
         return new TabList.Entry(
                 id,
                 manager.getDirection().getEntryName(viewer, slot),
-                manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).get()),
+                manager.getSkinManager().getSkin(viewer.getProperty(skinProperty).updateAndGet()),
                 ping,
                 0,
-                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).get())
+                IChatBaseComponent.optimizedComponent(viewer.getProperty(propertyName).updateAndGet())
         );
     }
 
