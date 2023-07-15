@@ -42,7 +42,7 @@ public class SpongeTabList implements TabList {
     @Override
     public void addEntry(@NotNull Entry entry) {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
-        if (entry.getSkin() != null) profile.withProperty(ProfileProperty.of(
+        if (entry.getSkin() != null) profile = profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
         player.getPlayer().tabList().addEntry(org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
                 .list(player.getPlayer().tabList())
