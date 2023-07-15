@@ -15,6 +15,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.profile.property.ProfileProperty;
+import org.spongepowered.api.text.Text;
 
 import java.util.Collection;
 
@@ -42,7 +43,7 @@ public final class SpongeTabPlayer extends TabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(Sponge7TAB.getTextCache().get(message, getVersion()));
+        getPlayer().sendMessage(Text.of(message.toLegacyText()));
     }
 
     @Override
