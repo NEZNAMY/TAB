@@ -310,6 +310,16 @@ public class MisconfigurationHelper {
         }
     }
 
+    public void teamAntiOverrideDisabled() {
+        startupWarn("anti-override for scoreboard-teams is disabled in config. This is usually a mistake. If you notice the" +
+                " feature randomly breaking, enable it back.");
+    }
+
+    public void tablistAntiOverrideDisabled() {
+        startupWarn("anti-override for tablist-name-formatting is disabled in config. This is usually a mistake. If you notice the" +
+                " feature randomly breaking, enable it back.");
+    }
+
     /**
      * Sends a startup warn message into console
      *
