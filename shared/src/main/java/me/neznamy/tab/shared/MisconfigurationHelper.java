@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.TabConstants.Placeholder;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.layout.LayoutManagerImpl;
 import me.neznamy.tab.shared.features.sorting.types.SortingType;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -345,6 +346,11 @@ public class MisconfigurationHelper {
             TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("BossBar \"" + bossBar +
                     "\" has invalid input configured for progress (\"" + configuredValue + "\"). Expecting a number between 0 and 100 or a placeholder returning one."));
         }
+    }
+
+    public void invalidInputForNumericSorting(SortingType type, String placeholder, String output, TabPlayer player) {
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Placeholder " + placeholder + " used in sorting type " +
+                type + " returned \"" + output + "\" for player " + player.getName() + ", which is not a valid number."));
     }
 
     // ------------------------

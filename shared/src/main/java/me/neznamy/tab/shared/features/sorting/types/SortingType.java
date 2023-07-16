@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public abstract class SortingType {
@@ -84,6 +85,29 @@ public abstract class SortingType {
         if (sb.length() == 1) sb.insert(0, (char) 0); // Avoid a single # if number is < 65535
         sb.append(decimalChar);
         return sb.toString();
+    }
+
+    /**
+     * Parses double in given string and returns it.
+     * Returns second argument if string is not valid and prints a console warn.
+     *
+     * @param   placeholder
+     *          Raw placeholder, used in error message
+     * @param   output
+     *          string to parse
+     * @param   defaultValue
+     *          value to return if string is not valid
+     * @param   player
+     *          Player name used in error message
+     * @return  parsed double or {@code defaultValue} if input is invalid
+     */
+    public double parseDouble(@NotNull String placeholder, @NotNull String output, double defaultValue, TabPlayer player) {
+        try {
+            return Double.parseDouble(output.replace(",", "."));
+        } catch (NumberFormatException e) {
+            TAB.getInstance().getMisconfigurationHelper().invalidInputForNumericSorting(this, placeholder, output, player);
+            return defaultValue;
+        }
     }
 
     @Override

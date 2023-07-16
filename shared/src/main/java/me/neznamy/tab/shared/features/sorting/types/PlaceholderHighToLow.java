@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.sorting.types;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 
 /**
@@ -23,6 +22,6 @@ public class PlaceholderHighToLow extends SortingType {
     public String getChars(TabPlayer p) {
         String output = setPlaceholders(p);
         sorting.setTeamNameNote(p, sorting.getTeamNameNote(p) + "\n-> " + sortingPlaceholder + " returned \"&e" + output + "&r\". &r");
-        return compressNumber(p, DEFAULT_NUMBER-TAB.getInstance().getErrorManager().parseDouble(output, 0));
+        return compressNumber(p, DEFAULT_NUMBER - parseDouble(sortingPlaceholder, output, 0, p));
     }
 }
