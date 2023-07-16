@@ -329,7 +329,7 @@ public class MisconfigurationHelper {
     private void startupWarn(@NotNull String... messages) {
         warnCount++;
         for (String message : messages) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent(message));
+            TAB.getInstance().getPlatform().logWarn(IChatBaseComponent.fromColoredText(message));
         }
     }
 
