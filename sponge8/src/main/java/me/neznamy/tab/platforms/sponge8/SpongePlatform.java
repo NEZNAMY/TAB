@@ -69,4 +69,9 @@ public final class SpongePlatform implements BackendPlatform {
     public double getTPS() {
         return Sponge.server().ticksPerSecond();
     }
+
+    @Override
+    public double getMSPT() {
+        return Sponge.server().averageTickTime();
+    }
 }

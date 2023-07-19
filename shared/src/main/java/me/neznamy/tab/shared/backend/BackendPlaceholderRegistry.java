@@ -24,6 +24,8 @@ public class BackendPlaceholderRegistry extends UniversalPlaceholderRegistry {
                 p -> ((BackendTabPlayer)p).getDisplayName());
         manager.registerServerPlaceholder(TabConstants.Placeholder.TPS, 1000,
                 () -> formatTPS(platform.getTPS()));
+        manager.registerServerPlaceholder(TabConstants.Placeholder.MSPT, 1000,
+                () -> format(platform.getMSPT()));
         super.registerPlaceholders(manager);
     }
 }

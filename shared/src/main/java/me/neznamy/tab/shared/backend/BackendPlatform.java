@@ -31,4 +31,11 @@ public interface BackendPlatform extends Platform {
      * @return  server's TPS
      */
     double getTPS();
+
+    /**
+     * Returns server's MSPT for {@link TabConstants.Placeholder#MSPT} placeholder
+     *
+     * @return  server's MSPT
+     */
+    double getMSPT();
 }

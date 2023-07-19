@@ -34,6 +34,27 @@ public class ReflectionUtils {
     }
 
     /**
+     * Returns {@code true} if method with specified name and parameters exists in
+     * the class, {@code false} if not.
+     *
+     * @param   clazz
+     *          Class where the method is
+     * @param   method
+     *          Name of the method
+     * @param   parameterTypes
+     *          Method parameters
+     * @return  {@code true} if exists, {@code false} if not
+     */
+    public static boolean methodExists(@NotNull Class<?> clazz, @NotNull String method, @NotNull Class<?>... parameterTypes) {
+        try {
+            clazz.getMethod(method, parameterTypes);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
+    /**
      * Returns all fields of class with defined class type
      *
      * @param   clazz

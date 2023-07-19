@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
+import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -15,7 +16,10 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@RequiredArgsConstructor
 public class FabricPlatform implements BackendPlatform {
+
+    @NotNull private final MinecraftServer server;
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -66,6 +70,11 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public double getTPS() {
-        return -1;
+        return -1; // Not available
+    }
+
+    @Override
+    public double getMSPT() {
+        return server.getAverageTickTime();
     }
 }

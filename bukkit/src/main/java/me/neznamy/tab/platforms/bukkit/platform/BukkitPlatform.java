@@ -64,6 +64,9 @@ public class BukkitPlatform implements BackendPlatform {
     /** Detection for presence of Paper's TPS getter */
     private Method paperTps;
 
+    /** Detection for presence of Paper's MSPT getter */
+    private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
+
     public BukkitPlatform(JavaPlugin plugin) {
         this.plugin = plugin;
         try {
@@ -206,6 +209,12 @@ public class BukkitPlatform implements BackendPlatform {
         } else {
             return -1;
         }
+    }
+
+    @Override
+    public double getMSPT() {
+       if (paperMspt) return Bukkit.getAverageTickTime();
+       return -1;
     }
 
     public void runEntityTask(Entity entity, Runnable task) {
