@@ -1,13 +1,14 @@
 package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.hook.ViaVersionHook;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.TAB;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
@@ -18,17 +19,17 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
-public final class SpongeTabPlayer extends TabPlayer {
+public final class SpongeTabPlayer extends BackendTabPlayer {
 
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     private final TabList tabList = new SpongeTabList(this);
     private final AdventureBossBar bossBar = new AdventureBossBar(this);
 
     public SpongeTabPlayer(ServerPlayer player) {
-        super(player, player.uniqueId(), player.name(), TAB.getInstance().getConfiguration().getServerName(),
-                player.world().key().value(), ViaVersionHook.getInstance().getPlayerVersion(player.uniqueId(), player.name()), true);
+        super(player, player.uniqueId(), player.name(), player.world().key().value());
     }
 
     @Override
@@ -87,5 +88,35 @@ public final class SpongeTabPlayer extends TabPlayer {
         if (getPlayer().gameMode().get() == GameModes.ADVENTURE.get()) return 2;
         if (getPlayer().gameMode().get() == GameModes.SPECTATOR.get()) return 3;
         return 0;
+    }
+
+    @Override
+    public double getHealth() {
+        return getPlayer().health().get();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return PlainTextComponentSerializer.plainText().serialize(getPlayer().displayName().get());
+    }
+
+    @Override
+    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
+        // Not available
+    }
+
+    @Override
+    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
+        // Not available
+    }
+
+    @Override
+    public void teleportEntity(int entityId, @NotNull Location location) {
+        // Not available
+    }
+
+    @Override
+    public void destroyEntities(int... entities) {
+        // Not available
     }
 }

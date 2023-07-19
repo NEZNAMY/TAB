@@ -54,7 +54,7 @@ public class KryptonPlatform implements BackendPlatform {
 
     @Override
     public void registerPlaceholders() {
-        new KryptonPlaceholderRegistry(plugin).registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+        new KryptonPlaceholderRegistry(this, plugin).registerPlaceholders(TAB.getInstance().getPlaceholderManager());
     }
 
     @Override
@@ -75,5 +75,10 @@ public class KryptonPlatform implements BackendPlatform {
     @Override
     public @Nullable TabFeature getPerWorldPlayerList() {
         return null;
+    }
+
+    @Override
+    public double getTPS() {
+        return -1;
     }
 }

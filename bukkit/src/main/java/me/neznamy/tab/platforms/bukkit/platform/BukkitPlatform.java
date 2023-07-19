@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -39,12 +38,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
  * Implementation of Platform interface for Bukkit platform
  */
-@RequiredArgsConstructor
 @Getter
 public class BukkitPlatform implements BackendPlatform {
 
@@ -55,6 +55,25 @@ public class BukkitPlatform implements BackendPlatform {
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
     @Setter private boolean libsDisguisesEnabled = ReflectionUtils.classExists("me.libraryaddict.disguise.DisguiseAPI");
 
+    /** NMS server to get TPS from on spigot */
+    private Object server;
+
+    /** TPS field */
+    private Field spigotTps;
+
+    /** Detection for presence of Paper's TPS getter */
+    private Method paperTps;
+
+    public BukkitPlatform(JavaPlugin plugin) {
+        this.plugin = plugin;
+        try {
+            server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
+            spigotTps = server.getClass().getField("recentTps");
+        } catch (ReflectiveOperationException e) {
+            //not spigot
+        }
+        try { paperTps = Bukkit.class.getMethod("getTPS"); } catch (NoSuchMethodException ignored) {}
+    }
     public @NotNull BossBarManagerImpl getLegacyBossBar() {
         return new WitherBossBar(plugin);
     }
@@ -68,7 +87,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void registerPlaceholders() {
-        new BukkitPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+        new BukkitPlaceholderRegistry(this).registerPlaceholders(TAB.getInstance().getPlaceholderManager());
     }
 
     @Override
@@ -175,6 +194,18 @@ public class BukkitPlatform implements BackendPlatform {
             }
         }
         return new GroupManager("None", p -> TabConstants.NO_GROUP);
+    }
+
+    @Override
+    @SneakyThrows
+    public double getTPS() {
+        if (paperTps != null) {
+            return Bukkit.getTPS()[0];
+        } else if (spigotTps != null) {
+            return ((double[]) spigotTps.get(server))[0];
+        } else {
+            return -1;
+        }
     }
 
     public void runEntityTask(Entity entity, Runnable task) {

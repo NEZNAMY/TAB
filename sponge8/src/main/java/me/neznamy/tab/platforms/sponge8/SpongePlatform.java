@@ -29,11 +29,6 @@ public final class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public void registerPlaceholders() {
-        new SpongePlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
-    }
-
-    @Override
     public @Nullable PipelineInjector createPipelineInjector() {
         return null;
     }
@@ -68,5 +63,10 @@ public final class SpongePlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Sponge] " + Sponge.platform().minecraftVersion().name();
+    }
+
+    @Override
+    public double getTPS() {
+        return Sponge.server().ticksPerSecond();
     }
 }

@@ -7,7 +7,6 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
-import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -58,8 +57,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
      */
     @SneakyThrows
     public BukkitTabPlayer(Player p) {
-        super(p, p.getUniqueId(), p.getName(), TAB.getInstance().getConfiguration().getServerName(),
-                p.getWorld().getName(), ViaVersionHook.getInstance().getPlayerVersion(p.getUniqueId(), p.getName()));
+        super(p, p.getUniqueId(), p.getName(), p.getWorld().getName());
         handle = NMSStorage.getInstance().getHandle.invoke(player);
         playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
     }
@@ -135,6 +133,16 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public int getGamemode() {
         return getPlayer().getGameMode().getValue();
+    }
+
+    @Override
+    public double getHealth() {
+        return getPlayer().getHealth();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return getPlayer().getDisplayName();
     }
 
     @Override

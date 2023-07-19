@@ -1,12 +1,13 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.backend.BackendTabPlayer;
+import me.neznamy.tab.shared.backend.EntityData;
+import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -18,17 +19,17 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.text.Text;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Getter
-public final class SpongeTabPlayer extends TabPlayer {
+public class SpongeTabPlayer extends BackendTabPlayer {
 
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     private final TabList tabList = new SpongeTabList(this);
     private final BossBar bossBar = new SpongeBossBar(this);
 
     public SpongeTabPlayer(final Player player) {
-        super(player, player.getUniqueId(), player.getName(), TAB.getInstance().getConfiguration().getServerName(),
-                player.getWorld().getName(), TAB.getInstance().getServerVersion().getNetworkId(), true);
+        super(player, player.getUniqueId(), player.getName(), player.getWorld().getName());
     }
 
     @Override
@@ -88,5 +89,35 @@ public final class SpongeTabPlayer extends TabPlayer {
         if (gameMode.equals(GameModes.ADVENTURE)) return 2;
         if (gameMode.equals(GameModes.SPECTATOR)) return 3;
         return 0;
+    }
+
+    @Override
+    public double getHealth() {
+        return getPlayer().health().get();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return getPlayer().getDisplayNameData().displayName().get().toPlain();
+    }
+
+    @Override
+    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
+        // Not available
+    }
+
+    @Override
+    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
+        // Not available
+    }
+
+    @Override
+    public void teleportEntity(int entityId, @NotNull Location location) {
+        // Not available
+    }
+
+    @Override
+    public void destroyEntities(int... entities) {
+        // Not available
     }
 }

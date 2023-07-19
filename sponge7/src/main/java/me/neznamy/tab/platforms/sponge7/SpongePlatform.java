@@ -16,7 +16,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
 @RequiredArgsConstructor
-public final class SpongePlatform implements BackendPlatform {
+public class SpongePlatform implements BackendPlatform {
 
     private final Sponge7TAB plugin;
 
@@ -30,11 +30,6 @@ public final class SpongePlatform implements BackendPlatform {
         for (Player player : Sponge.getServer().getOnlinePlayers()) {
             TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
         }
-    }
-
-    @Override
-    public void registerPlaceholders() {
-        new SpongePlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
     }
 
     @Override
@@ -66,5 +61,10 @@ public final class SpongePlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Sponge] " + Sponge.getPlatform().getMinecraftVersion().getName();
+    }
+
+    @Override
+    public double getTPS() {
+        return Sponge.getServer().getTicksPerSecond();
     }
 }

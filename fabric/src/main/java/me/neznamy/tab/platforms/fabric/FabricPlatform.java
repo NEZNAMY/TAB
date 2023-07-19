@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class FabricPlatform implements BackendPlatform {
+public class FabricPlatform implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -27,11 +27,6 @@ public final class FabricPlatform implements BackendPlatform {
         for (ServerPlayer player : PlayerLookup.all(FabricTAB.getInstance().getServer())) {
             TAB.getInstance().addPlayer(new FabricTabPlayer(player));
         }
-    }
-
-    @Override
-    public void registerPlaceholders() {
-        new FabricPlaceholderRegistry().registerPlaceholders(TAB.getInstance().getPlaceholderManager());
     }
 
     @Override
@@ -67,5 +62,10 @@ public final class FabricPlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Fabric] " + SharedConstants.getCurrentVersion().getName();
+    }
+
+    @Override
+    public double getTPS() {
+        return -1;
     }
 }
