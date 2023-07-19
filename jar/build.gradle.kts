@@ -7,11 +7,9 @@ plugins {
 val platforms = setOf(
     rootProject.projects.bukkit,
     rootProject.projects.bungeecord,
-    rootProject.projects.krypton,
     rootProject.projects.velocity,
     rootProject.projects.sponge7,
     rootProject.projects.sponge8,
-//    rootProject.projects.fabric
 ).map { it.dependencyProject }
 
 tasks {
