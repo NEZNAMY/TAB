@@ -263,7 +263,6 @@ global-playerlist:
   display-others-as-spectators: false
   display-vanished-players-as-spectators: true
   isolate-unlisted-servers: false
-  update-latency: false
   spy-servers:
     - spyserver1
     - spyserver2

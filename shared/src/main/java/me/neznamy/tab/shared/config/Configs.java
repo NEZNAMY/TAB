@@ -65,6 +65,7 @@ public class Configs {
         converter.convert301to302(config);
         converter.convert331to332(config);
         converter.convert332to400(config);
+        converter.convert403to404(config);
         if (config.getBoolean("mysql.enabled", false)) {
             try {
                 // Initialization to try to avoid java.sql.SQLException: No suitable driver found

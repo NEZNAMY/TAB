@@ -423,4 +423,11 @@ public class Converter {
         disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
         if (config.hasConfigOption("layout.hide-vanished-players")) config.set("layout.hide-vanished-players", null);
     }
+
+    public void convert403to404(@NotNull ConfigurationFile config) {
+        if (config.hasConfigOption("global-playerlist.update-latency")) {
+            TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 4.0.3 to 4.0.4"));
+            config.set("global-playerlist.update-latency", null);
+        }
+    }
 }
