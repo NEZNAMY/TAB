@@ -10,7 +10,7 @@ import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
 
 /**
- * Main class for BungeeCord platform
+ * Main class for BungeeCord.
  */
 public class BungeeTAB extends Plugin {
 
@@ -25,9 +25,7 @@ public class BungeeTAB extends Plugin {
         getProxy().getPluginManager().registerCommand(this, new BungeeTabCommand());
         TAB.setInstance(new TAB(new BungeePlatform(this), ProtocolVersion.PROXY, getDataFolder()));
         TAB.getInstance().load();
-        Metrics metrics = new Metrics(this, 10535);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+        new Metrics(this, 10535).addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
 
     @Override

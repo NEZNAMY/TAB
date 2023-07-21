@@ -51,11 +51,12 @@ public class ViaVersionHook {
     }
 
     /**
-     * Prints warn into console when ViaVersion is installed on proxy.
+     * Prints warn into console when ViaVersion is installed on BungeeCord.
+     * Surprisingly, the issue with wrong protocol version is not present on Velocity.
      */
     public void printProxyWarn() {
-        if (!installed || TAB.getInstance().getServerVersion() != ProtocolVersion.PROXY) return;
-        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Detected plugin ViaVersion, which when installed on proxy acts like a" +
+        if (!installed) return;
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Detected plugin ViaVersion, which when installed on BungeeCord acts like a" +
                 " client-sided protocol hack, making it impossible for TAB to properly detect player version and causing issues " +
                 "if client and server versions don't match, which include, but are not limited to:"));
         TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("#1 - NameTag prefix/suffix being cut to 16 characters even for 1.13+ players"));

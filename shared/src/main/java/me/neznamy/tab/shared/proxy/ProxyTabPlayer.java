@@ -194,4 +194,16 @@ public abstract class ProxyTabPlayer extends TabPlayer {
             out.writeDouble((double) value);
         } else throw new IllegalArgumentException("Unhandled message data type " + value.getClass().getName());
     }
+
+    /**
+     * Prints an error message saying player was not connected to any server,
+     * therefore plugin message could not be sent.
+     *
+     * @param   message
+     *          Message that failed to send
+     */
+    public void errorNoServer(byte[] message) {
+        TAB.getInstance().getErrorManager().printError("Skipped plugin message send to " + getName() + ", because player is not" +
+                "connected to any server (message=" + new String(message) + ")");
+    }
 }

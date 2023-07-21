@@ -18,14 +18,17 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisPlayer;
 import me.neznamy.tab.shared.features.sorting.Sorting;
+import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,11 +41,16 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public class BungeePipelineInjector extends NettyPipelineInjector {
 
+    /** Inaccessible bungee internals */
     private static @Nullable Field wrapperField;
+    private static @Nullable Object directionData;
+    private static @Nullable Method getId;
 
     static {
         try {
             (wrapperField = InitialHandler.class.getDeclaredField("ch")).setAccessible(true);
+            directionData = ReflectionUtils.setAccessible(Protocol.class.getDeclaredField("TO_CLIENT")).get(Protocol.GAME);
+            getId = ReflectionUtils.setAccessible(directionData.getClass().getDeclaredMethod("getId", Class.class, int.class));
         } catch (ReflectiveOperationException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to initialize bungee internal fields", exception);
         }
@@ -198,7 +206,7 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             try {
                 int packetId = buf.readByte();
                 for (int i=0; i<extraPacketClasses.length; i++) {
-                    if (packetId == ((BungeeTabPlayer)player).getPacketId(extraPacketClasses[i])) {
+                    if (packetId == getPacketId(((BungeeTabPlayer)player).getPlayer().getPendingConnection().getVersion(), extraPacketClasses[i])) {
                         DefinedPacket packet = extraPacketSuppliers[i].get();
                         packet.read(buf, null, ((ProxiedPlayer)player.getPlayer()).getPendingConnection().getVersion());
                         buf.release();
@@ -210,6 +218,26 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             }
             buf.readerIndex(marker);
             return buf;
+        }
+
+        /**
+         * Returns packet ID of specified packet on the protocol version
+         *
+         * @param   protocolVersion
+         *          Protocol version to get packet id for
+         * @param   clazz
+         *          packet class
+         * @return  packet ID
+         */
+        private int getPacketId(int protocolVersion, @NotNull Class<? extends DefinedPacket> clazz) {
+            if (getId == null) return -1;
+            try {
+                return (int) getId.invoke(directionData, clazz, protocolVersion);
+            } catch (ReflectiveOperationException e) {
+                TAB.getInstance().getErrorManager().printError("Failed to get packet id for packet " + clazz +
+                        " with client version " + protocolVersion, e);
+                return -1;
+            }
         }
     }
 }

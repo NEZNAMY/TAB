@@ -30,16 +30,17 @@ import java.nio.file.Path;
         url = TabConstants.PLUGIN_WEBSITE,
         authors = {TabConstants.PLUGIN_AUTHOR}
 )
+@Getter
 public class VelocityTAB {
 
     /** ProxyServer instance */
-    @Inject @Getter private ProxyServer server;
+    @Inject private ProxyServer server;
     
     /** Metrics factory for bStats */
     @Inject private Metrics.Factory metricsFactory;
 
     /** Console logger with TAB's prefix */
-    @Inject @Getter private Logger logger;
+    @Inject private Logger logger;
 
     /** Folder for configuration files */
     @Inject @DataDirectory Path dataFolder;
@@ -56,16 +57,16 @@ public class VelocityTAB {
      */
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        server.getCommandManager().register(server.getCommandManager().metaBuilder(TabConstants.COMMAND_PROXY).build(), new VelocityTabCommand());
         server.getChannelRegistrar().register(minecraftChannelIdentifier);
         server.getEventManager().register(this, new VelocityEventListener());
-        TAB.setInstance(new TAB(new VelocityPlatform(this, server), ProtocolVersion.PROXY, dataFolder.toFile()));
-        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Velocity compatibility is very experimental and should not be used in production! " +
-                "If you use it, you WILL run into issues and they WILL NOT be fixed. Any bug reports featuring Velocity installation " +
-                "will be immediately closed."));
+        server.getCommandManager().register(server.getCommandManager().metaBuilder(TabConstants.COMMAND_PROXY).build(), new VelocityTabCommand());
+        TAB.setInstance(new TAB(new VelocityPlatform(this), ProtocolVersion.PROXY, dataFolder.toFile()));
         TAB.getInstance().load();
         metricsFactory.make(this, 10533).addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED,
                 () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
+        TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("Velocity compatibility is very experimental and should not be used in production! " +
+                "If you use it, you WILL run into issues and they WILL NOT be fixed. Any bug reports featuring Velocity installation " +
+                "will be immediately closed."));
     }
     
     /**

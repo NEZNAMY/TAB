@@ -27,18 +27,18 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
     }
 
     @EventHandler
-    public void onChat(ChatEvent e) {
+    public void onCommand(ChatEvent e) {
         if (e.isCommand() && command(((ProxiedPlayer)e.getSender()).getUniqueId(), e.getMessage())) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void on(PluginMessageEvent event) {
-        if (!event.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
-        if (event.getReceiver() instanceof ProxiedPlayer) {
-            event.setCancelled(true);
-            pluginMessage(((ProxiedPlayer) event.getReceiver()).getUniqueId(), event.getData());
+    public void on(PluginMessageEvent e) {
+        if (!e.getTag().equals(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME)) return;
+        if (e.getReceiver() instanceof ProxiedPlayer) {
+            e.setCancelled(true);
+            pluginMessage(((ProxiedPlayer) e.getReceiver()).getUniqueId(), e.getData());
         }
     }
 

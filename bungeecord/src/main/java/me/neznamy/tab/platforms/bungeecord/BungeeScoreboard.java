@@ -19,28 +19,28 @@ import java.util.Collection;
  */
 public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
-    public BungeeScoreboard(BungeeTabPlayer player) {
+    public BungeeScoreboard(@NotNull BungeeTabPlayer player) {
         super(player);
     }
 
     @Override
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        player.sendPacket(new ScoreboardDisplay((byte)slot.ordinal(), objective));
+        player.getPlayer().unsafe().sendPacket(new ScoreboardDisplay((byte)slot.ordinal(), objective));
     }
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 0));
+        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 0));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(new ScoreboardObjective(objectiveName, "", null, (byte) 1)); // Empty string to prevent kick on 1.7
+        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, "", null, (byte) 1)); // Empty string to prevent kick on 1.7
     }
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 2));
+        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 2));
     }
 
     @Override
@@ -49,14 +49,14 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.sendPacket(new Team(name, (byte) 0, jsonOrRaw(name, player.getVersion()),
+        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 0, jsonOrRaw(name, player.getVersion()),
                 jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
                 visibility.toString(), collision.toString(), color, (byte)options, players.toArray(new String[0])));
     }
 
     @Override
     public void unregisterTeam0(@NotNull String name) {
-        player.sendPacket(new Team(name));
+        player.getPlayer().unsafe().sendPacket(new Team(name));
     }
 
     @Override
@@ -65,9 +65,19 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.sendPacket(new Team(name, (byte) 2, jsonOrRaw(name, player.getVersion()),
+        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 2, jsonOrRaw(name, player.getVersion()),
                 jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
                 visibility.toString(), collision.toString(), color, (byte)options, null));
+    }
+
+    @Override
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
+        player.getPlayer().unsafe().sendPacket(new ScoreboardScore(playerName, (byte) 0, objective, score));
+    }
+
+    @Override
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
+        player.getPlayer().unsafe().sendPacket(new ScoreboardScore(playerName, (byte) 1, objective, 0));
     }
 
     /**
@@ -90,13 +100,4 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         }
     }
 
-    @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        player.sendPacket(new ScoreboardScore(playerName, (byte) 0, objective, score));
-    }
-
-    @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        player.sendPacket(new ScoreboardScore(playerName, (byte) 1, objective, 0));
-    }
 }

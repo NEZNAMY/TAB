@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
 
-    public VelocityScoreboard(VelocityTabPlayer player) {
+    public VelocityScoreboard(@NotNull VelocityTabPlayer player) {
         super(player);
     }
 

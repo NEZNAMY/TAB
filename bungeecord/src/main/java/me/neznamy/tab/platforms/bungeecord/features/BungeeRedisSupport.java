@@ -1,24 +1,24 @@
-package me.neznamy.tab.platforms.bungeecord;
+package me.neznamy.tab.platforms.bungeecord.features;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import lombok.AllArgsConstructor;
+import me.neznamy.tab.platforms.bungeecord.BungeeTAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Redis implementation for BungeeCord
+ * RedisBungee implementation for BungeeCord
  */
 @AllArgsConstructor
-public class RedisBungeeSupport extends RedisSupport implements Listener {
+public class BungeeRedisSupport extends RedisSupport implements Listener {
 
     /** Plugin reference for registering listener */
-    private final @NotNull Plugin plugin;
+    @NotNull private final BungeeTAB plugin;
 
     @EventHandler
     public void onMessage(@NotNull PubSubMessageEvent e) {

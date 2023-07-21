@@ -1,15 +1,18 @@
 package me.neznamy.tab.platforms.velocity;
 
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.util.GameProfile;
 import lombok.Getter;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * TabPlayer implementation for Velocity
@@ -17,9 +20,14 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
-    private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
-    private final TabList tabList = new VelocityTabList(this);
-    private final BossBar bossBar = new AdventureBossBar(this);
+    /** Player's scoreboard */
+    private final @NotNull Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
+
+    /** Player's tab list */
+    private final @NotNull TabList tabList = new VelocityTabList(this);
+
+    /** Player's boss bar view */
+    private final @NotNull BossBar bossBar = new AdventureBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -48,9 +56,10 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public TabList.Skin getSkin() {
-        if (getPlayer().getGameProfile().getProperties().size() == 0) return null; //offline mode
-        return new TabList.Skin(getPlayer().getGameProfile().getProperties().get(0).getValue(), getPlayer().getGameProfile().getProperties().get(0).getSignature());
+    public @Nullable TabList.Skin getSkin() {
+        List<GameProfile.Property> properties = getPlayer().getGameProfile().getProperties();
+        if (properties.size() == 0) return null; //Offline mode
+        return new TabList.Skin(properties.get(0).getValue(), properties.get(0).getSignature());
     }
     
     @Override
@@ -68,16 +77,11 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
         try {
             getPlayer().getCurrentServer().ifPresentOrElse(
                     server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message),
-                    () -> error(message)
+                    () -> errorNoServer(message)
             );
         } catch (IllegalStateException VelocityBeingVelocityException) {
             // java.lang.IllegalStateException: Not connected to server!
-            error(message);
+            errorNoServer(message);
         }
-    }
-
-    private void error(byte[] message) {
-        TAB.getInstance().getErrorManager().printError("Skipped plugin message send to " + getName() + ", because player is not" +
-                "connected to any server (message=" + new String(message) + ")");
     }
 }
