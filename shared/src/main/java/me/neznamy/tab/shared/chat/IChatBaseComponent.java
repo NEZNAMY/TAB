@@ -28,18 +28,18 @@ public class IChatBaseComponent {
      * Component cache maps to avoid large memory allocations as well as
      * higher CPU usage when using animations which send the same text on repeat.
      */
-    private static final ComponentCache<String, IChatBaseComponent> stringCache = new ComponentCache<>(10000, (text, clientVersion) -> {
+    private static final ComponentCache<String, IChatBaseComponent> stringCache = new ComponentCache<>(1000, (text, clientVersion) -> {
                 return text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<") ?
                     IChatBaseComponent.fromColoredText(text) : //contains RGB colors
                     new IChatBaseComponent(text); //no RGB
             });
 
-    private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(10000,
+    private static final ComponentCache<IChatBaseComponent, String> serializeCache = new ComponentCache<>(1000,
             (component, clientVersion) -> component.toString());
 
     /** Component cache for BungeeCord components */
     private static final @NotNull ComponentCache<IChatBaseComponent, Object> bungeeCache =
-            new ComponentCache<>(10000, IChatBaseComponent::toBungeeComponent0);
+            new ComponentCache<>(1000, IChatBaseComponent::toBungeeComponent0);
 
     public static final String EMPTY_COMPONENT = "{\"text\":\"\"}";
 

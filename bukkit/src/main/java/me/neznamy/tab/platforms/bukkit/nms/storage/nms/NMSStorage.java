@@ -81,7 +81,7 @@ public abstract class NMSStorage {
 
     public Object dummyEntity;
 
-    private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(10000,
+    private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
     /**
