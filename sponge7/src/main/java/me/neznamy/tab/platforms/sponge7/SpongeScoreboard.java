@@ -96,6 +96,16 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         });
     }
 
+    @Override
+    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
+        sb.getObjective(objective).ifPresent(o -> o.getOrCreateScore(Text.of(playerName)).setScore(score));
+    }
+
+    @Override
+    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
+        sb.getObjective(objective).ifPresent(o -> o.removeScore(Text.of(playerName)));
+    }
+
     private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(CollisionRule rule) {
         switch (rule) {
             case ALWAYS: return CollisionRules.ALWAYS;
@@ -114,15 +124,5 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
             case HIDE_FOR_OWN_TEAM: return Visibilities.HIDE_FOR_OWN_TEAM;
             default: throw new IllegalArgumentException();
         }
-    }
-
-    @Override
-    public void setScore0(@NotNull String objective, @NotNull String playerName, int score) {
-        sb.getObjective(objective).ifPresent(o -> o.getOrCreateScore(Text.of(playerName)).setScore(score));
-    }
-
-    @Override
-    public void removeScore0(@NotNull String objective, @NotNull String playerName) {
-        sb.getObjective(objective).ifPresent(o -> o.removeScore(Text.of(playerName)));
     }
 }

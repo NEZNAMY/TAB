@@ -13,6 +13,9 @@ import org.spongepowered.api.text.Text;
 
 import java.util.UUID;
 
+/**
+ * TabList implementation for Sponge 7 and lower
+ */
 @RequiredArgsConstructor
 public class SpongeTabList implements TabList {
 
@@ -61,11 +64,10 @@ public class SpongeTabList implements TabList {
 
     private GameMode convertGameMode(int mode) {
         switch (mode) {
-            case 0: return GameModes.SURVIVAL;
             case 1: return GameModes.CREATIVE;
             case 2: return GameModes.ADVENTURE;
             case 3: return GameModes.SPECTATOR;
-            default: return GameModes.NOT_SET;
+            default: return GameModes.SURVIVAL;
         }
     }
 }

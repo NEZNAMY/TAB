@@ -49,7 +49,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean hasInvisibilityPotion() {
-        final PotionEffectData potionEffects = getPlayer().get(PotionEffectData.class).orElse(null);
+        PotionEffectData potionEffects = getPlayer().get(PotionEffectData.class).orElse(null);
         if (potionEffects == null) return false;
         return potionEffects.asList().stream().anyMatch(effect -> effect.getType().equals(PotionEffectTypes.INVISIBILITY));
     }
@@ -61,9 +61,9 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public TabList.Skin getSkin() {
-        final Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
-        if (properties.isEmpty()) return null; //offline mode
-        final ProfileProperty property = properties.iterator().next();
+        Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
+        if (properties.isEmpty()) return null; // Offline mode
+        ProfileProperty property = properties.iterator().next();
         return new TabList.Skin(property.getValue(), property.getSignature().orElse(null));
     }
 
@@ -84,7 +84,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public int getGamemode() {
-        final GameMode gameMode = getPlayer().getGameModeData().type().get();
+        GameMode gameMode = getPlayer().getGameModeData().type().get();
         if (gameMode.equals(GameModes.CREATIVE)) return 1;
         if (gameMode.equals(GameModes.ADVENTURE)) return 2;
         if (gameMode.equals(GameModes.SPECTATOR)) return 3;

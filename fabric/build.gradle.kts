@@ -1,5 +1,3 @@
-// Versions that don't require any code changes:
-//      1.19.3, 1.19.4, 1.20, 1.20.1
 val minecraftVersion = "1.20.1"
 
 val v114 = "0.28.5+1.14"

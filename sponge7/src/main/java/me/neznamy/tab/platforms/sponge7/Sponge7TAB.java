@@ -34,15 +34,14 @@ public class Sponge7TAB {
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
+        game.getEventManager().registerListeners(this, new SpongeEventListener());
+        TAB.setInstance(new TAB(new SpongePlatform(this), ProtocolVersion.fromFriendlyName(game.getPlatform().getMinecraftVersion().getName()), configDir));
+        TAB.getInstance().load();
         SpongeTabCommand cmd = new SpongeTabCommand();
         game.getCommandManager().register(this, CommandSpec.builder()
                 .arguments(cmd, GenericArguments.remainingJoinedStrings(Text.of("arguments"))) // GenericArguments.none() doesn't work, so rip no-arg
                 .executor(cmd)
                 .build(), TabConstants.COMMAND_BACKEND);
-        game.getEventManager().registerListeners(this, new SpongeEventListener());
-        String version = game.getPlatform().getMinecraftVersion().getName();
-        TAB.setInstance(new TAB(new SpongePlatform(this), ProtocolVersion.fromFriendlyName(version), configDir));
-        TAB.getInstance().load();
     }
 
     @Listener

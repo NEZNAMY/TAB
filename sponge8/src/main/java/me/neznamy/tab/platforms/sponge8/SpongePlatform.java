@@ -14,7 +14,10 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
-public final class SpongePlatform implements BackendPlatform {
+/**
+ * Platform implementation for Sponge 8 and up
+ */
+public class SpongePlatform implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -34,11 +37,6 @@ public final class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() {
-        return null;
-    }
-
-    @Override
     public @NotNull NameTag getUnlimitedNameTags() {
         return new NameTag();
     }
@@ -46,6 +44,11 @@ public final class SpongePlatform implements BackendPlatform {
     @Override
     public @NotNull TabExpansion createTabExpansion() {
         return new EmptyTabExpansion();
+    }
+
+    @Override
+    public @Nullable TabFeature getPerWorldPlayerList() {
+        return null;
     }
 
     @Override
@@ -57,7 +60,7 @@ public final class SpongePlatform implements BackendPlatform {
     @Override
     public void logWarn(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
-                message.toAdventureComponent(TAB.getInstance().getServerVersion()))); // Colors are not supported here
+                message.toAdventureComponent(TAB.getInstance().getServerVersion()))); // Sponge console does not support colors
     }
 
     @Override

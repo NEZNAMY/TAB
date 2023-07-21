@@ -15,9 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
+/**
+ * Platform implementation for Sponge 7 and lower
+ */
 @RequiredArgsConstructor
 public class SpongePlatform implements BackendPlatform {
 
+    /** Plugin reference */
     private final Sponge7TAB plugin;
 
     @Override
@@ -33,7 +37,9 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector createPipelineInjector() { return null; }
+    public @Nullable PipelineInjector createPipelineInjector() {
+        return null;
+    }
 
     @Override
     public @NotNull NameTag getUnlimitedNameTags() {
@@ -46,7 +52,9 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() { return null; }
+    public @Nullable TabFeature getPerWorldPlayerList() {
+        return null;
+    }
 
     @Override
     public void logInfo(@NotNull IChatBaseComponent message) {

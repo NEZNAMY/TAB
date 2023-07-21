@@ -32,7 +32,6 @@ public class SpongeTabCommand extends CommandElement implements CommandExecutor 
             boolean hasReloadPermission = source.hasPermission(TabConstants.Permission.COMMAND_RELOAD);
             boolean hasAdminPermission = source.hasPermission(TabConstants.Permission.COMMAND_ALL);
             List<String> messages = TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission);
-
             for (String message : messages) {
                 source.sendMessage(TextSerializers.FORMATTING_CODE.deserialize(message));
             }
@@ -53,21 +52,17 @@ public class SpongeTabCommand extends CommandElement implements CommandExecutor 
     }
 
     @Override
-    public @NotNull List<String> complete(@NotNull CommandSource src, @NotNull CommandArgs commandArgs, @NotNull CommandContext context) {
+    public @NotNull List<String> complete(@NotNull CommandSource source, @NotNull CommandArgs commandArgs, @NotNull CommandContext context) {
         TabPlayer player = null;
-        if (src.getCommandSource().isPresent()) {
-            CommandSource source = src.getCommandSource().get();
-            if (source instanceof Player) {
-                player = TAB.getInstance().getPlayer(((Player)source).getUniqueId());
-                if (player == null) return Collections.emptyList(); // Player not loaded correctly
-            }
-            String[] args = commandArgs.getRaw().split(" ");
-            if (commandArgs.getRaw().endsWith(" ")) {
-                args = Arrays.copyOf(args, args.length+1);
-                args[args.length-1] = "";
-            }
-            return TAB.getInstance().getCommand().complete(player, args);
+        if (source instanceof Player) {
+            player = TAB.getInstance().getPlayer(((Player)source).getUniqueId());
+            if (player == null) return Collections.emptyList(); // Player not loaded correctly
         }
-        return Collections.emptyList();
+        String[] args = commandArgs.getRaw().split(" ");
+        if (commandArgs.getRaw().endsWith(" ")) {
+            args = Arrays.copyOf(args, args.length+1);
+            args[args.length-1] = "";
+        }
+        return TAB.getInstance().getCommand().complete(player, args);
     }
 }

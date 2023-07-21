@@ -34,10 +34,10 @@ public class Sponge8TAB {
     @Listener
     public void onServerStart(StartingEngineEvent<Server> event) {
         game.eventManager().registerListeners(container, new SpongeEventListener());
-        String version = game.platform().minecraftVersion().name();
-        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(version), configDir.toFile()));
+        TAB.setInstance(new TAB(new SpongePlatform(), ProtocolVersion.fromFriendlyName(game.platform().minecraftVersion().name()), configDir.toFile()));
         TAB.getInstance().load();
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED,
+                () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> TAB.getInstance().getServerVersion().getFriendlyName()));
     }
 

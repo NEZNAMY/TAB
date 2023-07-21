@@ -24,11 +24,6 @@ public class SpongeEventListener extends EventListener<ServerPlayer> {
         join(event.player());
     }
 
-    @Listener(order = Order.PRE)
-    public void onRespawn(RespawnPlayerEvent.Recreate event) {
-        replacePlayer(event.recreatedPlayer().uniqueId(), event.recreatedPlayer());
-    }
-
     @Listener
     public void onWorldChange(ChangeEntityWorldEvent event, @First Player player) {
         worldChange(event.entity().uniqueId(), event.destinationWorld().toString());
@@ -37,6 +32,11 @@ public class SpongeEventListener extends EventListener<ServerPlayer> {
     @Listener
     public void onCommand(ExecuteCommandEvent.Pre event, @First Player player) {
         if (command(player.uniqueId(), event.command())) event.setCancelled(true);
+    }
+
+    @Listener(order = Order.PRE)
+    public void onRespawn(RespawnPlayerEvent.Recreate event) {
+        replacePlayer(event.recreatedPlayer().uniqueId(), event.recreatedPlayer());
     }
 
     @Override

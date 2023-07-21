@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
@@ -22,11 +23,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-public final class SpongeTabPlayer extends BackendTabPlayer {
+public class SpongeTabPlayer extends BackendTabPlayer {
 
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     private final TabList tabList = new SpongeTabList(this);
-    private final AdventureBossBar bossBar = new AdventureBossBar(this);
+    private final BossBar bossBar = new AdventureBossBar(this);
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), player.world().key().value());
@@ -63,7 +64,7 @@ public final class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public TabList.Skin getSkin() {
         List<ProfileProperty> list = getPlayer().profile().properties();
-        if (list.isEmpty()) return null;
+        if (list.isEmpty()) return null; // Offline mode
         return new TabList.Skin(list.get(0).value(), list.get(0).signature().orElse(null));
     }
 

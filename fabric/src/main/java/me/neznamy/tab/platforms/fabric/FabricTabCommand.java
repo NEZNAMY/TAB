@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -48,10 +47,10 @@ public class FabricTabCommand {
 
     private int executeCommand(@NotNull CommandSourceStack source, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
-            boolean hasReloadPermission = FabricTAB.getInstance().hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
-            boolean hasAdminPermission = FabricTAB.getInstance().hasPermission(source, TabConstants.Permission.COMMAND_ALL);
+            boolean hasReloadPermission = FabricTAB.hasPermission(source, TabConstants.Permission.COMMAND_RELOAD);
+            boolean hasAdminPermission = FabricTAB.hasPermission(source, TabConstants.Permission.COMMAND_ALL);
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, hasReloadPermission, hasAdminPermission)) {
-                source.sendSystemMessage(Component.Serializer.fromJson(IChatBaseComponent.optimizedComponent(message).toString()));
+                source.sendSystemMessage(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(message), TAB.getInstance().getServerVersion()));
             }
         } else {
             if (source.getEntity() == null) {

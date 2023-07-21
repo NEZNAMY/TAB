@@ -12,6 +12,9 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.UUID;
 
+/**
+ * TabList implementation for Sponge 8 and up
+ */
 @RequiredArgsConstructor
 public class SpongeTabList implements TabList {
 

@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.fabric;
 
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -16,10 +15,10 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@RequiredArgsConstructor
-public class FabricPlatform implements BackendPlatform {
-
-    @NotNull private final MinecraftServer server;
+/**
+ * Platform implementation for Fabric
+ */
+public record FabricPlatform(MinecraftServer server) implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -28,28 +27,32 @@ public class FabricPlatform implements BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (ServerPlayer player : PlayerLookup.all(FabricTAB.getInstance().getServer())) {
+        for (ServerPlayer player : PlayerLookup.all(server)) {
             TAB.getInstance().addPlayer(new FabricTabPlayer(player));
         }
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNameTags() {
-        return new NameTag();
-    }
-
-    @Override
-    public @Nullable PipelineInjector createPipelineInjector() {
+    public @Nullable
+    PipelineInjector createPipelineInjector() {
         return null;
     }
 
     @Override
-    public @NotNull TabExpansion createTabExpansion() {
+    public @NotNull
+    NameTag getUnlimitedNameTags() {
+        return new NameTag();
+    }
+
+    @Override
+    public @NotNull
+    TabExpansion createTabExpansion() {
         return new EmptyTabExpansion();
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() {
+    public @Nullable
+    TabFeature getPerWorldPlayerList() {
         return null;
     }
 
