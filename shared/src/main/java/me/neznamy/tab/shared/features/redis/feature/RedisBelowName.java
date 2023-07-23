@@ -31,14 +31,14 @@ public class RedisBelowName extends RedisFeature {
     @Override
     public void onJoin(@NotNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-            player.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, redis.getName(), values.get(redis));
+            player.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, redis.getNickname(), values.get(redis));
         }
     }
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getName(), values.get(player));
+            viewer.getScoreboard().setScore(BelowName.OBJECTIVE_NAME, player.getNickname(), values.get(player));
         }
     }
 

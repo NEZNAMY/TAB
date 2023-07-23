@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.features.redis.feature;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
@@ -20,7 +21,7 @@ import java.util.WeakHashMap;
 public class RedisYellowNumber extends RedisFeature {
 
     private final RedisSupport redisSupport;
-    private final Map<RedisPlayer, Integer> values = new WeakHashMap<>();
+    @Getter private final Map<RedisPlayer, Integer> values = new WeakHashMap<>();
 
     public RedisYellowNumber(@NotNull RedisSupport redisSupport) {
         this.redisSupport = redisSupport;
@@ -30,14 +31,14 @@ public class RedisYellowNumber extends RedisFeature {
     @Override
     public void onJoin(@NotNull TabPlayer player) {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
-            player.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, redis.getName(), values.get(redis));
+            player.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, redis.getNickname(), values.get(redis));
         }
     }
 
     @Override
     public void onJoin(@NotNull RedisPlayer player) {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
-            viewer.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getName(), values.get(player));
+            viewer.getScoreboard().setScore(YellowNumber.OBJECTIVE_NAME, player.getNickname(), values.get(player));
         }
     }
 

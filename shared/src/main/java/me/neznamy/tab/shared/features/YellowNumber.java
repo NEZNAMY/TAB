@@ -67,7 +67,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             if (disableChecker.isDisabledPlayer(viewer) || viewer.isBedrockPlayer()) continue;
             for (TabPlayer target : TAB.getInstance().getOnlinePlayers()) {
-                viewer.getScoreboard().setScore(OBJECTIVE_NAME, target.getName(), getValue(target));
+                viewer.getScoreboard().setScore(OBJECTIVE_NAME, target.getNickname(), getValue(target));
             }
         }
     }
@@ -95,10 +95,10 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (!disableChecker.isDisabledPlayer(all)) {
                 if (!all.isBedrockPlayer()) {
-                    all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getName(), value);
+                    all.getScoreboard().setScore(OBJECTIVE_NAME, connectedPlayer.getNickname(), value);
                 }
                 if (!connectedPlayer.isBedrockPlayer()) {
-                    connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getName(), getValue(all));
+                    connectedPlayer.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
                 }
             }
         }
@@ -111,7 +111,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         p.getScoreboard().registerObjective(OBJECTIVE_NAME, TITLE, displayType);
         p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.PLAYER_LIST, OBJECTIVE_NAME);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
-            p.getScoreboard().setScore(OBJECTIVE_NAME, all.getName(), getValue(all));
+            p.getScoreboard().setScore(OBJECTIVE_NAME, all.getNickname(), getValue(all));
         }
     }
 
@@ -128,7 +128,7 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
         int value = getValue(refreshed);
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (disableChecker.isDisabledPlayer(all) || all.isBedrockPlayer()) continue;
-            all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getName(), value);
+            all.getScoreboard().setScore(OBJECTIVE_NAME, refreshed.getNickname(), value);
         }
         if (redis != null) redis.updateYellowNumber(refreshed, value);
     }

@@ -62,6 +62,14 @@ public abstract class NettyPipelineInjector extends PipelineInjector {
         }
     }
 
+    public @Nullable TabPlayer getPlayer(@NotNull String name) {
+        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
+            if (p.getNickname().equals(name))
+                return p; // Nicked name
+        }
+        return TAB.getInstance().getPlayer(name); // Try original name
+    }
+
     public abstract void onDisplayObjective(@NotNull TabPlayer player, @NotNull Object packet);
 
     public abstract void onObjective(@NotNull TabPlayer player, @NotNull Object packet);

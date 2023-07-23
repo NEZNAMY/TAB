@@ -26,6 +26,9 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
     /** Player's real name */
     @Getter private final String name;
 
+    /** Player's name as seen in GameProfile */
+    @Getter @Setter private String nickname;
+
     /** Player's unique ID */
     @Getter private final UUID uniqueId;
 
@@ -85,6 +88,7 @@ public abstract class TabPlayer implements me.neznamy.tab.api.TabPlayer {
         this.player = player;
         this.uniqueId = uniqueId;
         this.name = name;
+        this.nickname = name;
         this.server = server;
         this.world = world;
         this.version = ProtocolVersion.fromNetworkId(protocolVersion);

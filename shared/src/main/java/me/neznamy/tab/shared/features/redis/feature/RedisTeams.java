@@ -18,14 +18,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@Getter
 public class RedisTeams extends RedisFeature {
 
     private final RedisSupport redisSupport;
     private final NameTag nameTags;
-    @Getter private final Map<RedisPlayer, String> teamNames = new WeakHashMap<>();
-    @Getter private final Map<RedisPlayer, String> prefixes = new WeakHashMap<>();
-    @Getter private final Map<RedisPlayer, String> suffixes = new WeakHashMap<>();
-    @Getter private final Map<RedisPlayer, NameVisibility> nameVisibilities = new WeakHashMap<>();
+    private final Map<RedisPlayer, String> teamNames = new WeakHashMap<>();
+    private final Map<RedisPlayer, String> prefixes = new WeakHashMap<>();
+    private final Map<RedisPlayer, String> suffixes = new WeakHashMap<>();
+    private final Map<RedisPlayer, NameVisibility> nameVisibilities = new WeakHashMap<>();
 
     public RedisTeams(@NotNull RedisSupport redisSupport, @NotNull NameTag nameTags) {
         this.redisSupport = redisSupport;
@@ -38,7 +39,7 @@ public class RedisTeams extends RedisFeature {
         for (RedisPlayer redis : redisSupport.getRedisPlayers().values()) {
             player.getScoreboard().registerTeam(teamNames.get(redis), prefixes.get(redis), suffixes.get(redis),
                         nameVisibilities.get(redis), CollisionRule.ALWAYS,
-                        Collections.singletonList(redis.getName()), 2);
+                        Collections.singletonList(redis.getNickname()), 2);
         }
     }
 
@@ -47,7 +48,7 @@ public class RedisTeams extends RedisFeature {
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getScoreboard().registerTeam(teamNames.get(player), prefixes.get(player), suffixes.get(player),
                     nameVisibilities.get(player), CollisionRule.ALWAYS,
-                    Collections.singletonList(player.getName()), 2);
+                    Collections.singletonList(player.getNickname()), 2);
         }
     }
 
@@ -143,7 +144,7 @@ public class RedisTeams extends RedisFeature {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
                     viewer.getScoreboard().unregisterTeam(oldTeamName);
                     viewer.getScoreboard().registerTeam(newTeamName, prefix, suffix, nameVisibility,
-                            CollisionRule.ALWAYS, Collections.singletonList(target.getName()), 2);
+                            CollisionRule.ALWAYS, Collections.singletonList(target.getNickname()), 2);
                 }
             } else {
                 for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {

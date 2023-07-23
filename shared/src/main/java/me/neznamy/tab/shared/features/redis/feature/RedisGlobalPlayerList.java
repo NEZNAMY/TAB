@@ -100,7 +100,7 @@ public class RedisGlobalPlayerList extends RedisFeature {
     }
 
     private @NotNull TabList.Entry getEntry(@NotNull RedisPlayer player) {
-        return new TabList.Entry(player.getUniqueId(), player.getName(), skins.get(player), 0, 0,
+        return new TabList.Entry(player.getUniqueId(), player.getNickname(), skins.get(player), 0, 0,
                 redisSupport.getRedisPlayerList() == null ? null :
                         IChatBaseComponent.optimizedComponent(redisSupport.getRedisPlayerList().getFormat(player)));
     }

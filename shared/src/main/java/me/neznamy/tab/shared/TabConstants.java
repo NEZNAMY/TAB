@@ -203,6 +203,7 @@ public class TabConstants {
 
         //additional info displayed in cpu command
         public static final String PACKET_DESERIALIZING = "Packet deserializing";
+        public static final String NICK_COMPATIBILITY = "Nick";
 
         public static String scoreboardLine(String line) {
             return "scoreboard-" + line;

@@ -118,10 +118,11 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             Sorting sorting = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SORTING);
             String expectedTeam = sorting.getShortTeamName(p);
-            if (expectedTeam != null && col.contains(p.getName()) &&
+            if (expectedTeam != null && (col.contains(p.getNickname()) || col.contains(p.getName())) &&
                     !((NameTag)TAB.getInstance().getNameTagManager()).getDisableChecker().isDisabledPlayer(p) &&
                     !TAB.getInstance().getNameTagManager().hasTeamHandlingPaused(p) && !packet.getName().equals(expectedTeam)) {
                 logTeamOverride(packet.getName(), p.getName(), expectedTeam);
+                col.remove(p.getNickname());
                 col.remove(p.getName());
             }
         }
@@ -130,9 +131,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
             RedisTeams teams = redis.getRedisTeams();
             if (teams != null) {
                 for (RedisPlayer p : redis.getRedisPlayers().values()) {
-                    if (col.contains(p.getName()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
-                        logTeamOverride(packet.getName(), p.getName(), teams.getTeamNames().get(p));
-                        col.remove(p.getName());
+                    if (col.contains(p.getNickname()) && !packet.getName().equals(teams.getTeamNames().get(p))) {
+                        logTeamOverride(packet.getName(), p.getNickname(), teams.getTeamNames().get(p));
+                        col.remove(p.getNickname());
                     }
                 }
             }
@@ -149,6 +150,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
                 }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
+                }
             }
         } else {
             PlayerListItem listItem = (PlayerListItem) packet;
@@ -156,6 +160,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
                 }
             }
         }

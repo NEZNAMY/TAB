@@ -251,6 +251,15 @@ public class FeatureManager {
         }
     }
 
+    public void onEntryAdd(TabPlayer packetReceiver, UUID id, String name) {
+        for (TabFeature f : values) {
+            if (!(f instanceof EntryAddListener)) continue;
+            long time = System.nanoTime();
+            ((EntryAddListener)f).onEntryAdd(packetReceiver, id, name);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+        }
+    }
+
     public void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
@@ -363,5 +372,7 @@ public class FeatureManager {
         // Must be loaded after: Global PlayerList, PlayerList, NameTags, YellowNumber, BelowName
         RedisSupport redis = TAB.getInstance().getPlatform().getRedisSupport();
         if (redis != null) TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.REDIS_BUNGEE, redis);
+
+        featureManager.registerFeature(TabConstants.Feature.NICK_COMPATIBILITY, new NickCompatibility());
     }
 }

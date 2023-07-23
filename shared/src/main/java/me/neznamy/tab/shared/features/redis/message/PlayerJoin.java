@@ -43,7 +43,7 @@ public class PlayerJoin extends RedisMessage {
         String server = in.readUTF();
         boolean vanished = in.readBoolean();
         boolean staff = in.readBoolean();
-        decodedPlayer = new RedisPlayer(uniqueId, name, server, vanished, staff);
+        decodedPlayer = new RedisPlayer(uniqueId, name, name, server, vanished, staff);
         redisSupport.getFeatures().forEach(f -> f.read(in, decodedPlayer));
     }
 

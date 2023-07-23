@@ -12,6 +12,7 @@ public class RedisPlayer {
 
     @NotNull private UUID uniqueId;
     @NotNull private String name;
+    @NotNull private String nickname;
     @NotNull private String server;
     private boolean vanished;
     private boolean staff;

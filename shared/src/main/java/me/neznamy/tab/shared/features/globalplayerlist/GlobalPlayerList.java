@@ -123,7 +123,7 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
                 (vanishedAsSpectators && p.isVanished()) ? 3 : p.getGamemode();
         return new TabList.Entry(
                 p.getTablistId(),
-                p.getName(),
+                p.getNickname(),
                 p.getSkin(),
                 p.getPing(),
                 gameMode,
