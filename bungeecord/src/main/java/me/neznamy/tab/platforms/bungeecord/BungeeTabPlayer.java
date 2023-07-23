@@ -108,8 +108,12 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public boolean isVanished() {
-        //noinspection ConstantConditions
-        if (premiumVanish && BungeeVanishAPI.isInvisible(getPlayer())) return true;
+        try {
+            //noinspection ConstantConditions
+            if (premiumVanish && BungeeVanishAPI.isInvisible(getPlayer())) return true;
+        } catch (IllegalStateException ignored) {
+            // PV Bug: PremiumVanish must be enabled to use its API
+        }
         return super.isVanished();
     }
 
