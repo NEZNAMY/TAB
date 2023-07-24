@@ -117,7 +117,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
         // creating new delayed task every time someone sneaks can be abused and cause OOM
         // RIP 1.8.0
         for (ArmorStand as : armorStandArray) {
-            viewer.destroyEntities(as.getEntityId());
+            viewer.getEntityView().destroyEntities(as.getEntityId());
         }
         for (ArmorStand a : armorStandArray) {
             a.spawn(viewer);
@@ -173,7 +173,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
      */
     public void destroy(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand as : armorStandArray) {
-            viewer.destroyEntities(as.getEntityId());
+            viewer.getEntityView().destroyEntities(as.getEntityId());
         }
         unregisterPlayer(viewer);
     }
@@ -182,7 +182,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
     public void destroy() {
         for (BackendTabPlayer viewer : nearbyPlayers) {
             for (ArmorStand as : armorStandArray) {
-                viewer.destroyEntities(as.getEntityId());
+                viewer.getEntityView().destroyEntities(as.getEntityId());
             }
         }
         nearbyPlayerList.clear();
@@ -203,7 +203,7 @@ public class BackendArmorStandManager implements ArmorStandManager {
 
     public void updateMetadata(@NotNull BackendTabPlayer viewer) {
         for (ArmorStand a : armorStandArray) {
-            viewer.updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
+            viewer.getEntityView().updateEntityMetadata(a.entityId, a.createDataWatcher(a.getProperty().getFormat(viewer), viewer));
         }
     }
 }

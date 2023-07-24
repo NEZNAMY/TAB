@@ -32,14 +32,14 @@ public class EntityBossBar implements BossBar {
         w.getHelper().setCustomName(title, player.getVersion());
         w.getHelper().setEntityFlags((byte) 32);
         w.getHelper().setWitherInvulnerableTime(880); // Magic number
-        player.spawnEntity(id.hashCode(), new UUID(0, 0), EntityType.WITHER, new Location(0, 0, 0), w);
+        player.getEntityView().spawnEntity(id.hashCode(), new UUID(0, 0), EntityType.WITHER, new Location(0, 0, 0), w);
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
         DataWatcher w = new DataWatcher();
         w.getHelper().setCustomName(title, player.getVersion());
-        player.updateEntityMetadata(id.hashCode(), w);
+        player.getEntityView().updateEntityMetadata(id.hashCode(), w);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class EntityBossBar implements BossBar {
         float health = 300*progress;
         if (health == 0) health = 1;
         w.getHelper().setHealth(health);
-        player.updateEntityMetadata(id.hashCode(), w);
+        player.getEntityView().updateEntityMetadata(id.hashCode(), w);
     }
 
     @Override
@@ -59,6 +59,6 @@ public class EntityBossBar implements BossBar {
 
     @Override
     public void remove(@NotNull UUID id) {
-        player.destroyEntities(id.hashCode());
+        player.getEntityView().destroyEntities(id.hashCode());
     }
 }

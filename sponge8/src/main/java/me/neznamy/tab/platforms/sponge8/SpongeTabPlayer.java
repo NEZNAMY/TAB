@@ -2,8 +2,8 @@ package me.neznamy.tab.platforms.sponge8;
 
 import lombok.Getter;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
+import me.neznamy.tab.shared.backend.entityview.DummyEntityView;
+import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -20,7 +20,6 @@ import org.spongepowered.api.profile.property.ProfileProperty;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 public class SpongeTabPlayer extends BackendTabPlayer {
@@ -28,6 +27,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
     private final TabList tabList = new SpongeTabList(this);
     private final BossBar bossBar = new AdventureBossBar(this);
+    private final EntityView entityView = new DummyEntityView();
 
     public SpongeTabPlayer(ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), player.world().key().value());
@@ -99,25 +99,5 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public String getDisplayName() {
         return PlainTextComponentSerializer.plainText().serialize(getPlayer().displayName().get());
-    }
-
-    @Override
-    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
-        // Not available
-    }
-
-    @Override
-    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        // Not available
-    }
-
-    @Override
-    public void teleportEntity(int entityId, @NotNull Location location) {
-        // Not available
-    }
-
-    @Override
-    public void destroyEntities(int... entities) {
-        // Not available
     }
 }

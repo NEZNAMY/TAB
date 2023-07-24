@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
+import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -18,8 +19,6 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -28,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.UUID;
 
 /**
  * TabPlayer implementation for Bukkit platform
@@ -47,7 +45,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final TabList tabList = new BukkitTabList(this);
     private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar(this) : getVersion().getMinorVersion() >= 9 ? new ViaBossBar(this) : new EntityBossBar(this);
-    private final PacketEntityView entityView = new PacketEntityView(this);
+    private final EntityView entityView = new PacketEntityView(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version
@@ -143,25 +141,5 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public String getDisplayName() {
         return getPlayer().getDisplayName();
-    }
-
-    @Override
-    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
-        entityView.spawnEntity(entityId, id, entityType, location, data);
-    }
-
-    @Override
-    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        entityView.updateEntityMetadata(entityId, data);
-    }
-
-    @Override
-    public void teleportEntity(int entityId, @NotNull Location location) {
-        entityView.teleportEntity(entityId, location);
-    }
-
-    @Override
-    public void destroyEntities(int... entities) {
-        entityView.destroyEntities(entities);
     }
 }

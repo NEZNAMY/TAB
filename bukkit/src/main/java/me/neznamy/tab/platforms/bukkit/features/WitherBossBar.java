@@ -51,7 +51,7 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
                 if (!line.getPlayers().contains(p)) continue;
                 Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
                 if (loc.getY() < 1) loc.setY(1);
-                ((BackendTabPlayer)p).teleportEntity(line.getUniqueId().hashCode(), new me.neznamy.tab.shared.backend.Location(loc.getX(), loc.getY(), loc.getZ()));
+                ((BackendTabPlayer)p).getEntityView().teleportEntity(line.getUniqueId().hashCode(), new me.neznamy.tab.shared.backend.Location(loc.getX(), loc.getY(), loc.getZ()));
             }
         }
     }

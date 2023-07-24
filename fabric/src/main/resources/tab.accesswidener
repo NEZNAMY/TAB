@@ -1,5 +1,7 @@
 accessWidener v1 named
 
+accessible field net/minecraft/network/protocol/game/ClientboundMoveEntityPacket entityId I
+
 # new
 accessible field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;
 mutable field net/minecraft/server/MinecraftServer LOGGER Lorg/slf4j/Logger;

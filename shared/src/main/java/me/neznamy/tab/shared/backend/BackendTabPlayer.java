@@ -1,6 +1,7 @@
 package me.neznamy.tab.shared.backend;
 
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.hook.ViaVersionHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -51,11 +52,10 @@ public abstract class BackendTabPlayer extends TabPlayer {
      */
     public abstract String getDisplayName();
 
-    public abstract void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data);
-
-    public abstract void updateEntityMetadata(int entityId, @NotNull EntityData data);
-
-    public abstract void teleportEntity(int entityId, @NotNull Location location);
-
-    public abstract void destroyEntities(int... entities);
+    /**
+     * Returns player's entity view
+     *
+     * @return  player's entity view
+     */
+    public abstract EntityView getEntityView();
 }

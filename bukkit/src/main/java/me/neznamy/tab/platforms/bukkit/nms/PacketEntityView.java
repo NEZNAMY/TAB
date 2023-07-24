@@ -7,6 +7,7 @@ import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
+import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,8 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class PacketEntityView {
+@SuppressWarnings("unchecked")
+public class PacketEntityView implements EntityView {
 
     /** PacketPlayOutEntityDestroy */
     public static Class<?> EntityDestroyClass;
@@ -240,6 +242,65 @@ public class PacketEntityView {
             for (int entity : entities) {
                 player.sendPacket(newEntityDestroy.newInstance(entity));
             }
+        }
+    }
+
+    @Override
+    public boolean isDestroyPacket(Object packet) {
+        return EntityDestroyClass.isInstance(packet);
+    }
+
+    @Override
+    public boolean isTeleportPacket(Object packet) {
+        return EntityTeleportClass.isInstance(packet);
+    }
+
+    @Override
+    public boolean isNamedEntitySpawnPacket(Object packet) {
+        return PacketPlayOutNamedEntitySpawn.isInstance(packet);
+    }
+
+    @Override
+    public boolean isMovePacket(Object packet) {
+        return PacketPlayOutEntity.isInstance(packet);
+    }
+
+    @Override
+    public boolean isLookPacket(Object packet) {
+        return PacketPlayOutEntityLook.isInstance(packet);
+    }
+
+    @Override
+    @SneakyThrows
+    public int getTeleportEntityId(Object teleportPacket) {
+        return EntityTeleport_EntityId.getInt(teleportPacket);
+    }
+
+    @Override
+    @SneakyThrows
+    public int getMoveEntityId(Object movePacket) {
+        return PacketPlayOutEntity_ENTITYID.getInt(movePacket);
+    }
+
+    @Override
+    @SneakyThrows
+    public int getSpawnedPlayer(Object playerSpawnPacket) {
+        return PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(playerSpawnPacket);
+    }
+
+    @Override
+    @SneakyThrows
+    public int[] getDestroyedEntities(Object destroyPacket) {
+        Object entities = PacketEntityView.EntityDestroy_Entities.get(destroyPacket);
+        if (NMSStorage.getInstance().getMinorVersion() >= 17) {
+            if (entities instanceof List) {
+                return ((List<Integer>)entities).stream().mapToInt(i -> i).toArray();
+            } else {
+                //1.17.0
+                return new int[]{(int) entities};
+            }
+        } else {
+            return (int[]) entities;
         }
     }
 }

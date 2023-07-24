@@ -110,7 +110,7 @@ public class ArmorStand {
 
     public void spawn(BackendTabPlayer viewer) {
         visible = calculateVisibility();
-        viewer.spawnEntity(entityId, uuid, manager.getArmorStandType(),
+        viewer.getEntityView().spawnEntity(entityId, uuid, manager.getArmorStandType(),
                 new Location(manager.getX(owner), getYLocation(viewer), manager.getZ(owner)),
                 createDataWatcher(property.getFormat(viewer), viewer));
     }
@@ -179,7 +179,7 @@ public class ArmorStand {
      */
     public void updateMetadata() {
         for (BackendTabPlayer viewer : asm.getNearbyPlayers()) {
-            viewer.updateEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer));
+            viewer.getEntityView().updateEntityMetadata(entityId, createDataWatcher(property.getFormat(viewer), viewer));
         }
     }
 
@@ -190,7 +190,7 @@ public class ArmorStand {
     }
 
     public void sendTeleportPacket(@NotNull BackendTabPlayer viewer) {
-        viewer.teleportEntity(entityId, new Location(manager.getX(owner), getYLocation(viewer), manager.getZ(owner)));
+        viewer.getEntityView().teleportEntity(entityId, new Location(manager.getX(owner), getYLocation(viewer), manager.getZ(owner)));
     }
 
     /**

@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.types.GameModeListener;
+import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -12,8 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.UUID;
 
-public abstract class BackendNameTagX extends NameTagX implements GameModeListener {
+public abstract class BackendNameTagX extends NameTagX implements GameModeListener, PacketSendListener {
 
     /** Vehicle manager reference */
     @Getter private final VehicleRefresher vehicleManager = new VehicleRefresher(this);
@@ -154,6 +156,36 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             getArmorStandManager(player).updateMetadata((BackendTabPlayer) viewer);
         }
+    }
+
+    @Override
+    public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
+        if (receiver.getVersion().getMinorVersion() < 8) return;
+        if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
+        BackendTabPlayer player = (BackendTabPlayer) receiver;
+        if (player.getEntityView().isMovePacket(packet) && !player.getEntityView().isLookPacket(packet)) { //ignoring head rotation only packets
+            packetListener.onEntityMove(player, player.getEntityView().getMoveEntityId(packet));
+        } else if (player.getEntityView().isTeleportPacket(packet)) {
+            packetListener.onEntityMove(player, player.getEntityView().getTeleportEntityId(packet));
+        } else if (player.getEntityView().isNamedEntitySpawnPacket(packet)) {
+            packetListener.onEntitySpawn(player, player.getEntityView().getSpawnedPlayer(packet));
+        } else if (player.getEntityView().isDestroyPacket(packet)) {
+            packetListener.onEntityDestroy(player, player.getEntityView().getDestroyedEntities(packet));
+        }
+    }
+
+    public void sneak(UUID playerUUID, boolean sneaking) {
+        TabPlayer p = TAB.getInstance().getPlayer(playerUUID);
+        if (p == null || isPlayerDisabled(p)) return;
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
+                () -> getArmorStandManager(p).sneak(sneaking));
+    }
+
+    public void respawn(UUID playerUUID) {
+        TabPlayer respawned = TAB.getInstance().getPlayer(playerUUID);
+        if (respawned == null || isPlayerDisabled(respawned)) return;
+        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
+                () -> getArmorStandManager(respawned).teleport());
     }
 
     public int getEntityId(@NotNull TabPlayer player) {

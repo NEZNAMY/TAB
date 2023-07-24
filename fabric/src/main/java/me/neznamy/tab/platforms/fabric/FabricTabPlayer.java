@@ -1,40 +1,27 @@
 package me.neznamy.tab.platforms.fabric;
 
 import com.mojang.authlib.properties.Property;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.UUID;
-
 import lombok.Getter;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import me.neznamy.tab.shared.backend.EntityData;
-import me.neznamy.tab.shared.backend.Location;
+import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 @Getter
 public class FabricTabPlayer extends BackendTabPlayer {
 
-    private static final Entity dummyEntity = new ArmorStand(null, 0, 0, 0);
-
     private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
     private final TabList tabList = new FabricTabList(this);
     private final BossBar bossBar = new FabricBossBar(this);
+    private final EntityView entityView = new FabricEntityView(this);
 
     public FabricTabPlayer(ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), player.level().dimension().location().toString());
@@ -101,30 +88,6 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @Override
     public String getDisplayName() {
         return getPlayer().getDisplayName().getString(); // Will make it work properly if someone asks
-    }
-
-    @Override
-    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
-        sendPacket(new ClientboundAddEntityPacket(entityId, id,
-                location.getX(), location.getY(), location.getZ(), 0, 0,
-                (EntityType<?>) entityType, 0, Vec3.ZERO, 0));
-    }
-
-    @Override
-    public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        sendPacket(new ClientboundSetEntityDataPacket(entityId, Objects.requireNonNull(((SynchedEntityData) data.build()).packDirty())));
-    }
-
-    @Override
-    public void teleportEntity(int entityId, @NotNull Location location) {
-        dummyEntity.setId(entityId);
-        dummyEntity.setPos(location.getX(), location.getY(), location.getZ());
-        sendPacket(new ClientboundTeleportEntityPacket(dummyEntity));
-    }
-
-    @Override
-    public void destroyEntities(int... entities) {
-        sendPacket(new ClientboundRemoveEntitiesPacket(entities));
     }
 
     /**

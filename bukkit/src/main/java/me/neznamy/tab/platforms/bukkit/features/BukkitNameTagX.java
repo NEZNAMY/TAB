@@ -1,17 +1,11 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
-import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
+import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.platform.TabPlayer;
-import me.neznamy.tab.shared.features.types.PacketSendListener;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -35,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * The core class for unlimited NameTag mode on Bukkit
  */
-public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketSendListener {
+public class BukkitNameTagX extends BackendNameTagX implements Listener {
 
     public BukkitNameTagX(@NotNull JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -43,45 +37,12 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSneak(PlayerToggleSneakEvent e) {
-        TabPlayer p = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-        if (p == null || isPlayerDisabled(p)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_SNEAK,
-                () -> getArmorStandManager(p).sneak(e.isSneaking()));
+        sneak(e.getPlayer().getUniqueId(), e.isSneaking());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onRespawn(PlayerRespawnEvent e) {
-        TabPlayer respawned = TAB.getInstance().getPlayer(e.getPlayer().getUniqueId());
-        if (respawned == null || isPlayerDisabled(respawned)) return;
-        TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PLAYER_RESPAWN,
-                () -> getArmorStandManager(respawned).teleport());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @SneakyThrows
-    public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        if (receiver.getVersion().getMinorVersion() < 8) return;
-        if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
-        if (PacketEntityView.PacketPlayOutEntity.isInstance(packet) && !PacketEntityView.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
-            packetListener.onEntityMove((BackendTabPlayer) receiver, PacketEntityView.PacketPlayOutEntity_ENTITYID.getInt(packet));
-        } else if (PacketEntityView.EntityTeleportClass.isInstance(packet)) {
-            packetListener.onEntityMove((BackendTabPlayer) receiver, PacketEntityView.EntityTeleport_EntityId.getInt(packet));
-        } else if (PacketEntityView.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-            packetListener.onEntitySpawn((BackendTabPlayer) receiver, PacketEntityView.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-        } else if (PacketEntityView.EntityDestroyClass.isInstance(packet)) {
-            if (NMSStorage.getInstance().getMinorVersion() >= 17) {
-                Object entities = PacketEntityView.EntityDestroy_Entities.get(packet);
-                if (entities instanceof List) {
-                    packetListener.onEntityDestroy((BackendTabPlayer) receiver, (List<Integer>) entities);
-                } else {
-                    //1.17.0
-                    packetListener.onEntityDestroy((BackendTabPlayer) receiver, (int) entities);
-                }
-            } else {
-                packetListener.onEntityDestroy((BackendTabPlayer) receiver, (int[]) PacketEntityView.EntityDestroy_Entities.get(packet));
-            }
-        }
+        respawn(e.getPlayer().getUniqueId());
     }
 
     @Override
