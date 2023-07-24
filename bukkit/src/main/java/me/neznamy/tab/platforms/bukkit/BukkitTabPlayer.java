@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.chat.rgb.RGBUtils;
@@ -13,9 +14,7 @@ import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.platforms.bukkit.bossbar.EntityBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.BukkitBossBar;
 import me.neznamy.tab.platforms.bukkit.bossbar.ViaBossBar;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
@@ -48,6 +47,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     private final TabList tabList = new BukkitTabList(this);
     private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar(this) : getVersion().getMinorVersion() >= 9 ? new ViaBossBar(this) : new EntityBossBar(this);
+    private final PacketEntityView entityView = new PacketEntityView(this);
 
     /**
      * Constructs new instance with given bukkit player and protocol version
@@ -147,38 +147,21 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
-        sendPacket(PacketPlayOutSpawnEntityLivingStorage.build(entityId, id, entityType, location, data));
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 15) {
-            updateEntityMetadata(entityId, data);
-        }
+        entityView.spawnEntity(entityId, id, entityType, location, data);
     }
 
     @Override
-    @SneakyThrows
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        if (PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.getParameterCount() == 2) {
-            //1.19.3+
-            sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, DataWatcher.packDirty.invoke(data.build())));
-        } else {
-            sendPacket(PacketPlayOutEntityMetadataStorage.CONSTRUCTOR.newInstance(entityId, data.build(), true));
-        }
+        entityView.updateEntityMetadata(entityId, data);
     }
 
     @Override
     public void teleportEntity(int entityId, @NotNull Location location) {
-        sendPacket(PacketPlayOutEntityTeleportStorage.build(entityId, location));
+        entityView.teleportEntity(entityId, location);
     }
 
     @Override
-    @SneakyThrows
     public void destroyEntities(int... entities) {
-        if (PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.getParameterTypes()[0] != int.class) {
-            sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(new Object[]{entities}));
-        } else {
-            //1.17.0 Mojank
-            for (int entity : entities) {
-                sendPacket(PacketPlayOutEntityDestroyStorage.CONSTRUCTOR.newInstance(entity));
-            }
-        }
+        entityView.destroyEntities(entities);
     }
 }

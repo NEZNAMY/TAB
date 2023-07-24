@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -33,22 +33,21 @@ import java.util.*;
 public class BukkitTabList implements TabList {
 
     // NMS Fields
-    public static Class<?> PacketPlayOutPlayerListHeaderFooterClass;
-    public static Constructor<?> newPacketPlayOutPlayerListHeaderFooter;
-    public static Field HEADER;
-    public static Field FOOTER;
+    private static Class<?> PacketPlayOutPlayerListHeaderFooterClass;
+    private static Constructor<?> newPacketPlayOutPlayerListHeaderFooter;
+    private static Field HEADER;
+    private static Field FOOTER;
 
     public static Class<?> PacketPlayOutPlayerInfoClass;
-    public static Constructor<?> newPacketPlayOutPlayerInfo;
+    private static Constructor<?> newPacketPlayOutPlayerInfo;
     public static Field ACTION;
     public static Field PLAYERS;
-    public static Class<Enum> EnumPlayerInfoActionClass;
-    public static Class<Enum> EnumGamemodeClass;
+    private static Class<Enum> EnumPlayerInfoActionClass;
+    private static Class<Enum> EnumGamemodeClass;
     public static Class<?> ClientboundPlayerInfoRemovePacket;
-    public static Class<?> RemoteChatSession$Data;
-    public static Constructor<?> newClientboundPlayerInfoRemovePacket;
+    private static Class<?> RemoteChatSession$Data;
+    private static Constructor<?> newClientboundPlayerInfoRemovePacket;
 
-    public static Class<?> PlayerInfoDataClass;
     public static Constructor<?> newPlayerInfoData;
     public static Method PlayerInfoData_getProfile;
     public static Field PlayerInfoData_Latency;
@@ -60,7 +59,34 @@ public class BukkitTabList implements TabList {
     /** Player this TabList belongs to */
     private final BukkitTabPlayer player;
 
-    public static void load(NMSStorage nms) throws NoSuchMethodException {
+    public static void load(NMSStorage nms) throws NoSuchMethodException, ClassNotFoundException {
+        if (nms.getMinorVersion() < 8) return; // Not supported (yet?)
+
+        // Classes
+        Class<?> playerInfoDataClass;
+        if (nms.getMinorVersion() >= 17) {
+            EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.EnumGamemode");
+            PacketPlayOutPlayerListHeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
+            if (nms.is1_19_3Plus()) {
+                ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
+                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$b");
+                RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$a");
+            } else {
+                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
+                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData");
+            }
+        } else {
+            PacketPlayOutPlayerListHeaderFooterClass = nms.getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
+            PacketPlayOutPlayerInfoClass = nms.getLegacyClass("PacketPlayOutPlayerInfo");
+            EnumPlayerInfoActionClass = (Class<Enum>) nms.getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            playerInfoDataClass = nms.getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
+            EnumGamemodeClass = (Class<Enum>) nms.getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
+        }
+
+        // Header & Footer
         if (nms.getMinorVersion() >= 17) {
             newPacketPlayOutPlayerListHeaderFooter = PacketPlayOutPlayerListHeaderFooterClass.getConstructor(nms.IChatBaseComponent, nms.IChatBaseComponent);
         } else {
@@ -68,6 +94,8 @@ public class BukkitTabList implements TabList {
             HEADER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooterClass, nms.IChatBaseComponent).get(0);
             FOOTER = ReflectionUtils.getFields(PacketPlayOutPlayerListHeaderFooterClass, nms.IChatBaseComponent).get(1);
         }
+
+        // Info packet
         if (nms.is1_19_3Plus()) {
             newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
             newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
@@ -77,14 +105,16 @@ public class BukkitTabList implements TabList {
             ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfoClass, EnumPlayerInfoActionClass);
         }
         PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfoClass, List.class);
-        newPlayerInfoData = ReflectionUtils.getOnlyConstructor(PlayerInfoDataClass);
-        PlayerInfoData_getProfile = ReflectionUtils.getOnlyMethod(PlayerInfoDataClass, GameProfile.class);
-        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(PlayerInfoDataClass, int.class);
-        PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(PlayerInfoDataClass, EnumGamemodeClass);
-        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(PlayerInfoDataClass, nms.IChatBaseComponent);
+
+        // Info data
+        newPlayerInfoData = ReflectionUtils.getOnlyConstructor(playerInfoDataClass);
+        PlayerInfoData_getProfile = ReflectionUtils.getOnlyMethod(playerInfoDataClass, GameProfile.class);
+        PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
+        PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
+        PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, nms.IChatBaseComponent);
         if (nms.is1_19_3Plus()) {
-            PlayerInfoData_Listed = ReflectionUtils.getOnlyField(PlayerInfoDataClass, boolean.class);
-            PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(PlayerInfoDataClass, RemoteChatSession$Data);
+            PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
+            PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
         }
     }
 

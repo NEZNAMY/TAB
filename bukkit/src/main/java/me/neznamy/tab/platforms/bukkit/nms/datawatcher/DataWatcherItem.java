@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 
 import lombok.Data;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 

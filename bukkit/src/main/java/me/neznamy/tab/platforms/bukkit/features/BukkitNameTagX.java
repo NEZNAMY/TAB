@@ -1,15 +1,14 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.features.types.PacketSendListener;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityDestroyStorage;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.PacketPlayOutEntityTeleportStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
@@ -38,9 +37,6 @@ import java.util.stream.Collectors;
  */
 public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketSendListener {
 
-    /** Reference to NMS storage for quick access */
-    private final NMSStorage nms = NMSStorage.getInstance();
-
     public BukkitNameTagX(@NotNull JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -67,15 +63,15 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
     public void onPacketSend(@NotNull TabPlayer receiver, @NotNull Object packet) {
         if (receiver.getVersion().getMinorVersion() < 8) return;
         if (!receiver.isLoaded() || getDisableChecker().isDisabledPlayer(receiver) || getUnlimitedDisableChecker().isDisabledPlayer(receiver)) return;
-        if (nms.PacketPlayOutEntity.isInstance(packet) && !nms.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
-            packetListener.onEntityMove((BackendTabPlayer) receiver, nms.PacketPlayOutEntity_ENTITYID.getInt(packet));
-        } else if (PacketPlayOutEntityTeleportStorage.CLASS.isInstance(packet)) {
-            packetListener.onEntityMove((BackendTabPlayer) receiver, PacketPlayOutEntityTeleportStorage.ENTITY_ID.getInt(packet));
-        } else if (nms.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
-            packetListener.onEntitySpawn((BackendTabPlayer) receiver, nms.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
-        } else if (PacketPlayOutEntityDestroyStorage.CLASS.isInstance(packet)) {
-            if (nms.getMinorVersion() >= 17) {
-                Object entities = PacketPlayOutEntityDestroyStorage.ENTITIES.get(packet);
+        if (PacketEntityView.PacketPlayOutEntity.isInstance(packet) && !PacketEntityView.PacketPlayOutEntityLook.isInstance(packet)) { //ignoring head rotation only packets
+            packetListener.onEntityMove((BackendTabPlayer) receiver, PacketEntityView.PacketPlayOutEntity_ENTITYID.getInt(packet));
+        } else if (PacketEntityView.EntityTeleportClass.isInstance(packet)) {
+            packetListener.onEntityMove((BackendTabPlayer) receiver, PacketEntityView.EntityTeleport_EntityId.getInt(packet));
+        } else if (PacketEntityView.PacketPlayOutNamedEntitySpawn.isInstance(packet)) {
+            packetListener.onEntitySpawn((BackendTabPlayer) receiver, PacketEntityView.PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(packet));
+        } else if (PacketEntityView.EntityDestroyClass.isInstance(packet)) {
+            if (NMSStorage.getInstance().getMinorVersion() >= 17) {
+                Object entities = PacketEntityView.EntityDestroy_Entities.get(packet);
                 if (entities instanceof List) {
                     packetListener.onEntityDestroy((BackendTabPlayer) receiver, (List<Integer>) entities);
                 } else {
@@ -83,7 +79,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener, PacketS
                     packetListener.onEntityDestroy((BackendTabPlayer) receiver, (int) entities);
                 }
             } else {
-                packetListener.onEntityDestroy((BackendTabPlayer) receiver, (int[]) PacketPlayOutEntityDestroyStorage.ENTITIES.get(packet));
+                packetListener.onEntityDestroy((BackendTabPlayer) receiver, (int[]) PacketEntityView.EntityDestroy_Entities.get(packet));
             }
         }
     }

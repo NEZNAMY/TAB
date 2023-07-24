@@ -9,6 +9,4 @@ public class Location {
     private double x;
     private double y;
     private double z;
-    private float yaw;
-    private float pitch;
 }

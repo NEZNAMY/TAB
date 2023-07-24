@@ -106,7 +106,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @Override
     public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
         sendPacket(new ClientboundAddEntityPacket(entityId, id,
-                location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(),
+                location.getX(), location.getY(), location.getZ(), 0, 0,
                 (EntityType<?>) entityType, 0, Vec3.ZERO, 0));
     }
 
@@ -119,8 +119,6 @@ public class FabricTabPlayer extends BackendTabPlayer {
     public void teleportEntity(int entityId, @NotNull Location location) {
         dummyEntity.setId(entityId);
         dummyEntity.setPos(location.getX(), location.getY(), location.getZ());
-        dummyEntity.setYRot(location.getYaw());
-        dummyEntity.setXRot(location.getPitch());
         sendPacket(new ClientboundTeleportEntityPacket(dummyEntity));
     }
 

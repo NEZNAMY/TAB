@@ -18,7 +18,7 @@ import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
 import me.neznamy.tab.platforms.bukkit.features.PerWorldPlayerList;
 import me.neznamy.tab.platforms.bukkit.features.WitherBossBar;
 import me.neznamy.tab.platforms.bukkit.features.BukkitNameTagX;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;

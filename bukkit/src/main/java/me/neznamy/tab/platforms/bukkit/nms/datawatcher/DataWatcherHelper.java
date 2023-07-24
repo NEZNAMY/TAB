@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import lombok.AllArgsConstructor;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import org.jetbrains.annotations.NotNull;
 

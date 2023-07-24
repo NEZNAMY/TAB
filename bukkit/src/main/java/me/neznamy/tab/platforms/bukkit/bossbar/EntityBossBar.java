@@ -32,7 +32,7 @@ public class EntityBossBar implements BossBar {
         w.getHelper().setCustomName(title, player.getVersion());
         w.getHelper().setEntityFlags((byte) 32);
         w.getHelper().setWitherInvulnerableTime(880); // Magic number
-        player.spawnEntity(id.hashCode(), new UUID(0, 0), EntityType.WITHER, new Location(0, 0, 0, 0, 0), w);
+        player.spawnEntity(id.hashCode(), new UUID(0, 0), EntityType.WITHER, new Location(0, 0, 0), w);
     }
 
     @Override

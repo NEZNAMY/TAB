@@ -3,7 +3,7 @@ package me.neznamy.tab.platforms.bukkit.nms.datawatcher;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;

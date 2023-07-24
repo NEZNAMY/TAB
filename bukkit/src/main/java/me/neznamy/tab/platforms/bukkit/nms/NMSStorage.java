@@ -1,4 +1,4 @@
-package me.neznamy.tab.platforms.bukkit.nms.storage.nms;
+package me.neznamy.tab.platforms.bukkit.nms;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
@@ -15,7 +15,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherItem;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcherObject;
-import me.neznamy.tab.platforms.bukkit.nms.storage.packet.*;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,12 +22,13 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Class holding all NMS classes, methods, fields and constructors used by TAB.
  */
-@SuppressWarnings("rawtypes")
-public abstract class NMSStorage {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class NMSStorage {
 
     /** Instance of this class */
     @Getter @Setter private static NMSStorage instance;
@@ -70,15 +70,6 @@ public abstract class NMSStorage {
     protected Class<?> ChatSerializer;
     public Method ChatSerializer_DESERIALIZE;
 
-    /** Other entity packets */
-    public Class<?> PacketPlayOutEntity;
-    public Field PacketPlayOutEntity_ENTITYID;
-
-    public Class<?> PacketPlayOutEntityLook;
-
-    public Class<?> PacketPlayOutNamedEntitySpawn;
-    public Field PacketPlayOutNamedEntitySpawn_ENTITYID;
-
     public Object dummyEntity;
 
     private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
@@ -108,23 +99,18 @@ public abstract class NMSStorage {
             Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
             Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
             dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
-            BukkitTabList.load(this);
         }
         if (minorVersion >= 9) {
             DataWatcherObject.load();
         }
         PLAYER_CONNECTION = ReflectionUtils.getOnlyField(EntityPlayer, PlayerConnection);
         getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".entity.CraftPlayer").getMethod("getHandle");
+        BukkitTabList.load(this);
         DataWatcher.load(this);
         DataWatcherItem.load(this);
         DataWatcherHelper.load(this);
-        PacketPlayOutEntityDestroyStorage.load();
-        PacketPlayOutEntityMetadataStorage.load(this);
-        PacketPlayOutEntityTeleportStorage.load(this);
-        PacketPlayOutSpawnEntityLivingStorage.load(this);
+        PacketEntityView.load(this);
         PacketScoreboard.load(this);
-        PacketPlayOutEntity_ENTITYID = ReflectionUtils.getFields(PacketPlayOutEntity, int.class).get(0);
-        PacketPlayOutNamedEntitySpawn_ENTITYID = ReflectionUtils.getFields(PacketPlayOutNamedEntitySpawn, int.class).get(0);
         if (minorVersion < 17) {
             try {
                 (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true); // 1.5.2 - 1.16.5
@@ -134,13 +120,51 @@ public abstract class NMSStorage {
         }
     }
 
-    /**
-     * Loads all classes used by the plugin
-     *
-     * @throws  ClassNotFoundException
-     *          If a class was not found
-     */
-    public abstract void loadClasses() throws ClassNotFoundException;
+    private void loadClasses() throws ClassNotFoundException {
+        if (minorVersion >= 17) {
+            ChatSerializer = Class.forName("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer");
+            World = Class.forName("net.minecraft.world.level.World");
+            EntityArmorStand = Class.forName("net.minecraft.world.entity.decoration.EntityArmorStand");
+            EntityHuman = Class.forName("net.minecraft.world.entity.player.EntityHuman");
+            NetworkManager = Class.forName("net.minecraft.network.NetworkManager");
+            IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+            Packet = Class.forName("net.minecraft.network.protocol.Packet");
+            EnumChatFormat = (Class<Enum>) Class.forName("net.minecraft.EnumChatFormat");
+            EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
+            Entity = Class.forName("net.minecraft.world.entity.Entity");
+            EntityLiving = Class.forName("net.minecraft.world.entity.EntityLiving");
+            PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
+            DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher");
+            DataWatcherItem.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
+            DataWatcherObject.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
+            DataWatcherHelper.DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
+            DataWatcherHelper.DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.DataWatcherSerializer");
+        } else {
+            EntityHuman = getLegacyClass("EntityHuman");
+            World = getLegacyClass("World");
+            Packet = getLegacyClass("Packet");
+            EnumChatFormat = (Class<Enum>) getLegacyClass("EnumChatFormat");
+            EntityPlayer = getLegacyClass("EntityPlayer");
+            Entity = getLegacyClass("Entity");
+            EntityLiving = getLegacyClass("EntityLiving");
+            PlayerConnection = getLegacyClass("PlayerConnection");
+            NetworkManager = getLegacyClass("NetworkManager");
+            DataWatcher.CLASS = getLegacyClass("DataWatcher");
+            DataWatcherItem.CLASS = getLegacyClass("DataWatcher$Item", "DataWatcher$WatchableObject", "WatchableObject");
+            if (minorVersion >= 7) {
+                IChatBaseComponent = getLegacyClass("IChatBaseComponent");
+                ChatSerializer = getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
+            }
+            if (minorVersion >= 8) {
+                EntityArmorStand = getLegacyClass("EntityArmorStand");
+            }
+            if (minorVersion >= 9) {
+                DataWatcherObject.CLASS = getLegacyClass("DataWatcherObject");
+                DataWatcherHelper.DataWatcherRegistry = getLegacyClass("DataWatcherRegistry");
+                DataWatcherHelper.DataWatcherSerializer = getLegacyClass("DataWatcherSerializer");
+            }
+        }
+    }
 
     /**
      * Converts TAB's IChatBaseComponent into minecraft's component using String deserialization.
@@ -155,5 +179,43 @@ public abstract class NMSStorage {
      */
     public @Nullable Object toNMSComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
         return componentCache.get(component, clientVersion);
+    }
+
+    /**
+     * Returns class with given potential names in same order
+     *
+     * @param   names
+     *          possible class names
+     * @return  class for specified names
+     * @throws  ClassNotFoundException
+     *          if class does not exist
+     */
+    public Class<?> getLegacyClass(@NotNull String... names) throws ClassNotFoundException {
+        for (String name : names) {
+            try {
+                return getLegacyClass(name);
+            } catch (ClassNotFoundException e) {
+                //not the first class name in array
+            }
+        }
+        throw new ClassNotFoundException("No class found with possible names " + Arrays.toString(names));
+    }
+
+    /**
+     * Returns class from given name. Supports modded servers, such as Thermos.
+     *
+     * @param   name
+     *          class name
+     * @return  class from given name
+     * @throws  ClassNotFoundException
+     *          if class was not found
+     */
+    public Class<?> getLegacyClass(@NotNull String name) throws ClassNotFoundException {
+        try {
+            return getClass().getClassLoader().loadClass("net.minecraft.server." + serverPackage + "." + name);
+        } catch (NullPointerException e) {
+            // nested class not found
+            throw new ClassNotFoundException(name);
+        }
     }
 }

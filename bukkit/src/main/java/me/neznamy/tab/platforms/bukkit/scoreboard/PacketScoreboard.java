@@ -2,7 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -45,8 +45,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     private static NMSStorage nms;
 
-    public static Class<?> Scoreboard;
-    public static Class<?> IScoreboardCriteria;
     private static Object emptyScoreboard;
     private static Field IScoreboardCriteria_self;
 
@@ -57,14 +55,12 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public static Field DisplayObjective_OBJECTIVE_NAME;
 
     // PacketPlayOutScoreboardScore
-    public static Class<?> ScorePacketClass;
-    public static Class<?> ScoreboardScoreClass;
-    public static Class<Enum> EnumScoreboardAction;
+    private static Class<Enum> EnumScoreboardAction;
     private static Constructor<?> newScorePacket_1_13;
     private static Constructor<?> newScorePacket_String;
     private static Constructor<?> newScorePacket;
     private static Constructor<?> newScoreboardScore;
-    public static Method ScoreboardScore_setScore;
+    private static Method ScoreboardScore_setScore;
 
     // PacketPlayOutScoreboardObjective
     public static Class<?> ObjectivePacketClass;
@@ -73,8 +69,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public static Field Objective_METHOD;
     private static Field Objective_RENDER_TYPE;
     private static Field Objective_DISPLAY_NAME;
-    public static Class<Enum> EnumScoreboardHealthDisplay;
-    public static Class<?> ScoreboardObjective;
+    private static Class<Enum> EnumScoreboardHealthDisplay;
     private static Constructor<?> newScoreboardObjective;
 
     // PacketPlayOutScoreboardTeamStorage
@@ -85,70 +80,109 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     public static Field TeamPacket_NAME;
     public static Field TeamPacket_ACTION;
     public static Field TeamPacket_PLAYERS;
-    public static Class<Enum> EnumNameTagVisibility;
-    public static Class<Enum> EnumTeamPush;
-    public static Class<?> ScoreboardTeam;
+    private static Class<Enum> EnumNameTagVisibility;
+    private static Class<Enum> EnumTeamPush;
     private static Constructor<?> newScoreboardTeam;
     private static Method ScoreboardTeam_getPlayerNameSet;
-    public static Method ScoreboardTeam_setNameTagVisibility;
+    private static Method ScoreboardTeam_setNameTagVisibility;
     private static Method ScoreboardTeam_setCollisionRule;
-    public static Method ScoreboardTeam_setPrefix;
-    public static Method ScoreboardTeam_setSuffix;
+    private static Method ScoreboardTeam_setPrefix;
+    private static Method ScoreboardTeam_setSuffix;
     private static Method ScoreboardTeam_setColor;
-    public static Method ScoreboardTeam_setAllowFriendlyFire;
-    public static Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
+    private static Method ScoreboardTeam_setAllowFriendlyFire;
+    private static Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
 
     public static void load(NMSStorage nms) throws ReflectiveOperationException {
         PacketScoreboard.nms = nms;
-        emptyScoreboard = Scoreboard.getConstructor().newInstance();
+        Class<?> scoreboardTeam;
+        Class<?> scoreboardObjective;
+        Class<?> scoreboardScoreClass;
+        Class<?> IScoreboardCriteria;
+        Class<?> scoreboard;
+        Class<?> scorePacketClass;
+        if (nms.getMinorVersion() >= 17) {
+            DisplayObjectiveClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective");
+            ObjectivePacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective");
+            scoreboard = Class.forName("net.minecraft.world.scores.Scoreboard");
+            scorePacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore");
+            scoreboardObjective = Class.forName("net.minecraft.world.scores.ScoreboardObjective");
+            scoreboardScoreClass = Class.forName("net.minecraft.world.scores.ScoreboardScore");
+            IScoreboardCriteria = Class.forName("net.minecraft.world.scores.criteria.IScoreboardCriteria");
+            EnumScoreboardHealthDisplay = (Class<Enum>) Class.forName("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay");
+            EnumScoreboardAction = (Class<Enum>) Class.forName("net.minecraft.server.ScoreboardServer$Action");
+            TeamPacketClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam");
+            scoreboardTeam = Class.forName("net.minecraft.world.scores.ScoreboardTeam");
+            EnumNameTagVisibility = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumNameTagVisibility");
+            EnumTeamPush = (Class<Enum>) Class.forName("net.minecraft.world.scores.ScoreboardTeamBase$EnumTeamPush");
+        } else {
+            DisplayObjectiveClass = nms.getLegacyClass("PacketPlayOutScoreboardDisplayObjective", "Packet208SetScoreboardDisplayObjective");
+            ObjectivePacketClass = nms.getLegacyClass("PacketPlayOutScoreboardObjective", "Packet206SetScoreboardObjective");
+            TeamPacketClass = nms.getLegacyClass("PacketPlayOutScoreboardTeam", "Packet209SetScoreboardTeam");
+            scorePacketClass = nms.getLegacyClass("PacketPlayOutScoreboardScore", "Packet207SetScoreboardScore");
+            scoreboard = nms.getLegacyClass("Scoreboard");
+            scoreboardObjective = nms.getLegacyClass("ScoreboardObjective");
+            scoreboardScoreClass = nms.getLegacyClass("ScoreboardScore");
+            IScoreboardCriteria = nms.getLegacyClass("IScoreboardCriteria", "IObjective"); // 1.5.1+, 1.5
+            scoreboardTeam = nms.getLegacyClass("ScoreboardTeam");
+            if (nms.getMinorVersion() >= 8) {
+                EnumScoreboardHealthDisplay = (Class<Enum>) nms.getLegacyClass("IScoreboardCriteria$EnumScoreboardHealthDisplay", "EnumScoreboardHealthDisplay");
+                EnumScoreboardAction = (Class<Enum>) nms.getLegacyClass("ScoreboardServer$Action", "PacketPlayOutScoreboardScore$EnumScoreboardAction", "EnumScoreboardAction");
+                EnumNameTagVisibility = (Class<Enum>) nms.getLegacyClass("ScoreboardTeamBase$EnumNameTagVisibility", "EnumNameTagVisibility");
+            }
+            if (nms.getMinorVersion() >= 9) {
+                EnumTeamPush = (Class<Enum>) nms.getLegacyClass("ScoreboardTeamBase$EnumTeamPush");
+            }
+        }
+        
+        emptyScoreboard = scoreboard.getConstructor().newInstance();
         IScoreboardCriteria_self = ReflectionUtils.getFields(IScoreboardCriteria, IScoreboardCriteria).get(0);
-        newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, ScoreboardObjective);
+        newDisplayObjective = DisplayObjectiveClass.getConstructor(int.class, scoreboardObjective);
         DisplayObjective_POSITION = ReflectionUtils.getOnlyField(DisplayObjectiveClass, int.class);
         DisplayObjective_OBJECTIVE_NAME = ReflectionUtils.getOnlyField(DisplayObjectiveClass, String.class);
-        newScoreboardObjective = ReflectionUtils.getOnlyConstructor(ScoreboardObjective);
+        newScoreboardObjective = ReflectionUtils.getOnlyConstructor(scoreboardObjective);
         Objective_OBJECTIVE_NAME = ReflectionUtils.getFields(ObjectivePacketClass, String.class).get(0);
         List<Field> list = ReflectionUtils.getFields(ObjectivePacketClass, int.class);
         Objective_METHOD = list.get(list.size()-1);
-        newScoreboardScore = ScoreboardScoreClass.getConstructor(Scoreboard, ScoreboardObjective, String.class);
-        newScoreboardTeam = ScoreboardTeam.getConstructor(Scoreboard, String.class);
+        newScoreboardScore = scoreboardScoreClass.getConstructor(scoreboard, scoreboardObjective, String.class);
+        newScoreboardTeam = scoreboardTeam.getConstructor(scoreboard, String.class);
         TeamPacket_NAME = ReflectionUtils.getFields(TeamPacketClass, String.class).get(0);
         TeamPacket_ACTION = ReflectionUtils.getInstanceFields(TeamPacketClass, int.class).get(0);
         TeamPacket_PLAYERS = ReflectionUtils.getOnlyField(TeamPacketClass, Collection.class);
-        ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(ScoreboardTeam, Collection.class);
-        ScoreboardScore_setScore = ReflectionUtils.getMethod(ScoreboardScoreClass, new String[] {"func_96647_c", "setScore", "b", "c"}, int.class); // {Thermos, 1.5.1 - 1.17.1, 1.18+, 1.5}
-        ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_96660_a", "setAllowFriendlyFire", "a"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+}
-        ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_98300_b", "setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+}
+        ScoreboardTeam_getPlayerNameSet = ReflectionUtils.getOnlyMethod(scoreboardTeam, Collection.class);
+        ScoreboardScore_setScore = ReflectionUtils.getMethod(scoreboardScoreClass, new String[] {"func_96647_c", "setScore", "b", "c"}, int.class); // {Thermos, 1.5.1 - 1.17.1, 1.18+, 1.5}
+        ScoreboardTeam_setAllowFriendlyFire = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_96660_a", "setAllowFriendlyFire", "a"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+}
+        ScoreboardTeam_setCanSeeFriendlyInvisibles = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_98300_b", "setCanSeeFriendlyInvisibles", "b"}, boolean.class); // {Thermos, 1.5.1+, 1.5 & 1.18+}
         if (nms.getMinorVersion() >= 13) {
-            newScorePacket_1_13 = ScorePacketClass.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
-            newObjectivePacket = ObjectivePacketClass.getConstructor(ScoreboardObjective, int.class);
+            newScorePacket_1_13 = scorePacketClass.getConstructor(EnumScoreboardAction, String.class, String.class, int.class);
+            newObjectivePacket = ObjectivePacketClass.getConstructor(scoreboardObjective, int.class);
             Objective_DISPLAY_NAME = ReflectionUtils.getOnlyField(ObjectivePacketClass, nms.IChatBaseComponent);
-            ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(ScoreboardTeam, void.class, nms.EnumChatFormat);
-            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(ScoreboardTeam, new String[]{"setPrefix", "b"}, nms.IChatBaseComponent); // {1.17.1-, 1.18+}
-            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(ScoreboardTeam, new String[]{"setSuffix", "c"}, nms.IChatBaseComponent); // {1.17.1-, 1.18+}
+            ScoreboardTeam_setColor = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, nms.EnumChatFormat);
+            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(scoreboardTeam, new String[]{"setPrefix", "b"}, nms.IChatBaseComponent); // {1.17.1-, 1.18+}
+            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(scoreboardTeam, new String[]{"setSuffix", "c"}, nms.IChatBaseComponent); // {1.17.1-, 1.18+}
         } else {
-            newScorePacket_String = ScorePacketClass.getConstructor(String.class);
+            newScorePacket_String = scorePacketClass.getConstructor(String.class);
             newObjectivePacket = ObjectivePacketClass.getConstructor();
             Objective_DISPLAY_NAME = ReflectionUtils.getFields(ObjectivePacketClass, String.class).get(1);
-            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_96666_b", "setPrefix", "b"}, String.class); // {Thermos, 1.5.1+, 1.5}
-            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"func_96662_c", "setSuffix", "c"}, String.class); // {Thermos, 1.5.1+, 1.5}
+            ScoreboardTeam_setPrefix = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_96666_b", "setPrefix", "b"}, String.class); // {Thermos, 1.5.1+, 1.5}
+            ScoreboardTeam_setSuffix = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"func_96662_c", "setSuffix", "c"}, String.class); // {Thermos, 1.5.1+, 1.5}
             if (nms.getMinorVersion() >= 8) {
-                newScorePacket = ScorePacketClass.getConstructor(ScoreboardScoreClass);
+                newScorePacket = scorePacketClass.getConstructor(scoreboardScoreClass);
                 Objective_RENDER_TYPE = ReflectionUtils.getOnlyField(ObjectivePacketClass, EnumScoreboardHealthDisplay);
             } else {
-                newScorePacket = ScorePacketClass.getConstructor(ScoreboardScoreClass, int.class);
+                newScorePacket = scorePacketClass.getConstructor(scoreboardScoreClass, int.class);
             }
         }
         if (nms.getMinorVersion() >= 8) {
-            ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(ScoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8 & 1.18+}
+            ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8 & 1.18+}
         }
         if (nms.getMinorVersion() >= 9) {
-            ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(ScoreboardTeam, void.class, EnumTeamPush);
+            ScoreboardTeam_setCollisionRule = ReflectionUtils.getOnlyMethod(scoreboardTeam, void.class, EnumTeamPush);
         }
         if (nms.getMinorVersion() >= 17) {
-            TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeam);
-            TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, ScoreboardTeam, boolean.class);
+            TeamPacketConstructor_of = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam);
+            TeamPacketConstructor_ofBoolean = ReflectionUtils.getOnlyMethod(TeamPacketClass, TeamPacketClass, scoreboardTeam, boolean.class);
         } else {
-            newTeamPacket = TeamPacketClass.getConstructor(ScoreboardTeam, int.class);
+            newTeamPacket = TeamPacketClass.getConstructor(scoreboardTeam, int.class);
         }
     }
 

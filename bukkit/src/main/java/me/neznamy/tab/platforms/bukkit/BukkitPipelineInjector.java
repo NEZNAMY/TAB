@@ -9,7 +9,7 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
