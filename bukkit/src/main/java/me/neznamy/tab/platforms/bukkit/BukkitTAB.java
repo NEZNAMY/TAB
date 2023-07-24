@@ -1,51 +1,43 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.BukkitLegacyNMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.BukkitModernNMSStorage;
+import me.neznamy.tab.platforms.bukkit.nms.storage.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.platform.FoliaPlatform;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
-import me.neznamy.tab.platforms.bukkit.nms.storage.nms.*;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 /**
- * Main class for Bukkit platform
+ * Main class for Bukkit.
  */
 public class BukkitTAB extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        String version = Bukkit.getBukkitVersion().split("-")[0];
-        String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Server version: " + version + " (" + serverPackage + ")"));
         if (!isVersionSupported()) {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        BukkitPlatform platform = ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer") ?
-                new FoliaPlatform(this) : new BukkitPlatform(this);
-        TAB.setInstance(new TAB(platform, ProtocolVersion.fromFriendlyName(version), getDataFolder()));
-        if (TAB.getInstance().getServerVersion() == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("&c[TAB] Unknown server version: " + Bukkit.getBukkitVersion() + "! Plugin may not work correctly."));
-        }
         Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
+        Objects.requireNonNull(Bukkit.getPluginCommand(TabConstants.COMMAND_BACKEND)).setExecutor(new BukkitTabCommand());
+        TAB.setInstance(new TAB(ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer") ?
+                new FoliaPlatform(this) : new BukkitPlatform(this),
+                ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]), getDataFolder()));
         TAB.getInstance().load();
         Metrics metrics = new Metrics(this, 5304);
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PLACEHOLDER_API, () -> platform.isPlaceholderAPI() ? "Yes" : "No"));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
         metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
-        PluginCommand cmd = Bukkit.getPluginCommand(TabConstants.COMMAND_BACKEND);
-        if (cmd == null) return;
-        BukkitTabCommand command = new BukkitTabCommand();
-        cmd.setExecutor(command);
-        cmd.setTabCompleter(command);
     }
 
     @Override
@@ -63,11 +55,8 @@ public class BukkitTAB extends JavaPlugin {
      */
     private boolean isVersionSupported() {
         try {
-            long time = System.currentTimeMillis();
-            String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-            int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
-            NMSStorage.setInstance(minorVersion >= 17 ? new BukkitModernNMSStorage() : new BukkitLegacyNMSStorage());
-            Bukkit.getConsoleSender().sendMessage(EnumChatFormat.color("[TAB] Loaded NMS hook in " + (System.currentTimeMillis()-time) + "ms"));
+            NMSStorage.setInstance(Integer.parseInt(Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].split("_")[1])
+                    >= 17 ? new BukkitModernNMSStorage() : new BukkitLegacyNMSStorage());
             return true;
         } catch (Exception ex) {
             if (ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]) == ProtocolVersion.UNKNOWN_SERVER_VERSION) {
