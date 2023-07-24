@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
+import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -33,26 +34,22 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
-    public @Nullable
-    PipelineInjector createPipelineInjector() {
+    public @Nullable PipelineInjector createPipelineInjector() {
         return null;
     }
 
     @Override
-    public @NotNull
-    NameTag getUnlimitedNameTags() {
-        return new NameTag();
+    public @NotNull NameTag getUnlimitedNameTags() {
+        return new FabricNameTagX();
     }
 
     @Override
-    public @NotNull
-    TabExpansion createTabExpansion() {
+    public @NotNull TabExpansion createTabExpansion() {
         return new EmptyTabExpansion();
     }
 
     @Override
-    public @Nullable
-    TabFeature getPerWorldPlayerList() {
+    public @Nullable TabFeature getPerWorldPlayerList() {
         return null;
     }
 

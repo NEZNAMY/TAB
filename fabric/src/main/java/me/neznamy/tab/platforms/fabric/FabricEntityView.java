@@ -11,7 +11,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.UUID;
 
 public record FabricEntityView(FabricTabPlayer player) implements EntityView {
@@ -23,11 +23,13 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
         player.sendPacket(new ClientboundAddEntityPacket(entityId, id,
                 location.getX(), location.getY(), location.getZ(), 0, 0,
                 (EntityType<?>) entityType, 0, Vec3.ZERO, 0));
+        updateEntityMetadata(entityId, data);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void updateEntityMetadata(int entityId, @NotNull EntityData data) {
-        player.sendPacket(new ClientboundSetEntityDataPacket(entityId, Objects.requireNonNull(((SynchedEntityData) data.build()).packDirty())));
+        player.sendPacket(new ClientboundSetEntityDataPacket(entityId, (List<SynchedEntityData.DataValue<?>>) data.build()));
 
     }
 
