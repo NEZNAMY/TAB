@@ -415,6 +415,11 @@ public class MisconfigurationHelper {
         }
     }
 
+    public void layoutIncludesPreventSpectatorEffect() {
+        hint("Layout feature automatically includes prevent-spectator-effect, therefore the feature can be disabled " +
+                "for better performance, as it is not needed at all (assuming it is configured to always display some layout).");
+    }
+
     public void hint(@NotNull String message) {
         TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&6[Hint] " + message));
     }

@@ -352,6 +352,9 @@ public class FeatureManager {
             if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) {
                 TAB.getInstance().getMisconfigurationHelper().layoutBreaksYellowNumber();
             }
+            if (configuration.getConfig().getBoolean("prevent-spectator-effect.enabled", false)) {
+                TAB.getInstance().getMisconfigurationHelper().layoutIncludesPreventSpectatorEffect();
+            }
         }
 
         // Must be loaded after: Layout
