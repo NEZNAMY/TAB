@@ -320,6 +320,14 @@ public class MisconfigurationHelper {
                 " feature randomly breaking, enable it back.");
     }
 
+    public void nonLastNoConditionScoreboard(@NotNull String noConditionScoreboard, @NotNull String nextScoreboard) {
+        startupWarn("Scoreboard \"" + noConditionScoreboard + "\" has no display condition set, however, there is" +
+                " another scoreboard in the chain (" + nextScoreboard + "). Scoreboards are checked from top to bottom" +
+                " until a scoreboard with meeting condition or no condition is found. Because of this, the scoreboard (" +
+                nextScoreboard + ") after the no-condition scoreboard (" + noConditionScoreboard + ") will never be displayed. " +
+                "Unless this is intentional to externally display the scoreboard (commands, API), this is a mistake.");
+    }
+
     /**
      * Sends a startup warn message into console
      *

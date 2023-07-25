@@ -54,8 +54,16 @@ public class ScoreboardManagerImpl extends TabFeature implements ScoreboardManag
     @Override
     public void load() {
         Map<String, Map<String, Object>> map = TAB.getInstance().getConfiguration().getConfig().getConfigurationSection("scoreboard.scoreboards");
+        boolean noConditionScoreboardFound = false;
+        String noConditionScoreboard = null;
         for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
             String condition = (String) entry.getValue().get("display-condition");
+            if (condition == null || condition.length() == 0) {
+                noConditionScoreboardFound = true;
+                noConditionScoreboard = entry.getKey();
+            } else if (noConditionScoreboardFound) {
+                TAB.getInstance().getMisconfigurationHelper().nonLastNoConditionScoreboard(noConditionScoreboard, entry.getKey());
+            }
             String title = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(entry.getValue(), "title", "<Title not defined>",
                     "Scoreboard \"" + entry.getKey() + "\" is missing title!");
             List<String> lines = TAB.getInstance().getMisconfigurationHelper().fromMapOrElse(entry.getValue(), "lines",
