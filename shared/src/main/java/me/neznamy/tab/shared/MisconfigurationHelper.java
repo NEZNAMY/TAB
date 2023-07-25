@@ -328,6 +328,12 @@ public class MisconfigurationHelper {
                 "Unless this is intentional to externally display the scoreboard (commands, API), this is a mistake.");
     }
 
+    public void layoutBreaksYellowNumber() {
+        startupWarn("Layout feature breaks yellow-number feature, because it replaces real player with fake slots " +
+                "with different usernames for more reliable functionality. Disable yellow-number feature, as it will only look bad " +
+                "and consume resources.");
+    }
+
     /**
      * Sends a startup warn message into console
      *

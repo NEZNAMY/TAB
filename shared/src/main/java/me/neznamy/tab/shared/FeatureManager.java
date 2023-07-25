@@ -349,6 +349,9 @@ public class FeatureManager {
         // Must be loaded after: Sorting
         if (minorVersion >= 8 && configuration.getConfig().getBoolean("layout.enabled", false)) {
             featureManager.registerFeature(TabConstants.Feature.LAYOUT, new LayoutManagerImpl());
+            if (configuration.getConfig().getBoolean("yellow-number-in-tablist.enabled", true)) {
+                TAB.getInstance().getMisconfigurationHelper().layoutBreaksYellowNumber();
+            }
         }
 
         // Must be loaded after: Layout
