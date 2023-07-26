@@ -64,7 +64,21 @@ public class BukkitTabList implements TabList {
 
         // Classes
         Class<?> playerInfoDataClass;
-        if (nms.getMinorVersion() >= 17) {
+        if (nms.isMojangMapped()) {
+            EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.GameType");
+            PacketPlayOutPlayerListHeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.ClientboundTabListPacket");
+            if (nms.is1_19_3Plus()) {
+                ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
+                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry");
+                RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$Data");
+            } else {
+                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
+                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
+                playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate");
+            }
+        } else if (nms.getMinorVersion() >= 17) {
             EnumGamemodeClass = (Class<Enum>) Class.forName("net.minecraft.world.level.EnumGamemode");
             PacketPlayOutPlayerListHeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
             if (nms.is1_19_3Plus()) {

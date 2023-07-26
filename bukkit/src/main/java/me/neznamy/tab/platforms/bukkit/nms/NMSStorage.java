@@ -19,7 +19,6 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -34,25 +33,24 @@ public class NMSStorage {
     @Getter @Setter private static NMSStorage instance;
 
     /** Server's NMS/CraftBukkit package */
-    @Getter protected final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+    @Getter private final String serverPackage = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
     /** Server's minor version */
-    @Getter protected final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
+    @Getter private final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
     /** Flag determining whether the server version is at least 1.19.3 or not */
     @Getter private final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
     @Getter private final boolean is1_19_4Plus = is1_19_3Plus && !serverPackage.equals("v1_19_R2");
 
+    /** Flag determining whether this server jar is mojang mapped or not */
+    @Getter private final boolean mojangMapped = ReflectionUtils.classExists("net.minecraft.ChatFormatting") && minorVersion >= 17;
+
     /** Basic universal values */
     protected Class<?> Packet;
     protected Class<?> NetworkManager;
-    protected Class<?> EntityArmorStand;
-    protected Class<?> World;
     public Class<Enum> EnumChatFormat;
     public Class<?> EntityPlayer;
     protected Class<?> EntityHuman;
-    public Class<?> Entity;
-    public Class<?> EntityLiving;
     protected Class<?> PlayerConnection;
 
     // Ping field for 1.5.2 - 1.16.5, 1.17+ has Player#getPing()
@@ -69,8 +67,6 @@ public class NMSStorage {
     public Class<?> IChatBaseComponent;
     protected Class<?> ChatSerializer;
     public Method ChatSerializer_DESERIALIZE;
-
-    public Object dummyEntity;
 
     private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
@@ -89,16 +85,13 @@ public class NMSStorage {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
-            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethod(ChatSerializer, new String[]{"a"}, String.class);
+            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethod(ChatSerializer, new String[]{"fromJson", "a"}, String.class);
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             try {
                 getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
             } catch (IllegalStateException catServer) {
                 getProfile = ReflectionUtils.getMethod(EntityHuman, new String[] {"getProfile"});
             }
-            Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(World, double.class, double.class, double.class);
-            Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + serverPackage + ".CraftWorld").getMethod("getHandle");
-            dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
         }
         if (minorVersion >= 9) {
             DataWatcherObject.load();
@@ -121,18 +114,28 @@ public class NMSStorage {
     }
 
     private void loadClasses() throws ClassNotFoundException {
-        if (minorVersion >= 17) {
+        if (mojangMapped) {
+            IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
+            ChatSerializer = Class.forName("net.minecraft.network.chat.Component$Serializer");
+            EntityHuman = Class.forName("net.minecraft.world.entity.player.Player");
+            NetworkManager = Class.forName("net.minecraft.network.Connection");
+            Packet = Class.forName("net.minecraft.network.protocol.Packet");
+            EnumChatFormat = (Class<Enum>) Class.forName("net.minecraft.ChatFormatting");
+            EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
+            PlayerConnection = Class.forName("net.minecraft.server.network.ServerGamePacketListenerImpl");
+            DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.SynchedEntityData");
+            DataWatcherItem.CLASS = Class.forName("net.minecraft.network.syncher.SynchedEntityData$DataItem");
+            DataWatcherObject.CLASS = Class.forName("net.minecraft.network.syncher.EntityDataAccessor");
+            DataWatcherHelper.DataWatcherRegistry = Class.forName("net.minecraft.network.syncher.EntityDataSerializers");
+            DataWatcherHelper.DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.EntityDataSerializer");
+        } else if (minorVersion >= 17) {
             ChatSerializer = Class.forName("net.minecraft.network.chat.IChatBaseComponent$ChatSerializer");
-            World = Class.forName("net.minecraft.world.level.World");
-            EntityArmorStand = Class.forName("net.minecraft.world.entity.decoration.EntityArmorStand");
             EntityHuman = Class.forName("net.minecraft.world.entity.player.EntityHuman");
             NetworkManager = Class.forName("net.minecraft.network.NetworkManager");
             IChatBaseComponent = Class.forName("net.minecraft.network.chat.IChatBaseComponent");
             Packet = Class.forName("net.minecraft.network.protocol.Packet");
             EnumChatFormat = (Class<Enum>) Class.forName("net.minecraft.EnumChatFormat");
             EntityPlayer = Class.forName("net.minecraft.server.level.EntityPlayer");
-            Entity = Class.forName("net.minecraft.world.entity.Entity");
-            EntityLiving = Class.forName("net.minecraft.world.entity.EntityLiving");
             PlayerConnection = Class.forName("net.minecraft.server.network.PlayerConnection");
             DataWatcher.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher");
             DataWatcherItem.CLASS = Class.forName("net.minecraft.network.syncher.DataWatcher$Item");
@@ -141,12 +144,9 @@ public class NMSStorage {
             DataWatcherHelper.DataWatcherSerializer = Class.forName("net.minecraft.network.syncher.DataWatcherSerializer");
         } else {
             EntityHuman = getLegacyClass("EntityHuman");
-            World = getLegacyClass("World");
             Packet = getLegacyClass("Packet");
             EnumChatFormat = (Class<Enum>) getLegacyClass("EnumChatFormat");
             EntityPlayer = getLegacyClass("EntityPlayer");
-            Entity = getLegacyClass("Entity");
-            EntityLiving = getLegacyClass("EntityLiving");
             PlayerConnection = getLegacyClass("PlayerConnection");
             NetworkManager = getLegacyClass("NetworkManager");
             DataWatcher.CLASS = getLegacyClass("DataWatcher");
@@ -154,9 +154,6 @@ public class NMSStorage {
             if (minorVersion >= 7) {
                 IChatBaseComponent = getLegacyClass("IChatBaseComponent");
                 ChatSerializer = getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
-            }
-            if (minorVersion >= 8) {
-                EntityArmorStand = getLegacyClass("EntityArmorStand");
             }
             if (minorVersion >= 9) {
                 DataWatcherObject.CLASS = getLegacyClass("DataWatcherObject");

@@ -54,22 +54,30 @@ public class DataWatcherHelper {
 
     public static void load(NMSStorage nms) throws NoSuchFieldException, IllegalAccessException {
         if (nms.getMinorVersion() < 9) return;
-        DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
-        DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
-        DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
-        if (nms.is1_19_3Plus()) {
-            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("g").get(null);
-            if (nms.is1_19_4Plus()) {
-                DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("k").get(null);
-            } else {
-                DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("j").get(null);
-            }
+        if (nms.isMojangMapped()) {
+            DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("BYTE").get(null);
+            DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("FLOAT").get(null);
+            DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("STRING").get(null);
+            DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("OPTIONAL_COMPONENT").get(null);
+            DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("BOOLEAN").get(null);
         } else {
-            if (nms.getMinorVersion() >= 13) {
-                DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
-                DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
+            DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
+            DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
+            DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
+            if (nms.is1_19_3Plus()) {
+                DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("g").get(null);
+                if (nms.is1_19_4Plus()) {
+                    DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("k").get(null);
+                } else {
+                    DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("j").get(null);
+                }
             } else {
-                DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
+                if (nms.getMinorVersion() >= 13) {
+                    DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
+                    DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
+                } else {
+                    DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
+                }
             }
         }
     }

@@ -9,11 +9,13 @@ import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.Location;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
@@ -23,17 +25,17 @@ import java.util.UUID;
 public class PacketEntityView implements EntityView {
 
     /** PacketPlayOutEntityDestroy */
-    public static Class<?> EntityDestroyClass;
+    private static Class<?> EntityDestroyClass;
     private static Constructor<?> newEntityDestroy;
-    public static Field EntityDestroy_Entities;
+    private static Field EntityDestroy_Entities;
 
     /** PacketPlayOutEntityMetadata */
     private static Constructor<?> newEntityMetadata;
     
     /** PacketPlayOutEntityTeleport */
-    public static Class<?> EntityTeleportClass;
+    private static Class<?> EntityTeleportClass;
     private static Constructor<?> newEntityTeleport;
-    public static Field EntityTeleport_EntityId;
+    private static Field EntityTeleport_EntityId;
     private static Field EntityTeleport_X;
     private static Field EntityTeleport_Y;
     private static Field EntityTeleport_Z;
@@ -58,11 +60,14 @@ public class PacketEntityView implements EntityView {
     private static final EnumMap<EntityType, Integer> entityIds = new EnumMap<>(EntityType.class);
 
     /** Other entity packets */
-    public static Class<?> PacketPlayOutEntity;
-    public static Field PacketPlayOutEntity_ENTITYID;
-    public static Class<?> PacketPlayOutEntityLook;
-    public static Class<?> PacketPlayOutNamedEntitySpawn;
-    public static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
+    private static Class<?> PacketPlayOutEntity;
+    private static Field PacketPlayOutEntity_ENTITYID;
+    private static Class<?> PacketPlayOutEntityLook;
+    private static Class<?> PacketPlayOutNamedEntitySpawn;
+    private static Field PacketPlayOutNamedEntitySpawn_ENTITYID;
+
+    private static Class<?> EntityArmorStand;
+    private static Object dummyEntity;
 
     /** Player this view belongs to */
     private final BukkitTabPlayer player;
@@ -76,7 +81,23 @@ public class PacketEntityView implements EntityView {
     public static void load(NMSStorage nms) throws ReflectiveOperationException {
         Class<?> spawnEntityClass;
         Class<?> entityMetadataClass;
-        if (nms.minorVersion >= 17) {
+        Class<?> world;
+        Class<?> entity;
+        if (nms.isMojangMapped()) {
+            entity = Class.forName("net.minecraft.world.entity.Entity");
+            EntityTeleportClass = Class.forName("net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket");
+            EntityDestroyClass = Class.forName("net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket");
+            entityMetadataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket");
+            Vec3D = Class.forName("net.minecraft.world.phys.Vec3");
+            EntityTypes = Class.forName("net.minecraft.world.entity.EntityType");
+            spawnEntityClass = Class.forName("net.minecraft.network.protocol.game.ClientboundAddEntityPacket");
+            PacketPlayOutEntity = Class.forName("net.minecraft.network.protocol.game.ClientboundMoveEntityPacket");
+            PacketPlayOutEntityLook = Class.forName("net.minecraft.network.protocol.game.ClientboundMoveEntityPacket$Rot");
+            PacketPlayOutNamedEntitySpawn = Class.forName("net.minecraft.network.protocol.game.ClientboundAddPlayerPacket");
+            world = Class.forName("net.minecraft.world.level.Level");
+            EntityArmorStand = Class.forName("net.minecraft.world.entity.decoration.ArmorStand");
+        } else if (nms.getMinorVersion() >= 17) {
+            entity = Class.forName("net.minecraft.world.entity.Entity");
             EntityTeleportClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport");
             EntityDestroyClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
             entityMetadataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
@@ -86,7 +107,10 @@ public class PacketEntityView implements EntityView {
             PacketPlayOutEntity = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntity");
             PacketPlayOutEntityLook = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntity$PacketPlayOutEntityLook");
             PacketPlayOutNamedEntitySpawn = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn");
+            world = Class.forName("net.minecraft.world.level.World");
+            EntityArmorStand = Class.forName("net.minecraft.world.entity.decoration.EntityArmorStand");
         } else {
+            entity = nms.getLegacyClass("Entity");
             spawnEntityClass = nms.getLegacyClass("PacketPlayOutSpawnEntityLiving", "Packet24MobSpawn");
             EntityTeleportClass = nms.getLegacyClass("PacketPlayOutEntityTeleport", "Packet34EntityTeleport");
             entityMetadataClass = nms.getLegacyClass("PacketPlayOutEntityMetadata", "Packet40EntityMetadata");
@@ -94,6 +118,10 @@ public class PacketEntityView implements EntityView {
             PacketPlayOutEntity = nms.getLegacyClass("PacketPlayOutEntity", "Packet30Entity");
             PacketPlayOutEntityLook = nms.getLegacyClass("PacketPlayOutEntity$PacketPlayOutEntityLook", "PacketPlayOutEntityLook", "Packet32EntityLook");
             PacketPlayOutNamedEntitySpawn = nms.getLegacyClass("PacketPlayOutNamedEntitySpawn", "Packet20NamedEntitySpawn");
+            world = nms.getLegacyClass("World");
+            if (nms.getMinorVersion() >= 8) {
+                EntityArmorStand = nms.getLegacyClass("EntityArmorStand");
+            }
         }
         
         EntityDestroy_Entities = ReflectionUtils.getOnlyField(EntityDestroyClass);
@@ -112,7 +140,10 @@ public class PacketEntityView implements EntityView {
 
         EntityTeleport_EntityId = ReflectionUtils.getFields(EntityTeleportClass, int.class).get(0);
         if (nms.getMinorVersion() >= 17) {
-            newEntityTeleport = EntityTeleportClass.getConstructor(nms.Entity);
+            Constructor<?> newEntityArmorStand = EntityArmorStand.getConstructor(world, double.class, double.class, double.class);
+            Method World_getHandle = Class.forName("org.bukkit.craftbukkit." + nms.getServerPackage() + ".CraftWorld").getMethod("getHandle");
+            dummyEntity = newEntityArmorStand.newInstance(World_getHandle.invoke(Bukkit.getWorlds().get(0)), 0, 0, 0);
+            newEntityTeleport = EntityTeleportClass.getConstructor(entity);
         } else {
             newEntityTeleport = EntityTeleportClass.getConstructor();
         }
@@ -126,27 +157,33 @@ public class PacketEntityView implements EntityView {
             EntityTeleport_Z = ReflectionUtils.getFields(EntityTeleportClass, int.class).get(3);
         }
 
-        if (nms.minorVersion >= 13) {
+        if (nms.getMinorVersion() >= 13) {
             entityIds.put(EntityType.ARMOR_STAND, 1);
         } else {
             entityIds.put(EntityType.WITHER, 64);
-            if (nms.minorVersion >= 8) {
+            if (nms.getMinorVersion() >= 8) {
                 entityIds.put(EntityType.ARMOR_STAND, 30);
             }
         }
 
-        if (nms.minorVersion >= 19) {
+        if (nms.isMojangMapped()) {
+            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("ARMOR_STAND").get(null);
+        } else if (nms.getMinorVersion() >= 19) {
             EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
+        } else if (nms.getMinorVersion() >= 17) {
+            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("c").get(null);
+        }
+
+        if (nms.getMinorVersion() >= 19) {
             newSpawnEntity = spawnEntityClass.getConstructor(int.class, java.util.UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
-        } else if (nms.minorVersion >= 17) {
-            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("c").get(null);
+        } else if (nms.getMinorVersion() >= 17) {
             newSpawnEntity = spawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
         } else {
             newSpawnEntity = spawnEntityClass.getConstructor();
             SpawnEntity_EntityId = ReflectionUtils.getFields(spawnEntityClass, int.class).get(0);
-            if (nms.minorVersion >= 9) {
+            if (nms.getMinorVersion() >= 9) {
                 SpawnEntity_UUID = ReflectionUtils.getOnlyField(spawnEntityClass, UUID.class);
                 SpawnEntity_X = ReflectionUtils.getFields(spawnEntityClass, double.class).get(0);
                 SpawnEntity_Y = ReflectionUtils.getFields(spawnEntityClass, double.class).get(1);
@@ -157,7 +194,7 @@ public class PacketEntityView implements EntityView {
                 SpawnEntity_Z = ReflectionUtils.getFields(spawnEntityClass, int.class).get(4);
             }
             SpawnEntity_EntityType = ReflectionUtils.getFields(spawnEntityClass, int.class).get(1);
-            if (nms.minorVersion <= 14) {
+            if (nms.getMinorVersion() <= 14) {
                 SpawnEntity_DataWatcher = ReflectionUtils.getOnlyField(spawnEntityClass, DataWatcher.CLASS);
             }
         }
@@ -216,7 +253,7 @@ public class PacketEntityView implements EntityView {
         NMSStorage nms = NMSStorage.getInstance();
         Object nmsPacket;
         if (nms.getMinorVersion() >= 17) {
-            nmsPacket = newEntityTeleport.newInstance(nms.dummyEntity);
+            nmsPacket = newEntityTeleport.newInstance(dummyEntity);
         } else {
             nmsPacket = newEntityTeleport.newInstance();
         }
