@@ -128,4 +128,9 @@ public class FabricNameTagX extends BackendNameTagX {
     public void runInEntityScheduler(Object entity, Runnable task) {
         task.run();
     }
+
+    @Override
+    public boolean isDead(TabPlayer player) {
+        return !((FabricTabPlayer)player).getPlayer().isAlive();
+    }
 }

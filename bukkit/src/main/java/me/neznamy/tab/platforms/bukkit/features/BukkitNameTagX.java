@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
@@ -152,5 +153,10 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     @Override
     public void runInEntityScheduler(Object entity, Runnable task) {
         ((BukkitPlatform)TAB.getInstance().getPlatform()).runEntityTask((Entity) entity, task);
+    }
+
+    @Override
+    public boolean isDead(TabPlayer player) {
+        return ((BukkitTabPlayer)player).getPlayer().isDead();
     }
 }

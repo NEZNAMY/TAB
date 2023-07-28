@@ -92,7 +92,7 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
      */
     private void spawnArmorStands(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
         if (viewer.getVersion().getMinorVersion() < 8) return;
-        if (target == viewer || isPlayerDisabled(target)) return;
+        if (target == viewer || isPlayerDisabled(target) || isDead(target)) return;
         if (!areInSameWorld(viewer, target)) return;
         if (getDistance(viewer, target) <= 48 && canSee(viewer, target) && !target.isVanished())
             getArmorStandManager(target).spawn((BackendTabPlayer) viewer);
@@ -236,4 +236,6 @@ public abstract class BackendNameTagX extends NameTagX implements GameModeListen
     public abstract EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible);
 
     public abstract void runInEntityScheduler(Object entity, Runnable task);
+
+    public abstract boolean isDead(TabPlayer player);
 }
