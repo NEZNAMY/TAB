@@ -59,10 +59,13 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
         }
         if (!"ERROR".equals(newValue) && !identifier.equals(newValue) && (lastValue == null || !lastValue.equals(newValue))) {
             lastValue = newValue;
-            for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
-                updateParents(player);
-                TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
-            }
+            TAB.getInstance().getCPUManager().runMeasuredTask(TAB.getInstance().getPlaceholderManager().getFeatureName(),
+                    TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
+                        for (TabPlayer player : TAB.getInstance().getOnlinePlayers()) {
+                            updateParents(player);
+                            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(player, identifier, newValue);
+                        }
+                    });
             return true;
         }
         return false;

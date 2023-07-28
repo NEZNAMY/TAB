@@ -1,18 +1,18 @@
 package me.neznamy.tab.shared.cpu;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.*;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import lombok.Getter;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 
 /**
  * A class which measures CPU usage of all tasks inserted into it and shows usage
@@ -31,8 +31,12 @@ public class CpuManager {
     @Nullable @Getter private CpuReport lastReport;
 
     /** Scheduler for scheduling delayed and repeating tasks */
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+    private final ScheduledExecutorService processingThread = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
+
+    /** Scheduler for placeholder refreshing task to prevent inefficient placeholders from lagging the entire plugin */
+    private final ScheduledExecutorService placeholderThread = Executors.newSingleThreadScheduledExecutor(
+            new ThreadFactoryBuilder().setNameFormat("TAB Placeholder Refreshing Thread").build());
 
     /** Tasks submitted to main thread before plugin was fully enabled */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
@@ -44,36 +48,24 @@ public class CpuManager {
      * Constructs new instance and starts repeating task that resets values in configured interval
      */
     public CpuManager() {
-        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), this::makeReport);
-    }
-
-    private void makeReport() {
-        lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
-        featureUsageCurrent = new ConcurrentHashMap<>();
-        placeholderUsageCurrent = new ConcurrentHashMap<>();
-
-        for (Entry<String, Float> entry : lastReport.getPlaceholderUsage().entrySet()) {
-            if (entry.getValue() > 30) {
-                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of placeholder " + entry.getKey() +
-                        " is " + (int)(float)entry.getValue() + "%. It will most likely cause problems. Try increasing refresh interval."));
+        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
+            lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
+            featureUsageCurrent = new ConcurrentHashMap<>();
+            placeholderUsageCurrent = new ConcurrentHashMap<>();
+            if (lastReport.getPlaceholderUsageTotal() > 50) {
+                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of placeholders is " + (int) lastReport.getPlaceholderUsageTotal() +
+                        "%. See /" + (TAB.getInstance().getServerVersion() == ProtocolVersion.PROXY ? TabConstants.COMMAND_PROXY : TabConstants.COMMAND_BACKEND) +
+                        " cpu for more info. Try increasing refresh intervals."));
             }
-        }
-        Map<String, Map<String, Float>> features = lastReport.getFeatureUsage();
-        double featuresTotal = 0;
-        for (Map<String, Float> map : features.values()) {
-            featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
-        }
-        if (featuresTotal > 90) {
-            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of the plugin is "
-                    + (int)featuresTotal + "%. This will cause problems. Check /tab cpu to find out why."));
-        }
+        });
     }
 
     /**
      * Cancels all tasks and shuts down thread pools
      */
     public void cancelAllTasks() {
-        scheduler.shutdownNow();
+        processingThread.shutdownNow();
+        placeholderThread.shutdownNow();
     }
 
     /**
@@ -86,6 +78,16 @@ public class CpuManager {
         while ((r = taskQueue.poll()) != null) {
             submit(r);
         }
+        // This one cannot be queued to processing thread, because we want it in different thread
+        placeholderThread.scheduleAtFixedRate(() -> run(() -> {
+                    long time = System.nanoTime();
+                    TAB.getInstance().getPlaceholderManager().refresh();
+                    addTime(TAB.getInstance().getPlaceholderManager().getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, System.nanoTime() - time);
+                }),
+                TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL,
+                TabConstants.Placeholder.MINIMUM_REFRESH_INTERVAL,
+                TimeUnit.MILLISECONDS
+        );
     }
 
     /**
@@ -95,12 +97,12 @@ public class CpuManager {
      * @param task task to execute
      */
     private void submit(@NotNull Runnable task) {
-        if (scheduler.isShutdown()) return;
+        if (processingThread.isShutdown()) return;
         if (!enabled) {
             taskQueue.add(task);
             return;
         }
-        scheduler.submit(() -> run(task));
+        processingThread.submit(() -> run(task));
     }
 
     /**
@@ -159,18 +161,18 @@ public class CpuManager {
     }
 
     public void startRepeatingMeasuredTask(int intervalMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        if (processingThread.isShutdown()) return;
+        processingThread.scheduleAtFixedRate(() -> runMeasuredTask(feature, type, task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public void startRepeatingTask(int intervalMilliseconds, @NotNull Runnable task) {
-        if (scheduler.isShutdown()) return;
-        scheduler.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
+        if (processingThread.isShutdown()) return;
+        processingThread.scheduleAtFixedRate(() -> run(task), intervalMilliseconds, intervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     public void runTaskLater(int delayMilliseconds, @NotNull String feature, @NotNull String type, @NotNull Runnable task) {
-        if (scheduler.isShutdown()) return;
-        scheduler.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
+        if (processingThread.isShutdown()) return;
+        processingThread.schedule(() -> runMeasuredTask(feature, type, task), delayMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     private void run(@NotNull Runnable task) {

@@ -59,8 +59,11 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
         String newValue = getReplacements().findReplacement(String.valueOf(output));
         if (!lastValues.computeIfAbsent(viewer, v -> new WeakHashMap<>()).containsKey(target) || !lastValues.get(viewer).get(target).equals(newValue)) {
             lastValues.get(viewer).put(target, newValue);
-            updateParents(viewer);
-            updateParents(target);
+            TAB.getInstance().getCPUManager().runMeasuredTask(TAB.getInstance().getPlaceholderManager().getFeatureName(),
+                    TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
+                        updateParents(viewer);
+                        updateParents(target);
+                    });
             return true;
         }
         return false;

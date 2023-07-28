@@ -60,8 +60,11 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
         }
         if (!lastValues.containsKey(p) || (!ERROR_VALUE.equals(newValue) && !identifier.equals(newValue) && !newValue.equals(lastValues.getOrDefault(p, null)))) {
             lastValues.put(p, ERROR_VALUE.equals(newValue) ? identifier : newValue);
-            updateParents(p);
-            TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
+            TAB.getInstance().getCPUManager().runMeasuredTask(TAB.getInstance().getPlaceholderManager().getFeatureName(),
+                    TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
+                        updateParents(p);
+                        TAB.getInstance().getPlaceholderManager().getTabExpansion().setPlaceholderValue(p, identifier, newValue);
+                    });
             return true;
         }
         return false;
