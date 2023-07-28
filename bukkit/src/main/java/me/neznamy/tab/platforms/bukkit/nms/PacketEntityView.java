@@ -175,7 +175,7 @@ public class PacketEntityView implements EntityView {
         }
 
         if (nms.getMinorVersion() >= 19) {
-            newSpawnEntity = spawnEntityClass.getConstructor(int.class, java.util.UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
+            newSpawnEntity = spawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D, double.class);
             Vec3D_Empty = ReflectionUtils.getOnlyField(Vec3D, Vec3D).get(null);
         } else if (nms.getMinorVersion() >= 17) {
             newSpawnEntity = spawnEntityClass.getConstructor(int.class, UUID.class, double.class, double.class, double.class, float.class, float.class, EntityTypes, int.class, Vec3D);
