@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.shared.cpu.CpuReport;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -32,33 +33,28 @@ public class CpuCommand extends SubCommand {
 
     @Override
     public void execute(@Nullable TabPlayer sender, @NotNull String[] args) {
-        String SEPARATOR = "&8&l" + LINE_CHAR + "&8&m                                                    ";
-        TAB tab = TAB.getInstance();
-        Map<String, Float> placeholders = tab.getCPUManager().getPlaceholderUsage();
-        double placeholdersTotal = placeholders.values().stream().mapToDouble(Float::floatValue).sum();
-
-        Map<String, Map<String, Float>> features = tab.getCPUManager().getFeatureUsage();
-        double featuresTotal = 0;
-        for (Map<String, Float> map : features.values()) {
-            featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
+        CpuReport report = TAB.getInstance().getCPUManager().getLastReport();
+        if (report == null) {
+            sendMessage(sender, "&cPlease wait at least 10 seconds since plugin load to use this command.");
+            return;
         }
-
+        Map<String, Map<String, Float>> features = report.getFeatureUsage();
         sendMessage(sender, " ");
         sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6CPU stats from the last 10 seconds");
-        sendMessage(sender, SEPARATOR);
+        sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m                                                    ");
         sendMessage(sender, "&8&l" + LINE_CHAR + " &6Top 5 placeholders:");
-        printPlaceholders(sender, placeholders);
-        sendMessage(sender, SEPARATOR);
+        printPlaceholders(sender, report.getPlaceholderUsage());
+        sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m                                                    ");
         if (sender != null) {
             sendToPlayer(sender, features);
         } else {
             sendToConsole(features);
         }
-        sendMessage(sender, SEPARATOR);
-        sendMessage(sender, String.format("&8&l%s &6&lPlaceholders Total: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(placeholdersTotal), 10, 5)));
-        sendMessage(sender, String.format("&8&l%s &6&lPlugin internals: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal-placeholdersTotal), 10, 5)));
-        sendMessage(sender, String.format("&8&l%s &6&lTotal: &e&l%s%%", LINE_CHAR, colorize(decimal3.format(featuresTotal), 10, 5)));
+        sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m                                                    ");
+        sendMessage(sender, String.format("&8&l%s &6&lPlaceholders Total: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(report.getPlaceholderUsageTotal()), 10, 5)));
+        sendMessage(sender, String.format("&8&l%s &6&lPlugin internals: &a&l%s%%", LINE_CHAR, colorize(decimal3.format(report.getFeatureUsageTotal()-report.getPlaceholderUsageTotal()), 10, 5)));
+        sendMessage(sender, String.format("&8&l%s &6&lTotal: &e&l%s%%", LINE_CHAR, colorize(decimal3.format(report.getFeatureUsageTotal()), 10, 5)));
         sendMessage(sender, "&8&l" + LINE_CHAR + "&8&m             &r&8&l[ &bTAB CPU Stats &8&l]&r&8&l&m             ");
         sendMessage(sender, " ");
     }
@@ -96,8 +92,7 @@ public class CpuCommand extends SubCommand {
         for (Entry<String, Map<String, Float>> entry : features.entrySet()) {
             double featureTotal = entry.getValue().values().stream().mapToDouble(Float::floatValue).sum();
             String core = String.format("&8&l%s &7%s &7(%s%%&7):", LINE_CHAR, entry.getKey(), colorize(decimal3.format(featureTotal), 5, 1));
-            IChatBaseComponent message = new IChatBaseComponent(EnumChatFormat.color(core));
-            sender.sendMessage(message);
+            sender.sendMessage(new IChatBaseComponent(EnumChatFormat.color(core)));
         }
     }
 

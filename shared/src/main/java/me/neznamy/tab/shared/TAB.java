@@ -12,6 +12,7 @@ import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
 import me.neznamy.tab.api.nametag.NameTagManager;
+import me.neznamy.tab.shared.cpu.CpuManager;
 import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.command.DisabledCommand;
 import me.neznamy.tab.shared.command.TabCommand;

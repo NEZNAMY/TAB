@@ -1,4 +1,4 @@
-package me.neznamy.tab.shared;
+package me.neznamy.tab.shared.cpu;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -6,9 +6,12 @@ import java.util.concurrent.*;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import lombok.Getter;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -18,21 +21,16 @@ public class CpuManager {
 
     private final int UPDATE_RATE_SECONDS = 10;
 
-    private final long TIME_PERCENT = TimeUnit.SECONDS.toNanos(1) / UPDATE_RATE_SECONDS;
-
     /** Active time in current time period saved as nanoseconds from features */
     private volatile Map<String, Map<String, Long>> featureUsageCurrent = new ConcurrentHashMap<>();
 
     /** Active time in current time period saved as nanoseconds from placeholders */
     private volatile Map<String, Long> placeholderUsageCurrent = new ConcurrentHashMap<>();
 
-    /** Active time in previous time period saved as nanoseconds from features */
-    private volatile Map<String, Map<String, Long>> featureUsagePrevious = new HashMap<>();
+    /** Last CPU report */
+    @Nullable @Getter private CpuReport lastReport;
 
-    /** Active time in previous time period saved as nanoseconds from placeholders */
-    private volatile Map<String, Long> placeholderUsagePrevious = new HashMap<>();
-
-    // Scheduler for scheduling delayed and repeating tasks
+    /** Scheduler for scheduling delayed and repeating tasks */
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("TAB Processing Thread").build());
 
@@ -46,30 +44,29 @@ public class CpuManager {
      * Constructs new instance and starts repeating task that resets values in configured interval
      */
     public CpuManager() {
-        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), () -> {
-            featureUsagePrevious = Collections.unmodifiableMap(featureUsageCurrent);
-            placeholderUsagePrevious = Collections.unmodifiableMap(placeholderUsageCurrent);
+        startRepeatingTask((int) TimeUnit.SECONDS.toMillis(UPDATE_RATE_SECONDS), this::makeReport);
+    }
 
-            featureUsageCurrent = new ConcurrentHashMap<>();
-            placeholderUsageCurrent = new ConcurrentHashMap<>();
+    private void makeReport() {
+        lastReport = new CpuReport(UPDATE_RATE_SECONDS, featureUsageCurrent, placeholderUsageCurrent);
+        featureUsageCurrent = new ConcurrentHashMap<>();
+        placeholderUsageCurrent = new ConcurrentHashMap<>();
 
-            for (Entry<String, Long> entry : placeholderUsagePrevious.entrySet()) {
-                float usagePercent = nanosToPercent(entry.getValue());
-                if (usagePercent > 30) {
-                    TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of placeholder " + entry.getKey() +
-                            " is " + (int)usagePercent + "%. It will most likely cause problems. Try increasing refresh interval."));
-                }
+        for (Entry<String, Float> entry : lastReport.getPlaceholderUsage().entrySet()) {
+            if (entry.getValue() > 30) {
+                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of placeholder " + entry.getKey() +
+                        " is " + (int)(float)entry.getValue() + "%. It will most likely cause problems. Try increasing refresh interval."));
             }
-            Map<String, Map<String, Float>> features = getFeatureUsage();
-            double featuresTotal = 0;
-            for (Map<String, Float> map : features.values()) {
-                featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
-            }
-            if (featuresTotal > 90) {
-                TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of the plugin is "
-                        + (int)featuresTotal + "%. This will cause problems. Check /tab cpu to find out why."));
-            }
-        });
+        }
+        Map<String, Map<String, Float>> features = lastReport.getFeatureUsage();
+        double featuresTotal = 0;
+        for (Map<String, Float> map : features.values()) {
+            featuresTotal += map.values().stream().mapToDouble(Float::floatValue).sum();
+        }
+        if (featuresTotal > 90) {
+            TAB.getInstance().getPlatform().logWarn(new IChatBaseComponent("CPU usage of the plugin is "
+                    + (int)featuresTotal + "%. This will cause problems. Check /tab cpu to find out why."));
+        }
     }
 
     /**
@@ -107,76 +104,6 @@ public class CpuManager {
     }
 
     /**
-     * Returns cpu usage map of placeholders from previous time period
-     *
-     * @return cpu usage map of placeholders
-     */
-    public Map<String, Float> getPlaceholderUsage() {
-        return getUsage(placeholderUsagePrevious);
-    }
-
-    /**
-     * Converts nano map to percent and sorts it from highest to lowest usage.
-     *
-     * @param map map to convert
-     * @return converted and sorted map
-     */
-    private @NotNull Map<String, Float> getUsage(@NotNull Map<String, Long> map) {
-        return map
-                .entrySet()
-                .stream()
-                .sorted(Entry.comparingByValue((o1, o2) -> Long.compare(o2, o1)))
-                .collect(LinkedHashMap::new,
-                        (m, e) -> m.put(e.getKey(), nanosToPercent(e.getValue())),
-                        Map::putAll
-                );
-    }
-
-    /**
-     * Returns map of CPU usage per feature and type in the previous time period
-     *
-     * @return map of CPU usage per feature and type
-     */
-    public @NotNull Map<String, Map<String, Float>> getFeatureUsage() {
-        final Map<String, Map<String, Long>> map = featureUsagePrevious;
-
-        TreeMap<Long, Map.Entry<String, Map<String, Float>>> sorted
-                = new TreeMap<>((o1, o2) -> Long.compare(o2, o1));
-
-        map.forEach((key, val) -> {
-            Set<Map.Entry<String, Long>> entries = val.entrySet();
-            Map<String, Float> percent = new LinkedHashMap<>(entries.size());
-            long sum = entries
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue((o1, o2) -> Long.compare(o2, o1)))
-                    .peek(e -> percent.put(e.getKey(), nanosToPercent(e.getValue())))
-                    .mapToLong(Map.Entry::getValue)
-                    .sum();
-            sorted.put(sum, // Map.entry(key, percent) inline type java9+
-                    new AbstractMap.SimpleImmutableEntry<>(key, percent));
-        });
-        // we will also try to get rid of O(log(n)) for random reading
-        int assumeCapacity = map.size();
-        return sorted
-                .values()
-                .stream()
-                .collect(() -> new LinkedHashMap<>(assumeCapacity),
-                        (m, e) -> m.put(e.getKey(), e.getValue()),
-                        Map::putAll
-                );
-    }
-
-    /**
-     * Converts nanoseconds to percent usage.
-     *
-     * @param nanos nanoseconds of cpu time
-     * @return usage in % (0-100)
-     */
-    private float nanosToPercent(long nanos) {
-        return (float) nanos / TIME_PERCENT;
-    }
-
-    /**
      * Adds cpu time to specified feature and usage type
      *
      * @param feature     feature to add time to
@@ -195,9 +122,7 @@ public class CpuManager {
      * @param nanoseconds time to add
      */
     public void addTime(@NotNull String feature, @NotNull String type, long nanoseconds) {
-        featureUsageCurrent
-                .computeIfAbsent(feature, f -> new ConcurrentHashMap<>())
-                .merge(type, nanoseconds, Long::sum);
+        featureUsageCurrent.computeIfAbsent(feature, f -> new ConcurrentHashMap<>()).merge(type, nanoseconds, Long::sum);
     }
 
     /**
