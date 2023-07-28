@@ -34,8 +34,8 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
-    public @Nullable PipelineInjector createPipelineInjector() {
-        return null;
+    public @NotNull PipelineInjector createPipelineInjector() {
+        return new FabricPipelineInjector();
     }
 
     @Override
