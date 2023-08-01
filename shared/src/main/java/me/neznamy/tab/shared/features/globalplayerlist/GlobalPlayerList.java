@@ -55,11 +55,19 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
         return getServerGroup(viewer.getServer()).equals(getServerGroup(displayed.getServer()));
     }
 
-    public @NotNull String getServerGroup(@NotNull String serverName) {
+    @NotNull public String getServerGroup(@NotNull String playerServer) {
         for (Map.Entry<String, List<String>> group : sharedServers.entrySet()) {
-            if (group.getValue().stream().anyMatch(serverName::equalsIgnoreCase)) return group.getKey();
+            for (String serverDefinition : group.getValue()) {
+                if (serverDefinition.endsWith("*")) {
+                    if (playerServer.toLowerCase().startsWith(serverDefinition.substring(0, serverDefinition.length()-1).toLowerCase())) return group.getKey();
+                } else if (serverDefinition.startsWith("*")) {
+                    if (playerServer.toLowerCase().endsWith(serverDefinition.substring(1).toLowerCase())) return group.getKey();
+                }  else {
+                    if (playerServer.equalsIgnoreCase(serverDefinition)) return group.getKey();
+                }
+            }
         }
-        return isolateUnlistedServers ? "isolated:" + serverName : "DEFAULT";
+        return isolateUnlistedServers ? "isolated:" + playerServer : "DEFAULT";
     }
 
     @Override
