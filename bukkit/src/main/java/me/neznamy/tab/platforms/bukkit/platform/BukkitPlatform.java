@@ -4,10 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.neznamy.tab.platforms.bukkit.BukkitPipelineInjector;
-import me.neznamy.tab.platforms.bukkit.BukkitPlaceholderRegistry;
-import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.*;
 import me.neznamy.tab.shared.GroupManager;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -30,7 +29,10 @@ import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.milkbowl.vault.permission.Permission;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -38,6 +40,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -183,6 +186,44 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0] + " (" + NMSStorage.getInstance().getServerPackage() + ")";
+    }
+
+    @Override
+    public void registerListener() {
+        Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), plugin);
+    }
+
+    @Override
+    public void registerCommand() {
+        PluginCommand command = Bukkit.getPluginCommand(TabConstants.COMMAND_BACKEND);
+        if (command != null) {
+            BukkitTabCommand cmd = new BukkitTabCommand();
+            command.setExecutor(cmd);
+            command.setTabCompleter(cmd);
+        } else {
+            logWarn(new IChatBaseComponent("Failed to register command, is it defined in plugin.yml?"));
+        }
+    }
+
+    @Override
+    public void startMetrics() {
+        Metrics metrics = new Metrics(plugin, 5304);
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED,
+                () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM,
+                () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
+                () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
+    }
+
+    @Override
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
+    }
+
+    @Override
+    public File getDataFolder() {
+        return plugin.getDataFolder();
     }
 
     @Override

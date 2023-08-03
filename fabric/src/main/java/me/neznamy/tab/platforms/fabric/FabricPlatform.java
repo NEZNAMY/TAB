@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.fabric;
 
 import me.neznamy.tab.platforms.fabric.features.FabricNameTagX;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -9,12 +11,16 @@ import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 /**
  * Platform implementation for Fabric
@@ -66,6 +72,31 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     @Override
     public String getServerVersionInfo() {
         return "[Fabric] " + SharedConstants.getCurrentVersion().getName();
+    }
+
+    @Override
+    public void registerListener() {
+        new FabricEventListener().register();
+    }
+
+    @Override
+    public void registerCommand() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
+    }
+
+    @Override
+    public void startMetrics() {
+        // Not available
+    }
+
+    @Override
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.fromFriendlyName(SharedConstants.getCurrentVersion().getName());
+    }
+
+    @Override
+    public File getDataFolder() {
+        return FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
     }
 
     @Override

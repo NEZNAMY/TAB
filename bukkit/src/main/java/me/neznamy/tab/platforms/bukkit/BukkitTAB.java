@@ -4,16 +4,11 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.platform.FoliaPlatform;
 import me.neznamy.tab.shared.ProtocolVersion;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.util.ReflectionUtils;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Objects;
 
 /**
  * Main class for Bukkit.
@@ -26,16 +21,8 @@ public class BukkitTAB extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), this);
-        Objects.requireNonNull(Bukkit.getPluginCommand(TabConstants.COMMAND_BACKEND)).setExecutor(new BukkitTabCommand());
-        TAB.setInstance(new TAB(ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer") ?
-                new FoliaPlatform(this) : new BukkitPlatform(this),
-                ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]), getDataFolder()));
-        TAB.getInstance().load();
-        Metrics metrics = new Metrics(this, 5304);
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.UNLIMITED_NAME_TAG_MODE_ENABLED, () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.UNLIMITED_NAME_TAGS) ? "Yes" : "No"));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.PERMISSION_SYSTEM, () -> TAB.getInstance().getGroupManager().getPermissionPlugin()));
-        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION, () -> "1." + TAB.getInstance().getServerVersion().getMinorVersion() + ".x"));
+        TAB.create(ReflectionUtils.classExists("io.papermc.paper.threadedregions.RegionizedServer") ?
+                new FoliaPlatform(this) : new BukkitPlatform(this));
     }
 
     @Override

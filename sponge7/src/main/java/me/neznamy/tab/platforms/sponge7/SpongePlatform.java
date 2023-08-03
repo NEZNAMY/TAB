@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.sponge7;
 
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -13,7 +15,12 @@ import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+
+import java.io.File;
 
 /**
  * Platform implementation for Sponge 7 and lower
@@ -69,6 +76,35 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Sponge] " + Sponge.getPlatform().getMinecraftVersion().getName();
+    }
+
+    @Override
+    public void registerListener() {
+        Sponge.getGame().getEventManager().registerListeners(plugin, new SpongeEventListener());
+    }
+
+    @Override
+    public void registerCommand() {
+        SpongeTabCommand cmd = new SpongeTabCommand();
+        Sponge.getGame().getCommandManager().register(this, CommandSpec.builder()
+                .arguments(cmd, GenericArguments.remainingJoinedStrings(Text.of("arguments"))) // GenericArguments.none() doesn't work, so rip no-arg
+                .executor(cmd)
+                .build(), TabConstants.COMMAND_BACKEND);
+    }
+
+    @Override
+    public void startMetrics() {
+        // Not available
+    }
+
+    @Override
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.fromFriendlyName(Sponge.getGame().getPlatform().getMinecraftVersion().getName());
+    }
+
+    @Override
+    public File getDataFolder() {
+        return plugin.getConfigDir();
     }
 
     @Override

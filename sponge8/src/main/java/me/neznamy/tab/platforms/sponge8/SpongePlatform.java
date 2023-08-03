@@ -1,6 +1,9 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.backend.BackendPlatform;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
@@ -9,15 +12,23 @@ import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import net.kyori.adventure.text.Component;
+import org.bstats.charts.SimplePie;
+import org.bstats.sponge.Metrics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
+import java.io.File;
+
 /**
  * Platform implementation for Sponge 8 and up
  */
+@RequiredArgsConstructor
 public class SpongePlatform implements BackendPlatform {
+
+    /** Main class reference */
+    private final Sponge8TAB plugin;
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
@@ -66,6 +77,34 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public String getServerVersionInfo() {
         return "[Sponge] " + Sponge.platform().minecraftVersion().name();
+    }
+
+    @Override
+    public void registerListener() {
+        Sponge.game().eventManager().registerListeners(plugin.getContainer(), new SpongeEventListener());
+    }
+
+    @Override
+    public void registerCommand() {
+        // Must be registered in main class event listener
+    }
+
+    @Override
+    public void startMetrics() {
+        Metrics metrics = plugin.getMetricsFactory().make(17732);
+        metrics.startup(null);
+        metrics.addCustomChart(new SimplePie(TabConstants.MetricsChart.SERVER_VERSION,
+                () -> TAB.getInstance().getServerVersion().getFriendlyName()));
+    }
+
+    @Override
+    public ProtocolVersion getServerVersion() {
+        return ProtocolVersion.fromFriendlyName(Sponge.game().platform().minecraftVersion().name());
+    }
+
+    @Override
+    public File getDataFolder() {
+        return plugin.getConfigDir().toFile();
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.Getter;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -76,7 +77,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     public void sendPluginMessage(byte[] message) {
         try {
             getPlayer().getCurrentServer().ifPresentOrElse(
-                    server -> server.sendPluginMessage(VelocityTAB.getMinecraftChannelIdentifier(), message),
+                    server -> server.sendPluginMessage(((VelocityPlatform)TAB.getInstance().getPlatform()).getMinecraftChannelIdentifier(), message),
                     () -> errorNoServer(message)
             );
         } catch (IllegalStateException VelocityBeingVelocityException) {

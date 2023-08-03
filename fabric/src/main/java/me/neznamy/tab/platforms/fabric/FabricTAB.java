@@ -3,14 +3,11 @@ package me.neznamy.tab.platforms.fabric;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,16 +24,7 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        new FabricEventListener().register();
-        CommandRegistrationCallback.EVENT.register((dispatcher, $, $$) -> new FabricTabCommand().onRegisterCommands(dispatcher));
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            TAB.setInstance(new TAB(
-                    new FabricPlatform(server),
-                    ProtocolVersion.fromNetworkId(SharedConstants.getCurrentVersion().getProtocolVersion()),
-                    FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile())
-            );
-            TAB.getInstance().load();
-        });
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
     }
 

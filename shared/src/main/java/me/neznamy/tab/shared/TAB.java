@@ -21,6 +21,7 @@ import me.neznamy.tab.shared.event.EventBusImpl;
 import me.neznamy.tab.shared.event.impl.TabLoadEventImpl;
 import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -36,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TAB extends TabAPI {
 
     /** Instance of this class */
-    @Getter @Setter private static TAB instance;
+    @Getter private static TAB instance;
 
     /** Player data storage */
     private final Map<UUID, TabPlayer> data = new ConcurrentHashMap<>();
@@ -101,18 +102,27 @@ public class TAB extends TabAPI {
     @Getter private final MisconfigurationHelper misconfigurationHelper = new MisconfigurationHelper();
 
     /**
+     * Creates new instance using given platform and loads it
+     *
+     * @param   platform
+     *          Platform interface
+     */
+    public static void create(@NotNull Platform platform) {
+        instance = new TAB(platform);
+        instance.load();
+    }
+
+    /**
      * Constructs new instance with given parameters and sets this
      * new instance as {@link me.neznamy.tab.api.TabAPI} instance.
      *
      * @param   platform
      *          Platform interface
-     * @param   serverVersion
-     *          Version the server is running on
      */
-    public TAB(@NotNull Platform platform, @NotNull ProtocolVersion serverVersion, @NotNull File dataFolder) {
+    private TAB(@NotNull Platform platform) {
         this.platform = platform;
-        this.serverVersion = serverVersion;
-        this.dataFolder = dataFolder;
+        this.serverVersion = platform.getServerVersion();
+        this.dataFolder = platform.getDataFolder();
         this.errorManager = new ErrorManager(this);
         try {
             eventBus = new EventBusImpl();
@@ -120,6 +130,12 @@ public class TAB extends TabAPI {
             //1.7.10 or lower
         }
         TabAPI.setInstance(this);
+        platform.registerListener();
+        platform.registerCommand();
+        platform.startMetrics();
+        if (platform instanceof ProxyPlatform) {
+            ((ProxyPlatform) platform).registerChannel();
+        }
     }
 
     /**
