@@ -42,7 +42,9 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                              @NotNull Collection<String> players, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);
@@ -66,7 +68,8 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         List<Object> args = new ArrayList<>();
         args.add("PacketPlayOutScoreboardTeam");
         args.add(name);

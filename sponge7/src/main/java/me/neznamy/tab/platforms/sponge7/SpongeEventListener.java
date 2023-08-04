@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.sponge7;
 
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -39,7 +40,8 @@ public class SpongeEventListener extends EventListener<Player> {
     }
 
     @Override
-    public TabPlayer createPlayer(Player player) {
+    @NotNull
+    public TabPlayer createPlayer(@NotNull Player player) {
         return new SpongeTabPlayer(player);
     }
 }

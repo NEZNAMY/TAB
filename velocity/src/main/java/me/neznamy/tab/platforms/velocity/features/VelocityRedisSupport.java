@@ -16,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class VelocityRedisSupport extends RedisSupport {
 
     /** Plugin reference for registering listener */
-    @NotNull private final VelocityTAB plugin;
+    @NotNull
+    private final VelocityTAB plugin;
 
     @Subscribe
     public void onMessage(PubSubMessageEvent e) {

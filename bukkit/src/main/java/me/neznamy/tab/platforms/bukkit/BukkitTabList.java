@@ -59,7 +59,7 @@ public class BukkitTabList implements TabList {
     /** Player this TabList belongs to */
     private final BukkitTabPlayer player;
 
-    public static void load(NMSStorage nms) throws NoSuchMethodException, ClassNotFoundException {
+    public static void load(@NotNull NMSStorage nms) throws NoSuchMethodException, ClassNotFoundException {
         if (nms.getMinorVersion() < 8) return; // Not supported (yet?)
 
         // Classes
@@ -135,6 +135,7 @@ public class BukkitTabList implements TabList {
     @Override
     @SneakyThrows
     public void removeEntry(@NotNull UUID entry) {
+        if (NMSStorage.getInstance().getMinorVersion() < 8) return;
         if (ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
             player.sendPacket(newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
@@ -146,6 +147,7 @@ public class BukkitTabList implements TabList {
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
+        if (NMSStorage.getInstance().getMinorVersion() < 8) return;
         player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME,
                 new Entry.Builder(entry).displayName(displayName).build(), player.getVersion())
         );
@@ -153,6 +155,7 @@ public class BukkitTabList implements TabList {
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
+        if (NMSStorage.getInstance().getMinorVersion() < 8) return;
         player.sendPacket(createPacket(Action.UPDATE_LATENCY,
                 new Entry.Builder(entry).latency(latency).build(), player.getVersion())
         );
@@ -160,6 +163,7 @@ public class BukkitTabList implements TabList {
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
+        if (NMSStorage.getInstance().getMinorVersion() < 8) return;
         player.sendPacket(createPacket(Action.UPDATE_GAME_MODE,
                 new Entry.Builder(entry).gameMode(gameMode).build(), player.getVersion())
         );
@@ -167,6 +171,7 @@ public class BukkitTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
+        if (NMSStorage.getInstance().getMinorVersion() < 8) return;
         player.sendPacket(createPacket(Action.ADD_PLAYER, entry, player.getVersion()));
     }
 
@@ -188,9 +193,9 @@ public class BukkitTabList implements TabList {
     }
 
     @SneakyThrows
-    private Object createPacket(TabList.Action action, TabList.Entry entry, ProtocolVersion clientVersion) {
+    @NotNull
+    private Object createPacket(@NotNull TabList.Action action, @NotNull TabList.Entry entry, @NotNull ProtocolVersion clientVersion) {
         NMSStorage nms = NMSStorage.getInstance();
-        if (nms.getMinorVersion() < 8) return null;
         Object packet;
         List<Object> players = new ArrayList<>();
         if (NMSStorage.getInstance().is1_19_3Plus()) {
@@ -234,6 +239,7 @@ public class BukkitTabList implements TabList {
         return packet;
     }
 
+    @NotNull
     private Object int2GameMode(int gameMode) {
         switch (gameMode) {
             case 1: return Enum.valueOf(EnumGamemodeClass, "CREATIVE");

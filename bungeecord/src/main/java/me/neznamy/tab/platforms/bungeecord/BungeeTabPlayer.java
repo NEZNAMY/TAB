@@ -31,15 +31,22 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     private static final boolean premiumVanish = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish") != null;
 
     /** Player's scoreboard */
-    private final @NotNull Scoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
+    @NotNull
+    private final Scoreboard<BungeeTabPlayer> scoreboard = new BungeeScoreboard(this);
 
     /** Player's tab list based on version */
-    private final @NotNull TabList tabList1_7 = new BungeeTabList17(this);
-    private final @NotNull TabList tabList1_8 = new BungeeTabList18(this);
-    private final @NotNull TabList tabList1_19_3 = new BungeeTabList1193(this);
+    @NotNull
+    private final TabList tabList1_7 = new BungeeTabList17(this);
+
+    @NotNull
+    private final TabList tabList1_8 = new BungeeTabList18(this);
+
+    @NotNull
+    private final TabList tabList1_19_3 = new BungeeTabList1193(this);
 
     /** Player's boss bar view */
-    private final @NotNull BossBar bossBar = new BungeeBossBar(this);
+    @NotNull
+    private final BossBar bossBar = new BungeeBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -67,7 +74,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public @Nullable TabList.Skin getSkin() {
+    @Nullable
+    public TabList.Skin getSkin() {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
         Property[] properties = loginResult.getProperties();
@@ -76,7 +84,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public @NotNull ProxiedPlayer getPlayer() {
+    @NotNull
+    public ProxiedPlayer getPlayer() {
         return (ProxiedPlayer) player;
     }
 
@@ -102,7 +111,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
      * @return  Player's current protocol version
      */
     @Override
-    public @NotNull ProtocolVersion getVersion() {
+    @NotNull
+    public ProtocolVersion getVersion() {
         return ProtocolVersion.fromNetworkId(getPlayer().getPendingConnection().getVersion());
     }
 
@@ -118,7 +128,8 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public @NotNull TabList getTabList() {
+    @NotNull
+    public TabList getTabList() {
         return getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ?
                 tabList1_19_3 : getVersion().getMinorVersion() >= 8 ? tabList1_8 : tabList1_7;
     }

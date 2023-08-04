@@ -19,6 +19,7 @@ import java.util.UUID;
 public class SpongeTabList implements TabList {
 
     /** Player this TabList belongs to */
+    @NotNull
     private final SpongeTabPlayer player;
 
     @Override
@@ -58,9 +59,13 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().tabList().setHeaderAndFooter(header.toAdventureComponent(player.getVersion()), footer.toAdventureComponent(player.getVersion()));
+        player.getPlayer().tabList().setHeaderAndFooter(
+                header.toAdventureComponent(player.getVersion()),
+                footer.toAdventureComponent(player.getVersion())
+        );
     }
 
+    @NotNull
     private GameMode convertGameMode(int mode) {
         switch (mode) {
             case 1: return GameModes.CREATIVE.get();

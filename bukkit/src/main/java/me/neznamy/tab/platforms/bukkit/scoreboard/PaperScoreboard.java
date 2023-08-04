@@ -34,9 +34,10 @@ import java.util.Collection;
 @SuppressWarnings({"ConstantConditions", "deprecation"})
 public class PaperScoreboard extends Scoreboard<BukkitTabPlayer> {
 
+    @NotNull
     private final org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-    public PaperScoreboard(BukkitTabPlayer player) {
+    public PaperScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
 
         // Put player into a different scoreboard for per-player view
@@ -124,7 +125,8 @@ public class PaperScoreboard extends Scoreboard<BukkitTabPlayer> {
      *          Text to convert
      * @return  Converted component
      */
-    private @NotNull Component toAdventure(@NotNull String text) {
+    @NotNull
+    private Component toAdventure(@NotNull String text) {
         return IChatBaseComponent.optimizedComponent(text).toAdventureComponent(player.getVersion());
     }
 

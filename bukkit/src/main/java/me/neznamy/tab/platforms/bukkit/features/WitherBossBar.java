@@ -28,7 +28,8 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
     private static final int WITHER_DISTANCE = 60;
 
     /** Reference to plugin for registering listener */
-    private final @NotNull JavaPlugin plugin;
+    @NotNull
+    private final JavaPlugin plugin;
 
     @Override
     public void load() {

@@ -22,10 +22,16 @@ import java.util.WeakHashMap;
 public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpansion {
 
     /** Map holding all values for all players for easy and high-performance access */
+    @NotNull
     private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();
 
+    @NotNull
     private final String author = TabConstants.PLUGIN_AUTHOR;
+
+    @NotNull
     private final String identifier = TabConstants.PLUGIN_ID;
+
+    @NotNull
     private final String version = TabConstants.PLUGIN_VERSION;
 
     @Override
@@ -34,6 +40,7 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
     }
 
     @Override
+    @Nullable
     public String onPlaceholderRequest(@Nullable Player player, @NotNull String identifier) {
         if (identifier.startsWith("replace_")) {
             String text = "%" + identifier.substring(8) + "%";

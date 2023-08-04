@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The core for bukkit forwarding events into all enabled features
@@ -37,7 +38,8 @@ public class BukkitEventListener extends EventListener<Player> implements Listen
     }
 
     @Override
-    public TabPlayer createPlayer(Player player) {
+    @NotNull
+    public TabPlayer createPlayer(@NotNull Player player) {
         return new BukkitTabPlayer(player);
     }
 }

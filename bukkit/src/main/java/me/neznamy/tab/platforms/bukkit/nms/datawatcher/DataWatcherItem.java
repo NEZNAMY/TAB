@@ -28,7 +28,7 @@ public class DataWatcherItem {
      * @param   nms
      *          NMS storage reference
      */
-    public static void load(NMSStorage nms) {
+    public static void load(@NotNull NMSStorage nms) {
         VALUE = ReflectionUtils.getFields(CLASS, Object.class).get(0);
         if (nms.getMinorVersion() >= 9) {
             TYPE = ReflectionUtils.getOnlyField(CLASS, DataWatcherObject.CLASS);

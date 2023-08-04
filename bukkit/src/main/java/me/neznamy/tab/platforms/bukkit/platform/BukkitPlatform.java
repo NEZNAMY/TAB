@@ -52,6 +52,7 @@ import java.util.Collection;
 public class BukkitPlatform implements BackendPlatform {
 
     /** Plugin instance for registering tasks and events */
+    @NotNull
     private final JavaPlugin plugin;
 
     /** Variables checking presence of other plugins to hook into */
@@ -59,18 +60,18 @@ public class BukkitPlatform implements BackendPlatform {
     @Setter private boolean libsDisguisesEnabled = ReflectionUtils.classExists("me.libraryaddict.disguise.DisguiseAPI");
 
     /** NMS server to get TPS from on spigot */
-    private Object server;
+    @Nullable private Object server;
 
     /** TPS field */
-    private Field spigotTps;
+    @Nullable private Field spigotTps;
 
     /** Detection for presence of Paper's TPS getter */
-    private Method paperTps;
+    @Nullable private Method paperTps;
 
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
 
-    public BukkitPlatform(JavaPlugin plugin) {
+    public BukkitPlatform(@NotNull JavaPlugin plugin) {
         this.plugin = plugin;
         try {
             server = Bukkit.getServer().getClass().getMethod("getServer").invoke(Bukkit.getServer());
@@ -80,7 +81,10 @@ public class BukkitPlatform implements BackendPlatform {
         }
         try { paperTps = Bukkit.class.getMethod("getTPS"); } catch (NoSuchMethodException ignored) {}
     }
-    public @NotNull BossBarManagerImpl getLegacyBossBar() {
+
+    @Override
+    @NotNull
+    public BossBarManagerImpl getLegacyBossBar() {
         return new WitherBossBar(plugin);
     }
 
@@ -97,17 +101,20 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector createPipelineInjector() {
+    @Nullable
+    public PipelineInjector createPipelineInjector() {
         return NMSStorage.getInstance().getMinorVersion() >= 8 ? new BukkitPipelineInjector() : null;
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNameTags() {
+    @NotNull
+    public NameTag getUnlimitedNameTags() {
         return new BukkitNameTagX(plugin);
     }
 
     @Override
-    public @NotNull TabExpansion createTabExpansion() {
+    @NotNull
+    public TabExpansion createTabExpansion() {
         if (placeholderAPI) {
             BukkitTabExpansion expansion = new BukkitTabExpansion();
             expansion.register();
@@ -117,7 +124,8 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() {
+    @Nullable
+    public TabFeature getPerWorldPlayerList() {
         return new PerWorldPlayerList(plugin);
     }
 
@@ -128,7 +136,8 @@ public class BukkitPlatform implements BackendPlatform {
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private @NotNull Player[] getOnlinePlayers() {
+    @NotNull
+    private Player[] getOnlinePlayers() {
         Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
         if (players instanceof Player[]) {
             //1.7-
@@ -158,7 +167,7 @@ public class BukkitPlatform implements BackendPlatform {
         }
     }
 
-    public void registerSyncPlaceholder(String identifier, int refresh) {
+    public void registerSyncPlaceholder(@NotNull String identifier, int refresh) {
         String syncedPlaceholder = "%" + identifier.substring(6);
         PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
         ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> {
@@ -184,6 +193,7 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
+    @NotNull
     public String getServerVersionInfo() {
         return "[Bukkit] " + Bukkit.getName() + " - " + Bukkit.getBukkitVersion().split("-")[0] + " (" + NMSStorage.getInstance().getServerPackage() + ")";
     }
@@ -217,17 +227,20 @@ public class BukkitPlatform implements BackendPlatform {
     }
 
     @Override
+    @NotNull
     public ProtocolVersion getServerVersion() {
         return ProtocolVersion.fromFriendlyName(Bukkit.getBukkitVersion().split("-")[0]);
     }
 
     @Override
+    @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder();
     }
 
     @Override
-    @NotNull public GroupManager detectPermissionPlugin() {
+    @NotNull
+    public GroupManager detectPermissionPlugin() {
         if (LuckPermsHook.getInstance().isInstalled()) {
             return new GroupManager("LuckPerms", LuckPermsHook.getInstance().getGroupFunction());
         }
@@ -258,7 +271,7 @@ public class BukkitPlatform implements BackendPlatform {
        return -1;
     }
 
-    public void runEntityTask(Entity entity, Runnable task) {
+    public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
         task.run();
     }
 }

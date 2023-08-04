@@ -18,11 +18,15 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 public class BungeeBossBar implements BossBar {
-    
-    private final @NotNull BungeeTabPlayer player;
+
+    @NotNull
+    private final BungeeTabPlayer player;
 
     /** Both are included in the same action, need to remember and write them both */
+    @NotNull
     private final Map<UUID, Integer> colors = new HashMap<>();
+
+    @NotNull
     private final Map<UUID, Integer> styles = new HashMap<>();
 
     @Override

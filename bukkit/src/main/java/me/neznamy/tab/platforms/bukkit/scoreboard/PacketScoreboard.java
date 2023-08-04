@@ -92,7 +92,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static Method ScoreboardTeam_setAllowFriendlyFire;
     private static Method ScoreboardTeam_setCanSeeFriendlyInvisibles;
 
-    public static void load(NMSStorage nms) throws ReflectiveOperationException {
+    public static void load(@NotNull NMSStorage nms) throws ReflectiveOperationException {
         PacketScoreboard.nms = nms;
         Class<?> scoreboardTeam;
         Class<?> scoreboardObjective;
@@ -212,7 +212,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         }
     }
 
-    public PacketScoreboard(BukkitTabPlayer player) {
+    public PacketScoreboard(@NotNull BukkitTabPlayer player) {
         super(player);
     }
 
@@ -300,7 +300,8 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @SneakyThrows
-    private Object createTeam(String teamName, String prefix, String suffix, NameVisibility visibility, CollisionRule collision, int options) {
+    private Object createTeam(@NotNull String teamName, @NotNull String prefix, @NotNull String suffix,
+                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         Object team = newScoreboardTeam.newInstance(emptyScoreboard, teamName);
         ScoreboardTeam_setAllowFriendlyFire.invoke(team, (options & 0x1) > 0);
         ScoreboardTeam_setCanSeeFriendlyInvisibles.invoke(team, (options & 0x2) > 0);

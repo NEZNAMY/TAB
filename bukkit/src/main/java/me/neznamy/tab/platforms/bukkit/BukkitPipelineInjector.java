@@ -14,6 +14,7 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.features.injection.NettyPipelineInjector;
 import me.neznamy.tab.shared.features.sorting.Sorting;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
+    @Nullable
     protected Channel getChannel(@NotNull TabPlayer player) {
         BukkitTabPlayer bukkit = (BukkitTabPlayer) player;
         NMSStorage nms = NMSStorage.getInstance();

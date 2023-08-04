@@ -31,7 +31,8 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
     }
 
     @Override
-    protected @Nullable Channel getChannel(@NotNull TabPlayer player) {
+    @Nullable
+    protected Channel getChannel(@NotNull TabPlayer player) {
         return ((FabricTabPlayer)player).getPlayer().connection.connection.channel;
     }
 

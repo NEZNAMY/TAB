@@ -32,6 +32,7 @@ public class FabricTabCommand {
         dispatcher.getRoot().addChild(command);
     }
 
+    @NotNull
     private String[] getArguments(@NotNull CommandContext<CommandSourceStack> context) {
         String input = context.getInput();
         int firstSpace = input.indexOf(' ');
@@ -63,7 +64,9 @@ public class FabricTabCommand {
         return 0;
     }
 
-    private @NotNull CompletableFuture<Suggestions> getSuggestions(@NotNull CommandSourceStack source, @NotNull String[] args, @NotNull SuggestionsBuilder builder) {
+    @NotNull
+    private CompletableFuture<Suggestions> getSuggestions(@NotNull CommandSourceStack source, @NotNull String[] args,
+                                                          @NotNull SuggestionsBuilder builder) {
         TabPlayer player = null;
         if (source.getEntity() != null) {
             player = TAB.getInstance().getPlayer(source.getEntity().getUUID());

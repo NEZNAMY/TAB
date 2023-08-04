@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -28,12 +29,12 @@ public class Sponge7TAB {
     @Inject private Logger logger;
 
     @Listener
-    public void onServerStart(GameStartedServerEvent event) {
+    public void onServerStart(@Nullable GameStartedServerEvent event) {
         TAB.create(new SpongePlatform(this));
     }
 
     @Listener
-    public void onServerStop(GameStoppedServerEvent event) {
+    public void onServerStop(@Nullable GameStoppedServerEvent event) {
         TAB.getInstance().unload();
     }
 }

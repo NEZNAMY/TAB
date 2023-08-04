@@ -36,25 +36,34 @@ import java.util.Collection;
 public class BukkitTabPlayer extends BackendTabPlayer {
 
     /** Player's NMS handle (EntityPlayer), preloading for speed */
+    @NotNull
     private final Object handle;
 
     /** Player's connection for sending packets, preloading for speed */
+    @NotNull
     private final Object playerConnection;
 
+    @NotNull
     private final Scoreboard<BukkitTabPlayer> scoreboard = new PacketScoreboard(this);
+
+    @NotNull
     private final TabList tabList = new BukkitTabList(this);
+
+    @NotNull
     private final BossBar bossBar = TAB.getInstance().getServerVersion().getMinorVersion() >= 9 ?
             new BukkitBossBar(this) : getVersion().getMinorVersion() >= 9 ? new ViaBossBar(this) : new EntityBossBar(this);
+
+    @NotNull
     private final EntityView entityView = new PacketEntityView(this);
 
     /**
-     * Constructs new instance with given bukkit player and protocol version
+     * Constructs new instance with given bukkit player
      *
      * @param   p
      *          bukkit player
      */
     @SneakyThrows
-    public BukkitTabPlayer(Player p) {
+    public BukkitTabPlayer(@NotNull Player p) {
         super(p, p.getUniqueId(), p.getName(), p.getWorld().getName());
         handle = NMSStorage.getInstance().getHandle.invoke(player);
         playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
@@ -75,8 +84,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @SneakyThrows
-    public void sendPacket(@Nullable Object nmsPacket) {
-        if (nmsPacket == null || !getPlayer().isOnline()) return;
+    public void sendPacket(@NotNull Object nmsPacket) {
+        if (!getPlayer().isOnline()) return;
         NMSStorage.getInstance().sendPacket.invoke(playerConnection, nmsPacket);
     }
 
@@ -106,6 +115,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     @SneakyThrows
+    @Nullable
     public TabList.Skin getSkin() {
         Collection<Property> col = ((GameProfile)NMSStorage.getInstance().getProfile.invoke(handle)).getProperties().get(TabList.TEXTURES_PROPERTY);
         if (col.isEmpty()) return null; //offline mode
@@ -114,7 +124,8 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    @NotNull
+    public Player getPlayer() {
         return (Player) player;
     }
 
@@ -139,6 +150,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @NotNull
     public String getDisplayName() {
         return getPlayer().getDisplayName();
     }

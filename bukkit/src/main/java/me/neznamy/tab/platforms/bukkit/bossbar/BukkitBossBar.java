@@ -22,9 +22,11 @@ import java.util.UUID;
 public class BukkitBossBar implements BossBar {
 
     /** Player this handler belongs to */
+    @NotNull
     private final BukkitTabPlayer player;
 
     /** Bukkit BossBars the player can currently see */
+    @NotNull
     private final Map<UUID, org.bukkit.boss.BossBar> bossBars = new HashMap<>();
 
     @Override

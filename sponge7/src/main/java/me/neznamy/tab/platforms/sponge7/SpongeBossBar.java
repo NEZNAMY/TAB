@@ -16,7 +16,10 @@ import java.util.UUID;
 public class SpongeBossBar implements BossBar {
 
     /** Player to send boss bars to */
+    @NotNull
     private final SpongeTabPlayer player;
+
+    @NotNull
     private final Map<UUID, ServerBossBar> bossBars = new HashMap<>();
 
     @Override
@@ -56,7 +59,8 @@ public class SpongeBossBar implements BossBar {
         bossBars.remove(id).removePlayer(player.getPlayer());
     }
 
-    private @NotNull BossBarColor convertBossBarColor(@NotNull BarColor color) {
+    @NotNull
+    private BossBarColor convertBossBarColor(@NotNull BarColor color) {
         switch (color) {
             case PINK: return BossBarColors.PINK;
             case BLUE: return BossBarColors.BLUE;
@@ -68,7 +72,8 @@ public class SpongeBossBar implements BossBar {
         }
     }
 
-    private @NotNull BossBarOverlay convertOverlay(@NotNull BarStyle style) {
+    @NotNull
+    private BossBarOverlay convertOverlay(@NotNull BarStyle style) {
         switch (style) {
             case NOTCHED_6: return BossBarOverlays.NOTCHED_6;
             case NOTCHED_10: return BossBarOverlays.NOTCHED_10;

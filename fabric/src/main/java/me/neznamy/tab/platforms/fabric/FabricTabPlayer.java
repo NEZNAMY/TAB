@@ -18,12 +18,19 @@ import java.util.Collection;
 @Getter
 public class FabricTabPlayer extends BackendTabPlayer {
 
+    @NotNull
     private final Scoreboard<FabricTabPlayer> scoreboard = new FabricScoreboard(this);
+
+    @NotNull
     private final TabList tabList = new FabricTabList(this);
+
+    @NotNull
     private final BossBar bossBar = new FabricBossBar(this);
+
+    @NotNull
     private final EntityView entityView = new FabricEntityView(this);
 
-    public FabricTabPlayer(ServerPlayer player) {
+    public FabricTabPlayer(@NotNull ServerPlayer player) {
         super(player, player.getUUID(), player.getGameProfile().getName(), player.level().dimension().location().toString());
     }
 
@@ -53,7 +60,8 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public @Nullable TabList.Skin getSkin() {
+    @Nullable
+    public TabList.Skin getSkin() {
         Collection<Property> properties = getPlayer().getGameProfile().getProperties().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
         Property skinProperty = properties.iterator().next();
@@ -61,7 +69,8 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public @NotNull ServerPlayer getPlayer() {
+    @NotNull
+    public ServerPlayer getPlayer() {
         return (ServerPlayer) player;
     }
 
@@ -86,6 +95,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @NotNull
     public String getDisplayName() {
         return getPlayer().getDisplayName().getString(); // Will make it work properly if someone asks
     }
@@ -96,7 +106,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
      * @param   packet
      *          Packet to send
      */
-    public void sendPacket(Packet<?> packet) {
+    public void sendPacket(@NotNull Packet<?> packet) {
         getPlayer().connection.send(packet);
     }
 }

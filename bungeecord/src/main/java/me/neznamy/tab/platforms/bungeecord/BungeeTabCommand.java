@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class BungeeTabCommand extends Command implements TabExecutor {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(@NotNull CommandSender sender, @NotNull String[] args) {
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(args, sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
                 sender.sendMessage(new TextComponent(EnumChatFormat.color(message)));
@@ -38,7 +39,8 @@ public class BungeeTabCommand extends Command implements TabExecutor {
     }
 
     @Override
-    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+    @NotNull
+    public Iterable<String> onTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
         TabPlayer p = null;
         if (sender instanceof ProxiedPlayer) {
             p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());

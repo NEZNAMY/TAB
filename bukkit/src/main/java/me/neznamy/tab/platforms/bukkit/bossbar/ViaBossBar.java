@@ -22,9 +22,11 @@ import java.util.UUID;
 public class ViaBossBar implements BossBar {
 
     /** Player this handler belongs to */
+    @NotNull
     private final BukkitTabPlayer player;
 
     /** ViaVersion BossBars this 1.9+ player can see on 1.8 server */
+    @NotNull
     private final Map<UUID, com.viaversion.viaversion.api.legacy.bossbar.BossBar> viaBossBars = new HashMap<>();
 
     @Override

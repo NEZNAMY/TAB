@@ -16,10 +16,12 @@ import java.util.UUID;
 
 public record FabricEntityView(FabricTabPlayer player) implements EntityView {
 
+    @NotNull
     private static final Entity dummyEntity = new ArmorStand(null, 0, 0, 0);
 
     @Override
-    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location, @NotNull EntityData data) {
+    public void spawnEntity(int entityId, @NotNull UUID id, @NotNull Object entityType, @NotNull Location location,
+                            @NotNull EntityData data) {
         player.sendPacket(new ClientboundAddEntityPacket(entityId, id,
                 location.getX(), location.getY(), location.getZ(), 0, 0,
                 (EntityType<?>) entityType, 0, Vec3.ZERO, 0));
@@ -46,47 +48,47 @@ public record FabricEntityView(FabricTabPlayer player) implements EntityView {
     }
 
     @Override
-    public boolean isDestroyPacket(Object packet) {
+    public boolean isDestroyPacket(@NotNull Object packet) {
         return packet instanceof ClientboundRemoveEntitiesPacket;
     }
 
     @Override
-    public boolean isTeleportPacket(Object packet) {
+    public boolean isTeleportPacket(@NotNull Object packet) {
         return packet instanceof ClientboundTeleportEntityPacket;
     }
 
     @Override
-    public boolean isNamedEntitySpawnPacket(Object packet) {
+    public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
         return packet instanceof ClientboundAddPlayerPacket;
     }
 
     @Override
-    public boolean isMovePacket(Object packet) {
+    public boolean isMovePacket(@NotNull Object packet) {
         return packet instanceof ClientboundMoveEntityPacket;
     }
 
     @Override
-    public boolean isLookPacket(Object packet) {
+    public boolean isLookPacket(@NotNull Object packet) {
         return packet instanceof ClientboundMoveEntityPacket.Rot;
     }
 
     @Override
-    public int getTeleportEntityId(Object teleportPacket) {
+    public int getTeleportEntityId(@NotNull Object teleportPacket) {
         return ((ClientboundTeleportEntityPacket) teleportPacket).getId();
     }
 
     @Override
-    public int getMoveEntityId(Object movePacket) {
+    public int getMoveEntityId(@NotNull Object movePacket) {
         return ((ClientboundMoveEntityPacket) movePacket).entityId;
     }
 
     @Override
-    public int getSpawnedPlayer(Object playerSpawnPacket) {
+    public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
         return ((ClientboundAddPlayerPacket) playerSpawnPacket).getEntityId();
     }
 
     @Override
-    public int[] getDestroyedEntities(Object destroyPacket) {
+    public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
         return ((ClientboundRemoveEntitiesPacket) destroyPacket).getEntityIds().toIntArray();
     }
 }

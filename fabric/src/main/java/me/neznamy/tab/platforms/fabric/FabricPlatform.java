@@ -40,22 +40,26 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
-    public @NotNull PipelineInjector createPipelineInjector() {
+    @NotNull
+    public PipelineInjector createPipelineInjector() {
         return new FabricPipelineInjector();
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNameTags() {
+    @NotNull
+    public NameTag getUnlimitedNameTags() {
         return new FabricNameTagX();
     }
 
     @Override
-    public @NotNull TabExpansion createTabExpansion() {
+    @NotNull
+    public TabExpansion createTabExpansion() {
         return new EmptyTabExpansion();
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() {
+    @Nullable
+    public TabFeature getPerWorldPlayerList() {
         return null;
     }
 
@@ -70,6 +74,7 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
+    @NotNull
     public String getServerVersionInfo() {
         return "[Fabric] " + SharedConstants.getCurrentVersion().getName();
     }
@@ -90,11 +95,13 @@ public record FabricPlatform(MinecraftServer server) implements BackendPlatform 
     }
 
     @Override
+    @NotNull
     public ProtocolVersion getServerVersion() {
         return ProtocolVersion.fromFriendlyName(SharedConstants.getCurrentVersion().getName());
     }
 
     @Override
+    @NotNull
     public File getDataFolder() {
         return FabricLoader.getInstance().getConfigDir().resolve(TabConstants.PLUGIN_ID).toFile();
     }

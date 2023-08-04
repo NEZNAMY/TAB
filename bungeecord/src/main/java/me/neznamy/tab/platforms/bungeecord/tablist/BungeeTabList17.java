@@ -28,10 +28,14 @@ import java.util.UUID;
 public class BungeeTabList17 implements TabList {
 
     /** Player this TabList belongs to */
+    @NotNull
     private final BungeeTabPlayer player;
 
     /** Because entries are identified by names and not uuids on 1.7 */
+    @NotNull
     private final Map<UUID, String> userNames = new HashMap<>();
+
+    @NotNull
     private final Map<UUID, String> displayNames = new HashMap<>();
 
     @Override

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
 
 public class FabricEventListener extends EventListener<ServerPlayer> {
 
@@ -19,7 +20,8 @@ public class FabricEventListener extends EventListener<ServerPlayer> {
     }
 
     @Override
-    public TabPlayer createPlayer(ServerPlayer player) {
+    @NotNull
+    public TabPlayer createPlayer(@NotNull ServerPlayer player) {
         return new FabricTabPlayer(player);
     }
 }

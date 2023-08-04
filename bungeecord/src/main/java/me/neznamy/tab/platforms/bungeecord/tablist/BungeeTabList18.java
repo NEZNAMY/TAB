@@ -23,6 +23,7 @@ import java.util.UUID;
 public class BungeeTabList18 implements TabList {
 
     /** Player this TabList belongs to */
+    @NotNull
     private final BungeeTabPlayer player;
 
     @Override
@@ -66,7 +67,8 @@ public class BungeeTabList18 implements TabList {
         sendPacket(PlayerListItem.Action.ADD_PLAYER, item);
     }
 
-    public @NotNull Item item(@NotNull UUID id) {
+    @NotNull
+    public Item item(@NotNull UUID id) {
         Item item = new Item();
         item.setUuid(id);
         return item;

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class VelocityTabList implements TabList {
 
     /** Player this TabList belongs to */
-    private final VelocityTabPlayer player;
+    @NotNull private final VelocityTabPlayer player;
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
@@ -88,7 +88,8 @@ public class VelocityTabList implements TabList {
      *          UUID to get entry by
      * @return  TabList entry with specified UUID
      */
-    private TabListEntry getEntry(UUID id) {
+    @NotNull
+    private TabListEntry getEntry(@NotNull UUID id) {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
             if (entry.getProfile().getId().equals(id)) return entry;
         }

@@ -52,7 +52,7 @@ public class DataWatcherHelper {
         }
     }
 
-    public static void load(NMSStorage nms) throws NoSuchFieldException, IllegalAccessException {
+    public static void load(@NotNull NMSStorage nms) throws NoSuchFieldException, IllegalAccessException {
         if (nms.getMinorVersion() < 9) return;
         if (nms.isMojangMapped()) {
             DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("BYTE").get(null);

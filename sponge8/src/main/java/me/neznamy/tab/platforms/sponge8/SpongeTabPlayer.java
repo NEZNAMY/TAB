@@ -11,6 +11,7 @@ import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -24,12 +25,19 @@ import java.util.List;
 @Getter
 public class SpongeTabPlayer extends BackendTabPlayer {
 
+    @NotNull
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+
+    @NotNull
     private final TabList tabList = new SpongeTabList(this);
+
+    @NotNull
     private final BossBar bossBar = new AdventureBossBar(this);
+
+    @NotNull
     private final EntityView entityView = new DummyEntityView();
 
-    public SpongeTabPlayer(ServerPlayer player) {
+    public SpongeTabPlayer(@NotNull ServerPlayer player) {
         super(player, player.uniqueId(), player.name(), player.world().key().value());
     }
 
@@ -62,6 +70,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @Nullable
     public TabList.Skin getSkin() {
         List<ProfileProperty> list = getPlayer().profile().properties();
         if (list.isEmpty()) return null; // Offline mode
@@ -69,7 +78,8 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public @NotNull ServerPlayer getPlayer() {
+    @NotNull
+    public ServerPlayer getPlayer() {
         return (ServerPlayer) player;
     }
 
@@ -97,6 +107,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @NotNull
     public String getDisplayName() {
         return PlainTextComponentSerializer.plainText().serialize(getPlayer().displayName().get());
     }

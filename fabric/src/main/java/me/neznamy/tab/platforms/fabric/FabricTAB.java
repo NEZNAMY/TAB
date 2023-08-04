@@ -33,7 +33,8 @@ public class FabricTAB implements DedicatedServerModInitializer {
         return fabricPermissionsApi && Permissions.check(source, permission);
     }
 
-    public static @NotNull Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
+    @NotNull
+    public static Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
         // Text
         MutableComponent comp = MutableComponent.create(new LiteralContents(component.getText()));
 

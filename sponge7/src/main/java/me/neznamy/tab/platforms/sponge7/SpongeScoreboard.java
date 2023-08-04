@@ -2,7 +2,10 @@ package me.neznamy.tab.platforms.sponge7;
 
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.scoreboard.*;
+import org.spongepowered.api.scoreboard.CollisionRules;
+import org.spongepowered.api.scoreboard.Team;
+import org.spongepowered.api.scoreboard.Visibilities;
+import org.spongepowered.api.scoreboard.Visibility;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
@@ -14,9 +17,10 @@ import java.util.Collection;
 public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     /** Scoreboard of the player */
+    @NotNull
     private final org.spongepowered.api.scoreboard.Scoreboard sb = org.spongepowered.api.scoreboard.Scoreboard.builder().build();
     
-    public SpongeScoreboard(SpongeTabPlayer player) {
+    public SpongeScoreboard(@NotNull SpongeTabPlayer player) {
         super(player);
         // Make sure each player is in different scoreboard for per-player view
         player.getPlayer().setScoreboard(sb);
@@ -27,7 +31,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         sb.getObjective(objective).ifPresent(o -> sb.updateDisplaySlot(o, convertDisplaySlot(slot)));
     }
 
-    private org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
+    @NotNull
+    private org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(@NotNull DisplaySlot slot) {
         switch (slot) {
             case PLAYER_LIST: return DisplaySlots.LIST;
             case SIDEBAR: return DisplaySlots.SIDEBAR;
@@ -106,7 +111,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         sb.getObjective(objective).ifPresent(o -> o.removeScore(Text.of(playerName)));
     }
 
-    private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(CollisionRule rule) {
+    @NotNull
+    private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(@NotNull CollisionRule rule) {
         switch (rule) {
             case ALWAYS: return CollisionRules.ALWAYS;
             case NEVER: return CollisionRules.NEVER;
@@ -116,7 +122,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         }
     }
 
-    private Visibility convertVisibility(NameVisibility visibility) {
+    @NotNull
+    private Visibility convertVisibility(@NotNull NameVisibility visibility) {
         switch (visibility) {
             case ALWAYS: return Visibilities.ALWAYS;
             case NEVER: return Visibilities.NEVER;

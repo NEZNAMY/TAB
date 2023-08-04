@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 public class BungeeRedisSupport extends RedisSupport implements Listener {
 
     /** Plugin reference for registering listener */
-    @NotNull private final BungeeTAB plugin;
+    @NotNull
+    private final BungeeTAB plugin;
 
     @EventHandler
     public void onMessage(@NotNull PubSubMessageEvent e) {

@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -23,12 +24,19 @@ import java.util.Collection;
 @Getter
 public class SpongeTabPlayer extends BackendTabPlayer {
 
+    @NotNull
     private final Scoreboard<SpongeTabPlayer> scoreboard = new SpongeScoreboard(this);
+
+    @NotNull
     private final TabList tabList = new SpongeTabList(this);
+
+    @NotNull
     private final BossBar bossBar = new SpongeBossBar(this);
+
+    @NotNull
     private final EntityView entityView = new DummyEntityView();
 
-    public SpongeTabPlayer(final Player player) {
+    public SpongeTabPlayer(@NotNull Player player) {
         super(player, player.getUniqueId(), player.getName(), player.getWorld().getName());
     }
 
@@ -60,6 +68,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @Nullable
     public TabList.Skin getSkin() {
         Collection<ProfileProperty> properties = getPlayer().getProfile().getPropertyMap().get(TabList.TEXTURES_PROPERTY);
         if (properties.isEmpty()) return null; // Offline mode
@@ -68,7 +77,8 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    @NotNull
+    public Player getPlayer() {
         return (Player) player;
     }
 
@@ -97,6 +107,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     }
 
     @Override
+    @NotNull
     public String getDisplayName() {
         return getPlayer().getDisplayNameData().displayName().get().toPlain();
     }

@@ -28,6 +28,7 @@ import java.io.File;
 public class SpongePlatform implements BackendPlatform {
 
     /** Main class reference */
+    @NotNull
     private final Sponge8TAB plugin;
 
     @Override
@@ -43,22 +44,26 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
-    public @Nullable PipelineInjector createPipelineInjector() {
+    @Nullable
+    public PipelineInjector createPipelineInjector() {
         return null;
     }
 
     @Override
-    public @NotNull NameTag getUnlimitedNameTags() {
+    @NotNull
+    public NameTag getUnlimitedNameTags() {
         return new NameTag();
     }
 
     @Override
-    public @NotNull TabExpansion createTabExpansion() {
+    @NotNull
+    public TabExpansion createTabExpansion() {
         return new EmptyTabExpansion();
     }
 
     @Override
-    public @Nullable TabFeature getPerWorldPlayerList() {
+    @Nullable
+    public TabFeature getPerWorldPlayerList() {
         return null;
     }
 
@@ -75,6 +80,7 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    @NotNull
     public String getServerVersionInfo() {
         return "[Sponge] " + Sponge.platform().minecraftVersion().name();
     }
@@ -98,11 +104,13 @@ public class SpongePlatform implements BackendPlatform {
     }
 
     @Override
+    @NotNull
     public ProtocolVersion getServerVersion() {
         return ProtocolVersion.fromFriendlyName(Sponge.game().platform().minecraftVersion().name());
     }
 
     @Override
+    @NotNull
     public File getDataFolder() {
         return plugin.getConfigDir().toFile();
     }

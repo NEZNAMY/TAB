@@ -54,12 +54,14 @@ public class FabricNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public @NotNull List<Integer> getPassengers(@NotNull Object vehicle) {
+    @NotNull
+    public List<Integer> getPassengers(@NotNull Object vehicle) {
         return ((Entity)vehicle).getPassengers().stream().map(Entity::getId).collect(Collectors.toList());
     }
 
     @Override
-    public @Nullable Object getVehicle(@NotNull TabPlayer player) {
+    @Nullable
+    public Object getVehicle(@NotNull TabPlayer player) {
         return ((FabricTabPlayer)player).getPlayer().getVehicle();
     }
 
@@ -69,7 +71,8 @@ public class FabricNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public @NotNull String getEntityType(@NotNull Object entity) {
+    @NotNull
+    public String getEntityType(@NotNull Object entity) {
         return ((Entity)entity).getType().toString(); // TODO test/fix
     }
 
@@ -94,7 +97,8 @@ public class FabricNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public @NotNull Object getArmorStandType() {
+    @NotNull
+    public Object getArmorStandType() {
         return EntityType.ARMOR_STAND;
     }
 
@@ -114,6 +118,7 @@ public class FabricNameTagX extends BackendNameTagX {
     }
 
     @Override
+    @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
         return () -> Arrays.asList(
                 new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
@@ -125,12 +130,12 @@ public class FabricNameTagX extends BackendNameTagX {
     }
 
     @Override
-    public void runInEntityScheduler(Object entity, Runnable task) {
+    public void runInEntityScheduler(@NotNull Object entity, @NotNull Runnable task) {
         task.run();
     }
 
     @Override
-    public boolean isDead(TabPlayer player) {
+    public boolean isDead(@NotNull TabPlayer player) {
         return !((FabricTabPlayer)player).getPlayer().isAlive();
     }
 }

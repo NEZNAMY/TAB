@@ -70,7 +70,8 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
 
     @SuppressWarnings("deprecation")
     @Override
-    public @NotNull List<Integer> getPassengers(@NotNull Object entity) {
+    @NotNull
+    public List<Integer> getPassengers(@NotNull Object entity) {
         Entity vehicle = (Entity) entity;
         if (TAB.getInstance().getServerVersion().getMinorVersion() >= 11) {
             return vehicle.getPassengers().stream().map(Entity::getEntityId).collect(Collectors.toList());
@@ -84,7 +85,8 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     }
 
     @Override
-    public @Nullable Object getVehicle(@NotNull TabPlayer player) {
+    @Nullable
+    public Object getVehicle(@NotNull TabPlayer player) {
         return ((Player)player.getPlayer()).getVehicle();
     }
 
@@ -94,7 +96,8 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     }
 
     @Override
-    public @NotNull String getEntityType(@NotNull Object entity) {
+    @NotNull
+    public String getEntityType(@NotNull Object entity) {
         return ((Entity) entity).getType().toString().toLowerCase();
     }
 
@@ -121,7 +124,8 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     }
 
     @Override
-    public @NotNull Object getArmorStandType() {
+    @NotNull
+    public Object getArmorStandType() {
         return EntityType.ARMOR_STAND;
     }
 
@@ -141,6 +145,7 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     }
 
     @Override
+    @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
         DataWatcher datawatcher = new DataWatcher();
         datawatcher.getHelper().setEntityFlags(flags);
@@ -151,12 +156,12 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     }
 
     @Override
-    public void runInEntityScheduler(Object entity, Runnable task) {
+    public void runInEntityScheduler(@NotNull Object entity, @NotNull Runnable task) {
         ((BukkitPlatform)TAB.getInstance().getPlatform()).runEntityTask((Entity) entity, task);
     }
 
     @Override
-    public boolean isDead(TabPlayer player) {
+    public boolean isDead(@NotNull TabPlayer player) {
         return ((BukkitTabPlayer)player).getPlayer().isDead();
     }
 }

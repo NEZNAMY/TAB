@@ -27,7 +27,8 @@ import java.io.File;
 @AllArgsConstructor
 public class BungeePlatform extends ProxyPlatform {
 
-    @NotNull private final BungeeTAB plugin;
+    @NotNull
+    private final BungeeTAB plugin;
 
     @Override
     public void loadPlayers() {
@@ -38,7 +39,8 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
-    public @Nullable RedisSupport getRedisSupport() {
+    @Nullable
+    public RedisSupport getRedisSupport() {
         if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
                 RedisBungeeAPI.getRedisBungeeApi() != null) {
             return new BungeeRedisSupport(plugin);
@@ -57,6 +59,7 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
     public String getServerVersionInfo() {
         return "[BungeeCord] " + plugin.getProxy().getName() + " - " + plugin.getProxy().getVersion();
     }
@@ -78,12 +81,14 @@ public class BungeePlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder();
     }
 
     @Override
-    public @Nullable PipelineInjector createPipelineInjector() {
+    @Nullable
+    public PipelineInjector createPipelineInjector() {
         return new BungeePipelineInjector();
     }
 

@@ -8,6 +8,7 @@ import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public class VelocityTabCommand implements SimpleCommand {
 
     @Override
-    public void execute(Invocation invocation) {
+    public void execute(@NotNull Invocation invocation) {
         CommandSource sender = invocation.source();
         if (TAB.getInstance().isPluginDisabled()) {
             for (String message : TAB.getInstance().getDisabledCommand().execute(invocation.arguments(), sender.hasPermission(TabConstants.Permission.COMMAND_RELOAD), sender.hasPermission(TabConstants.Permission.COMMAND_ALL))) {
@@ -32,7 +33,8 @@ public class VelocityTabCommand implements SimpleCommand {
     }
 
     @Override
-    public List<String> suggest(Invocation invocation) {
+    @NotNull
+    public List<String> suggest(@NotNull Invocation invocation) {
         TabPlayer p = null;
         if (invocation.source() instanceof Player) {
             p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());

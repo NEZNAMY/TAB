@@ -22,13 +22,16 @@ import java.util.List;
 public class VelocityTabPlayer extends ProxyTabPlayer {
 
     /** Player's scoreboard */
-    private final @NotNull Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
+    @NotNull
+    private final Scoreboard<VelocityTabPlayer> scoreboard = new VelocityScoreboard(this);
 
     /** Player's tab list */
-    private final @NotNull TabList tabList = new VelocityTabList(this);
+    @NotNull
+    private final TabList tabList = new VelocityTabList(this);
 
     /** Player's boss bar view */
-    private final @NotNull BossBar bossBar = new AdventureBossBar(this);
+    @NotNull
+    private final BossBar bossBar = new AdventureBossBar(this);
 
     /**
      * Constructs new instance for given player
@@ -36,13 +39,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
      * @param   p
      *          velocity player
      */
-    public VelocityTabPlayer(Player p) {
+    public VelocityTabPlayer(@NotNull Player p) {
         super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
                 s.getServerInfo().getName()).orElse("null"), p.getProtocolVersion().getProtocol());
     }
     
     @Override
-    public boolean hasPermission0(String permission) {
+    public boolean hasPermission0(@NotNull String permission) {
         return getPlayer().hasPermission(permission);
     }
     
@@ -57,14 +60,16 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
-    public @Nullable TabList.Skin getSkin() {
+    @Nullable
+    public TabList.Skin getSkin() {
         List<GameProfile.Property> properties = getPlayer().getGameProfile().getProperties();
         if (properties.size() == 0) return null; //Offline mode
         return new TabList.Skin(properties.get(0).getValue(), properties.get(0).getSignature());
     }
     
     @Override
-    public @NotNull Player getPlayer() {
+    @NotNull
+    public Player getPlayer() {
         return (Player) player;
     }
     

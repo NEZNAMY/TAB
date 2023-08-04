@@ -10,18 +10,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Bukkit registry to register bukkit-only and universal placeholders
  */
 public class BukkitPlaceholderRegistry extends BackendPlaceholderRegistry {
 
+    @Nullable
     private Chat chat;
 
     /**
      * Constructs new instance and loads hooks
      */
-    public BukkitPlaceholderRegistry(BukkitPlatform platform) {
+    public BukkitPlaceholderRegistry(@NotNull BukkitPlatform platform) {
         super(platform);
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);

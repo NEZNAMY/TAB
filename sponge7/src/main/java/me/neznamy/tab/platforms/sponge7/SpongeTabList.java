@@ -20,6 +20,7 @@ import java.util.UUID;
 public class SpongeTabList implements TabList {
 
     /** Player this TabList belongs to */
+    @NotNull
     private final SpongeTabPlayer player;
 
     @Override
@@ -62,6 +63,7 @@ public class SpongeTabList implements TabList {
         player.getPlayer().getTabList().setHeaderAndFooter(Text.of(header.toLegacyText()), Text.of(footer.toLegacyText()));
     }
 
+    @NotNull
     private GameMode convertGameMode(int mode) {
         switch (mode) {
             case 1: return GameModes.CREATIVE;

@@ -20,7 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
 
-    private static final @NotNull net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
+    @NotNull
+    private static final net.minecraft.world.scores.Scoreboard dummyScoreboard = new net.minecraft.world.scores.Scoreboard();
 
     public FabricScoreboard(FabricTabPlayer player) {
         super(player);

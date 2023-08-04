@@ -78,7 +78,7 @@ public class PacketEntityView implements EntityView {
      * @throws  ReflectiveOperationException
      *          If something fails
      */
-    public static void load(NMSStorage nms) throws ReflectiveOperationException {
+    public static void load(@NotNull NMSStorage nms) throws ReflectiveOperationException {
         Class<?> spawnEntityClass;
         Class<?> entityMetadataClass;
         Class<?> world;
@@ -283,51 +283,51 @@ public class PacketEntityView implements EntityView {
     }
 
     @Override
-    public boolean isDestroyPacket(Object packet) {
+    public boolean isDestroyPacket(@NotNull Object packet) {
         return EntityDestroyClass.isInstance(packet);
     }
 
     @Override
-    public boolean isTeleportPacket(Object packet) {
+    public boolean isTeleportPacket(@NotNull Object packet) {
         return EntityTeleportClass.isInstance(packet);
     }
 
     @Override
-    public boolean isNamedEntitySpawnPacket(Object packet) {
+    public boolean isNamedEntitySpawnPacket(@NotNull Object packet) {
         return PacketPlayOutNamedEntitySpawn.isInstance(packet);
     }
 
     @Override
-    public boolean isMovePacket(Object packet) {
+    public boolean isMovePacket(@NotNull Object packet) {
         return PacketPlayOutEntity.isInstance(packet);
     }
 
     @Override
-    public boolean isLookPacket(Object packet) {
+    public boolean isLookPacket(@NotNull Object packet) {
         return PacketPlayOutEntityLook.isInstance(packet);
     }
 
     @Override
     @SneakyThrows
-    public int getTeleportEntityId(Object teleportPacket) {
+    public int getTeleportEntityId(@NotNull Object teleportPacket) {
         return EntityTeleport_EntityId.getInt(teleportPacket);
     }
 
     @Override
     @SneakyThrows
-    public int getMoveEntityId(Object movePacket) {
+    public int getMoveEntityId(@NotNull Object movePacket) {
         return PacketPlayOutEntity_ENTITYID.getInt(movePacket);
     }
 
     @Override
     @SneakyThrows
-    public int getSpawnedPlayer(Object playerSpawnPacket) {
+    public int getSpawnedPlayer(@NotNull Object playerSpawnPacket) {
         return PacketPlayOutNamedEntitySpawn_ENTITYID.getInt(playerSpawnPacket);
     }
 
     @Override
     @SneakyThrows
-    public int[] getDestroyedEntities(Object destroyPacket) {
+    public int[] getDestroyedEntities(@NotNull Object destroyPacket) {
         Object entities = PacketEntityView.EntityDestroy_Entities.get(destroyPacket);
         if (NMSStorage.getInstance().getMinorVersion() >= 17) {
             if (entities instanceof List) {

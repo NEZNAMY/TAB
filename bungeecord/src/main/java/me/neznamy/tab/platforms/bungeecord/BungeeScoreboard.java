@@ -44,7 +44,9 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, @NotNull Collection<String> players, int options) {
+    public void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                              @NotNull NameVisibility visibility, @NotNull CollisionRule collision,
+                              @NotNull Collection<String> players, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
@@ -60,7 +62,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
+    public void updateTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix,
+                            @NotNull NameVisibility visibility, @NotNull CollisionRule collision, int options) {
         int color = 0;
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
@@ -92,6 +95,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
      *          Version of player to convert text for
      * @return  serialized component for 1.13+ clients, cut string for 1.12-
      */
+    @NotNull
     private String jsonOrRaw(@NotNull String text, @NotNull ProtocolVersion clientVersion) {
         if (clientVersion.getMinorVersion() >= 13) {
             return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
@@ -99,5 +103,4 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
             return text;
         }
     }
-
 }

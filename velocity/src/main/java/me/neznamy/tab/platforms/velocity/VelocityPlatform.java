@@ -27,10 +27,12 @@ import java.io.File;
 @RequiredArgsConstructor
 public class VelocityPlatform extends ProxyPlatform {
 
-    @NotNull private final VelocityTAB plugin;
+    @NotNull
+    private final VelocityTAB plugin;
 
     /** Plugin message channel */
-    @Getter private final MinecraftChannelIdentifier minecraftChannelIdentifier =
+    @Getter
+    private final MinecraftChannelIdentifier minecraftChannelIdentifier =
             MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
     @Override
@@ -41,7 +43,8 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
-    public @Nullable RedisSupport getRedisSupport() {
+    @Nullable
+    public RedisSupport getRedisSupport() {
         if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
                 RedisBungeeAPI.getRedisBungeeApi() != null) {
             return new VelocityRedisSupport(plugin);
@@ -60,6 +63,7 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
     public String getServerVersionInfo() {
         return "[Velocity] " + plugin.getServer().getVersion().getName() + " - " + plugin.getServer().getVersion().getVersion();
     }
@@ -83,12 +87,14 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
+    @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder().toFile();
     }
 
     @Override
-    public @Nullable PipelineInjector createPipelineInjector() {
+    @Nullable
+    public PipelineInjector createPipelineInjector() {
         return null;
     }
 

@@ -42,9 +42,14 @@ import java.util.function.Supplier;
 public class BungeePipelineInjector extends NettyPipelineInjector {
 
     /** Inaccessible bungee internals */
-    private static @Nullable Field wrapperField;
-    private static @Nullable Object directionData;
-    private static @Nullable Method getId;
+    @Nullable
+    private static Field wrapperField;
+
+    @Nullable
+    private static Object directionData;
+
+    @Nullable
+    private static Method getId;
 
     static {
         try {
@@ -57,21 +62,26 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
     }
 
     /** Packets used by the plugin that must be deserialized and BungeeCord does not do it automatically */
+    @NotNull
     private final Class<? extends DefinedPacket>[] extraPacketClasses = new Class[]{Team.class, ScoreboardDisplay.class, ScoreboardObjective.class};
+
+    @NotNull
     private final Supplier<DefinedPacket>[] extraPacketSuppliers = new Supplier[]{Team::new, ScoreboardDisplay::new, ScoreboardObjective::new};
 
     @Override
+    @NotNull
     public Function<TabPlayer, ChannelDuplexHandler> getChannelFunction() {
         return byteBufDeserialization ? DeserializableBungeeChannelDuplexHandler::new : TabChannelDuplexHandler::new;
     }
 
     @Override
-    protected @Nullable Channel getChannel(@NotNull TabPlayer player) {
+    @Nullable
+    protected Channel getChannel(@NotNull TabPlayer player) {
         if (wrapperField == null) return null;
         final BungeeTabPlayer bungee = (BungeeTabPlayer) player;
         try {
             return ((ChannelWrapper) wrapperField.get(bungee.getPlayer().getPendingConnection())).getHandle();
-        } catch (final IllegalAccessException exception) {
+        } catch (IllegalAccessException exception) {
             TAB.getInstance().getErrorManager().criticalError("Failed to get channel of " + bungee.getPlayer().getName(), exception);
         }
         return null;
@@ -188,12 +198,12 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          * @param   player
          *          player to inject
          */
-        public DeserializableBungeeChannelDuplexHandler(TabPlayer player) {
+        public DeserializableBungeeChannelDuplexHandler(@NotNull TabPlayer player) {
             super(player);
         }
 
         @Override
-        public void write(ChannelHandlerContext context, Object packet, ChannelPromise channelPromise) {
+        public void write(@NotNull ChannelHandlerContext context, @NotNull Object packet, @NotNull ChannelPromise channelPromise) {
             long time = System.nanoTime();
             Object modifiedPacket = packet instanceof ByteBuf ? deserialize((ByteBuf) packet) : packet;
             TAB.getInstance().getCPUManager().addTime(TabConstants.Feature.PACKET_DESERIALIZING, TabConstants.CpuUsageCategory.BYTE_BUF, System.nanoTime()-time);
@@ -208,7 +218,8 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
          *          byte buf to deserialize
          * @return  deserialized packet or input byte buf if packet is not tracked
          */
-        private @NotNull Object deserialize(@NotNull ByteBuf buf) {
+        @NotNull
+        private Object deserialize(@NotNull ByteBuf buf) {
             int marker = buf.readerIndex();
             try {
                 int packetId = buf.readByte();

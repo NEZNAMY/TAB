@@ -32,13 +32,19 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
 
     /** Config options */
     private final boolean allowBypass = TAB.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
+
+    @NotNull
     private final List<String> ignoredWorlds = TAB.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignored_world", "build"));
+
+    @NotNull
     private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
     /** Plugin reference*/
-    @NotNull private final JavaPlugin plugin;
+    @NotNull
+    private final JavaPlugin plugin;
 
-    @Getter private final String featureName = "Per world PlayerList";
+    @Getter
+    private final String featureName = "Per world PlayerList";
 
     @Override
     public void load() {

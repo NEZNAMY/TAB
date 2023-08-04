@@ -58,7 +58,8 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
         );
     }
 
-    private Packet<?> build(EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions, FabricTabList.Builder entry) {
+    @NotNull
+    private Packet<?> build(@NotNull EnumSet<ClientboundPlayerInfoUpdatePacket.Action> actions, @NotNull FabricTabList.Builder entry) {
         ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(actions, Collections.emptyList());
         packet.entries = Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(
                 entry.getId(),
@@ -83,31 +84,37 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
         private int gameMode;
         @Nullable private Component displayName;
 
-        public Builder setName(String name) {
+        @NotNull
+        public Builder setName(@Nullable String name) {
             this.name = name;
             return this;
         }
 
-        public Builder setSkin(Skin skin) {
+        @NotNull
+        public Builder setSkin(@Nullable Skin skin) {
             this.skin = skin;
             return this;
         }
 
+        @NotNull
         public Builder setLatency(int latency) {
             this.latency = latency;
             return this;
         }
 
+        @NotNull
         public Builder setGameMode(int gameMode) {
             this.gameMode = gameMode;
             return this;
         }
 
-        public Builder setDisplayName(Component displayName) {
+        @NotNull
+        public Builder setDisplayName(@Nullable Component displayName) {
             this.displayName = displayName;
             return this;
         }
 
+        @NotNull
         public GameProfile createProfile() {
             GameProfile profile = new GameProfile(id, name);
             if (skin != null) {

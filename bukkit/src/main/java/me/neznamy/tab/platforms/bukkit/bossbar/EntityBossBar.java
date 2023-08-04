@@ -21,6 +21,7 @@ import java.util.UUID;
 public class EntityBossBar implements BossBar {
 
     /** Player this handler belongs to */
+    @NotNull
     private final BukkitTabPlayer player;
 
     @Override

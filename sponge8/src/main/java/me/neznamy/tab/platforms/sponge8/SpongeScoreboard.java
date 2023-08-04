@@ -4,7 +4,10 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.scoreboard.*;
+import org.spongepowered.api.scoreboard.CollisionRules;
+import org.spongepowered.api.scoreboard.Team;
+import org.spongepowered.api.scoreboard.Visibilities;
+import org.spongepowered.api.scoreboard.Visibility;
 import org.spongepowered.api.scoreboard.criteria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
@@ -15,9 +18,10 @@ import java.util.Collection;
 public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     /** Scoreboard of the player */
+    @NotNull
     private final org.spongepowered.api.scoreboard.Scoreboard sb = org.spongepowered.api.scoreboard.Scoreboard.builder().build();
     
-    public SpongeScoreboard(SpongeTabPlayer player) {
+    public SpongeScoreboard(@NotNull SpongeTabPlayer player) {
         super(player);
         // Make sure each player is in different scoreboard for per-player view
         player.getPlayer().setScoreboard(sb);
@@ -28,7 +32,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         sb.objective(objective).ifPresent(o -> sb.updateDisplaySlot(o, convertDisplaySlot(slot)));
     }
 
-    private org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(DisplaySlot slot) {
+    private org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(@NotNull DisplaySlot slot) {
         switch (slot) {
             case PLAYER_LIST: return DisplaySlots.LIST.get();
             case SIDEBAR: return DisplaySlots.SIDEBAR.get();
@@ -107,7 +111,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         sb.objective(objective).ifPresent(o -> o.removeScore(adventure(playerName)));
     }
 
-    private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(CollisionRule rule) {
+    @NotNull
+    private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(@NotNull CollisionRule rule) {
         switch (rule) {
             case ALWAYS: return CollisionRules.ALWAYS.get();
             case NEVER: return CollisionRules.NEVER.get();
@@ -117,7 +122,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
         }
     }
 
-    private Visibility convertVisibility(NameVisibility visibility) {
+    @NotNull
+    private Visibility convertVisibility(@NotNull NameVisibility visibility) {
         switch (visibility) {
             case ALWAYS: return Visibilities.ALWAYS.get();
             case NEVER: return Visibilities.NEVER.get();
@@ -134,7 +140,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      *          Text to convert
      * @return  Converted text
      */
-    private Component adventure(String text) {
+    @NotNull
+    private Component adventure(@NotNull String text) {
         return IChatBaseComponent.optimizedComponent(text).toAdventureComponent(player.getVersion());
     }
 }

@@ -15,7 +15,10 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class FabricBossBar implements BossBar {
 
+    @NotNull
     private final FabricTabPlayer player;
+
+    @NotNull
     private final Map<UUID, ServerBossEvent> bars = new HashMap<>();
 
     @Override

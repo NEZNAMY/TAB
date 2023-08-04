@@ -5,6 +5,8 @@ import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import org.bstats.sponge.Metrics;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.config.ConfigDir;
@@ -24,17 +26,17 @@ public class Sponge8TAB {
     @Inject private Metrics.Factory metricsFactory;
 
     @Listener
-    public void onServerStart(StartingEngineEvent<Server> event) {
+    public void onServerStart(@Nullable StartingEngineEvent<Server> event) {
         TAB.create(new SpongePlatform(this));
     }
 
     @Listener
-    public void onRegisterCommands(RegisterCommandEvent<Command.Raw> event) {
+    public void onRegisterCommands(@NotNull RegisterCommandEvent<Command.Raw> event) {
         event.register(container, new SpongeTabCommand(), TabConstants.COMMAND_BACKEND);
     }
 
     @Listener
-    public void onServerStop(StoppingEngineEvent<Server> event) {
+    public void onServerStop(@Nullable StoppingEngineEvent<Server> event) {
         TAB.getInstance().unload();
     }
 }

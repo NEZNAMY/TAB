@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -21,7 +22,7 @@ import java.util.function.Consumer;
  */
 public class FoliaPlatform extends BukkitPlatform {
 
-    public FoliaPlatform(JavaPlugin plugin) {
+    public FoliaPlatform(@NotNull JavaPlugin plugin) {
         super(plugin);
     }
 
@@ -49,7 +50,7 @@ public class FoliaPlatform extends BukkitPlatform {
     }
 
     @Override
-    public void registerSyncPlaceholder(String identifier, int refresh) {
+    public void registerSyncPlaceholder(@NotNull String identifier, int refresh) {
         String syncedPlaceholder = "%" + identifier.substring(6);
         PlayerPlaceholderImpl[] ppl = new PlayerPlaceholderImpl[1];
         ppl[0] = TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p -> {
@@ -75,7 +76,7 @@ public class FoliaPlatform extends BukkitPlatform {
      */
     @SneakyThrows
     @SuppressWarnings("JavaReflectionMemberAccess")
-    private void runSync(Entity entity, Runnable task) {
+    private void runSync(@NotNull Entity entity, @NotNull Runnable task) {
         Object entityScheduler = Entity.class.getMethod("getScheduler").invoke(entity);
         Consumer<?> consumer = $ -> task.run(); // Reflection and lambdas don't go together
         entityScheduler.getClass().getMethod("run", Plugin.class, Consumer.class, Runnable.class)
@@ -83,7 +84,7 @@ public class FoliaPlatform extends BukkitPlatform {
     }
 
     @Override
-    public void runEntityTask(Entity entity, Runnable task) {
+    public void runEntityTask(@NotNull Entity entity, @NotNull Runnable task) {
         runSync(entity, task);
     }
 }

@@ -10,6 +10,7 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The core for BungeeCord forwarding events into all enabled features
@@ -43,7 +44,8 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
     }
 
     @Override
-    public TabPlayer createPlayer(ProxiedPlayer player) {
+    @NotNull
+    public TabPlayer createPlayer(@NotNull ProxiedPlayer player) {
         return new BungeeTabPlayer(player);
     }
 }
