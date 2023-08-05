@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.scoreboard;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
@@ -18,30 +19,14 @@ import java.util.List;
 
 /**
  * Scoreboard implementation for Bukkit, which uses packets
- * to send scoreboards. While md_5 keeps saying that you don't
- * need packets for scoreboards in every single spigot update,
- * this is not true. It may seem that way at first, but after
- * investigating, fatal problems are found:<p>
- * #1 - Limitations on legacy versions are forced in the API.
- *      While this may not seem like a problem, it enforces those
- *      limits even for 1.13+ players (if using ViaVersion).<p>
- * #2 - Modern versions no longer have any limits, but md_5
- *      decided to add some random limits for absolutely no reason
- *      at all. Scoreboard title received a random 128 characters
- *      limit including color codes. Together with the almighty bukkit
- *      RGB format using 14 characters for 1 color code, this makes
- *      gradients just impossible to use. Team prefix/suffix also
- *      received a 64 characters limit (excluding color codes at least),
- *      however that might not be enough for displaying a line of text
- *      in sidebar, which would require splitting the text into prefix
- *      and suffix, which is just begging for bugs to be introduced.<p>
- * #3 - Other plugins can decide to put players into their own
- *      scoreboard, automatically destroying all visuals made by the
- *      plugin. They might also put all players into the same scoreboard,
- *      making per-player view of teams, especially sidebar not working.<p>
+ * to send scoreboards to use the full potential on all versions
+ * and server software without any artificial limits.
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
+
+    @Getter
+    private static boolean available;
 
     private static NMSStorage nms;
 
@@ -210,6 +195,7 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
                 ScoreboardTeam_setNameTagVisibility = ReflectionUtils.getMethod(scoreboardTeam, new String[] {"setNameTagVisibility", "a"}, EnumNameTagVisibility); // {1.8.1+, 1.8 & 1.18+}
             }
         }
+        available = true;
     }
 
     public PacketScoreboard(@NotNull BukkitTabPlayer player) {
