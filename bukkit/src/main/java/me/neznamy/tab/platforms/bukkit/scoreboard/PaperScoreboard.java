@@ -36,7 +36,7 @@ public class PaperScoreboard extends BukkitScoreboard {
     }
 
     @Override
-    public void setDisplayName(Objective objective, String displayName) {
+    public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
         objective.displayName(toAdventure(displayName));
     }
 

@@ -40,7 +40,6 @@ import java.util.Collection;
  *      making per-player view of teams, especially sidebar not working.<p>
  */
 // Throw the NPE if something is not as expected, parent class should ensure it anyway
-// Use Bukkit setColor, the adventure one does not support magic codes while they are permitted
 @SuppressWarnings({"ConstantConditions", "deprecation"})
 public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
@@ -156,23 +155,22 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     public void newObjective(String objectiveName, String criteria, String title, boolean hearts) {
         if (serverMinorVersion >= 14) {
-            scoreboard.registerNewObjective(objectiveName, criteria, transform(title), hearts ? RenderType.HEARTS : RenderType.INTEGER);
+            scoreboard.registerNewObjective(objectiveName, criteria, transform(title, 128, 32), hearts ? RenderType.HEARTS : RenderType.INTEGER);
         } else {
-            Objective obj = scoreboard.registerNewObjective(objectiveName, hearts ? "health" : "dummy");
-            obj.setDisplayName(transform(title));
+            setDisplayName(scoreboard.registerNewObjective(objectiveName, hearts ? "health" : "dummy"), title);
         }
     }
 
-    public void setDisplayName(Objective objective, String displayName) {
-        objective.setDisplayName(transform(displayName));
+    public void setDisplayName(@NotNull Objective objective, @NotNull String displayName) {
+        objective.setDisplayName(transform(displayName, 128, 32));
     }
 
     public void setPrefix(@NotNull Team team, @NotNull String prefix) {
-        team.setPrefix(transform(prefix));
+        team.setPrefix(transform(prefix, 64, 16));
     }
 
     public void setSuffix(@NotNull Team team, @NotNull String suffix) {
-        team.setSuffix(transform(suffix));
+        team.setSuffix(transform(suffix, 64, 16));
     }
 
     /**
@@ -180,12 +178,27 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      *
      * @param   text
      *          Text to transform
+     * @param   maxLengthModern
+     *          Maximum text length defined by bukkit API on 1.13+
+     * @param   maxLengthLegacy
+     *          Maximum text length defined by bukkit API on 1.12-
      * @return  Converted text
      */
     @NotNull
-    private String transform(@NotNull String text) {
-        return RGBUtils.getInstance().convertToBukkitFormat(IChatBaseComponent.optimizedComponent(text).toFlatText(),
-                player.getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16);
+    private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
+        String transformed = RGBUtils.getInstance().convertToBukkitFormat(IChatBaseComponent.optimizedComponent(text).toFlatText(),
+                player.getVersion().getMinorVersion() >= 16 && serverMinorVersion >= 16);
+        if (serverMinorVersion >= 16) {
+            while (ChatColor.stripColor(transformed).length() > maxLengthModern)
+                transformed = transformed.substring(0, transformed.length()-1);
+        } else if (serverMinorVersion >= 13) {
+            if (transformed.length() > maxLengthModern)
+                transformed = transformed.substring(0, maxLengthModern);
+        } else {
+            if (transformed.length() > maxLengthLegacy)
+                transformed = transformed.substring(0, maxLengthLegacy);
+        }
+        return transformed;
     }
 
     /**
