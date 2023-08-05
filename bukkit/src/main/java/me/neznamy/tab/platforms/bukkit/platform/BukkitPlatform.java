@@ -28,6 +28,7 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -97,7 +98,19 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void registerPlaceholders() {
-        new BukkitPlaceholderRegistry(this).registerPlaceholders(TAB.getInstance().getPlaceholderManager());
+        PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
+        manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "");
+        manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "");
+        Chat chat;
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
+            if (rspChat != null) {
+                chat = rspChat.getProvider();
+                manager.registerPlayerPlaceholder("%vault-prefix%", 1000, p -> chat.getPlayerPrefix((Player) p.getPlayer()));
+                manager.registerPlayerPlaceholder("%vault-suffix%", 1000, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
+            }
+        }
+        BackendPlatform.super.registerPlaceholders();
     }
 
     @Override
