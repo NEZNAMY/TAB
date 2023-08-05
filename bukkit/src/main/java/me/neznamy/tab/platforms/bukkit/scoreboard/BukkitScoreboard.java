@@ -188,7 +188,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
         String transformed = RGBUtils.getInstance().convertToBukkitFormat(IChatBaseComponent.optimizedComponent(text).toFlatText(),
                 player.getVersion().getMinorVersion() >= 16 && serverMinorVersion >= 16);
-        if (serverMinorVersion >= 16) {
+        if (serverMinorVersion >= 16 && maxLengthModern < 128) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);
         } else if (serverMinorVersion >= 13) {
