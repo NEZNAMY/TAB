@@ -365,9 +365,8 @@ public class Converter {
 
     @SuppressWarnings("unchecked")
     public void convert332to400(@NotNull ConfigurationFile config) throws IOException {
-        if (config.hasConfigOption("ping-spoof.enabled")) {
+        if (config.hasConfigOption("fix-pet-names")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.2 to 4.0.0"));
-            config.set("ping-spoof", null);
             config.set("fix-pet-names", null);
             config.set("bossbar.disable-in-worlds", null);
             config.set("bossbar.disable-in-servers", null);

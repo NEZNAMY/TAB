@@ -96,11 +96,17 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
         for (Object nmsData : (List<?>) BukkitTabList.PLAYERS.get(packet)) {
             GameProfile profile = (GameProfile) BukkitTabList.PlayerInfoData_getProfile.invoke(nmsData);
             Object displayName = null;
+            int latency = 0;
             if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
                 if (newDisplayName != null) displayName = nms.toNMSComponent(newDisplayName, receiver.getVersion());
                 if (!nms.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
+            }
+            if (actions.contains(TabList.Action.UPDATE_LATENCY.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
+                latency = BukkitTabList.PlayerInfoData_Latency.getInt(nmsData);
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
+                if (!nms.is1_19_3Plus()) BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
             }
             if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
@@ -111,7 +117,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                         profile.getId(),
                         profile,
                         BukkitTabList.PlayerInfoData_Listed.getBoolean(nmsData),
-                        BukkitTabList.PlayerInfoData_Latency.getInt(nmsData),
+                        latency,
                         BukkitTabList.PlayerInfoData_GameMode.get(nmsData),
                         displayName,
                         BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));

@@ -160,6 +160,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
                 }
+                if (update.getActions().contains(PlayerListItemUpdate.Action.UPDATE_LATENCY)) {
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
+                }
                 if (update.getActions().contains(PlayerListItemUpdate.Action.ADD_PLAYER)) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());
                 }
@@ -170,6 +173,9 @@ public class BungeePipelineInjector extends NettyPipelineInjector {
                 if (listItem.getAction() == PlayerListItem.Action.UPDATE_DISPLAY_NAME || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, item.getUuid());
                     if (newDisplayName != null) item.setDisplayName(newDisplayName.toString(receiver.getVersion()));
+                }
+                if (listItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY || listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
+                    item.setPing(TAB.getInstance().getFeatureManager().onLatencyChange(receiver, item.getUuid(), item.getPing()));
                 }
                 if (listItem.getAction() == PlayerListItem.Action.ADD_PLAYER) {
                     TAB.getInstance().getFeatureManager().onEntryAdd(receiver, item.getUuid(), item.getUsername());

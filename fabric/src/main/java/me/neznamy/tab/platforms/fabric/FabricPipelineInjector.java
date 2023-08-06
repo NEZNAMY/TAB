@@ -77,16 +77,19 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
         List<Entry> updatedList = new ArrayList<>();
         for (Entry nmsData : packet.entries()) {
             GameProfile profile = nmsData.profile();
-            Component displayName = null;
+            Component displayName = nmsData.displayName();
+            int latency = nmsData.latency();
             if (actions.contains(Action.UPDATE_DISPLAY_NAME)) {
-                displayName = nmsData.displayName();
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
                 if (newDisplayName != null) displayName = FabricTAB.toComponent(newDisplayName, receiver.getVersion());
+            }
+            if (actions.contains(Action.UPDATE_LATENCY)) {
+                latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
             }
             if (actions.contains(Action.ADD_PLAYER)) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
             }
-            updatedList.add(new Entry(profile.getId(), profile, nmsData.listed(), nmsData.latency(), nmsData.gameMode(), displayName, nmsData.chatSession()));
+            updatedList.add(new Entry(profile.getId(), profile, nmsData.listed(), latency, nmsData.gameMode(), displayName, nmsData.chatSession()));
         }
         packet.entries = updatedList;
     }

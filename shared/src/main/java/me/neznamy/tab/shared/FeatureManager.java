@@ -260,6 +260,16 @@ public class FeatureManager {
         }
     }
 
+    public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
+        for (TabFeature f : values) {
+            if (!(f instanceof LatencyListener)) continue;
+            long time = System.nanoTime();
+            latency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, latency);
+            TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
+        }
+        return latency;
+    }
+
     public void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {
         features.put(featureName, featureHandler);
         values = features.values().toArray(new TabFeature[0]);
@@ -292,6 +302,9 @@ public class FeatureManager {
         Configs configuration = TAB.getInstance().getConfiguration();
         FeatureManager featureManager = TAB.getInstance().getFeatureManager();
         int minorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
+
+        if (configuration.getConfig().getBoolean("ping-spoof.enabled", false))
+            featureManager.registerFeature(TabConstants.Feature.PING_SPOOF, new PingSpoof());
 
         if (configuration.getConfig().getBoolean("bossbar.enabled", false)) {
             featureManager.registerFeature(TabConstants.Feature.BOSS_BAR,
