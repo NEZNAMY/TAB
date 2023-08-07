@@ -137,10 +137,9 @@ public class ArmorStand {
      */
     protected boolean isNameVisiblyEmpty(@NotNull String displayName) {
         if (displayName.length() == 0) return true;
-        if (!displayName.startsWith(EnumChatFormat.COLOR_STRING) && !displayName.startsWith("&") && !displayName.startsWith("#")) return false;
-        String text = IChatBaseComponent.fromColoredText(displayName).toRawText();
-        if (text.contains(" ")) text = text.replace(" ", "");
-        return text.length() == 0;
+        String rawText = displayName.contains(" ") ? displayName.replace(" ", "") : displayName;
+        if (!rawText.startsWith(EnumChatFormat.COLOR_STRING) && !rawText.startsWith("&") && !rawText.startsWith("#")) return false;
+        return IChatBaseComponent.fromColoredText(rawText).toRawText().length() == 0;
     }
 
     /**
