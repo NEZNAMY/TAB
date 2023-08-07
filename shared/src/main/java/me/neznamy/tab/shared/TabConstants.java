@@ -282,7 +282,7 @@ public class TabConstants {
         public static final String HEALTH = "%health%";
 
         public static final int MINIMUM_REFRESH_INTERVAL = 50;
-        public static final int RETURN_TIME_WARN_THRESHOLD = 1000;
+        public static final int RETURN_TIME_WARN_THRESHOLD = 50;
 
         public static String condition(String name) {
             return "%condition:" + name + "%";
