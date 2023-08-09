@@ -163,20 +163,24 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
+        if (!placeholderAPI) {
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, -1, () -> identifier);
+            return;
+        }
         PlaceholderManagerImpl pl = TAB.getInstance().getPlaceholderManager();
         int refresh = pl.getRefreshInterval(identifier);
         if (identifier.startsWith("%rel_")) {
             //relational placeholder
             TAB.getInstance().getPlaceholderManager().registerRelationalPlaceholder(identifier, pl.getRefreshInterval(identifier), (viewer, target) ->
-                    placeholderAPI ? PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier) : identifier);
+                    PlaceholderAPI.setRelationalPlaceholders((Player) viewer.getPlayer(), (Player) target.getPlayer(), identifier));
         } else if (identifier.startsWith("%sync:")) {
             registerSyncPlaceholder(identifier, refresh);
         } else if (identifier.startsWith("%server_")) {
-            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, refresh, () ->
-                    placeholderAPI ? PlaceholderAPI.setPlaceholders(null, identifier) : identifier);
+            TAB.getInstance().getPlaceholderManager().registerServerPlaceholder(identifier, refresh,
+                    () -> PlaceholderAPI.setPlaceholders(null, identifier));
         } else {
-            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh, p ->
-                    placeholderAPI ? PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier) : identifier);
+            TAB.getInstance().getPlaceholderManager().registerPlayerPlaceholder(identifier, refresh,
+                    p -> PlaceholderAPI.setPlaceholders((Player) p.getPlayer(), identifier));
         }
     }
 
