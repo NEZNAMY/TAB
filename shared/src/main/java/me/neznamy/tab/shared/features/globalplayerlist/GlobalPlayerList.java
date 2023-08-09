@@ -115,9 +115,13 @@ public class GlobalPlayerList extends TabFeature implements JoinListener, QuitLi
             for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
                 if (all == changed) continue;
                 // Remove for everyone and add back if visible, easy solution to display-others-as-spectators option
-                all.getTabList().removeEntry(changed.getTablistId());
+                // Also do not remove/add players from the same server, let backend handle it
+                boolean sameServer = all.getServer().equals(changed.getServer());
+                if (!sameServer) all.getTabList().removeEntry(changed.getTablistId());
                 if (shouldSee(all, changed)) {
-                    all.getTabList().addEntry(getAddInfoData(changed, all));
+                    if (!sameServer) {
+                        all.getTabList().addEntry(getAddInfoData(changed, all));
+                    }
                 }
             }
         });

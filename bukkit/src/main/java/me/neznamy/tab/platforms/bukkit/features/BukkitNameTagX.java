@@ -1,7 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.platforms.bukkit.nms.datawatcher.DataWatcher;
+import me.neznamy.tab.platforms.bukkit.nms.DataWatcher;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.EntityData;
@@ -148,10 +148,10 @@ public class BukkitNameTagX extends BackendNameTagX implements Listener {
     @NotNull
     public EntityData createDataWatcher(@NotNull TabPlayer viewer, byte flags, @NotNull String displayName, boolean nameVisible) {
         DataWatcher datawatcher = new DataWatcher();
-        datawatcher.getHelper().setEntityFlags(flags);
-        datawatcher.getHelper().setCustomName(displayName, viewer.getVersion());
-        datawatcher.getHelper().setCustomNameVisible(nameVisible);
-        datawatcher.getHelper().setArmorStandFlags((byte)16);
+        datawatcher.setEntityFlags(flags);
+        datawatcher.setCustomName(displayName, viewer.getVersion());
+        datawatcher.setCustomNameVisible(nameVisible);
+        datawatcher.setArmorStandFlags((byte)16);
         return datawatcher;
     }
 
