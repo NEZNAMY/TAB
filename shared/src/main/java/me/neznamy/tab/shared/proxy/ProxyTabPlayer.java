@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.unlimited.NameTagX;
-import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,7 +78,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 getVersion().getNetworkId(),
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                         !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
-                !(expansion instanceof EmptyTabExpansion));
+                true);
         ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
         Map<String, Integer> placeholders = platform.getBridgePlaceholders();
         args.add(placeholders.size());

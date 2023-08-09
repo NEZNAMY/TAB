@@ -23,7 +23,6 @@ import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.RelationalPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.ServerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.TabPlaceholder;
-import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,8 +48,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
 
     private final AtomicInteger loopTime = new AtomicInteger();
 
-    @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getConfig().getBoolean("placeholders.register-tab-expansion", false) ?
-            TAB.getInstance().getPlatform().createTabExpansion() : new EmptyTabExpansion();
+    @NonNull private final TabExpansion tabExpansion = TAB.getInstance().getPlatform().createTabExpansion();
 
     public PlaceholderManagerImpl() {
         TAB.getInstance().getMisconfigurationHelper().fixRefreshIntervals(refreshIntervals);
