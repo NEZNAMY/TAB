@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
+import me.neznamy.tab.shared.platform.TabList.Entry.Builder;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -158,38 +158,32 @@ public class BukkitTabList implements TabList {
             player.sendPacket(newClientboundPlayerInfoRemovePacket.newInstance(Collections.singletonList(entry)));
         } else {
             //1.19.2-
-            player.sendPacket(createPacket(Action.REMOVE_PLAYER, new Entry.Builder(entry).build(), player.getVersion()));
+            player.sendPacket(createPacket(Action.REMOVE_PLAYER, new Builder(entry).build()));
         }
     }
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         if (!available) return;
-        player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME,
-                new Entry.Builder(entry).displayName(displayName).build(), player.getVersion())
-        );
+        player.sendPacket(createPacket(Action.UPDATE_DISPLAY_NAME, new Builder(entry).displayName(displayName).build()));
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
         if (!available) return;
-        player.sendPacket(createPacket(Action.UPDATE_LATENCY,
-                new Entry.Builder(entry).latency(latency).build(), player.getVersion())
-        );
+        player.sendPacket(createPacket(Action.UPDATE_LATENCY, new Builder(entry).latency(latency).build()));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
         if (!available) return;
-        player.sendPacket(createPacket(Action.UPDATE_GAME_MODE,
-                new Entry.Builder(entry).gameMode(gameMode).build(), player.getVersion())
-        );
+        player.sendPacket(createPacket(Action.UPDATE_GAME_MODE, new Builder(entry).gameMode(gameMode).build()));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
         if (!available) return;
-        player.sendPacket(createPacket(Action.ADD_PLAYER, entry, player.getVersion()));
+        player.sendPacket(createPacket(Action.ADD_PLAYER, entry));
     }
 
     @Override
@@ -208,20 +202,20 @@ public class BukkitTabList implements TabList {
 
     @SneakyThrows
     @NotNull
-    private Object createPacket(@NotNull TabList.Action action, @NotNull TabList.Entry entry, @NotNull ProtocolVersion clientVersion) {
+    private Object createPacket(@NotNull Action action, @NotNull Entry entry) {
         Object packet;
         List<Object> players = new ArrayList<>();
         if (BukkitReflection.is1_19_3Plus()) {
             EnumSet<?> actions;
-            if (action == TabList.Action.ADD_PLAYER) {
+            if (action == Action.ADD_PLAYER) {
                 actions = EnumSet.allOf(EnumPlayerInfoActionClass);
             } else {
                 actions = EnumSet.of(Enum.valueOf(EnumPlayerInfoActionClass, action.name()));
             }
             packet = newPacketPlayOutPlayerInfo.newInstance(actions, Collections.emptyList());
             GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
-            if (entry.getSkin() != null) profile.getProperties().put(TabList.TEXTURES_PROPERTY,
-                    new Property(TabList.TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
+            if (entry.getSkin() != null) profile.getProperties().put(TEXTURES_PROPERTY,
+                    new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
             players.add(newPlayerInfoData.newInstance(
                     entry.getUniqueId(),
                     profile,
@@ -235,8 +229,8 @@ public class BukkitTabList implements TabList {
             packet = newPacketPlayOutPlayerInfo.newInstance(Enum.valueOf(EnumPlayerInfoActionClass, action.name()),
                     Array.newInstance(EntityPlayer, 0));
             GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
-            if (entry.getSkin() != null) profile.getProperties().put(TabList.TEXTURES_PROPERTY,
-                    new Property(TabList.TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
+            if (entry.getSkin() != null) profile.getProperties().put(TEXTURES_PROPERTY,
+                    new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
             List<Object> parameters = new ArrayList<>();
             if (newPlayerInfoData.getParameterTypes()[0] == PacketPlayOutPlayerInfoClass) {
                 parameters.add(packet);
