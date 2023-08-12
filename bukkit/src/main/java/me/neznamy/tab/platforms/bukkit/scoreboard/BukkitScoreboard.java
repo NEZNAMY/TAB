@@ -2,6 +2,7 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -48,7 +49,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     private static final boolean available = ReflectionUtils.methodExists(Bukkit.class, "getScoreboardManager");
 
     /** Server's minor version */
-    private final int serverMinorVersion = TAB.getInstance().getServerVersion().getMinorVersion();
+    private final int serverMinorVersion = BukkitReflection.getMinorVersion();
 
     @NotNull
     protected final org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();

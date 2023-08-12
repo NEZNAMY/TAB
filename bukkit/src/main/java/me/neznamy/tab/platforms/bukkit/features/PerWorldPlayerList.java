@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.UnLoadable;
 import org.bukkit.Bukkit;
@@ -27,29 +25,26 @@ import org.jetbrains.annotations.NotNull;
  * Per-world-PlayerList feature handler
  */
 @SuppressWarnings("deprecation")
-@RequiredArgsConstructor
 public class PerWorldPlayerList extends TabFeature implements Listener, Loadable, UnLoadable {
 
     /** Config options */
     private final boolean allowBypass = TAB.getInstance().getConfig().getBoolean("per-world-playerlist.allow-bypass-permission", false);
-
-    @NotNull
     private final List<String> ignoredWorlds = TAB.getInstance().getConfig().getStringList("per-world-playerlist.ignore-effect-in-worlds", Arrays.asList("ignored_world", "build"));
-
-    @NotNull
     private final Map<String, List<String>> sharedWorlds = TAB.getInstance().getConfig().getConfigurationSection("per-world-playerlist.shared-playerlist-world-groups");
 
-    /** Plugin reference*/
-    @NotNull
-    private final JavaPlugin plugin;
-
-    @Getter
-    private final String featureName = "Per world PlayerList";
+    /**
+     * Constructs new instance and registers events
+     *
+     * @param   plugin
+     *          Plugin instance to register events
+     */
+    public PerWorldPlayerList(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
     @Override
     public void load() {
         Bukkit.getOnlinePlayers().forEach(this::checkPlayer);
-        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
@@ -66,14 +61,14 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
     public void onJoin(PlayerJoinEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
+        TAB.getInstance().getCPUManager().addTime(this, TabConstants.CpuUsageCategory.PLAYER_JOIN, System.nanoTime()-time);
     }
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
         long time = System.nanoTime();
         checkPlayer(e.getPlayer());
-        TAB.getInstance().getCPUManager().addTime(featureName, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
+        TAB.getInstance().getCPUManager().addTime(this, TabConstants.CpuUsageCategory.WORLD_SWITCH, System.nanoTime()-time);
     }
 
     /**
@@ -114,5 +109,11 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
             }
         }
         return viewerWorldGroup.equals(targetWorldGroup);
+    }
+
+    @Override
+    @NotNull
+    public String getFeatureName() {
+        return "Per world PlayerList";
     }
 }

@@ -32,9 +32,6 @@ public class NMSStorage {
     /** Server's minor version */
     @Getter private final int minorVersion = Integer.parseInt(serverPackage.split("_")[1]);
 
-    /** Flag determining whether the server version is at least 1.19.3 or not */
-    @Getter private final boolean is1_19_3Plus = ReflectionUtils.classExists("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-
     /** Basic universal values */
     protected Class<?> Packet;
     protected Class<?> NetworkManager;

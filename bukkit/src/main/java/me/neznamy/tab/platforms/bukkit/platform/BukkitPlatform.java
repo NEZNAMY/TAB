@@ -43,7 +43,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
@@ -67,7 +66,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Nullable private Field spigotTps;
 
     /** Detection for presence of Paper's TPS getter */
-    @Nullable private Method paperTps;
+    private final boolean paperTps = ReflectionUtils.methodExists(Bukkit.class, "getTPS");
 
     /** Detection for presence of Paper's MSPT getter */
     private final boolean paperMspt = ReflectionUtils.methodExists(Bukkit.class, "getAverageTickTime");
@@ -80,7 +79,6 @@ public class BukkitPlatform implements BackendPlatform {
         } catch (ReflectiveOperationException e) {
             //not spigot
         }
-        try { paperTps = Bukkit.class.getMethod("getTPS"); } catch (NoSuchMethodException ignored) {}
     }
 
     @Override
@@ -275,7 +273,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     @SneakyThrows
     public double getTPS() {
-        if (paperTps != null) {
+        if (paperTps) {
             return Bukkit.getTPS()[0];
         } else if (spigotTps != null) {
             return ((double[]) spigotTps.get(server))[0];

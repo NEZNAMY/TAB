@@ -1,6 +1,7 @@
 package me.neznamy.tab.platforms.bukkit.features;
 
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
@@ -10,7 +11,6 @@ import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import me.neznamy.tab.shared.features.bossbar.BossBarManagerImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -24,16 +24,18 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public class WitherBossBar extends BossBarManagerImpl implements Listener, WorldSwitchListener {
 
-    /** Distance of the Wither in blocks */
-    private static final int WITHER_DISTANCE = 60;
-
-    /** Reference to plugin for registering listener */
-    @NotNull
-    private final JavaPlugin plugin;
+    /**
+     * Constructs new instance and registers events
+     *
+     * @param   plugin
+     *          Plugin instance to register events
+     */
+    public WitherBossBar(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
     @Override
     public void load() {
-        Bukkit.getPluginManager().registerEvents(this, plugin);
         //when MC is on fullscreen, BossBar disappears after 1 second of not being seen
         //when in a small window, it's about 100ms
         TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(100,
@@ -50,7 +52,8 @@ public class WitherBossBar extends BossBarManagerImpl implements Listener, World
             if (p.getVersion().getMinorVersion() > 8) continue; //sending VV packets to those
             for (BossBar line : getRegisteredBossBars().values()) {
                 if (!line.getPlayers().contains(p)) continue;
-                Location loc = ((Player) p.getPlayer()).getEyeLocation().add(((Player) p.getPlayer()).getEyeLocation().getDirection().normalize().multiply(WITHER_DISTANCE));
+                Location eyeLocation = ((BukkitTabPlayer)p).getPlayer().getEyeLocation();
+                Location loc = eyeLocation.add(eyeLocation.getDirection().normalize().multiply(60)); // Wither distance
                 if (loc.getY() < 1) loc.setY(1);
                 ((BackendTabPlayer)p).getEntityView().teleportEntity(line.getUniqueId().hashCode(), new me.neznamy.tab.shared.backend.Location(loc.getX(), loc.getY(), loc.getZ()));
             }

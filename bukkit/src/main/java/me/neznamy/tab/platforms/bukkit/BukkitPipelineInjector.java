@@ -3,6 +3,7 @@ package me.neznamy.tab.platforms.bukkit;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.features.nametags.NameTag;
@@ -83,7 +84,6 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
     @Override
     @SneakyThrows
     public void onPlayerInfo(@NotNull TabPlayer receiver, @NotNull Object packet) {
-        NMSStorage nms = NMSStorage.getInstance();
         List<String> actions;
         if (BukkitTabList.ClientboundPlayerInfoRemovePacket != null) {
             //1.19.3+
@@ -100,18 +100,18 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
-                if (newDisplayName != null) displayName = nms.toNMSComponent(newDisplayName, receiver.getVersion());
-                if (!nms.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
+                if (newDisplayName != null) displayName = NMSStorage.getInstance().toNMSComponent(newDisplayName, receiver.getVersion());
+                if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
             if (actions.contains(TabList.Action.UPDATE_LATENCY.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 latency = BukkitTabList.PlayerInfoData_Latency.getInt(nmsData);
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);
-                if (!nms.is1_19_3Plus()) BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
+                if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_Latency.set(nmsData, latency);
             }
             if (actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 TAB.getInstance().getFeatureManager().onEntryAdd(receiver, profile.getId(), profile.getName());
             }
-            if (nms.is1_19_3Plus()) {
+            if (BukkitReflection.is1_19_3Plus()) {
                 // 1.19.3 is using records, which do not allow changing final fields, need to rewrite the list entirely
                 updatedList.add(BukkitTabList.newPlayerInfoData.newInstance(
                         profile.getId(),
@@ -123,7 +123,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
                         BukkitTabList.PlayerInfoData_RemoteChatSession.get(nmsData)));
             }
         }
-        if (nms.is1_19_3Plus()) {
+        if (BukkitReflection.is1_19_3Plus()) {
             BukkitTabList.PLAYERS.set(packet, updatedList);
         }
     }
