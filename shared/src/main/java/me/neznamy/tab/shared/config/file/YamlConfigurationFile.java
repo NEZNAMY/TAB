@@ -26,9 +26,6 @@ import me.neznamy.yamlassist.YamlAssist;
  */
 public class YamlConfigurationFile extends ConfigurationFile {
 
-    /** SnakeYAML instance */
-    private final Yaml yaml;
-
     /**
      * Constructs new instance and attempts to load specified configuration file.
      * If file does not exist, default file is copied from {@code source}.
@@ -51,10 +48,7 @@ public class YamlConfigurationFile extends ConfigurationFile {
         FileInputStream input = null;
         try {
             input = new FileInputStream(file);
-            DumperOptions options = new DumperOptions();
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            yaml = new Yaml(options);
-            values = yaml.load(input);
+            values = new Yaml().load(input);
             if (values == null) values = new LinkedHashMap<>();
             input.close();
         } catch (YAMLException e) {
@@ -78,7 +72,9 @@ public class YamlConfigurationFile extends ConfigurationFile {
     public void save() {
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            yaml.dump(values, writer);
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            new Yaml(options).dump(values, writer);
             writer.close();
             fixHeader();
         } catch (IOException e) {
