@@ -23,20 +23,29 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
 
     /** Map holding all values for all players for easy and high-performance access */
     @NotNull
-    private final WeakHashMap<Player, Map<String, String>> values = new WeakHashMap<>();
-
-    @NotNull
-    private final String author = TabConstants.PLUGIN_AUTHOR;
-
-    @NotNull
-    private final String identifier = TabConstants.PLUGIN_ID;
-
-    @NotNull
-    private final String version = TabConstants.PLUGIN_VERSION;
+    private final WeakHashMap<TabPlayer, Map<String, String>> values = new WeakHashMap<>();
 
     @Override
     public boolean persist() {
         return true;
+    }
+
+    @Override
+    @NotNull
+    public String getAuthor() {
+        return TabConstants.PLUGIN_AUTHOR;
+    }
+
+    @Override
+    @NotNull
+    public String getIdentifier() {
+        return TabConstants.PLUGIN_ID;
+    }
+
+    @Override
+    @NotNull
+    public String getVersion() {
+        return TabConstants.PLUGIN_VERSION;
     }
 
     @Override
@@ -57,11 +66,14 @@ public class BukkitTabExpansion extends PlaceholderExpansion implements TabExpan
         if (identifier.startsWith("placeholder_")) {
             TAB.getInstance().getPlaceholderManager().addUsedPlaceholder("%" + identifier.substring(12) + "%", TAB.getInstance().getPlaceholderManager());
         }
-        return values.get(player).get(identifier);
+        if (player == null) return "<Player cannot be null>";
+        TabPlayer p = TAB.getInstance().getPlayer(player.getUniqueId());
+        if (p == null || !p.isLoaded()) return "<Player is not loaded>";
+        return values.get(p).get(identifier);
     }
 
     @Override
     public void setValue(@NotNull TabPlayer player, @NotNull String key, @NotNull String value) {
-        values.computeIfAbsent((Player) player.getPlayer(), p -> new HashMap<>()).put(key, value);
+        values.computeIfAbsent(player, p -> new HashMap<>()).put(key, value);
     }
 }
