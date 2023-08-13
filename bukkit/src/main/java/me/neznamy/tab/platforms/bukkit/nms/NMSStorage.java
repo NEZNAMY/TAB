@@ -70,7 +70,7 @@ public class NMSStorage {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
-            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethod(ChatSerializer, new String[]{"fromJson", "a"}, String.class);
+            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethod(ChatSerializer, new String[]{"fromJson", "a", "m_130701_"}, String.class); // Mohist 1.18.2
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             try {
                 getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
@@ -85,11 +85,7 @@ public class NMSStorage {
         PacketEntityView.load();
         PacketScoreboard.load();
         if (minorVersion < 17) {
-            try {
-                (PING = EntityPlayer.getDeclaredField("ping")).setAccessible(true); // 1.5.2 - 1.16.5
-            } catch (NoSuchFieldException e) {
-                (PING = EntityPlayer.getDeclaredField("field_71138_i")).setAccessible(true); // 1.7.10 Thermos
-            }
+            PING = ReflectionUtils.getField(EntityPlayer, "ping", "field_71138_i"); // 1.5.2 - 1.16.5, 1.7.10 Thermos
         }
     }
 

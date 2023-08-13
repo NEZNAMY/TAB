@@ -175,7 +175,7 @@ public class PacketEntityView implements EntityView {
         } else if (minorVersion >= 19) {
             EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("d").get(null);
         } else if (minorVersion >= 17) {
-            EntityTypes_ARMOR_STAND = EntityTypes.getDeclaredField("c").get(null);
+            EntityTypes_ARMOR_STAND = ReflectionUtils.getField(EntityTypes, "c", "f_20529_").get(null); // Mohist 1.18.2
         }
 
         if (minorVersion >= 19) {

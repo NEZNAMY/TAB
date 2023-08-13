@@ -63,6 +63,7 @@ public class ReflectionUtils {
      *          field type to check for
      * @return  list of all fields with specified class type
      */
+    @NotNull
     public static List<Field> getFields(@NotNull Class<?> clazz, @NotNull Class<?> type) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
@@ -84,6 +85,7 @@ public class ReflectionUtils {
      *          Parameter types of methods
      * @return  List of found methods matching requirements. If nothing is found, empty list is returned.
      */
+    @NotNull
     public static List<Method> getMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
@@ -114,6 +116,7 @@ public class ReflectionUtils {
      * @throws  NoSuchMethodException
      *          if no such method exists
      */
+    @NotNull
     public static Method getMethod(@NotNull Class<?> clazz, @NotNull String[] names, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
         List<String> list = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
@@ -148,6 +151,7 @@ public class ReflectionUtils {
      *          Type of field
      * @return  List of instance fields with defined class type
      */
+    @NotNull
     public static List<Field> getInstanceFields(@NotNull Class<?> clazz, @NotNull Class<?> fieldType) {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
@@ -165,7 +169,8 @@ public class ReflectionUtils {
      *          Object to make accessible
      * @return  Provided object
      */
-    public static @NotNull <T extends AccessibleObject> T setAccessible(@NotNull T o) {
+    @NotNull
+    public static <T extends AccessibleObject> T setAccessible(@NotNull T o) {
         o.setAccessible(true);
         return o;
     }
@@ -180,7 +185,8 @@ public class ReflectionUtils {
      * @throws  IllegalStateException
      *          If class has more than 1 constructor or doesn't have any
      */
-    public static Constructor<?> getOnlyConstructor(Class<?> clazz) throws IllegalStateException {
+    @NotNull
+    public static Constructor<?> getOnlyConstructor(@NotNull Class<?> clazz) throws IllegalStateException {
         Constructor<?>[] constructors = clazz.getConstructors();
         if (constructors.length != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 constructor, but has " +
@@ -201,6 +207,7 @@ public class ReflectionUtils {
      * @throws  IllegalStateException
      *          If more than 1 field meets the criteria or if none do.
      */
+    @NotNull
     public static Field getOnlyField(@NotNull Class<?> clazz, @NotNull Class<?> type) throws IllegalStateException {
         List<Field> list = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
@@ -230,6 +237,7 @@ public class ReflectionUtils {
      * @throws  IllegalStateException
      *          If more than 1 methods meets the criteria or if none do.
      */
+    @NotNull
     public static Method getOnlyMethod(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
@@ -262,12 +270,35 @@ public class ReflectionUtils {
      * @throws  IllegalStateException
      *          If class has more than 1 field or has none
      */
-    public static Field getOnlyField(Class<?> clazz) throws IllegalStateException{
+    @NotNull
+    public static Field getOnlyField(@NotNull Class<?> clazz) throws IllegalStateException{
         Field[] fields = clazz.getDeclaredFields();
         if (fields.length != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 field, but has " +
                     fields.length + ": " + Arrays.stream(fields).map(Field::getName).collect(Collectors.toList()));
         }
         return setAccessible(fields[0]);
+    }
+
+    /**
+     * Returns field from given possible names
+     *
+     * @param   clazz
+     *          Class to get field from
+     * @param   names
+     *          All possible names of the field
+     * @return  Field from given potential names
+     * @throws  IllegalArgumentException
+     *          If no such field is found
+     */
+    @NotNull
+    public static Field getField(@NotNull Class<?> clazz, @NotNull String... names) throws IllegalArgumentException {
+        for (String name : names) {
+            try {
+                return setAccessible(clazz.getDeclaredField(name));
+            } catch (NoSuchFieldException ignored) {}
+        }
+        throw new IllegalArgumentException("Class " + clazz.getName() + " does not contain a field with potential names " +
+                Arrays.toString(names));
     }
 }

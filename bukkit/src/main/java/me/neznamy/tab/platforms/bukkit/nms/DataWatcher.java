@@ -94,7 +94,7 @@ public class DataWatcher implements EntityData {
         if (BukkitReflection.isMojangMapped()) {
             DataWatcher_register = DataWatcher.getMethod("define", DataWatcherObject, Object.class);
         } else if (minorVersion >= 9) {
-            DataWatcher_register = ReflectionUtils.getMethod(DataWatcher, new String[]{"register", "a"}, DataWatcherObject, Object.class); // {Bukkit, Bukkit 1.18+}
+            DataWatcher_register = ReflectionUtils.getMethod(DataWatcher, new String[]{"register", "a", "m_135372_"}, DataWatcherObject, Object.class); // {Bukkit, Bukkit 1.18+, Mohist 1.18.2}
         } else {
             DataWatcher_register = ReflectionUtils.getMethod(DataWatcher, new String[]{"func_75682_a", "a"}, int.class, Object.class); // {Thermos 1.7.10, Bukkit}
         }
@@ -110,16 +110,13 @@ public class DataWatcher implements EntityData {
         }
         if (minorVersion >= 9) {
             newDataWatcherObject = DataWatcherObject.getConstructor(int.class, DataWatcherSerializer);
+            DataWatcherSerializer_BYTE = ReflectionUtils.getField(DataWatcherRegistry, "BYTE", "a", "f_135027_").get(null); // Mohist 1.18.2
+            DataWatcherSerializer_FLOAT = ReflectionUtils.getField(DataWatcherRegistry, "FLOAT", "c", "f_135029_").get(null); // Mohist 1.18.2
+            DataWatcherSerializer_STRING = ReflectionUtils.getField(DataWatcherRegistry, "STRING", "d", "f_135030_").get(null); // Mohist 1.18.2
             if (BukkitReflection.isMojangMapped()) {
-                DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("BYTE").get(null);
-                DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("FLOAT").get(null);
-                DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("STRING").get(null);
                 DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("OPTIONAL_COMPONENT").get(null);
                 DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("BOOLEAN").get(null);
             } else {
-                DataWatcherSerializer_BYTE = DataWatcherRegistry.getDeclaredField("a").get(null);
-                DataWatcherSerializer_FLOAT = DataWatcherRegistry.getDeclaredField("c").get(null);
-                DataWatcherSerializer_STRING = DataWatcherRegistry.getDeclaredField("d").get(null);
                 if (BukkitReflection.is1_19_3Plus()) {
                     DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("g").get(null);
                     if (BukkitReflection.is1_19_4Plus()) {
@@ -129,8 +126,8 @@ public class DataWatcher implements EntityData {
                     }
                 } else {
                     if (minorVersion >= 13) {
-                        DataWatcherSerializer_OPTIONAL_COMPONENT = DataWatcherRegistry.getDeclaredField("f").get(null);
-                        DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("i").get(null);
+                        DataWatcherSerializer_OPTIONAL_COMPONENT = ReflectionUtils.getField(DataWatcherRegistry, "f", "f_135032_").get(null); // Mohist 1.18.2
+                        DataWatcherSerializer_BOOLEAN = ReflectionUtils.getField(DataWatcherRegistry, "i", "f_135035_").get(null); // Mohist 1.18.2
                     } else {
                         DataWatcherSerializer_BOOLEAN = DataWatcherRegistry.getDeclaredField("h").get(null);
                     }
