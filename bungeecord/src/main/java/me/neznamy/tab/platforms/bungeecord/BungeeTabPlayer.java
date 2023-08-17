@@ -130,7 +130,9 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     @NotNull
     public TabList getTabList() {
-        return getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ?
-                tabList1_19_3 : getVersion().getMinorVersion() >= 8 ? tabList1_8 : tabList1_7;
+        int version = getPlayer().getPendingConnection().getVersion();
+        if (version >= ProtocolVersion.V1_19_3.getNetworkId()) return tabList1_19_3;
+        if (version >= ProtocolVersion.V1_8.getNetworkId()) return tabList1_8;
+        return tabList1_7;
     }
 }
