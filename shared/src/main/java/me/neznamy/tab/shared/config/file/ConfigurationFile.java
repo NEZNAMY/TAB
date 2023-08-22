@@ -11,10 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -186,7 +183,7 @@ public abstract class ConfigurationFile {
         Object value = getObject(path, defaultValue);
         if (value == null) return defaultValue;
         if (!(value instanceof List)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         List<String> fixedList = new ArrayList<>();
         for (Object key : (List<Object>)value) {

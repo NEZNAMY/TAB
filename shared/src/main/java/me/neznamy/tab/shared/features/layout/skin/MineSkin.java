@@ -2,8 +2,8 @@ package me.neznamy.tab.shared.features.layout.skin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,10 +37,10 @@ public class MineSkin extends SkinSource {
             return Arrays.asList(value, signature);
         } catch (FileNotFoundException e) {
             TAB.getInstance().getErrorManager().printError("Failed to load skin by id: No skin with the id '" + input + "' was found");
-            return new ArrayList<>();
+            return Collections.emptyList();
         } catch (IOException | ParseException e) {
             TAB.getInstance().getErrorManager().printError("Failed to load skin by id: " + e.getMessage(), e);
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 }

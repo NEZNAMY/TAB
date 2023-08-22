@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -45,6 +45,6 @@ public class SetCollisionCommand extends SubCommand {
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         if (arguments.length == 2) return getStartingArgument(Arrays.asList("true", "false"), arguments[1]);
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 }

@@ -2,6 +2,7 @@ package me.neznamy.tab.shared.command.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -55,7 +56,7 @@ public class ScoreboardAnnounceCommand extends SubCommand {
     @Override
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         ScoreboardManager s = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.SCOREBOARD);
-        if (s == null) return new ArrayList<>();
+        if (s == null) return Collections.emptyList();
         List<String> suggestions = new ArrayList<>();
         if (arguments.length == 1) {
             for (String bar : s.getRegisteredScoreboards().keySet()) {

@@ -1,7 +1,7 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.neznamy.tab.shared.TAB;
@@ -18,7 +18,7 @@ public abstract class PropertyCommand extends SubCommand {
 
     @Override
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
-        if (arguments.length != 2) return new ArrayList<>();
+        if (arguments.length != 2) return Collections.emptyList();
         return getStartingArgument(getAllProperties(), arguments[1]);
     }
 

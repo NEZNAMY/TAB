@@ -6,8 +6,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +48,7 @@ public class Texture extends SkinSource {
             return Arrays.asList(value, signature);
         } catch (IOException | ParseException e) {
             TAB.getInstance().getErrorManager().printError("Failed to load skin by texture: " + e.getMessage(), e);
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 }

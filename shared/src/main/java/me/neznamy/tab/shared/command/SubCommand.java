@@ -1,11 +1,6 @@
 package me.neznamy.tab.shared.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
@@ -169,7 +164,7 @@ public abstract class SubCommand {
         if (subcommand != null) {
             return subcommand.complete(sender, Arrays.copyOfRange(arguments, 1, arguments.length));
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     public @NotNull MessageFile getMessages() {

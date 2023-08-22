@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class VelocityTabCommand implements SimpleCommand {
@@ -38,7 +38,7 @@ public class VelocityTabCommand implements SimpleCommand {
         TabPlayer p = null;
         if (invocation.source() instanceof Player) {
             p = TAB.getInstance().getPlayer(((Player)invocation.source()).getUniqueId());
-            if (p == null) return new ArrayList<>(); //player not loaded correctly
+            if (p == null) return Collections.emptyList(); //player not loaded correctly
         }
         return TAB.getInstance().getCommand().complete(p, invocation.arguments());
     }

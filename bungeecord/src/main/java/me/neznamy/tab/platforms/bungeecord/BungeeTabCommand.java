@@ -11,7 +11,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 public class BungeeTabCommand extends Command implements TabExecutor {
 
@@ -44,7 +44,7 @@ public class BungeeTabCommand extends Command implements TabExecutor {
         TabPlayer p = null;
         if (sender instanceof ProxiedPlayer) {
             p = TAB.getInstance().getPlayer(((ProxiedPlayer)sender).getUniqueId());
-            if (p == null) return new ArrayList<>(); //player not loaded correctly
+            if (p == null) return Collections.emptyList(); //player not loaded correctly
         }
         return TAB.getInstance().getCommand().complete(p, args);
     }
