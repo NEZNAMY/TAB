@@ -1,28 +1,30 @@
-package me.neznamy.tab.shared.command.level2;
+package me.neznamy.tab.shared.command.bossbar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- * Handler for "/tab announce bar" subcommand
+ * Handler for "/tab bossbar announce &lt;name&gt; &lt;length&gt;" subcommand
  */
-public class AnnounceBarCommand extends SubCommand {
+public class BossBarAnnounceCommand extends SubCommand {
 
     /**
      * Constructs new instance
      */
-    public AnnounceBarCommand() {
-        super("bar", TabConstants.Permission.COMMAND_BOSSBAR_ANNOUNCE);
+    public BossBarAnnounceCommand() {
+        super("announce", TabConstants.Permission.COMMAND_BOSSBAR_ANNOUNCE);
     }
 
     @Override
@@ -62,16 +64,16 @@ public class AnnounceBarCommand extends SubCommand {
     }
 
     @Override
-    public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
-        BossBarManager b = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
-        if (b == null) return new ArrayList<>();
+    @NotNull
+    public List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
+        BossBarManager feature = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
+        if (feature == null) return Collections.emptyList();
         List<String> suggestions = new ArrayList<>();
         if (arguments.length == 1) {
-            for (BossBar bar : b.getRegisteredBossBars().values()) {
-                if (bar.getName().toLowerCase().startsWith(arguments[0].toLowerCase()) &&
-                        bar.isAnnouncementBar()) suggestions.add(bar.getName());
+            for (String bar : feature.getRegisteredBossBars().values().stream().filter(BossBar::isAnnouncementBar).map(BossBar::getName).collect(Collectors.toList())) {
+                if (bar.toLowerCase().startsWith(arguments[0].toLowerCase())) suggestions.add(bar);
             }
-        } else if (arguments.length == 2 && b.getBossBar(arguments[0]) != null) {
+        } else if (arguments.length == 2 && feature.getRegisteredBossBars().get(arguments[0]) != null) {
             for (String time : Arrays.asList("5", "10", "30", "60", "120")) {
                 if (time.startsWith(arguments[1])) suggestions.add(time);
             }

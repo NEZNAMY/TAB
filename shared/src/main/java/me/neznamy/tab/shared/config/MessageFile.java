@@ -78,6 +78,11 @@ public class MessageFile extends YamlConfigurationFile {
             "/tab scoreboard show <name> [player]",
             "/tab scoreboard announce <name> <length>"
     ));
+    @Getter private final List<String> bossbarHelpMenu = getStringList("bossbar-help-menu", Arrays.asList(
+            "/tab bossbar [on/off/toggle] [player] [options]",
+            "/tab bossbar send <name> [player]",
+            "/tab bossbar announce <name> <length>"
+    ));
 
     public MessageFile() throws YAMLException, IOException {
         super(MessageFile.class.getClassLoader().getResourceAsStream("messages.yml"), new File(TAB.getInstance().getDataFolder(), "messages.yml"));

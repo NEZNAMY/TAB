@@ -71,3 +71,7 @@ scoreboard-help-menu:
   - "/tab scoreboard [on/off/toggle] [player] [options]"
   - "/tab scoreboard show <name> [player]"
   - "/tab scoreboard announce <name> <length>"
+bossbar-help-menu:
+  - "/tab bossbar [on/off/toggle] [player] [options]"
+  - "/tab bossbar send <name> [player]"
+  - "/tab bossbar announce <name> <length>"

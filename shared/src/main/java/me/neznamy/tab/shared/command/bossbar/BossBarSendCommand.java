@@ -1,28 +1,28 @@
-package me.neznamy.tab.shared.command.level2;
+package me.neznamy.tab.shared.command.bossbar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.command.SubCommand;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Handler for "/tab announce bar" subcommand
+ * Handler for "/tab bossbar send &lt;name&gt; [player]" subcommand
  */
-public class SendBarCommand extends SubCommand {
+public class BossBarSendCommand extends SubCommand {
 
     /**
      * Constructs new instance
      */
-    public SendBarCommand() {
-        super("bar", TabConstants.Permission.COMMAND_BOSSBAR_SEND);
+    public BossBarSendCommand() {
+        super("send", TabConstants.Permission.COMMAND_SCOREBOARD_SHOW);
     }
 
     @Override
@@ -65,10 +65,10 @@ public class SendBarCommand extends SubCommand {
     @Override
     public @NotNull List<String> complete(@Nullable TabPlayer sender, @NotNull String[] arguments) {
         BossBarManager b = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BOSS_BAR);
-        if (b == null) return new ArrayList<>();
+        if (b == null) return Collections.emptyList();
         if (arguments.length == 1) return getOnlinePlayers(arguments[0]);
         if (arguments.length == 2) return getStartingArgument(b.getRegisteredBossBars().keySet(), arguments[1]);
         if (arguments.length == 3 && b.getBossBar(arguments[1]) != null) return getStartingArgument(Arrays.asList("5", "10", "30", "60", "120"), arguments[2]);
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 }

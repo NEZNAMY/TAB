@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import me.neznamy.tab.shared.ProtocolVersion;
+import me.neznamy.tab.shared.command.bossbar.BossBarCommand;
 import me.neznamy.tab.shared.command.scoreboard.ScoreboardCommand;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.TAB;
@@ -24,7 +25,6 @@ public class TabCommand extends SubCommand {
      */
     public TabCommand() {
         super(null, null);
-        registerSubCommand(new AnnounceCommand());
         registerSubCommand(new BossBarCommand());
         registerSubCommand(new CpuCommand());
         registerSubCommand(new DebugCommand());
@@ -36,7 +36,6 @@ public class TabCommand extends SubCommand {
         registerSubCommand(new PlayerCommand());
         registerSubCommand(new PlayerUUIDCommand());
         registerSubCommand(new ReloadCommand());
-        registerSubCommand(new SendCommand());
         registerSubCommand(new SetCollisionCommand());
         registerSubCommand(new ScoreboardCommand());
         registerSubCommand(new WidthCommand());

@@ -82,6 +82,7 @@ public class TabConstants {
 
         public static final String COMMAND_BOSSBAR_ANNOUNCE         = "tab.announce.bar";
         public static final String COMMAND_BOSSBAR_TOGGLE           = "tab.bossbar.toggle";
+        public static final String COMMAND_BOSSBAR_TOGGLE_OTHER     = "tab.bossbar.toggle.other";
         public static final String COMMAND_BOSSBAR_SEND             = "tab.send.bar";
 
         public static final String COMMAND_MYSQL_DOWNLOAD           = "tab.mysql.download";
