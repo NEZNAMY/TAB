@@ -238,7 +238,7 @@ public class PlayerList extends TabFeature implements TabListFormatManager, Join
 
     @Override
     public void onVanishStatusChange(@NotNull TabPlayer player) {
-        if (player.isVanished()) return;
+        if (player.isVanished() || disableChecker.isDisabledPlayer(player)) return;
         for (TabPlayer viewer : TAB.getInstance().getOnlinePlayers()) {
             viewer.getTabList().updateDisplayName(player.getTablistId(), getTabFormat(player, viewer));
         }
