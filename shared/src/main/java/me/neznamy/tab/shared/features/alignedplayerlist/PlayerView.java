@@ -51,6 +51,7 @@ public class PlayerView {
     }
 
     private void updateAllPlayers() {
+        if (viewer.getVersion().getMinorVersion() < 8) return;
         for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
             if (feature.getDisableChecker().isDisabledPlayer(all)) continue;
             viewer.getTabList().updateDisplayName(feature.getTablistUUID(all, viewer), formatName(all));
@@ -58,6 +59,7 @@ public class PlayerView {
     }
 
     public synchronized IChatBaseComponent formatName(@NotNull TabPlayer target) {
+        if (viewer.getVersion().getMinorVersion() < 8) return null;
         Integer width = playerWidths.get(target);
         if (width == null) return null; //in packet reader, not loaded yet, will send packet after loading player
         Property prefixPr = target.getProperty(TabConstants.Property.TABPREFIX);
@@ -112,6 +114,7 @@ public class PlayerView {
     }
 
     public void updatePlayer(@NotNull TabPlayer target) {
+        if (viewer.getVersion().getMinorVersion() < 8) return;
         playerWidths.put(target, getPlayerNameWidth(target));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
@@ -195,6 +198,7 @@ public class PlayerView {
     }
 
     public void onVanishChange(@NotNull TabPlayer changed) {
+        if (viewer.getVersion().getMinorVersion() < 8) return;
         playerWidths.put(changed, getPlayerNameWidth(changed));
         if (recalculateMaxWidth(null)) {
             updateAllPlayers();
