@@ -378,13 +378,21 @@ public class Converter {
         if (config.hasConfigOption("placeholderapi-refresh-intervals.server")) {
             Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
             Map<String, Object> server = config.getConfigurationSection("placeholderapi-refresh-intervals.server");
-            Map<String, Object> player = config.getConfigurationSection("placeholderapi-refresh-intervals.player");
-            Map<String, Object> relational = config.getConfigurationSection("placeholderapi-refresh-intervals.relational");
             intervals.remove("server");
-            intervals.remove("player");
-            intervals.remove("relational");
             intervals.putAll(server);
+            config.save();
+        }
+        if (config.hasConfigOption("placeholderapi-refresh-intervals.player")) {
+            Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
+            Map<String, Object> player = config.getConfigurationSection("placeholderapi-refresh-intervals.player");
+            intervals.remove("player");
             intervals.putAll(player);
+            config.save();
+        }
+        if (config.hasConfigOption("placeholderapi-refresh-intervals.relational")) {
+            Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
+            Map<String, Object> relational = config.getConfigurationSection("placeholderapi-refresh-intervals.relational");
+            intervals.remove("relational");
             intervals.putAll(relational);
             config.save();
         }
