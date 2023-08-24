@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.nms;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +29,6 @@ public class BukkitReflection {
     @Getter
     private static final boolean is1_19_4Plus = is1_19_3Plus && !serverPackage.equals("v1_19_R2");
 
-    @SneakyThrows
     private static boolean checkMojangMapped() {
         try {
             Class.forName("net.minecraft.network.syncher.SynchedEntityData").getMethod("define",
