@@ -261,13 +261,14 @@ public class FeatureManager {
     }
 
     public int onLatencyChange(TabPlayer packetReceiver, UUID id, int latency) {
+        int newLatency = latency;
         for (TabFeature f : values) {
             if (!(f instanceof LatencyListener)) continue;
             long time = System.nanoTime();
-            latency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, latency);
+            newLatency = ((LatencyListener)f).onLatencyChange(packetReceiver, id, newLatency);
             TAB.getInstance().getCPUManager().addTime(f, TabConstants.CpuUsageCategory.PACKET_PLAYER_INFO, System.nanoTime() - time);
         }
-        return latency;
+        return newLatency;
     }
 
     public void registerFeature(@NotNull String featureName, @NotNull TabFeature featureHandler) {

@@ -73,13 +73,14 @@ public class FabricTabCommand {
             if (player == null) return Suggestions.empty();
         }
 
-        int lastSpace = builder.getRemaining().lastIndexOf(' ');
+        SuggestionsBuilder newBuilder = builder;
+        int lastSpace = newBuilder.getRemaining().lastIndexOf(' ');
         if (lastSpace != -1) {
-            builder = builder.createOffset(lastSpace + 1 + builder.getStart());
+            newBuilder = newBuilder.createOffset(lastSpace + 1 + newBuilder.getStart());
         }
         for (String suggestion : TAB.getInstance().getCommand().complete(player, args)) {
-            builder.suggest(suggestion);
+            newBuilder.suggest(suggestion);
         }
-        return builder.buildFuture();
+        return newBuilder.buildFuture();
     }
 }
