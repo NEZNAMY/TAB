@@ -40,11 +40,11 @@ public class BukkitTabList implements TabList {
     private static Field HEADER;
     private static Field FOOTER;
 
-    public static Class<?> PacketPlayOutPlayerInfoClass;
+    public static Class<?> PlayerInfoClass;
     private static Constructor<?> newPacketPlayOutPlayerInfo;
     public static Field ACTION;
     public static Field PLAYERS;
-    private static Class<Enum> EnumPlayerInfoActionClass;
+    private static Class<Enum> ActionClass;
     private static Class<Enum> EnumGamemodeClass;
     public static Class<?> ClientboundPlayerInfoRemovePacket;
     private static Class<?> RemoteChatSession$Data;
@@ -78,13 +78,13 @@ public class BukkitTabList implements TabList {
             HeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.ClientboundTabListPacket");
             if (BukkitReflection.is1_19_3Plus()) {
                 ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
-                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action");
                 playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry");
                 RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$Data");
             } else {
-                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
-                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$Action");
                 playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket$PlayerUpdate");
             }
         } else if (BukkitReflection.getMinorVersion() >= 17) {
@@ -94,29 +94,28 @@ public class BukkitTabList implements TabList {
             HeaderFooterClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
             if (BukkitReflection.is1_19_3Plus()) {
                 ClientboundPlayerInfoRemovePacket = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket");
-                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$a");
                 playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$b");
                 RemoteChatSession$Data = Class.forName("net.minecraft.network.chat.RemoteChatSession$a");
             } else {
-                PacketPlayOutPlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
-                EnumPlayerInfoActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+                PlayerInfoClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
+                ActionClass = (Class<Enum>) Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
                 playerInfoDataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo$PlayerInfoData");
             }
         } else {
             IChatBaseComponent = BukkitReflection.getLegacyClass("IChatBaseComponent");
             EntityPlayer = BukkitReflection.getLegacyClass("EntityPlayer");
             HeaderFooterClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerListHeaderFooter");
-            PacketPlayOutPlayerInfoClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo");
-            EnumPlayerInfoActionClass = (Class<Enum>) BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
+            PlayerInfoClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo");
+            ActionClass = (Class<Enum>) BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction", "EnumPlayerInfoAction");
             playerInfoDataClass = BukkitReflection.getLegacyClass("PacketPlayOutPlayerInfo$PlayerInfoData", "PlayerInfoData");
             EnumGamemodeClass = (Class<Enum>) BukkitReflection.getLegacyClass("EnumGamemode", "WorldSettings$EnumGamemode");
         }
 
         // Header & Footer
         if (BukkitReflection.getMinorVersion() >= 17) {
-            newHeaderFooter = HeaderFooterClass.getConstructor(
-                    IChatBaseComponent, IChatBaseComponent);
+            newHeaderFooter = HeaderFooterClass.getConstructor(IChatBaseComponent, IChatBaseComponent);
         } else {
             newHeaderFooter = HeaderFooterClass.getConstructor();
             HEADER = ReflectionUtils.getFields(HeaderFooterClass, IChatBaseComponent).get(0);
@@ -124,28 +123,22 @@ public class BukkitTabList implements TabList {
         }
 
         // Info packet
-        if (BukkitReflection.is1_19_3Plus()) {
-            newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
-            newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
-            ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfoClass, EnumSet.class);
-        } else {
-            newPacketPlayOutPlayerInfo = PacketPlayOutPlayerInfoClass.getConstructor(EnumPlayerInfoActionClass,
-                    Array.newInstance(EntityPlayer, 0).getClass());
-            ACTION = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfoClass, EnumPlayerInfoActionClass);
-        }
-        PLAYERS = ReflectionUtils.getOnlyField(PacketPlayOutPlayerInfoClass, List.class);
-
-        // Info data
+        PLAYERS = ReflectionUtils.getOnlyField(PlayerInfoClass, List.class);
         newPlayerInfoData = ReflectionUtils.getOnlyConstructor(playerInfoDataClass);
         PlayerInfoData_getProfile = ReflectionUtils.getOnlyMethod(playerInfoDataClass, GameProfile.class);
         PlayerInfoData_Latency = ReflectionUtils.getOnlyField(playerInfoDataClass, int.class);
         PlayerInfoData_GameMode = ReflectionUtils.getOnlyField(playerInfoDataClass, EnumGamemodeClass);
         PlayerInfoData_DisplayName = ReflectionUtils.getOnlyField(playerInfoDataClass, IChatBaseComponent);
         if (BukkitReflection.is1_19_3Plus()) {
+            newClientboundPlayerInfoRemovePacket = ClientboundPlayerInfoRemovePacket.getConstructor(List.class);
+            newPacketPlayOutPlayerInfo = PlayerInfoClass.getConstructor(EnumSet.class, Collection.class);
+            ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, EnumSet.class);
             PlayerInfoData_Listed = ReflectionUtils.getOnlyField(playerInfoDataClass, boolean.class);
             PlayerInfoData_RemoteChatSession = ReflectionUtils.getOnlyField(playerInfoDataClass, RemoteChatSession$Data);
+        } else {
+            newPacketPlayOutPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Array.newInstance(EntityPlayer, 0).getClass());
+            ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
         }
-
         available = true;
     }
 
@@ -208,9 +201,9 @@ public class BukkitTabList implements TabList {
         if (BukkitReflection.is1_19_3Plus()) {
             EnumSet<?> actions;
             if (action == Action.ADD_PLAYER) {
-                actions = EnumSet.allOf(EnumPlayerInfoActionClass);
+                actions = EnumSet.allOf(ActionClass);
             } else {
-                actions = EnumSet.of(Enum.valueOf(EnumPlayerInfoActionClass, action.name()));
+                actions = EnumSet.of(Enum.valueOf(ActionClass, action.name()));
             }
             packet = newPacketPlayOutPlayerInfo.newInstance(actions, Collections.emptyList());
             GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
@@ -226,13 +219,13 @@ public class BukkitTabList implements TabList {
                     null
             ));
         } else {
-            packet = newPacketPlayOutPlayerInfo.newInstance(Enum.valueOf(EnumPlayerInfoActionClass, action.name()),
+            packet = newPacketPlayOutPlayerInfo.newInstance(Enum.valueOf(ActionClass, action.name()),
                     Array.newInstance(EntityPlayer, 0));
             GameProfile profile = new GameProfile(entry.getUniqueId(), entry.getName());
             if (entry.getSkin() != null) profile.getProperties().put(TEXTURES_PROPERTY,
                     new Property(TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
             List<Object> parameters = new ArrayList<>();
-            if (newPlayerInfoData.getParameterTypes()[0] == PacketPlayOutPlayerInfoClass) {
+            if (newPlayerInfoData.getParameterTypes()[0] == PlayerInfoClass) {
                 parameters.add(packet);
             }
             parameters.add(profile);

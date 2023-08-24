@@ -78,7 +78,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
 
     @Override
     public boolean isPlayerInfo(@NotNull Object packet) {
-        return BukkitTabList.PacketPlayOutPlayerInfoClass.isInstance(packet);
+        return BukkitTabList.PlayerInfoClass.isInstance(packet);
     }
 
     @Override
