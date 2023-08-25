@@ -9,6 +9,7 @@ import me.neznamy.tab.api.placeholder.ServerPlaceholder;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -58,7 +59,11 @@ public class PluginMessageHandler {
         if (!TAB.getInstance().getPlaceholderManager().getRegisteredPlaceholders().containsKey(identifier)) return;
         Placeholder placeholder = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
         if (placeholder instanceof RelationalPlaceholder) {
-            ((RelationalPlaceholder)placeholder).updateValue(player, TAB.getInstance().getPlayer(in.readUTF()), in.readUTF());
+            TabPlayer other = TAB.getInstance().getPlayer(in.readUTF());
+            String value = in.readUTF();
+            if (other != null) { // Backend player did not connect via this proxy if null
+                ((RelationalPlaceholder)placeholder).updateValue(player, other, value);
+            }
         } else {
             ((PlayerPlaceholder)placeholder).updateValue(player, in.readUTF());
         }
@@ -108,8 +113,12 @@ public class PluginMessageHandler {
             if (identifier.startsWith("%rel_")) {
                 int playerCount = in.readInt();
                 for (int j=0; j<playerCount; j++) {
-                    ((RelationalPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier))
-                            .updateValue(player, TAB.getInstance().getPlayer(in.readUTF()), in.readUTF());
+                    TabPlayer other = TAB.getInstance().getPlayer(in.readUTF());
+                    String value = in.readUTF();
+                    if (other != null) { // Backend player did not connect via this proxy if null
+                        ((RelationalPlaceholder)TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier))
+                                .updateValue(player, other, value);
+                    }
                 }
             } else {
                 Placeholder pl = TAB.getInstance().getPlaceholderManager().getPlaceholder(identifier);
