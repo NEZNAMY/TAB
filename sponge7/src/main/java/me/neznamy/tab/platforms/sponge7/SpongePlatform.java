@@ -92,7 +92,7 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public void registerCommand() {
         SpongeTabCommand cmd = new SpongeTabCommand();
-        Sponge.getGame().getCommandManager().register(this, CommandSpec.builder()
+        Sponge.getGame().getCommandManager().register(plugin, CommandSpec.builder()
                 .arguments(cmd, GenericArguments.remainingJoinedStrings(Text.of("arguments"))) // GenericArguments.none() doesn't work, so rip no-arg
                 .executor(cmd)
                 .build(), TabConstants.COMMAND_BACKEND);
