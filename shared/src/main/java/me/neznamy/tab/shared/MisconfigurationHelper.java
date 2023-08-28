@@ -34,7 +34,7 @@ public class MisconfigurationHelper {
      *          Configured refresh intervals
      */
     public void fixRefreshIntervals(@NotNull Map<String, Integer> refreshIntervals) {
-        int defaultRefresh = refreshIntervals.get("default-refresh-interval");
+        int defaultRefresh = refreshIntervals.getOrDefault("default-refresh-interval", 500);
         LinkedHashMap<String, Integer> valuesToFix = new LinkedHashMap<>();
         for (Map.Entry<String, ?> entry : refreshIntervals.entrySet()) {
             if (entry.getValue() == null) {
