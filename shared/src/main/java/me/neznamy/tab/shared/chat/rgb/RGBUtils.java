@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.chat.rgb;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.chat.rgb.format.BukkitFormat;
 import me.neznamy.tab.shared.chat.rgb.format.HtmlFormat;
@@ -16,7 +15,6 @@ import me.neznamy.tab.shared.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.neznamy.tab.shared.chat.rgb.format.CMIFormat;
 import me.neznamy.tab.shared.chat.rgb.format.RGBFormatter;
@@ -104,36 +102,6 @@ public class RGBUtils {
             replaced = pattern.applyPattern(replaced, true);
         }
         return replaced;
-    }
-
-    /**
-     * Converts TAB's RGB format (#RRGGBB) into bukkit one
-     * (&amp;x&amp;r&amp;r&amp;g&amp;g&amp;b&amp;b) for modern
-     * clients (1.16+), for legacy clients it will use the closest color.
-     *
-     * @param   text
-     *          text to convert
-     * @param   rgbClient
-     *          whether client accepts RGB or not
-     * @return  converted text
-     */
-    public @NotNull String convertToBukkitFormat(@NotNull String text, boolean rgbClient) {
-        if (!text.contains("#")) return text; //no rgb codes
-        if (rgbClient) {
-            //converting random formats to TAB one
-            String replaced = applyFormats(text);
-            for (Pattern p : new Pattern[]{tabPatternLegacy, tabPattern}) {
-                Matcher m = p.matcher(replaced);
-                while (m.find()) {
-                    String hexCode = m.group();
-                    String fixed = "&x&" + hexCode.charAt(1) + "&" + hexCode.charAt(2) + "&" + hexCode.charAt(3) + "&" + hexCode.charAt(4) + "&" + hexCode.charAt(5) + "&" + hexCode.charAt(6);
-                    replaced = replaced.replace(hexCode, EnumChatFormat.color(fixed));
-                }
-            }
-            return replaced;
-        } else {
-            return convertRGBtoLegacy(text);
-        }
     }
 
     /**

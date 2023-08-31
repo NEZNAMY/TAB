@@ -3,10 +3,10 @@ package me.neznamy.tab.platforms.bukkit.bossbar;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
+import me.neznamy.tab.platforms.bukkit.BukkitUtils;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
-import me.neznamy.tab.shared.TAB;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,8 +33,7 @@ public class BukkitBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
         org.bukkit.boss.BossBar bar = Bukkit.createBossBar(
-                RGBUtils.getInstance().convertToBukkitFormat(title,
-                        player.getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16),
+                BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(title), player.getVersion().getMinorVersion() >= 16),
                 org.bukkit.boss.BarColor.valueOf(color.name()),
                 org.bukkit.boss.BarStyle.valueOf(style.getBukkitName()));
         bar.setProgress(progress);
@@ -44,8 +43,7 @@ public class BukkitBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(title,
-                player.getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+        bossBars.get(id).setTitle(BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(title), player.getVersion().getMinorVersion() >= 16));
     }
 
     @Override

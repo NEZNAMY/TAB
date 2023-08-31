@@ -4,11 +4,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
 import me.neznamy.tab.platforms.bukkit.scoreboard.PacketScoreboard;
 import me.neznamy.tab.shared.backend.entityview.EntityView;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
@@ -77,7 +77,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     @SneakyThrows
     public int getPing() {
-        if (TAB.getInstance().getServerVersion().getMinorVersion() >= 17) {
+        if (BukkitReflection.getMinorVersion() >= 17) {
             return getPlayer().getPing();
         }
         return NMSStorage.getInstance().PING.getInt(handle);
@@ -91,8 +91,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
-                getVersion().getMinorVersion() >= 16 && TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+        getPlayer().sendMessage(BukkitUtils.toBukkitFormat(message, getVersion().getMinorVersion() >= 16));
     }
 
     @Override

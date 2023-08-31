@@ -10,7 +10,6 @@ import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.types.TabFeature;
 import me.neznamy.tab.platforms.bukkit.features.BukkitTabExpansion;
@@ -43,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.Collection;
 
 /**
  * Implementation of Platform interface for Bukkit platform
@@ -89,7 +87,7 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void loadPlayers() {
-        for (Player p : getOnlinePlayers()) {
+        for (Player p : BukkitUtils.getOnlinePlayers()) {
             TAB.getInstance().addPlayer(new BukkitTabPlayer(p));
         }
     }
@@ -140,25 +138,6 @@ public class BukkitPlatform implements BackendPlatform {
         return new PerWorldPlayerList(plugin);
     }
 
-    /**
-     * Returns online players from Bukkit API
-     *
-     * @return  online players from Bukkit API
-     */
-    @SuppressWarnings("unchecked")
-    @SneakyThrows
-    @NotNull
-    private Player[] getOnlinePlayers() {
-        Object players = Bukkit.class.getMethod("getOnlinePlayers").invoke(null);
-        if (players instanceof Player[]) {
-            //1.7-
-            return (Player[]) players;
-        } else {
-            //1.8+
-            return ((Collection<Player>)players).toArray(new Player[0]);
-        }
-    }
-
     @Override
     public void registerUnknownPlaceholder(@NotNull String identifier) {
         if (!placeholderAPI) {
@@ -197,14 +176,12 @@ public class BukkitPlatform implements BackendPlatform {
 
     @Override
     public void logInfo(@NotNull IChatBaseComponent message) {
-        Bukkit.getConsoleSender().sendMessage("[TAB] " + RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
-                TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+        Bukkit.getConsoleSender().sendMessage("[TAB] " + BukkitUtils.toBukkitFormat(message, true));
     }
 
     @Override
     public void logWarn(@NotNull IChatBaseComponent message) {
-        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] " + RGBUtils.getInstance().convertToBukkitFormat(message.toFlatText(),
-                TAB.getInstance().getServerVersion().getMinorVersion() >= 16));
+        Bukkit.getConsoleSender().sendMessage(EnumChatFormat.RED.getFormat() + "[TAB] [WARN] " + BukkitUtils.toBukkitFormat(message, true));
     }
 
     @Override

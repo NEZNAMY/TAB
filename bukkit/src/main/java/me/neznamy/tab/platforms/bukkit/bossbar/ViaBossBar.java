@@ -4,10 +4,10 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
 import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,7 @@ public class ViaBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (viaBossBars.containsKey(id)) return;
         com.viaversion.viaversion.api.legacy.bossbar.BossBar bar = Via.getAPI().legacyAPI().createLegacyBossBar(
-                RGBUtils.getInstance().convertToBukkitFormat(title, player.getVersion().getMinorVersion() >= 16),
+                IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()),
                 progress,
                 BossColor.valueOf(color.name()),
                 BossStyle.valueOf(style.getBukkitName()));
@@ -43,8 +43,7 @@ public class ViaBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        viaBossBars.get(id).setTitle(RGBUtils.getInstance().convertToBukkitFormat(title,
-                player.getVersion().getMinorVersion() >= 16));
+        viaBossBars.get(id).setTitle(IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()));
     }
 
     @Override

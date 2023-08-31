@@ -2,12 +2,12 @@ package me.neznamy.tab.platforms.bukkit.scoreboard;
 
 import lombok.Getter;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
+import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.chat.rgb.RGBUtils;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
@@ -187,8 +187,7 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
      */
     @NotNull
     private String transform(@NotNull String text, int maxLengthModern, int maxLengthLegacy) {
-        String transformed = RGBUtils.getInstance().convertToBukkitFormat(IChatBaseComponent.optimizedComponent(text).toFlatText(),
-                player.getVersion().getMinorVersion() >= 16 && serverMinorVersion >= 16);
+        String transformed = BukkitUtils.toBukkitFormat(IChatBaseComponent.optimizedComponent(text), player.getVersion().getMinorVersion() >= 16);
         if (serverMinorVersion >= 16 && maxLengthModern < 128) { // Scoreboard title is not stripping colors
             while (ChatColor.stripColor(transformed).length() > maxLengthModern)
                 transformed = transformed.substring(0, transformed.length()-1);
