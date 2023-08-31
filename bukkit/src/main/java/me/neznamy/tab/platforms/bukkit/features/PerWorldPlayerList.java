@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import me.neznamy.tab.platforms.bukkit.BukkitUtils;
 import me.neznamy.tab.shared.features.types.Loadable;
 import me.neznamy.tab.shared.features.types.UnLoadable;
 import org.bukkit.Bukkit;
@@ -44,13 +45,15 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
 
     @Override
     public void load() {
-        Bukkit.getOnlinePlayers().forEach(this::checkPlayer);
+        for (Player p : BukkitUtils.getOnlinePlayers()) {
+            checkPlayer(p);
+        }
     }
 
     @Override
     public void unload() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            for (Player pl : Bukkit.getOnlinePlayers()) {
+        for (Player p : BukkitUtils.getOnlinePlayers()) {
+            for (Player pl : BukkitUtils.getOnlinePlayers()) {
                 p.showPlayer(pl);
             }
         }
@@ -80,7 +83,7 @@ public class PerWorldPlayerList extends TabFeature implements Listener, Loadable
      *          Player to update
      */
     private void checkPlayer(@NotNull Player p) {
-        for (Player all : Bukkit.getOnlinePlayers()) {
+        for (Player all : BukkitUtils.getOnlinePlayers()) {
             if (all == p) continue;
             if (!shouldSee(p, all) && p.canSee(all)) p.hidePlayer(all);
             if (shouldSee(p, all) && !p.canSee(all)) p.showPlayer(all);
