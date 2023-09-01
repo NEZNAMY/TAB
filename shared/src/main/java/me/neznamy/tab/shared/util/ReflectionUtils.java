@@ -89,7 +89,7 @@ public class ReflectionUtils {
     public static List<Method> getMethods(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
+            if (!returnType.isAssignableFrom(m.getReturnType()) || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
             Class<?>[] types = m.getParameterTypes();
             boolean valid = true;
             for (int i=0; i<types.length; i++) {
@@ -239,19 +239,7 @@ public class ReflectionUtils {
      */
     @NotNull
     public static Method getOnlyMethod(@NotNull Class<?> clazz, @NotNull Class<?> returnType, @NotNull Class<?>... parameterTypes) {
-        List<Method> list = new ArrayList<>();
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getReturnType() != returnType || m.getParameterCount() != parameterTypes.length || !Modifier.isPublic(m.getModifiers())) continue;
-            Class<?>[] types = m.getParameterTypes();
-            boolean valid = true;
-            for (int i=0; i<types.length; i++) {
-                if (types[i] != parameterTypes[i]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) list.add(m);
-        }
+        List<Method> list = getMethods(clazz, returnType, parameterTypes);
         if (list.size() != 1) {
             throw new IllegalStateException("Class " + clazz.getName() + " is expected to have 1 method with return type " +
                     returnType.getName() + " and parameters " + Arrays.toString(parameterTypes) + ", but has " +

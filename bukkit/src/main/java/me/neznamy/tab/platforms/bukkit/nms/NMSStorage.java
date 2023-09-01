@@ -70,7 +70,7 @@ public class NMSStorage {
             sendPacket = ReflectionUtils.getMethod(PlayerConnection, new String[]{"sendPacket"}, Packet);
         }
         if (minorVersion >= 8) {
-            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethod(ChatSerializer, new String[]{"fromJson", "a", "m_130701_"}, String.class); // Mohist 1.18.2
+            ChatSerializer_DESERIALIZE = ReflectionUtils.getMethods(ChatSerializer, Object.class, String.class).get(0);
             CHANNEL = ReflectionUtils.getOnlyField(NetworkManager, Channel.class);
             try {
                 getProfile = ReflectionUtils.getOnlyMethod(EntityHuman, GameProfile.class);
