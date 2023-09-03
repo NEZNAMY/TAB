@@ -309,22 +309,6 @@ public class IChatBaseComponent {
     }
 
     /**
-     * Converts the component into flat text with used colors (including rgb) and magic codes
-     *
-     * @return  converted text
-     */
-    public @NotNull String toFlatText() {
-        StringBuilder builder = new StringBuilder();
-        if (modifier.getColor() != null) builder.append("#").append(modifier.getColor().getHexCode());
-        builder.append(modifier.getMagicCodes());
-        if (text != null) builder.append(text);
-        for (IChatBaseComponent child : getExtra()) {
-            builder.append(child.toFlatText());
-        }
-        return builder.toString();
-    }
-
-    /**
      * Returns the most optimized component based on text. Returns null if text is null,
      * organized component if RGB colors are used or simple component with only text field
      * containing the whole text when no RGB colors are used

@@ -83,7 +83,6 @@ public class TabConstants {
         public static final String COMMAND_BOSSBAR_ANNOUNCE         = "tab.announce.bar";
         public static final String COMMAND_BOSSBAR_TOGGLE           = "tab.bossbar.toggle";
         public static final String COMMAND_BOSSBAR_TOGGLE_OTHER     = "tab.bossbar.toggle.other";
-        public static final String COMMAND_BOSSBAR_SEND             = "tab.send.bar";
 
         public static final String COMMAND_MYSQL_DOWNLOAD           = "tab.mysql.download";
         public static final String COMMAND_MYSQL_UPLOAD             = "tab.mysql.upload";
@@ -306,7 +305,6 @@ public class TabConstants {
 
         public static final String PERMISSION_SYSTEM = "permission_system";
         public static final String GLOBAL_PLAYER_LIST_ENABLED = "global_playerlist_enabled";
-        public static final String PLACEHOLDER_API = "placeholderapi";
         public static final String SERVER_VERSION = "server_version";
         public static final String UNLIMITED_NAME_TAG_MODE_ENABLED = "unlimited_nametag_mode_enabled";
 

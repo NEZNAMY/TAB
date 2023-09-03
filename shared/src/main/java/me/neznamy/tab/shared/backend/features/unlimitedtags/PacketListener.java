@@ -13,7 +13,6 @@ import me.neznamy.tab.shared.backend.BackendTabPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -108,42 +107,14 @@ public class PacketListener extends TabFeature implements JoinListener, QuitList
      * @param   entities
      *          de-spawned entities
      */
-    public void onEntityDestroy(@NotNull BackendTabPlayer receiver, @NotNull List<Integer> entities) {
-        for (int entity : entities) {
-            onEntityDestroy(receiver, entity);
-        }
-    }
-
-    /**
-     * Processes entity destroy packet and destroys armor stands if
-     * entity ID belongs to an online player.
-     *
-     * @param   receiver
-     *          packet receiver
-     * @param   entities
-     *          de-spawned entities
-     */
     public void onEntityDestroy(@NotNull BackendTabPlayer receiver, int... entities) {
         for (int entity : entities) {
-            onEntityDestroy(receiver, entity);
-        }
-    }
-
-    /**
-     * Processes entity destroy packet and destroys armor stands if
-     * entity ID belongs to an online player.
-     *
-     * @param   receiver
-     *          packet receiver
-     * @param   entity
-     *          de-spawned entity
-     */
-    public void onEntityDestroy(@NotNull BackendTabPlayer receiver, int entity) {
-        TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
-        if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
-            BackendArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);
-            TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
-                    () -> asm.destroy(receiver));
+            TabPlayer deSpawnedPlayer = entityIdMap.get(entity);
+            if (deSpawnedPlayer != null && deSpawnedPlayer.isLoaded() && !nameTagX.isPlayerDisabled(deSpawnedPlayer)) {
+                BackendArmorStandManager asm = nameTagX.getArmorStandManager(deSpawnedPlayer);
+                TAB.getInstance().getCPUManager().runMeasuredTask(featureName, TabConstants.CpuUsageCategory.PACKET_ENTITY_DESTROY,
+                        () -> asm.destroy(receiver));
+            }
         }
     }
 }

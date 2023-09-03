@@ -72,7 +72,7 @@ public abstract class SortingType {
      *          Number to convert
      * @return  3 characters long String of converted number with a base of 65536.
      */
-    public String compressNumber(TabPlayer player, double number) {
+    public String compressNumber(double number) {
         int wholePart = (int) number;
         char decimalChar = (char) ((number - wholePart) * Character.MAX_VALUE);
         StringBuilder sb = new StringBuilder();

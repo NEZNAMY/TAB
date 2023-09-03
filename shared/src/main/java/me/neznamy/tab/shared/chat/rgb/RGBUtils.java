@@ -34,12 +34,6 @@ public class RGBUtils {
     /** Registered gradient patterns */
     private final GradientPattern[] gradients;
 
-    /** TAB's RGB pattern, used to convert text to bukkit format for boss bar */
-    private final Pattern tabPattern = Pattern.compile("#[0-9a-fA-F]{6}");
-
-    /** RGB pattern for legacy codes */
-    private final Pattern tabPatternLegacy = Pattern.compile("#[0-9a-fA-F]{6}\\|.");
-
     /**
      * Constructs new instance and loads all RGB patterns and gradients
      */
