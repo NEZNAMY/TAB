@@ -81,7 +81,7 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     public void startMetrics() {
-        plugin.getMetricsFactory().make(this, 10533)
+        plugin.getMetricsFactory().make(plugin, 10533)
                 .addCustomChart(new SimplePie(TabConstants.MetricsChart.GLOBAL_PLAYER_LIST_ENABLED,
                 () -> TAB.getInstance().getFeatureManager().isFeatureEnabled(TabConstants.Feature.GLOBAL_PLAYER_LIST) ? "Yes" : "No"));
     }
