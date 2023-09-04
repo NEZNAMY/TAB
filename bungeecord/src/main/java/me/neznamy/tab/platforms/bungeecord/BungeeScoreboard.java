@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.bungeecord;
 
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -30,17 +29,32 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
 
     @Override
     public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 0));
+        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
+                objectiveName,
+                jsonOrRaw(title),
+                hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER,
+                (byte) 0
+        ));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, "", null, (byte) 1)); // Empty string to prevent kick on 1.7
+        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
+                objectiveName,
+                "", // Empty string to prevent kick on 1.7
+                null,
+                (byte) 1
+        ));
     }
 
     @Override
     public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(objectiveName, jsonOrRaw(title, player.getVersion()), hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER, (byte) 2));
+        player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
+                objectiveName,
+                jsonOrRaw(title),
+                hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER,
+                (byte) 2
+        ));
     }
 
     @Override
@@ -51,8 +65,7 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 0, jsonOrRaw(name, player.getVersion()),
-                jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
+        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 0, jsonOrRaw(name), jsonOrRaw(prefix), jsonOrRaw(suffix),
                 visibility.toString(), collision.toString(), color, (byte)options, players.toArray(new String[0])));
     }
 
@@ -68,9 +81,8 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
         if (player.getVersion().getMinorVersion() >= 13) {
             color = EnumChatFormat.lastColorsOf(prefix).ordinal();
         }
-        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 2, jsonOrRaw(name, player.getVersion()),
-                jsonOrRaw(prefix, player.getVersion()), jsonOrRaw(suffix, player.getVersion()),
-                visibility.toString(), collision.toString(), color, (byte)options, null));
+        player.getPlayer().unsafe().sendPacket(new Team(name, (byte) 2, jsonOrRaw(name), jsonOrRaw(prefix),
+                jsonOrRaw(suffix), visibility.toString(), collision.toString(), color, (byte)options, null));
     }
 
     @Override
@@ -84,21 +96,19 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     /**
-     * If {@code clientVersion} is &gt;= 1.13, creates a component from given text and returns
+     * If player's version is 1.13+, creates a component from given text and returns
      * it as a serialized component, which BungeeCord uses.
      * <p>
-     * If {@code clientVersion} is &lt; 1.12, the text is returned
+     * If player's version is 1.12-, the text is returned
      *
      * @param   text
      *          Text to convert
-     * @param   clientVersion
-     *          Version of player to convert text for
      * @return  serialized component for 1.13+ clients, cut string for 1.12-
      */
     @NotNull
-    private String jsonOrRaw(@NotNull String text, @NotNull ProtocolVersion clientVersion) {
-        if (clientVersion.getMinorVersion() >= 13) {
-            return IChatBaseComponent.optimizedComponent(text).toString(clientVersion);
+    private String jsonOrRaw(@NotNull String text) {
+        if (player.getVersion().getMinorVersion() >= 13) {
+            return IChatBaseComponent.optimizedComponent(text).toString(player.getVersion());
         } else {
             return text;
         }
