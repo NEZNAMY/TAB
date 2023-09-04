@@ -45,7 +45,6 @@ public class BukkitTabList implements TabList {
     public static Field ACTION;
     public static Field PLAYERS;
     private static Class<Enum> ActionClass;
-    private static Class<Enum> EnumGamemodeClass;
     public static Class<?> ClientboundPlayerInfoRemovePacket;
     private static Class<?> RemoteChatSession$Data;
     private static Constructor<?> newClientboundPlayerInfoRemovePacket;
@@ -59,6 +58,8 @@ public class BukkitTabList implements TabList {
     public static Field PlayerInfoData_Listed;
     public static Field PlayerInfoData_RemoteChatSession;
 
+    private static Object[] gameModes;
+
     @Getter
     private static boolean available;
 
@@ -71,6 +72,7 @@ public class BukkitTabList implements TabList {
         // Classes
         Class<?> playerInfoDataClass;
         Class<?> IChatBaseComponent;
+        Class<Enum> EnumGamemodeClass;
         if (BukkitReflection.isMojangMapped()) {
             IChatBaseComponent = Class.forName("net.minecraft.network.chat.Component");
             EntityPlayer = Class.forName("net.minecraft.server.level.ServerPlayer");
@@ -139,6 +141,12 @@ public class BukkitTabList implements TabList {
             newPacketPlayOutPlayerInfo = PlayerInfoClass.getConstructor(ActionClass, Array.newInstance(EntityPlayer, 0).getClass());
             ACTION = ReflectionUtils.getOnlyField(PlayerInfoClass, ActionClass);
         }
+        gameModes = new Object[] {
+                Enum.valueOf(EnumGamemodeClass, "SURVIVAL"),
+                Enum.valueOf(EnumGamemodeClass, "CREATIVE"),
+                Enum.valueOf(EnumGamemodeClass, "ADVENTURE"),
+                Enum.valueOf(EnumGamemodeClass, "SPECTATOR")
+        };
         available = true;
     }
 
@@ -214,7 +222,7 @@ public class BukkitTabList implements TabList {
                     profile,
                     true,
                     entry.getLatency(),
-                    int2GameMode(entry.getGameMode()),
+                    gameModes[entry.getGameMode()],
                     entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()),
                     null
             ));
@@ -230,23 +238,13 @@ public class BukkitTabList implements TabList {
             }
             parameters.add(profile);
             parameters.add(entry.getLatency());
-            parameters.add(int2GameMode(entry.getGameMode()));
+            parameters.add(gameModes[entry.getGameMode()]);
             parameters.add(entry.getDisplayName() == null ? null : toComponent(entry.getDisplayName()));
             if (BukkitReflection.getMinorVersion() >= 19) parameters.add(null);
             players.add(newPlayerInfoData.newInstance(parameters.toArray()));
         }
         PLAYERS.set(packet, players);
         return packet;
-    }
-
-    @NotNull
-    private Object int2GameMode(int gameMode) {
-        switch (gameMode) {
-            case 1: return Enum.valueOf(EnumGamemodeClass, "CREATIVE");
-            case 2: return Enum.valueOf(EnumGamemodeClass, "ADVENTURE");
-            case 3: return Enum.valueOf(EnumGamemodeClass, "SPECTATOR");
-            default: return Enum.valueOf(EnumGamemodeClass, "SURVIVAL");
-        }
     }
 
     private Object toComponent(IChatBaseComponent component) {
