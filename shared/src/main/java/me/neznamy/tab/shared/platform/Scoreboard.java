@@ -39,12 +39,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
         removeScore0(objective, playerName);
     }
 
-    public void registerObjective(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void registerObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         if (!registeredObjectives.add(objectiveName)) {
             error("Tried to register duplicated objective %s to player ", objectiveName);
             return;
         }
-        registerObjective0(objectiveName, cutTo(title, 32), hearts);
+        registerObjective0(objectiveName, cutTo(title, 32), display);
     }
 
     public void unregisterObjective(@NotNull String objectiveName) {
@@ -55,12 +55,12 @@ public abstract class Scoreboard<T extends TabPlayer> {
         unregisterObjective0(objectiveName);
     }
 
-    public void updateObjective(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void updateObjective(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         if (!registeredObjectives.contains(objectiveName)) {
             error("Tried to modify non-existing objective %s for player ", objectiveName);
             return;
         }
-        updateObjective0(objectiveName, cutTo(title, 32), hearts);
+        updateObjective0(objectiveName, cutTo(title, 32), display);
     }
 
     public void registerTeam(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
@@ -135,11 +135,11 @@ public abstract class Scoreboard<T extends TabPlayer> {
 
     public abstract void removeScore0(@NotNull String objective, @NotNull String player);
 
-    public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts);
+    public abstract void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display);
 
     public abstract void unregisterObjective0(@NotNull String objectiveName);
 
-    public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts);
+    public abstract void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display);
 
     public abstract void registerTeam0(@NotNull String name, @NotNull String prefix, @NotNull String suffix, @NotNull NameVisibility visibility,
                                                  @NotNull CollisionRule collision, @NotNull Collection<String> players, int options);
@@ -191,5 +191,10 @@ public abstract class Scoreboard<T extends TabPlayer> {
         public static NameVisibility getByName(String name) {
             return BY_NAME.getOrDefault(name, ALWAYS);
         }
+    }
+    
+    public enum HealthDisplay {
+        
+        INTEGER, HEARTS
     }
 }

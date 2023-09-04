@@ -88,9 +88,9 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         checkPlayerScoreboard();
-        newObjective(objectiveName, "dummy", title, hearts);
+        newObjective(objectiveName, "dummy", title, display);
     }
 
     @Override
@@ -100,12 +100,11 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         checkPlayerScoreboard();
         Objective obj = scoreboard.getObjective(objectiveName);
         setDisplayName(obj, title);
-        if (serverMinorVersion >= 14)
-            obj.setRenderType(hearts ? RenderType.HEARTS : RenderType.INTEGER);
+        if (serverMinorVersion >= 14) obj.setRenderType(RenderType.valueOf(display.name()));
     }
 
     @Override
@@ -154,11 +153,11 @@ public class BukkitScoreboard extends Scoreboard<BukkitTabPlayer> {
         team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
     }
 
-    public void newObjective(String objectiveName, String criteria, String title, boolean hearts) {
+    public void newObjective(String objectiveName, String criteria, String title, @NotNull HealthDisplay display) {
         if (serverMinorVersion >= 14) {
-            scoreboard.registerNewObjective(objectiveName, criteria, transform(title, 128, 32), hearts ? RenderType.HEARTS : RenderType.INTEGER);
+            scoreboard.registerNewObjective(objectiveName, criteria, transform(title, 128, 32), RenderType.valueOf(display.name()));
         } else {
-            setDisplayName(scoreboard.registerNewObjective(objectiveName, hearts ? "health" : "dummy"), title);
+            setDisplayName(scoreboard.registerNewObjective(objectiveName, display == HealthDisplay.HEARTS ? "health" : "dummy"), title);
         }
     }
 

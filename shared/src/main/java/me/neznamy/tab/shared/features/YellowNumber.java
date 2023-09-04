@@ -29,8 +29,10 @@ public class YellowNumber extends TabFeature implements JoinListener, Loadable, 
     /** Numeric value to display */
     private final String rawValue = TAB.getInstance().getConfiguration().getConfig().getString("yellow-number-in-tablist.value", TabConstants.Placeholder.PING);
 
-    /** Display type, true for HEARTS, false for INTEGER */
-    private final boolean displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) || "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue);
+    /** Scoreboard display type */
+    private final Scoreboard.HealthDisplay displayType = TabConstants.Placeholder.HEALTH.equals(rawValue) ||
+            "%player_health%".equals(rawValue) || "%player_health_rounded%".equals(rawValue) ?
+            Scoreboard.HealthDisplay.HEARTS : Scoreboard.HealthDisplay.INTEGER;
     private final DisableChecker disableChecker;
     private RedisSupport redis;
 

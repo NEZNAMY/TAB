@@ -31,8 +31,8 @@ public class PaperScoreboard extends BukkitScoreboard {
     }
 
     @Override
-    public void newObjective(String objectiveName, String criteria, String title, boolean hearts) {
-        scoreboard.registerNewObjective(objectiveName, criteria, toAdventure(title), hearts ? RenderType.HEARTS : RenderType.INTEGER);
+    public void newObjective(String objectiveName, String criteria, String title, @NotNull HealthDisplay display) {
+        scoreboard.registerNewObjective(objectiveName, criteria, toAdventure(title), RenderType.valueOf(display.name()));
     }
 
     @Override

@@ -25,9 +25,9 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 0,
-                title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
+                title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), display.ordinal());
     }
 
     @Override
@@ -36,9 +36,9 @@ public class VelocityScoreboard extends Scoreboard<VelocityTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.sendPluginMessage("PacketPlayOutScoreboardObjective", objectiveName, 2,
-                title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), hearts ? 1 : 0);
+                title, IChatBaseComponent.optimizedComponent(title).toString(player.getVersion()), display.ordinal());
     }
 
     @Override

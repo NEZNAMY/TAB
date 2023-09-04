@@ -44,15 +44,15 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.sendPacket(
                 new ClientboundSetObjectivePacket(
                         new Objective(
-                            dummyScoreboard,
-                            objectiveName,
-                            ObjectiveCriteria.DUMMY,
-                            FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                            hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
+                                dummyScoreboard,
+                                objectiveName,
+                                ObjectiveCriteria.DUMMY,
+                                FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                                ObjectiveCriteria.RenderType.valueOf(display.name())
                         ),
                         0
                 )
@@ -76,15 +76,15 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.sendPacket(
                 new ClientboundSetObjectivePacket(
                         new Objective(
-                            dummyScoreboard,
-                            objectiveName,
-                            ObjectiveCriteria.DUMMY,
-                            FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
-                            hearts ? ObjectiveCriteria.RenderType.HEARTS : ObjectiveCriteria.RenderType.INTEGER
+                                dummyScoreboard,
+                                objectiveName,
+                                ObjectiveCriteria.DUMMY,
+                                FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                                ObjectiveCriteria.RenderType.valueOf(display.name())
                         ),
                         2
                 )

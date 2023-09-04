@@ -28,11 +28,11 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
                 objectiveName,
                 jsonOrRaw(title),
-                hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER,
+                ScoreboardObjective.HealthDisplay.valueOf(display.name()),
                 (byte) 0
         ));
     }
@@ -48,11 +48,11 @@ public class BungeeScoreboard extends Scoreboard<BungeeTabPlayer> {
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
         player.getPlayer().unsafe().sendPacket(new ScoreboardObjective(
                 objectiveName,
                 jsonOrRaw(title),
-                hearts ? ScoreboardObjective.HealthDisplay.HEARTS : ScoreboardObjective.HealthDisplay.INTEGER,
+                ScoreboardObjective.HealthDisplay.valueOf(display.name()),
                 (byte) 2
         ));
     }

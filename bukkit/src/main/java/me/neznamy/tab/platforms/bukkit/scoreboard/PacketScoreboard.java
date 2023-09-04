@@ -220,27 +220,27 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
 
     @Override
     @SneakyThrows
-    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.sendPacket(buildObjective(0, objectiveName, title, hearts));
+    public void registerObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+        player.sendPacket(buildObjective(0, objectiveName, title, display));
     }
 
     @Override
     public void unregisterObjective0(@NotNull String objectiveName) {
-        player.sendPacket(buildObjective(1, objectiveName, "", false));
+        player.sendPacket(buildObjective(1, objectiveName, "", HealthDisplay.INTEGER));
     }
 
     @Override
-    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, boolean hearts) {
-        player.sendPacket(buildObjective(2, objectiveName, title, hearts));
+    public void updateObjective0(@NotNull String objectiveName, @NotNull String title, @NotNull HealthDisplay display) {
+        player.sendPacket(buildObjective(2, objectiveName, title, display));
     }
 
     @SneakyThrows
-    private Object buildObjective(int action, String objectiveName, String title, boolean hearts) {
+    private Object buildObjective(int action, String objectiveName, String title, @NotNull HealthDisplay display) {
         if (BukkitReflection.getMinorVersion() >= 13) {
             return newObjectivePacket.newInstance(
                     newScoreboardObjective.newInstance(null, objectiveName, null,
                             toComponent(IChatBaseComponent.optimizedComponent(title)),
-                    asDisplayType(hearts)),
+                            Enum.valueOf(EnumScoreboardHealthDisplay, display.name())),
                     action
             );
         }
@@ -248,14 +248,10 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
         Objective_OBJECTIVE_NAME.set(nmsPacket, objectiveName);
         Objective_DISPLAY_NAME.set(nmsPacket, title);
         if (BukkitReflection.getMinorVersion() >= 8) {
-            Objective_RENDER_TYPE.set(nmsPacket, asDisplayType(hearts));
+            Objective_RENDER_TYPE.set(nmsPacket, Enum.valueOf(EnumScoreboardHealthDisplay, display.name()));
         }
         Objective_METHOD.set(nmsPacket, action);
         return nmsPacket;
-    }
-
-    private Object asDisplayType(boolean hearts) {
-        return Enum.valueOf(EnumScoreboardHealthDisplay, hearts ? "HEARTS" : "INTEGER");
     }
 
     @Override

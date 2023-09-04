@@ -136,7 +136,11 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
         if (players.contains(p)) return; //already registered
         players.add(p);
         p.setProperty(this, titleProperty, title);
-        p.getScoreboard().registerObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, p.getProperty(titleProperty).updateAndGet(), false);
+        p.getScoreboard().registerObjective(
+                ScoreboardManagerImpl.OBJECTIVE_NAME,
+                p.getProperty(titleProperty).updateAndGet(),
+                Scoreboard.HealthDisplay.INTEGER
+        );
         p.getScoreboard().setDisplaySlot(Scoreboard.DisplaySlot.SIDEBAR, ScoreboardManagerImpl.OBJECTIVE_NAME);
         for (Line s : lines) {
             ((ScoreboardLine)s).register(p);
@@ -169,7 +173,11 @@ public class ScoreboardImpl extends TabFeature implements me.neznamy.tab.api.sco
     @Override
     public void refresh(@NotNull TabPlayer refreshed, boolean force) {
         if (!players.contains(refreshed)) return;
-        refreshed.getScoreboard().updateObjective(ScoreboardManagerImpl.OBJECTIVE_NAME, refreshed.getProperty(titleProperty).updateAndGet(), false);
+        refreshed.getScoreboard().updateObjective(
+                ScoreboardManagerImpl.OBJECTIVE_NAME,
+                refreshed.getProperty(titleProperty).updateAndGet(),
+                Scoreboard.HealthDisplay.INTEGER
+        );
     }
 
     @Override
