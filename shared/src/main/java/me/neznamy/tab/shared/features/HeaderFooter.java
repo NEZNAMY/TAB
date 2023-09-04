@@ -90,7 +90,6 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
 
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
         if (disabledNow) {
-            if (p.getVersion().getMinorVersion() < 8) return;
             p.getTabList().setPlayerListHeaderFooter(new IChatBaseComponent(""), new IChatBaseComponent(""));
         } else {
             sendHeaderFooter(p, p.getProperty(TabConstants.Property.HEADER).get(), p.getProperty(TabConstants.Property.FOOTER).get());
@@ -128,7 +127,7 @@ public class HeaderFooter extends TabFeature implements HeaderFooterManager, Joi
     }
 
     private void sendHeaderFooter(TabPlayer player, String header, String footer) {
-        if (player.getVersion().getMinorVersion() < 8 || disableChecker.isDisabledPlayer(player)) return;
+        if (disableChecker.isDisabledPlayer(player)) return;
         player.getTabList().setPlayerListHeaderFooter(IChatBaseComponent.optimizedComponent(header), IChatBaseComponent.optimizedComponent(footer));
     }
 
