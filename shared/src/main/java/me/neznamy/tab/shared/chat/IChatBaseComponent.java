@@ -190,8 +190,9 @@ public class IChatBaseComponent {
                 String hex = text.substring(i+1, i+7);
                 if (RGBUtils.getInstance().isHexCode(hex)) {
                     TextColor color;
-                    if (containsLegacyCode(text, i)) {
-                        color = new TextColor(hex, EnumChatFormat.getByChar(text.charAt(i+8)));
+                    EnumChatFormat code = text.length() - i >= 9 ? EnumChatFormat.getByChar(text.charAt(i+8)) : null;
+                    if (code != null && text.charAt(i+7) == '|') {
+                        color = new TextColor(hex, code);
                         i += 8;
                     } else {
                         color = new TextColor(hex);
@@ -214,20 +215,6 @@ public class IChatBaseComponent {
         component.setText(builder.toString());
         components.add(component);
         return new IChatBaseComponent("").setExtra(components);
-    }
-
-    /**
-     * Returns true if text contains legacy color request at defined RGB index start
-     *
-     * @param   text
-     *          text to check
-     * @param   i
-     *          current index start
-     * @return  true if legacy color is defined, false if not
-     */
-    private static boolean containsLegacyCode(@NotNull String text, int i) {
-        if (text.length() - i < 9 || text.charAt(i+7) != '|') return false;
-        return EnumChatFormat.getByChar(text.charAt(i+8)) != null;
     }
 
     /**
