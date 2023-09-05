@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +28,7 @@ public class IChatBaseComponent {
      */
     private static final ComponentCache<String, IChatBaseComponent> stringCache = new ComponentCache<>(1000, (text, clientVersion) -> {
                 return text.contains("#") || text.contains("&x") || text.contains(EnumChatFormat.COLOR_CHAR + "x") || text.contains("<") ?
-                    IChatBaseComponent.fromColoredText(text) : //contains RGB colors
+                    IChatBaseComponent.fromColoredText(text) : //contains RGB colors or font
                     new IChatBaseComponent(text); //no RGB
             });
 
@@ -34,6 +36,8 @@ public class IChatBaseComponent {
             (component, clientVersion) -> component.toString());
 
     public static final String EMPTY_COMPONENT = "{\"text\":\"\"}";
+
+    private static final Pattern fontPattern = Pattern.compile("<font:(.*?)>(.*?)</font>");
 
     /** Text of the component */
     @Getter @Setter private String text;
@@ -135,11 +139,41 @@ public class IChatBaseComponent {
      *          text to convert
      * @return  organized component from colored text
      */
-    public static @NotNull IChatBaseComponent fromColoredText(@NotNull String originalText) {
+    @NotNull
+    public static IChatBaseComponent fromColoredText(@NotNull String originalText) {
+        if (originalText.isEmpty()) return new IChatBaseComponent("");
+        String remainingText = originalText;
+        List<IChatBaseComponent> components = new ArrayList<>();
+        while (!remainingText.isEmpty()) {
+            Matcher m = fontPattern.matcher(remainingText);
+            if (m.find()) {
+                if (m.start() > 0) {
+                    // Something is before the text with font, process normally
+                    components.addAll(toComponentArray(remainingText.substring(0, m.start()), null));
+                }
+                // Process text with font
+                String match = m.group();
+                components.addAll(toComponentArray(
+                        match.substring(match.indexOf(">")+1, match.length()-7),
+                        match.substring(6, match.indexOf(">"))
+                ));
+                // Prepare the rest for next loop
+                remainingText = remainingText.substring(m.start() + match.length());
+            } else {
+                components.addAll(toComponentArray(remainingText, null));
+                break;
+            }
+        }
+        return new IChatBaseComponent("").setExtra(components);
+    }
+
+    @NotNull
+    private static List<IChatBaseComponent> toComponentArray(@NotNull String originalText, @Nullable String font) {
         String text = RGBUtils.getInstance().applyFormats(EnumChatFormat.color(originalText));
         List<IChatBaseComponent> components = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         IChatBaseComponent component = new IChatBaseComponent();
+        component.modifier.setFont(font);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (c == EnumChatFormat.COLOR_CHAR) {
@@ -158,6 +192,7 @@ public class IChatBaseComponent {
                         components.add(component);
                         component = new IChatBaseComponent(component);
                         component.text = null;
+                        component.modifier.setFont(font);
                         builder = new StringBuilder();
                     }
                     switch (format) {
@@ -179,10 +214,12 @@ public class IChatBaseComponent {
                     case RESET: 
                         component = new IChatBaseComponent();
                         component.modifier.setColor(new TextColor(EnumChatFormat.WHITE));
+                        component.modifier.setFont(font);
                         break;
                     default:
                         component = new IChatBaseComponent();
                         component.modifier.setColor(new TextColor(format));
+                        component.modifier.setFont(font);
                         break;
                     }
                 }
@@ -205,6 +242,7 @@ public class IChatBaseComponent {
                     }
                     component = new IChatBaseComponent();
                     component.modifier.setColor(color);
+                    component.modifier.setFont(font);
                 } else {
                     builder.append(c);
                 }
@@ -214,7 +252,7 @@ public class IChatBaseComponent {
         }
         component.setText(builder.toString());
         components.add(component);
-        return new IChatBaseComponent("").setExtra(components);
+        return components;
     }
 
     /**
