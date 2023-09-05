@@ -12,8 +12,6 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.util.ComponentCache;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -53,7 +51,7 @@ public class NMSStorage {
     protected Class<?> ChatSerializer;
     public Method ChatSerializer_DESERIALIZE;
 
-    private final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
+    public final ComponentCache<IChatBaseComponent, Object> componentCache = new ComponentCache<>(1000,
             (component, clientVersion) -> ChatSerializer_DESERIALIZE.invoke(null, component.toString(clientVersion)));
 
     /**
@@ -114,20 +112,5 @@ public class NMSStorage {
                 ChatSerializer = BukkitReflection.getLegacyClass("IChatBaseComponent$ChatSerializer", "ChatSerializer");
             }
         }
-    }
-
-    /**
-     * Converts TAB's IChatBaseComponent into minecraft's component using String deserialization.
-     * If the requested component is found in cache, it is returned. If not, it is created, added into cache and returned.
-     * If {@code component} is {@code null}, returns {@code null}
-     *
-     * @param   component
-     *          component to convert
-     * @param   clientVersion
-     *          client version used to decide RGB conversion
-     * @return  converted component or {@code null} if {@code component} is {@code null}
-     */
-    public @Nullable Object toNMSComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion clientVersion) {
-        return componentCache.get(component, clientVersion);
     }
 }

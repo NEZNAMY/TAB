@@ -58,6 +58,6 @@ public class VelocityEventListener extends EventListener<Player> {
     @Override
     @NotNull
     public TabPlayer createPlayer(@NotNull Player player) {
-        return new VelocityTabPlayer(player);
+        return new VelocityTabPlayer((VelocityPlatform) TAB.getInstance().getPlatform(), player);
     }
 }

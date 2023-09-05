@@ -10,7 +10,7 @@ import me.neznamy.tab.shared.platform.Platform;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import org.jetbrains.annotations.NotNull;
 
-public interface BackendPlatform extends Platform {
+public interface BackendPlatform<T> extends Platform<T> {
 
     @Override
     @NotNull default GroupManager detectPermissionPlugin() {

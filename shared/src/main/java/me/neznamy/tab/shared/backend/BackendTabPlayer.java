@@ -26,16 +26,10 @@ public abstract class BackendTabPlayer extends TabPlayer {
      * @param   world
      *          Player's world
      */
-    protected BackendTabPlayer(@NotNull Object player, @NotNull UUID uniqueId, @NotNull String name, @NotNull String world) {
-        super(
-                player,
-                uniqueId,
-                name,
-                TAB.getInstance().getConfiguration().getServerName(),
-                world,
-                ViaVersionHook.getInstance().getPlayerVersion(uniqueId, name),
-                true
-        );
+    protected BackendTabPlayer(@NotNull BackendPlatform<?> platform, @NotNull Object player, @NotNull UUID uniqueId,
+                               @NotNull String name, @NotNull String world) {
+        super(platform, player, uniqueId, name, TAB.getInstance().getConfiguration().getServerName(),
+                world, ViaVersionHook.getInstance().getPlayerVersion(uniqueId, name), true);
     }
 
     /**

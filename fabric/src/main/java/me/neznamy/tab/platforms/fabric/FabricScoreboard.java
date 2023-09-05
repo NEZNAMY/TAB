@@ -51,7 +51,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 dummyScoreboard,
                                 objectiveName,
                                 ObjectiveCriteria.DUMMY,
-                                FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                                player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                                 ObjectiveCriteria.RenderType.valueOf(display.name())
                         ),
                         0
@@ -83,7 +83,7 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
                                 dummyScoreboard,
                                 objectiveName,
                                 ObjectiveCriteria.DUMMY,
-                                FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
+                                player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                                 ObjectiveCriteria.RenderType.valueOf(display.name())
                         ),
                         2
@@ -101,8 +101,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
-        team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
-        team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+        team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+        team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         team.getPlayers().addAll(players);
         player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
     }
@@ -121,8 +121,8 @@ public class FabricScoreboard extends Scoreboard<FabricTabPlayer> {
         team.setColor(ChatFormatting.valueOf(EnumChatFormat.lastColorsOf(prefix).name()));
         team.setCollisionRule(Team.CollisionRule.valueOf(collision.name()));
         team.setNameTagVisibility(Team.Visibility.valueOf(visibility.name()));
-        team.setPlayerPrefix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
-        team.setPlayerSuffix(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
+        team.setPlayerPrefix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(prefix), player.getVersion()));
+        team.setPlayerSuffix(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(suffix), player.getVersion()));
         player.sendPacket(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, false));
     }
 

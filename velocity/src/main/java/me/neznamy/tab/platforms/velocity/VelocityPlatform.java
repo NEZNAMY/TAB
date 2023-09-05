@@ -7,14 +7,17 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
+import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,20 +28,19 @@ import java.io.File;
  * Velocity implementation of Platform
  */
 @RequiredArgsConstructor
-public class VelocityPlatform extends ProxyPlatform {
+public class VelocityPlatform extends ProxyPlatform<Component> {
 
     @NotNull
     private final VelocityTAB plugin;
 
     /** Plugin message channel */
     @Getter
-    private final MinecraftChannelIdentifier minecraftChannelIdentifier =
-            MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
+    private final MinecraftChannelIdentifier MCI = MinecraftChannelIdentifier.from(TabConstants.PLUGIN_MESSAGE_CHANNEL_NAME);
 
     @Override
     public void loadPlayers() {
         for (Player p : plugin.getServer().getAllPlayers()) {
-            TAB.getInstance().addPlayer(new VelocityTabPlayer(p));
+            TAB.getInstance().addPlayer(new VelocityTabPlayer(this, p));
         }
     }
 
@@ -93,6 +95,11 @@ public class VelocityPlatform extends ProxyPlatform {
     }
 
     @Override
+    public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+        return AdventureHook.toAdventureComponent(component, version);
+    }
+
+    @Override
     @Nullable
     public PipelineInjector createPipelineInjector() {
         return null;
@@ -100,6 +107,6 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     public void registerChannel() {
-        plugin.getServer().getChannelRegistrar().register(minecraftChannelIdentifier);
+        plugin.getServer().getChannelRegistrar().register(MCI);
     }
 }

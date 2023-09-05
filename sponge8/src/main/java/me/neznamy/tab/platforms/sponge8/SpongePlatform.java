@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.nametags.NameTag;
 import me.neznamy.tab.shared.features.types.TabFeature;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
 import net.kyori.adventure.text.Component;
@@ -25,7 +26,7 @@ import java.io.File;
  * Platform implementation for Sponge 8 and up
  */
 @RequiredArgsConstructor
-public class SpongePlatform implements BackendPlatform {
+public class SpongePlatform implements BackendPlatform<Component> {
 
     /** Main class reference */
     @NotNull
@@ -39,7 +40,7 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public void loadPlayers() {
         for (ServerPlayer player : Sponge.server().onlinePlayers()) {
-            TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
+            TAB.getInstance().addPlayer(new SpongeTabPlayer(this, player));
         }
     }
 
@@ -70,13 +71,13 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public void logInfo(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] ").append(
-                message.toAdventureComponent(TAB.getInstance().getServerVersion())));
+                toComponent(message, TAB.getInstance().getServerVersion())));
     }
 
     @Override
     public void logWarn(@NotNull IChatBaseComponent message) {
         Sponge.systemSubject().sendMessage(Component.text("[TAB] [WARN] ").append(
-                message.toAdventureComponent(TAB.getInstance().getServerVersion()))); // Sponge console does not support colors
+                toComponent(message, TAB.getInstance().getServerVersion()))); // Sponge console does not support colors
     }
 
     @Override
@@ -113,6 +114,11 @@ public class SpongePlatform implements BackendPlatform {
     @NotNull
     public File getDataFolder() {
         return plugin.getConfigDir().toFile();
+    }
+
+    @Override
+    public Component toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+        return AdventureHook.toAdventureComponent(component, version);
     }
 
     @Override

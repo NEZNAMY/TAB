@@ -100,7 +100,7 @@ public class BukkitPipelineInjector extends NettyPipelineInjector {
             if (actions.contains(TabList.Action.UPDATE_DISPLAY_NAME.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {
                 displayName = BukkitTabList.PlayerInfoData_DisplayName.get(nmsData);
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
-                if (newDisplayName != null) displayName = NMSStorage.getInstance().toNMSComponent(newDisplayName, receiver.getVersion());
+                if (newDisplayName != null) displayName = TAB.getInstance().getPlatform().toComponent(newDisplayName, receiver.getVersion());
                 if (!BukkitReflection.is1_19_3Plus()) BukkitTabList.PlayerInfoData_DisplayName.set(nmsData, displayName);
             }
             if (actions.contains(TabList.Action.UPDATE_LATENCY.name()) || actions.contains(TabList.Action.ADD_PLAYER.name())) {

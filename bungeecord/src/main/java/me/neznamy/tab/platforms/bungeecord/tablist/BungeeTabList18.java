@@ -83,6 +83,9 @@ public class BungeeTabList18 implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().setTabHeader(header.toBungeeComponent(player.getVersion()), footer.toBungeeComponent(player.getVersion()));
+        player.getPlayer().setTabHeader(
+                player.getPlatform().toComponent(header, player.getVersion()),
+                player.getPlatform().toComponent(footer, player.getVersion())
+        );
     }
 }

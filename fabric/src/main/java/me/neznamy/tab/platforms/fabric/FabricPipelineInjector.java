@@ -81,7 +81,7 @@ public class FabricPipelineInjector extends NettyPipelineInjector {
             int latency = nmsData.latency();
             if (actions.contains(Action.UPDATE_DISPLAY_NAME)) {
                 IChatBaseComponent newDisplayName = TAB.getInstance().getFeatureManager().onDisplayNameChange(receiver, profile.getId());
-                if (newDisplayName != null) displayName = FabricTAB.toComponent(newDisplayName, receiver.getVersion());
+                if (newDisplayName != null) displayName = ((FabricTabPlayer)receiver).getPlatform().toComponent(newDisplayName, receiver.getVersion());
             }
             if (actions.contains(Action.UPDATE_LATENCY)) {
                 latency = TAB.getInstance().getFeatureManager().onLatencyChange(receiver, profile.getId(), latency);

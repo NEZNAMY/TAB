@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import me.neznamy.tab.api.bossbar.BarColor;
 import me.neznamy.tab.api.bossbar.BarStyle;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
+import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public class AdventureBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         if (bossBars.containsKey(id)) return;
         net.kyori.adventure.bossbar.BossBar bar = net.kyori.adventure.bossbar.BossBar.bossBar(
-                IChatBaseComponent.optimizedComponent(title).toAdventureComponent(player.getVersion()),
+                AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()),
                 progress,
                 net.kyori.adventure.bossbar.BossBar.Color.valueOf(color.toString()),
                 net.kyori.adventure.bossbar.BossBar.Overlay.valueOf(style.toString())
@@ -33,7 +34,7 @@ public class AdventureBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull String title) {
-        bossBars.get(id).name(IChatBaseComponent.optimizedComponent(title).toAdventureComponent(player.getVersion()));
+        bossBars.get(id).name(AdventureHook.toAdventureComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()));
     }
 
     @Override

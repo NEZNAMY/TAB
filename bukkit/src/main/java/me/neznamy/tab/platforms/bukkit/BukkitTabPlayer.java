@@ -59,12 +59,14 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     /**
      * Constructs new instance with given bukkit player
      *
+     * @param   platform
+     *          Server platform
      * @param   p
      *          bukkit player
      */
     @SneakyThrows
-    public BukkitTabPlayer(@NotNull Player p) {
-        super(p, p.getUniqueId(), p.getName(), p.getWorld().getName());
+    public BukkitTabPlayer(@NotNull BukkitPlatform platform, @NotNull Player p) {
+        super(platform, p, p.getUniqueId(), p.getName(), p.getWorld().getName());
         handle = NMSStorage.getInstance().getHandle.invoke(player);
         playerConnection = NMSStorage.getInstance().PLAYER_CONNECTION.get(handle);
     }
@@ -102,12 +104,12 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isDisguised() {
         try {
-            if (!((BukkitPlatform)TAB.getInstance().getPlatform()).isLibsDisguisesEnabled()) return false;
+            if (!getPlatform().isLibsDisguisesEnabled()) return false;
             return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, getPlayer());
         } catch (LinkageError | ReflectiveOperationException e) {
             //java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
             TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
-            ((BukkitPlatform)TAB.getInstance().getPlatform()).setLibsDisguisesEnabled(false);
+            getPlatform().setLibsDisguisesEnabled(false);
             return false;
         }
     }
@@ -131,6 +133,11 @@ public class BukkitTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isOnline() {
         return getPlayer().isOnline();
+    }
+
+    @Override
+    public BukkitPlatform getPlatform() {
+        return (BukkitPlatform) platform;
     }
 
     @Override

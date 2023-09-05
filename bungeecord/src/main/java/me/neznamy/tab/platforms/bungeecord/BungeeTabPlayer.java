@@ -14,7 +14,6 @@ import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.proxy.ProxyTabPlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.Property;
@@ -51,11 +50,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     /**
      * Constructs new instance for given player
      *
+     * @param   platform
+     *          Server platform
      * @param   p
      *          BungeeCord player
      */
-    public BungeeTabPlayer(@NotNull ProxiedPlayer p) {
-        super(p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
+    public BungeeTabPlayer(@NotNull BungeePlatform platform, @NotNull ProxiedPlayer p) {
+        super(platform, p, p.getUniqueId(), p.getName(), p.getServer() != null ? p.getServer().getInfo().getName() : "-", -1);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(ComponentSerializer.parse(message.toString(getVersion())));
+        getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
@@ -92,6 +93,11 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
     @Override
     public boolean isOnline() {
         return getPlayer().isConnected();
+    }
+
+    @Override
+    public BungeePlatform getPlatform() {
+        return (BungeePlatform) platform;
     }
 
     @Override

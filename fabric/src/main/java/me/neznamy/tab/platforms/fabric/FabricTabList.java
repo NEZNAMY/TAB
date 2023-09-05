@@ -27,7 +27,7 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.sendPacket(build(EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME),
-                new Builder(entry).setDisplayName(displayName == null ? null : FabricTAB.toComponent(displayName, player.getVersion()))));
+                new Builder(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()))));
     }
 
     @Override
@@ -47,14 +47,14 @@ public record FabricTabList(@NotNull FabricTabPlayer player) implements TabList 
                 .setSkin(entry.getSkin())
                 .setGameMode(entry.getGameMode())
                 .setLatency(entry.getLatency())
-                .setDisplayName(entry.getDisplayName() == null ? null : FabricTAB.toComponent(entry.getDisplayName(), player.getVersion()))));
+                .setDisplayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))));
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().connection.send(new ClientboundTabListPacket(
-                FabricTAB.toComponent(header, player.getVersion()),
-                FabricTAB.toComponent(footer, player.getVersion()))
+                player.getPlatform().toComponent(header, player.getVersion()),
+                player.getPlatform().toComponent(footer, player.getVersion()))
         );
     }
 

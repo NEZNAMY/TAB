@@ -50,6 +50,8 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * Constructs new instance with given parameters and sends a message
      * to bridge about this player joining with join data
      *
+     * @param   platform
+     *          Server platform
      * @param   player
      *          platform-specific player object
      * @param   uniqueId
@@ -61,8 +63,9 @@ public abstract class ProxyTabPlayer extends TabPlayer {
      * @param   protocolVersion
      *          Player's protocol network id
      */
-    protected ProxyTabPlayer(@NotNull Object player, @NotNull UUID uniqueId, @NotNull String name, @NotNull String server, int protocolVersion) {
-        super(player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
+    protected ProxyTabPlayer(@NotNull ProxyPlatform<?> platform, @NotNull Object player, @NotNull UUID uniqueId,
+                             @NotNull String name, @NotNull String server, int protocolVersion) {
+        super(platform, player, uniqueId, name, server, "N/A", protocolVersion, TAB.getInstance().getConfiguration().isOnlineUuidInTabList());
         sendJoinPluginMessage();
     }
 
@@ -79,8 +82,7 @@ public abstract class ProxyTabPlayer extends TabPlayer {
                 TAB.getInstance().getGroupManager().getPermissionPlugin().contains("Vault") &&
                         !TAB.getInstance().getGroupManager().isGroupsByPermissions(),
                 true);
-        ProxyPlatform platform = (ProxyPlatform) TAB.getInstance().getPlatform();
-        Map<String, Integer> placeholders = platform.getBridgePlaceholders();
+        Map<String, Integer> placeholders = ((ProxyPlatform<?>) getPlatform()).getBridgePlaceholders();
         args.add(placeholders.size());
         for (Map.Entry<String, Integer> entry : placeholders.entrySet()) {
             args.add(entry.getKey());

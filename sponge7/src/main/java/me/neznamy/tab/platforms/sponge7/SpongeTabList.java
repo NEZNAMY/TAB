@@ -9,7 +9,6 @@ import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
-import org.spongepowered.api.text.Text;
 
 import java.util.UUID;
 
@@ -31,7 +30,7 @@ public class SpongeTabList implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.getPlayer().getTabList().getEntry(entry).ifPresent(
-                e -> e.setDisplayName(displayName == null ? null : Text.of(displayName.toLegacyText())));
+                e -> e.setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion())));
     }
 
     @Override
@@ -54,13 +53,16 @@ public class SpongeTabList implements TabList {
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))
-                .displayName(entry.getDisplayName() == null ? null : Text.of(entry.getDisplayName().toLegacyText()))
+                .displayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
                 .build());
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().getTabList().setHeaderAndFooter(Text.of(header.toLegacyText()), Text.of(footer.toLegacyText()));
+        player.getPlayer().getTabList().setHeaderAndFooter(
+                player.getPlatform().toComponent(header, player.getVersion()),
+                player.getPlatform().toComponent(footer, player.getVersion())
+        );
     }
 
     @NotNull

@@ -1,7 +1,9 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.platforms.bungeecord.BungeePlatform;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
@@ -88,6 +90,9 @@ public class BungeeTabList1193 implements TabList {
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
-        player.getPlayer().setTabHeader(header.toBungeeComponent(player.getVersion()), footer.toBungeeComponent(player.getVersion()));
+        player.getPlayer().setTabHeader(
+                player.getPlatform().toComponent(header, player.getVersion()),
+                player.getPlatform().toComponent(footer, player.getVersion())
+        );
     }
 }

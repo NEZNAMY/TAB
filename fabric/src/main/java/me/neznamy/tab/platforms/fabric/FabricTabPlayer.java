@@ -30,8 +30,8 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @NotNull
     private final EntityView entityView = new FabricEntityView(this);
 
-    public FabricTabPlayer(@NotNull ServerPlayer player) {
-        super(player, player.getUUID(), player.getGameProfile().getName(), player.level().dimension().location().toString());
+    public FabricTabPlayer(@NotNull FabricPlatform platform, @NotNull ServerPlayer player) {
+        super(platform, player, player.getUUID(), player.getGameProfile().getName(), player.level().dimension().location().toString());
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FabricTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendSystemMessage(FabricTAB.toComponent(message, getVersion()));
+        getPlayer().sendSystemMessage(getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
@@ -77,6 +77,11 @@ public class FabricTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isOnline() {
         return true;
+    }
+
+    @Override
+    public FabricPlatform getPlatform() {
+        return (FabricPlatform) platform;
     }
 
     @Override

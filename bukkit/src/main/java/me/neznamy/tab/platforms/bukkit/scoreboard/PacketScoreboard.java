@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.neznamy.tab.platforms.bukkit.BukkitTabPlayer;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
-import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.Scoreboard;
@@ -362,6 +361,6 @@ public class PacketScoreboard extends Scoreboard<BukkitTabPlayer> {
     }
 
     private Object toComponent(IChatBaseComponent component) {
-        return NMSStorage.getInstance().toNMSComponent(component, player.getVersion());
+        return player.getPlatform().toComponent(component, player.getVersion());
     }
 }

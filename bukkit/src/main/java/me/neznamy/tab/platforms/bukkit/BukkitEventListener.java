@@ -1,5 +1,7 @@
 package me.neznamy.tab.platforms.bukkit;
 
+import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.bukkit.entity.Player;
@@ -40,6 +42,6 @@ public class BukkitEventListener extends EventListener<Player> implements Listen
     @Override
     @NotNull
     public TabPlayer createPlayer(@NotNull Player player) {
-        return new BukkitTabPlayer(player);
+        return new BukkitTabPlayer((BukkitPlatform) TAB.getInstance().getPlatform(), player);
     }
 }

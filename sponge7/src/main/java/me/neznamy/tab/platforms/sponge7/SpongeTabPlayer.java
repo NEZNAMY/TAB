@@ -36,8 +36,8 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @NotNull
     private final EntityView entityView = new DummyEntityView();
 
-    public SpongeTabPlayer(@NotNull Player player) {
-        super(player, player.getUniqueId(), player.getName(), player.getWorld().getName());
+    public SpongeTabPlayer(@NotNull SpongePlatform platform, @NotNull Player player) {
+        super(platform, player, player.getUniqueId(), player.getName(), player.getWorld().getName());
     }
 
     @Override
@@ -85,6 +85,11 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isOnline() {
         return getPlayer().isOnline();
+    }
+
+    @Override
+    public SpongePlatform getPlatform() {
+        return (SpongePlatform) platform;
     }
 
     @Override

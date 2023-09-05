@@ -55,7 +55,7 @@ public class TAB extends TabAPI {
     @Getter private final DisabledCommand disabledCommand = new DisabledCommand();
 
     /** Implementation of platform the plugin is installed on for platform-specific calls */
-    @Getter private final Platform platform;
+    @Getter private final Platform<?> platform;
 
     /**
      * CPU manager for thread and task management as well as
@@ -107,7 +107,7 @@ public class TAB extends TabAPI {
      * @param   platform
      *          Platform interface
      */
-    public static void create(@NotNull Platform platform) {
+    public static void create(@NotNull Platform<?> platform) {
         instance = new TAB(platform);
         instance.load();
     }
@@ -119,7 +119,7 @@ public class TAB extends TabAPI {
      * @param   platform
      *          Platform interface
      */
-    private TAB(@NotNull Platform platform) {
+    private TAB(@NotNull Platform<?> platform) {
         this.platform = platform;
         this.serverVersion = platform.getServerVersion();
         this.dataFolder = platform.getDataFolder();
@@ -134,7 +134,7 @@ public class TAB extends TabAPI {
         platform.registerCommand();
         platform.startMetrics();
         if (platform instanceof ProxyPlatform) {
-            ((ProxyPlatform) platform).registerChannel();
+            ((ProxyPlatform<?>) platform).registerChannel();
         }
     }
 

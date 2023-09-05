@@ -37,8 +37,8 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @NotNull
     private final EntityView entityView = new DummyEntityView();
 
-    public SpongeTabPlayer(@NotNull ServerPlayer player) {
-        super(player, player.uniqueId(), player.name(), player.world().key().value());
+    public SpongeTabPlayer(@NotNull SpongePlatform platform, @NotNull ServerPlayer player) {
+        super(platform, player, player.uniqueId(), player.name(), player.world().key().value());
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SpongeTabPlayer extends BackendTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(message.toAdventureComponent(getVersion()));
+        getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
@@ -86,6 +86,11 @@ public class SpongeTabPlayer extends BackendTabPlayer {
     @Override
     public boolean isOnline() {
         return getPlayer().isOnline();
+    }
+
+    @Override
+    public SpongePlatform getPlatform() {
+        return (SpongePlatform) platform;
     }
 
     @Override

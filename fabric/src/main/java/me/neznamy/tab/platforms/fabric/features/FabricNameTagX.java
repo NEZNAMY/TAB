@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.fabric.features;
 
-import me.neznamy.tab.platforms.fabric.FabricTAB;
 import me.neznamy.tab.platforms.fabric.FabricTabPlayer;
 import me.neznamy.tab.shared.backend.EntityData;
 import me.neznamy.tab.shared.backend.features.unlimitedtags.BackendNameTagX;
@@ -123,7 +122,7 @@ public class FabricNameTagX extends BackendNameTagX {
         return () -> Arrays.asList(
                 new SynchedEntityData.DataValue<>(0, EntityDataSerializers.BYTE, flags),
                 new SynchedEntityData.DataValue<>(2, EntityDataSerializers.OPTIONAL_COMPONENT,
-                Optional.of(FabricTAB.toComponent(IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion()))),
+                Optional.of(((FabricTabPlayer)viewer).getPlatform().toComponent(IChatBaseComponent.optimizedComponent(displayName), viewer.getVersion()))),
                 new SynchedEntityData.DataValue<>(3, EntityDataSerializers.BOOLEAN, nameVisible),
                 new SynchedEntityData.DataValue<>(15, EntityDataSerializers.BYTE, (byte)16)
         );

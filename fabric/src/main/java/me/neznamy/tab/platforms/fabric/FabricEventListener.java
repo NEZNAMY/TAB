@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.fabric;
 
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
@@ -22,6 +23,6 @@ public class FabricEventListener extends EventListener<ServerPlayer> {
     @Override
     @NotNull
     public TabPlayer createPlayer(@NotNull ServerPlayer player) {
-        return new FabricTabPlayer(player);
+        return new FabricTabPlayer((FabricPlatform) TAB.getInstance().getPlatform(), player);
     }
 }

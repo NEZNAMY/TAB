@@ -26,7 +26,7 @@ import java.io.File;
  * Platform implementation for Sponge 7 and lower
  */
 @RequiredArgsConstructor
-public class SpongePlatform implements BackendPlatform {
+public class SpongePlatform implements BackendPlatform<Text> {
 
     /** Plugin reference */
     @NotNull
@@ -40,7 +40,7 @@ public class SpongePlatform implements BackendPlatform {
     @Override
     public void loadPlayers() {
         for (Player player : Sponge.getServer().getOnlinePlayers()) {
-            TAB.getInstance().addPlayer(new SpongeTabPlayer(player));
+            TAB.getInstance().addPlayer(new SpongeTabPlayer(this, player));
         }
     }
 
@@ -113,6 +113,11 @@ public class SpongePlatform implements BackendPlatform {
     @NotNull
     public File getDataFolder() {
         return plugin.getConfigDir();
+    }
+
+    @Override
+    public Text toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+        return Text.of(component.toLegacyText());
     }
 
     @Override

@@ -30,7 +30,7 @@ public class SpongeTabList implements TabList {
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
         player.getPlayer().tabList().entry(entry).ifPresent(
-                e -> e.setDisplayName(displayName == null ? null : displayName.toAdventureComponent(player.getVersion())));
+                e -> e.setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion())));
     }
 
     @Override
@@ -53,15 +53,15 @@ public class SpongeTabList implements TabList {
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(convertGameMode(entry.getGameMode()))
-                .displayName(entry.getDisplayName() == null ? null : entry.getDisplayName().toAdventureComponent(player.getVersion()))
+                .displayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
                 .build());
     }
 
     @Override
     public void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer) {
         player.getPlayer().tabList().setHeaderAndFooter(
-                header.toAdventureComponent(player.getVersion()),
-                footer.toAdventureComponent(player.getVersion())
+                player.getPlatform().toComponent(header, player.getVersion()),
+                player.getPlatform().toComponent(footer, player.getVersion())
         );
     }
 

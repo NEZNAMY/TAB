@@ -3,7 +3,6 @@ package me.neznamy.tab.platforms.velocity;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.Getter;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.bossbar.AdventureBossBar;
 import me.neznamy.tab.shared.platform.bossbar.BossBar;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
@@ -36,11 +35,13 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     /**
      * Constructs new instance for given player
      *
+     * @param   platform
+     *          Server platform
      * @param   p
      *          velocity player
      */
-    public VelocityTabPlayer(@NotNull Player p) {
-        super(p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
+    public VelocityTabPlayer(@NotNull VelocityPlatform platform, @NotNull Player p) {
+        super(platform, p, p.getUniqueId(), p.getUsername(), p.getCurrentServer().map(s ->
                 s.getServerInfo().getName()).orElse("null"), p.getProtocolVersion().getProtocol());
     }
     
@@ -56,7 +57,7 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull IChatBaseComponent message) {
-        getPlayer().sendMessage(message.toAdventureComponent(getVersion()));
+        getPlayer().sendMessage(getPlatform().toComponent(message, getVersion()));
     }
 
     @Override
@@ -79,10 +80,15 @@ public class VelocityTabPlayer extends ProxyTabPlayer {
     }
 
     @Override
+    public VelocityPlatform getPlatform() {
+        return (VelocityPlatform) platform;
+    }
+
+    @Override
     public void sendPluginMessage(byte[] message) {
         try {
             getPlayer().getCurrentServer().ifPresentOrElse(
-                    server -> server.sendPluginMessage(((VelocityPlatform)TAB.getInstance().getPlatform()).getMinecraftChannelIdentifier(), message),
+                    server -> server.sendPluginMessage(getPlatform().getMCI(), message),
                     () -> errorNoServer(message)
             );
         } catch (IllegalStateException VelocityBeingVelocityException) {

@@ -143,6 +143,6 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
      */
     @NotNull
     private Component adventure(@NotNull String text) {
-        return IChatBaseComponent.optimizedComponent(text).toAdventureComponent(player.getVersion());
+        return player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(text), player.getVersion());
     }
 }

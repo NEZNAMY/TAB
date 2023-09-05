@@ -47,7 +47,7 @@ import java.lang.reflect.Field;
  * Implementation of Platform interface for Bukkit platform
  */
 @Getter
-public class BukkitPlatform implements BackendPlatform {
+public class BukkitPlatform implements BackendPlatform<Object> {
 
     /** Plugin instance for registering tasks and events */
     @NotNull
@@ -88,7 +88,7 @@ public class BukkitPlatform implements BackendPlatform {
     @Override
     public void loadPlayers() {
         for (Player p : BukkitUtils.getOnlinePlayers()) {
-            TAB.getInstance().addPlayer(new BukkitTabPlayer(p));
+            TAB.getInstance().addPlayer(new BukkitTabPlayer(this, p));
         }
     }
 
@@ -230,6 +230,11 @@ public class BukkitPlatform implements BackendPlatform {
     @NotNull
     public File getDataFolder() {
         return plugin.getDataFolder();
+    }
+
+    @Override
+    public Object toComponent(@NotNull IChatBaseComponent component, @NotNull ProtocolVersion version) {
+        return NMSStorage.getInstance().componentCache.get(component, version);
     }
 
     @Override

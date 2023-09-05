@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.sponge8;
 
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +44,6 @@ public class SpongeEventListener extends EventListener<ServerPlayer> {
     @Override
     @NotNull
     public TabPlayer createPlayer(@NotNull ServerPlayer player) {
-        return new SpongeTabPlayer(player);
+        return new SpongeTabPlayer((SpongePlatform) TAB.getInstance().getPlatform(), player);
     }
 }

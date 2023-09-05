@@ -1,5 +1,6 @@
 package me.neznamy.tab.platforms.bungeecord;
 
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.platform.EventListener;
 import me.neznamy.tab.shared.platform.TabPlayer;
@@ -46,6 +47,6 @@ public class BungeeEventListener extends EventListener<ProxiedPlayer> implements
     @Override
     @NotNull
     public TabPlayer createPlayer(@NotNull ProxiedPlayer player) {
-        return new BungeeTabPlayer(player);
+        return new BungeeTabPlayer((BungeePlatform) TAB.getInstance().getPlatform(), player);
     }
 }
