@@ -194,6 +194,20 @@ public interface BossBar {
     @NotNull List<TabPlayer> getPlayers();
 
     /**
+     * Returns {@code true} if this bossbar is visible to specified player based on
+     * display condition or adding via {@link #addPlayer(TabPlayer)}, {@code false} if not.
+     * <p>
+     * This may return {@code true} even if player cannot physically see the bossbar due to
+     * having it disabled via toggle command or {@link BossBarManager#toggleBossBar(TabPlayer, boolean)}
+     * (or {@link BossBarManager#setBossBarVisible(TabPlayer, boolean, boolean)}).
+     *
+     * @param   player
+     *          Player to check
+     * @return  {@code true} if player is allowed to see this Boss Bar, {@code false} if not.
+     */
+    boolean containsPlayer(TabPlayer player);
+
+    /**
      * Returns {@code true} if this boss bar is configured as announcement-only bar,
      * {@code false} if not.
      *

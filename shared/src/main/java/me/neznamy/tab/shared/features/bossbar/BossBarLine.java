@@ -252,6 +252,11 @@ public class BossBarLine implements BossBar {
         return players.stream().filter(TabPlayer::isOnline).collect(Collectors.toList());
     }
 
+    @Override
+    public boolean containsPlayer(me.neznamy.tab.api.TabPlayer player) {
+        return players.contains((TabPlayer) player);
+    }
+
     public class TextRefresher extends TabFeature implements Refreshable {
 
         @Getter private final String featureName = "BossBar";
