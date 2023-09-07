@@ -4,15 +4,14 @@ import com.velocitypowered.api.proxy.player.ChatSession;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -20,6 +19,9 @@ public class VelocityTabList implements TabList {
 
     /** Player this TabList belongs to */
     @NotNull private final VelocityTabPlayer player;
+
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabListEntry, Component> expectedDisplayNames = new WeakHashMap<>();
 
     @Override
     public void removeEntry(@NotNull UUID entry) {
@@ -36,29 +38,34 @@ public class VelocityTabList implements TabList {
      */
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        if (player.getVersion().getMinorVersion() >= 8) {
-            getEntry(entry).setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion()));
-        } else {
-            String username = getEntry(entry).getProfile().getName();
-            removeEntry(entry);
-            addEntry(new Entry.Builder(entry).name(username).displayName(displayName).build());
-        }
+        getEntry(entry).ifPresent(e -> {
+            if (player.getVersion().getMinorVersion() >= 8) {
+                Component component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
+                e.setDisplayName(component);
+                expectedDisplayNames.put(e, component);
+            } else {
+                String username = e.getProfile().getName();
+                removeEntry(entry);
+                addEntry(new Entry.Builder(entry).name(username).displayName(displayName).build());
+            }
+        });
     }
 
     @Override
     public void updateLatency(@NotNull UUID entry, int latency) {
-        getEntry(entry).setLatency(latency);
+        getEntry(entry).ifPresent(e -> e.setLatency(latency));
     }
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        getEntry(entry).setGameMode(gameMode);
+        getEntry(entry).ifPresent(e -> e.setGameMode(gameMode));
     }
 
     @Override
     public void addEntry(@NotNull Entry entry) {
         if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
-        player.getPlayer().getTabList().addEntry(TabListEntry.builder()
+        Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
+        TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
                 .profile(new GameProfile(
                         entry.getUniqueId(),
@@ -68,8 +75,10 @@ public class VelocityTabList implements TabList {
                 ))
                 .latency(entry.getLatency())
                 .gameMode(entry.getGameMode())
-                .displayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
-                .build());
+                .displayName(displayName)
+                .build();
+        player.getPlayer().getTabList().addEntry(e);
+        expectedDisplayNames.put(e, displayName);
     }
 
     @Override
@@ -82,20 +91,34 @@ public class VelocityTabList implements TabList {
 
     /**
      * Returns TabList entry with specified UUID. If no such entry was found,
-     * a new, dummy entry is returned to avoid NPE.
+     * empty Optional is returned.
      *
      * @param   id
      *          UUID to get entry by
      * @return  TabList entry with specified UUID
      */
     @NotNull
-    private TabListEntry getEntry(@NotNull UUID id) {
+    private Optional<TabListEntry> getEntry(@NotNull UUID id) {
         for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
-            if (entry.getProfile().getId().equals(id)) return entry;
+            if (entry.getProfile().getId().equals(id)) return Optional.of(entry);
         }
-        //return dummy entry to not cause NPE
-        //possibly add logging into the future to see when this happens
-        return TabListEntry.builder().tabList(player.getPlayer().getTabList())
-                .profile(new GameProfile(id, "", Collections.emptyList())).build();
+        return Optional.empty();
+    }
+
+    /**
+     * Checks if all entries have display names as configured and if not,
+     * they are forced.
+     */
+    public void checkEntries() {
+        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
+            if (expectedDisplayNames.containsKey(entry)) {
+                Component expectedComponent = expectedDisplayNames.get(entry);
+                if (entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
+                    TAB.getInstance().debug("Tablist entry of player " + entry.getProfile().getName() + " has a different display name " +
+                            "for viewer " + player.getName() + " than expected, fixing.");
+                    entry.setDisplayName(expectedComponent);
+                }
+            }
+        }
     }
 }
