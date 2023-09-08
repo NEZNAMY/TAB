@@ -99,7 +99,7 @@ public class VelocityTabList implements TabList {
      */
     @NotNull
     private Optional<TabListEntry> getEntry(@NotNull UUID id) {
-        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
+        for (TabListEntry entry : getEntries()) {
             if (entry.getProfile().getId().equals(id)) return Optional.of(entry);
         }
         return Optional.empty();
@@ -110,7 +110,7 @@ public class VelocityTabList implements TabList {
      * they are forced.
      */
     public void checkEntries() {
-        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
+        for (TabListEntry entry : getEntries()) {
             if (expectedDisplayNames.containsKey(entry)) {
                 Component expectedComponent = expectedDisplayNames.get(entry);
                 if (entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
@@ -119,6 +119,22 @@ public class VelocityTabList implements TabList {
                     entry.setDisplayName(expectedComponent);
                 }
             }
+        }
+    }
+
+    /**
+     * Returns list of entries in player's TabList. This includes a try/catch
+     * to avoid {@link ConcurrentModificationException} when it's modified by the
+     * backend server while iterating.
+     *
+     * @return  A copy of TabList entries in player's TabList
+     */
+    private Collection<TabListEntry> getEntries() {
+        try {
+            return new ArrayList<>(player.getPlayer().getTabList().getEntries());
+        } catch (ConcurrentModificationException velocity) {
+            // TabList was modified by backend server during iteration
+            return getEntries();
         }
     }
 }
