@@ -15,6 +15,7 @@ dependencyResolutionManagement {
         maven("https://oss.sonatype.org/content/repositories/snapshots/") // Spark
         maven("https://maven.fabricmc.net/") // Fabric
         maven("https://jitpack.io") // PremiumVanish, Vault
+        maven("https://repo.md-5.net/content/groups/public/") // LibsDisguises
     }
 }
 

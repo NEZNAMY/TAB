@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.neznamy.tab.platforms.bukkit.hook.LibsDisguisesHook;
 import me.neznamy.tab.platforms.bukkit.nms.BukkitReflection;
 import me.neznamy.tab.platforms.bukkit.nms.PacketEntityView;
 import me.neznamy.tab.platforms.bukkit.platform.BukkitPlatform;
@@ -19,7 +20,6 @@ import me.neznamy.tab.platforms.bukkit.nms.NMSStorage;
 import me.neznamy.tab.shared.platform.Scoreboard;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.backend.BackendTabPlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -103,15 +103,7 @@ public class BukkitTabPlayer extends BackendTabPlayer {
 
     @Override
     public boolean isDisguised() {
-        try {
-            if (!getPlatform().isLibsDisguisesEnabled()) return false;
-            return (boolean) Class.forName("me.libraryaddict.disguise.DisguiseAPI").getMethod("isDisguised", Entity.class).invoke(null, getPlayer());
-        } catch (LinkageError | ReflectiveOperationException e) {
-            //java.lang.NoClassDefFoundError: Could not initialize class me.libraryaddict.disguise.DisguiseAPI
-            TAB.getInstance().getErrorManager().printError("Failed to check disguise status using LibsDisguises", e);
-            getPlatform().setLibsDisguisesEnabled(false);
-            return false;
-        }
+        return LibsDisguisesHook.isDisguised(this);
     }
 
     @Override

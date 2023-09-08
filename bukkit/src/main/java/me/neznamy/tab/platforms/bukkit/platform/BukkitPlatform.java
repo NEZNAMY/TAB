@@ -1,7 +1,6 @@
 package me.neznamy.tab.platforms.bukkit.platform;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.neznamy.tab.platforms.bukkit.*;
@@ -55,7 +54,6 @@ public class BukkitPlatform implements BackendPlatform<Object> {
 
     /** Variables checking presence of other plugins to hook into */
     private final boolean placeholderAPI = ReflectionUtils.classExists("me.clip.placeholderapi.PlaceholderAPI");
-    @Setter private boolean libsDisguisesEnabled = ReflectionUtils.classExists("me.libraryaddict.disguise.DisguiseAPI");
 
     /** NMS server to get TPS from on spigot */
     @Nullable private Object server;
@@ -97,11 +95,10 @@ public class BukkitPlatform implements BackendPlatform<Object> {
         PlaceholderManagerImpl manager = TAB.getInstance().getPlaceholderManager();
         manager.registerServerPlaceholder("%vault-prefix%", -1, () -> "");
         manager.registerServerPlaceholder("%vault-suffix%", -1, () -> "");
-        Chat chat;
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Chat> rspChat = Bukkit.getServicesManager().getRegistration(Chat.class);
             if (rspChat != null) {
-                chat = rspChat.getProvider();
+                Chat chat = rspChat.getProvider();
                 manager.registerPlayerPlaceholder("%vault-prefix%", 1000, p -> chat.getPlayerPrefix((Player) p.getPlayer()));
                 manager.registerPlayerPlaceholder("%vault-suffix%", 1000, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
             }

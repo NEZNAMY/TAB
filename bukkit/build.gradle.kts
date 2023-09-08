@@ -7,4 +7,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude("org.bukkit", "bukkit")
     }
+    compileOnly("LibsDisguises:LibsDisguises:10.0.21") {
+        exclude("org.spigotmc", "spigot")
+    }
 }
