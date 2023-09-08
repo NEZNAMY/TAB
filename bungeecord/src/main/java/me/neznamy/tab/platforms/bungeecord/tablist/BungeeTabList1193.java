@@ -1,9 +1,7 @@
 package me.neznamy.tab.platforms.bungeecord.tablist;
 
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.platforms.bungeecord.BungeePlatform;
 import me.neznamy.tab.platforms.bungeecord.BungeeTabPlayer;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.md_5.bungee.UserConnection;
