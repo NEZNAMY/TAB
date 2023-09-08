@@ -14,8 +14,14 @@ public class FabricTAB implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> TAB.create(new FabricPlatform(server)));
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> TAB.getInstance().unload());
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            try {
+                TAB.create(new FabricPlatform(server));
+                ServerLifecycleEvents.SERVER_STOPPING.register($ -> TAB.getInstance().unload());
+            } catch (Error e) {
+                System.out.println("[TAB] Your server version is not supported! This jar only supports Fabric 1.20.1");
+            }
+        });
     }
 
     public static boolean hasPermission(@NotNull CommandSourceStack source, @NotNull String permission) {
