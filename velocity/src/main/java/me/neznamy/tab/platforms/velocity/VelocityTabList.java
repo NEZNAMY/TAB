@@ -111,13 +111,11 @@ public class VelocityTabList implements TabList {
      */
     public void checkEntries() {
         for (TabListEntry entry : getEntries()) {
-            if (expectedDisplayNames.containsKey(entry)) {
-                Component expectedComponent = expectedDisplayNames.get(entry);
-                if (entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
-                    TAB.getInstance().debug("Tablist entry of player " + entry.getProfile().getName() + " has a different display name " +
-                            "for viewer " + player.getName() + " than expected, fixing.");
-                    entry.setDisplayName(expectedComponent);
-                }
+            Component expectedComponent = expectedDisplayNames.get(entry);
+            if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
+                TAB.getInstance().debug("Tablist entry of player " + entry.getProfile().getName() + " has a different display name " +
+                        "for viewer " + player.getName() + " than expected, fixing.");
+                entry.setDisplayName(expectedComponent);
             }
         }
     }
