@@ -17,6 +17,21 @@ import java.util.Collection;
 
 public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
+    /** Collision rule array for fast access */
+    private static final org.spongepowered.api.scoreboard.CollisionRule[] collisionRules = new org.spongepowered.api.scoreboard.CollisionRule[]{
+            CollisionRules.ALWAYS.get(), CollisionRules.NEVER.get(), CollisionRules.PUSH_OTHER_TEAMS.get(), CollisionRules.PUSH_OWN_TEAM.get()
+    };
+
+    /** Visibility array for fast access */
+    private static final Visibility[] visibilities = new Visibility[] {
+            Visibilities.ALWAYS.get(), Visibilities.NEVER.get(), Visibilities.HIDE_FOR_OTHER_TEAMS.get(), Visibilities.HIDE_FOR_OWN_TEAM.get()
+    };
+
+    /** DisplaySlot array for fast access */
+    private static final org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] displaySlots = new org.spongepowered.api.scoreboard.displayslot.DisplaySlot[] {
+            DisplaySlots.LIST.get(), DisplaySlots.SIDEBAR.get(), DisplaySlots.BELOW_NAME.get()
+    };
+
     /** Scoreboard of the player */
     @NotNull
     private final org.spongepowered.api.scoreboard.Scoreboard sb = org.spongepowered.api.scoreboard.Scoreboard.builder().build();
@@ -29,15 +44,7 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
 
     @Override
     public void setDisplaySlot(@NotNull DisplaySlot slot, @NotNull String objective) {
-        sb.objective(objective).ifPresent(o -> sb.updateDisplaySlot(o, convertDisplaySlot(slot)));
-    }
-
-    private org.spongepowered.api.scoreboard.displayslot.DisplaySlot convertDisplaySlot(@NotNull DisplaySlot slot) {
-        switch (slot) {
-            case PLAYER_LIST: return DisplaySlots.LIST.get();
-            case SIDEBAR: return DisplaySlots.SIDEBAR.get();
-            default: return DisplaySlots.BELOW_NAME.get();
-        }
+        sb.objective(objective).ifPresent(o -> sb.updateDisplaySlot(o, displaySlots[slot.ordinal()]));
     }
 
     @Override
@@ -74,8 +81,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
                 .suffix(adventure(suffix))
                 .allowFriendlyFire((options & 0x01) != 0)
                 .canSeeFriendlyInvisibles((options & 0x02) != 0)
-                .collisionRule(convertCollisionRule(collision))
-                .nameTagVisibility(convertVisibility(visibility))
+                .collisionRule(collisionRules[collision.ordinal()])
+                .nameTagVisibility(visibilities[visibility.ordinal()])
                 .build();
         for (String member : players) {
             team.addMember(adventure(member));
@@ -97,8 +104,8 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
             team.setSuffix(adventure(suffix));
             team.setAllowFriendlyFire((options & 0x01) != 0);
             team.setCanSeeFriendlyInvisibles((options & 0x02) != 0);
-            team.setCollisionRule(convertCollisionRule(collision));
-            team.setNameTagVisibility(convertVisibility(visibility));
+            team.setCollisionRule(collisionRules[collision.ordinal()]);
+            team.setNameTagVisibility(visibilities[visibility.ordinal()]);
         });
     }
 
@@ -110,28 +117,6 @@ public class SpongeScoreboard extends Scoreboard<SpongeTabPlayer> {
     @Override
     public void removeScore0(@NotNull String objective, @NotNull String playerName) {
         sb.objective(objective).ifPresent(o -> o.removeScore(adventure(playerName)));
-    }
-
-    @NotNull
-    private org.spongepowered.api.scoreboard.CollisionRule convertCollisionRule(@NotNull CollisionRule rule) {
-        switch (rule) {
-            case ALWAYS: return CollisionRules.ALWAYS.get();
-            case NEVER: return CollisionRules.NEVER.get();
-            case PUSH_OTHER_TEAMS: return CollisionRules.PUSH_OTHER_TEAMS.get();
-            case PUSH_OWN_TEAM: return CollisionRules.PUSH_OWN_TEAM.get();
-            default: throw new IllegalArgumentException();
-        }
-    }
-
-    @NotNull
-    private Visibility convertVisibility(@NotNull NameVisibility visibility) {
-        switch (visibility) {
-            case ALWAYS: return Visibilities.ALWAYS.get();
-            case NEVER: return Visibilities.NEVER.get();
-            case HIDE_FOR_OTHER_TEAMS: return Visibilities.HIDE_FOR_OTHER_TEAMS.get();
-            case HIDE_FOR_OWN_TEAM: return Visibilities.HIDE_FOR_OWN_TEAM.get();
-            default: throw new IllegalArgumentException();
-        }
     }
 
     /**

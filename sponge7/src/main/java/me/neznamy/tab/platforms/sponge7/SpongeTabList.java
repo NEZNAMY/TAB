@@ -18,6 +18,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SpongeTabList implements TabList {
 
+    /** Gamemode array for fast access */
+    private static final GameMode[] gameModes = new GameMode[]{
+            GameModes.SURVIVAL, GameModes.CREATIVE, GameModes.ADVENTURE, GameModes.SPECTATOR
+    };
+
     /** Player this TabList belongs to */
     @NotNull
     private final SpongeTabPlayer player;
@@ -40,7 +45,7 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void updateGameMode(@NotNull UUID entry, int gameMode) {
-        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setGameMode(convertGameMode(gameMode)));
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> e.setGameMode(gameModes[gameMode]));
     }
 
     @Override
@@ -52,7 +57,7 @@ public class SpongeTabList implements TabList {
                 .list(player.getPlayer().getTabList())
                 .profile(profile)
                 .latency(entry.getLatency())
-                .gameMode(convertGameMode(entry.getGameMode()))
+                .gameMode(gameModes[entry.getGameMode()])
                 .displayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
                 .build());
     }
@@ -63,15 +68,5 @@ public class SpongeTabList implements TabList {
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
         );
-    }
-
-    @NotNull
-    private GameMode convertGameMode(int mode) {
-        switch (mode) {
-            case 1: return GameModes.CREATIVE;
-            case 2: return GameModes.ADVENTURE;
-            case 3: return GameModes.SPECTATOR;
-            default: return GameModes.SURVIVAL;
-        }
     }
 }

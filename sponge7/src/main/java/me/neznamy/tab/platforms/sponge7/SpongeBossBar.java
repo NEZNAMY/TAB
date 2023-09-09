@@ -15,6 +15,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SpongeBossBar implements BossBar {
 
+    /** Color array for fast access */
+    private static final BossBarColor[] colors = new BossBarColor[] {
+            BossBarColors.PINK, BossBarColors.BLUE, BossBarColors.RED, BossBarColors.GREEN, BossBarColors.YELLOW, BossBarColors.PURPLE, BossBarColors.WHITE
+    };
+
+    /** Style array for fast access */
+    private static final BossBarOverlay[] styles = new BossBarOverlay[] {
+            BossBarOverlays.PROGRESS, BossBarOverlays.NOTCHED_6, BossBarOverlays.NOTCHED_10, BossBarOverlays.NOTCHED_12, BossBarOverlays.NOTCHED_20
+    };
+
     /** Player to send boss bars to */
     @NotNull
     private final SpongeTabPlayer player;
@@ -26,8 +36,8 @@ public class SpongeBossBar implements BossBar {
     public void create(@NotNull UUID id, @NotNull String title, float progress, @NotNull BarColor color, @NotNull BarStyle style) {
         ServerBossBar bar = ServerBossBar.builder()
                 .name(player.getPlatform().toComponent(IChatBaseComponent.optimizedComponent(title), player.getVersion()))
-                .color(convertBossBarColor(color))
-                .overlay(convertOverlay(style))
+                .color(colors[color.ordinal()])
+                .overlay(styles[style.ordinal()])
                 .percent(progress)
                 .build();
         bossBars.put(id, bar);
@@ -46,40 +56,16 @@ public class SpongeBossBar implements BossBar {
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarStyle style) {
-        bossBars.get(id).setOverlay(convertOverlay(style));
+        bossBars.get(id).setOverlay(styles[style.ordinal()]);
     }
 
     @Override
     public void update(@NotNull UUID id, @NotNull BarColor color) {
-        bossBars.get(id).setColor(convertBossBarColor(color));
+        bossBars.get(id).setColor(colors[color.ordinal()]);
     }
 
     @Override
     public void remove(@NotNull UUID id) {
         bossBars.remove(id).removePlayer(player.getPlayer());
-    }
-
-    @NotNull
-    private BossBarColor convertBossBarColor(@NotNull BarColor color) {
-        switch (color) {
-            case PINK: return BossBarColors.PINK;
-            case BLUE: return BossBarColors.BLUE;
-            case RED: return BossBarColors.RED;
-            case GREEN: return BossBarColors.GREEN;
-            case YELLOW: return BossBarColors.YELLOW;
-            case WHITE: return BossBarColors.WHITE;
-            default: return BossBarColors.PURPLE;
-        }
-    }
-
-    @NotNull
-    private BossBarOverlay convertOverlay(@NotNull BarStyle style) {
-        switch (style) {
-            case NOTCHED_6: return BossBarOverlays.NOTCHED_6;
-            case NOTCHED_10: return BossBarOverlays.NOTCHED_10;
-            case NOTCHED_12: return BossBarOverlays.NOTCHED_12;
-            case NOTCHED_20: return BossBarOverlays.NOTCHED_20;
-            default: return BossBarOverlays.PROGRESS;
-        }
     }
 }
