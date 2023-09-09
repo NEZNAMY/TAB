@@ -115,7 +115,7 @@ public class BungeePlatform extends ProxyPlatform<BaseComponent> {
         if (modifier.isUnderlined()) textComponent.setUnderlined(true);
         if (modifier.getFont() != null) textComponent.setFont(modifier.getFont());
         if (!component.getExtra().isEmpty()) textComponent.setExtra(
-                component.getExtra().stream().map(c -> toComponent(c, version)).collect(Collectors.toList()));
+                component.getExtra().stream().map(c -> toComponent0(c, version)).collect(Collectors.toList()));
         return textComponent;
     }
 
