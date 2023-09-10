@@ -6,10 +6,9 @@ plugins {
 
 repositories {
     // Gradle doesn't support combining settings and project repositories, so we have to re-declare all the settings repos we need
-    maven("https://repo.kryptonmc.org/releases")
+    maven("https://jitpack.io") // YamlAssist
     maven("https://repo.opencollab.dev/maven-snapshots/")
     maven("https://repo.viaversion.com/")
-
 }
 
 dependencies {

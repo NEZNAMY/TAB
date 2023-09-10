@@ -5,7 +5,7 @@ plugins {
 dependencies {
     api(projects.api)
     api("org.yaml:snakeyaml:1.33")
-    api("me.neznamy:yamlassist:1.0.5")
+    api("com.github.NEZNAMY:yamlassist:1.0.5")
     api("com.googlecode.json-simple:json-simple:1.1.1") {
         exclude("junit", "junit")
     }
@@ -13,7 +13,6 @@ dependencies {
         exclude("com.google.guava", "guava")
         exclude("org.checkerframework", "checker-qual")
     }
-    compileOnlyApi("net.md-5:bungeecord-chat:1.19-R0.1-SNAPSHOT")
     compileOnlyApi("com.viaversion:viaversion-api:4.5.1")
     compileOnlyApi("io.netty:netty-all:4.1.90.Final")
     compileOnlyApi("net.luckperms:api:5.4")
