@@ -2,7 +2,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
     repositories {
-        mavenCentral() // Netty, SnakeYaml, json-simple, slf4j, Guava, Kyori event, bStats, AuthLib, LuckPerms
+        mavenCentral() // Netty, SnakeYaml, json-simple, Guava, Kyori event, bStats, AuthLib, LuckPerms
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
         maven("https://repo.viaversion.com/") // ViaVersion
         maven("https://repo.codemc.org/repository/maven-public/") // RedisBungee, BungeeCord-proxy
