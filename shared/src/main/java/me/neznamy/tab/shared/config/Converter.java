@@ -365,6 +365,7 @@ public class Converter {
 
     @SuppressWarnings("unchecked")
     public void convert332to400(@NotNull ConfigurationFile config) throws IOException {
+        // Removed config options
         if (config.hasConfigOption("fix-pet-names")) {
             TAB.getInstance().getPlatform().logInfo(IChatBaseComponent.fromColoredText("&ePerforming configuration conversion from 3.3.2 to 4.0.0"));
             config.set("fix-pet-names", null);
@@ -375,33 +376,29 @@ public class Converter {
             config.set("remove-ghost-players", null);
             config.set("global-playerlist.fill-profile-key", null);
         }
-        if (config.hasConfigOption("placeholderapi-refresh-intervals.server")) {
-            Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
-            Map<String, Object> server = config.getConfigurationSection("placeholderapi-refresh-intervals.server");
-            intervals.remove("server");
-            intervals.putAll(server);
-            config.save();
+
+        // Merged refresh intervals
+        Map<Object, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
+        boolean updated = false;
+        for (Map.Entry<?, ?> entry : new ArrayList<>(intervals.entrySet())) {
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                intervals.remove(entry.getKey());
+                intervals.putAll(((Map<Object, Object>)value));
+                updated = true;
+            }
         }
-        if (config.hasConfigOption("placeholderapi-refresh-intervals.player")) {
-            Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
-            Map<String, Object> player = config.getConfigurationSection("placeholderapi-refresh-intervals.player");
-            intervals.remove("player");
-            intervals.putAll(player);
-            config.save();
-        }
-        if (config.hasConfigOption("placeholderapi-refresh-intervals.relational")) {
-            Map<String, Object> intervals = config.getConfigurationSection("placeholderapi-refresh-intervals");
-            Map<String, Object> relational = config.getConfigurationSection("placeholderapi-refresh-intervals.relational");
-            intervals.remove("relational");
-            intervals.putAll(relational);
-            config.save();
-        }
+        if (updated) config.save();
+
+        // Merge layout to config
         File layoutFile = new File(TAB.getInstance().getDataFolder(), "layout.yml");
         if (layoutFile.exists()) {
             ConfigurationFile layout = new YamlConfigurationFile(null, layoutFile);
             config.set("layout", layout.getValues());
             Files.delete(layoutFile.toPath());
         }
+
+        // Convert disabled worlds/servers into disable condition
         Consumer<Map<String, Object>> disabledConditionConverter = (map -> {
             List<String> newConditions = new ArrayList<>();
             boolean update = false;
@@ -428,6 +425,8 @@ public class Converter {
         disabledConditionConverter.accept(config.getConfigurationSection("scoreboard-teams.unlimited-nametag-mode"));
         disabledConditionConverter.accept(config.getConfigurationSection("yellow-number-in-tablist"));
         disabledConditionConverter.accept(config.getConfigurationSection("belowname-objective"));
+
+        // Removed config option
         if (config.hasConfigOption("layout.hide-vanished-players")) config.set("layout.hide-vanished-players", null);
     }
 
