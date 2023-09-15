@@ -12,11 +12,9 @@ import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
-import me.neznamy.tab.shared.features.PlayerList;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.AdventureHook;
-import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
@@ -43,15 +41,6 @@ public class VelocityPlatform extends ProxyPlatform<Component> {
     public void loadPlayers() {
         for (Player p : plugin.getServer().getAllPlayers()) {
             TAB.getInstance().addPlayer(new VelocityTabPlayer(this, p));
-        }
-        PlayerList playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
-        if (playerList != null && playerList.isAntiOverrideTabList()) {
-            TAB.getInstance().getCPUManager().startRepeatingMeasuredTask(500, "Velocity extras",
-                    TabConstants.CpuUsageCategory.ANTI_OVERRIDE, () -> {
-                        for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
-                            ((VelocityTabList)p.getTabList()).checkEntries();
-                        }
-                    });
         }
     }
 

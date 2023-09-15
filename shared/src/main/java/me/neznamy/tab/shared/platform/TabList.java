@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.platform;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +42,26 @@ public interface TabList {
      *          Footer to use
      */
     void setPlayerListHeaderFooter(@NotNull IChatBaseComponent header, @NotNull IChatBaseComponent footer);
+
+    /**
+     * Checks if all entries have display names as configured and if not,
+     * they are forced. Only works on platforms with a full TabList API.
+     * Not needed for platforms which support pipeline injection.
+     */
+    default void checkDisplayNames(){}
+
+    /**
+     * Sends a debug message when display name is not as expected.
+     *
+     * @param   player
+     *          Player with different display name than expected.
+     * @param   viewer
+     *          Viewer of the TabList with wrong entry.
+     */
+    default void displayNameWrong(String player, TabPlayer viewer) {
+        TAB.getInstance().debug("TabList entry of player " + player + " has a different display name " +
+                "for viewer " + viewer.getName() + " than expected, fixing.");
+    }
 
     enum Action {
         ADD_PLAYER, REMOVE_PLAYER, UPDATE_DISPLAY_NAME, UPDATE_LATENCY, UPDATE_GAME_MODE

@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.player.ChatSession;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.RequiredArgsConstructor;
-import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.platform.TabList;
 import net.kyori.adventure.text.Component;
@@ -63,7 +62,6 @@ public class VelocityTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
-        if (player.getPlayer().getTabList().containsEntry(entry.getUniqueId())) return;
         Component displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
         TabListEntry e = TabListEntry.builder()
                 .tabList(player.getPlayer().getTabList())
@@ -105,16 +103,12 @@ public class VelocityTabList implements TabList {
         return Optional.empty();
     }
 
-    /**
-     * Checks if all entries have display names as configured and if not,
-     * they are forced.
-     */
-    public void checkEntries() {
+    @Override
+    public void checkDisplayNames() {
         for (TabListEntry entry : getEntries()) {
             Component expectedComponent = expectedDisplayNames.get(entry);
             if (expectedComponent != null && entry.getDisplayNameComponent().orElse(null) != expectedComponent) {
-                TAB.getInstance().debug("Tablist entry of player " + entry.getProfile().getName() + " has a different display name " +
-                        "for viewer " + player.getName() + " than expected, fixing.");
+                displayNameWrong(entry.getProfile().getName(), player);
                 entry.setDisplayName(expectedComponent);
             }
         }

@@ -7,10 +7,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.profile.property.ProfileProperty;
+import org.spongepowered.api.text.Text;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 /**
  * TabList implementation for Sponge 7 and lower
@@ -27,6 +31,9 @@ public class SpongeTabList implements TabList {
     @NotNull
     private final SpongeTabPlayer player;
 
+    /** Expected names based on configuration, saving to restore them if another plugin overrides them */
+    private final Map<TabListEntry, Text> expectedDisplayNames = new WeakHashMap<>();
+
     @Override
     public void removeEntry(@NotNull UUID entry) {
         player.getPlayer().getTabList().removeEntry(entry);
@@ -34,8 +41,11 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void updateDisplayName(@NotNull UUID entry, @Nullable IChatBaseComponent displayName) {
-        player.getPlayer().getTabList().getEntry(entry).ifPresent(
-                e -> e.setDisplayName(displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion())));
+        player.getPlayer().getTabList().getEntry(entry).ifPresent(e -> {
+            Text component = displayName == null ? null : player.getPlatform().toComponent(displayName, player.getVersion());
+            e.setDisplayName(component);
+            expectedDisplayNames.put(e, component);
+        });
     }
 
     @Override
@@ -50,16 +60,19 @@ public class SpongeTabList implements TabList {
 
     @Override
     public void addEntry(@NotNull Entry entry) {
+        Text displayName = entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion());
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile.getPropertyMap().put(TEXTURES_PROPERTY, ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
-        player.getPlayer().getTabList().addEntry(org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
+        TabListEntry tabListEntry = org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
                 .list(player.getPlayer().getTabList())
                 .profile(profile)
                 .latency(entry.getLatency())
                 .gameMode(gameModes[entry.getGameMode()])
-                .displayName(entry.getDisplayName() == null ? null : player.getPlatform().toComponent(entry.getDisplayName(), player.getVersion()))
-                .build());
+                .displayName(displayName)
+                .build();
+        player.getPlayer().getTabList().addEntry(tabListEntry);
+        expectedDisplayNames.put(tabListEntry, displayName);
     }
 
     @Override
@@ -68,5 +81,16 @@ public class SpongeTabList implements TabList {
                 player.getPlatform().toComponent(header, player.getVersion()),
                 player.getPlatform().toComponent(footer, player.getVersion())
         );
+    }
+
+    @Override
+    public void checkDisplayNames() {
+        for (TabListEntry entry : player.getPlayer().getTabList().getEntries()) {
+            Text expectedComponent = expectedDisplayNames.get(entry);
+            if (expectedComponent != null && entry.getDisplayName().orElse(null) != expectedComponent) {
+                displayNameWrong(entry.getProfile().getName().orElse(null), player);
+                entry.setDisplayName(expectedComponent);
+            }
+        }
     }
 }
