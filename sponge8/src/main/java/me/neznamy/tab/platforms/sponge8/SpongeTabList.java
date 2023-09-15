@@ -64,7 +64,7 @@ public class SpongeTabList implements TabList {
         GameProfile profile = GameProfile.of(entry.getUniqueId(), entry.getName());
         if (entry.getSkin() != null) profile = profile.withProperty(ProfileProperty.of(
                 TEXTURES_PROPERTY, entry.getSkin().getValue(), entry.getSkin().getSignature()));
-        TabListEntry tabListEntry = org.spongepowered.api.entity.living.player.tab.TabListEntry.builder()
+        TabListEntry tabListEntry = TabListEntry.builder()
                 .list(player.getPlayer().tabList())
                 .profile(profile)
                 .latency(entry.getLatency())
