@@ -25,6 +25,7 @@ import me.neznamy.tab.shared.hook.LuckPermsHook;
 import me.neznamy.tab.shared.placeholders.PlayerPlaceholderImpl;
 import me.neznamy.tab.shared.placeholders.expansion.EmptyTabExpansion;
 import me.neznamy.tab.shared.placeholders.expansion.TabExpansion;
+import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
@@ -103,6 +104,9 @@ public class BukkitPlatform implements BackendPlatform<Object> {
                 manager.registerPlayerPlaceholder("%vault-suffix%", 1000, p -> chat.getPlayerSuffix((Player) p.getPlayer()));
             }
         }
+        // Override for the PAPI placeholder to prevent console errors on unsupported server versions when ping field changes
+        manager.registerPlayerPlaceholder("%player_ping%", manager.getRefreshInterval("%player_ping%"),
+                p -> ((TabPlayer)p).getPing());
         BackendPlatform.super.registerPlaceholders();
     }
 
