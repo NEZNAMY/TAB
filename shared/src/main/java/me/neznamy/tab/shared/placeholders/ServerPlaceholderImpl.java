@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.ServerPlaceholder;
@@ -104,7 +105,18 @@ public class ServerPlaceholderImpl extends TabPlaceholder implements ServerPlace
 
     @Override
     public void update() {
-        update0();
+        PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+        TAB.getInstance().getCPUManager().runMeasuredTask(pm.getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
+            if (update0()) {
+                for (Refreshable r : pm.getPlaceholderUsage().get(identifier)) {
+                    for (TabPlayer all : TAB.getInstance().getOnlinePlayers()) {
+                        long startTime = System.nanoTime();
+                        r.refresh(all, false);
+                        TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                    }
+                 }
+            }
+        });
     }
 
     @Override

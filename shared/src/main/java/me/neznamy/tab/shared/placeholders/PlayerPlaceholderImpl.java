@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.api.placeholder.PlayerPlaceholder;
@@ -105,7 +106,16 @@ public class PlayerPlaceholderImpl extends TabPlaceholder implements PlayerPlace
 
     @Override
     public void update(@NonNull me.neznamy.tab.api.TabPlayer player) {
-        update((TabPlayer) player);
+        PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+        TAB.getInstance().getCPUManager().runMeasuredTask(pm.getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
+            if (update((TabPlayer) player)) {
+                for (Refreshable r : pm.getPlaceholderUsage().get(identifier)) {
+                    long startTime = System.nanoTime();
+                    r.refresh((TabPlayer) player, false);
+                    TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                }
+            }
+        });
     }
 
     public void updateFromNested(@NonNull TabPlayer player) {

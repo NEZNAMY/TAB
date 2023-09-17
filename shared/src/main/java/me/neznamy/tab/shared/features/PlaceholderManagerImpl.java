@@ -43,7 +43,7 @@ public class PlaceholderManagerImpl extends TabFeature implements PlaceholderMan
     private final Map<String, Placeholder> registeredPlaceholders = new HashMap<>();
 
     //map of String-Set of features using placeholder
-    private final Map<String, Set<Refreshable>> placeholderUsage = new ConcurrentHashMap<>();
+    @Getter private final Map<String, Set<Refreshable>> placeholderUsage = new ConcurrentHashMap<>();
     private Placeholder[] usedPlaceholders = new Placeholder[0];
 
     private final AtomicInteger loopTime = new AtomicInteger();

@@ -5,6 +5,7 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import lombok.NonNull;
+import me.neznamy.tab.shared.features.PlaceholderManagerImpl;
 import me.neznamy.tab.shared.features.types.Refreshable;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import me.neznamy.tab.shared.chat.EnumChatFormat;
@@ -105,7 +106,16 @@ public class RelationalPlaceholderImpl extends TabPlaceholder implements Relatio
 
     @Override
     public void update(@NonNull me.neznamy.tab.api.TabPlayer viewer, @NonNull me.neznamy.tab.api.TabPlayer target) {
-        update((TabPlayer) viewer, (TabPlayer) target);
+        PlaceholderManagerImpl pm = TAB.getInstance().getPlaceholderManager();
+        TAB.getInstance().getCPUManager().runMeasuredTask(pm.getFeatureName(), TabConstants.CpuUsageCategory.PLACEHOLDER_REFRESHING, () -> {
+            if (update((TabPlayer) viewer, (TabPlayer) target)) {
+                for (Refreshable r : pm.getPlaceholderUsage().get(identifier)) {
+                    long startTime = System.nanoTime();
+                    r.refresh((TabPlayer) target, false);
+                    TAB.getInstance().getCPUManager().addTime(r.getFeatureName(), r.getRefreshDisplayName(), System.nanoTime() - startTime);
+                }
+            }
+        });
     }
 
     /**
