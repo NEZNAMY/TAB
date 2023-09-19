@@ -1,7 +1,6 @@
 package me.neznamy.tab.shared.features.layout;
 
 import lombok.Getter;
-import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.chat.IChatBaseComponent;
 import me.neznamy.tab.shared.placeholders.conditions.Condition;
@@ -50,14 +49,16 @@ public class LayoutView {
             viewer.getTabList().addEntry(slot.createEntry(viewer));
         }
         for (int slot : emptySlots) {
-            viewer.getTabList().addEntry(new TabList.Entry(manager.getUUID(slot), getEntryName(viewer, slot), manager.getSkinManager().getDefaultSkin(slot),
-                    manager.getEmptySlotPing(), 0, new IChatBaseComponent("")));
+            viewer.getTabList().addEntry(new TabList.Entry(
+                    manager.getUUID(slot),
+                    manager.getDirection().getEntryName(viewer, slot),
+                    manager.getSkinManager().getDefaultSkin(slot),
+                    manager.getEmptySlotPing(),
+                    0,
+                    new IChatBaseComponent("")
+            ));
         }
         tick();
-    }
-
-    public String getEntryName(@NotNull TabPlayer viewer, long slot) {
-        return viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ? "|slot_" + (10+slot) : "";
     }
 
     public void destroy() {

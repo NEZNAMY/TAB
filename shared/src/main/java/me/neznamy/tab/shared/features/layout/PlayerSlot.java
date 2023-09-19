@@ -36,7 +36,7 @@ public class PlayerSlot {
             PlayerList playerList = layout.getManager().getPlayerList();
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
+                    layout.getManager().getDirection().getEntryName(p, slot),
                     player.getSkin(),
                     player.getPing(),
                     0,
@@ -45,7 +45,7 @@ public class PlayerSlot {
         } else {
             data = new TabList.Entry(
                     uniqueId,
-                    layout.getEntryName(p, uniqueId.getLeastSignificantBits()),
+                    layout.getManager().getDirection().getEntryName(p, slot),
                     layout.getManager().getSkinManager().getDefaultSkin(slot),
                     layout.getManager().getEmptySlotPing(),
                     0,

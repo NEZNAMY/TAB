@@ -50,6 +50,8 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     private final WeakHashMap<TabPlayer, LayoutView> views = new WeakHashMap<>();
     private final WeakHashMap<me.neznamy.tab.api.TabPlayer, LayoutPattern> forcedLayouts = new WeakHashMap<>();
 
+    private static boolean teamsEnabled;
+
     public String getDefaultSkin(int slot) {
         return defaultSkinHashMap.getOrDefault(slot, defaultSkin);
     }
@@ -77,6 +79,7 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
     @Override
     public void load() {
         playerList = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.PLAYER_LIST);
+        teamsEnabled = TAB.getInstance().getNameTagManager() != null;
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.LAYOUT_LATENCY, new LayoutLatencyRefresher(this));
         for (TabPlayer p : TAB.getInstance().getOnlinePlayers()) {
             onJoin(p);
@@ -209,14 +212,20 @@ public class LayoutManagerImpl extends TabFeature implements LayoutManager, Join
 
         @NotNull private final Function<Integer, Integer> slotTranslator;
 
-        // 1.19.2-
         public int translateSlot(int slot) {
             return slotTranslator.apply(slot);
         }
 
-        // 1.19.3+
         public String getEntryName(TabPlayer viewer, int slot) {
-            return viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId() ? "|slot_" + (10+slotTranslator.apply(slot)) : "";
+            if (viewer.getVersion().getNetworkId() >= ProtocolVersion.V1_19_3.getNetworkId()) {
+                if (teamsEnabled) {
+                    return "|slot_" + (10+slotTranslator.apply(slot));
+                } else {
+                    return " slot_" + (10+slotTranslator.apply(slot));
+                }
+            } else {
+                return "";
+            }
         }
     }
 }
